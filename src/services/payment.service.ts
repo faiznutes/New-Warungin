@@ -608,6 +608,13 @@ class PaymentService {
       
       // Store mapping in database for webhook lookup
       try {
+        // Store additional data in config JSON field for addon-extend
+        const config: any = {};
+        if (data.itemType === 'addon-extend' && data.addonId) {
+          config.addonId = data.addonId;
+          config.duration = data.duration;
+        }
+        
         await prisma.paymentMapping.upsert({
           where: { orderId },
           update: {
@@ -617,6 +624,7 @@ class PaymentService {
             itemName: data.itemName,
             amount: data.amount,
             status: 'PENDING',
+            config: Object.keys(config).length > 0 ? config : undefined,
           },
           create: {
             orderId,
@@ -626,6 +634,7 @@ class PaymentService {
             itemName: data.itemName,
             amount: data.amount,
             status: 'PENDING',
+            config: Object.keys(config).length > 0 ? config : undefined,
           },
         });
       } catch (error: any) {
