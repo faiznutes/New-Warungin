@@ -402,6 +402,100 @@ class OfflineStorageEnhanced {
   }
 
   /**
+   * Clear all IndexedDB databases (safe method with fallback)
+   */
+  async clearAllDatabases(): Promise<void> {
+    if (!('indexedDB' in window)) {
+      console.warn('IndexedDB not supported');
+      return;
+    }
+
+    try {
+      // Try using indexedDB.databases() if available (Chrome, Edge, Firefox)
+      if (typeof indexedDB.databases === 'function') {
+        const databases = await indexedDB.databases();
+        await Promise.all(
+          databases.map((db) => {
+            return new Promise<void>((resolve, reject) => {
+              const deleteReq = indexedDB.deleteDatabase(db.name);
+              deleteReq.onsuccess = () => resolve();
+              deleteReq.onerror = () => reject(deleteReq.error);
+              deleteReq.onblocked = () => {
+                console.warn(`Database ${db.name} deletion blocked`);
+                resolve(); // Continue even if blocked
+              };
+            });
+          })
+        );
+      } else {
+        // Fallback: Delete known database names
+        const knownDatabases = [
+          this.dbName,
+          'warungin-offline',
+          'WarunginOfflineDB',
+        ];
+
+        await Promise.all(
+          knownDatabases.map((dbName) => {
+            return new Promise<void>((resolve, reject) => {
+              const deleteReq = indexedDB.deleteDatabase(dbName);
+              deleteReq.onsuccess = () => resolve();
+              deleteReq.onerror = () => {
+                // Ignore errors for databases that don't exist
+                resolve();
+              };
+              deleteReq.onblocked = () => {
+                console.warn(`Database ${dbName} deletion blocked`);
+                resolve();
+              };
+            });
+          })
+        );
+      }
+      console.log('All IndexedDB databases cleared');
+    } catch (error) {
+      console.error('Error clearing IndexedDB databases:', error);
+      // Don't throw, just log the error
+    }
+  }
+
+  /**
+   * Clear all data from current database
+   */
+  async clearAllData(): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    if (!this.db) return;
+
+    try {
+      // Clear actions store
+      const actionsTransaction = this.db.transaction([this.actionsStore], 'readwrite');
+      const actionsStore = actionsTransaction.objectStore(this.actionsStore);
+      await new Promise<void>((resolve, reject) => {
+        const request = actionsStore.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+
+      // Clear data store
+      const dataTransaction = this.db.transaction([this.dataStore], 'readwrite');
+      const dataStore = dataTransaction.objectStore(this.dataStore);
+      await new Promise<void>((resolve, reject) => {
+        const request = dataStore.clear();
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+
+      console.log('All offline data cleared');
+    } catch (error) {
+      console.error('Error clearing offline data:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get storage statistics
    */
   async getStats(): Promise<{ pendingActions: number; storedData: number }> {
