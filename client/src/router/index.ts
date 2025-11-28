@@ -243,46 +243,46 @@ const router = createRouter({
           path: 'inventory/suppliers',
           name: 'suppliers',
           component: () => import('../views/inventory/Suppliers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
         },
         {
           path: 'inventory/purchase-orders',
           name: 'purchase-orders',
           component: () => import('../views/inventory/PurchaseOrders.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
         },
         {
           path: 'inventory/stock-transfers',
           name: 'stock-transfers',
           component: () => import('../views/inventory/StockTransfers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
         },
         {
           path: 'inventory/stock-alerts',
           name: 'stock-alerts',
           component: () => import('../views/inventory/StockAlerts.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
         },
         // Advanced Reporting
         {
           path: 'reports/advanced',
           name: 'advanced-reporting',
           component: () => import('../views/reports/AdvancedReporting.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'ADVANCED_REPORTING' },
         },
         // Financial Management Enhancement
         {
           path: 'finance/management',
           name: 'financial-management',
           component: () => import('../views/finance/FinancialManagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'FINANCIAL_MANAGEMENT' },
         },
         // AI/ML Features
         {
           path: 'ai-ml',
           name: 'ai-ml-features',
           component: () => import('../views/ai-ml/AIMLFeatures.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'AI_ML_FEATURES' },
         },
         {
           path: 'analytics',
@@ -294,7 +294,7 @@ const router = createRouter({
           path: 'finance',
           name: 'finance',
           component: () => import('../views/finance/AccountingFinance.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'FINANCIAL_MANAGEMENT' },
         },
         {
           path: 'profit-loss',
@@ -511,9 +511,27 @@ router.beforeEach(async (to, from, next) => {
     }
     
     // Admin Tenant bypass addon check for BUSINESS_ANALYTICS (basic analytics access)
-    if (userRole === 'ADMIN_TENANT' && requiredAddon === 'BUSINESS_ANALYTICS') {
-      next();
-      return;
+    // Also check if CUSTOM plan (has all features)
+    if (userRole === 'ADMIN_TENANT') {
+      try {
+        // Check plan features first
+        const { default: api } = await import('../api');
+        const planResponse = await api.get('/subscription/plan-features').catch(() => null);
+        
+        if (planResponse?.data?.plan === 'CUSTOM') {
+          // CUSTOM plan has all features
+          next();
+          return;
+        }
+        
+        // For BUSINESS_ANALYTICS, allow basic access
+        if (requiredAddon === 'BUSINESS_ANALYTICS') {
+          next();
+          return;
+        }
+      } catch (error: any) {
+        // If error, continue to addon check
+      }
     }
     
     // For other roles or addons, check if addon is active

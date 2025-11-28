@@ -11,6 +11,7 @@ import advancedReportingService from '../services/advanced-reporting.service';
 import { handleRouteError } from '../utils/route-error-handler';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
+import { checkAdvancedReportingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -27,6 +28,7 @@ router.get(
   '/templates',
   authGuard,
   subscriptionGuard,
+  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -129,6 +131,7 @@ router.get(
   '/scheduled',
   authGuard,
   subscriptionGuard,
+  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -191,6 +194,7 @@ router.get(
   '/dashboard-settings',
   authGuard,
   subscriptionGuard,
+  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

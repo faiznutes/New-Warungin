@@ -9,6 +9,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { requireTenantId } from '../utils/tenant';
 import stockAlertService from '../services/stock-alert.service';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkInventoryManagementAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.get(
   '/low-stock',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -55,6 +57,7 @@ router.get(
   '/stats',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -82,6 +85,7 @@ router.post(
   '/send',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

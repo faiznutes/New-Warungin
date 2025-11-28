@@ -11,6 +11,7 @@ import emailAnalyticsService from '../services/email-analytics.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -131,6 +132,7 @@ router.get(
   '/campaign/:campaignId',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -198,6 +200,7 @@ router.get(
   '/overall',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

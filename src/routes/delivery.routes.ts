@@ -6,6 +6,7 @@ import { requireTenantId } from '../utils/tenant';
 import deliveryService from '../services/delivery.service';
 import logger from '../utils/logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -54,6 +55,7 @@ const trackShipmentSchema = z.object({
 router.get(
   '/orders',
   authGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -101,6 +103,7 @@ router.get(
 router.post(
   '/orders/:orderId/process',
   authGuard,
+  checkDeliveryMarketingAddon,
   validate({ body: processDeliverySchema }),
   async (req: Request, res: Response) => {
     try {
@@ -116,6 +119,7 @@ router.post(
 router.post(
   '/couriers',
   authGuard,
+  checkDeliveryMarketingAddon,
   validate({ body: createCourierSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -177,6 +181,7 @@ router.post(
 router.post(
   '/orders/:orderId/create-shipment',
   authGuard,
+  checkDeliveryMarketingAddon,
   validate({ body: createShipmentSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -242,6 +247,7 @@ router.post(
 router.post(
   '/track',
   authGuard,
+  checkDeliveryMarketingAddon,
   validate({ body: trackShipmentSchema }),
   async (req: Request, res: Response) => {
     try {

@@ -177,6 +177,7 @@ export class AddonService {
           case 'DELIVERY_MARKETING':
           case 'RECEIPT_EDITOR':
           case 'MULTI_OUTLET_ADVANCED':
+          case 'EXPORT_REPORTS':
             // These addons don't have usage limits
             currentUsage = 0;
             break;
@@ -492,6 +493,7 @@ export class AddonService {
       case 'DELIVERY_MARKETING':
       case 'RECEIPT_EDITOR':
       case 'MULTI_OUTLET_ADVANCED':
+      case 'EXPORT_REPORTS':
         // These addons don't have usage limits
         return { allowed: true, currentUsage: 0 };
     }

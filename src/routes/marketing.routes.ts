@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import marketingService from '../services/marketing.service';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -29,6 +30,7 @@ const createPromoSchema = z.object({
 router.get(
   '/campaigns',
   authGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -100,6 +102,7 @@ router.post(
 router.post(
   '/campaigns/:campaignId/send',
   authGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -258,6 +261,7 @@ router.post(
 router.get(
   '/analytics',
   authGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -303,6 +307,7 @@ router.get(
 router.get(
   '/campaigns/:campaignId/roi',
   authGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

@@ -11,6 +11,7 @@ import financialManagementService from '../services/financial-management-enhance
 import { handleRouteError } from '../utils/route-error-handler';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
+import { checkFinancialManagementAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -65,6 +66,7 @@ router.get(
   '/cash-flow/summary',
   authGuard,
   subscriptionGuard,
+  checkFinancialManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -131,6 +133,7 @@ router.get(
   '/expenses/by-category',
   authGuard,
   subscriptionGuard,
+  checkFinancialManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -188,6 +191,7 @@ router.get(
   '/forecast',
   authGuard,
   subscriptionGuard,
+  checkFinancialManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

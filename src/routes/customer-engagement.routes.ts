@@ -9,6 +9,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { requireTenantId } from '../utils/tenant';
 import customerEngagementService from '../services/customer-engagement.service';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -60,6 +61,7 @@ router.get(
   '/:customerId',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -104,6 +106,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -142,6 +145,7 @@ router.get(
   '/level/:level',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -200,6 +204,7 @@ router.get(
   '/stats/overall',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

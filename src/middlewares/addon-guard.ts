@@ -33,8 +33,14 @@ export const checkAddon = (addonType: string) => {
       if (!hasAddon) {
         const addonNames: Record<string, string> = {
           'BUSINESS_ANALYTICS': 'Business Analytics & Insight',
+          'ADVANCED_REPORTING': 'Advanced Reporting',
           'EXPORT_REPORTS': 'Export Laporan',
-          'RECEIPT_EDITOR': 'Simple Nota Editor',
+          'FINANCIAL_MANAGEMENT': 'Financial Management',
+          'INVENTORY_MANAGEMENT': 'Inventory Management',
+          'AI_ML_FEATURES': 'AI/ML Features',
+          'DELIVERY_MARKETING': 'Delivery & Marketing',
+          'RECEIPT_EDITOR': 'Advanced Receipt Editor',
+          'MULTI_OUTLET_ADVANCED': 'Multi-Outlet Advanced',
         };
         
         const addonName = addonNames[addonType] || addonType;
@@ -56,12 +62,42 @@ export const checkAddon = (addonType: string) => {
 export const checkBusinessAnalyticsAddon = checkAddon('BUSINESS_ANALYTICS');
 
 /**
+ * Middleware specifically for Advanced Reporting addon
+ */
+export const checkAdvancedReportingAddon = checkAddon('ADVANCED_REPORTING');
+
+/**
  * Middleware specifically for Export Reports addon
  */
 export const checkExportReportsAddon = checkAddon('EXPORT_REPORTS');
 
 /**
+ * Middleware specifically for Financial Management addon
+ */
+export const checkFinancialManagementAddon = checkAddon('FINANCIAL_MANAGEMENT');
+
+/**
+ * Middleware specifically for Inventory Management addon
+ */
+export const checkInventoryManagementAddon = checkAddon('INVENTORY_MANAGEMENT');
+
+/**
+ * Middleware specifically for AI/ML Features addon
+ */
+export const checkAIMLFeaturesAddon = checkAddon('AI_ML_FEATURES');
+
+/**
+ * Middleware specifically for Delivery & Marketing addon
+ */
+export const checkDeliveryMarketingAddon = checkAddon('DELIVERY_MARKETING');
+
+/**
  * Middleware specifically for Receipt Editor addon
  */
 export const checkReceiptEditorAddon = checkAddon('RECEIPT_EDITOR');
+
+/**
+ * Middleware specifically for Multi-Outlet Advanced addon
+ */
+export const checkMultiOutletAdvancedAddon = checkAddon('MULTI_OUTLET_ADVANCED');
 

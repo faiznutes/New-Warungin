@@ -9,6 +9,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { requireTenantId } from '../utils/tenant';
 import aiMlService from '../services/ai-ml.service';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkAIMLFeaturesAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.get(
   '/forecast-sales',
   authGuard,
   subscriptionGuard,
+  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -50,6 +52,7 @@ router.get(
   '/recommendations',
   authGuard,
   subscriptionGuard,
+  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -77,6 +80,7 @@ router.get(
   '/customer-segments',
   authGuard,
   subscriptionGuard,
+  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -101,6 +105,7 @@ router.post(
   '/optimize-price',
   authGuard,
   subscriptionGuard,
+  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

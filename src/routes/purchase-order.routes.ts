@@ -11,6 +11,7 @@ import { requireTenantId, requireUserId } from '../utils/tenant';
 import purchaseOrderService from '../services/purchase-order.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkInventoryManagementAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -73,6 +74,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -112,6 +114,7 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -250,6 +253,7 @@ router.post(
   '/:id/receive',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -290,6 +294,7 @@ router.post(
   '/:id/cancel',
   authGuard,
   subscriptionGuard,
+  checkInventoryManagementAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

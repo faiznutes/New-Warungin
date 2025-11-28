@@ -11,6 +11,7 @@ import { requireTenantId } from '../utils/tenant';
 import emailTemplateService from '../services/email-template.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -58,6 +59,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -97,6 +99,7 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -265,6 +268,7 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
