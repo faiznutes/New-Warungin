@@ -275,11 +275,12 @@ router.post(
       const exportedData = await advancedReportingService.exportReport(report, format);
       
       // Set headers for file download
-      const contentType = {
+      const contentTypeMap: Record<'PDF' | 'EXCEL' | 'CSV', string> = {
         PDF: 'application/pdf',
         EXCEL: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         CSV: 'text/csv',
-      }[format];
+      };
+      const contentType = contentTypeMap[format as 'PDF' | 'EXCEL' | 'CSV'] || 'application/octet-stream';
       
       const filename = `report-${Date.now()}.${format.toLowerCase()}`;
       

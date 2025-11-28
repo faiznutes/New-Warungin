@@ -567,6 +567,47 @@ class AdvancedReportingService {
       throw error;
     }
   }
+
+  /**
+   * Add digital signature to report
+   */
+  async addDigitalSignature(
+    tenantId: string,
+    data: {
+      reportId: string;
+      signature: string; // Base64 encoded signature image
+      signerName: string;
+      signerTitle?: string;
+      position?: 'HEADER' | 'FOOTER';
+    }
+  ): Promise<any> {
+    try {
+      // In a real implementation, this would:
+      // 1. Retrieve the report
+      // 2. Add the signature image to the report
+      // 3. Save the signed report
+      // 4. Return the signed report data
+
+      logger.info('Adding digital signature to report', {
+        tenantId,
+        reportId: data.reportId,
+        signerName: data.signerName,
+      });
+
+      // For now, return a mock response
+      return {
+        id: data.reportId,
+        signedAt: new Date(),
+        signerName: data.signerName,
+        signerTitle: data.signerTitle,
+        position: data.position || 'FOOTER',
+        hasSignature: true,
+      };
+    } catch (error: any) {
+      logger.error('Error adding digital signature:', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdvancedReportingService();
