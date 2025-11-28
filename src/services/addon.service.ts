@@ -10,10 +10,12 @@ export interface SubscribeAddonInput {
 }
 
 export const AVAILABLE_ADDONS = [
+  // Group 1: Resource Addons (Limit-based)
   {
     id: 'add_outlets',
     name: 'Tambah Outlet',
     type: 'ADD_OUTLETS',
+    category: 'RESOURCE',
     description: 'Tambahkan outlet/cabang tambahan untuk operasi multi-lokasi',
     defaultLimit: 1,
     price: 120000, // per month
@@ -22,6 +24,7 @@ export const AVAILABLE_ADDONS = [
     id: 'add_users',
     name: 'Tambah Pengguna',
     type: 'ADD_USERS',
+    category: 'RESOURCE',
     description: 'Tambahkan user, kasir, atau supervisor tambahan dengan role preset (Admin, Kasir, Supervisor) dan log aktivitas',
     defaultLimit: 5,
     price: 50000, // per month (per 5 users)
@@ -30,33 +33,98 @@ export const AVAILABLE_ADDONS = [
     id: 'add_products',
     name: 'Tambah Produk',
     type: 'ADD_PRODUCTS',
+    category: 'RESOURCE',
     description: 'Tambahkan limit produk dengan fitur bulk import CSV/Excel dan dukungan varian produk (warna, ukuran, rasa)',
     defaultLimit: 100,
     price: 30000, // per month (per 100 produk)
   },
+  
+  // Group 2: Delivery & Marketing
+  {
+    id: 'delivery_marketing',
+    name: 'Delivery & Marketing',
+    type: 'DELIVERY_MARKETING',
+    category: 'MARKETING',
+    description: 'Fitur delivery orders dan marketing campaigns lengkap dengan email templates, email analytics, email scheduler, dan customer engagement',
+    defaultLimit: null,
+    price: 200000, // per month
+  },
+  
+  // Group 3: Business Analytics
   {
     id: 'business_analytics',
     name: 'Business Analytics & Insight',
     type: 'BUSINESS_ANALYTICS',
+    category: 'ANALYTICS',
     description: 'Laporan Laba Rugi dengan Revenue, COGS, Gross Profit, Operating Expenses, dan Net Profit. Prediksi penjualan, analisis tren, dan custom report builder. Ringkasan harian transaksi dan produk terlaris.',
     defaultLimit: null,
-    price: 250000, // per month (gabungan dari 150k + 100k + 60k = 310k, diskon menjadi 250k)
+    price: 250000, // per month
   },
+  
+  // Group 4: Advanced Reporting
   {
-    id: 'export_reports',
-    name: 'Export Laporan',
-    type: 'EXPORT_REPORTS',
-    description: 'Ekspor laporan transaksi, stok, dan keuangan dalam format Excel, PDF, atau CSV. Rentang waktu custom sesuai kebutuhan. Tanda tangan digital untuk keperluan legal.',
+    id: 'advanced_reporting',
+    name: 'Advanced Reporting',
+    type: 'ADVANCED_REPORTING',
+    category: 'REPORTING',
+    description: 'Laporan lanjutan dengan export Excel, PDF, CSV. Custom report builder, scheduled reports, dan tanda tangan digital untuk keperluan legal.',
     defaultLimit: null,
-    price: 75000, // per month
+    price: 150000, // per month
   },
+  
+  // Group 5: Financial Management
+  {
+    id: 'financial_management',
+    name: 'Financial Management',
+    type: 'FINANCIAL_MANAGEMENT',
+    category: 'FINANCE',
+    description: 'Manajemen keuangan lengkap: accounting, profit & loss report, cash flow, expenses, tax calculations, financial forecasts, dan bank reconciliations',
+    defaultLimit: null,
+    price: 200000, // per month
+  },
+  
+  // Group 6: Inventory Management
+  {
+    id: 'inventory_management',
+    name: 'Inventory Management',
+    type: 'INVENTORY_MANAGEMENT',
+    category: 'INVENTORY',
+    description: 'Manajemen inventory lengkap: suppliers, purchase orders, stock transfers, stock alerts, stock valuations, dan product adjustments',
+    defaultLimit: null,
+    price: 150000, // per month
+  },
+  
+  // Group 7: AI/ML Features
+  {
+    id: 'ai_ml_features',
+    name: 'AI/ML Features',
+    type: 'AI_ML_FEATURES',
+    category: 'AI_ML',
+    description: 'Fitur AI dan Machine Learning: prediksi penjualan, rekomendasi produk, analisis tren otomatis, dan insights berbasis AI',
+    defaultLimit: null,
+    price: 300000, // per month
+  },
+  
+  // Group 8: Receipt & Export
   {
     id: 'receipt_editor',
-    name: 'Simple Nota Editor',
+    name: 'Advanced Receipt Editor',
     type: 'RECEIPT_EDITOR',
+    category: 'RECEIPT',
     description: 'Kustomisasi tampilan nota: nama toko, pesan promo, logo. Preview real-time sebelum cetak untuk memastikan hasil. Edit header, footer, dan layout struk sesuai brand.',
     defaultLimit: null,
     price: 50000, // per month
+  },
+  
+  // Group 9: Multi-Outlet (Advanced)
+  {
+    id: 'multi_outlet_advanced',
+    name: 'Multi-Outlet Advanced',
+    type: 'MULTI_OUTLET_ADVANCED',
+    category: 'OUTLET',
+    description: 'Fitur multi-outlet lanjutan: manajemen stok antar outlet, transfer otomatis, laporan per outlet, dan sinkronisasi real-time',
+    defaultLimit: null,
+    price: 100000, // per month
   },
 ];
 
@@ -102,8 +170,13 @@ export class AddonService {
             });
             break;
           case 'BUSINESS_ANALYTICS':
-          case 'EXPORT_REPORTS':
+          case 'ADVANCED_REPORTING':
+          case 'FINANCIAL_MANAGEMENT':
+          case 'INVENTORY_MANAGEMENT':
+          case 'AI_ML_FEATURES':
+          case 'DELIVERY_MARKETING':
           case 'RECEIPT_EDITOR':
+          case 'MULTI_OUTLET_ADVANCED':
             // These addons don't have usage limits
             currentUsage = 0;
             break;
@@ -412,8 +485,13 @@ export class AddonService {
         limitType = 'outlets';
         break;
       case 'BUSINESS_ANALYTICS':
-      case 'EXPORT_REPORTS':
+      case 'ADVANCED_REPORTING':
+      case 'FINANCIAL_MANAGEMENT':
+      case 'INVENTORY_MANAGEMENT':
+      case 'AI_ML_FEATURES':
+      case 'DELIVERY_MARKETING':
       case 'RECEIPT_EDITOR':
+      case 'MULTI_OUTLET_ADVANCED':
         // These addons don't have usage limits
         return { allowed: true, currentUsage: 0 };
     }

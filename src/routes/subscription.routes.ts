@@ -31,6 +31,66 @@ router.get(
   }
 );
 
+/**
+ * GET /api/subscription/plan-features
+ * Get plan features and active addons for tenant
+ */
+router.get(
+  '/plan-features',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const { getTenantPlanFeatures } = await import('../services/plan-features.service');
+      const result = await getTenantPlanFeatures(tenantId);
+      
+      // Map to frontend format
+      const planFeatures = result.planFeatures || (result as any).features;
+      const features = planFeatures?.features || {};
+      
+      res.json({
+        plan: result.plan,
+        features: {
+          products: features.products ?? (result.plan !== 'BASIC'),
+          inventory: features.inventory ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          orders: features.orders ?? true,
+          pos: features.pos ?? true,
+          delivery: features.delivery ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'DELIVERY_MARKETING')),
+          customers: features.customers ?? true,
+          members: features.members ?? true,
+          reports: features.reports ?? true,
+          advancedReporting: features.advancedReporting ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'ADVANCED_REPORTING')),
+          advancedAnalytics: features.advancedAnalytics ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'BUSINESS_ANALYTICS')),
+          financialManagement: features.financialManagement ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'FINANCIAL_MANAGEMENT')),
+          profitLoss: features.profitLoss ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'BUSINESS_ANALYTICS' || a.type === 'FINANCIAL_MANAGEMENT')),
+          marketing: features.marketing ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'DELIVERY_MARKETING')),
+          emailMarketing: features.emailMarketing ?? (result.plan === 'CUSTOM' || result.activeAddons.some(a => a.type === 'DELIVERY_MARKETING')),
+          stores: features.stores ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          rewards: features.rewards ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          discounts: features.discounts ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          receiptTemplates: features.receiptTemplates ?? true,
+          userManagement: features.userManagement ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          subscription: features.subscription ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          addons: features.addons ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          settings: features.settings ?? true,
+          webhooks: features.webhooks ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          sessions: features.sessions ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+          passwordSettings: features.passwordSettings ?? true,
+          gdpr: features.gdpr ?? true,
+          twoFactor: features.twoFactor ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
+        },
+        activeAddons: result.activeAddons,
+      });
+    } catch (error: any) {
+      console.error('Error in /subscription/plan-features:', error);
+      res.status(500).json({ 
+        message: error.message || 'Failed to load plan features',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
+  }
+);
+
 router.post(
   '/extend',
   authGuard,

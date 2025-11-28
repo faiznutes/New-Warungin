@@ -66,7 +66,7 @@
             </router-link>
 
             <router-link
-              v-if="authStore.user?.role === 'ADMIN_TENANT'"
+              v-if="authStore.user?.role === 'ADMIN_TENANT' && (currentPlan === 'PRO' || currentPlan === 'CUSTOM' || hasInventory)"
               to="/app/products/adjustments"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
               active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -310,7 +310,7 @@
           </div>
 
           <!-- Inventory Management Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && (currentPlan === 'PRO' || currentPlan === 'CUSTOM' || hasInventoryManagement)" class="pt-4 mt-4 border-t border-green-600">
             <button
               @click="toggleMenu('inventory')"
               class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
@@ -381,7 +381,7 @@
           </div>
 
           <!-- Manajemen Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && (currentPlan === 'PRO' || currentPlan === 'CUSTOM')" class="pt-4 mt-4 border-t border-green-600">
             <button
               @click="toggleMenu('manajemen')"
               class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
@@ -414,6 +414,7 @@
               </router-link>
 
               <router-link
+                v-if="hasMultiOutlet"
                 to="/app/stores"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -426,6 +427,7 @@
               </router-link>
 
               <router-link
+                v-if="hasDiscounts"
                 to="/app/discounts"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -461,6 +463,7 @@
               class="mt-1 space-y-1 transition-all duration-200"
             >
               <router-link
+                v-if="currentPlan === 'PRO' || currentPlan === 'CUSTOM'"
                 to="/app/subscription"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -473,6 +476,7 @@
               </router-link>
 
               <router-link
+                v-if="currentPlan === 'PRO' || currentPlan === 'CUSTOM'"
                 to="/app/addons"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -485,6 +489,7 @@
               </router-link>
 
               <router-link
+                v-if="hasRewards"
                 to="/app/rewards"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -613,6 +618,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import AdminInfoModal from '../components/AdminInfoModal.vue';
 import api from '../api';
+import { usePlanFeatures } from '../composables/usePlanFeatures';
 
 const router = useRouter();
 const route = useRoute();
@@ -622,18 +628,23 @@ const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
-const activeAddons = ref<any[]>([]);
-const hasBusinessAnalytics = computed(() => {
-  return activeAddons.value.some(
-    (addon: any) => addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-  );
-});
 
-const hasDeliveryMarketing = computed(() => {
-  return activeAddons.value.some(
-    (addon: any) => addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
-  );
-});
+// Use plan features composable
+const {
+  currentPlan,
+  features,
+  hasInventory,
+  hasDeliveryMarketing,
+  hasBusinessAnalytics,
+  hasAdvancedReporting,
+  hasFinancialManagement,
+  hasInventoryManagement,
+  hasAIMLFeatures,
+  hasMultiOutlet,
+  hasRewards,
+  hasDiscounts,
+  fetchPlanFeatures,
+} = usePlanFeatures();
 
 // Menu expand/collapse state
 const expandedMenus = ref({
@@ -756,16 +767,10 @@ const handleDontShowToday = () => {
   handleInfoModalClose();
 };
 
-// Load active addons
-const loadAddons = async () => {
+// Load plan features
+const loadPlanFeatures = async () => {
   if (authStore.user?.role === 'ADMIN_TENANT') {
-    try {
-      const response = await api.get('/addons');
-      activeAddons.value = response.data || [];
-    } catch (error) {
-      console.error('Failed to load addons:', error);
-      activeAddons.value = [];
-    }
+    await fetchPlanFeatures();
   }
 };
 
@@ -775,7 +780,7 @@ watch(() => authStore.user?.role, () => {
   if (checkShouldShowInfo()) {
     showInfoModal.value = true;
   }
-  loadAddons();
+  loadPlanFeatures();
 }, { immediate: true });
 
 // Watch route changes to auto-expand menu
