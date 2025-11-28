@@ -153,8 +153,8 @@ async function syncOfflineActions() {
 }
 
 // Periodic background sync (if supported)
-if ('periodicSync' in self.registration) {
-  self.addEventListener('periodic sync', (event) => {
+if (self.registration && 'periodicSync' in self.registration) {
+  self.addEventListener('periodicsync', (event) => {
     if (event.tag === 'sync-actions') {
       event.waitUntil(syncOfflineActions());
     }

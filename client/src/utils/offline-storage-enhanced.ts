@@ -353,7 +353,7 @@ class OfflineStorageEnhanced {
     });
 
     // Register background sync (if supported)
-    if ('serviceWorker' in navigator && 'serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready
         .then((registration: ServiceWorkerRegistration | null) => {
           // Check if sync is available in registration
