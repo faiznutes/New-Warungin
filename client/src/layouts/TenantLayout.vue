@@ -679,7 +679,7 @@ const autoExpandMenu = () => {
   const currentPath = route.path;
   
   // Check which section contains the current route
-  if (currentPath.includes('/dashboard') || currentPath.includes('/products') || 
+  if (currentPath.includes('/products') || 
       currentPath.includes('/orders') || currentPath.includes('/customers')) {
     expandedMenus.value.operasional = true;
   }
@@ -794,6 +794,13 @@ onMounted(() => {
 const userName = computed(() => authStore.user?.name || 'Tenant');
 const userEmail = computed(() => authStore.user?.email || '');
 const tenantName = computed(() => authStore.user?.tenantName || 'Toko');
+const tenantLabel = computed(() => {
+  const name = tenantName.value;
+  if (name.length > 10) {
+    return 'Admin';
+  }
+  return name;
+});
 const userInitials = computed(() => {
   const name = userName.value;
   return name
