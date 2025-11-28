@@ -9,7 +9,7 @@ import prisma from '../config/database';
 const router = Router();
 
 const extendSubscriptionSchema = z.object({
-  plan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']).optional(),
+  plan: z.enum(['BASIC', 'PRO', 'CUSTOM']).optional(),
   duration: z.number().int().positive(),
 });
 
@@ -128,7 +128,7 @@ router.post(
 );
 
 const upgradeSubscriptionSchema = z.object({
-  newPlan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']),
+  newPlan: z.enum(['BASIC', 'PRO', 'CUSTOM']),
   upgradeType: z.enum(['temporary', 'until_end', 'custom']),
   customDuration: z.number().int().positive().optional(),
 });

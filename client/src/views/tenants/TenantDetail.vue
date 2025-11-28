@@ -1956,10 +1956,10 @@ const startCountdown = () => {
         const subscriptionEnd = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
         
         // Only reload if:
-        // 1. Current plan is PRO or ENTERPRISE (boost) and expired
+        // 1. Current plan is PRO or CUSTOM (boost) and expired
         // 2. SubscriptionEnd is not null (might be temporary upgrade that needs revert)
         // 3. Not already reloading
-        if ((currentPlan === 'PRO' || currentPlan === 'ENTERPRISE') && subscriptionEnd && !isReloadingTenant.value) {
+        if ((currentPlan === 'PRO' || currentPlan === 'CUSTOM') && subscriptionEnd && !isReloadingTenant.value) {
           // Boost plan expired - reload to get reverted BASIC plan with remaining time
           isReloadingTenant.value = true;
           loadTenantDetail().finally(() => {

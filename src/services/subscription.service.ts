@@ -472,7 +472,7 @@ export class SubscriptionService {
     }
 
     const now = new Date();
-    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'ENTERPRISE';
+    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'CUSTOM';
     const subscriptionEnd = tenant.subscriptionEnd;
     
     if (!subscriptionEnd || subscriptionEnd <= now) {
@@ -904,7 +904,7 @@ export class SubscriptionService {
 
   /**
    * Revert temporary upgrades that have expired
-   * Also revert expired PRO/ENTERPRISE subscriptions to BASIC
+   * Also revert expired PRO/CUSTOM subscriptions to BASIC
    * This should be called by a cron job daily
    */
   async revertTemporaryUpgrades() {
@@ -912,7 +912,7 @@ export class SubscriptionService {
     console.log('🔄 Starting revert temporary upgrades job at', now.toISOString());
     
     // Find all tenants with expired subscriptions (check tenant.subscriptionEnd)
-    // This will catch all expired PRO/ENTERPRISE tenants regardless of subscription records
+    // This will catch all expired PRO/CUSTOM tenants regardless of subscription records
     const expiredTenants = await prisma.tenant.findMany({
       where: {
         subscriptionEnd: { lte: now },
@@ -967,7 +967,7 @@ export class SubscriptionService {
 
     console.log(`Found ${temporaryUpgrades.length} temporary upgrades to revert`);
 
-    // Filter for expired PRO/ENTERPRISE subscriptions (non-temporary)
+    // Filter for expired PRO/CUSTOM subscriptions (non-temporary)
     // Check both from expiredSubscriptions and expiredTenants
     const expiredProMaxSubscriptions = [
       ...expiredSubscriptions.filter(
@@ -1428,7 +1428,7 @@ export class SubscriptionService {
       PRO: 350000,
       CUSTOM: 500000,
     };
-    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'ENTERPRISE';
+    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'CUSTOM';
     const monthlyPrice = planPrices[currentPlan] || 0;
     
     // Discount based on duration

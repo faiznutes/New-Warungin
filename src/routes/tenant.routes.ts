@@ -404,7 +404,7 @@ router.put(
 );
 
 const upgradePlanSchema = z.object({
-  subscriptionPlan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']),
+  subscriptionPlan: z.enum(['BASIC', 'PRO', 'CUSTOM']),
   durationDays: z.number().int().positive('Durasi harus lebih dari 0'),
 });
 
@@ -451,7 +451,7 @@ router.put(
       const planPrices: Record<string, number> = {
         BASIC: 200000,
         PRO: 350000,
-        ENTERPRISE: 500000,
+        CUSTOM: 500000,
       };
       const planPrice = planPrices[subscriptionPlan] || 0;
       const amount = (planPrice * durationDays) / 30;

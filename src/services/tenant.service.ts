@@ -131,7 +131,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     // Generate users based on plan
     // BASIC: 1 ADMIN_TENANT, 2 CASHIER, 1 KITCHEN (total 4 users)
     // PRO: 1 ADMIN_TENANT, 1 SUPERVISOR, 6 CASHIER, 2 KITCHEN (total 10 users)
-    // ENTERPRISE: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
+    // CUSTOM: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
     const usersToCreate: Array<{
       tenantId: string;
       email: string;

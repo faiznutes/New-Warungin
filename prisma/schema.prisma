@@ -22,7 +22,7 @@ model Tenant {
   isActive          Boolean   @default(true)
   subscriptionStart DateTime?
   subscriptionEnd   DateTime?
-  subscriptionPlan  String? // BASIC, PRO, ENTERPRISE
+  subscriptionPlan  String? // BASIC, PRO, CUSTOM
   previousPlan      String? // untuk revert
   temporaryUpgrade  Boolean   @default(false)
   features          Json? // cache aktif fitur saat ini
@@ -448,7 +448,7 @@ model TenantAddon {
 model Subscription {
   id               String   @id @default(uuid())
   tenantId         String
-  plan             String // BASIC, PRO, ENTERPRISE
+  plan             String // BASIC, PRO, CUSTOM
   startDate        DateTime
   endDate          DateTime
   status           String // ACTIVE, EXPIRED, CANCELLED
@@ -472,7 +472,7 @@ model SubscriptionHistory {
   id             String   @id @default(uuid())
   subscriptionId String?
   tenantId       String
-  planType       String // BASIC, PRO, ENTERPRISE
+  planType       String // BASIC, PRO, CUSTOM
   startDate      DateTime
   endDate        DateTime
   price          Decimal  @db.Decimal(10, 2)
