@@ -250,11 +250,11 @@ class SMSGatewayService {
         case 'ZENZIVA':
           return await this.getZenzivaBalance();
         default:
-          return { balance: 0 };
+          return { balance: 0, currency: 'USD' };
       }
     } catch (error: any) {
       logger.error('Error getting SMS balance:', error);
-      return { balance: 0 };
+      return { balance: 0, currency: 'USD' };
     }
   }
 
@@ -263,7 +263,7 @@ class SMSGatewayService {
    */
   private async getTwilioBalance(): Promise<{ balance: number; currency: string }> {
     if (!this.config.accountSid || !this.config.authToken) {
-      return { balance: 0 };
+      return { balance: 0, currency: 'USD' };
     }
 
     try {
@@ -283,7 +283,7 @@ class SMSGatewayService {
       };
     } catch (error: any) {
       logger.error('Error getting Twilio balance:', error);
-      return { balance: 0 };
+      return { balance: 0, currency: 'USD' };
     }
   }
 

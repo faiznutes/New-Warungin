@@ -75,10 +75,11 @@ class StockAlertService {
       // Send email alert (using marketing service)
       try {
         await marketingService.sendEmailCampaign(tenantId, {
+          name: subject,
+          type: 'EMAIL',
           target: 'ALL',
           subject,
           content,
-          recipients: [tenant.email],
         });
       } catch (emailError) {
         logger.error('Error sending stock alert email:', emailError);

@@ -145,7 +145,10 @@ class PurchaseOrderService {
       await supplierService.getSupplierById(data.supplierId, tenantId);
 
       // Calculate total amount
-      const totalAmount = data.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+      const { Prisma } = await import('@prisma/client');
+      const totalAmount = new Prisma.Decimal(
+        data.items.reduce((sum, item) => sum + (item.quantity * Number(item.unitPrice)), 0)
+      );
 
       return await prisma.$transaction(async (tx) => {
         // Generate order number
@@ -205,7 +208,10 @@ class PurchaseOrderService {
       // Calculate new total if items updated
       let totalAmount = purchaseOrder.totalAmount;
       if (data.items) {
-        totalAmount = data.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+        const { Prisma } = await import('@prisma/client');
+        totalAmount = new Prisma.Decimal(
+          data.items.reduce((sum, item) => sum + (item.quantity * Number(item.unitPrice)), 0)
+        );
       }
 
       return await prisma.$transaction(async (tx) => {

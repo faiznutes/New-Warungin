@@ -243,10 +243,9 @@ class CustomerEngagementEnhancementService {
 
       return {
         ...feedback,
-        id: saved.id,
         createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
-      };
+      } as any;
     } catch (error: any) {
       logger.error('Error submitting feedback:', error);
       throw error;
@@ -378,10 +377,10 @@ class CustomerEngagementEnhancementService {
 
       // Push notification campaign
       try {
-        const pushResult = await marketingService.sendPushCampaign(tenantId, {
+        const pushResult = await marketingService.sendPushNotificationCampaign(tenantId, {
           name: promo.name,
           title: promo.name,
-          message,
+          content: message,
           target,
         });
         totalSent += pushResult.sent;

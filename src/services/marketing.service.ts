@@ -12,17 +12,21 @@ interface Campaign {
   status: string;
   targetCount: number;
   sentCount?: number;
+  opens?: number;
+  clicks?: number;
+  conversions?: number;
   createdAt?: Date;
   sentAt?: Date;
 }
 
 interface CreateCampaignInput {
   name: string;
-  type: 'SMS' | 'EMAIL' | 'WHATSAPP' | 'PROMO';
+  type: 'SMS' | 'EMAIL' | 'WHATSAPP' | 'PROMO' | 'PUSH';
   target: 'ALL' | 'MEMBERS' | 'ACTIVE' | 'INACTIVE';
   content: string;
   promoCode?: string;
   subject?: string; // For email campaigns
+  campaignId?: string; // Optional campaign ID
 }
 
 interface CreatePromoInput {
@@ -107,7 +111,7 @@ class MarketingService {
         break;
       
       case 'PUSH':
-        result = await this.sendPushCampaign(tenantId, {
+        result = await this.sendPushNotificationCampaign(tenantId, {
           name: campaignData.name,
           title: campaignData.subject || campaignData.name,
           message: campaignData.content,
@@ -154,7 +158,7 @@ class MarketingService {
    */
   async sendSMSCampaign(
     tenantId: string,
-    campaign: { name: string; content: string; target: string }
+    campaign: { name: string; content: string; target: string; campaignId?: string }
   ): Promise<{ sent: number; failed: number }> {
     const customers = await this.getTargetCustomers(tenantId, campaign.target);
     let sent = 0;
@@ -220,7 +224,7 @@ class MarketingService {
    */
   async sendPushNotificationCampaign(
     tenantId: string,
-    campaign: { name: string; content: string; target: string; title?: string }
+    campaign: { name: string; content: string; target: string; title?: string; campaignId?: string }
   ): Promise<{ sent: number; failed: number }> {
     const customers = await this.getTargetCustomers(tenantId, campaign.target);
     let sent = 0;
@@ -305,13 +309,12 @@ class MarketingService {
       case 'MEMBERS':
         return await prisma.member.findMany({
           where: { tenantId, isActive: true },
-          include: { customer: { select: { email: true, name: true, phone: true } } },
         }).then(members => 
           members.map(m => ({
-            id: m.customerId,
-            email: m.customer?.email || null,
-            name: m.customer?.name || m.name,
-            phone: m.customer?.phone || m.phone,
+            id: m.id,
+            email: m.email || null,
+            name: m.name,
+            phone: m.phone,
           }))
         );
       case 'ACTIVE':

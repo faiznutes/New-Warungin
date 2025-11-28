@@ -164,7 +164,7 @@ class AdvancedReportingService {
         data = orders;
         summary = {
           totalOrders: orders.length,
-          totalRevenue: orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
+          totalRevenue: orders.reduce((sum, o) => sum + Number(o.total), 0),
         };
       } else if (template.type === 'INVENTORY') {
         const products = await prisma.product.findMany({ where: { tenantId } });
@@ -256,7 +256,7 @@ class AdvancedReportingService {
         recipients: saved.recipients,
         format: saved.format as any,
         isActive: saved.isActive,
-        nextRunAt: saved.nextRunAt,
+        nextRunAt: saved.nextRunAt || undefined,
         lastRunAt: saved.lastRunAt || undefined,
       };
     } catch (error: any) {
@@ -403,7 +403,7 @@ class AdvancedReportingService {
           );
 
           // Export report in requested format
-          const exportedReport = await this.exportReport(reportData, scheduledReport.format);
+          const exportedReport = await this.exportReport(reportData, scheduledReport.format as 'PDF' | 'EXCEL' | 'CSV' | 'HTML');
 
           // Send via email
           for (const recipient of scheduledReport.recipients) {
@@ -411,8 +411,7 @@ class AdvancedReportingService {
               await sendEmail(
                 recipient,
                 'Scheduled Report',
-                'Please find your scheduled report attached.',
-                exportedReport
+                'Please find your scheduled report attached. Format: ' + scheduledReport.format
               );
             } catch (emailError) {
               logger.error(`Failed to send report to ${recipient}:`, emailError);
@@ -511,7 +510,7 @@ class AdvancedReportingService {
         where: {
           tenantId_userId: {
             tenantId,
-            userId: userId || null,
+            userId: userId ?? null,
           },
         },
       });
@@ -547,7 +546,7 @@ class AdvancedReportingService {
         where: {
           tenantId_userId: {
             tenantId,
-            userId: userId || null,
+            userId: userId ?? null,
           },
         },
         create: {

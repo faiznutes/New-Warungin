@@ -102,9 +102,8 @@ class FinancialManagementEnhancementService {
       return {
         ...entry,
         id: saved.id,
-        createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
-      };
+      } as any;
     } catch (error: any) {
       logger.error('Error recording cash flow:', error);
       throw error;
@@ -234,9 +233,8 @@ class FinancialManagementEnhancementService {
       return {
         ...expense,
         id: saved.id,
-        createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
-      };
+      } as any;
     } catch (error: any) {
       logger.error('Error recording expense:', error);
       throw error;
@@ -289,8 +287,8 @@ class FinancialManagementEnhancementService {
       // Get revenue and expenses
       const financialSummary = await financeService.getFinancialSummary(tenantId, startDate.toISOString(), endDate.toISOString());
       
-      const totalRevenue = parseFloat(financialSummary.totalRevenue.toString());
-      const totalExpenses = parseFloat(financialSummary.totalExpenses.toString());
+      const totalRevenue = financialSummary.revenue;
+      const totalExpenses = financialSummary.expenses;
       const taxableIncome = totalRevenue - totalExpenses;
 
       // Tax calculation (simplified - adjust based on actual tax rules)
@@ -379,8 +377,8 @@ class FinancialManagementEnhancementService {
         );
         historicalData.push({
           month: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-          revenue: parseFloat(summary.totalRevenue.toString()),
-          expenses: parseFloat(summary.totalExpenses.toString()),
+          revenue: summary.revenue,
+          expenses: summary.expenses,
         });
       }
 
@@ -469,7 +467,7 @@ class FinancialManagementEnhancementService {
           },
           status: 'COMPLETED',
           paymentMethod: {
-            in: ['BANK_TRANSFER', 'OVO', 'DANA', 'SHOPEEPAY', 'LINKAJA'],
+            in: ['BANK_TRANSFER', 'E_WALLET', 'DANA', 'SHOPEEPAY'],
           },
         },
         select: {
@@ -532,9 +530,8 @@ class FinancialManagementEnhancementService {
       return {
         ...reconciliation,
         id: saved.id,
-        createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
-      };
+      } as any;
     } catch (error: any) {
       logger.error('Error reconciling bank statement:', error);
       throw error;
