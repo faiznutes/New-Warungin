@@ -269,5 +269,137 @@ router.delete(
   }
 );
 
+/**
+ * @swagger
+ * /api/outlets/{id}/reports:
+ *   get:
+ *     summary: Get reports for specific outlet (Multi-Outlet Advanced)
+ *     tags: [Outlets]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/:id/reports',
+  authGuard,
+  subscriptionGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const outletId = req.params.id;
+      
+      // Check if MULTI_OUTLET_ADVANCED addon is active
+      const addonService = (await import('../services/addon.service')).default;
+      const addons = await addonService.getTenantAddons(tenantId);
+      const hasMultiOutletAdvanced = addons.some(
+        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+      );
+      
+      if (!hasMultiOutletAdvanced) {
+        return res.status(403).json({ 
+          message: 'MULTI_OUTLET_ADVANCED addon is required for outlet-specific reports' 
+        });
+      }
+
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      
+      const reports = await outletService.getOutletReports(tenantId, outletId, {
+        startDate,
+        endDate,
+      });
+      
+      res.json({ data: reports });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get outlet reports', 'GET_OUTLET_REPORTS');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/outlets/auto-transfer:
+ *   post:
+ *     summary: Setup automatic stock transfer between outlets (Multi-Outlet Advanced)
+ *     tags: [Outlets]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/auto-transfer',
+  authGuard,
+  subscriptionGuard,
+  validate({
+    body: z.object({
+      fromOutletId: z.string(),
+      toOutletId: z.string(),
+      productId: z.string(),
+      threshold: z.number().positive(), // Auto transfer when stock below this
+      transferQuantity: z.number().positive(),
+      enabled: z.boolean().default(true),
+    }),
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      
+      // Check if MULTI_OUTLET_ADVANCED addon is active
+      const addonService = (await import('../services/addon.service')).default;
+      const addons = await addonService.getTenantAddons(tenantId);
+      const hasMultiOutletAdvanced = addons.some(
+        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+      );
+      
+      if (!hasMultiOutletAdvanced) {
+        return res.status(403).json({ 
+          message: 'MULTI_OUTLET_ADVANCED addon is required for automatic stock transfers' 
+        });
+      }
+
+      const autoTransfer = await outletService.createAutoTransfer(tenantId, req.body);
+      res.status(201).json({ data: autoTransfer });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to create auto transfer', 'CREATE_AUTO_TRANSFER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/outlets/sync:
+ *   post:
+ *     summary: Sync stock across all outlets (Multi-Outlet Advanced)
+ *     tags: [Outlets]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/sync',
+  authGuard,
+  subscriptionGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      
+      // Check if MULTI_OUTLET_ADVANCED addon is active
+      const addonService = (await import('../services/addon.service')).default;
+      const addons = await addonService.getTenantAddons(tenantId);
+      const hasMultiOutletAdvanced = addons.some(
+        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+      );
+      
+      if (!hasMultiOutletAdvanced) {
+        return res.status(403).json({ 
+          message: 'MULTI_OUTLET_ADVANCED addon is required for real-time synchronization' 
+        });
+      }
+
+      const syncResult = await outletService.syncAllOutlets(tenantId);
+      res.json({ data: syncResult });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to sync outlets', 'SYNC_OUTLETS');
+    }
+  }
+);
+
 export default router;
 

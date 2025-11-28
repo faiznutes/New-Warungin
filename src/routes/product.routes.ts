@@ -496,5 +496,66 @@ router.get(
   }
 );
 
+/**
+ * @swagger
+ * /api/products/bulk-import:
+ *   post:
+ *     summary: Bulk import products from CSV/Excel file
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: CSV or Excel file containing products
+ *     responses:
+ *       200:
+ *         description: Products imported successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.post(
+  '/bulk-import',
+  authGuard,
+  subscriptionGuard,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      // Check if ADD_PRODUCTS addon is active
+      const addonService = (await import('../services/addon.service')).default;
+      const addons = await addonService.getTenantAddons(tenantId);
+      const hasAddProductsAddon = addons.some(
+        (addon) => addon.addonType === 'ADD_PRODUCTS' && addon.status === 'active'
+      );
+      
+      if (!hasAddProductsAddon) {
+        return res.status(403).json({ 
+          message: 'ADD_PRODUCTS addon is required for bulk import' 
+        });
+      }
+
+      // TODO: Implement bulk import service
+      // For now, return placeholder
+      res.status(501).json({ 
+        message: 'Bulk import feature is under development',
+        note: 'This endpoint will support CSV and Excel file uploads with product variants (color, size, taste)'
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to import products', 'BULK_IMPORT_PRODUCTS');
+    }
+  }
+);
+
 export default router;
 
