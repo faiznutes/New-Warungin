@@ -49,9 +49,14 @@ class OfflineStorageEnhanced {
         this.db = request.result;
         console.log('IndexedDB initialized successfully');
         // Start background sync asynchronously to avoid blocking
+        // Use longer delay to ensure service worker is fully ready
         setTimeout(() => {
-          this.startBackgroundSync();
-        }, 0);
+          try {
+            this.startBackgroundSync();
+          } catch (error) {
+            console.warn('Failed to start background sync:', error);
+          }
+        }, 500);
         resolve();
       };
 
