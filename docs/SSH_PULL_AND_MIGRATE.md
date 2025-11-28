@@ -10,6 +10,47 @@ Dokumentasi lengkap untuk melakukan pull manual dari GitHub dan migrate database
 2. Akses ke direktori project
 3. Akses ke database PostgreSQL
 4. Environment variables sudah dikonfigurasi (`.env`)
+5. Node.js dan npm sudah terinstall (atau gunakan Docker)
+
+## ⚠️ Troubleshooting: npx command not found
+
+Jika muncul error `npx: command not found`, ada beberapa solusi:
+
+### Solusi 1: Install Node.js dan npm
+
+```bash
+# Untuk Debian/Ubuntu
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Verifikasi instalasi
+node --version
+npm --version
+```
+
+### Solusi 2: Gunakan Docker (Recommended)
+
+Jika project menggunakan Docker, gunakan Docker untuk menjalankan migrate:
+
+```bash
+# Masuk ke container backend
+docker compose exec backend sh
+
+# Atau langsung jalankan command di container
+docker compose exec backend npx prisma migrate deploy
+```
+
+### Solusi 3: Gunakan npm run script
+
+Jika `npx` tidak tersedia, gunakan npm run script:
+
+```bash
+# Di package.json, pastikan ada script:
+# "prisma:migrate": "prisma migrate deploy"
+
+# Jalankan dengan:
+npm run prisma:migrate
+```
 
 ---
 
@@ -96,14 +137,37 @@ yarn install
 
 ### 3. Generate Prisma Client
 
+#### Opsi A: Menggunakan npx (Jika Node.js terinstall)
+
 ```bash
 npx prisma generate
 ```
 
+#### Opsi B: Menggunakan Docker
+
+```bash
+docker compose exec backend npx prisma generate
+```
+
+#### Opsi C: Menggunakan npm run script
+
+```bash
+npm run prisma:generate
+# Pastikan di package.json ada: "prisma:generate": "prisma generate"
+```
+
 ### 4. Cek Status Migration
+
+#### Opsi A: Menggunakan npx
 
 ```bash
 npx prisma migrate status
+```
+
+#### Opsi B: Menggunakan Docker
+
+```bash
+docker compose exec backend npx prisma migrate status
 ```
 
 Ini akan menampilkan:
@@ -115,8 +179,14 @@ Ini akan menampilkan:
 
 #### A. Migrate Development (Untuk Development)
 
+**Menggunakan npx:**
 ```bash
 npx prisma migrate dev
+```
+
+**Menggunakan Docker:**
+```bash
+docker compose exec backend npx prisma migrate dev
 ```
 
 **Catatan:** Command ini akan:
@@ -126,8 +196,20 @@ npx prisma migrate dev
 
 #### B. Migrate Deploy (Untuk Production - RECOMMENDED)
 
+**Menggunakan npx:**
 ```bash
 npx prisma migrate deploy
+```
+
+**Menggunakan Docker:**
+```bash
+docker compose exec backend npx prisma migrate deploy
+```
+
+**Menggunakan npm run script:**
+```bash
+npm run prisma:migrate
+# Pastikan di package.json ada: "prisma:migrate": "prisma migrate deploy"
 ```
 
 **Catatan:** Command ini:
