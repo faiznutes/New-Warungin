@@ -287,9 +287,31 @@ class PaymentService {
       // Check if this is an extend operation
       if (itemType === 'addon-extend' && extractedItemId.startsWith('extend-')) {
         // Handle addon extension
-        const extendParts = extractedItemId.split('-');
-        const addonId = extendParts[1];
-        const duration = extendParts[2] ? parseInt(extendParts[2]) : 30;
+        // Try to get addonId and duration from mapping config first
+        let addonId: string | null = null;
+        let duration: number = 30;
+        
+        if (mapping && mapping.config && typeof mapping.config === 'object') {
+          const config = mapping.config as any;
+          addonId = config.addonId || null;
+          duration = config.duration || 30;
+        }
+        
+        // Fallback: parse from itemId
+        if (!addonId) {
+          const extendParts = extractedItemId.split('-');
+          addonId = extendParts[1] || null;
+          duration = extendParts[2] ? parseInt(extendParts[2]) : 30;
+        }
+        
+        if (!addonId) {
+          console.error('Could not determine addonId for extension:', {
+            orderId,
+            itemId: extractedItemId,
+            hasConfig: !!(mapping && mapping.config),
+          });
+          return;
+        }
 
         console.log('Extending addon via payment status check:', {
           tenantId,
