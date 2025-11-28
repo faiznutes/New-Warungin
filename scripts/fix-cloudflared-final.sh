@@ -82,7 +82,7 @@ docker run -d \
   --network "$NETWORK_NAME" \
   -e TUNNEL_TOKEN="$TOKEN" \
   cloudflare/cloudflared:latest \
-  tunnel --no-autoupdate run --retries 5
+  tunnel --no-autoupdate run
 
 sleep 10
 echo -e "${GREEN}✅ Created${NC}"
@@ -90,14 +90,16 @@ echo ""
 
 # 7. Verify in Network
 echo -e "${BLUE}7. Verifying in Network...${NC}"
-CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" || echo "0")
+CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" 2>/dev/null || echo "0")
+CLOUDFLARED_IN_NETWORK=${CLOUDFLARED_IN_NETWORK:-0}
 if [ "$CLOUDFLARED_IN_NETWORK" -gt 0 ]; then
     echo -e "${GREEN}✅ Cloudflared di network${NC}"
 else
     echo -e "${RED}❌ Cloudflared tidak di network${NC}"
     docker network connect "$NETWORK_NAME" warungin-cloudflared 2>/dev/null || true
     sleep 3
-    CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" || echo "0")
+    CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" 2>/dev/null || echo "0")
+    CLOUDFLARED_IN_NETWORK=${CLOUDFLARED_IN_NETWORK:-0}
     if [ "$CLOUDFLARED_IN_NETWORK" -gt 0 ]; then
         echo -e "${GREEN}✅ Connected manually${NC}"
     fi
@@ -107,8 +109,10 @@ echo ""
 # 8. Check Status
 echo -e "${BLUE}8. Checking Status...${NC}"
 sleep 10
-RESTARTING=$(docker ps | grep warungin-cloudflared | grep -c "Restarting" || echo "0")
-RUNNING=$(docker ps | grep warungin-cloudflared | grep -c "Up" || echo "0")
+RESTARTING=$(docker ps 2>/dev/null | grep warungin-cloudflared | grep -c "Restarting" 2>/dev/null || echo "0")
+RESTARTING=${RESTARTING:-0}
+RUNNING=$(docker ps 2>/dev/null | grep warungin-cloudflared | grep -c "Up" 2>/dev/null || echo "0")
+RUNNING=${RUNNING:-0}
 
 if [ "$RESTARTING" -gt 0 ]; then
     echo -e "${RED}❌ Masih restarting${NC}"
