@@ -155,14 +155,14 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: warungin-cloudflared
     restart: unless-stopped
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate run --retries 5
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
     networks:
       - warungin-network
     depends_on:
       nginx:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "cloudflared", "tunnel", "info"]
       interval: 30s
@@ -178,7 +178,7 @@ services:
     # Aktifkan dengan: docker compose --profile cloudflare up -d cloudflared
     # Domain: pos.faiznute.site
     # Troubleshooting: Lihat CLOUDFLARE_TROUBLESHOOTING.md
-    # Note: Changed depends_on to service_started instead of service_healthy untuk avoid dependency issues
+    # Fix Error 1033: Changed depends_on to service_healthy dan added --retries 5 untuk retry connection
 
 networks:
   warungin-network:
