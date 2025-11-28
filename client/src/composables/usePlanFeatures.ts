@@ -48,6 +48,7 @@ export function usePlanFeatures() {
 
   const fetchPlanFeatures = async () => {
     if (!authStore.isAuthenticated || !authStore.user?.tenantId) {
+      planFeatures.value = null;
       return;
     }
 
@@ -122,6 +123,15 @@ export function usePlanFeatures() {
   const hasMultiOutlet = computed(() => hasFeature('stores'));
   const hasRewards = computed(() => hasFeature('rewards'));
   const hasDiscounts = computed(() => hasFeature('discounts'));
+
+  // Watch for tenantId changes and refetch
+  watch(() => authStore.user?.tenantId, (newTenantId, oldTenantId) => {
+    if (newTenantId && newTenantId !== oldTenantId) {
+      fetchPlanFeatures();
+    } else if (!newTenantId) {
+      planFeatures.value = null;
+    }
+  }, { immediate: true });
 
   onMounted(() => {
     fetchPlanFeatures();
