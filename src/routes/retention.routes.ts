@@ -93,7 +93,7 @@ router.get(
  *               days:
  *                 type: integer
  *                 minimum: 1
- *                 default: 365
+ *                 default: 730
  *                 description: Number of days to retain orders
  *     responses:
  *       200:
@@ -119,7 +119,7 @@ router.post(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const tenantId = requireTenantId(req);
-      const { days = 365 } = req.body;
+      const { days = 730 } = req.body;
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
@@ -158,7 +158,7 @@ router.post(
  *               days:
  *                 type: integer
  *                 minimum: 1
- *                 default: 365
+ *                 default: 730
  *     responses:
  *       200:
  *         description: Retention policy applied successfully
@@ -174,7 +174,7 @@ router.post(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const tenantId = requireTenantId(req);
-      const { days = 365 } = req.body;
+      const { days = 730 } = req.body;
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
