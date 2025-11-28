@@ -142,3 +142,25 @@ export function getTemplateFooterStyle(templateType: string): string {
   return styleMap[templateType] || styleMap.DEFAULT;
 }
 
+export function getTemplateOrderInfoStyle(templateType: string): string {
+  const styleMap: Record<string, string> = {
+    DEFAULT: 'mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200',
+    MODERN: 'mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-primary-200',
+    MINIMAL: 'mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-gray-200',
+    DETAILED: 'mb-3 sm:mb-4 pb-3 sm:pb-4 border-b-2 border-gray-300',
+    COMPACT: 'mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-gray-200',
+  };
+  return styleMap[templateType] || styleMap.DEFAULT;
+}
+
+export function getTemplatePaymentStyle(templateType: string): string {
+  const styleMap: Record<string, string> = {
+    DEFAULT: 'pt-3 mt-3 border-t border-gray-200',
+    MODERN: 'pt-3 mt-3 border-t border-primary-200',
+    MINIMAL: 'pt-2 mt-2 border-t border-gray-200',
+    DETAILED: 'pt-3 mt-3 border-t-2 border-gray-300',
+    COMPACT: 'pt-2 mt-2 border-t border-gray-200',
+  };
+  return styleMap[templateType] || styleMap.DEFAULT;
+}
+

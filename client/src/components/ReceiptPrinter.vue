@@ -71,7 +71,7 @@
           <!-- Receipt Preview -->
           <div
             ref="receiptContent"
-            class="bg-white border-2 border-gray-300 rounded-lg p-4 sm:p-6 receipt-print-container"
+            class="bg-white p-4 sm:p-6 receipt-print-container"
             :class="selectedPaperSize === '50mm' ? 'receipt-50mm' : 'receipt-85mm'"
           >
             <!-- Receipt Content -->
@@ -96,7 +96,8 @@
               </div>
 
               <!-- Order Info -->
-              <div class="mb-3 sm:mb-4 space-y-1 sm:space-y-2">
+              <div v-if="template?.fields?.showOrderNumber || template?.fields?.showDate || template?.fields?.showTime || (template?.fields?.showCustomer && receiptData.customerName)" 
+                   :class="getTemplateOrderInfoStyle(template.templateType) + ' space-y-1 sm:space-y-2'">
                 <div v-if="template?.fields?.showOrderNumber" class="flex justify-between text-xs sm:text-sm">
                   <span class="text-gray-600">No. Pesanan:</span>
                   <span class="font-semibold">{{ receiptData.orderNumber }}</span>
@@ -160,7 +161,8 @@
                   <span>TOTAL:</span>
                   <span>{{ formatCurrency(receiptData.total) }}</span>
                 </div>
-                <div v-if="template?.fields?.showPaymentMethod || (template?.fields?.showChange && receiptData.change && receiptData.change > 0) || receiptData.servedBy" class="space-y-1">
+                <div v-if="template?.fields?.showPaymentMethod || (template?.fields?.showChange && receiptData.change && receiptData.change > 0) || receiptData.servedBy" 
+                     :class="getTemplatePaymentStyle(template.templateType) + ' space-y-1'">
                   <div v-if="template?.fields?.showPaymentMethod" class="flex justify-between text-xs sm:text-sm">
                     <span class="font-medium">Pembayaran:</span>
                     <span class="font-semibold">{{ getPaymentMethodLabel(receiptData.paymentMethod) }}</span>
@@ -225,7 +227,9 @@ import {
   getTemplateContentStyle, 
   getTemplateItemStyle, 
   getTemplateTotalStyle, 
-  getTemplateFooterStyle 
+  getTemplateFooterStyle,
+  getTemplateOrderInfoStyle,
+  getTemplatePaymentStyle
 } from '../utils/receipt-template-styles';
 
 const { warning } = useNotification();
