@@ -14,13 +14,41 @@ Dokumentasi lengkap untuk melakukan pull manual dari GitHub dan migrate database
 
 ## ⚠️ Troubleshooting: npx command not found
 
-Jika muncul error `npx: command not found`, ada beberapa solusi:
+Jika muncul error `npx: command not found`, **Gunakan Docker** (Recommended) karena project sudah menggunakan Docker Compose.
 
-### Solusi 1: Install Node.js dan npm
+### ✅ Solusi 1: Gunakan Docker (RECOMMENDED - Tidak Perlu Install Node.js)
+
+Karena project sudah menggunakan Docker, **tidak perlu install Node.js di server**. Gunakan Docker untuk semua operasi:
+
+```bash
+# 1. Pastikan container backend sudah running
+docker compose ps
+
+# 2. Generate Prisma Client (jika perlu)
+docker compose exec backend npx prisma generate
+
+# 3. Cek status migration
+docker compose exec backend npx prisma migrate status
+
+# 4. Jalankan migration
+docker compose exec backend npx prisma migrate deploy
+```
+
+**Keuntungan menggunakan Docker:**
+- ✅ Tidak perlu install Node.js di server
+- ✅ Environment sudah terkonfigurasi dengan benar
+- ✅ Konsisten dengan development environment
+- ✅ Tidak ada konflik dengan versi Node.js
+
+### Solusi 2: Install Node.js (Jika Benar-benar Diperlukan)
+
+**Catatan:** Hanya gunakan jika tidak bisa menggunakan Docker.
+
+#### A. Install Node.js 20.x (LTS - Recommended)
 
 ```bash
 # Untuk Debian/Ubuntu
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Verifikasi instalasi
@@ -28,16 +56,32 @@ node --version
 npm --version
 ```
 
-### Solusi 2: Gunakan Docker (Recommended)
-
-Jika project menggunakan Docker, gunakan Docker untuk menjalankan migrate:
+#### B. Install Node.js 22.x (Latest)
 
 ```bash
-# Masuk ke container backend
-docker compose exec backend sh
+# Untuk Debian/Ubuntu
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
-# Atau langsung jalankan command di container
-docker compose exec backend npx prisma migrate deploy
+# Verifikasi instalasi
+node --version
+npm --version
+```
+
+#### C. Fix Repository Error (Jika Ada)
+
+Jika ada error repository Cloudflare atau repository lain:
+
+```bash
+# Hapus repository yang error
+sudo rm /etc/apt/sources.list.d/cloudflared-deb.list
+
+# Atau edit file sources.list
+sudo nano /etc/apt/sources.list.d/cloudflared-deb.list
+# Comment atau hapus baris yang error
+
+# Update apt
+sudo apt update
 ```
 
 ### Solusi 3: Gunakan npm run script
@@ -119,55 +163,69 @@ git log --oneline -5
 
 ## 🗄️ Migrate Database
 
-### 1. Masuk ke Direktori Backend
+### ⚡ Quick Start (Menggunakan Docker - RECOMMENDED)
+
+```bash
+# 1. Pastikan container backend running
+docker compose ps
+
+# 2. Generate Prisma Client
+docker compose exec backend npx prisma generate
+
+# 3. Cek status migration
+docker compose exec backend npx prisma migrate status
+
+# 4. Jalankan migration (Production)
+docker compose exec backend npx prisma migrate deploy
+```
+
+---
+
+### 📋 Detailed Steps
+
+### 1. Masuk ke Direktori Project
 
 ```bash
 cd /path/to/your/project
-# Pastikan berada di root project yang memiliki folder prisma
+# Contoh: cd ~/New-Warungin
 ```
 
-### 2. Install Dependencies (Jika Perlu)
+### 2. Pastikan Container Backend Running
 
 ```bash
-# Jika ada package baru yang ditambahkan
-npm install
-# atau
-yarn install
+# Cek status container
+docker compose ps
+
+# Jika container tidak running, start dulu
+docker compose up -d backend
 ```
 
 ### 3. Generate Prisma Client
 
-#### Opsi A: Menggunakan npx (Jika Node.js terinstall)
-
-```bash
-npx prisma generate
-```
-
-#### Opsi B: Menggunakan Docker
+**✅ RECOMMENDED: Menggunakan Docker**
 
 ```bash
 docker compose exec backend npx prisma generate
 ```
 
-#### Opsi C: Menggunakan npm run script
+**Alternatif: Menggunakan npx (jika Node.js terinstall)**
 
 ```bash
-npm run prisma:generate
-# Pastikan di package.json ada: "prisma:generate": "prisma generate"
+npx prisma generate
 ```
 
 ### 4. Cek Status Migration
 
-#### Opsi A: Menggunakan npx
-
-```bash
-npx prisma migrate status
-```
-
-#### Opsi B: Menggunakan Docker
+**✅ RECOMMENDED: Menggunakan Docker**
 
 ```bash
 docker compose exec backend npx prisma migrate status
+```
+
+**Alternatif: Menggunakan npx**
+
+```bash
+npx prisma migrate status
 ```
 
 Ini akan menampilkan:
@@ -179,14 +237,16 @@ Ini akan menampilkan:
 
 #### A. Migrate Development (Untuk Development)
 
-**Menggunakan npx:**
-```bash
-npx prisma migrate dev
-```
+**✅ RECOMMENDED: Menggunakan Docker**
 
-**Menggunakan Docker:**
 ```bash
 docker compose exec backend npx prisma migrate dev
+```
+
+**Alternatif: Menggunakan npx**
+
+```bash
+npx prisma migrate dev
 ```
 
 **Catatan:** Command ini akan:
@@ -196,20 +256,16 @@ docker compose exec backend npx prisma migrate dev
 
 #### B. Migrate Deploy (Untuk Production - RECOMMENDED)
 
-**Menggunakan npx:**
-```bash
-npx prisma migrate deploy
-```
+**✅ RECOMMENDED: Menggunakan Docker**
 
-**Menggunakan Docker:**
 ```bash
 docker compose exec backend npx prisma migrate deploy
 ```
 
-**Menggunakan npm run script:**
+**Alternatif: Menggunakan npx**
+
 ```bash
-npm run prisma:migrate
-# Pastikan di package.json ada: "prisma:migrate": "prisma migrate deploy"
+npx prisma migrate deploy
 ```
 
 **Catatan:** Command ini:
