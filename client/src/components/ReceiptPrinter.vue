@@ -443,55 +443,103 @@ const printBrowser = async () => {
     await warning('Popup blocker terdeteksi. Silakan izinkan popup untuk mencetak struk.');
     return;
   }
+  
+  // Wait untuk memastikan DOM ready
+  await new Promise(resolve => setTimeout(resolve, 100));
 
-  // Clone element dan convert computed styles to inline styles
+  // Clone element dan convert computed styles to inline styles dengan lebih detail
   const cloneElement = receiptContent.value.cloneNode(true) as HTMLElement;
   const receiptElement = cloneElement.querySelector('.receipt-content') as HTMLElement;
   
-  // Function to convert computed styles to inline styles
+  // Function to convert computed styles to inline styles dengan lebih lengkap
   const applyComputedStyles = (element: HTMLElement) => {
     const computed = window.getComputedStyle(element);
-    const stylesToApply: Record<string, string> = {};
+    const htmlEl = element;
     
-    // Get all important styles
-    const importantProps = [
-      'fontFamily', 'fontSize', 'fontWeight', 'color', 'lineHeight',
-      'textAlign', 'padding', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
-      'margin', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight',
-      'border', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight',
-      'borderWidth', 'borderStyle', 'borderColor',
-      'backgroundColor', 'background',
-      'display', 'flexDirection', 'justifyContent', 'alignItems',
-      'width', 'maxWidth', 'minWidth',
-      'height', 'maxHeight', 'minHeight',
-    ];
+    // Font styles
+    if (computed.fontFamily) htmlEl.style.fontFamily = computed.fontFamily;
+    if (computed.fontSize) htmlEl.style.fontSize = computed.fontSize;
+    if (computed.fontWeight) htmlEl.style.fontWeight = computed.fontWeight;
+    if (computed.fontStyle) htmlEl.style.fontStyle = computed.fontStyle;
+    if (computed.lineHeight) htmlEl.style.lineHeight = computed.lineHeight;
     
-    importantProps.forEach(prop => {
-      const value = (computed as any)[prop];
-      if (value && value !== 'none' && value !== 'normal' && value !== 'auto') {
-        // Convert camelCase to kebab-case
-        const kebabProp = prop.replace(/([A-Z])/g, '-$1').toLowerCase();
-        stylesToApply[kebabProp] = value;
-      }
-    });
+    // Text styles
+    if (computed.color) htmlEl.style.color = computed.color;
+    if (computed.textAlign) htmlEl.style.textAlign = computed.textAlign;
+    if (computed.textTransform) htmlEl.style.textTransform = computed.textTransform;
+    if (computed.letterSpacing) htmlEl.style.letterSpacing = computed.letterSpacing;
     
-    // Apply all styles
-    Object.entries(stylesToApply).forEach(([prop, value]) => {
-      element.style.setProperty(prop, value, 'important');
-    });
+    // Spacing
+    if (computed.padding && computed.padding !== '0px') htmlEl.style.padding = computed.padding;
+    if (computed.paddingTop && computed.paddingTop !== '0px') htmlEl.style.paddingTop = computed.paddingTop;
+    if (computed.paddingBottom && computed.paddingBottom !== '0px') htmlEl.style.paddingBottom = computed.paddingBottom;
+    if (computed.paddingLeft && computed.paddingLeft !== '0px') htmlEl.style.paddingLeft = computed.paddingLeft;
+    if (computed.paddingRight && computed.paddingRight !== '0px') htmlEl.style.paddingRight = computed.paddingRight;
+    
+    if (computed.margin && computed.margin !== '0px') htmlEl.style.margin = computed.margin;
+    if (computed.marginTop && computed.marginTop !== '0px') htmlEl.style.marginTop = computed.marginTop;
+    if (computed.marginBottom && computed.marginBottom !== '0px') htmlEl.style.marginBottom = computed.marginBottom;
+    if (computed.marginLeft && computed.marginLeft !== '0px') htmlEl.style.marginLeft = computed.marginLeft;
+    if (computed.marginRight && computed.marginRight !== '0px') htmlEl.style.marginRight = computed.marginRight;
+    
+    // Border - sangat penting untuk garis pemisah
+    if (computed.borderTopWidth && computed.borderTopWidth !== '0px') {
+      htmlEl.style.borderTop = `${computed.borderTopWidth} ${computed.borderTopStyle || 'solid'} ${computed.borderTopColor || '#000'}`;
+    }
+    if (computed.borderBottomWidth && computed.borderBottomWidth !== '0px') {
+      htmlEl.style.borderBottom = `${computed.borderBottomWidth} ${computed.borderBottomStyle || 'solid'} ${computed.borderBottomColor || '#000'}`;
+    }
+    if (computed.borderLeftWidth && computed.borderLeftWidth !== '0px') {
+      htmlEl.style.borderLeft = `${computed.borderLeftWidth} ${computed.borderLeftStyle || 'solid'} ${computed.borderLeftColor || '#000'}`;
+    }
+    if (computed.borderRightWidth && computed.borderRightWidth !== '0px') {
+      htmlEl.style.borderRight = `${computed.borderRightWidth} ${computed.borderRightStyle || 'solid'} ${computed.borderRightColor || '#000'}`;
+    }
+    if (computed.border && computed.border !== '0px none rgb(0, 0, 0)') {
+      htmlEl.style.border = computed.border;
+    }
+    
+    // Background
+    if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)' && computed.backgroundColor !== 'transparent') {
+      htmlEl.style.backgroundColor = computed.backgroundColor;
+    }
+    if (computed.background && computed.background !== 'none') {
+      htmlEl.style.background = computed.background;
+    }
+    
+    // Layout
+    if (computed.display) htmlEl.style.display = computed.display;
+    if (computed.flexDirection) htmlEl.style.flexDirection = computed.flexDirection;
+    if (computed.justifyContent) htmlEl.style.justifyContent = computed.justifyContent;
+    if (computed.alignItems) htmlEl.style.alignItems = computed.alignItems;
+    if (computed.gap) htmlEl.style.gap = computed.gap;
+    
+    // Width/Height
+    if (computed.width && computed.width !== 'auto') htmlEl.style.width = computed.width;
+    if (computed.maxWidth && computed.maxWidth !== 'none') htmlEl.style.maxWidth = computed.maxWidth;
+    if (computed.minWidth && computed.minWidth !== '0px') htmlEl.style.minWidth = computed.minWidth;
+    
+    // Additional important styles
+    if (computed.borderRadius) htmlEl.style.borderRadius = computed.borderRadius;
+    if (computed.boxShadow) htmlEl.style.boxShadow = computed.boxShadow;
   };
   
   if (receiptElement) {
     // Apply styles to receipt content
     applyComputedStyles(receiptElement);
     
-    // Apply styles to all child elements recursively
-    const allElements = receiptElement.querySelectorAll('*');
-    allElements.forEach((el) => {
-      applyComputedStyles(el as HTMLElement);
-    });
+    // Apply styles to all child elements recursively - WAIT untuk computed styles ter-apply
+    setTimeout(() => {
+      const allElements = receiptElement.querySelectorAll('*');
+      allElements.forEach((el) => {
+        applyComputedStyles(el as HTMLElement);
+      });
+    }, 0);
   }
 
+  // Wait a bit untuk memastikan styles ter-apply
+  await new Promise(resolve => setTimeout(resolve, 50));
+  
   const printContent = cloneElement.innerHTML;
   
   // Responsive print styles based on paper size
