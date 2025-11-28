@@ -1,9 +1,6 @@
 <template>
   <ErrorBoundary>
     <div id="app-wrapper" class="w-full min-h-screen">
-      <!-- Skip to main content for accessibility -->
-      <a href="#main-content" class="skip-to-main">Lompat ke konten utama</a>
-      
       <main id="main-content" tabindex="-1">
         <router-view />
       </main>
@@ -31,7 +28,6 @@ import NotificationModal from './components/NotificationModal.vue';
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue';
 import ErrorBoundary from './components/ErrorBoundary.vue';
 import { useNotification } from './composables/useNotification';
-import { useAccessibility } from './composables/useAccessibility';
 import {
   handleNotificationConfirm as handleConfirm,
   handleNotificationCancel as handleCancel,
@@ -40,7 +36,6 @@ import {
 
 const authStore = useAuthStore();
 const { showNotification, notificationOptions } = useNotification();
-const { skipToMain } = useAccessibility();
 
 onMounted(async () => {
   // Skip restore if we're on login page (to avoid flash)
