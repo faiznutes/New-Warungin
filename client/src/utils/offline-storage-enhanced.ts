@@ -364,33 +364,43 @@ class OfflineStorageEnhanced {
     });
 
     // Register background sync (if supported)
-    if ('serviceWorker' in navigator && navigator.serviceWorker) {
+    // Check if serviceWorker exists in navigator
+    if (typeof navigator !== 'undefined' && navigator && typeof navigator.serviceWorker !== 'undefined' && navigator.serviceWorker) {
       // Use setTimeout to ensure service worker is ready
       setTimeout(() => {
+        if (!navigator.serviceWorker || !navigator.serviceWorker.ready) {
+          return;
+        }
+
         navigator.serviceWorker.ready
           .then((registration: ServiceWorkerRegistration | null | undefined) => {
             // Check if registration exists and is a valid object
             if (!registration) {
-              console.warn('Service worker registration is null or undefined');
+              // Background sync not available, skip silently
               return;
             }
 
             if (typeof registration !== 'object') {
-              console.warn('Service worker registration is not an object');
+              // Invalid registration, skip silently
               return;
             }
 
-            // Check if sync property exists using safe method
+            // Check if sync property exists using safe method - NO 'in' operator
             const registrationAny = registration as any;
-            if (!registrationAny || registrationAny.sync === undefined) {
+            if (!registrationAny) {
+              return;
+            }
+
+            // Check sync property directly without 'in' operator
+            const syncProperty = registrationAny.sync;
+            if (syncProperty === undefined || syncProperty === null) {
               // Background sync not supported, skip silently
               return;
             }
 
             try {
-              const syncManager = registrationAny.sync;
-              if (syncManager && typeof syncManager === 'object' && typeof syncManager.register === 'function') {
-                syncManager
+              if (typeof syncProperty === 'object' && typeof syncProperty.register === 'function') {
+                syncProperty
                   .register('sync-actions')
                   .catch((err: Error) => {
                     console.warn('Background sync registration failed:', err);
