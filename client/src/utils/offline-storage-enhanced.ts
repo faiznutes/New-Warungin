@@ -374,31 +374,38 @@ class OfflineStorageEnhanced {
 
         navigator.serviceWorker.ready
           .then((registration: ServiceWorkerRegistration | null | undefined) => {
-            // Check if registration exists and is a valid object
-            if (!registration) {
-              // Background sync not available, skip silently
-              return;
-            }
-
-            if (typeof registration !== 'object') {
-              // Invalid registration, skip silently
-              return;
-            }
-
-            // Check if sync property exists using safe method - NO 'in' operator
-            const registrationAny = registration as any;
-            if (!registrationAny) {
-              return;
-            }
-
-            // Check sync property directly without 'in' operator
-            const syncProperty = registrationAny.sync;
-            if (syncProperty === undefined || syncProperty === null) {
-              // Background sync not supported, skip silently
-              return;
-            }
-
             try {
+              // Check if registration exists and is a valid object
+              if (!registration) {
+                // Background sync not available, skip silently
+                return;
+              }
+
+              if (typeof registration !== 'object') {
+                // Invalid registration, skip silently
+                return;
+              }
+
+              // Check if sync property exists using safe method - NO 'in' operator
+              // Use try-catch to safely access property
+              let syncProperty: any = undefined;
+              try {
+                const registrationAny = registration as any;
+                if (registrationAny) {
+                  syncProperty = registrationAny.sync;
+                }
+              } catch (e) {
+                // Property access failed, skip silently
+                return;
+              }
+
+              // Check if sync property exists
+              if (syncProperty === undefined || syncProperty === null) {
+                // Background sync not supported, skip silently
+                return;
+              }
+
+              // Verify syncProperty is an object with register method
               if (typeof syncProperty === 'object' && typeof syncProperty.register === 'function') {
                 syncProperty
                   .register('sync-actions')
@@ -407,7 +414,8 @@ class OfflineStorageEnhanced {
                   });
               }
             } catch (err) {
-              console.warn('Background sync not supported:', err);
+              // Silently ignore all errors to prevent app crash
+              console.warn('Background sync initialization error:', err);
             }
           })
           .catch((err: Error) => {
