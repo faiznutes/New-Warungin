@@ -41,6 +41,7 @@ export const checkAddon = (addonType: string) => {
           'DELIVERY_MARKETING': 'Delivery & Marketing',
           'RECEIPT_EDITOR': 'Advanced Receipt Editor',
           'MULTI_OUTLET_ADVANCED': 'Multi-Outlet Advanced',
+          'ADD_PRODUCTS': 'Tambah Produk',
         };
         
         const addonName = addonNames[addonType] || addonType;
@@ -100,4 +101,9 @@ export const checkReceiptEditorAddon = checkAddon('RECEIPT_EDITOR');
  * Middleware specifically for Multi-Outlet Advanced addon
  */
 export const checkMultiOutletAdvancedAddon = checkAddon('MULTI_OUTLET_ADVANCED');
+
+/**
+ * Middleware specifically for Add Products addon
+ */
+export const checkAddProductsAddon = checkAddon('ADD_PRODUCTS');
 

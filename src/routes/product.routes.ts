@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { checkAddProductsAddon } from '../middlewares/addon-guard';
 import productService from '../services/product.service';
 import productAdjustmentService, { createProductAdjustmentSchema } from '../services/product-adjustment.service';
 import { createProductSchema, updateProductSchema, getProductsQuerySchema } from '../validators/product.validator';
@@ -529,21 +530,11 @@ router.post(
   '/bulk-import',
   authGuard,
   subscriptionGuard,
+  checkAddProductsAddon,
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      // Check if ADD_PRODUCTS addon is active
-      const addonService = (await import('../services/addon.service')).default;
-      const addons = await addonService.getTenantAddons(tenantId);
-      const hasAddProductsAddon = addons.some(
-        (addon) => addon.addonType === 'ADD_PRODUCTS' && addon.status === 'active'
-      );
-      
-      if (!hasAddProductsAddon) {
-        return res.status(403).json({ 
-          message: 'ADD_PRODUCTS addon is required for bulk import' 
-        });
-      }
+      const userId = req.userId!;
 
       // TODO: Implement bulk import service
       // For now, return placeholder

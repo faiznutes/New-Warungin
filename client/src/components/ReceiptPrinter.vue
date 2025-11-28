@@ -117,7 +117,7 @@
 
               <!-- Items -->
               <div v-if="template?.fields?.showItems" 
-                   class="mb-3 sm:mb-4 border-t border-b py-3 sm:py-4"
+                   class="mb-3 sm:mb-4 py-3 sm:py-4"
                    :class="getTemplateContentStyle(template.templateType)">
                 <div class="space-y-2">
                   <div v-for="item in receiptData.items" 
@@ -141,7 +141,7 @@
 
               <!-- Totals -->
               <div class="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-                <div class="border-t border-dashed border-gray-400 pt-2 mt-2">
+                <div v-if="template?.fields?.showSubtotal || (template?.fields?.showDiscount && receiptData.discount > 0) || template?.fields?.showTax" class="space-y-1">
                   <div v-if="template?.fields?.showSubtotal" class="flex justify-between mb-1">
                     <span class="font-medium">Subtotal:</span>
                     <span class="font-semibold">{{ formatCurrency(receiptData.subtotal) }}</span>
@@ -160,7 +160,7 @@
                   <span>TOTAL:</span>
                   <span>{{ formatCurrency(receiptData.total) }}</span>
                 </div>
-                <div class="border-t border-dashed border-gray-400 pt-2 mt-2 space-y-1">
+                <div v-if="template?.fields?.showPaymentMethod || (template?.fields?.showChange && receiptData.change && receiptData.change > 0) || receiptData.servedBy" class="space-y-1">
                   <div v-if="template?.fields?.showPaymentMethod" class="flex justify-between text-xs sm:text-sm">
                     <span class="font-medium">Pembayaran:</span>
                     <span class="font-semibold">{{ getPaymentMethodLabel(receiptData.paymentMethod) }}</span>
@@ -169,7 +169,7 @@
                     <span class="font-medium">Kembalian:</span>
                     <span class="font-semibold text-green-600">{{ formatCurrency(receiptData.change) }}</span>
                   </div>
-                  <div v-if="receiptData.servedBy" class="flex justify-between text-xs sm:text-sm mt-2 pt-2 border-t border-dashed border-gray-300">
+                  <div v-if="receiptData.servedBy" class="flex justify-between text-xs sm:text-sm mt-2 pt-2">
                     <span class="font-medium">Dilayani oleh:</span>
                     <span class="font-semibold">{{ receiptData.servedBy }}</span>
                   </div>
