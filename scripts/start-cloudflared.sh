@@ -15,14 +15,23 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 1. Check if already running
-echo -e "${BLUE}1. Checking Current Status...${NC}"
-STATUS=$(docker compose ps cloudflared 2>/dev/null | grep -c "Up" || echo "0")
+# 1. Check and Clean Existing Containers
+echo -e "${BLUE}1. Checking and Cleaning Existing Containers...${NC}"
+# Remove any existing cloudflared container (from docker run or docker compose)
+docker stop warungin-cloudflared 2>/dev/null || true
+docker rm -f warungin-cloudflared 2>/dev/null || true
+docker compose --profile cloudflare rm -f cloudflared 2>/dev/null || true
+sleep 2
+
+# Check if already running via docker compose
+STATUS=$(docker compose ps cloudflared 2>/dev/null | grep -c "Up" 2>/dev/null || echo "0")
+STATUS=${STATUS:-0}
 if [ "$STATUS" -gt 0 ]; then
     echo -e "${GREEN}✅ Cloudflared sudah running${NC}"
     docker compose ps cloudflared
     exit 0
 fi
+echo -e "${GREEN}✅ Cleaned${NC}"
 echo ""
 
 # 2. Verify Nginx
@@ -74,8 +83,10 @@ echo ""
 
 RESTARTING=$(echo "$STATUS_OUTPUT" | grep -c "Restarting" 2>/dev/null || echo "0")
 RESTARTING=${RESTARTING:-0}
+if [ -z "$RESTARTING" ]; then RESTARTING=0; fi
 RUNNING=$(echo "$STATUS_OUTPUT" | grep -c "Up" 2>/dev/null || echo "0")
 RUNNING=${RUNNING:-0}
+if [ -z "$RUNNING" ]; then RUNNING=0; fi
 
 if [ "$RESTARTING" -gt 0 ]; then
     echo -e "${RED}❌ Cloudflared masih restarting${NC}"
@@ -100,7 +111,7 @@ echo "=========================================="
 echo "📋 Summary"
 echo "=========================================="
 echo ""
-if [ "$RESTARTING" -eq 0 ] && [ "$RUNNING" -gt 0 ]; then
+if [ "$RESTARTING" -eq 0 ] && [ "$RUNNING" -gt 0 ] 2>/dev/null; then
     echo -e "${GREEN}✅ Cloudflared started successfully!${NC}"
     echo ""
     echo "Next steps:"
