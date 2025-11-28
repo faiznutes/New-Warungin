@@ -528,18 +528,13 @@ const printBrowser = async () => {
     // Apply styles to receipt content
     applyComputedStyles(receiptElement);
     
-    // Apply styles to all child elements recursively - WAIT untuk computed styles ter-apply
-    setTimeout(() => {
-      const allElements = receiptElement.querySelectorAll('*');
-      allElements.forEach((el) => {
-        applyComputedStyles(el as HTMLElement);
-      });
-    }, 0);
+    // Apply styles to all child elements - langsung tanpa setTimeout
+    const allElements = receiptElement.querySelectorAll('*');
+    allElements.forEach((el) => {
+      applyComputedStyles(el as HTMLElement);
+    });
   }
 
-  // Wait a bit untuk memastikan styles ter-apply
-  await new Promise(resolve => setTimeout(resolve, 50));
-  
   const printContent = cloneElement.innerHTML;
   
   // Responsive print styles based on paper size
@@ -596,8 +591,98 @@ const printBrowser = async () => {
     return fontMap[template.value?.templateType || 'DEFAULT'] || 'Courier New, monospace';
   };
 
-  // Get template-specific print styles
+  // Get template-specific print styles dengan Tailwind classes support
   const getTemplatePrintStyles = () => {
+    const templateType = template.value?.templateType || 'DEFAULT';
+    
+    // Base Tailwind utility classes untuk print - SANGAT PENTING untuk text-align, border, font-size
+    const tailwindPrintStyles = `
+      /* Text alignment - PENTING untuk center header */
+      .text-center { text-align: center !important; }
+      .text-left { text-align: left !important; }
+      .text-right { text-align: right !important; }
+      
+      /* Font sizes - PENTING untuk variasi font size */
+      .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
+      .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+      .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+      .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+      .text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+      .text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+      .text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+      
+      /* Font weights */
+      .font-normal { font-weight: 400 !important; }
+      .font-medium { font-weight: 500 !important; }
+      .font-semibold { font-weight: 600 !important; }
+      .font-bold { font-weight: 700 !important; }
+      
+      /* Borders - PENTING untuk garis pemisah */
+      .border { border-width: 1px !important; border-style: solid !important; border-color: #000 !important; }
+      .border-t { border-top-width: 1px !important; border-top-style: solid !important; border-top-color: #000 !important; }
+      .border-b { border-bottom-width: 1px !important; border-bottom-style: solid !important; border-bottom-color: #000 !important; }
+      .border-t-2 { border-top-width: 2px !important; border-top-style: solid !important; border-top-color: #000 !important; }
+      .border-b-2 { border-bottom-width: 2px !important; border-bottom-style: solid !important; border-bottom-color: #000 !important; }
+      .border-dashed { border-style: dashed !important; }
+      .border-dotted { border-style: dotted !important; }
+      .border-gray-200 { border-color: #e5e7eb !important; }
+      .border-gray-300 { border-color: #d1d5db !important; }
+      .border-gray-400 { border-color: #9ca3af !important; }
+      .border-primary-200 { border-color: #bfdbfe !important; }
+      .border-primary-300 { border-color: #93c5fd !important; }
+      
+      /* Spacing */
+      .mb-1 { margin-bottom: 0.25rem !important; }
+      .mb-2 { margin-bottom: 0.5rem !important; }
+      .mb-3 { margin-bottom: 0.75rem !important; }
+      .mb-4 { margin-bottom: 1rem !important; }
+      .mb-5 { margin-bottom: 1.25rem !important; }
+      .mt-1 { margin-top: 0.25rem !important; }
+      .mt-2 { margin-top: 0.5rem !important; }
+      .mt-3 { margin-top: 0.75rem !important; }
+      .pb-1 { padding-bottom: 0.25rem !important; }
+      .pb-2 { padding-bottom: 0.5rem !important; }
+      .pb-2\\.5 { padding-bottom: 0.625rem !important; }
+      .pb-3 { padding-bottom: 0.75rem !important; }
+      .pb-4 { padding-bottom: 1rem !important; }
+      .pt-2 { padding-top: 0.5rem !important; }
+      .pt-3 { padding-top: 0.75rem !important; }
+      .pt-4 { padding-top: 1rem !important; }
+      .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+      .px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+      .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+      .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+      .py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+      .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+      .py-1\\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
+      
+      /* Flexbox */
+      .flex { display: flex !important; }
+      .justify-between { justify-content: space-between !important; }
+      .items-center { align-items: center !important; }
+      .items-start { align-items: flex-start !important; }
+      .flex-1 { flex: 1 1 0% !important; }
+      
+      /* Colors */
+      .text-gray-500 { color: #6b7280 !important; }
+      .text-gray-600 { color: #4b5563 !important; }
+      .text-gray-700 { color: #374151 !important; }
+      .text-gray-900 { color: #111827 !important; }
+      .text-primary-600 { color: #2563eb !important; }
+      .text-primary-700 { color: #1d4ed8 !important; }
+      .text-green-600 { color: #059669 !important; }
+      .text-red-600 { color: #dc2626 !important; }
+      
+      /* Backgrounds */
+      .bg-gray-50 { background-color: #f9fafb !important; }
+      .bg-gray-100 { background-color: #f3f4f6 !important; }
+      .bg-primary-50 { background-color: #eff6ff !important; }
+      
+      /* Space between */
+      .space-y-1 > * + * { margin-top: 0.25rem !important; }
+      .space-y-2 > * + * { margin-top: 0.5rem !important; }
+    `;
+    
     return `
       <style>
         * {
@@ -633,6 +718,7 @@ const printBrowser = async () => {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
+        ${tailwindPrintStyles}
         @media print {
           @page {
             size: ${getPageSize()};
@@ -667,13 +753,30 @@ const printBrowser = async () => {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          /* Preserve all inline styles - they override everything */
+          /* Preserve all inline styles - highest priority */
           [style] {
-            /* Inline styles are preserved automatically */
+            /* Inline styles override everything */
           }
-          /* Ensure borders are visible */
-          [style*="border"] {
+          /* Ensure borders are always visible - PENTING untuk garis pemisah */
+          .border, .border-t, .border-b, .border-t-2, .border-b-2 {
+            border-color: #000 !important;
             border-style: solid !important;
+          }
+          .border-dashed {
+            border-style: dashed !important;
+          }
+          .border-dotted {
+            border-style: dotted !important;
+          }
+          /* Ensure text-align works - PENTING untuk center header */
+          .text-center {
+            text-align: center !important;
+          }
+          .text-left {
+            text-align: left !important;
+          }
+          .text-right {
+            text-align: right !important;
           }
         }
         @media screen {
