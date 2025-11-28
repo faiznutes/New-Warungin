@@ -8,7 +8,7 @@ export interface CreateTenantInput {
   name: string;
   phone?: string;
   address?: string;
-  subscriptionPlan?: string; // BASIC, PRO, ENTERPRISE
+  subscriptionPlan?: string; // BASIC, PRO, CUSTOM
 }
 
 // Generate email from tenant name
@@ -244,8 +244,8 @@ export const createTenant = async (input: CreateTenantInput) => {
           role: 'KITCHEN' as const,
         }
       );
-    } else if (subscriptionPlan === 'ENTERPRISE') {
-      // ENTERPRISE: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users (default set, user can add more)
+    } else if (subscriptionPlan === 'CUSTOM') {
+      // CUSTOM: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users (default set, user can add more)
       usersToCreate.push(
         {
           tenantId: tenant.id,
@@ -254,7 +254,7 @@ export const createTenant = async (input: CreateTenantInput) => {
           name: `${name} Supervisor`,
           role: 'SUPERVISOR' as const,
         },
-        // Create 10 cashiers for ENTERPRISE plan
+        // Create 10 cashiers for CUSTOM plan
         {
           tenantId: tenant.id,
           email: `${emailPrefix}K1@warungin.com`,
@@ -325,7 +325,7 @@ export const createTenant = async (input: CreateTenantInput) => {
           name: `${name} Kasir 10`,
           role: 'CASHIER' as const,
         },
-        // Create 3 kitchen users for ENTERPRISE plan
+        // Create 3 kitchen users for CUSTOM plan
         {
           tenantId: tenant.id,
           email: `${emailPrefix}D1@warungin.com`,
@@ -376,7 +376,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      ENTERPRISE: 500000,
+      CUSTOM: 500000,
     };
     const planPrice = planPrices[subscriptionPlan] || 0;
 

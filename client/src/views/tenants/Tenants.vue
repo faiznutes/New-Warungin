@@ -200,7 +200,7 @@
             >
               <option value="BASIC">Starter (BASIC)</option>
               <option value="PRO">Boost (PRO)</option>
-              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
+              <option value="CUSTOM">Max (CUSTOM)</option>
             </select>
           </div>
           <div v-if="editingTenant" class="flex items-center space-x-2">
@@ -385,7 +385,7 @@ const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
     BASIC: 'Starter',
     PRO: 'Boost',
-    ENTERPRISE: 'Max',
+    CUSTOM: 'Max',
   };
   return planNames[plan] || plan;
 };
@@ -394,7 +394,7 @@ const getPlanBadgeClass = (plan: string) => {
   const classes: Record<string, string> = {
     BASIC: 'bg-gray-100 text-gray-700',
     PRO: 'bg-blue-100 text-blue-700',
-    ENTERPRISE: 'bg-purple-100 text-purple-700',
+    CUSTOM: 'bg-purple-100 text-purple-700',
   };
   return classes[plan] || 'bg-gray-100 text-gray-700';
 };

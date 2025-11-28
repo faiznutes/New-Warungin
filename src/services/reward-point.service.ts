@@ -11,11 +11,11 @@ const POINT_CONFIG = {
   POINT_PER_RUPIAH,
   
   // Subscription redemption (calculated from price: price / 200)
-  // BASIC: 200000rp = 1000pts, PRO: 350000rp = 1750pts, ENTERPRISE: 500000rp = 2500pts
+  // BASIC: 200000rp = 1000pts, PRO: 350000rp = 1750pts, CUSTOM: 500000rp = 2500pts
   SUBSCRIPTION: {
     '1month_starter': 1000,      // BASIC: 200000rp / 200 = 1000 pts
     '1month_boost': 1750,        // PRO: 350000rp / 200 = 1750 pts
-    '1month_max': 2500,          // ENTERPRISE: 500000rp / 200 = 2500 pts
+    '1month_max': 2500,          // CUSTOM: 500000rp / 200 = 2500 pts
   },
   
   // Addon redemption (calculated from price: price / 200)
@@ -486,10 +486,10 @@ export class RewardPointService {
     }
 
     // Map planId to actual plan
-    const planMapping: Record<string, 'BASIC' | 'PRO' | 'ENTERPRISE'> = {
+    const planMapping: Record<string, 'BASIC' | 'PRO' | 'CUSTOM'> = {
       '1month_starter': 'BASIC',
       '1month_boost': 'PRO',
-      '1month_max': 'ENTERPRISE',
+      '1month_max': 'CUSTOM',
     };
 
     const plan = planMapping[planId];
@@ -718,7 +718,7 @@ export class RewardPointService {
     const subscriptionNames: Record<string, string> = {
       '1month_starter': 'Starter (BASIC)',
       '1month_boost': 'Boost (PRO)',
-      '1month_max': 'Max (ENTERPRISE)',
+      '1month_max': 'Max (CUSTOM)',
     };
 
     const addonNames: Record<string, string> = {

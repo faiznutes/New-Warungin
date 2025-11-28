@@ -341,7 +341,7 @@ class PaymentService {
         if (extractedItemId.startsWith('upgrade-')) {
           // Handle upgrade
           const upgradeParts = extractedItemId.split('-');
-          const newPlan = upgradeParts[1]?.toUpperCase() as 'BASIC' | 'PRO' | 'ENTERPRISE';
+          const newPlan = upgradeParts[1]?.toUpperCase() as 'BASIC' | 'PRO' | 'CUSTOM';
           const upgradeType = upgradeParts[2] as 'temporary' | 'until_end' | 'custom';
           const customDuration = upgradeParts[3] ? parseInt(upgradeParts[3]) : undefined;
 
@@ -367,7 +367,7 @@ class PaymentService {
         } else {
           // Handle extend
           const extendParts = extractedItemId.split('-');
-          const plan = extendParts[0]?.toUpperCase() as 'BASIC' | 'PRO' | 'ENTERPRISE';
+          const plan = extendParts[0]?.toUpperCase() as 'BASIC' | 'PRO' | 'CUSTOM';
           const duration = extendParts[1] ? parseInt(extendParts[1]) : 30;
 
           console.log('Extending subscription via payment status check:', {

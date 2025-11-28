@@ -297,7 +297,7 @@
                 <ul class="list-disc list-inside space-y-1 ml-2">
                   <li><strong>BASIC</strong> - Rp 200.000/bulan: Fitur dasar untuk UMKM kecil</li>
                   <li><strong>PRO</strong> - Rp 350.000/bulan: Fitur lengkap untuk bisnis menengah</li>
-                  <li><strong>ENTERPRISE</strong> - Rp 500.000/bulan: Fitur premium untuk bisnis besar</li>
+                  <li><strong>CUSTOM/MAX</strong> - Rp 500.000/bulan: Fitur premium untuk bisnis besar</li>
                 </ul>
               </div>
               <div>
@@ -314,7 +314,7 @@
                 <h4 class="font-semibold text-gray-900 mb-2">Fitur Setiap Paket:</h4>
                 <ul class="list-disc list-inside space-y-1 ml-2">
                   <li>Semua paket termasuk manajemen produk, pesanan, dan pelanggan</li>
-                  <li>Paket PRO dan ENTERPRISE memiliki limit yang lebih besar</li>
+                  <li>Paket PRO dan CUSTOM/MAX memiliki limit yang lebih besar</li>
                   <li>Anda bisa upgrade atau extend kapan saja</li>
                 </ul>
               </div>

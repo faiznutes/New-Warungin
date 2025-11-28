@@ -536,7 +536,7 @@
             >
               <option value="BASIC">Starter (BASIC)</option>
               <option value="PRO">Boost (PRO)</option>
-              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
+              <option value="CUSTOM">Max (CUSTOM)</option>
             </select>
           </div>
           <div class="mb-6">
@@ -1073,7 +1073,7 @@ const editUserForm = ref({
   password: '',
 });
 const planForm = ref({
-  subscriptionPlan: 'BASIC' as 'BASIC' | 'PRO' | 'ENTERPRISE',
+  subscriptionPlan: 'BASIC' as 'BASIC' | 'PRO' | 'CUSTOM',
   durationDays: 30, // Default 30 hari
 });
 const extendSubscriptionDays = ref<number>(30);
@@ -1138,7 +1138,7 @@ const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
     BASIC: 'Starter',
     PRO: 'Boost',
-    ENTERPRISE: 'Max',
+    CUSTOM: 'Max',
   };
   return planNames[plan] || plan;
 };
@@ -1147,7 +1147,7 @@ const getPlanBadgeClass = (plan: string) => {
   const classes: Record<string, string> = {
     BASIC: 'bg-gray-100 text-gray-700',
     PRO: 'bg-blue-100 text-blue-700',
-    ENTERPRISE: 'bg-purple-100 text-purple-700',
+    CUSTOM: 'bg-purple-100 text-purple-700',
   };
   return classes[plan] || 'bg-gray-100 text-gray-700';
 };
@@ -1519,7 +1519,7 @@ const loadTenantDetail = async () => {
     }
     
     // Set initial plan form value
-    planForm.value.subscriptionPlan = (subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'ENTERPRISE';
+    planForm.value.subscriptionPlan = (subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'CUSTOM';
     planForm.value.durationDays = 30; // Reset durasi ke default
 
     // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
@@ -1949,7 +1949,7 @@ const startCountdown = () => {
           countdownInterval = null;
         }
         
-        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/ENTERPRISE) and expired
+        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/CUSTOM) and expired
         // If current plan is BASIC and expired, don't auto refresh (just show expired state)
         // This prevents unnecessary page refresh for BASIC plan
         const currentPlan = subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC';

@@ -4,12 +4,12 @@ import { calculateUpgradeCost, addMonths, getDiscountForDuration } from '../util
 import { applyPlanFeatures } from './plan-features.service';
 
 export interface CreateSubscriptionInput {
-  plan: 'BASIC' | 'PRO' | 'ENTERPRISE';
+  plan: 'BASIC' | 'PRO' | 'CUSTOM';
   duration: number; // days
 }
 
 export interface UpgradeSubscriptionInput {
-  newPlan: 'BASIC' | 'PRO' | 'ENTERPRISE';
+  newPlan: 'BASIC' | 'PRO' | 'CUSTOM';
   upgradeType: 'temporary' | 'until_end' | 'custom'; // temporary = 1 bulan, until_end = sampai masa aktif, custom = 3/6/12 bulan
   customDuration?: number; // days, only for custom type
 }
@@ -361,7 +361,7 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      ENTERPRISE: 500000,
+      CUSTOM: 500000,
     };
     const monthlyPrice = planPrices[data.plan] || 0;
     
@@ -502,7 +502,7 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      ENTERPRISE: 500000,
+      CUSTOM: 500000,
     };
 
     const currentPlanPrice = planPrices[currentPlan] || 0;
@@ -916,7 +916,7 @@ export class SubscriptionService {
     const expiredTenants = await prisma.tenant.findMany({
       where: {
         subscriptionEnd: { lte: now },
-        subscriptionPlan: { in: ['PRO', 'ENTERPRISE'] },
+        subscriptionPlan: { in: ['PRO', 'CUSTOM'] },
       },
       include: {
         subscriptions: {
@@ -933,7 +933,7 @@ export class SubscriptionService {
       },
     });
 
-    console.log(`Found ${expiredTenants.length} expired tenants with PRO/ENTERPRISE plan`);
+    console.log(`Found ${expiredTenants.length} expired tenants with PRO/CUSTOM plan`);
 
     // Also find expired subscriptions directly (both ACTIVE and EXPIRED to catch all)
     // Also check tenant.temporaryUpgrade to catch cases where subscription might not have the flag
@@ -973,7 +973,7 @@ export class SubscriptionService {
       ...expiredSubscriptions.filter(
         (sub: any) => 
           !sub.temporaryUpgrade && 
-          (sub.plan === 'PRO' || sub.plan === 'ENTERPRISE') &&
+          (sub.plan === 'PRO' || sub.plan === 'CUSTOM') &&
           sub.tenant.subscriptionPlan !== 'BASIC'
       ),
       ...expiredTenants
@@ -984,7 +984,7 @@ export class SubscriptionService {
           tenant: tenant,
         }))
         .filter((sub: any) => 
-          (sub.plan === 'PRO' || sub.plan === 'ENTERPRISE') &&
+          (sub.plan === 'PRO' || sub.plan === 'CUSTOM') &&
           sub.plan !== 'BASIC'
         ),
     ];
@@ -997,7 +997,7 @@ export class SubscriptionService {
       }
     );
 
-    console.log(`Found ${uniqueExpiredProMax.length} unique expired PRO/ENTERPRISE subscriptions to revert`);
+    console.log(`Found ${uniqueExpiredProMax.length} unique expired PRO/CUSTOM subscriptions to revert`);
 
     const results = [];
 
@@ -1192,7 +1192,7 @@ export class SubscriptionService {
       }
     }
 
-    // Process expired PRO/ENTERPRISE subscriptions (revert to BASIC)
+    // Process expired PRO/CUSTOM subscriptions (revert to BASIC)
     for (const subscription of uniqueExpiredProMax) {
       try {
         const tenantId = subscription.tenantId || subscription.tenant?.id;
@@ -1426,7 +1426,7 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      ENTERPRISE: 500000,
+      CUSTOM: 500000,
     };
     const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'ENTERPRISE';
     const monthlyPrice = planPrices[currentPlan] || 0;

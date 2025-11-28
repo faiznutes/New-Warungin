@@ -999,7 +999,7 @@ const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
     BASIC: 'Starter',
     PRO: 'Boost',
-    ENTERPRISE: 'Max',
+    CUSTOM: 'Max',
     STARTER: 'Starter',
     BOOST: 'Boost',
     MAX: 'Max',
@@ -1011,7 +1011,7 @@ const getPlanPrice = (plan: string) => {
   const prices: Record<string, number> = {
     BASIC: 200000,
     PRO: 350000,
-    ENTERPRISE: 500000,
+    CUSTOM: 500000,
   };
   return prices[plan] || 0;
 };
@@ -1427,7 +1427,7 @@ const startCountdown = () => {
           countdownInterval = null;
         }
         
-        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/ENTERPRISE) and expired
+        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/CUSTOM) and expired
         // If current plan is BASIC and expired, don't auto refresh (just show expired state)
         // This prevents unnecessary page refresh for BASIC plan
         const currentPlan = currentSubscription.value?.plan || 'BASIC';

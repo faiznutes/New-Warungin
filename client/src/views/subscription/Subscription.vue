@@ -482,7 +482,7 @@ const subscriptionPlans = [
     description: '1 Admin + 1 Supervisor + 6 Kasir + 2 Kitchen, 2 Outlet, 100 Produk',
   },
   {
-    id: 'ENTERPRISE',
+    id: 'CUSTOM',
     name: 'Warungin Max',
     price: 500000,
     description: 'Custom paket sesuai kebutuhan. Hubungi admin untuk penawaran khusus.',
@@ -687,7 +687,7 @@ const startCountdown = () => {
           countdownInterval = null;
         }
         
-        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/ENTERPRISE) and expired
+        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/CUSTOM) and expired
         // If current plan is BASIC and expired, don't auto refresh (just show expired state)
         // This prevents unnecessary page refresh for BASIC plan
         const currentPlan = subscription.value?.plan || 'BASIC';
