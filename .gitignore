@@ -85,6 +85,8 @@ prisma/migrations/*.sql
 *.sh.log
 
 # Exclude ALL .sh and .md files (except essential ones)
+# Only keep: README.md, docs/**/*.md, setup-cloudflare-tunnel.md, CLOUDFLARE_TROUBLESHOOTING.md
+# Only keep: scripts/docker-startup.sh
 *.sh
 !scripts/docker-startup.sh
 *.md
@@ -92,16 +94,13 @@ prisma/migrations/*.sql
 !docs/**/*.md
 !setup-cloudflare-tunnel.md
 !CLOUDFLARE_TROUBLESHOOTING.md
-
-# Exclude all documentation and script files
+**/*.sh
+!scripts/docker-startup.sh
 **/*.md
 !README.md
 !docs/**/*.md
 !setup-cloudflare-tunnel.md
 !CLOUDFLARE_TROUBLESHOOTING.md
-
-**/*.sh
-!scripts/docker-startup.sh
 
 # Exclude all .bat and .ps1 files
 *.bat
