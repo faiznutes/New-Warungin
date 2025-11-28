@@ -114,7 +114,7 @@ class MarketingService {
         result = await this.sendPushNotificationCampaign(tenantId, {
           name: campaignData.name,
           title: campaignData.subject || campaignData.name,
-          message: campaignData.content,
+          content: campaignData.content,
           target: campaignData.target,
           campaignId,
         });

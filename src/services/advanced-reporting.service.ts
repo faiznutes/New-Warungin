@@ -510,9 +510,9 @@ class AdvancedReportingService {
         where: {
           tenantId_userId: {
             tenantId,
-            userId: userId ?? null,
+            userId: userId || null,
           },
-        },
+        } as any,
       });
 
       if (settings) {
@@ -546,9 +546,9 @@ class AdvancedReportingService {
         where: {
           tenantId_userId: {
             tenantId,
-            userId: userId ?? null,
+            userId: userId || null,
           },
-        },
+        } as any,
         create: {
           tenantId,
           userId: userId || null,

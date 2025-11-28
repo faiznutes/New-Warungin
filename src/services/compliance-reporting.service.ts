@@ -132,7 +132,7 @@ class ComplianceReportingService {
               userId: request.userId,
             },
             data: {
-              userId: null, // Remove user reference
+              userId: { set: null }, // Remove user reference
             },
           });
           anonymized += result.count;

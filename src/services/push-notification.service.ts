@@ -77,7 +77,8 @@ class PushNotificationService {
 
     try {
       // Dynamic import Firebase Admin SDK
-      let admin: typeof import('firebase-admin');
+      // @ts-ignore - Optional dependency
+      let admin: any;
       try {
         admin = await import('firebase-admin');
       } catch (importError) {
@@ -176,18 +177,18 @@ class PushNotificationService {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       if (data.id) {
         return {
           success: true,
-          messageId: data.id,
+          messageId: data.id as string,
           status: 'sent',
         };
       } else {
         return {
           success: false,
-          error: data.errors?.[0] || 'OneSignal push failed',
+          error: (data.errors?.[0] as string) || 'OneSignal push failed',
         };
       }
     } catch (error: any) {

@@ -75,7 +75,8 @@ class SMSGatewayService {
 
     try {
       // Dynamic import Twilio client
-      let twilio: typeof import('twilio');
+      // @ts-ignore - Optional dependency
+      let twilio: any;
       try {
         twilio = await import('twilio');
       } catch (importError) {
@@ -130,18 +131,18 @@ class SMSGatewayService {
         body: params.toString(),
       });
 
-      const data = await response.json();
+      const data = await response.json() as any;
 
       if (data.status === 1 || data.status === '1') {
         return {
           success: true,
-          messageId: data.messageId || data.message_id,
+          messageId: (data.messageId || data.message_id) as string,
           status: 'sent',
         };
       } else {
         return {
           success: false,
-          error: data.text || 'Zenziva SMS failed',
+          error: (data.text as string) || 'Zenziva SMS failed',
         };
       }
     } catch (error: any) {
@@ -203,7 +204,8 @@ class SMSGatewayService {
     }
 
     try {
-      let twilio: typeof import('twilio');
+      // @ts-ignore - Optional dependency
+      let twilio: any;
       try {
         twilio = await import('twilio');
       } catch (importError) {
@@ -267,7 +269,8 @@ class SMSGatewayService {
     }
 
     try {
-      let twilio: typeof import('twilio');
+      // @ts-ignore - Optional dependency
+      let twilio: any;
       try {
         twilio = await import('twilio');
       } catch (importError) {

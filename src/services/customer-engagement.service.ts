@@ -215,12 +215,12 @@ class CustomerEngagementService {
   private async getCustomerEmails(tenantId: string, customerId: string): Promise<string[]> {
     const customer = await prisma.customer.findFirst({
       where: { id: customerId, tenantId },
-      select: { email: true },
+      select: { email: true, phone: true },
     });
 
-    const member = await prisma.member.findFirst({
-      where: { phone: customer?.phone || '', tenantId },
-    });
+    const member = customer?.phone ? await prisma.member.findFirst({
+      where: { phone: customer.phone, tenantId },
+    }) : null;
 
     const emails: string[] = [];
     if (customer?.email) emails.push(customer.email);
