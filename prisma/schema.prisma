@@ -252,10 +252,11 @@ model PaymentMapping {
   orderId   String   @unique // Midtrans order_id (short format)
   tenantId  String
   itemId    String
-  itemType  String // 'addon' or 'subscription'
+  itemType  String // 'addon', 'subscription', or 'addon-extend'
   itemName  String?
   amount    Decimal  @db.Decimal(10, 2)
   status    String   @default("PENDING") // PENDING, SETTLED, CANCELLED
+  config    Json? // Additional data like addonId, duration for addon-extend
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
