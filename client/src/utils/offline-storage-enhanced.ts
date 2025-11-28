@@ -48,7 +48,10 @@ class OfflineStorageEnhanced {
       request.onsuccess = () => {
         this.db = request.result;
         console.log('IndexedDB initialized successfully');
-        this.startBackgroundSync();
+        // Start background sync asynchronously to avoid blocking
+        setTimeout(() => {
+          this.startBackgroundSync();
+        }, 0);
         resolve();
       };
 
@@ -353,19 +356,31 @@ class OfflineStorageEnhanced {
     });
 
     // Register background sync (if supported)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready
-        .then((registration: ServiceWorkerRegistration | null | undefined) => {
-          // Check if registration exists and is a valid object
-          if (!registration || typeof registration !== 'object') {
-            return;
-          }
+    if ('serviceWorker' in navigator && navigator.serviceWorker) {
+      // Use setTimeout to ensure service worker is ready
+      setTimeout(() => {
+        navigator.serviceWorker.ready
+          .then((registration: ServiceWorkerRegistration | null | undefined) => {
+            // Check if registration exists and is a valid object
+            if (!registration) {
+              console.warn('Service worker registration is null or undefined');
+              return;
+            }
 
-          // Check if sync is available in registration
-          // Use hasOwnProperty or in operator with proper null check
-          if (Object.prototype.hasOwnProperty.call(registration, 'sync')) {
+            if (typeof registration !== 'object') {
+              console.warn('Service worker registration is not an object');
+              return;
+            }
+
+            // Check if sync property exists using safe method
+            const registrationAny = registration as any;
+            if (!registrationAny || registrationAny.sync === undefined) {
+              // Background sync not supported, skip silently
+              return;
+            }
+
             try {
-              const syncManager = (registration as any).sync;
+              const syncManager = registrationAny.sync;
               if (syncManager && typeof syncManager === 'object' && typeof syncManager.register === 'function') {
                 syncManager
                   .register('sync-actions')
@@ -376,11 +391,11 @@ class OfflineStorageEnhanced {
             } catch (err) {
               console.warn('Background sync not supported:', err);
             }
-          }
-        })
-        .catch((err: Error) => {
-          console.warn('Service worker not ready:', err);
-        });
+          })
+          .catch((err: Error) => {
+            console.warn('Service worker not ready:', err);
+          });
+      }, 100);
     }
   }
 
