@@ -448,36 +448,47 @@ const printBrowser = async () => {
   const cloneElement = receiptContent.value.cloneNode(true) as HTMLElement;
   const receiptElement = cloneElement.querySelector('.receipt-content') as HTMLElement;
   
-  if (receiptElement) {
-    // Get computed styles and apply as inline styles
-    const computedStyles = window.getComputedStyle(receiptElement);
-    receiptElement.style.fontFamily = computedStyles.fontFamily;
-    receiptElement.style.fontSize = computedStyles.fontSize;
-    receiptElement.style.color = computedStyles.color;
-    receiptElement.style.lineHeight = computedStyles.lineHeight;
+  // Function to convert computed styles to inline styles
+  const applyComputedStyles = (element: HTMLElement) => {
+    const computed = window.getComputedStyle(element);
+    const stylesToApply: Record<string, string> = {};
     
-    // Apply styles to all child elements
+    // Get all important styles
+    const importantProps = [
+      'fontFamily', 'fontSize', 'fontWeight', 'color', 'lineHeight',
+      'textAlign', 'padding', 'paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight',
+      'margin', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight',
+      'border', 'borderTop', 'borderBottom', 'borderLeft', 'borderRight',
+      'borderWidth', 'borderStyle', 'borderColor',
+      'backgroundColor', 'background',
+      'display', 'flexDirection', 'justifyContent', 'alignItems',
+      'width', 'maxWidth', 'minWidth',
+      'height', 'maxHeight', 'minHeight',
+    ];
+    
+    importantProps.forEach(prop => {
+      const value = (computed as any)[prop];
+      if (value && value !== 'none' && value !== 'normal' && value !== 'auto') {
+        // Convert camelCase to kebab-case
+        const kebabProp = prop.replace(/([A-Z])/g, '-$1').toLowerCase();
+        stylesToApply[kebabProp] = value;
+      }
+    });
+    
+    // Apply all styles
+    Object.entries(stylesToApply).forEach(([prop, value]) => {
+      element.style.setProperty(prop, value, 'important');
+    });
+  };
+  
+  if (receiptElement) {
+    // Apply styles to receipt content
+    applyComputedStyles(receiptElement);
+    
+    // Apply styles to all child elements recursively
     const allElements = receiptElement.querySelectorAll('*');
     allElements.forEach((el) => {
-      const elStyles = window.getComputedStyle(el as Element);
-      const htmlEl = el as HTMLElement;
-      
-      // Preserve important styles
-      if (elStyles.fontSize) htmlEl.style.fontSize = elStyles.fontSize;
-      if (elStyles.fontWeight) htmlEl.style.fontWeight = elStyles.fontWeight;
-      if (elStyles.color && elStyles.color !== 'rgb(0, 0, 0)') htmlEl.style.color = elStyles.color;
-      if (elStyles.backgroundColor && elStyles.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-        htmlEl.style.backgroundColor = elStyles.backgroundColor;
-      }
-      if (elStyles.borderTopWidth && elStyles.borderTopWidth !== '0px') {
-        htmlEl.style.borderTop = `${elStyles.borderTopWidth} ${elStyles.borderTopStyle} ${elStyles.borderTopColor}`;
-      }
-      if (elStyles.borderBottomWidth && elStyles.borderBottomWidth !== '0px') {
-        htmlEl.style.borderBottom = `${elStyles.borderBottomWidth} ${elStyles.borderBottomStyle} ${elStyles.borderBottomColor}`;
-      }
-      if (elStyles.padding) htmlEl.style.padding = elStyles.padding;
-      if (elStyles.margin) htmlEl.style.margin = elStyles.margin;
-      if (elStyles.textAlign) htmlEl.style.textAlign = elStyles.textAlign;
+      applyComputedStyles(el as HTMLElement);
     });
   }
 
@@ -539,16 +550,15 @@ const printBrowser = async () => {
 
   // Get template-specific print styles
   const getTemplatePrintStyles = () => {
-    const templateType = template.value?.templateType || 'DEFAULT';
-    
     return `
       <style>
         * {
           margin: 0;
           padding: 0;
           box-sizing: border-box;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
         }
         body {
           margin: 0;
@@ -557,6 +567,8 @@ const printBrowser = async () => {
           font-size: ${getFontSize()};
           line-height: 1.4;
           color: #000;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         .receipt-print-container {
           max-width: ${getMaxWidth()};
@@ -569,10 +581,19 @@ const printBrowser = async () => {
           font-family: ${getFontFamily()};
           font-size: ${getFontSize()};
         }
+        .receipt-content * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
         @media print {
           @page {
             size: ${getPageSize()};
             margin: 0;
+          }
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
           body {
             margin: 0;
@@ -581,8 +602,8 @@ const printBrowser = async () => {
             font-size: ${getFontSize()};
             line-height: 1.4;
             color: #000 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           .receipt-print-container {
             max-width: ${getMaxWidth()};
@@ -595,12 +616,16 @@ const printBrowser = async () => {
             color: #000 !important;
           }
           .receipt-content * {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
-          /* Preserve all inline styles */
+          /* Preserve all inline styles - they override everything */
           [style] {
             /* Inline styles are preserved automatically */
+          }
+          /* Ensure borders are visible */
+          [style*="border"] {
+            border-style: solid !important;
           }
         }
         @media screen {
