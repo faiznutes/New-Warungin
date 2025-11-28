@@ -74,6 +74,105 @@
         </div>
       </div>
 
+      <!-- Subscription Tiers -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg border-2 border-blue-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">Subscription Tiers</h3>
+            <p class="text-sm text-gray-600">Paket langganan yang tersedia</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div class="p-4 bg-white rounded-lg border-2 border-gray-200">
+            <h4 class="font-bold text-gray-900 mb-2">Basic</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• 1 Outlet</li>
+              <li>• 4 Pengguna (1 Admin + 2 Kasir + 1 Kitchen)</li>
+              <li>• 25 Produk</li>
+              <li>• Fitur dasar: Produk, Pesanan, Pelanggan, POS, Laporan Dasar</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border-2 border-primary-400">
+            <h4 class="font-bold text-gray-900 mb-2">Pro ⭐</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• 2 Outlet</li>
+              <li>• 10 Pengguna (1 Admin + 1 Supervisor + 6 Kasir + 2 Kitchen)</li>
+              <li>• 100 Produk</li>
+              <li>• Semua fitur Basic + Inventory Management, Product Adjustments, Rewards & Discounts, User Management, Subscription & Addon Management, Advanced Receipt Templates</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border-2 border-indigo-400">
+            <h4 class="font-bold text-gray-900 mb-2">Custom/Max 🔥</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Unlimited Outlet, Pengguna & Produk</li>
+              <li>• Semua fitur Pro</li>
+              <li>• Semua 9 Addons Premium</li>
+              <li>• Dedicated Account Manager & Support 24/7</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Addons -->
+      <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-lg border-2 border-purple-200 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900">Available Addons</h3>
+            <p class="text-sm text-gray-600">9 addons premium yang dapat ditambahkan ke paket</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          <div class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">Resource Addons</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Tambah Outlet (Rp 120rb/bulan)</li>
+              <li>• Tambah Pengguna (Rp 50rb/5 user/bulan)</li>
+              <li>• Tambah Produk (Rp 30rb/100 produk/bulan)</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">Marketing & Delivery</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Delivery & Marketing (Rp 180rb/bulan)</li>
+              <li>• Email Templates, Analytics & Scheduler</li>
+              <li>• Customer Engagement Tools</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">Analytics & Reporting</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Business Analytics & Insight (Rp 250rb/bulan)</li>
+              <li>• Advanced Reporting (Rp 75rb/bulan)</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">Financial & Inventory</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• Financial Management (Rp 150rb/bulan)</li>
+              <li>• Inventory Management (Rp 100rb/bulan)</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">AI/ML & Advanced</h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li>• AI/ML Features (Rp 200rb/bulan)</li>
+              <li>• Advanced Receipt Editor (Rp 60rb/bulan)</li>
+              <li>• Multi-Outlet Advanced (Rp 150rb/bulan)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <!-- Admin Tenant Features -->
       <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <div class="flex items-center gap-3 mb-4">
@@ -84,27 +183,27 @@
           </div>
           <div>
             <h3 class="text-xl font-bold text-gray-900">Admin Tenant</h3>
-            <p class="text-sm text-gray-600">Mengelola toko dan operasional</p>
+            <p class="text-sm text-gray-600">Mengelola toko dan operasional (berdasarkan tier & addons)</p>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 class="font-semibold text-gray-900 mb-2">Produk & Inventory</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Kelola produk</li>
-              <li>• Product Adjustments</li>
-              <li>• Suppliers</li>
-              <li>• Purchase Orders</li>
-              <li>• Stock Transfers</li>
-              <li>• Stock Alerts</li>
+              <li>• Kelola produk (Semua tier)</li>
+              <li>• Product Adjustments (Pro, Custom/Max)</li>
+              <li>• Suppliers (Pro, Custom/Max, atau Inventory Management Addon)</li>
+              <li>• Purchase Orders (Pro, Custom/Max, atau Inventory Management Addon)</li>
+              <li>• Stock Transfers (Pro, Custom/Max, atau Inventory Management Addon)</li>
+              <li>• Stock Alerts (Pro, Custom/Max, atau Inventory Management Addon)</li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 class="font-semibold text-gray-900 mb-2">Orders & POS</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Kelola pesanan</li>
-              <li>• Point of Sale (POS)</li>
-              <li>• Delivery Orders</li>
+              <li>• Kelola pesanan (Semua tier)</li>
+              <li>• Point of Sale (POS) (Semua tier)</li>
+              <li>• Delivery Orders (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
@@ -117,39 +216,40 @@
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 class="font-semibold text-gray-900 mb-2">Reports & Analytics</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Laporan penjualan</li>
-              <li>• Advanced Reporting (Addon)</li>
-              <li>• Advanced Analytics (Addon)</li>
-              <li>• Financial Management (Addon)</li>
-              <li>• Profit & Loss (Addon)</li>
+              <li>• Laporan penjualan (Semua tier)</li>
+              <li>• Advanced Reporting (Pro, Custom/Max, atau Advanced Reporting Addon)</li>
+              <li>• Advanced Analytics (Pro, Custom/Max, atau Business Analytics Addon)</li>
+              <li>• Financial Management (Pro, Custom/Max, atau Financial Management Addon)</li>
+              <li>• Profit & Loss (Pro, Custom/Max, atau Business Analytics Addon)</li>
+              <li>• AI/ML Features (Custom/Max, atau AI/ML Features Addon)</li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 class="font-semibold text-gray-900 mb-2">Marketing</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Marketing Campaigns (Addon)</li>
-              <li>• Email Templates (Addon)</li>
-              <li>• Email Analytics (Addon)</li>
-              <li>• Email Scheduler (Addon)</li>
-              <li>• Customer Engagement (Addon)</li>
+              <li>• Marketing Campaigns (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
+              <li>• Email Templates (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
+              <li>• Email Analytics (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
+              <li>• Email Scheduler (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
+              <li>• Customer Engagement (Pro, Custom/Max, atau Delivery & Marketing Addon)</li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <h4 class="font-semibold text-gray-900 mb-2">Settings & Management</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Store Settings</li>
-              <li>• User Management</li>
-              <li>• Subscription</li>
-              <li>• Addons</li>
-              <li>• Rewards</li>
-              <li>• Discounts</li>
-              <li>• Receipt Templates</li>
-              <li>• Stores (Multi-outlet)</li>
-              <li>• 2FA Settings</li>
-              <li>• Webhooks</li>
-              <li>• Sessions</li>
-              <li>• Password Settings</li>
-              <li>• GDPR Settings</li>
+              <li>• Store Settings (Semua tier)</li>
+              <li>• User Management (Pro, Custom/Max, atau User Management Addon)</li>
+              <li>• Subscription (Pro, Custom/Max, atau Subscription Management Addon)</li>
+              <li>• Addons (Pro, Custom/Max, atau Addon Management Addon)</li>
+              <li>• Rewards (Pro, Custom/Max, atau Rewards Management Addon)</li>
+              <li>• Discounts (Pro, Custom/Max, atau Discount Management Addon)</li>
+              <li>• Receipt Templates (Pro, Custom/Max, atau Advanced Receipt Editor Addon)</li>
+              <li>• Stores (Multi-outlet) (Pro, Custom/Max, atau Multi-Outlet Advanced Addon)</li>
+              <li>• 2FA Settings (Semua tier)</li>
+              <li>• Webhooks (Pro, Custom/Max)</li>
+              <li>• Sessions (Semua tier)</li>
+              <li>• Password Settings (Semua tier)</li>
+              <li>• GDPR Settings (Semua tier)</li>
             </ul>
           </div>
         </div>
