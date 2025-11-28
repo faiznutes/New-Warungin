@@ -355,12 +355,18 @@ class OfflineStorageEnhanced {
     // Register background sync (if supported)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready
-        .then((registration: ServiceWorkerRegistration | null) => {
+        .then((registration: ServiceWorkerRegistration | null | undefined) => {
+          // Check if registration exists and is a valid object
+          if (!registration || typeof registration !== 'object') {
+            return;
+          }
+
           // Check if sync is available in registration
-          if (registration && typeof registration === 'object' && 'sync' in registration) {
+          // Use hasOwnProperty or in operator with proper null check
+          if (Object.prototype.hasOwnProperty.call(registration, 'sync')) {
             try {
               const syncManager = (registration as any).sync;
-              if (syncManager && typeof syncManager.register === 'function') {
+              if (syncManager && typeof syncManager === 'object' && typeof syncManager.register === 'function') {
                 syncManager
                   .register('sync-actions')
                   .catch((err: Error) => {
