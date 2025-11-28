@@ -17,18 +17,18 @@ export interface RetentionPolicy {
 
 export class RetentionService {
   private defaultPolicy: RetentionPolicy = {
-    orders: 365, // 1 year
-    transactions: 365, // 1 year
-    reports: 180, // 6 months
-    auditLogs: 90, // 3 months
-    contactSubmissions: 90, // 3 months
-    demoRequests: 90, // 3 months
+    orders: 730, // 2 years
+    transactions: 730, // 2 years
+    reports: 730, // 2 years
+    auditLogs: 730, // 2 years
+    contactSubmissions: 730, // 2 years
+    demoRequests: 730, // 2 years
   };
 
   /**
    * Apply retention policy for orders
    */
-  async applyOrdersRetention(tenantId: string, days: number = 365): Promise<number> {
+  async applyOrdersRetention(tenantId: string, days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -52,7 +52,7 @@ export class RetentionService {
   /**
    * Apply retention policy for transactions
    */
-  async applyTransactionsRetention(tenantId: string, days: number = 365): Promise<number> {
+  async applyTransactionsRetention(tenantId: string, days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -76,7 +76,7 @@ export class RetentionService {
   /**
    * Apply retention policy for reports
    */
-  async applyReportsRetention(tenantId: string, days: number = 180): Promise<number> {
+  async applyReportsRetention(tenantId: string, days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -99,7 +99,7 @@ export class RetentionService {
   /**
    * Apply retention policy for audit logs
    */
-  async applyAuditLogsRetention(tenantId: string, days: number = 90): Promise<number> {
+  async applyAuditLogsRetention(tenantId: string, days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -122,7 +122,7 @@ export class RetentionService {
   /**
    * Apply retention policy for contact submissions
    */
-  async applyContactSubmissionsRetention(days: number = 90): Promise<number> {
+  async applyContactSubmissionsRetention(days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -143,7 +143,7 @@ export class RetentionService {
   /**
    * Apply retention policy for demo requests
    */
-  async applyDemoRequestsRetention(days: number = 90): Promise<number> {
+  async applyDemoRequestsRetention(days: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 

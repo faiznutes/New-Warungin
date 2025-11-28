@@ -93,6 +93,19 @@
             <span class="font-medium">System Settings</span>
           </router-link>
 
+          <router-link
+            to="/app/system/info"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
+            active-class="bg-blue-700 text-white font-semibold shadow-lg"
+            exact-active-class="bg-blue-700 text-white font-semibold shadow-lg"
+            @click="closeSidebarOnMobile"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">System Info</span>
+          </router-link>
+
           <!-- Business Analytics Menu Section (Always visible for Super Admin) -->
           <div class="pt-4 mt-4 border-t border-blue-700">
             <p class="px-4 py-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">Business Analytics</p>
@@ -226,6 +239,7 @@ const pageTitle = computed(() => {
     '/app/addons': 'Addon Management',
     '/app/reports/global': 'Laporan Global',
     '/app/settings/system': 'System Settings',
+    '/app/system/info': 'System Info',
     '/app/analytics': 'Advanced Analytics',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',

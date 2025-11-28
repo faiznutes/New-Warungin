@@ -348,13 +348,20 @@ const router = createRouter({
           path: 'settings/archive',
           name: 'archive-management',
           component: () => import('../views/settings/ArchiveManagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['SUPER_ADMIN'] },
         },
         {
           path: 'settings/retention',
           name: 'retention-management',
           component: () => import('../views/settings/RetentionManagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        // System Info for Super Admin
+        {
+          path: 'system/info',
+          name: 'system-info',
+          component: () => import('../views/system/SystemInfo.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
         },
         {
           path: 'products/adjustments',
