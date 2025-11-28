@@ -21,8 +21,10 @@ STATUS_OUTPUT=$(docker compose ps cloudflared 2>/dev/null)
 echo "$STATUS_OUTPUT"
 echo ""
 
-RESTARTING=$(echo "$STATUS_OUTPUT" | grep -c "Restarting" || echo "0")
-RUNNING=$(echo "$STATUS_OUTPUT" | grep -c "Up" || echo "0")
+RESTARTING=$(echo "$STATUS_OUTPUT" | grep -c "Restarting" 2>/dev/null || echo "0")
+RESTARTING=${RESTARTING:-0}
+RUNNING=$(echo "$STATUS_OUTPUT" | grep -c "Up" 2>/dev/null || echo "0")
+RUNNING=${RUNNING:-0}
 
 if [ "$RESTARTING" -gt 0 ]; then
     echo -e "${RED}❌ Cloudflared masih restarting${NC}"
