@@ -111,7 +111,15 @@ echo "=========================================="
 echo "📋 Summary"
 echo "=========================================="
 echo ""
-if [ "$RESTARTING" -eq 0 ] && [ "$RUNNING" -gt 0 ] 2>/dev/null; then
+
+# Re-check status for summary (fix variable scope)
+STATUS_OUTPUT_SUMMARY=$(docker compose ps cloudflared 2>/dev/null)
+RESTARTING_SUMMARY=$(echo "$STATUS_OUTPUT_SUMMARY" | grep -c "Restarting" 2>/dev/null || echo "0")
+RESTARTING_SUMMARY=${RESTARTING_SUMMARY:-0}
+RUNNING_SUMMARY=$(echo "$STATUS_OUTPUT_SUMMARY" | grep -c "Up" 2>/dev/null || echo "0")
+RUNNING_SUMMARY=${RUNNING_SUMMARY:-0}
+
+if [ "$RESTARTING_SUMMARY" -eq 0 ] && [ "$RUNNING_SUMMARY" -gt 0 ] 2>/dev/null; then
     echo -e "${GREEN}✅ Cloudflared started successfully!${NC}"
     echo ""
     echo "Next steps:"
@@ -119,11 +127,25 @@ if [ "$RESTARTING" -eq 0 ] && [ "$RUNNING" -gt 0 ] 2>/dev/null; then
     echo "2. Verify: bash scripts/verify-cloudflared.sh"
     echo "3. Check Dashboard: https://one.dash.cloudflare.com/"
 else
-    echo -e "${RED}❌ Masih ada masalah${NC}"
-    echo ""
-    echo "Troubleshooting:"
-    echo "1. Check logs: docker compose logs cloudflared | tail -50"
-    echo "2. Verify token: grep CLOUDFLARE_TUNNEL_TOKEN .env"
+    # Check logs to see if actually running (sometimes status check fails but tunnel is up)
+    LOGS_CHECK=$(docker compose logs cloudflared 2>&1 | tail -5 | grep -c "Registered tunnel connection\|Updated to new configuration" || echo "0")
+    LOGS_CHECK=${LOGS_CHECK:-0}
+    if [ "$LOGS_CHECK" -gt 0 ]; then
+        echo -e "${GREEN}✅ Cloudflared sepertinya sudah running! (dari logs)${NC}"
+        echo ""
+        echo "Logs menunjukkan tunnel sudah connected:"
+        docker compose logs cloudflared 2>&1 | grep -i "registered\|updated" | tail -3
+        echo ""
+        echo "Next steps:"
+        echo "1. Verify: bash scripts/verify-cloudflared.sh"
+        echo "2. Check Dashboard: https://one.dash.cloudflare.com/"
+    else
+        echo -e "${RED}❌ Masih ada masalah${NC}"
+        echo ""
+        echo "Troubleshooting:"
+        echo "1. Check logs: docker compose logs cloudflared | tail -50"
+        echo "2. Verify token: grep CLOUDFLARE_TUNNEL_TOKEN .env"
+    fi
 fi
 echo ""
 
