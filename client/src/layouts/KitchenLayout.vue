@@ -36,6 +36,7 @@
             to="/app/orders/kitchen"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-red-100 hover:bg-red-500 hover:text-white group"
             active-class="bg-red-500 text-white font-semibold shadow-lg"
+            exact-active-class="bg-red-500 text-white font-semibold shadow-lg"
             @click="closeSidebarOnMobile"
           >
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
