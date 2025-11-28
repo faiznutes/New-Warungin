@@ -279,31 +279,28 @@ class PaymentService {
 
     const extractedItemId = itemId;
 
-    if (itemType === 'addon') {
+    if (itemType === 'addon' || itemType === 'addon-extend') {
       // Import addon service
       const addonService = await import('./addon.service');
       const { AVAILABLE_ADDONS } = addonService;
 
-      // Find addon info
-      const addonInfo = AVAILABLE_ADDONS.find(a => a.id === extractedItemId);
+      // Check if this is an extend operation
+      if (itemType === 'addon-extend' && extractedItemId.startsWith('extend-')) {
+        // Handle addon extension
+        const extendParts = extractedItemId.split('-');
+        const addonId = extendParts[1];
+        const duration = extendParts[2] ? parseInt(extendParts[2]) : 30;
 
-      if (addonInfo) {
-        console.log('Activating addon via payment status check:', {
+        console.log('Extending addon via payment status check:', {
           tenantId,
-          addonId: extractedItemId,
-          addonName: addonInfo.name,
+          addonId,
+          duration,
           orderId,
         });
 
         try {
-          // Subscribe addon
-          await addonService.default.subscribeAddon(tenantId, {
-            addonId: extractedItemId,
-            addonName: addonInfo.name,
-            addonType: addonInfo.type,
-            limit: addonInfo.defaultLimit ?? undefined,
-            duration: 30,
-          });
+          // Extend addon
+          await addonService.default.extendAddon(tenantId, addonId, duration);
 
           // Update mapping status
           if (mapping) {
@@ -313,25 +310,72 @@ class PaymentService {
             });
           }
 
-          console.log('Addon activated successfully via payment status check:', {
+          console.log('Addon extended successfully via payment status check:', {
             tenantId,
-            addonId: extractedItemId,
+            addonId,
+            duration,
           });
         } catch (error: any) {
-          console.error('Error activating addon via payment status check:', {
+          console.error('Error extending addon via payment status check:', {
             tenantId,
-            addonId: extractedItemId,
+            addonId,
+            duration,
             error: error.message,
             stack: error.stack,
           });
           throw error; // Re-throw to be handled by caller
         }
       } else {
-        console.error('Addon not found in AVAILABLE_ADDONS:', {
-          extractedItemId,
-          orderId,
-          availableAddonIds: AVAILABLE_ADDONS.map(a => a.id),
-        });
+        // Handle new addon subscription
+        // Find addon info
+        const addonInfo = AVAILABLE_ADDONS.find(a => a.id === extractedItemId);
+
+        if (addonInfo) {
+          console.log('Activating addon via payment status check:', {
+            tenantId,
+            addonId: extractedItemId,
+            addonName: addonInfo.name,
+            orderId,
+          });
+
+          try {
+            // Subscribe addon
+            await addonService.default.subscribeAddon(tenantId, {
+              addonId: extractedItemId,
+              addonName: addonInfo.name,
+              addonType: addonInfo.type,
+              limit: addonInfo.defaultLimit ?? undefined,
+              duration: 30,
+            });
+
+            // Update mapping status
+            if (mapping) {
+              await prisma.paymentMapping.update({
+                where: { orderId },
+                data: { status: 'SETTLED' },
+              });
+            }
+
+            console.log('Addon activated successfully via payment status check:', {
+              tenantId,
+              addonId: extractedItemId,
+            });
+          } catch (error: any) {
+            console.error('Error activating addon via payment status check:', {
+              tenantId,
+              addonId: extractedItemId,
+              error: error.message,
+              stack: error.stack,
+            });
+            throw error; // Re-throw to be handled by caller
+          }
+        } else {
+          console.error('Addon not found in AVAILABLE_ADDONS:', {
+            extractedItemId,
+            orderId,
+            availableAddonIds: AVAILABLE_ADDONS.map(a => a.id),
+          });
+        }
       }
     } else if (itemType === 'subscription') {
       // Handle subscription payment
@@ -528,7 +572,9 @@ class PaymentService {
     itemName: string;
     amount: number;
     itemId: string;
-    itemType: 'addon' | 'subscription';
+    itemType: 'addon' | 'subscription' | 'addon-extend';
+    addonId?: string; // For addon-extend
+    duration?: number; // For addon-extend
   }): Promise<PaymentResponse> {
     try {
       if (!this.snap) {
@@ -550,11 +596,11 @@ class PaymentService {
 
       // Create short orderId to comply with Midtrans 50 character limit
       // Format: {type_prefix}-{hash_8chars}-{timestamp_10chars}
-      // type_prefix: "ADD" for addon, "SUB" for subscription (3 chars)
+      // type_prefix: "ADD" for addon, "ADX" for addon-extend, "SUB" for subscription (3 chars)
       // hash: First 8 chars of MD5 hash of tenantId+itemId (8 chars)
       // timestamp: Last 10 digits of timestamp (10 chars)
       // Total: 3 + 1 + 8 + 1 + 10 = 23 characters (well under 50 limit)
-      const typePrefix = data.itemType === 'addon' ? 'ADD' : 'SUB';
+      const typePrefix = data.itemType === 'addon-extend' ? 'ADX' : (data.itemType === 'addon' ? 'ADD' : 'SUB');
       const hashInput = `${data.tenantId}-${data.itemId}`;
       const hash = crypto.createHash('md5').update(hashInput).digest('hex').substring(0, 8).toUpperCase();
       const timestamp = Date.now().toString().slice(-10); // Last 10 digits

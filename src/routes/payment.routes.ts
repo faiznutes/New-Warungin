@@ -162,7 +162,9 @@ const createAddonPaymentSchema = z.object({
   itemName: z.string().min(1),
   amount: z.number().positive(),
   itemId: z.string().min(1),
-  itemType: z.enum(['addon', 'subscription']),
+  itemType: z.enum(['addon', 'subscription', 'addon-extend']),
+  addonId: z.string().optional(), // For addon-extend
+  duration: z.number().int().positive().optional(), // For addon-extend
 });
 
 /**
@@ -210,6 +212,8 @@ router.post(
         amount: req.body.amount,
         itemId: req.body.itemId,
         itemType: req.body.itemType,
+        addonId: req.body.addonId,
+        duration: req.body.duration,
       });
 
       if (result.success) {
