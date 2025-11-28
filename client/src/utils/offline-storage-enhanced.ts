@@ -134,17 +134,20 @@ class OfflineStorageEnhanced {
 
       const transaction = this.db.transaction([this.actionsStore], 'readonly');
       const store = transaction.objectStore(this.actionsStore);
-      const index = store.index('synced');
       
-      // Use openCursor to filter by synced = false
-      const request = index.openCursor(IDBKeyRange.only(false));
+      // Use openCursor on store directly and filter manually for better compatibility
+      const request = store.openCursor();
 
       const pendingActions: OfflineAction[] = [];
 
       request.onsuccess = (event) => {
         const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
         if (cursor) {
-          pendingActions.push(cursor.value as OfflineAction);
+          const action = cursor.value as OfflineAction;
+          // Filter by synced = false manually
+          if (action && action.synced === false) {
+            pendingActions.push(action);
+          }
           cursor.continue();
         } else {
           resolve(pendingActions);
