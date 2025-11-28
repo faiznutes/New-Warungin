@@ -75,9 +75,10 @@ class SMSGatewayService {
 
     try {
       // Dynamic import Twilio client
-      // @ts-ignore - Optional dependency
+      // @ts-expect-error - Optional dependency, may not be installed
       let twilio: any;
       try {
+        // @ts-expect-error - Optional dependency
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');
@@ -204,9 +205,10 @@ class SMSGatewayService {
     }
 
     try {
-      // @ts-ignore - Optional dependency
+      // @ts-expect-error - Optional dependency, may not be installed
       let twilio: any;
       try {
+        // @ts-expect-error - Optional dependency
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');
@@ -269,9 +271,10 @@ class SMSGatewayService {
     }
 
     try {
-      // @ts-ignore - Optional dependency
+      // @ts-expect-error - Optional dependency, may not be installed
       let twilio: any;
       try {
+        // @ts-expect-error - Optional dependency
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');

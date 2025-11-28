@@ -77,9 +77,10 @@ class PushNotificationService {
 
     try {
       // Dynamic import Firebase Admin SDK
-      // @ts-ignore - Optional dependency
+      // @ts-expect-error - Optional dependency, may not be installed
       let admin: any;
       try {
+        // @ts-expect-error - Optional dependency
         admin = await import('firebase-admin');
       } catch (importError) {
         throw new Error('firebase-admin package is not installed. Install it with: npm install firebase-admin');
