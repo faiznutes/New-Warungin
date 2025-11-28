@@ -444,7 +444,44 @@ const printBrowser = async () => {
     return;
   }
 
-  const printContent = receiptContent.value.innerHTML;
+  // Clone element dan convert computed styles to inline styles
+  const cloneElement = receiptContent.value.cloneNode(true) as HTMLElement;
+  const receiptElement = cloneElement.querySelector('.receipt-content') as HTMLElement;
+  
+  if (receiptElement) {
+    // Get computed styles and apply as inline styles
+    const computedStyles = window.getComputedStyle(receiptElement);
+    receiptElement.style.fontFamily = computedStyles.fontFamily;
+    receiptElement.style.fontSize = computedStyles.fontSize;
+    receiptElement.style.color = computedStyles.color;
+    receiptElement.style.lineHeight = computedStyles.lineHeight;
+    
+    // Apply styles to all child elements
+    const allElements = receiptElement.querySelectorAll('*');
+    allElements.forEach((el) => {
+      const elStyles = window.getComputedStyle(el as Element);
+      const htmlEl = el as HTMLElement;
+      
+      // Preserve important styles
+      if (elStyles.fontSize) htmlEl.style.fontSize = elStyles.fontSize;
+      if (elStyles.fontWeight) htmlEl.style.fontWeight = elStyles.fontWeight;
+      if (elStyles.color && elStyles.color !== 'rgb(0, 0, 0)') htmlEl.style.color = elStyles.color;
+      if (elStyles.backgroundColor && elStyles.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+        htmlEl.style.backgroundColor = elStyles.backgroundColor;
+      }
+      if (elStyles.borderTopWidth && elStyles.borderTopWidth !== '0px') {
+        htmlEl.style.borderTop = `${elStyles.borderTopWidth} ${elStyles.borderTopStyle} ${elStyles.borderTopColor}`;
+      }
+      if (elStyles.borderBottomWidth && elStyles.borderBottomWidth !== '0px') {
+        htmlEl.style.borderBottom = `${elStyles.borderBottomWidth} ${elStyles.borderBottomStyle} ${elStyles.borderBottomColor}`;
+      }
+      if (elStyles.padding) htmlEl.style.padding = elStyles.padding;
+      if (elStyles.margin) htmlEl.style.margin = elStyles.margin;
+      if (elStyles.textAlign) htmlEl.style.textAlign = elStyles.textAlign;
+    });
+  }
+
+  const printContent = cloneElement.innerHTML;
   
   // Responsive print styles based on paper size
   const getPageSize = () => {
@@ -503,118 +540,35 @@ const printBrowser = async () => {
   // Get template-specific print styles
   const getTemplatePrintStyles = () => {
     const templateType = template.value?.templateType || 'DEFAULT';
-    const baseStyles = `
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: ${getFontFamily()};
-        font-size: ${getFontSize()};
-        line-height: 1.4;
-        color: #000;
-      }
-      .receipt-print-container {
-        max-width: ${getMaxWidth()};
-        width: ${getMaxWidth()};
-        margin: 0 auto;
-        padding: 8px;
-      }
-      .receipt-content {
-        width: 100%;
-      }
-    `;
-
-    // Template-specific styles
-    let templateStyles = '';
-    switch (templateType) {
-      case 'MODERN':
-        templateStyles = `
-          .receipt-content h1 {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 0.5em;
-            color: #2563eb;
-          }
-          .receipt-content .border-t-2 {
-            border-top: 2px solid #2563eb !important;
-          }
-          .receipt-content .border-b {
-            border-bottom: 1px solid #dbeafe !important;
-          }
-        `;
-        break;
-      case 'MINIMAL':
-        templateStyles = `
-          .receipt-content h1 {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 0.3em;
-          }
-          .receipt-content .border-t-2 {
-            border-top: 2px solid #000 !important;
-          }
-          .receipt-content .border-b {
-            border-bottom: 1px solid #e5e7eb !important;
-          }
-        `;
-        break;
-      case 'DETAILED':
-        templateStyles = `
-          .receipt-content h1 {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 0.5em;
-          }
-          .receipt-content .border-t-2 {
-            border-top: 2px solid #374151 !important;
-          }
-          .receipt-content .border-b {
-            border-bottom: 1px solid #d1d5db !important;
-          }
-          .receipt-content .bg-gray-50 {
-            background-color: #f9fafb !important;
-          }
-        `;
-        break;
-      case 'COMPACT':
-        templateStyles = `
-          .receipt-content h1 {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 0.3em;
-          }
-          .receipt-content .border-t-2 {
-            border-top: 2px solid #000 !important;
-          }
-          .receipt-content .border-b {
-            border-bottom: 1px solid #e5e7eb !important;
-          }
-        `;
-        break;
-      default: // DEFAULT
-        templateStyles = `
-          .receipt-content h1 {
-            font-size: 1.5em;
-            font-weight: 600;
-            margin-bottom: 0.5em;
-          }
-          .receipt-content .border-t-2 {
-            border-top: 2px solid #000 !important;
-          }
-          .receipt-content .border-b {
-            border-bottom: 1px solid #e5e7eb !important;
-          }
-        `;
-    }
-
+    
     return `
       <style>
-        ${baseStyles}
-        ${templateStyles}
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: ${getFontFamily()};
+          font-size: ${getFontSize()};
+          line-height: 1.4;
+          color: #000;
+        }
+        .receipt-print-container {
+          max-width: ${getMaxWidth()};
+          width: ${getMaxWidth()};
+          margin: 0 auto;
+          padding: 8px;
+        }
+        .receipt-content {
+          width: 100%;
+          font-family: ${getFontFamily()};
+          font-size: ${getFontSize()};
+        }
         @media print {
           @page {
             size: ${getPageSize()};
@@ -640,33 +594,13 @@ const printBrowser = async () => {
             width: 100%;
             color: #000 !important;
           }
-          .no-print {
-            display: none !important;
+          .receipt-content * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
-          /* Preserve borders and important styling */
-          .border-t, .border-b, .border-t-2, .border-b-2 {
-            border-color: #000 !important;
-          }
-          /* Preserve text colors for important elements */
-          .text-primary-600, .text-primary-700 {
-            color: #2563eb !important;
-          }
-          .text-green-600 {
-            color: #059669 !important;
-          }
-          .text-red-600 {
-            color: #dc2626 !important;
-          }
-          .text-gray-600, .text-gray-700, .text-gray-900 {
-            color: #000 !important;
-          }
-          /* Preserve background for important sections */
-          .bg-gray-50, .bg-primary-50 {
-            background-color: #f9fafb !important;
-          }
-          /* Remove gradients but keep colors */
-          .bg-gradient-to-r {
-            background: #f9fafb !important;
+          /* Preserve all inline styles */
+          [style] {
+            /* Inline styles are preserved automatically */
           }
         }
         @media screen {
