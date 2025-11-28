@@ -353,16 +353,23 @@ class OfflineStorageEnhanced {
     });
 
     // Register background sync (if supported)
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && 'serviceWorker' in navigator) {
       navigator.serviceWorker.ready
-        .then((registration: ServiceWorkerRegistration) => {
+        .then((registration: ServiceWorkerRegistration | null) => {
           // Check if sync is available in registration
-          if (registration && 'sync' in registration) {
-            (registration as any).sync
-              .register('sync-actions')
-              .catch((err: Error) => {
-                console.warn('Background sync registration failed:', err);
-              });
+          if (registration && typeof registration === 'object' && 'sync' in registration) {
+            try {
+              const syncManager = (registration as any).sync;
+              if (syncManager && typeof syncManager.register === 'function') {
+                syncManager
+                  .register('sync-actions')
+                  .catch((err: Error) => {
+                    console.warn('Background sync registration failed:', err);
+                  });
+              }
+            } catch (err) {
+              console.warn('Background sync not supported:', err);
+            }
           }
         })
         .catch((err: Error) => {
