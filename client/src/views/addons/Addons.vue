@@ -42,7 +42,7 @@
               <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
             </div>
             <p class="text-sm text-gray-600 mb-3">{{ getAddonDescription(addon) }}</p>
-            <div v-if="addon.limit" class="space-y-2">
+            <div v-if="addon.limit" class="space-y-2 mb-3">
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Penggunaan:</span>
                 <span class="font-semibold" :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'">
@@ -53,16 +53,30 @@
                 <div
                   class="h-2 rounded-full transition-all"
                   :class="addon.isLimitReached ? 'bg-red-500' : 'bg-primary-600'"
-                  :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }"
+                  :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }" 
                 ></div>
               </div>
             </div>
-            <button
-              @click="unsubscribeAddon(addon.addonId)"
-              class="mt-3 w-full px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
-            >
-              Nonaktifkan
-            </button>
+            <div v-if="addon.expiresAt" class="text-xs text-gray-600 mb-3">
+              <p>Berakhir: {{ formatDate(addon.expiresAt) }}</p>
+              <p v-if="getDaysUntilExpiry(addon.expiresAt) > 0" class="text-orange-600 font-semibold">
+                Tersisa {{ getDaysUntilExpiry(addon.expiresAt) }} hari
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button
+                @click="openExtendModal(addon)"
+                class="flex-1 px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition font-medium"
+              >
+                Perpanjang
+              </button>
+              <button
+                @click="unsubscribeAddon(addon.addonId)"
+                class="flex-1 px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+              >
+                Nonaktifkan
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -102,6 +116,75 @@
       </div>
     </div>
 
+    <!-- Extend Addon Modal -->
+    <div
+      v-if="showExtendModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showExtendModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Perpanjang Addon</h3>
+        <div v-if="selectedAddonForExtend" class="space-y-4">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-900 mb-1">{{ selectedAddonForExtend.addonName }}</h4>
+            <p class="text-sm text-gray-600">{{ getAddonDescription(selectedAddonForExtend) }}</p>
+            <div v-if="selectedAddonForExtend.expiresAt" class="mt-2 text-xs text-gray-500">
+              Berakhir: {{ formatDate(selectedAddonForExtend.expiresAt) }}
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Durasi Perpanjangan</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <button
+                v-for="duration in durationOptions"
+                :key="duration.value"
+                @click="extendDuration = duration.value"
+                class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
+                :class="extendDuration === duration.value
+                  ? 'border-green-600 bg-green-50 text-green-700'
+                  : 'border-gray-200 hover:border-green-300 text-gray-700'"
+              >
+                {{ duration.label }}
+                <span v-if="duration.discount" class="block text-xs text-green-600 mt-1">Diskon {{ duration.discount }}%</span>
+              </button>
+            </div>
+          </div>
+
+          <div v-if="extendDuration && selectedAddonForExtend" class="bg-gray-50 rounded-lg p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-gray-700">Durasi:</span>
+              <span class="font-semibold text-gray-900">{{ extendDuration }} hari</span>
+            </div>
+            <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-2">
+              <span class="text-gray-700">Diskon:</span>
+              <span class="font-semibold text-green-600">{{ getExtendDiscount() }}%</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+              <span class="text-lg font-semibold text-gray-900">Total Pembayaran:</span>
+              <span class="text-2xl font-bold text-green-600">{{ formatCurrency(calculateExtendAddonTotal()) }}</span>
+            </div>
+          </div>
+
+          <div class="flex space-x-3">
+            <button
+              @click="showExtendModal = false; selectedAddonForExtend = null; extendDuration = 0"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              @click="handleExtendAddon"
+              :disabled="!extendDuration || processing"
+              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ processing ? 'Memproses...' : 'Perpanjang Addon' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </template>
@@ -123,6 +206,17 @@ const loading = ref(false);
 const availableAddons = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
 const currentSubscription = ref<any>(null);
+const showExtendModal = ref(false);
+const selectedAddonForExtend = ref<any>(null);
+const extendDuration = ref<number>(0);
+const processing = ref(false);
+
+const durationOptions = [
+  { value: 30, label: '1 Bulan', discount: 0 },
+  { value: 90, label: '3 Bulan', discount: 5 },
+  { value: 180, label: '6 Bulan', discount: 10 },
+  { value: 365, label: '1 Tahun', discount: 15 },
+];
 
 const loadAddons = async () => {
   if (needsTenantSelection.value) {
@@ -225,6 +319,86 @@ const unsubscribeAddon = async (addonId: string) => {
     await loadAddons();
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal menonaktifkan addon');
+  }
+};
+
+const openExtendModal = (addon: any) => {
+  selectedAddonForExtend.value = addon;
+  extendDuration.value = 0;
+  showExtendModal.value = true;
+};
+
+const formatDate = (dateString: string | Date) => {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+const getDaysUntilExpiry = (expiresAt: string | Date) => {
+  if (!expiresAt) return 0;
+  const expiry = new Date(expiresAt);
+  const now = new Date();
+  const diff = expiry.getTime() - now.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+};
+
+const getExtendDiscount = () => {
+  if (!extendDuration.value) return 0;
+  const duration = durationOptions.find(d => d.value === extendDuration.value);
+  return duration?.discount || 0;
+};
+
+const calculateExtendAddonTotal = () => {
+  if (!selectedAddonForExtend.value || !extendDuration.value) return 0;
+  
+  // Find addon price from available addons
+  const addonInfo = availableAddons.value.find(
+    a => a.id === selectedAddonForExtend.value.addonId || a.type === selectedAddonForExtend.value.addonType
+  );
+  
+  if (!addonInfo || !addonInfo.price) return 0;
+  
+  const baseAmount = (addonInfo.price * extendDuration.value) / 30;
+  const discount = getExtendDiscount() / 100;
+  return Math.floor(baseAmount * (1 - discount));
+};
+
+const handleExtendAddon = async () => {
+  if (!selectedAddonForExtend.value || !extendDuration.value) {
+    await showError('Pilih durasi perpanjangan terlebih dahulu');
+    return;
+  }
+
+  processing.value = true;
+  try {
+    // Calculate total amount
+    const total = calculateExtendAddonTotal();
+    
+    // Create payment for addon extension
+    const response = await api.post('/payment/addon', {
+      itemName: `Perpanjang ${selectedAddonForExtend.value.addonName}`,
+      amount: total,
+      itemId: `extend-${selectedAddonForExtend.value.addonId}-${extendDuration.value}`,
+      itemType: 'addon-extend',
+      addonId: selectedAddonForExtend.value.addonId,
+      duration: extendDuration.value,
+    });
+
+    if (response.data.success && response.data.paymentUrl) {
+      // Redirect to Midtrans payment page
+      window.location.href = response.data.paymentUrl;
+    } else {
+      await showError(response.data.message || 'Gagal membuat pembayaran');
+    }
+  } catch (error: any) {
+    console.error('Error extending addon:', error);
+    await showError(error.response?.data?.message || 'Gagal memperpanjang addon');
+  } finally {
+    processing.value = false;
   }
 };
 

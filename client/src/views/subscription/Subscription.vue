@@ -75,15 +75,18 @@
         </div>
       </div>
 
-      <!-- Upgrade/Extend Section -->
-      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white rounded-xl shadow-lg p-6">
+      <!-- Perpanjang Paket Section (More Prominent) -->
+      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 border-2 border-green-200">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-gray-900">Upgrade Paket</h3>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-900">Perpanjang Paket</h3>
+            <p class="text-sm text-gray-600 mt-1">Perpanjang paket langganan Anda untuk melanjutkan layanan</p>
+          </div>
           <button
             @click="showExtendSection = !showExtendSection"
-            class="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border border-primary-600 rounded-lg hover:bg-primary-50 transition"
+            class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition shadow-md"
           >
-            {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Paket' }}
+            {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Sekarang' }}
           </button>
         </div>
         
