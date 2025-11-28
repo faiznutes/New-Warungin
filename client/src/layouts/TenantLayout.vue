@@ -463,7 +463,6 @@
               class="mt-1 space-y-1 transition-all duration-200"
             >
               <router-link
-                v-if="currentPlan === 'PRO' || currentPlan === 'CUSTOM'"
                 to="/app/subscription"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -476,7 +475,6 @@
               </router-link>
 
               <router-link
-                v-if="currentPlan === 'PRO' || currentPlan === 'CUSTOM'"
                 to="/app/addons"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -489,7 +487,6 @@
               </router-link>
 
               <router-link
-                v-if="hasRewards"
                 to="/app/rewards"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"

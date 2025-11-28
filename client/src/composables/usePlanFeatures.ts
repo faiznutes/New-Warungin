@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../api';
 
@@ -53,7 +53,7 @@ export function usePlanFeatures() {
 
     loading.value = true;
     try {
-      const response = await api.get('/subscription/plan-features');
+      const response = await api.get('/subscriptions/plan-features');
       planFeatures.value = response.data;
     } catch (error: any) {
       console.error('Error fetching plan features:', error);

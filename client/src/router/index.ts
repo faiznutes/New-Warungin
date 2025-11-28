@@ -187,13 +187,13 @@ const router = createRouter({
           path: 'rewards',
           name: 'rewards',
           component: () => import('../views/rewards/Rewards.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'reward-view',
           name: 'reward-view',
           component: () => import('../views/rewards/RewardView.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'discounts',
@@ -516,7 +516,7 @@ router.beforeEach(async (to, from, next) => {
       try {
         // Check plan features first
         const { default: api } = await import('../api');
-        const planResponse = await api.get('/subscription/plan-features').catch(() => null);
+        const planResponse = await api.get('/subscriptions/plan-features').catch(() => null);
         
         if (planResponse?.data?.plan === 'CUSTOM') {
           // CUSTOM plan has all features
