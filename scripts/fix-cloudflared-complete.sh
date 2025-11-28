@@ -158,17 +158,30 @@ echo ""
 echo -e "${BLUE}8. Verifying Cloudflared in Network...${NC}"
 sleep 5
 if [ -n "$NETWORK_NAME" ]; then
-    CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" || echo "0")
-    if [ "$CLOUDFLARED_IN_NETWORK" -gt "0" ]; then
+    CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" 2>/dev/null || echo "0")
+    CLOUDFLARED_IN_NETWORK=${CLOUDFLARED_IN_NETWORK:-0}
+    if [ "$CLOUDFLARED_IN_NETWORK" -gt 0 ]; then
         echo -e "${GREEN}✅ Cloudflared di network${NC}"
     else
         echo -e "${YELLOW}⚠️  Cloudflared belum di network, waiting...${NC}"
         sleep 10
-        CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" || echo "0")
-        if [ "$CLOUDFLARED_IN_NETWORK" -gt "0" ]; then
+        CLOUDFLARED_IN_NETWORK=$(docker network inspect "$NETWORK_NAME" 2>/dev/null | grep -c "warungin-cloudflared" 2>/dev/null || echo "0")
+        CLOUDFLARED_IN_NETWORK=${CLOUDFLARED_IN_NETWORK:-0}
+        if [ "$CLOUDFLARED_IN_NETWORK" -gt 0 ]; then
             echo -e "${GREEN}✅ Cloudflared sekarang di network${NC}"
         else
             echo -e "${RED}❌ Cloudflared masih tidak di network${NC}"
+            echo "   Trying manual network connect..."
+            # Wait for container to be in running state (not restarting)
+            sleep 5
+            CLOUDFLARED_RUNNING=$(docker ps | grep warungin-cloudflared | grep -c "Up" || echo "0")
+            if [ "$CLOUDFLARED_RUNNING" -gt 0 ]; then
+                docker network connect "$NETWORK_NAME" warungin-cloudflared 2>/dev/null && \
+                    echo -e "${GREEN}✅ Connected manually${NC}" || \
+                    echo -e "${RED}❌ Manual connect failed${NC}"
+            else
+                echo -e "${RED}❌ Container masih restarting, tidak bisa connect${NC}"
+            fi
             ERRORS_FOUND=$((ERRORS_FOUND + 1))
         fi
     fi

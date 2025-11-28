@@ -86,7 +86,7 @@ prisma/migrations/*.sql
 
 # Exclude ALL .sh and .md files (except essential ones)
 # Only keep: README.md, docs/**/*.md, setup-cloudflare-tunnel.md, CLOUDFLARE_TROUBLESHOOTING.md
-# Only keep: scripts/docker-startup.sh, scripts/diagnose-cloudflare-tunnel.sh, scripts/fix-cloudflare-tunnel-down.sh, scripts/fix-cloudflared-restarting.sh, scripts/rebuild-all.sh, scripts/check-cloudflared-error.sh, scripts/fix-cloudflared-network.sh, scripts/fix-cloudflared-sandbox-error.sh, scripts/fix-cloudflared-complete.sh
+# Only keep: scripts/docker-startup.sh, scripts/diagnose-cloudflare-tunnel.sh, scripts/fix-cloudflare-tunnel-down.sh, scripts/fix-cloudflared-restarting.sh, scripts/rebuild-all.sh, scripts/check-cloudflared-error.sh, scripts/fix-cloudflared-network.sh, scripts/fix-cloudflared-sandbox-error.sh, scripts/fix-cloudflared-complete.sh, scripts/fix-cloudflared-final.sh
 *.sh
 !scripts/docker-startup.sh
 !scripts/diagnose-cloudflare-tunnel.sh
@@ -97,6 +97,7 @@ prisma/migrations/*.sql
 !scripts/fix-cloudflared-network.sh
 !scripts/fix-cloudflared-sandbox-error.sh
 !scripts/fix-cloudflared-complete.sh
+!scripts/fix-cloudflared-final.sh
 *.md
 !README.md
 !docs/**/*.md
@@ -112,6 +113,7 @@ prisma/migrations/*.sql
 !scripts/fix-cloudflared-network.sh
 !scripts/fix-cloudflared-sandbox-error.sh
 !scripts/fix-cloudflared-complete.sh
+!scripts/fix-cloudflared-final.sh
 **/*.md
 !README.md
 !docs/**/*.md
