@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 
-// 5 Template Receipt yang Lengkap
+// 5 Template Receipt yang Modern & Elegant
 export const RECEIPT_TEMPLATE_DEFINITIONS = [
   {
     type: 'DEFAULT',
-    name: 'Struk Standar',
+    name: 'Struk Elegant',
     paperSize: 'A4',
-    description: 'Template standar dengan semua informasi lengkap',
+    description: 'Template elegant dengan desain clean dan profesional',
     header: {
       showLogo: true,
       showName: true,
@@ -33,17 +33,19 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showChange: true,
     },
     styles: {
-      fontSize: '12px',
-      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
       headerAlign: 'center',
-      showBorders: true,
+      showBorders: false,
+      useGradient: false,
+      colorScheme: 'elegant',
     },
   },
   {
     type: 'MODERN',
     name: 'Struk Modern',
     paperSize: 'A4',
-    description: 'Desain modern dengan layout yang rapi dan profesional',
+    description: 'Desain modern dengan gradient subtle dan tipografi yang rapi',
     header: {
       showLogo: true,
       showName: true,
@@ -72,18 +74,19 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showBarcode: true,
     },
     styles: {
-      fontSize: '11px',
-      fontFamily: 'Inter, sans-serif',
+      fontSize: '12px',
+      fontFamily: 'Inter, system-ui, sans-serif',
       headerAlign: 'center',
       showBorders: false,
       useGradient: true,
+      colorScheme: 'modern',
     },
   },
   {
     type: 'MINIMAL',
     name: 'Struk Minimalis',
     paperSize: 'THERMAL_58',
-    description: 'Template minimalis untuk thermal printer 58mm',
+    description: 'Template minimalis yang clean untuk thermal printer 58mm',
     header: {
       showLogo: false,
       showName: true,
@@ -110,16 +113,18 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
     },
     styles: {
       fontSize: '10px',
-      fontFamily: 'Courier New, monospace',
+      fontFamily: 'ui-monospace, monospace',
       headerAlign: 'center',
       showBorders: false,
+      useGradient: false,
+      colorScheme: 'minimal',
     },
   },
   {
     type: 'DETAILED',
-    name: 'Struk Detail',
+    name: 'Struk Professional',
     paperSize: 'A4',
-    description: 'Template detail dengan informasi lengkap termasuk pajak dan breakdown',
+    description: 'Template professional dengan informasi lengkap dan layout terstruktur',
     header: {
       showLogo: true,
       showName: true,
@@ -154,18 +159,19 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showQRCode: false,
     },
     styles: {
-      fontSize: '11px',
-      fontFamily: 'Arial, sans-serif',
+      fontSize: '12px',
+      fontFamily: 'Inter, system-ui, sans-serif',
       headerAlign: 'center',
       showBorders: true,
-      showShadows: true,
+      useGradient: false,
+      colorScheme: 'professional',
     },
   },
   {
     type: 'COMPACT',
-    name: 'Struk Kompak',
+    name: 'Struk Compact',
     paperSize: 'THERMAL_80',
-    description: 'Template kompak untuk thermal printer 80mm dengan informasi penting',
+    description: 'Template compact yang efisien untuk thermal printer 80mm',
     header: {
       showLogo: true,
       showName: true,
@@ -191,9 +197,11 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
     },
     styles: {
       fontSize: '11px',
-      fontFamily: 'Courier New, monospace',
+      fontFamily: 'ui-monospace, monospace',
       headerAlign: 'center',
-      showBorders: true,
+      showBorders: false,
+      useGradient: false,
+      colorScheme: 'compact',
     },
   },
 ];

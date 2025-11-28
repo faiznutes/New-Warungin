@@ -1,26 +1,32 @@
 <template>
-  <div class="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white">
+  <div class="flex flex-col h-full bg-gray-50">
     <!-- Store Selector (only for Admin/Supervisor) -->
-    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'" class="px-3 pt-3">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
     
-    <!-- Header Section -->
-    <div class="mb-4 sm:mb-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Point of Sale</h2>
-        <p class="text-sm sm:text-base text-gray-600">Pilih produk dan lakukan transaksi</p>
+    <!-- Header Section - Compact -->
+    <div class="px-3 pt-3 pb-2 border-b border-gray-200 bg-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">Point of Sale</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Pilih produk dan lakukan transaksi</p>
+        </div>
+        <div class="text-right">
+          <div class="text-xs text-gray-500">Total Item</div>
+          <div class="text-sm font-semibold text-gray-900">{{ cart.length }}</div>
+        </div>
       </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 h-full px-4 sm:px-6 pb-4 sm:pb-6">
-      <!-- Product Grid -->
-      <div class="flex-1 bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 overflow-y-auto">
-        <!-- Search Section -->
-        <div class="mb-4 sm:mb-6">
+    <div class="flex flex-col lg:flex-row gap-3 h-full px-3 py-3 overflow-hidden">
+      <!-- Product Grid - Optimized for Tablet/PC -->
+      <div class="flex-1 bg-white rounded-lg border border-gray-200 p-3 overflow-y-auto">
+        <!-- Search Section - Compact -->
+        <div class="mb-3">
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -28,111 +34,108 @@
               v-model="searchQuery"
               type="text"
               placeholder="Cari produk..."
-              class="block w-full pl-10 pr-3 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white transition"
+              class="block w-full pl-8 pr-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-primary-500 focus:border-primary-500 bg-white transition"
             />
           </div>
         </div>
 
         <div v-if="loading" class="flex items-center justify-center py-12">
-          <div class="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+          <div class="w-8 h-8 border-3 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
 
         <div v-else-if="filteredProducts.length === 0" class="text-center py-12 text-gray-500">
-          <p>Tidak ada produk ditemukan</p>
+          <p class="text-sm">Tidak ada produk ditemukan</p>
         </div>
 
-        <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <!-- Product Grid - Optimized Grid -->
+        <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
           <div
             v-for="product in filteredProducts"
             :key="product.id"
             @click="addToCart(product)"
-            class="bg-gradient-to-br from-white to-gray-50 border-2 rounded-xl p-3 sm:p-4 cursor-pointer hover:border-primary-500 hover:shadow-xl transition-all active:scale-95 group"
-            :class="{ 'border-primary-500 bg-gradient-to-br from-primary-50 to-primary-100 shadow-md': isInCart(product.id), 'border-gray-200': !isInCart(product.id) }"
+            class="bg-white border rounded-lg p-2.5 cursor-pointer hover:border-primary-400 hover:shadow-sm transition-all active:scale-[0.98] group"
+            :class="{ 'border-primary-500 bg-primary-50/50 shadow-sm': isInCart(product.id), 'border-gray-200': !isInCart(product.id) }"
           >
             <div class="text-center">
-              <div class="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mx-auto mb-2 sm:mb-3 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition">
-                <!-- Priority: Image → Emoji → Default icon -->
+              <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center overflow-hidden">
                 <img v-if="product.image" :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
-                <span v-else-if="product.emoji" class="text-3xl sm:text-4xl md:text-5xl">{{ product.emoji }}</span>
-                <span v-else class="text-2xl sm:text-3xl">📦</span>
+                <span v-else-if="product.emoji" class="text-2xl sm:text-3xl">{{ product.emoji }}</span>
+                <span v-else class="text-xl">📦</span>
               </div>
-              <h3 class="font-semibold text-xs sm:text-sm text-gray-900 mb-1 truncate">{{ product.name }}</h3>
-              <p class="text-sm sm:text-base md:text-lg font-bold text-primary-600 mb-1 sm:mb-2">{{ formatCurrency(product.price) }}</p>
-              <p class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full inline-block">Stok: {{ product.stock }}</p>
+              <h3 class="font-medium text-xs text-gray-900 mb-1 line-clamp-2 leading-tight min-h-[2.5rem]">{{ product.name }}</h3>
+              <p class="text-sm font-semibold text-primary-600 mb-1">{{ formatCurrency(product.price) }}</p>
+              <p class="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded inline-block">Stok: {{ product.stock }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Cart Sidebar -->
-      <div class="w-full lg:w-96 bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6 flex flex-col">
-        <div class="mb-4 sm:mb-6">
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Keranjang</h2>
-          <p class="text-sm text-gray-600">{{ cart.length }} item</p>
+      <!-- Cart Sidebar - Compact & Efficient -->
+      <div class="w-full lg:w-80 xl:w-96 bg-white rounded-lg border border-gray-200 p-3 flex flex-col overflow-hidden">
+        <div class="mb-3 pb-2 border-b border-gray-200">
+          <h2 class="text-base font-semibold text-gray-900">Keranjang</h2>
+          <p class="text-xs text-gray-500 mt-0.5">{{ cart.length }} item</p>
         </div>
 
-        <div class="flex-1 overflow-y-auto mb-4">
-          <div v-if="cart.length === 0" class="text-center py-8 text-gray-500">
-            <p>Keranjang kosong</p>
+        <div class="flex-1 overflow-y-auto mb-3 space-y-2">
+          <div v-if="cart.length === 0" class="text-center py-8 text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <p class="text-sm">Keranjang kosong</p>
           </div>
 
-          <div v-else class="space-y-3">
-            <div
-              v-for="item in cart"
-              :key="item.id"
-              class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition"
-            >
-              <div class="flex items-center space-x-3 flex-1 min-w-0">
-                <!-- Item Icon/Image/Emoji -->
-                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
-                  <!-- Priority: Image → Emoji → Default icon -->
-                  <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
-                  <span v-else-if="item.emoji" class="text-2xl sm:text-3xl">{{ item.emoji }}</span>
-                  <span v-else class="text-xl">📦</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-semibold text-gray-900 truncate text-sm sm:text-base">{{ item.name }}</h4>
-                  <p class="text-xs sm:text-sm text-gray-600">{{ formatCurrency(item.price) }} × {{ item.quantity }}</p>
-                </div>
-              </div>
-              <div class="flex items-center space-x-2">
-                <button
-                  @click="decreaseQuantity(item.id)"
-                  class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-lg hover:bg-gray-300 transition font-semibold text-gray-700"
-                >
-                  −
-                </button>
-                <span class="w-10 text-center font-bold text-gray-900">{{ item.quantity }}</span>
-                <button
-                  @click="increaseQuantity(item.id)"
-                  class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-lg hover:bg-gray-300 transition font-semibold text-gray-700"
-                >
-                  +
-                </button>
-                <button
-                  @click="removeFromCart(item.id)"
-                  class="ml-2 p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
+          <div
+            v-for="item in cart"
+            :key="item.id"
+            class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-300 transition"
+          >
+            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
+              <span v-else-if="item.emoji" class="text-lg">{{ item.emoji }}</span>
+              <span v-else class="text-sm">📦</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="font-medium text-sm text-gray-900 truncate">{{ item.name }}</h4>
+              <p class="text-xs text-gray-600">{{ formatCurrency(item.price) }} × {{ item.quantity }}</p>
+            </div>
+            <div class="flex items-center gap-1">
+              <button
+                @click="decreaseQuantity(item.id)"
+                class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition text-xs font-semibold text-gray-700"
+              >
+                −
+              </button>
+              <span class="w-8 text-center text-xs font-semibold text-gray-900">{{ item.quantity }}</span>
+              <button
+                @click="increaseQuantity(item.id)"
+                class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition text-xs font-semibold text-gray-700"
+              >
+                +
+              </button>
+              <button
+                @click="removeFromCart(item.id)"
+                class="ml-1 p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Customer/Member Info -->
-        <div class="mb-4 p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200">
-          <p class="text-xs font-medium text-gray-700 mb-3">Tipe Pelanggan</p>
-          <div class="flex gap-2 mb-3">
+        <!-- Customer/Member Info - Compact -->
+        <div class="mb-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+          <p class="text-xs font-medium text-gray-700 mb-2">Tipe Pelanggan</p>
+          <div class="flex gap-1.5 mb-2">
             <button
               @click="switchCustomerType('customer')"
               :class="[
-                'flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all',
+                'flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all',
                 customerType === 'customer'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-primary-300'
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:border-primary-300'
               ]"
             >
               Pelanggan
@@ -140,10 +143,10 @@
             <button
               @click="switchCustomerType('member')"
               :class="[
-                'flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-all',
+                'flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-all',
                 customerType === 'member'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-primary-300'
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:border-primary-300'
               ]"
             >
               Member
@@ -151,29 +154,29 @@
           </div>
           
           <!-- Customer Input -->
-          <div v-if="customerType === 'customer'" class="flex gap-2">
+          <div v-if="customerType === 'customer'" class="flex gap-1.5">
             <input
               v-model="customerInput"
               type="text"
               placeholder="Nama pelanggan (opsional)"
-              class="flex-1 px-3 py-2 text-sm border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="flex-1 px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary-500 focus:border-primary-500 bg-white"
               @blur="handleCustomerInput"
             />
             <button
               @click="clearCustomer"
               v-if="customerInput"
-              class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium"
+              class="px-2 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-xs font-medium"
             >
               ✕
             </button>
           </div>
 
           <!-- Member Select -->
-          <div v-else class="flex gap-2">
+          <div v-else class="flex gap-1.5">
             <select
               v-model="selectedMemberId"
               @change="handleMemberSelect"
-              class="flex-1 px-3 py-2 text-sm border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="flex-1 px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-primary-500 focus:border-primary-500 bg-white"
             >
               <option value="">-- Pilih Member --</option>
               <option
@@ -187,15 +190,15 @@
             <button
               @click="clearCustomer"
               v-if="selectedMember"
-              class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium"
+              class="px-2 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-xs font-medium"
             >
               ✕
             </button>
           </div>
 
-          <div v-if="selectedMember" class="mt-3 p-2.5 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
-            <div class="flex items-center gap-2 text-xs sm:text-sm text-green-800">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div v-if="selectedMember" class="mt-2 p-2 bg-green-50 rounded border border-green-200">
+            <div class="flex items-center gap-1.5 text-xs text-green-800">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
               <span class="font-medium">Member: {{ selectedMember.name }}</span>
@@ -204,9 +207,9 @@
               </span>
             </div>
           </div>
-          <div v-else-if="customerType === 'customer' && customerName" class="mt-3 p-2.5 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-            <div class="flex items-center gap-2 text-xs sm:text-sm text-blue-800">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div v-else-if="customerType === 'customer' && customerName" class="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
+            <div class="flex items-center gap-1.5 text-xs text-blue-800">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
               <span class="font-medium">Pelanggan: {{ customerName }}</span>
@@ -214,54 +217,54 @@
           </div>
         </div>
 
-        <!-- Send to Kitchen -->
-        <div class="mb-4">
+        <!-- Send to Kitchen - Compact -->
+        <div class="mb-3">
           <label class="flex items-center space-x-2 cursor-pointer">
             <input
               v-model="sendToKitchen"
               type="checkbox"
-              class="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+              class="w-3.5 h-3.5 text-primary-600 rounded focus:ring-primary-500"
             />
-            <span class="text-sm text-gray-700">Kirim ke dapur</span>
+            <span class="text-xs text-gray-700">Kirim ke dapur</span>
           </label>
         </div>
 
-        <!-- Total -->
-        <div class="mb-4 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl border-2 border-primary-200">
-          <div class="flex justify-between items-center mb-2 pb-2 border-b border-primary-200">
-            <span class="text-sm text-gray-700 font-medium">Subtotal:</span>
-            <span class="text-sm font-semibold text-gray-900">{{ formatCurrency(subtotal) }}</span>
+        <!-- Total - Compact -->
+        <div class="mb-3 p-2.5 bg-primary-50 rounded-lg border border-primary-200">
+          <div class="flex justify-between items-center mb-1.5 pb-1.5 border-b border-primary-200">
+            <span class="text-xs text-gray-700 font-medium">Subtotal:</span>
+            <span class="text-xs font-semibold text-gray-900">{{ formatCurrency(subtotal) }}</span>
           </div>
-          <div v-if="estimatedDiscount > 0" class="flex justify-between items-center mb-2 pb-2 border-b border-primary-200">
-            <span class="text-sm text-green-700 font-medium">Diskon:</span>
-            <span class="text-sm font-semibold text-green-700">-{{ formatCurrency(estimatedDiscount) }}</span>
+          <div v-if="estimatedDiscount > 0" class="flex justify-between items-center mb-1.5 pb-1.5 border-b border-primary-200">
+            <span class="text-xs text-green-700 font-medium">Diskon:</span>
+            <span class="text-xs font-semibold text-green-700">-{{ formatCurrency(estimatedDiscount) }}</span>
           </div>
-          <div class="flex justify-between items-center pt-2">
-            <span class="text-base sm:text-lg font-bold text-gray-900">Total:</span>
-            <span class="text-lg sm:text-xl font-bold text-primary-600">{{ formatCurrency(total) }}</span>
+          <div class="flex justify-between items-center pt-1.5">
+            <span class="text-sm font-bold text-gray-900">Total:</span>
+            <span class="text-base font-bold text-primary-600">{{ formatCurrency(total) }}</span>
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="space-y-3">
+        <!-- Actions - Compact Buttons -->
+        <div class="space-y-2">
           <button
             @click="showPaymentModal = true"
             :disabled="cart.length === 0 || processing"
-            class="w-full px-4 sm:px-6 py-3 text-sm sm:text-base bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed font-bold flex items-center justify-center gap-2"
+            class="w-full px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2"
           >
-            <svg v-if="!processing" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg v-if="!processing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span v-if="processing" class="flex items-center gap-2">
-              <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               Memproses...
             </span>
-            <span v-else>Bayar Sekarang</span>
+            <span v-else>Bayar</span>
           </button>
           <button
             @click="clearCart"
             :disabled="cart.length === 0"
-            class="w-full px-4 sm:px-6 py-2.5 text-sm sm:text-base bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            class="w-full px-3 py-1.5 text-xs bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             Hapus Semua
           </button>
@@ -610,10 +613,9 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
         productId: item.id,
         quantity: Number(item.quantity),
         price: Number(item.price),
-        // discount field tidak perlu karena tidak ada di OrderItem model
       })),
       sendToKitchen: Boolean(sendToKitchen.value),
-      discount: 0, // Add order-level discount field
+      discount: 0,
     };
 
     // Add outletId if selected
@@ -647,7 +649,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
       amount: finalTotal,
       paymentMethod: paymentData.paymentMethod,
       status: 'COMPLETED',
-      servedBy: authStore.user?.name || 'Unknown', // Nama kasir/admin yang melayani
+      servedBy: authStore.user?.name || 'Unknown',
     };
     
     if (paymentData.paymentMethod === 'QRIS' && paymentData.qrCode) {
@@ -677,7 +679,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
       change: paymentData.paymentMethod === 'CASH' && paymentData.cashAmount 
         ? paymentData.cashAmount - finalTotal 
         : 0,
-      servedBy: transaction?.servedBy || authStore.user?.name || 'Unknown', // Nama kasir/admin yang melayani
+      servedBy: transaction?.servedBy || authStore.user?.name || 'Unknown',
     };
 
     lastOrderId.value = order.id;
@@ -804,3 +806,11 @@ onMounted(() => {
 });
 </script>
 
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
