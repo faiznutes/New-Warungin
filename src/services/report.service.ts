@@ -197,11 +197,18 @@ export class ReportService {
         dbClient = prisma;
       }
       
-      // Set date range
-      const startDate = start || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      // Set date range - if no dates provided, get all data (use very old date)
+      const startDate = start || new Date('2000-01-01');
       const endDate = end || new Date();
       startDate.setHours(0, 0, 0, 0);
       endDate.setHours(23, 59, 59, 999);
+      
+      // Log for debugging
+      logger.info('Generating global report', {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        hasDateFilter: !!(start || end),
+      });
 
       // Get all tenants with subscriptions
       const tenants = await dbClient.tenant.findMany({
@@ -312,6 +319,20 @@ export class ReportService {
 
       // Count total orders
       const totalOrders = allOrders.length;
+      
+      // Log results for debugging
+      logger.info('Global report query results', {
+        totalSalesRevenue,
+        totalSubscriptionRevenue,
+        totalAddonRevenue,
+        totalGlobalRevenue,
+        totalTenants: tenants.length,
+        activeTenants: tenants.filter(t => t.isActive).length,
+        totalOrders,
+        ordersCount: allOrders.length,
+        subscriptionsCount: subscriptions.length,
+        addonsCount: addons.length,
+      });
 
       return {
         summary: {
@@ -604,14 +625,58 @@ export class ReportService {
   }
 
   async generateProductReport(tenantId: string, options: any) {
-    const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const endDate = options.endDate ? new Date(options.endDate) : new Date();
+    const period = options.period || 'all';
+    
+    // If period is 'all' and no date range specified, get all data
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    
+    if (options.startDate && options.endDate) {
+      startDate = new Date(options.startDate);
+      endDate = new Date(options.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (period !== 'all') {
+      // If period is specified but no date range, use default 30 days
+      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      endDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else {
+      // If period is 'all' and no date range, use a very old date to get all data
+      startDate = new Date('2000-01-01');
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+    }
+    
     return this.getProductPerformanceReport(tenantId, startDate, endDate);
   }
 
   async generateCustomerReport(tenantId: string, options: any) {
-    const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const endDate = options.endDate ? new Date(options.endDate) : new Date();
+    const period = options.period || 'all';
+    
+    // If period is 'all' and no date range specified, get all data
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+    
+    if (options.startDate && options.endDate) {
+      startDate = new Date(options.startDate);
+      endDate = new Date(options.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else if (period !== 'all') {
+      // If period is specified but no date range, use default 30 days
+      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      endDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+    } else {
+      // If period is 'all' and no date range, use a very old date to get all data
+      startDate = new Date('2000-01-01');
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+    }
+    
     return this.getCustomerAnalytics(tenantId, startDate, endDate);
   }
 
