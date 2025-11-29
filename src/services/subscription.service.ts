@@ -399,6 +399,7 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
+          addedBySuperAdmin: data.addedBySuperAdmin || false, // Set based on who created it
         },
       });
 
