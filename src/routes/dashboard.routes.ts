@@ -394,7 +394,8 @@ async function getSuperAdminStats() {
       overview: {
         totalAddonRevenue,
         totalSubscriptionRevenue,
-        totalRevenue,
+        totalRevenue, // Total Pendapatan (Subscription + Addons only, no orders)
+        totalGlobalRevenue: totalRevenue, // Alias for frontend compatibility
         totalAddons: allAddons.length,
         activeSubscriptions,
         totalTenants,

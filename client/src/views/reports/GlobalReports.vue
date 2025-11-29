@@ -234,6 +234,15 @@
               <option value="active">Aktif</option>
               <option value="expired">Expired</option>
             </select>
+            <select
+              v-model="addonInfoFilter"
+              @change="addonPage = 1"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua Info</option>
+              <option value="superadmin">Ditambahkan Super Admin</option>
+              <option value="self">Dibeli Sendiri</option>
+            </select>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -621,6 +630,7 @@ const itemsPerPage = 7;
 // Addon pagination and filter
 const addonPage = ref(1);
 const addonFilter = ref<'all' | 'active' | 'expired'>('all');
+const addonInfoFilter = ref<'all' | 'superadmin' | 'self'>('all');
 
 // Set default date range: bulan ini (month)
 const now = new Date();
@@ -666,6 +676,15 @@ const filteredAddons = computed(() => {
   
   if (addonFilter.value !== 'all') {
     filtered = filtered.filter((addon: any) => addon.status === addonFilter.value);
+  }
+  
+  // Filter by addedBySuperAdmin
+  if (addonInfoFilter.value !== 'all') {
+    if (addonInfoFilter.value === 'superadmin') {
+      filtered = filtered.filter((addon: any) => addon.addedBySuperAdmin === true);
+    } else if (addonInfoFilter.value === 'self') {
+      filtered = filtered.filter((addon: any) => addon.addedBySuperAdmin === false);
+    }
   }
   
   return filtered;

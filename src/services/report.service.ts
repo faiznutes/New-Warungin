@@ -329,8 +329,8 @@ export class ReportService {
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
-      // Get addons - if no date range, get all addons (not just active)
-      // If date range provided, filter by subscribedAt or createdAt
+      // Get addons - if no date range, get ALL addons (not just active, no status filter)
+      // If date range provided, filter by subscribedAt or createdAt (fallback)
       const addonWhere: any = {};
       if (start && end) {
         // If date range provided, filter by subscribedAt or createdAt (fallback)
@@ -350,8 +350,8 @@ export class ReportService {
           },
         ];
       }
-      // If no date range, get all addons (not just active) - same as dashboard logic for subscriptions
-      // Don't add any status filter
+      // If no date range, get ALL addons (no status filter, no date filter) - same as dashboard logic for subscriptions
+      // This ensures all addons are fetched regardless of status
 
       let addons: any[] = [];
       try {
