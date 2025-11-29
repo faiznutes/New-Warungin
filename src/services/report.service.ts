@@ -495,29 +495,34 @@ export class ReportService {
           addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
         addons: (sortedAddons || []).map((addon: any) => {
-          const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
-          const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
-            ? (addon.config as any).originalDuration || 30
-            : 30;
-          const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
-          
-          // Use subscribedAt if available, otherwise use createdAt as fallback
-          const subscribedAt = addon.subscribedAt || addon.createdAt;
-          
-          return {
-            id: addon.id,
-            addonId: addon.addonId,
-            addonName: addon.addon?.name || 'Unknown',
-            tenantId: addon.tenantId,
-            tenantName: addon.tenant?.name || 'Unknown',
-            status: addon.status,
-            subscribedAt: subscribedAt,
-            expiresAt: addon.expiresAt,
-            price: price,
-            amount: amount, // Add amount field for display
-            addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
-          };
-        }),
+          try {
+            const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+            const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+              ? (addon.config as any).originalDuration || 30
+              : 30;
+            const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
+            
+            // Use subscribedAt if available, otherwise use createdAt as fallback
+            const subscribedAt = addon?.subscribedAt || addon?.createdAt;
+            
+            return {
+              id: addon?.id || '',
+              addonId: addon?.addonId || '',
+              addonName: addon?.addon?.name || 'Unknown',
+              tenantId: addon?.tenantId || '',
+              tenantName: addon?.tenant?.name || 'Unknown',
+              status: addon?.status || 'inactive',
+              subscribedAt: subscribedAt || new Date(),
+              expiresAt: addon?.expiresAt || null,
+              price: price,
+              amount: amount, // Add amount field for display
+              addedBySuperAdmin: (addon?.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
+            };
+          } catch (err: any) {
+            logger.warn('Error mapping addon', { error: err.message, addonId: addon?.id });
+            return null;
+          }
+        }).filter((addon: any) => addon !== null), // Filter out null entries
         tenantReports: tenantReports || [], // Add tenant reports for performance table
       };
     } catch (error: any) {
