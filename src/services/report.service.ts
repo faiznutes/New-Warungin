@@ -241,6 +241,9 @@ export class ReportService {
             },
           },
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching tenants in getGlobalReport', { error: error.message });
+        return []; // Return empty array on error
       });
 
       // Get all completed orders - if no date range, get all (same as dashboard doesn't filter orders by date for tenant count)
@@ -260,10 +263,13 @@ export class ReportService {
           total: true,
           tenantId: true,
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching orders in getGlobalReport', { error: error.message });
+        return []; // Return empty array on error
       });
 
       // Calculate total revenue from all orders
-      const totalSalesRevenue = allOrders.reduce((sum: number, order: any) => sum + Number(order.total), 0);
+      const totalSalesRevenue = (allOrders || []).reduce((sum: number, order: any) => sum + Number(order.total || 0), 0);
 
       // Get subscriptions - if no date range, get all subscriptions (same as dashboard)
       // If date range provided, filter by createdAt
@@ -290,10 +296,13 @@ export class ReportService {
         orderBy: {
           createdAt: 'desc',
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching subscriptions in getGlobalReport', { error: error.message });
+        return []; // Return empty array on error
       });
 
       // Calculate subscription revenue (same logic as dashboard)
-      const totalSubscriptionRevenue = subscriptions.reduce((sum: number, sub: any) => sum + Number(sub.amount || 0), 0);
+      const totalSubscriptionRevenue = (subscriptions || []).reduce((sum: number, sub: any) => sum + Number(sub.amount || 0), 0);
 
       // Get addon prices from service (same as dashboard)
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
@@ -333,10 +342,13 @@ export class ReportService {
         orderBy: {
           subscribedAt: 'desc',
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching addons in getGlobalReport', { error: error.message });
+        return []; // Return empty array on error
       });
 
       // Calculate addon revenue (same logic as dashboard)
-      const totalAddonRevenue = addons.reduce((sum: number, addon: any) => {
+      const totalAddonRevenue = (addons || []).reduce((sum: number, addon: any) => {
         const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
         // Use same calculation as dashboard: (price * duration) / 30
         const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
@@ -377,8 +389,8 @@ export class ReportService {
           totalUsers: tenants.reduce((sum: number, t: any) => sum + (t._count?.users || 0), 0),
           totalOrders,
         },
-        tenants,
-        subscriptions: subscriptions.map((sub: any) => ({
+        tenants: tenants || [],
+        subscriptions: (subscriptions || []).map((sub: any) => ({
           id: sub.id,
           tenantId: sub.tenantId,
           tenantName: sub.tenant?.name || 'Unknown',
@@ -390,7 +402,7 @@ export class ReportService {
           createdAt: sub.createdAt,
           addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
-        addons: addons.map((addon: any) => ({
+        addons: (addons || []).map((addon: any) => ({
           id: addon.id,
           addonId: addon.addonId,
           addonName: addon.addon?.name || 'Unknown',
