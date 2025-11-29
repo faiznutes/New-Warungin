@@ -829,8 +829,12 @@ export class ReportService {
             },
           },
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching products in generateInventoryReport', { error: error.message, tenantId });
+        return []; // Return empty array on error
       });
-      return products;
+      
+      return products || [];
     } catch (error: any) {
       logger.error('Error generating inventory report', { 
         error: error.message, 
