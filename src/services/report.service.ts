@@ -99,10 +99,13 @@ export class ReportService {
           product: true,
           order: true,
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching orderItems in getProductPerformanceReport', { error: error.message, tenantId });
+        return []; // Return empty array on error
       });
 
       // Group by product
-      const productStats = orderItems.reduce((acc: Record<string, any>, item: any) => {
+      const productStats = (orderItems || []).reduce((acc: Record<string, any>, item: any) => {
         const productId = item.productId;
         if (!acc[productId]) {
           acc[productId] = {
@@ -126,8 +129,12 @@ export class ReportService {
         orderCount: stat.orders.size,
       }));
     } catch (error: any) {
-      logger.error('Error generating product performance report', { error: error.message, tenantId });
-      throw error;
+      logger.error('Error generating product performance report', { 
+        error: error.message, 
+        tenantId,
+        stack: error.stack,
+      });
+      return []; // Return empty array on error
     }
   }
 
@@ -183,8 +190,12 @@ export class ReportService {
         };
       });
     } catch (error: any) {
-      logger.error('Error generating customer analytics', { error: error.message, tenantId });
-      throw error;
+      logger.error('Error generating customer analytics', { 
+        error: error.message, 
+        tenantId,
+        stack: error.stack,
+      });
+      return []; // Return empty array on error
     }
   }
 
