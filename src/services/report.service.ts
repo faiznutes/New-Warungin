@@ -572,7 +572,19 @@ export class ReportService {
   async generateSalesReport(tenantId: string, options: any) {
     try {
       if (!tenantId) {
-        throw new Error('Tenant ID is required');
+        logger.error('Tenant ID is required in generateSalesReport');
+        // Return empty structure instead of throwing
+        return {
+          summary: {
+            totalRevenue: 0,
+            totalOrders: 0,
+            totalItems: 0,
+            averageOrderValue: 0,
+          },
+          byDate: [],
+          orders: [],
+          transactions: [],
+        };
       }
       
       const period = options.period || 'all';
@@ -828,7 +840,9 @@ export class ReportService {
   async generateProductReport(tenantId: string, options: any) {
     try {
       if (!tenantId) {
-        throw new Error('Tenant ID is required');
+        logger.error('Tenant ID is required in generateProductReport');
+        // Return empty array instead of throwing
+        return [];
       }
       
       const period = options.period || 'all';
@@ -870,7 +884,9 @@ export class ReportService {
   async generateCustomerReport(tenantId: string, options: any) {
     try {
       if (!tenantId) {
-        throw new Error('Tenant ID is required');
+        logger.error('Tenant ID is required in generateCustomerReport');
+        // Return empty array instead of throwing
+        return [];
       }
       
       const period = options.period || 'all';
@@ -949,7 +965,22 @@ export class ReportService {
   async generateFinancialReport(tenantId: string, options: any) {
     try {
       if (!tenantId) {
-        throw new Error('Tenant ID is required');
+        logger.error('Tenant ID is required in generateFinancialReport');
+        // Return empty structure instead of throwing
+        return {
+          summary: {
+            totalRevenue: 0,
+            totalCost: 0,
+            grossProfit: 0,
+            profitMargin: 0,
+            totalOrders: 0,
+            totalItems: 0,
+            averageOrderValue: 0,
+          },
+          byDate: [],
+          orders: [],
+          transactions: [],
+        };
       }
       
       // Financial report uses same structure as sales report but with cost/profit calculations
