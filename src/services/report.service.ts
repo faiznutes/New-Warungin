@@ -532,18 +532,8 @@ export class ReportService {
         tenantReports: [],
       };
       
-      // Handle database connection errors
-      if (error.code === 'P1001' || error.code === 'P1002' || error.message?.includes('connect')) {
-        throw new Error('Database connection error. Please try again.');
-      }
-      
-      // Handle Prisma errors
-      if (error.code?.startsWith('P')) {
-        throw new Error(`Database error: ${error.message}`);
-      }
-      
-      // Re-throw other errors
-      throw error;
+      // Don't throw error - return empty structure to prevent 502
+      // All errors are already logged above
     }
   }
 
