@@ -610,6 +610,8 @@ const selectedAddon = ref<any>(null);
 const selectedSubscriptions = ref<string[]>([]);
 const selectedAddons = ref<string[]>([]);
 const shouldLoadReport = ref(false);
+const editingSubscription = ref<any>({ addedBySuperAdmin: false });
+const editingAddon = ref<any>({ addedBySuperAdmin: false });
 
 // Subscription pagination and filter
 const subscriptionPage = ref(1);

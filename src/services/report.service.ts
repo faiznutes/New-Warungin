@@ -328,19 +328,29 @@ export class ReportService {
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
-      // Get addons - if no date range, get all active addons (same as dashboard)
+      // Get addons - if no date range, get all addons (not just active)
       // If date range provided, filter by subscribedAt
       const addonWhere: any = {};
       if (start && end) {
         // If date range provided, filter by subscribedAt
-        addonWhere.subscribedAt = {
-          gte: startDate,
-          lte: endDate,
-        };
-      } else {
-        // If no date range, get all active addons (same as dashboard logic)
-        addonWhere.status = 'active';
+        // Also include addons without subscribedAt (set to createdAt as fallback)
+        addonWhere.OR = [
+          {
+            subscribedAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          {
+            subscribedAt: null,
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+        ];
       }
+      // If no date range, get all addons (not just active) - same as dashboard logic for subscriptions
 
       const addons = await dbClient.tenantAddon.findMany({
         where: addonWhere,
@@ -429,6 +439,9 @@ export class ReportService {
             : 30;
           const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
           
+          // Use subscribedAt if available, otherwise use createdAt as fallback
+          const subscribedAt = addon.subscribedAt || addon.createdAt;
+          
           return {
             id: addon.id,
             addonId: addon.addonId,
@@ -436,7 +449,7 @@ export class ReportService {
             tenantId: addon.tenantId,
             tenantName: addon.tenant?.name || 'Unknown',
             status: addon.status,
-            subscribedAt: addon.subscribedAt,
+            subscribedAt: subscribedAt,
             expiresAt: addon.expiresAt,
             price: price,
             amount: amount, // Add amount field for display
