@@ -13,11 +13,17 @@ export class ReportService {
    */
   async getSalesReport(tenantId: string, startDate: Date, endDate: Date) {
     try {
-      // Use read replica for reporting
-      const readReplica = getReadReplicaClient();
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available, using main database', { error: error.message });
+        dbClient = prisma;
+      }
 
       const [orders, transactions] = await Promise.all([
-        readReplica.order.findMany({
+        dbClient.order.findMany({
           where: {
             tenantId,
             createdAt: {
@@ -35,7 +41,7 @@ export class ReportService {
           },
         }),
 
-        readReplica.transaction.findMany({
+        dbClient.transaction.findMany({
           where: {
             tenantId,
             createdAt: {
@@ -69,9 +75,16 @@ export class ReportService {
    */
   async getProductPerformanceReport(tenantId: string, startDate: Date, endDate: Date) {
     try {
-      const readReplica = getReadReplicaClient();
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available, using main database', { error: error.message });
+        dbClient = prisma;
+      }
 
-      const orderItems = await readReplica.orderItem.findMany({
+      const orderItems = await dbClient.orderItem.findMany({
         where: {
           order: {
             tenantId,
@@ -123,9 +136,16 @@ export class ReportService {
    */
   async getCustomerAnalytics(tenantId: string, startDate: Date, endDate: Date) {
     try {
-      const readReplica = getReadReplicaClient();
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available, using main database', { error: error.message });
+        dbClient = prisma;
+      }
 
-      const customers = await readReplica.customer.findMany({
+      const customers = await dbClient.customer.findMany({
         where: {
           tenantId,
         },
@@ -168,7 +188,14 @@ export class ReportService {
   // Stub methods for compatibility with routes
   async getGlobalReport(start?: Date, end?: Date) {
     try {
-      const readReplica = getReadReplicaClient();
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available for global report, using main database', { error: error.message });
+        dbClient = prisma;
+      }
       
       // Set date range
       const startDate = start || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -177,7 +204,7 @@ export class ReportService {
       endDate.setHours(23, 59, 59, 999);
 
       // Get all tenants with subscriptions
-      const tenants = await readReplica.tenant.findMany({
+      const tenants = await dbClient.tenant.findMany({
         include: {
           subscriptions: {
             where: {
@@ -205,7 +232,7 @@ export class ReportService {
       });
 
       // Get all completed orders in date range for revenue calculation
-      const allOrders = await readReplica.order.findMany({
+      const allOrders = await dbClient.order.findMany({
         where: {
           status: 'COMPLETED',
           createdAt: {
@@ -223,7 +250,7 @@ export class ReportService {
       const totalSalesRevenue = allOrders.reduce((sum, order) => sum + Number(order.total), 0);
 
       // Get subscriptions in date range with full details
-      const subscriptions = await readReplica.subscription.findMany({
+      const subscriptions = await dbClient.subscription.findMany({
         where: {
           createdAt: {
             gte: startDate,
@@ -247,7 +274,7 @@ export class ReportService {
       const totalSubscriptionRevenue = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
 
       // Get addons in date range with full details
-      const addons = await readReplica.tenantAddon.findMany({
+      const addons = await dbClient.tenantAddon.findMany({
         where: {
           subscribedAt: {
             gte: startDate,
@@ -345,26 +372,61 @@ export class ReportService {
 
   async generateSalesReport(tenantId: string, options: any) {
     try {
-      const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const endDate = options.endDate ? new Date(options.endDate) : new Date();
-      
-      // Set time to start/end of day
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
-      
       const period = options.period || 'all';
-      const readReplica = getReadReplicaClient();
+      
+      // If period is 'all' and no date range specified, get all data
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      
+      if (options.startDate && options.endDate) {
+        startDate = new Date(options.startDate);
+        endDate = new Date(options.endDate);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+      } else if (period !== 'all') {
+        // If period is specified but no date range, use default 30 days
+        startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        endDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+      }
+      // If period is 'all' and no date range, startDate and endDate will be undefined (get all data)
+      
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available, using main database', { error: error.message });
+        dbClient = prisma;
+      }
+      
+      // Build where clause
+      const whereClause: any = {
+        tenantId,
+        status: 'COMPLETED',
+      };
+      
+      // Only add date filter if dates are provided
+      if (startDate && endDate) {
+        whereClause.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+      
+      // Log query for debugging
+      logger.info('Generating sales report', {
+        tenantId,
+        period,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+        hasDateFilter: !!(startDate && endDate),
+      });
       
       // Get all orders with items and products
-      const orders = await readReplica.order.findMany({
-        where: {
-          tenantId,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          status: 'COMPLETED',
-        },
+      const orders = await dbClient.order.findMany({
+        where: whereClause,
         include: {
           items: {
             include: {
@@ -390,22 +452,41 @@ export class ReportService {
       });
 
       // Get transactions
-      const transactions = await readReplica.transaction.findMany({
-        where: {
-          tenantId,
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-          status: 'COMPLETED',
-        },
+      const transactionWhereClause: any = {
+        tenantId,
+        status: 'COMPLETED',
+      };
+      
+      if (startDate && endDate) {
+        transactionWhereClause.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+      
+      const transactions = await dbClient.transaction.findMany({
+        where: transactionWhereClause,
       });
-
+      
       // Calculate totals
       const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
       const totalOrders = orders.length;
-      const totalItems = orders.reduce((sum, o) => sum + o.items.length, 0);
+      const totalItems = orders.reduce((sum, o) => sum + (o.items?.length || 0), 0);
       const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+      
+      // Log results for debugging
+      logger.info('Sales report query results', {
+        tenantId,
+        period,
+        ordersCount: orders.length,
+        transactionsCount: transactions.length,
+        totalRevenue,
+        totalOrders,
+        totalItems,
+        averageOrderValue,
+        hasDateFilter: !!(startDate && endDate),
+        dateRange: startDate && endDate ? `${startDate.toISOString()} to ${endDate.toISOString()}` : 'all time',
+      });
 
       // Group by date based on period
       const byDate: any[] = [];
@@ -490,19 +571,34 @@ export class ReportService {
         });
       });
 
-      return {
+      // Ensure byDate is not empty - if no orders, return empty array with proper structure
+      const result = {
         summary: {
-          totalRevenue,
-          totalOrders,
-          totalItems,
-          averageOrderValue,
+          totalRevenue: totalRevenue || 0,
+          totalOrders: totalOrders || 0,
+          totalItems: totalItems || 0,
+          averageOrderValue: averageOrderValue || 0,
         },
-        byDate,
-        orders,
-        transactions,
+        byDate: byDate.length > 0 ? byDate : [],
+        orders: orders || [],
+        transactions: transactions || [],
       };
+      
+      // Log final result for debugging
+      logger.info('Sales report final result', {
+        tenantId,
+        summary: result.summary,
+        byDateCount: result.byDate.length,
+        ordersCount: result.orders.length,
+      });
+      
+      return result;
     } catch (error: any) {
-      logger.error('Error generating sales report', { error: error.message, tenantId });
+      logger.error('Error generating sales report', { 
+        error: error.message, 
+        tenantId,
+        stack: error.stack,
+      });
       throw error;
     }
   }
@@ -521,8 +617,16 @@ export class ReportService {
 
   async generateInventoryReport(tenantId: string, options: any) {
     try {
-      const readReplica = getReadReplicaClient();
-      const products = await readReplica.product.findMany({
+      // Try to use read replica, fallback to main database if it fails
+      let dbClient: any;
+      try {
+        dbClient = getReadReplicaClient();
+      } catch (error: any) {
+        logger.warn('Read replica not available, using main database', { error: error.message });
+        dbClient = prisma;
+      }
+      
+      const products = await dbClient.product.findMany({
         where: { tenantId },
         include: {
           _count: {
