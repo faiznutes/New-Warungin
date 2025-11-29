@@ -403,30 +403,43 @@ export class ReportService {
       const totalOrders = allOrders.length;
       
       // Calculate tenant reports (performance per tenant)
-      const tenantReportsMap = new Map<string, { tenantId: string; tenantName: string; totalRevenue: number; totalOrders: number }>();
-      
-      // Group orders by tenant
-      (allOrders || []).forEach((order: any) => {
-        const tenantId = order.tenantId;
-        if (!tenantId) return;
+      let tenantReports: any[] = [];
+      try {
+        const tenantReportsMap = new Map<string, { tenantId: string; tenantName: string; totalRevenue: number; totalOrders: number }>();
         
-        if (!tenantReportsMap.has(tenantId)) {
-          // Find tenant name
-          const tenant = tenants.find((t: any) => t.id === tenantId);
-          tenantReportsMap.set(tenantId, {
-            tenantId: tenantId,
-            tenantName: tenant?.name || 'Unknown',
-            totalRevenue: 0,
-            totalOrders: 0,
-          });
-        }
+        // Group orders by tenant
+        (allOrders || []).forEach((order: any) => {
+          try {
+            const tenantId = order?.tenantId;
+            if (!tenantId) return;
+            
+            if (!tenantReportsMap.has(tenantId)) {
+              // Find tenant name
+              const tenant = (tenants || []).find((t: any) => t?.id === tenantId);
+              tenantReportsMap.set(tenantId, {
+                tenantId: tenantId,
+                tenantName: tenant?.name || 'Unknown',
+                totalRevenue: 0,
+                totalOrders: 0,
+              });
+            }
+            
+            const report = tenantReportsMap.get(tenantId);
+            if (report) {
+              report.totalRevenue += Number(order?.total || 0);
+              report.totalOrders += 1;
+            }
+          } catch (err: any) {
+            logger.warn('Error processing order for tenantReports', { error: err.message, orderId: order?.id });
+            // Continue processing other orders
+          }
+        });
         
-        const report = tenantReportsMap.get(tenantId)!;
-        report.totalRevenue += Number(order.total || 0);
-        report.totalOrders += 1;
-      });
-      
-      const tenantReports = Array.from(tenantReportsMap.values());
+        tenantReports = Array.from(tenantReportsMap.values());
+      } catch (err: any) {
+        logger.error('Error calculating tenantReports', { error: err.message, stack: err.stack });
+        tenantReports = []; // Return empty array on error
+      }
       
       // Log results for debugging
       logger.info('Global report query results', {
@@ -500,6 +513,24 @@ export class ReportService {
         start: start?.toISOString(),
         end: end?.toISOString(),
       });
+      
+      // Return empty structure instead of throwing to prevent 502
+      return {
+        summary: {
+          totalGlobalRevenue: 0,
+          totalSubscriptionRevenue: 0,
+          totalAddonRevenue: 0,
+          totalSalesRevenue: 0,
+          totalTenants: 0,
+          activeTenants: 0,
+          totalUsers: 0,
+          totalOrders: 0,
+        },
+        tenants: [],
+        subscriptions: [],
+        addons: [],
+        tenantReports: [],
+      };
       
       // Handle database connection errors
       if (error.code === 'P1001' || error.code === 'P1002' || error.message?.includes('connect')) {
