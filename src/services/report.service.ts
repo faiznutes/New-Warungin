@@ -498,7 +498,6 @@ export class ReportService {
               : 30;
             const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
             
-            // Use subscribedAt if available, otherwise use createdAt as fallback
             // Use subscribedAt (it's required field)
             const subscribedAt = addon?.subscribedAt;
             
