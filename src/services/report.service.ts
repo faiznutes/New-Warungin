@@ -530,9 +530,9 @@ export class ReportService {
       });
       
       // Calculate totals
-      const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
+      const totalRevenue = orders.reduce((sum: number, o: any) => sum + Number(o.total), 0);
       const totalOrders = orders.length;
-      const totalItems = orders.reduce((sum, o) => sum + (o.items?.length || 0), 0);
+      const totalItems = orders.reduce((sum: number, o: any) => sum + (o.items?.length || 0), 0);
       const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
       
       // Log results for debugging
