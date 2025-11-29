@@ -59,6 +59,60 @@ export function getReadReplicaClient(): PrismaClient {
         if (!mainUrl) {
           throw new Error('DATABASE_URL must be set');
         }
+        try {
+          const cleanedUrl = cleanDatabaseUrl(mainUrl);
+          readReplicaClient = new PrismaClient({
+            datasources: {
+              db: {
+                url: cleanedUrl,
+              },
+            },
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+          });
+        } catch (cleanError: any) {
+          console.error('Failed to clean database URL:', cleanError.message);
+          // Use URL as-is if cleaning fails
+          readReplicaClient = new PrismaClient({
+            datasources: {
+              db: {
+                url: mainUrl,
+              },
+            },
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+          });
+        }
+      } else {
+        try {
+          const cleanedUrl = cleanDatabaseUrl(readReplicaUrl);
+          readReplicaClient = new PrismaClient({
+            datasources: {
+              db: {
+                url: cleanedUrl,
+              },
+            },
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+          });
+        } catch (cleanError: any) {
+          console.error('Failed to clean read replica URL:', cleanError.message);
+          // Use URL as-is if cleaning fails
+          readReplicaClient = new PrismaClient({
+            datasources: {
+              db: {
+                url: readReplicaUrl,
+              },
+            },
+            log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+          });
+        }
+      }
+    } catch (error: any) {
+      // If read replica fails, fallback to main database
+      console.error('Failed to initialize read replica, falling back to main database:', error.message);
+      const mainUrl = process.env.DATABASE_URL;
+      if (!mainUrl) {
+        throw new Error('DATABASE_URL must be set');
+      }
+      try {
         const cleanedUrl = cleanDatabaseUrl(mainUrl);
         readReplicaClient = new PrismaClient({
           datasources: {
@@ -68,33 +122,18 @@ export function getReadReplicaClient(): PrismaClient {
           },
           log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
         });
-      } else {
-        const cleanedUrl = cleanDatabaseUrl(readReplicaUrl);
+      } catch (cleanError: any) {
+        console.error('Failed to clean main database URL:', cleanError.message);
+        // Use URL as-is if cleaning fails
         readReplicaClient = new PrismaClient({
           datasources: {
             db: {
-              url: cleanedUrl,
+              url: mainUrl,
             },
           },
           log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
         });
       }
-    } catch (error: any) {
-      // If read replica fails, fallback to main database
-      console.error('Failed to initialize read replica, falling back to main database:', error.message);
-      const mainUrl = process.env.DATABASE_URL;
-      if (!mainUrl) {
-        throw new Error('DATABASE_URL must be set');
-      }
-      const cleanedUrl = cleanDatabaseUrl(mainUrl);
-      readReplicaClient = new PrismaClient({
-        datasources: {
-          db: {
-            url: cleanedUrl,
-          },
-        },
-        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-      });
     }
   }
 
