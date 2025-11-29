@@ -413,7 +413,7 @@ export class ReportService {
         totalOrders,
         ordersCount: allOrders.length,
         subscriptionsCount: subscriptions.length,
-        addonsCount: addons.length,
+        addonsCount: sortedAddons.length,
       });
 
       return {
