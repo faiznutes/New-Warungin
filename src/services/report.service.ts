@@ -169,24 +169,157 @@ export class ReportService {
   async getGlobalReport(start?: Date, end?: Date) {
     try {
       const readReplica = getReadReplicaClient();
+      
+      // Set date range
+      const startDate = start || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const endDate = end || new Date();
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      // Get all tenants with subscriptions
       const tenants = await readReplica.tenant.findMany({
         include: {
-          subscriptions: true,
+          subscriptions: {
+            where: {
+              createdAt: {
+                gte: startDate,
+                lte: endDate,
+              },
+            },
+          },
           _count: {
             select: {
               users: true,
-              orders: true,
+              orders: {
+                where: {
+                  status: 'COMPLETED',
+                  createdAt: {
+                    gte: startDate,
+                    lte: endDate,
+                  },
+                },
+              },
             },
           },
         },
       });
 
+      // Get all completed orders in date range for revenue calculation
+      const allOrders = await readReplica.order.findMany({
+        where: {
+          status: 'COMPLETED',
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        select: {
+          total: true,
+          tenantId: true,
+        },
+      });
+
+      // Calculate total revenue from all orders
+      const totalSalesRevenue = allOrders.reduce((sum, order) => sum + Number(order.total), 0);
+
+      // Get subscriptions in date range with full details
+      const subscriptions = await readReplica.subscription.findMany({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // Calculate subscription revenue
+      const totalSubscriptionRevenue = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
+
+      // Get addons in date range with full details
+      const addons = await readReplica.tenantAddon.findMany({
+        where: {
+          subscribedAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        include: {
+          addon: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+            },
+          },
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          subscribedAt: 'desc',
+        },
+      });
+
+      // Calculate addon revenue
+      const totalAddonRevenue = addons.reduce((sum, addon) => {
+        const price = Number(addon.addon?.price || (addon.config as any)?.price || 0);
+        return sum + price;
+      }, 0);
+
+      // Total global revenue = subscription + addon revenue (platform revenue)
+      const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
+
+      // Count total orders
+      const totalOrders = allOrders.length;
+
       return {
-        totalTenants: tenants.length,
-        activeTenants: tenants.filter(t => t.isActive).length,
-        totalUsers: tenants.reduce((sum, t) => sum + t._count.users, 0),
-        totalOrders: tenants.reduce((sum, t) => sum + t._count.orders, 0),
+        summary: {
+          totalGlobalRevenue,
+          totalSubscriptionRevenue,
+          totalAddonRevenue,
+          totalSalesRevenue, // Revenue from tenant sales
+          totalTenants: tenants.length,
+          activeTenants: tenants.filter(t => t.isActive).length,
+          totalUsers: tenants.reduce((sum, t) => sum + t._count.users, 0),
+          totalOrders,
+        },
         tenants,
+        subscriptions: subscriptions.map((sub) => ({
+          id: sub.id,
+          tenantId: sub.tenantId,
+          tenantName: sub.tenant?.name || 'Unknown',
+          plan: sub.plan,
+          status: sub.status,
+          amount: Number(sub.amount),
+          startDate: sub.startDate,
+          endDate: sub.endDate,
+          createdAt: sub.createdAt,
+        })),
+        addons: addons.map((addon) => ({
+          id: addon.id,
+          addonId: addon.addonId,
+          addonName: addon.addon?.name || 'Unknown',
+          tenantId: addon.tenantId,
+          tenantName: addon.tenant?.name || 'Unknown',
+          status: addon.status,
+          subscribedAt: addon.subscribedAt,
+          expiresAt: addon.expiresAt,
+          price: Number(addon.addon?.price || (addon.config as any)?.price || 0),
+        })),
       };
     } catch (error: any) {
       logger.error('Error generating global report', { error: error.message });
