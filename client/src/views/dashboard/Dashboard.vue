@@ -1104,15 +1104,43 @@ const getDateRangeLabel = () => {
   return `${startDate.toLocaleDateString('id-ID')} - ${endDate.toLocaleDateString('id-ID')}`;
 };
 
+const loadGlobalReport = async () => {
+  try {
+    // Load global report data for super admin dashboard
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now);
+    
+    const params: any = {
+      startDate: startOfMonth.toISOString().split('T')[0],
+      endDate: endOfMonth.toISOString().split('T')[0],
+    };
+    
+    const response = await api.get('/reports/global', { params });
+    globalReportData.value = response.data;
+    
+    console.log('Global report data loaded:', {
+      summary: globalReportData.value?.summary,
+      addonsCount: globalReportData.value?.addons?.length || 0,
+      subscriptionsCount: globalReportData.value?.subscriptions?.length || 0,
+    });
+  } catch (error: any) {
+    console.error('Error loading global report:', error);
+    // Don't show error for 401/403 (user might not be authenticated)
+    if (error.response?.status !== 401 && error.response?.status !== 403) {
+      console.warn('Failed to load global report data, using stats only');
+    }
+  }
+};
+
 const loadSuperAdminStats = async () => {
   try {
     // Load stats from API (includes addon & subscription revenue) - ini cepat
     const response = await api.get('/dashboard/stats');
     stats.value = response.data;
     
-    // Load global report data dan tenants secara lazy (tidak di awal)
-    // Akan di-load saat user klik atau saat dibutuhkan
-    // Ini akan mempercepat initial load
+    // Also load global report data for detailed information
+    await loadGlobalReport();
   } catch (error: any) {
     // Don't show alert if user is not authenticated (likely logged out)
     if (!authStore.isAuthenticated) {

@@ -468,6 +468,10 @@ export class ReportService {
         ordersCount: allOrders.length,
         subscriptionsCount: subscriptions.length,
         addonsCount: sortedAddons.length,
+        addonsRawCount: addons.length,
+        tenantReportsCount: tenantReports.length,
+        addonWhereFilter: JSON.stringify(addonWhere),
+        hasDateRange: !!(start && end),
       });
 
       return {
