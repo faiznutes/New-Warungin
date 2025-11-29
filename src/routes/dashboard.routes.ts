@@ -348,7 +348,8 @@ async function getSuperAdminStats() {
     // Calculate growth
     const lastMonthAddonRevenue = allAddons
       .filter(a => {
-        const date = new Date(a.subscribedAt);
+        // Use subscribedAt if available, otherwise use createdAt as fallback
+        const date = new Date(a.subscribedAt || a.createdAt);
         return date >= lastMonthStart && date <= lastMonthEnd;
       })
       .reduce((sum, addon) => {
