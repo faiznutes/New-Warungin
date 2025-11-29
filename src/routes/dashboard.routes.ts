@@ -270,10 +270,13 @@ async function getSuperAdminStats() {
       const revenue = (price * duration) / 30; // Convert to total revenue
 
       totalAddonRevenue += revenue;
-      if (new Date(addon.subscribedAt) >= todayStart) {
+      
+      // Use subscribedAt if available, otherwise use createdAt as fallback
+      const subscribedAt = addon.subscribedAt || addon.createdAt;
+      if (new Date(subscribedAt) >= todayStart) {
         todayAddonRevenue += revenue;
       }
-      if (new Date(addon.subscribedAt) >= thisMonthStart) {
+      if (new Date(subscribedAt) >= thisMonthStart) {
         thisMonthAddonRevenue += revenue;
       }
 
