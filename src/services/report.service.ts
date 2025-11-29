@@ -210,32 +210,43 @@ export class ReportService {
         hasDateFilter: !!(start || end),
       });
 
-      // Get all tenants with subscriptions
-      const tenants = await dbClient.tenant.findMany({
-        include: {
-          subscriptions: {
-            where: {
-              createdAt: {
-                gte: startDate,
-                lte: endDate,
-              },
+      // Get all tenants - filter subscriptions and orders by date range if provided
+      const tenantInclude: any = {
+        subscriptions: start && end ? {
+          where: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
             },
           },
-          _count: {
-            select: {
-              users: true,
-              orders: {
-                where: {
-                  status: 'COMPLETED',
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
-                  },
+        } : true, // If no date range, get all subscriptions
+        _count: {
+          select: {
+            users: true,
+            orders: start && end ? {
+              where: {
+                status: 'COMPLETED',
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
                 },
+              },
+            } : {
+              where: {
+                status: 'COMPLETED',
               },
             },
           },
         },
+      };
+
+      const tenants = await dbClient.tenant.findMany({
+        where: {
+          name: {
+            not: 'System',
+          },
+        },
+        include: tenantInclude,
       });
 
       // Get all completed orders in date range for revenue calculation
