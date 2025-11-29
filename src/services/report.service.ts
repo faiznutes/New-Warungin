@@ -463,6 +463,7 @@ export class ReportService {
             addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
           };
         }),
+        tenantReports: tenantReports || [], // Add tenant reports for performance table
       };
     } catch (error: any) {
       logger.error('Error generating global report', { 
