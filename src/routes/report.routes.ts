@@ -4,6 +4,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
+import logger from '../utils/logger';
 
 const router = Router();
 
