@@ -384,6 +384,13 @@ export class ReportService {
         logger.error('Error fetching addons in getGlobalReport', { error: error.message });
         return []; // Return empty array on error
       });
+      
+      // Sort addons manually: subscribedAt desc, then createdAt desc
+      const sortedAddons = (addons || []).sort((a: any, b: any) => {
+        const aDate = a.subscribedAt || a.createdAt;
+        const bDate = b.subscribedAt || b.createdAt;
+        return new Date(bDate).getTime() - new Date(aDate).getTime();
+      });
 
       // Calculate addon revenue (same logic as dashboard)
       const totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
