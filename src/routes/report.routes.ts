@@ -163,6 +163,12 @@ router.get(
       res.json(report);
     } catch (error: any) {
       console.error('Error loading tenant report:', error);
+      logger.error('Error loading tenant report', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        query: req.query,
+      });
       res.status(500).json({ message: error.message || 'Failed to load tenant report' });
     }
   }
@@ -233,6 +239,12 @@ router.get(
       res.json(report);
     } catch (error: any) {
       console.error('Error loading report:', error);
+      logger.error('Error loading report', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        query: req.query,
+      });
       res.status(500).json({ message: error.message || 'Failed to load report' });
     }
   }
