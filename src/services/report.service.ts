@@ -422,18 +422,27 @@ export class ReportService {
           createdAt: sub.createdAt,
           addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
-        addons: (addons || []).map((addon: any) => ({
-          id: addon.id,
-          addonId: addon.addonId,
-          addonName: addon.addon?.name || 'Unknown',
-          tenantId: addon.tenantId,
-          tenantName: addon.tenant?.name || 'Unknown',
-          status: addon.status,
-          subscribedAt: addon.subscribedAt,
-          expiresAt: addon.expiresAt,
-          price: Number(addon.addon?.price || (addon.config as any)?.price || 0),
-          addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
-        })),
+        addons: (addons || []).map((addon: any) => {
+          const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
+          const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+            ? (addon.config as any).originalDuration || 30
+            : 30;
+          const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
+          
+          return {
+            id: addon.id,
+            addonId: addon.addonId,
+            addonName: addon.addon?.name || 'Unknown',
+            tenantId: addon.tenantId,
+            tenantName: addon.tenant?.name || 'Unknown',
+            status: addon.status,
+            subscribedAt: addon.subscribedAt,
+            expiresAt: addon.expiresAt,
+            price: price,
+            amount: amount, // Add amount field for display
+            addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
+          };
+        }),
       };
     } catch (error: any) {
       logger.error('Error generating global report', { 

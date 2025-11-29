@@ -880,7 +880,7 @@ import QuickInsightWidget from '../../components/QuickInsightWidget.vue';
 const authStore = useAuthStore();
 const { error: showError } = useNotification();
 const loading = ref(false);
-const dateRange = ref('today');
+const dateRange = ref('month'); // Default bulan ini
 const superAdminDateRange = ref('month'); // Default bulan ini untuk super admin
 const stats = ref<any>(null);
 const globalReportData = ref<any>(null);

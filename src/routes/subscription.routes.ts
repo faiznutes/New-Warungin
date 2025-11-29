@@ -451,5 +451,49 @@ router.post(
   }
 );
 
+/**
+ * PATCH /api/subscriptions/:id
+ * Update subscription (Super Admin only)
+ */
+router.patch(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const userRole = (req as any).user.role;
+      
+      // Only SUPER_ADMIN can update subscription
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can update subscription' });
+      }
+
+      const subscriptionId = req.params.id;
+      const { addedBySuperAdmin } = req.body;
+      
+      // Check if subscription exists
+      const subscription = await prisma.subscription.findUnique({
+        where: { id: subscriptionId },
+      });
+
+      if (!subscription) {
+        return res.status(404).json({ message: 'Subscription not found' });
+      }
+
+      // Update subscription
+      const updated = await prisma.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          addedBySuperAdmin: addedBySuperAdmin !== undefined ? addedBySuperAdmin : subscription.addedBySuperAdmin,
+        },
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating subscription:', error);
+      res.status(500).json({ message: error.message || 'Failed to update subscription' });
+    }
+  }
+);
+
 export default router;
 

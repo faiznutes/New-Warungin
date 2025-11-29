@@ -408,16 +408,14 @@ const marginDisplayFormat = ref<'percentage' | 'amount'>(
   (localStorage.getItem('marginDisplayFormat') as 'percentage' | 'amount') || 'percentage'
 );
 
-// Set default date range: 2 weeks back and 2 weeks forward
+// Set default date range: bulan ini (month)
 const now = new Date();
-const twoWeeksBack = new Date(now);
-twoWeeksBack.setDate(now.getDate() - 14); // 2 weeks back
-const twoWeeksForward = new Date(now);
-twoWeeksForward.setDate(now.getDate() + 14); // 2 weeks forward
+const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+const endOfMonth = new Date(now);
 
 const dateRange = ref({
-  from: twoWeeksBack.toISOString().split('T')[0],
-  to: twoWeeksForward.toISOString().split('T')[0],
+  from: startOfMonth.toISOString().split('T')[0],
+  to: endOfMonth.toISOString().split('T')[0],
 });
 
 const setPeriod = (p: string) => {

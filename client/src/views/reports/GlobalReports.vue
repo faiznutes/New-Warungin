@@ -463,6 +463,16 @@
                 <label class="block text-sm font-medium text-gray-700">ID Subscription</label>
                 <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedSubscription.id }}</p>
               </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ditambahkan oleh Super Admin?</label>
+                <select
+                  v-model="editingSubscription.addedBySuperAdmin"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option :value="true">Ya, Ditambahkan oleh Super Admin</option>
+                  <option :value="false">Tidak, Dibeli sendiri</option>
+                </select>
+              </div>
             </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
@@ -470,7 +480,13 @@
                 @click="showSubscriptionModal = false"
                 class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
-                Tutup
+                Batal
+              </button>
+              <button
+                @click="updateSubscription"
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+              >
+                Simpan Perubahan
               </button>
               <button
                 @click="deleteSubscription(selectedSubscription)"
@@ -516,7 +532,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Jumlah</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedAddon.amount) }}</p>
+                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedAddon.amount || selectedAddon.price || 0) }}</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Status</label>
@@ -537,6 +553,16 @@
                 <label class="block text-sm font-medium text-gray-700">ID Addon</label>
                 <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedAddon.id }}</p>
               </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ditambahkan oleh Super Admin?</label>
+                <select
+                  v-model="editingAddon.addedBySuperAdmin"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option :value="true">Ya, Ditambahkan oleh Super Admin</option>
+                  <option :value="false">Tidak, Dibeli sendiri</option>
+                </select>
+              </div>
             </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
@@ -544,7 +570,13 @@
                 @click="showAddonModal = false"
                 class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
-                Tutup
+                Batal
+              </button>
+              <button
+                @click="updateAddon"
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+              >
+                Simpan Perubahan
               </button>
               <button
                 @click="deleteAddon(selectedAddon)"
@@ -588,16 +620,14 @@ const itemsPerPage = 7;
 const addonPage = ref(1);
 const addonFilter = ref<'all' | 'active' | 'expired'>('all');
 
-// Set default date range: 2 weeks back and 2 weeks forward
+// Set default date range: bulan ini (month)
 const now = new Date();
-const twoWeeksBack = new Date(now);
-twoWeeksBack.setDate(now.getDate() - 14); // 2 weeks back
-const twoWeeksForward = new Date(now);
-twoWeeksForward.setDate(now.getDate() + 14); // 2 weeks forward
+const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+const endOfMonth = new Date(now);
 
 const dateRange = ref({
-  from: twoWeeksBack.toISOString().split('T')[0],
-  to: twoWeeksForward.toISOString().split('T')[0],
+  from: startOfMonth.toISOString().split('T')[0],
+  to: endOfMonth.toISOString().split('T')[0],
 });
 
 // Filtered subscriptions
@@ -776,7 +806,27 @@ const bulkDeleteAddons = async () => {
 
 const editSubscription = async (subscription: any) => {
   selectedSubscription.value = subscription;
+  editingSubscription.value = {
+    addedBySuperAdmin: subscription.addedBySuperAdmin || false,
+  };
   showSubscriptionModal.value = true;
+};
+
+const updateSubscription = async () => {
+  if (!selectedSubscription.value) return;
+  
+  try {
+    await api.patch(`/subscriptions/${selectedSubscription.value.id}`, {
+      addedBySuperAdmin: editingSubscription.value.addedBySuperAdmin,
+    });
+    
+    await showSuccess('Subscription berhasil diperbarui');
+    showSubscriptionModal.value = false;
+    await loadReport();
+  } catch (error: any) {
+    console.error('Error updating subscription:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui subscription');
+  }
 };
 
 const deleteSubscription = async (subscription: any) => {
@@ -839,7 +889,27 @@ const printSubscription = async (subscription: any) => {
 
 const editAddon = async (addon: any) => {
   selectedAddon.value = addon;
+  editingAddon.value = {
+    addedBySuperAdmin: addon.addedBySuperAdmin || false,
+  };
   showAddonModal.value = true;
+};
+
+const updateAddon = async () => {
+  if (!selectedAddon.value) return;
+  
+  try {
+    await api.patch(`/addons/${selectedAddon.value.id}`, {
+      addedBySuperAdmin: editingAddon.value.addedBySuperAdmin,
+    });
+    
+    await showSuccess('Addon berhasil diperbarui');
+    showAddonModal.value = false;
+    await loadReport();
+  } catch (error: any) {
+    console.error('Error updating addon:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui addon');
+  }
 };
 
 const deleteAddon = async (addon: any) => {
