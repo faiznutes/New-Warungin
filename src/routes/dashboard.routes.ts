@@ -337,7 +337,7 @@ async function getSuperAdminStats() {
     // Recent addon purchases (last 10)
     const recentAddons = allAddons.slice(0, 10).map(addon => ({
       id: addon.id,
-      tenantName: addon.tenant.name,
+      tenantName: addon.tenant?.name || 'Unknown',
       addonName: addon.addonName,
       addonType: addon.addonType,
       subscribedAt: addon.subscribedAt,
@@ -348,8 +348,9 @@ async function getSuperAdminStats() {
     // Calculate growth
     const lastMonthAddonRevenue = allAddons
       .filter(a => {
-        // Use subscribedAt if available, otherwise use createdAt as fallback
-        const date = new Date(a.subscribedAt || a.createdAt);
+        // Use subscribedAt (it's required field, but handle null case)
+        if (!a.subscribedAt) return false;
+        const date = new Date(a.subscribedAt);
         return date >= lastMonthStart && date <= lastMonthEnd;
       })
       .reduce((sum, addon) => {
