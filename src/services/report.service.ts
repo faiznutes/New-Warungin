@@ -123,10 +123,10 @@ export class ReportService {
 
       // Convert to array and calculate order count
       return Object.values(productStats).map((stat: any) => ({
-        product: stat.product,
-        quantity: stat.quantity,
-        revenue: stat.revenue,
-        orderCount: stat.orders.size,
+        product: stat.product || null,
+        quantity: stat.quantity || 0,
+        revenue: stat.revenue || 0,
+        orderCount: stat.orders?.size || 0,
       }));
     } catch (error: any) {
       logger.error('Error generating product performance report', { 
@@ -175,12 +175,13 @@ export class ReportService {
         return []; // Return empty array on error
       });
 
-      return customers.map((customer: any) => {
-        const totalSpent = customer.orders.reduce(
-          (sum: number, order: any) => sum + Number(order.total),
+      return (customers || []).map((customer: any) => {
+        const orders = customer.orders || [];
+        const totalSpent = orders.reduce(
+          (sum: number, order: any) => sum + Number(order.total || 0),
           0
         );
-        const orderCount = customer.orders.length;
+        const orderCount = orders.length;
 
         return {
           customer,
