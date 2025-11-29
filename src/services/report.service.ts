@@ -293,7 +293,7 @@ export class ReportService {
       });
 
       // Calculate subscription revenue (same logic as dashboard)
-      const totalSubscriptionRevenue = subscriptions.reduce((sum: number, sub: any) => sum + Number(sub.amount), 0);
+      const totalSubscriptionRevenue = subscriptions.reduce((sum: number, sub: any) => sum + Number(sub.amount || 0), 0);
 
       // Get addon prices from service (same as dashboard)
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
