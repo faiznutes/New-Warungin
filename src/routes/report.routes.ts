@@ -167,7 +167,7 @@ router.get(
       logger.error('Error loading tenant report', {
         error: error.message,
         stack: error.stack,
-        tenantId,
+        tenantId: tenantId || 'unknown',
         query: req.query,
       });
       res.status(500).json({ message: error.message || 'Failed to load tenant report' });
@@ -243,7 +243,7 @@ router.get(
       logger.error('Error loading report', {
         error: error.message,
         stack: error.stack,
-        tenantId,
+        tenantId: tenantId || 'unknown',
         query: req.query,
       });
       res.status(500).json({ message: error.message || 'Failed to load report' });

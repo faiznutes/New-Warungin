@@ -53,9 +53,9 @@ export class ReportService {
         }),
       ]);
 
-      const totalRevenue = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+      const totalRevenue = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
       const totalOrders = orders.length;
-      const totalItems = orders.reduce((sum, o) => sum + o.items.length, 0);
+      const totalItems = orders.reduce((sum: number, o: any) => sum + o.items.length, 0);
 
       return {
         totalRevenue,
@@ -102,7 +102,7 @@ export class ReportService {
       });
 
       // Group by product
-      const productStats = orderItems.reduce((acc, item) => {
+      const productStats = orderItems.reduce((acc: Record<string, any>, item: any) => {
         const productId = item.productId;
         if (!acc[productId]) {
           acc[productId] = {
@@ -165,9 +165,9 @@ export class ReportService {
         },
       });
 
-      return customers.map((customer) => {
+      return customers.map((customer: any) => {
         const totalSpent = customer.orders.reduce(
-          (sum, order) => sum + Number(order.total),
+          (sum: number, order: any) => sum + Number(order.total),
           0
         );
         const orderCount = customer.orders.length;
@@ -269,7 +269,7 @@ export class ReportService {
       });
 
       // Calculate total revenue from all orders
-      const totalSalesRevenue = allOrders.reduce((sum, order) => sum + Number(order.total), 0);
+      const totalSalesRevenue = allOrders.reduce((sum: number, order: any) => sum + Number(order.total), 0);
 
       // Get subscriptions - if no date range, get all subscriptions (same as dashboard)
       // If date range provided, filter by createdAt
@@ -299,7 +299,7 @@ export class ReportService {
       });
 
       // Calculate subscription revenue (same logic as dashboard)
-      const totalSubscriptionRevenue = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
+      const totalSubscriptionRevenue = subscriptions.reduce((sum: number, sub: any) => sum + Number(sub.amount), 0);
 
       // Get addon prices from service (same as dashboard)
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
@@ -342,7 +342,7 @@ export class ReportService {
       });
 
       // Calculate addon revenue (same logic as dashboard)
-      const totalAddonRevenue = addons.reduce((sum, addon) => {
+      const totalAddonRevenue = addons.reduce((sum: number, addon: any) => {
         const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
         // Use same calculation as dashboard: (price * duration) / 30
         const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
@@ -379,8 +379,8 @@ export class ReportService {
           totalAddonRevenue,
           totalSalesRevenue, // Revenue from tenant sales
           totalTenants: tenants.length,
-          activeTenants: tenants.filter(t => t.isActive).length,
-          totalUsers: tenants.reduce((sum, t) => sum + t._count.users, 0),
+          activeTenants: tenants.filter((t: any) => t.isActive).length,
+          totalUsers: tenants.reduce((sum: number, t: any) => sum + t._count.users, 0),
           totalOrders,
         },
         tenants,

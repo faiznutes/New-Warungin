@@ -7,6 +7,7 @@ export interface SubscribeAddonInput {
   addonType: string;
   limit?: number;
   duration?: number; // days
+  addedBySuperAdmin?: boolean; // true if added by super admin
 }
 
 export const AVAILABLE_ADDONS = [
