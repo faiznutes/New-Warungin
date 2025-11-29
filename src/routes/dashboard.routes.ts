@@ -99,12 +99,17 @@ router.get(
       // Don't throw error - return error response to prevent 502
       console.error('Error in dashboard stats route:', error);
       
+      // Get user info for error handling
+      const user = (req as any).user;
+      const userRole = user?.role;
+      const queryTenantId = req.query.tenantId as string;
+      
       // Import logger dynamically to avoid circular dependency
       const logger = await import('../utils/logger');
       logger.default.error('Error in dashboard stats route', {
         error: error.message,
         stack: error.stack,
-        userRole: (req as any).user?.role,
+        userRole: userRole,
       });
       
       // Return empty stats instead of throwing to prevent 502
