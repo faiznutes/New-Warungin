@@ -31,33 +31,55 @@ const router = Router();
 router.get(
   '/global',
   authGuard,
-  async (req: Request, res: Response, next) => {
+  async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
       
       // Only Super Admin can access global reports
-      if (user.role !== 'SUPER_ADMIN') {
+      if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Access denied. Super Admin only.' });
       }
 
       const { startDate, endDate } = req.query;
-      let start = startDate ? new Date(startDate as string) : undefined;
-      let end = endDate ? new Date(endDate as string) : undefined;
       
-      // If end date is provided, set time to end of day to include all subscriptions created on that day
-      if (end) {
+      // Validate date format if provided
+      let start: Date | undefined;
+      let end: Date | undefined;
+      
+      if (startDate) {
+        start = new Date(startDate as string);
+        if (isNaN(start.getTime())) {
+          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+        }
+        start.setHours(0, 0, 0, 0);
+      }
+      
+      if (endDate) {
+        end = new Date(endDate as string);
+        if (isNaN(end.getTime())) {
+          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+        }
         end.setHours(23, 59, 59, 999);
       }
       
-      // If start date is provided, set time to start of day
-      if (start) {
-        start.setHours(0, 0, 0, 0);
+      // Validate date range
+      if (start && end && start > end) {
+        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
       }
 
       const report = await reportService.getGlobalReport(start, end);
       res.json(report);
     } catch (error: any) {
-      next(error);
+      logger.error('Error loading global report', {
+        error: error.message,
+        stack: error.stack,
+        query: req.query,
+        user: (req as any).user?.role,
+      });
+      res.status(500).json({ 
+        message: error.message || 'Failed to load global report',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   }
 );
