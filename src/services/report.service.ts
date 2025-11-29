@@ -249,15 +249,19 @@ export class ReportService {
         include: tenantInclude,
       });
 
-      // Get all completed orders in date range for revenue calculation
+      // Get all completed orders - if no date range, get all (same as dashboard doesn't filter orders by date for tenant count)
+      const orderWhere: any = {
+        status: 'COMPLETED',
+      };
+      if (start && end) {
+        orderWhere.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+
       const allOrders = await dbClient.order.findMany({
-        where: {
-          status: 'COMPLETED',
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
+        where: orderWhere,
         select: {
           total: true,
           tenantId: true,
