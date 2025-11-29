@@ -553,7 +553,7 @@ export class ReportService {
       const byDate: any[] = [];
       const dateGroups: Record<string, { orders: any[]; revenue: number; count: number }> = {};
 
-      orders.forEach((order) => {
+      orders.forEach((order: any) => {
         const orderDate = new Date(order.createdAt);
         let dateKey: string;
         let dateLabel: string;
