@@ -244,11 +244,10 @@ async function getSuperAdminStats() {
     const { AVAILABLE_ADDONS } = await import('../services/addon.service');
     const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
-    // Calculate addon revenue
+    // Calculate addon revenue - get ALL addons (not just active) to match report logic
     const allAddons = await prisma.tenantAddon.findMany({
-      where: { status: 'active' },
       include: { tenant: { select: { name: true } } },
-      orderBy: { subscribedAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
 
     // Calculate subscription revenue
