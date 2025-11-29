@@ -394,6 +394,7 @@ export class ReportService {
           startDate: sub.startDate,
           endDate: sub.endDate,
           createdAt: sub.createdAt,
+          addedBySuperAdmin: sub.addedBySuperAdmin || false,
         })),
         addons: addons.map((addon) => ({
           id: addon.id,
@@ -405,6 +406,7 @@ export class ReportService {
           subscribedAt: addon.subscribedAt,
           expiresAt: addon.expiresAt,
           price: Number(addon.addon?.price || (addon.config as any)?.price || 0),
+          addedBySuperAdmin: addon.addedBySuperAdmin || false,
         })),
       };
     } catch (error: any) {

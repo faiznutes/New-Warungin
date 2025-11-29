@@ -119,7 +119,7 @@ router.post(
         if (userRole !== 'SUPER_ADMIN') {
           return res.status(403).json({ message: 'Plan is required for tenant admin' });
         }
-        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration);
+        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration, true); // true = added by super admin
         res.json(result);
       }
     } catch (error: any) {
