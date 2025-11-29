@@ -9,14 +9,36 @@ import { PrismaClient } from '@prisma/client';
  * Clean database URL (remove query parameters for connection pooling)
  */
 function cleanDatabaseUrl(url: string): string {
+  if (!url) {
+    throw new Error('Database URL is not defined');
+  }
+  
+  let cleanedUrl = url;
+  
+  // Remove "DATABASE_URL=" prefix if present
+  if (cleanedUrl.startsWith('DATABASE_URL=')) {
+    cleanedUrl = cleanedUrl.replace('DATABASE_URL=', '');
+  }
+  cleanedUrl = cleanedUrl.replace(/DATABASE_URL=$/g, '');
+  cleanedUrl = cleanedUrl.replace(/DATABASE_URL=/g, '');
+  
+  // Trim whitespace
+  cleanedUrl = cleanedUrl.trim();
+  
   try {
-    const urlObj = new URL(url);
+    const urlObj = new URL(cleanedUrl);
     // Remove query parameters that might interfere with connection
     urlObj.search = '';
-    return urlObj.toString();
-  } catch {
-    return url;
+    cleanedUrl = urlObj.toString();
+  } catch (error) {
+    // If URL parsing fails, return original (might be valid PostgreSQL connection string)
+    // Just validate it starts with postgresql:// or postgres://
+    if (!cleanedUrl.startsWith('postgresql://') && !cleanedUrl.startsWith('postgres://')) {
+      throw new Error(`Invalid DATABASE_URL format: URL must start with postgresql:// or postgres://`);
+    }
   }
+  
+  return cleanedUrl;
 }
 
 let readReplicaClient: PrismaClient | null = null;
