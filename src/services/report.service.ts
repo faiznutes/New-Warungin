@@ -373,7 +373,7 @@ export class ReportService {
             },
           },
           orderBy: {
-            createdAt: 'desc', // Use createdAt as primary sort since subscribedAt might be null
+            subscribedAt: 'desc', // Use subscribedAt for sorting
           },
         });
       } catch (error: any) {
@@ -381,14 +381,17 @@ export class ReportService {
         addons = []; // Return empty array on error
       }
       
-      // Sort addons manually: subscribedAt desc, then createdAt desc
+      // Sort addons manually: subscribedAt desc
       let sortedAddons: any[] = [];
       try {
         sortedAddons = (addons || []).sort((a: any, b: any) => {
           try {
-            const aDate = a?.subscribedAt || a?.createdAt;
-            const bDate = b?.subscribedAt || b?.createdAt;
-            if (!aDate || !bDate) return 0;
+            // Use subscribedAt (it's required field, but handle null case)
+            const aDate = a?.subscribedAt;
+            const bDate = b?.subscribedAt;
+            if (!aDate && !bDate) return 0;
+            if (!aDate) return 1; // Put null dates at the end
+            if (!bDate) return -1; // Put null dates at the end
             return new Date(bDate).getTime() - new Date(aDate).getTime();
           } catch (err: any) {
             logger.warn('Error sorting addon', { error: err.message });
