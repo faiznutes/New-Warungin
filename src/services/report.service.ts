@@ -256,14 +256,20 @@ export class ReportService {
       // Calculate total revenue from all orders
       const totalSalesRevenue = allOrders.reduce((sum, order) => sum + Number(order.total), 0);
 
-      // Get subscriptions in date range with full details
+      // Get subscriptions - if no date range, get all subscriptions (same as dashboard)
+      // If date range provided, filter by createdAt
+      const subscriptionWhere: any = {};
+      if (start && end) {
+        // If date range provided, filter by createdAt
+        subscriptionWhere.createdAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+      // If no date range, get all subscriptions (same as dashboard logic)
+
       const subscriptions = await dbClient.subscription.findMany({
-        where: {
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
+        where: subscriptionWhere,
         include: {
           tenant: {
             select: {
@@ -277,17 +283,29 @@ export class ReportService {
         },
       });
 
-      // Calculate subscription revenue
+      // Calculate subscription revenue (same logic as dashboard)
       const totalSubscriptionRevenue = subscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
 
-      // Get addons in date range with full details
+      // Get addon prices from service (same as dashboard)
+      const { AVAILABLE_ADDONS } = await import('../services/addon.service');
+      const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
+
+      // Get addons - if no date range, get all active addons (same as dashboard)
+      // If date range provided, filter by subscribedAt
+      const addonWhere: any = {};
+      if (start && end) {
+        // If date range provided, filter by subscribedAt
+        addonWhere.subscribedAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      } else {
+        // If no date range, get all active addons (same as dashboard logic)
+        addonWhere.status = 'active';
+      }
+
       const addons = await dbClient.tenantAddon.findMany({
-        where: {
-          subscribedAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
+        where: addonWhere,
         include: {
           addon: {
             select: {
@@ -308,10 +326,15 @@ export class ReportService {
         },
       });
 
-      // Calculate addon revenue
+      // Calculate addon revenue (same logic as dashboard)
       const totalAddonRevenue = addons.reduce((sum, addon) => {
-        const price = Number(addon.addon?.price || (addon.config as any)?.price || 0);
-        return sum + price;
+        const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
+        // Use same calculation as dashboard: (price * duration) / 30
+        const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+          ? (addon.config as any).originalDuration || 30
+          : 30;
+        const revenue = (price * duration) / 30; // Convert to total revenue (same as dashboard)
+        return sum + revenue;
       }, 0);
 
       // Total global revenue = subscription + addon revenue (platform revenue)
