@@ -53,7 +53,7 @@ router.get(
   '/stats',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response, next) => {
+  async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
       const userRole = user?.role;
