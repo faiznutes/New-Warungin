@@ -163,6 +163,9 @@ export class ReportService {
             },
           },
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching customers in getCustomerAnalytics', { error: error.message, tenantId });
+        return []; // Return empty array on error
       });
 
       return customers.map((customer: any) => {
