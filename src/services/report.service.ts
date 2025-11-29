@@ -211,9 +211,167 @@ export class ReportService {
   }
 
   async generateSalesReport(tenantId: string, options: any) {
-    const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const endDate = options.endDate ? new Date(options.endDate) : new Date();
-    return this.getSalesReport(tenantId, startDate, endDate);
+    try {
+      const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const endDate = options.endDate ? new Date(options.endDate) : new Date();
+      
+      // Set time to start/end of day
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+      
+      const period = options.period || 'all';
+      const readReplica = getReadReplicaClient();
+      
+      // Get all orders with items and products
+      const orders = await readReplica.order.findMany({
+        where: {
+          tenantId,
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          status: 'COMPLETED',
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+          customer: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          outlet: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      // Get transactions
+      const transactions = await readReplica.transaction.findMany({
+        where: {
+          tenantId,
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          status: 'COMPLETED',
+        },
+      });
+
+      // Calculate totals
+      const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total), 0);
+      const totalOrders = orders.length;
+      const totalItems = orders.reduce((sum, o) => sum + o.items.length, 0);
+      const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+      // Group by date based on period
+      const byDate: any[] = [];
+      const dateGroups: Record<string, { orders: any[]; revenue: number; count: number }> = {};
+
+      orders.forEach((order) => {
+        const orderDate = new Date(order.createdAt);
+        let dateKey: string;
+        let dateLabel: string;
+
+        if (period === 'daily') {
+          dateKey = orderDate.toISOString().split('T')[0]; // YYYY-MM-DD
+          dateLabel = dateKey;
+        } else if (period === 'weekly') {
+          // Get week start (Monday)
+          const weekStart = new Date(orderDate);
+          weekStart.setDate(orderDate.getDate() - orderDate.getDay() + (orderDate.getDay() === 0 ? -6 : 1));
+          dateKey = weekStart.toISOString().split('T')[0];
+          dateLabel = `${dateKey} (Week ${Math.ceil((orderDate.getDate() + new Date(orderDate.getFullYear(), orderDate.getMonth(), 1).getDay()) / 7)})`;
+        } else if (period === 'monthly') {
+          dateKey = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+          dateLabel = new Date(orderDate.getFullYear(), orderDate.getMonth(), 1).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+        } else {
+          // 'all' - group all in one
+          dateKey = 'all';
+          dateLabel = 'All Time';
+        }
+
+        if (!dateGroups[dateKey]) {
+          dateGroups[dateKey] = {
+            orders: [],
+            revenue: 0,
+            count: 0,
+          };
+        }
+
+        dateGroups[dateKey].orders.push(order);
+        dateGroups[dateKey].revenue += Number(order.total);
+        dateGroups[dateKey].count += 1;
+      });
+
+      // Convert to array format
+      Object.keys(dateGroups).sort().forEach((dateKey) => {
+        const group = dateGroups[dateKey];
+        const dateObj = period === 'daily' 
+          ? new Date(dateKey) 
+          : period === 'monthly'
+          ? new Date(dateKey + '-01')
+          : period === 'weekly'
+          ? new Date(dateKey)
+          : new Date();
+
+        // Calculate cost of goods from order items
+        let costOfGoods = 0;
+        group.orders.forEach((order: any) => {
+          if (order.items && Array.isArray(order.items)) {
+            order.items.forEach((item: any) => {
+              const cost = Number(item.cost || item.product?.cost || 0);
+              costOfGoods += cost * item.quantity;
+            });
+          }
+        });
+
+        const grossProfit = group.revenue - costOfGoods;
+        const profitMargin = group.revenue > 0 ? (grossProfit / group.revenue) * 100 : 0;
+
+        byDate.push({
+          date: dateObj.toISOString(),
+          dateLabel: period === 'daily' 
+            ? new Date(dateKey).toLocaleDateString('id-ID')
+            : period === 'monthly'
+            ? new Date(dateKey + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
+            : period === 'weekly'
+            ? `Week of ${new Date(dateKey).toLocaleDateString('id-ID')}`
+            : 'All Time',
+          revenue: group.revenue,
+          count: group.count,
+          orders: group.orders,
+          costOfGoods,
+          grossProfit,
+          profitMargin,
+        });
+      });
+
+      return {
+        summary: {
+          totalRevenue,
+          totalOrders,
+          totalItems,
+          averageOrderValue,
+        },
+        byDate,
+        orders,
+        transactions,
+      };
+    } catch (error: any) {
+      logger.error('Error generating sales report', { error: error.message, tenantId });
+      throw error;
+    }
   }
 
   async generateProductReport(tenantId: string, options: any) {
@@ -249,9 +407,23 @@ export class ReportService {
   }
 
   async generateFinancialReport(tenantId: string, options: any) {
-    const startDate = options.startDate ? new Date(options.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const endDate = options.endDate ? new Date(options.endDate) : new Date();
-    return this.getSalesReport(tenantId, startDate, endDate);
+    // Financial report uses same structure as sales report but with cost/profit calculations
+    const salesReport = await this.generateSalesReport(tenantId, options);
+    
+    // Calculate financial summary
+    const totalCostOfGoods = salesReport.byDate?.reduce((sum: number, item: any) => sum + (item.costOfGoods || 0), 0) || 0;
+    const totalGrossProfit = salesReport.summary.totalRevenue - totalCostOfGoods;
+    const overallProfitMargin = salesReport.summary.totalRevenue > 0 
+      ? (totalGrossProfit / salesReport.summary.totalRevenue) * 100 
+      : 0;
+
+    return {
+      ...salesReport,
+      revenue: salesReport.summary.totalRevenue,
+      costOfGoods: totalCostOfGoods,
+      grossProfit: totalGrossProfit,
+      profitMargin: overallProfitMargin,
+    };
   }
 
   generateGlobalReportPDF(report: any, start?: Date, end?: Date): string {

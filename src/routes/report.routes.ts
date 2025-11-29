@@ -184,13 +184,52 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const { startDate, endDate, type } = req.query;
+      const { startDate, endDate, type, period } = req.query;
 
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
       const reportType = (type as string) || 'sales';
+      const periodType = (period as string) || 'all';
 
-      const report = await reportService.getTenantReport(tenantId, start, end, reportType);
+      // Use new report service methods for consistency
+      let report: any;
+      switch (reportType) {
+        case 'sales':
+          report = await reportService.generateSalesReport(tenantId, {
+            startDate: start?.toISOString(),
+            endDate: end?.toISOString(),
+            period: periodType as any,
+          });
+          break;
+        case 'products':
+          report = await reportService.generateProductReport(tenantId, {
+            startDate: start?.toISOString(),
+            endDate: end?.toISOString(),
+            period: periodType as any,
+          });
+          break;
+        case 'customers':
+          report = await reportService.generateCustomerReport(tenantId, {
+            startDate: start?.toISOString(),
+            endDate: end?.toISOString(),
+            period: periodType as any,
+          });
+          break;
+        case 'inventory':
+          report = await reportService.generateInventoryReport(tenantId, {});
+          break;
+        case 'financial':
+          report = await reportService.generateFinancialReport(tenantId, {
+            startDate: start?.toISOString(),
+            endDate: end?.toISOString(),
+            period: periodType as any,
+          });
+          break;
+        default:
+          // Fallback to old method for backward compatibility
+          report = await reportService.getTenantReport(tenantId, start, end, reportType);
+      }
+
       res.json(report);
     } catch (error: any) {
       console.error('Error loading report:', error);
