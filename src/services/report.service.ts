@@ -333,22 +333,11 @@ export class ReportService {
       // If date range provided, filter by subscribedAt or createdAt (fallback)
       const addonWhere: any = {};
       if (start && end) {
-        // If date range provided, filter by subscribedAt or createdAt (fallback)
-        addonWhere.OR = [
-          {
-            subscribedAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          {
-            subscribedAt: null,
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        ];
+        // If date range provided, filter by subscribedAt
+        addonWhere.subscribedAt = {
+          gte: startDate,
+          lte: endDate,
+        };
       }
       // If no date range, get ALL addons (no status filter, no date filter) - same as dashboard logic for subscriptions
       // This ensures all addons are fetched regardless of status
@@ -510,7 +499,8 @@ export class ReportService {
             const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
             
             // Use subscribedAt if available, otherwise use createdAt as fallback
-            const subscribedAt = addon?.subscribedAt || addon?.createdAt;
+            // Use subscribedAt (it's required field)
+            const subscribedAt = addon?.subscribedAt;
             
             return {
               id: addon?.id || '',
