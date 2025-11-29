@@ -637,19 +637,56 @@ const totalAddonPages = computed(() => {
 const loadReport = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/reports/global', {
-      params: {
-        startDate: dateRange.value.from,
-        endDate: dateRange.value.to,
-      },
-    });
+    const params: any = {};
+    
+    // Only add date range if both dates are provided
+    if (dateRange.value.from && dateRange.value.to) {
+      params.startDate = dateRange.value.from;
+      params.endDate = dateRange.value.to;
+    }
+    
+    const response = await api.get('/reports/global', { params });
     reportData.value = response.data;
+    
+    // Log for debugging
+    if (!reportData.value) {
+      console.warn('Global report data is null or empty', { params });
+    } else {
+      console.log('Global report data loaded:', {
+        summary: reportData.value.summary,
+        tenantsCount: reportData.value.tenants?.length || 0,
+        subscriptionsCount: reportData.value.subscriptions?.length || 0,
+        addonsCount: reportData.value.addons?.length || 0,
+      });
+    }
+    
+    // Ensure reportData has proper structure even if empty
+    if (!reportData.value) {
+      reportData.value = {
+        summary: {
+          totalGlobalRevenue: 0,
+          totalSubscriptionRevenue: 0,
+          totalAddonRevenue: 0,
+          totalSalesRevenue: 0,
+          totalTenants: 0,
+          activeTenants: 0,
+          totalUsers: 0,
+          totalOrders: 0,
+        },
+        tenants: [],
+        subscriptions: [],
+        addons: [],
+      };
+    }
+    
     // Reset pagination when data changes
     subscriptionPage.value = 1;
     addonPage.value = 1;
   } catch (error: any) {
     console.error('Error loading global report:', error);
-    await showError('Gagal memuat laporan global');
+    if (error.response?.status !== 401 && error.response?.status !== 403) {
+      await showError('Gagal memuat laporan global');
+    }
   } finally {
     loading.value = false;
   }

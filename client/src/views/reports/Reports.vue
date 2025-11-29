@@ -615,8 +615,38 @@ const loadReport = async () => {
       params.endDate = dateRange.value.to;
     }
 
-    const reportResponse = await api.get('/reports/tenant', { params }).catch(() => ({ data: null }));
+    const reportResponse = await api.get('/reports/tenant', { params }).catch((error: any) => {
+      console.error('Error fetching report:', error);
+      return { data: null };
+    });
+    
     reportData.value = reportResponse.data;
+    
+    // Log for debugging
+    if (!reportData.value) {
+      console.warn('Report data is null or empty', { params });
+    } else {
+      console.log('Report data loaded:', {
+        summary: reportData.value.summary,
+        byDateCount: reportData.value.byDate?.length || 0,
+        ordersCount: reportData.value.orders?.length || 0,
+      });
+    }
+    
+    // Ensure reportData has proper structure even if empty
+    if (!reportData.value) {
+      reportData.value = {
+        summary: {
+          totalRevenue: 0,
+          totalOrders: 0,
+          totalItems: 0,
+          averageOrderValue: 0,
+        },
+        byDate: [],
+        orders: [],
+        transactions: [],
+      };
+    }
     
     // Process product details if available - pisah 1 per 1 (tidak digabung)
     if (reportData.value?.byDate && Array.isArray(reportData.value.byDate)) {
