@@ -424,17 +424,18 @@ model Report {
 
 // Tenant Addon Model
 model TenantAddon {
-  id           String    @id @default(uuid())
-  tenantId     String
-  addonId      String
-  addonName    String
-  addonType    String // ADD_USERS, ADD_PRODUCTS, ADD_OUTLETS, E_COMMERCE, etc.
-  status       String    @default("active")
-  limit        Int? // Limit for this addon (e.g., 100 products, 5 users)
-  currentUsage Int       @default(0) // Current usage count
-  subscribedAt DateTime  @default(now())
-  expiresAt    DateTime?
-  config       Json?
+  id                String    @id @default(uuid())
+  tenantId          String
+  addonId           String
+  addonName         String
+  addonType         String // ADD_USERS, ADD_PRODUCTS, ADD_OUTLETS, E_COMMERCE, etc.
+  status            String    @default("active")
+  limit             Int? // Limit for this addon (e.g., 100 products, 5 users)
+  currentUsage      Int       @default(0) // Current usage count
+  subscribedAt      DateTime  @default(now())
+  expiresAt         DateTime?
+  config            Json?
+  addedBySuperAdmin Boolean   @default(false) // true if added by super admin, false if purchased by tenant
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -456,6 +457,7 @@ model Subscription {
   amount           Decimal  @db.Decimal(10, 2)
   temporaryUpgrade Boolean  @default(false) // true jika upgrade sementara 1 bulan
   previousPlan     String? // Plan sebelumnya (untuk revert)
+  addedBySuperAdmin Boolean @default(false) // true if added by super admin, false if purchased by tenant
   createdAt        DateTime @default(now())
 
   // Relations

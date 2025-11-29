@@ -383,6 +383,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     // Create subscription record with plan price
     // Convert amount to string for Prisma Decimal compatibility
     // This subscription will be recorded as a purchase in global reports
+    // When created by super admin (via createTenant), set addedBySuperAdmin = true
     const subscription = await tx.subscription.create({
       data: {
         tenantId: tenant.id,
@@ -391,6 +392,7 @@ export const createTenant = async (input: CreateTenantInput) => {
         endDate: subscriptionEnd,
         status: 'ACTIVE',
         amount: planPrice.toString(), // Set amount sesuai harga paket untuk laporan global
+        addedBySuperAdmin: true, // Always true when created via createTenant (super admin only)
       },
     });
     

@@ -69,6 +69,7 @@ router.post(
         addonType: req.body.addonType,
         limit: req.body.limit || null,
         duration: req.body.duration || undefined,
+        addedBySuperAdmin: userRole === 'SUPER_ADMIN', // Set true if created by super admin
       };
 
       const addon = await addonService.subscribeAddon(tenantId, addonData);

@@ -361,13 +361,14 @@ class PaymentService {
           });
 
           try {
-            // Subscribe addon
+            // Subscribe addon (purchased by tenant, not super admin)
             await addonService.default.subscribeAddon(tenantId, {
               addonId: extractedItemId,
               addonName: addonInfo.name,
               addonType: addonInfo.type,
               limit: addonInfo.defaultLimit ?? undefined,
               duration: 30,
+              addedBySuperAdmin: false, // Purchased by tenant via payment
             });
 
             // Update mapping status

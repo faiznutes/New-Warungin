@@ -111,6 +111,7 @@ router.post(
         const result = await subscriptionService.extendSubscription(tenantId, {
           plan: req.body.plan,
           duration: req.body.duration,
+          addedBySuperAdmin: userRole === 'SUPER_ADMIN', // Set true if created by super admin
         });
         res.json(result);
       } else {

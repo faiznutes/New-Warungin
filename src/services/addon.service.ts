@@ -268,6 +268,11 @@ export class AddonService {
         updateData.subscribedAt = now;
       }
       
+      // Set addedBySuperAdmin if provided
+      if (data.addedBySuperAdmin !== undefined) {
+        updateData.addedBySuperAdmin = data.addedBySuperAdmin;
+      }
+      
       const updatedAddon = await prisma.tenantAddon.update({
         where: { id: existing.id },
         data: updateData,
@@ -310,6 +315,7 @@ export class AddonService {
         subscribedAt: now, // Set subscribedAt untuk laporan global
         expiresAt,
         config: addonConfig,
+        addedBySuperAdmin: data.addedBySuperAdmin || false, // Set based on who created it
       },
     });
     

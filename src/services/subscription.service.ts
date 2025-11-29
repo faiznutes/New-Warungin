@@ -6,6 +6,7 @@ import { applyPlanFeatures } from './plan-features.service';
 export interface CreateSubscriptionInput {
   plan: 'BASIC' | 'PRO' | 'CUSTOM';
   duration: number; // days
+  addedBySuperAdmin?: boolean; // true if added by super admin
 }
 
 export interface UpgradeSubscriptionInput {
@@ -614,6 +615,7 @@ export class SubscriptionService {
           endDate: upgradeEndDate,
           status: 'ACTIVE',
           amount: finalAmount.toString(),
+          addedBySuperAdmin: false, // Upgrades are always purchased by tenant
           ...(temporaryUpgrade && { temporaryUpgrade: true }),
           ...(previousPlan && { previousPlan }),
         } as any,
@@ -1395,7 +1397,7 @@ export class SubscriptionService {
    * Extend subscription with custom duration (for Super Admin)
    * This allows extending without changing plan
    */
-  async extendSubscriptionCustom(tenantId: string, duration: number) {
+  async extendSubscriptionCustom(tenantId: string, duration: number, addedBySuperAdmin: boolean = false) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
     });
@@ -1471,6 +1473,7 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
+          addedBySuperAdmin: addedBySuperAdmin, // Set based on who created it
           // Preserve temporaryUpgrade flags if it's a temporary upgrade
           ...(shouldPreserveTemporaryUpgrade ? {
             temporaryUpgrade: true,
