@@ -27,7 +27,11 @@ router.get(
       const settings = await settingsService.getSystemSettings();
       res.json(settings);
     } catch (error: any) {
-      next(error);
+      console.error('Error loading system settings:', error);
+      res.status(500).json({
+        message: error.message || 'Failed to load system settings',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      });
     }
   }
 );
@@ -58,7 +62,11 @@ router.put(
         settings: updatedSettings,
       });
     } catch (error: any) {
-      next(error);
+      console.error('Error updating system settings:', error);
+      res.status(500).json({
+        message: error.message || 'Failed to update system settings',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      });
     }
   }
 );

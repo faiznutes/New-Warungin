@@ -206,8 +206,11 @@ router.get(
       
       // Ensure response hasn't been sent
       if (!res.headersSent) {
-        // Pass error to Express error handler
-        next(error);
+        // Return error response instead of next(error) to prevent 502
+        res.status(500).json({
+          message: err.message || 'Failed to fetch tenants',
+          error: 'INTERNAL_SERVER_ERROR',
+        });
       } else {
         logger.warn('Error in GET /tenants but response already sent:', {
           error: err.message,
