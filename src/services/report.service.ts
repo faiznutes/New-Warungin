@@ -211,42 +211,36 @@ export class ReportService {
       });
 
       // Get all tenants - filter subscriptions and orders by date range if provided
-      const tenantInclude: any = {
-        subscriptions: start && end ? {
-          where: {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-        } : true, // If no date range, get all subscriptions
-        _count: {
-          select: {
-            users: true,
-            orders: start && end ? {
-              where: {
-                status: 'COMPLETED',
-                createdAt: {
-                  gte: startDate,
-                  lte: endDate,
-                },
-              },
-            } : {
-              where: {
-                status: 'COMPLETED',
-              },
-            },
-          },
-        },
-      };
-
+      // Use select instead of include to avoid potential null reference issues
       const tenants = await dbClient.tenant.findMany({
         where: {
           name: {
             not: 'System',
           },
         },
-        include: tenantInclude,
+        select: {
+          id: true,
+          name: true,
+          isActive: true,
+          _count: {
+            select: {
+              users: true,
+              orders: start && end ? {
+                where: {
+                  status: 'COMPLETED',
+                  createdAt: {
+                    gte: startDate,
+                    lte: endDate,
+                  },
+                },
+              } : {
+                where: {
+                  status: 'COMPLETED',
+                },
+              },
+            },
+          },
+        },
       });
 
       // Get all completed orders - if no date range, get all (same as dashboard doesn't filter orders by date for tenant count)
