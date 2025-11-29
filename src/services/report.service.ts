@@ -384,7 +384,7 @@ export class ReportService {
           totalOrders,
         },
         tenants,
-        subscriptions: subscriptions.map((sub) => ({
+        subscriptions: subscriptions.map((sub: any) => ({
           id: sub.id,
           tenantId: sub.tenantId,
           tenantName: sub.tenant?.name || 'Unknown',
@@ -394,9 +394,9 @@ export class ReportService {
           startDate: sub.startDate,
           endDate: sub.endDate,
           createdAt: sub.createdAt,
-          addedBySuperAdmin: sub.addedBySuperAdmin || false,
+          addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
-        addons: addons.map((addon) => ({
+        addons: addons.map((addon: any) => ({
           id: addon.id,
           addonId: addon.addonId,
           addonName: addon.addon?.name || 'Unknown',
@@ -406,7 +406,7 @@ export class ReportService {
           subscribedAt: addon.subscribedAt,
           expiresAt: addon.expiresAt,
           price: Number(addon.addon?.price || (addon.config as any)?.price || 0),
-          addedBySuperAdmin: addon.addedBySuperAdmin || false,
+          addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
       };
     } catch (error: any) {
