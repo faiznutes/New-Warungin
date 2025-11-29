@@ -106,18 +106,23 @@ export class ReportService {
 
       // Group by product
       const productStats = (orderItems || []).reduce((acc: Record<string, any>, item: any) => {
+        if (!item || !item.productId) {
+          return acc; // Skip invalid items
+        }
         const productId = item.productId;
         if (!acc[productId]) {
           acc[productId] = {
-            product: item.product,
+            product: item.product || null,
             quantity: 0,
             revenue: 0,
             orders: new Set(),
           };
         }
-        acc[productId].quantity += item.quantity;
-        acc[productId].revenue += Number(item.price) * item.quantity;
-        acc[productId].orders.add(item.orderId);
+        acc[productId].quantity += Number(item.quantity || 0);
+        acc[productId].revenue += Number(item.price || 0) * Number(item.quantity || 0);
+        if (item.orderId) {
+          acc[productId].orders.add(item.orderId);
+        }
         return acc;
       }, {} as Record<string, any>);
 
