@@ -380,7 +380,7 @@ export class ReportService {
           totalSalesRevenue, // Revenue from tenant sales
           totalTenants: tenants.length,
           activeTenants: tenants.filter((t: any) => t.isActive).length,
-          totalUsers: tenants.reduce((sum: number, t: any) => sum + t._count.users, 0),
+          totalUsers: tenants.reduce((sum: number, t: any) => sum + (t._count?.users || 0), 0),
           totalOrders,
         },
         tenants,
@@ -390,7 +390,7 @@ export class ReportService {
           tenantName: sub.tenant?.name || 'Unknown',
           plan: sub.plan,
           status: sub.status,
-          amount: Number(sub.amount),
+          amount: Number(sub.amount || 0),
           startDate: sub.startDate,
           endDate: sub.endDate,
           createdAt: sub.createdAt,
@@ -410,7 +410,25 @@ export class ReportService {
         })),
       };
     } catch (error: any) {
-      logger.error('Error generating global report', { error: error.message });
+      logger.error('Error generating global report', { 
+        error: error.message, 
+        stack: error.stack,
+        code: error.code,
+        start: start?.toISOString(),
+        end: end?.toISOString(),
+      });
+      
+      // Handle database connection errors
+      if (error.code === 'P1001' || error.code === 'P1002' || error.message?.includes('connect')) {
+        throw new Error('Database connection error. Please try again.');
+      }
+      
+      // Handle Prisma errors
+      if (error.code?.startsWith('P')) {
+        throw new Error(`Database error: ${error.message}`);
+      }
+      
+      // Re-throw other errors
       throw error;
     }
   }
