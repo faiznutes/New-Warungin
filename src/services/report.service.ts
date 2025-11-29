@@ -369,17 +369,9 @@ export class ReportService {
             },
           },
         },
-        orderBy: [
-          {
-            subscribedAt: {
-              sort: 'desc',
-              nulls: 'last',
-            },
-          },
-          {
-            createdAt: 'desc',
-          },
-        ],
+        orderBy: {
+          createdAt: 'desc', // Use createdAt as primary sort since subscribedAt might be null
+        },
       }).catch((error: any) => {
         logger.error('Error fetching addons in getGlobalReport', { error: error.message });
         return []; // Return empty array on error
