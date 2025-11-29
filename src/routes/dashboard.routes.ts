@@ -98,17 +98,49 @@ router.get(
     } catch (error: any) {
       // Don't throw error - return error response to prevent 502
       console.error('Error in dashboard stats route:', error);
-      logger.error('Error in dashboard stats route', {
+      
+      // Import logger dynamically to avoid circular dependency
+      const logger = await import('../utils/logger');
+      logger.default.error('Error in dashboard stats route', {
         error: error.message,
         stack: error.stack,
         userRole: (req as any).user?.role,
       });
       
-      // Return empty stats instead of throwing
-      res.status(500).json({
-        message: error.message || 'Failed to load dashboard stats',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+      // Return empty stats instead of throwing to prevent 502
+      if (userRole === 'SUPER_ADMIN' && !queryTenantId) {
+        // Return empty super admin stats
+        res.status(500).json({
+          overview: {
+            totalAddonRevenue: 0,
+            totalSubscriptionRevenue: 0,
+            totalRevenue: 0,
+            totalGlobalRevenue: 0,
+            totalAddons: 0,
+            activeSubscriptions: 0,
+            totalTenants: 0,
+            activeTenants: 0,
+            totalUsers: 0,
+            todayAddonRevenue: 0,
+            todaySubscriptionRevenue: 0,
+            todayRevenue: 0,
+            thisMonthAddonRevenue: 0,
+            thisMonthSubscriptionRevenue: 0,
+            thisMonthRevenue: 0,
+            revenueGrowth: 0,
+          },
+          topAddons: [],
+          recentSubscriptions: [],
+          recentAddons: [],
+          subscriptionBreakdown: [],
+        });
+      } else {
+        // Return error message for other cases
+        res.status(500).json({
+          message: error.message || 'Failed to load dashboard stats',
+          error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        });
+      }
     }
   }
 );
