@@ -282,6 +282,7 @@ export class ReportService {
         select: {
           total: true,
           tenantId: true,
+          id: true, // Add id for uniqueness
         },
       }).catch((error: any) => {
         logger.error('Error fetching orders in getGlobalReport', { error: error.message });
