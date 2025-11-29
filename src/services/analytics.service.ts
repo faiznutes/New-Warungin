@@ -50,6 +50,7 @@ class AnalyticsService {
     // Get sales data for last 6 months for better accuracy
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
 
     const orders = await prisma.order.findMany({
       where: {
@@ -61,7 +62,13 @@ class AnalyticsService {
         total: true,
         createdAt: true,
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
     });
+
+    // Log for debugging
+    console.log(`[Analytics] getPredictions for tenant ${tenantId}: Found ${orders.length} completed orders in last 6 months`);
 
     // Calculate monthly totals
     const monthlyTotals: Record<string, number> = {};
@@ -73,11 +80,26 @@ class AnalyticsService {
     const months = Object.keys(monthlyTotals).sort();
     const values = months.map(month => monthlyTotals[month] || 0);
 
-    if (values.length < 2) {
+    console.log(`[Analytics] Monthly totals:`, monthlyTotals);
+    console.log(`[Analytics] Values array:`, values);
+
+    // If no data at all, return 0
+    if (values.length === 0 || values.every(v => v === 0)) {
+      console.log(`[Analytics] No data available for predictions`);
       return {
         nextMonth: 0,
         trend: 0,
         accuracy: 0,
+      };
+    }
+
+    // If only one month of data, use that month as prediction
+    if (values.length === 1) {
+      console.log(`[Analytics] Only one month of data, using that as prediction`);
+      return {
+        nextMonth: values[0],
+        trend: 0,
+        accuracy: 50,
       };
     }
 
