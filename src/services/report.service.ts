@@ -386,7 +386,7 @@ export class ReportService {
       });
 
       // Calculate addon revenue (same logic as dashboard)
-      const totalAddonRevenue = (addons || []).reduce((sum: number, addon: any) => {
+      const totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
         const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
         // Use same calculation as dashboard: (price * duration) / 30
         const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
@@ -440,7 +440,7 @@ export class ReportService {
           createdAt: sub.createdAt,
           addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
         })),
-        addons: (addons || []).map((addon: any) => {
+        addons: (sortedAddons || []).map((addon: any) => {
           const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
           const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
             ? (addon.config as any).originalDuration || 30
