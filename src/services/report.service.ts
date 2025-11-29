@@ -402,6 +402,32 @@ export class ReportService {
       // Count total orders
       const totalOrders = allOrders.length;
       
+      // Calculate tenant reports (performance per tenant)
+      const tenantReportsMap = new Map<string, { tenantId: string; tenantName: string; totalRevenue: number; totalOrders: number }>();
+      
+      // Group orders by tenant
+      (allOrders || []).forEach((order: any) => {
+        const tenantId = order.tenantId;
+        if (!tenantId) return;
+        
+        if (!tenantReportsMap.has(tenantId)) {
+          // Find tenant name
+          const tenant = tenants.find((t: any) => t.id === tenantId);
+          tenantReportsMap.set(tenantId, {
+            tenantId: tenantId,
+            tenantName: tenant?.name || 'Unknown',
+            totalRevenue: 0,
+            totalOrders: 0,
+          });
+        }
+        
+        const report = tenantReportsMap.get(tenantId)!;
+        report.totalRevenue += Number(order.total || 0);
+        report.totalOrders += 1;
+      });
+      
+      const tenantReports = Array.from(tenantReportsMap.values());
+      
       // Log results for debugging
       logger.info('Global report query results', {
         totalSalesRevenue,
