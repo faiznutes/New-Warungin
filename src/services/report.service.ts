@@ -365,7 +365,7 @@ export class ReportService {
         totalAddonRevenue,
         totalGlobalRevenue,
         totalTenants: tenants.length,
-        activeTenants: tenants.filter(t => t.isActive).length,
+        activeTenants: tenants.filter((t: any) => t.isActive).length,
         totalOrders,
         ordersCount: allOrders.length,
         subscriptionsCount: subscriptions.length,

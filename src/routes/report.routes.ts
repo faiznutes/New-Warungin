@@ -92,8 +92,9 @@ router.get(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
+    let tenantId: string | undefined;
     try {
-      const tenantId = requireTenantId(req);
+      tenantId = requireTenantId(req);
       const { startDate, endDate, reportType, period, format } = req.query;
 
       // Check if export format is requested (requires EXPORT_REPORTS addon)
@@ -189,8 +190,9 @@ router.get(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
+    let tenantId: string | undefined;
     try {
-      const tenantId = requireTenantId(req);
+      tenantId = requireTenantId(req);
       const { startDate, endDate, type, period } = req.query;
 
       const start = startDate ? new Date(startDate as string) : undefined;
