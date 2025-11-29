@@ -353,37 +353,52 @@ export class ReportService {
       // If no date range, get all addons (not just active) - same as dashboard logic for subscriptions
       // Don't add any status filter
 
-      const addons = await dbClient.tenantAddon.findMany({
-        where: addonWhere,
-        include: {
-          addon: {
-            select: {
-              id: true,
-              name: true,
-              price: true,
+      let addons: any[] = [];
+      try {
+        addons = await dbClient.tenantAddon.findMany({
+          where: addonWhere,
+          include: {
+            addon: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+              },
+            },
+            tenant: {
+              select: {
+                id: true,
+                name: true,
+              },
             },
           },
-          tenant: {
-            select: {
-              id: true,
-              name: true,
-            },
+          orderBy: {
+            createdAt: 'desc', // Use createdAt as primary sort since subscribedAt might be null
           },
-        },
-        orderBy: {
-          createdAt: 'desc', // Use createdAt as primary sort since subscribedAt might be null
-        },
-      }).catch((error: any) => {
-        logger.error('Error fetching addons in getGlobalReport', { error: error.message });
-        return []; // Return empty array on error
-      });
+        });
+      } catch (error: any) {
+        logger.error('Error fetching addons in getGlobalReport', { error: error.message, stack: error.stack });
+        addons = []; // Return empty array on error
+      }
       
       // Sort addons manually: subscribedAt desc, then createdAt desc
-      const sortedAddons = (addons || []).sort((a: any, b: any) => {
-        const aDate = a.subscribedAt || a.createdAt;
-        const bDate = b.subscribedAt || b.createdAt;
-        return new Date(bDate).getTime() - new Date(aDate).getTime();
-      });
+      let sortedAddons: any[] = [];
+      try {
+        sortedAddons = (addons || []).sort((a: any, b: any) => {
+          try {
+            const aDate = a?.subscribedAt || a?.createdAt;
+            const bDate = b?.subscribedAt || b?.createdAt;
+            if (!aDate || !bDate) return 0;
+            return new Date(bDate).getTime() - new Date(aDate).getTime();
+          } catch (err: any) {
+            logger.warn('Error sorting addon', { error: err.message });
+            return 0;
+          }
+        });
+      } catch (error: any) {
+        logger.error('Error sorting addons', { error: error.message });
+        sortedAddons = addons || []; // Use unsorted if sort fails
+      }
 
       // Calculate addon revenue (same logic as dashboard)
       const totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
