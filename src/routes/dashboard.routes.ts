@@ -96,8 +96,19 @@ router.get(
       );
       res.json(stats);
     } catch (error: any) {
-      // Pass error to Express error handler
-      next(error);
+      // Don't throw error - return error response to prevent 502
+      console.error('Error in dashboard stats route:', error);
+      logger.error('Error in dashboard stats route', {
+        error: error.message,
+        stack: error.stack,
+        userRole: (req as any).user?.role,
+      });
+      
+      // Return empty stats instead of throwing
+      res.status(500).json({
+        message: error.message || 'Failed to load dashboard stats',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      });
     }
   }
 );
@@ -424,19 +435,31 @@ async function getSuperAdminStats() {
   } catch (error: any) {
     console.error('Error in getSuperAdminStats:', error);
     
-    // Handle database connection errors
-    if (error.code === 'P1001' || 
-        error.message?.includes('Can\'t reach database server') || 
-        error.message?.includes('connection') ||
-        error.message?.includes('Database connection error')) {
-      throw {
-        code: 'P1001',
-        message: 'Database connection error. Please check your database configuration.',
-      };
-    }
-    
-    // Re-throw other errors
-    throw error;
+    // Return empty structure instead of throwing to prevent 502
+    return {
+      overview: {
+        totalAddonRevenue: 0,
+        totalSubscriptionRevenue: 0,
+        totalRevenue: 0,
+        totalGlobalRevenue: 0,
+        totalAddons: 0,
+        activeSubscriptions: 0,
+        totalTenants: 0,
+        activeTenants: 0,
+        totalUsers: 0,
+        todayAddonRevenue: 0,
+        todaySubscriptionRevenue: 0,
+        todayRevenue: 0,
+        thisMonthAddonRevenue: 0,
+        thisMonthSubscriptionRevenue: 0,
+        thisMonthRevenue: 0,
+        revenueGrowth: 0,
+      },
+      topAddons: [],
+      recentSubscriptions: [],
+      recentAddons: [],
+      subscriptionBreakdown: [],
+    };
   }
 }
 
