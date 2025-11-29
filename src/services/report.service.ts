@@ -457,6 +457,10 @@ export class ReportService {
 
   async generateSalesReport(tenantId: string, options: any) {
     try {
+      if (!tenantId) {
+        throw new Error('Tenant ID is required');
+      }
+      
       const period = options.period || 'all';
       
       // If period is 'all' and no date range specified, get all data
@@ -534,6 +538,9 @@ export class ReportService {
         orderBy: {
           createdAt: 'asc',
         },
+      }).catch((error: any) => {
+        logger.error('Error fetching orders in generateSalesReport', { error: error.message, tenantId });
+        return []; // Return empty array on error
       });
 
       // Get transactions
@@ -551,6 +558,9 @@ export class ReportService {
       
       const transactions = await dbClient.transaction.findMany({
         where: transactionWhereClause,
+      }).catch((error: any) => {
+        logger.error('Error fetching transactions in generateSalesReport', { error: error.message, tenantId });
+        return []; // Return empty array on error
       });
       
       // Calculate totals
