@@ -329,11 +329,10 @@ export class ReportService {
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
       // Get addons - if no date range, get all addons (not just active)
-      // If date range provided, filter by subscribedAt
+      // If date range provided, filter by subscribedAt or createdAt
       const addonWhere: any = {};
       if (start && end) {
-        // If date range provided, filter by subscribedAt
-        // Also include addons without subscribedAt (set to createdAt as fallback)
+        // If date range provided, filter by subscribedAt or createdAt (fallback)
         addonWhere.OR = [
           {
             subscribedAt: {
@@ -351,6 +350,7 @@ export class ReportService {
         ];
       }
       // If no date range, get all addons (not just active) - same as dashboard logic for subscriptions
+      // Don't add any status filter
 
       const addons = await dbClient.tenantAddon.findMany({
         where: addonWhere,
@@ -369,9 +369,17 @@ export class ReportService {
             },
           },
         },
-        orderBy: {
-          subscribedAt: 'desc',
-        },
+        orderBy: [
+          {
+            subscribedAt: {
+              sort: 'desc',
+              nulls: 'last',
+            },
+          },
+          {
+            createdAt: 'desc',
+          },
+        ],
       }).catch((error: any) => {
         logger.error('Error fetching addons in getGlobalReport', { error: error.message });
         return []; // Return empty array on error
