@@ -247,7 +247,7 @@ async function getSuperAdminStats() {
     // Calculate addon revenue - get ALL addons (not just active) to match report logic
     const allAddons = await prisma.tenantAddon.findMany({
       include: { tenant: { select: { name: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { subscribedAt: 'desc' },
     });
 
     // Calculate subscription revenue
@@ -271,12 +271,12 @@ async function getSuperAdminStats() {
 
       totalAddonRevenue += revenue;
       
-      // Use subscribedAt if available, otherwise use createdAt as fallback
-      const subscribedAt = addon.subscribedAt || addon.createdAt;
-      if (new Date(subscribedAt) >= todayStart) {
+      // Use subscribedAt (it's required field, but handle null case)
+      const subscribedAt = addon.subscribedAt;
+      if (subscribedAt && new Date(subscribedAt) >= todayStart) {
         todayAddonRevenue += revenue;
       }
-      if (new Date(subscribedAt) >= thisMonthStart) {
+      if (subscribedAt && new Date(subscribedAt) >= thisMonthStart) {
         thisMonthAddonRevenue += revenue;
       }
 
