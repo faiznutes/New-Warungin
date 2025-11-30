@@ -290,11 +290,15 @@
                   </div>
                   <div>
                     <span class="text-gray-600">Untung:</span>
-                    <p class="font-semibold text-green-600">{{ formatCurrency(group.totalProfit) }}</p>
+                    <p class="font-semibold" :class="group.totalProfit >= 0 ? 'text-green-600' : 'text-red-600'">
+                      {{ formatCurrency(group.totalProfit) }}
+                    </p>
                   </div>
                   <div>
                     <span class="text-gray-600">Margin:</span>
-                    <p class="font-semibold text-green-600">{{ group.margin }}%</p>
+                    <p class="font-semibold" :class="parseFloat(group.margin) >= 0 ? 'text-green-600' : 'text-red-600'">
+                      {{ group.margin }}%
+                    </p>
                   </div>
                 </div>
               </div>
