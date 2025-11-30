@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="text-2xl font-bold text-gray-900">Manajemen Keuangan</h2>
-        <p class="text-gray-600">Cash flow, expenses, tax, forecasting, dan bank reconciliation</p>
+        <p class="text-gray-600">Arus kas, pengeluaran, pajak, perkiraan, dan rekonsiliasi bank</p>
       </div>
       <div class="flex space-x-3">
         <button
@@ -78,11 +78,11 @@
           <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
-          <p class="text-sm text-gray-600 mb-1">Total Expenses</p>
+          <p class="text-sm text-gray-600 mb-1">Total Pengeluaran</p>
           <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-600 mb-1">Net Cash Flow</p>
+          <p class="text-sm text-gray-600 mb-1">Arus Kas Bersih</p>
           <p class="text-3xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'">
             Rp {{ formatCurrency(cashFlowSummary.netCashFlow) }}
           </p>
