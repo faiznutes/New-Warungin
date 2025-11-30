@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="text-2xl font-bold text-gray-900">Fitur AI/ML</h2>
-        <p class="text-gray-600">Sales forecasting, product recommendations, customer segmentation, dan price optimization</p>
+        <p class="text-gray-600">Prediksi penjualan, rekomendasi produk, segmentasi pelanggan, dan optimasi harga</p>
       </div>
     </div>
 
@@ -16,28 +16,28 @@
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'forecast' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Sales Forecast
+          Prediksi Penjualan
         </button>
         <button
           @click="activeTab = 'recommendations'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'recommendations' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Product Recommendations
+          Rekomendasi Produk
         </button>
         <button
           @click="activeTab = 'segmentation'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'segmentation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Customer Segmentation
+          Segmentasi Pelanggan
         </button>
         <button
           @click="activeTab = 'pricing'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'pricing' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Price Optimization
+          Optimasi Harga
         </button>
       </nav>
     </div>
@@ -46,7 +46,7 @@
     <div v-if="activeTab === 'forecast'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Sales Forecasting</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Prediksi Penjualan</h3>
           <div class="flex items-center space-x-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Period (Months)</label>
@@ -72,7 +72,7 @@
           <!-- Summary Card -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
-              <p class="text-sm text-gray-600 mb-1">Total Forecasted Revenue</p>
+              <p class="text-sm text-gray-600 mb-1">Total Pendapatan yang Diprediksi</p>
               <p class="text-2xl font-bold text-green-600">Rp {{ formatCurrency(salesForecastSummary.totalRevenue) }}</p>
             </div>
             <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
@@ -95,7 +95,7 @@
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forecasted Revenue</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pendapatan yang Diprediksi</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
@@ -132,7 +132,7 @@
     <div v-if="activeTab === 'recommendations'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Product Recommendations</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Rekomendasi Produk</h3>
           <div class="flex items-center space-x-4">
             <select
               v-model="recommendationType"
@@ -147,7 +147,7 @@
               v-if="recommendationType === 'PERSONALIZED'"
               v-model="customerIdForRecommendation"
               type="text"
-              placeholder="Customer ID"
+              placeholder="ID Pelanggan"
               class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             />
           </div>
@@ -182,7 +182,7 @@
     <div v-if="activeTab === 'segmentation'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Customer Segmentation</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Segmentasi Pelanggan</h3>
           <button
             @click="loadCustomerSegments"
             :disabled="loading"
@@ -205,17 +205,17 @@
                 <p class="text-sm text-gray-600">{{ segment.description }}</p>
               </div>
               <span class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
-                {{ segment.customerCount }} customers
+                {{ segment.customerCount }} pelanggan
               </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <p class="text-sm text-gray-600">Total Revenue</p>
+                <p class="text-sm text-gray-600">Total Pendapatan</p>
                 <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(segment.totalRevenue) }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600">Average Order Value</p>
+                <p class="text-sm text-gray-600">Nilai Rata-rata Pesanan</p>
                 <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(segment.averageOrderValue) }}</p>
               </div>
               <div>
@@ -225,7 +225,7 @@
             </div>
 
             <div v-if="segment.topCustomers && segment.topCustomers.length > 0" class="mt-4">
-              <p class="text-sm font-medium text-gray-700 mb-2">Top Customers:</p>
+              <p class="text-sm font-medium text-gray-700 mb-2">Pelanggan Teratas:</p>
               <div class="flex flex-wrap gap-2">
                 <span
                   v-for="customer in segment.topCustomers.slice(0, 5)"
@@ -239,7 +239,7 @@
           </div>
         </div>
         <div v-else class="text-center py-12 text-gray-500">
-          Klik "Refresh Segments" untuk melihat customer segmentation
+          Klik "Refresh Segments" untuk melihat segmentasi pelanggan
         </div>
       </div>
     </div>
@@ -248,7 +248,7 @@
     <div v-if="activeTab === 'pricing'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-semibold text-gray-900">Price Optimization</h3>
+          <h3 class="text-lg font-semibold text-gray-900">Optimasi Harga</h3>
           <div class="flex items-center space-x-4">
             <select
               v-model="optimizationStrategy"
@@ -256,7 +256,7 @@
               class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             >
               <option value="DEMAND_BASED">Demand-Based</option>
-              <option value="PROFIT_MARGIN">Profit Margin</option>
+              <option value="PROFIT_MARGIN">Margin Laba</option>
               <option value="COMPETITIVE">Competitive</option>
             </select>
             <button
@@ -264,7 +264,7 @@
               :disabled="loading"
               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
             >
-              {{ loading ? 'Loading...' : 'Optimize Prices' }}
+              {{ loading ? 'Memuat...' : 'Optimalkan Harga' }}
             </button>
           </div>
         </div>
@@ -274,9 +274,9 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recommended Price</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Saat Ini</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga yang Direkomendasikan</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Impact</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
@@ -297,10 +297,10 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm">
-                      <p class="text-gray-900">Revenue: <span class="font-semibold" :class="opt.expectedRevenueChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <p class="text-gray-900">Pendapatan: <span class="font-semibold" :class="opt.expectedRevenueChange >= 0 ? 'text-green-600' : 'text-red-600'">
                         {{ opt.expectedRevenueChange >= 0 ? '+' : '' }}{{ (opt.expectedRevenueChange * 100).toFixed(1) }}%
                       </span></p>
-                      <p class="text-gray-600">Profit: <span class="font-semibold" :class="opt.expectedProfitChange >= 0 ? 'text-green-600' : 'text-red-600'">
+                      <p class="text-gray-600">Laba: <span class="font-semibold" :class="opt.expectedProfitChange >= 0 ? 'text-green-600' : 'text-red-600'">
                         {{ opt.expectedProfitChange >= 0 ? '+' : '' }}{{ (opt.expectedProfitChange * 100).toFixed(1) }}%
                       </span></p>
                     </div>
@@ -319,7 +319,7 @@
           </div>
         </div>
         <div v-else class="text-center py-12 text-gray-500">
-          Pilih strategy dan klik "Optimize Prices" untuk melihat rekomendasi
+          Pilih strategi dan klik "Optimalkan Harga" untuk melihat rekomendasi
         </div>
       </div>
     </div>

@@ -50,21 +50,21 @@
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'tax' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Tax
+          Pajak
         </button>
         <button
           @click="activeTab = 'forecast'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'forecast' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Forecast
+          Perkiraan
         </button>
         <button
           @click="activeTab = 'reconciliation'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'reconciliation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Bank Reconciliation
+          Rekonsiliasi Bank
         </button>
       </nav>
     </div>
@@ -74,7 +74,7 @@
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
-          <p class="text-sm text-gray-600 mb-1">Total Income</p>
+          <p class="text-sm text-gray-600 mb-1">Total Pendapatan</p>
           <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">

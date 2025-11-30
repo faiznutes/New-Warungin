@@ -156,43 +156,43 @@
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Inventory Management (Suppliers, Purchase Orders, Stock Transfers, Stock Alerts)</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Inventori (Pemasok, Pesanan Pembelian, Transfer Stok, Peringatan Stok)</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Product Adjustments</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Penyesuaian Produk</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Rewards & Discounts</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Hadiah & Diskon</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">User Management</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Pengguna</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Subscription & Addon Management</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Langganan & Addon</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Advanced Receipt Templates</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Template Struk Lanjutan</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Webhooks, Sessions, 2FA Settings</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Webhook, Sesi, Pengaturan 2FA</span>
               </li>
             </ul>
             <router-link
@@ -239,25 +239,25 @@
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Semua 9 Addons Premium (Delivery & Marketing, Business Analytics, Advanced Reporting, Financial Management, Inventory Management, AI/ML Features, Advanced Receipt Editor, Multi-Outlet Advanced)</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Semua 9 Addon Premium (Pemasaran & Pengiriman, Analitik Bisnis, Laporan Lanjutan, Manajemen Keuangan, Manajemen Inventori, Fitur AI/ML, Editor Struk Lanjutan, Multi-Outlet Lanjutan)</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Delivery Orders & Marketing Campaigns</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Pesanan Pengiriman & Kampanye Pemasaran</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Email Marketing (Templates, Analytics, Scheduler, Customer Engagement)</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Pemasaran Email (Template, Analitik, Penjadwal, Interaksi Pelanggan)</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="text-white text-xs sm:text-sm leading-relaxed">Advanced Analytics & Financial Management</span>
+                <span class="text-white text-xs sm:text-sm leading-relaxed">Analitik Lanjutan & Manajemen Keuangan</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -449,7 +449,7 @@
           <!-- Advanced Reporting -->
           <div class="bg-gradient-to-br from-white to-cyan-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-cyan-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Advanced Reporting</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">Laporan Lanjutan</h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -505,7 +505,7 @@
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="leading-relaxed">Delivery Orders & Tracking</span>
+                <span class="leading-relaxed">Pesanan Pengiriman & Pelacakan</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -517,13 +517,13 @@
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="leading-relaxed">Email Templates, Analytics & Scheduler</span>
+                <span class="leading-relaxed">Template Email, Analitik & Penjadwal</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="leading-relaxed">Customer Engagement Tools</span>
+                <span class="leading-relaxed">Alat Interaksi Pelanggan</span>
               </li>
             </ul>
           </div>
@@ -576,7 +576,7 @@
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Manajemen supplier, purchase orders, stock transfers, dan stock alerts</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Manajemen pemasok, pesanan pembelian, transfer stok, dan peringatan stok</p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(100000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -587,13 +587,13 @@
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="leading-relaxed">Suppliers & Purchase Orders</span>
+                <span class="leading-relaxed">Pemasok & Pesanan Pembelian</span>
               </li>
               <li class="flex items-start">
                 <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span class="leading-relaxed">Stock Transfers & Stock Alerts</span>
+                <span class="leading-relaxed">Transfer Stok & Peringatan Stok</span>
               </li>
             </ul>
           </div>
@@ -601,7 +601,7 @@
           <!-- AI/ML Features -->
           <div class="bg-gradient-to-br from-white to-violet-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-violet-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">AI/ML Features</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">Fitur AI/ML</h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-violet-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
