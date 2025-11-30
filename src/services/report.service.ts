@@ -631,40 +631,73 @@ export class ReportService {
         },
         tenants: tenants || [],
         subscriptions: mappedSubscriptions,
-        addons: (sortedAddons || []).map((addon: any) => {
+        addons: (() => {
           try {
-            if (!addon || !addon.id) {
-              logger.warn('Invalid addon data', { addon });
-              return null;
-            }
+            const mappedAddons = (sortedAddons || []).map((addon: any) => {
+              try {
+                if (!addon || !addon.id) {
+                  logger.warn('Invalid addon data', { addon });
+                  return null;
+                }
+                
+                const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+                const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+                  ? (addon.config as any).originalDuration || 30
+                  : 30;
+                const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
+                
+                // Use subscribedAt (it's required field, but handle null case)
+                const subscribedAt = addon?.subscribedAt ? new Date(addon.subscribedAt) : new Date();
+                
+                const mapped = {
+                  id: addon.id || '',
+                  addonId: addon.addonId || '',
+                  addonName: addon?.addon?.name || addon?.addonName || 'Unknown',
+                  tenantId: addon.tenantId || '',
+                  tenantName: addon?.tenant?.name || 'Unknown',
+                  status: addon.status || 'inactive',
+                  subscribedAt: subscribedAt,
+                  expiresAt: addon.expiresAt ? new Date(addon.expiresAt) : null,
+                  price: price,
+                  amount: amount, // Add amount field for display
+                  addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
+                };
+                
+                // Log first few addons for debugging
+                if ((sortedAddons || []).indexOf(addon) < 3) {
+                  logger.info('Mapped addon sample', {
+                    index: (sortedAddons || []).indexOf(addon),
+                    original: {
+                      id: addon.id,
+                      addonId: addon.addonId,
+                      hasAddon: !!addon.addon,
+                      hasTenant: !!addon.tenant,
+                      status: addon.status,
+                      subscribedAt: addon.subscribedAt,
+                    },
+                    mapped: mapped,
+                  });
+                }
+                
+                return mapped;
+              } catch (err: any) {
+                logger.warn('Error mapping addon', { error: err.message, addonId: addon?.id, stack: err.stack });
+                return null;
+              }
+            }).filter((addon: any) => addon !== null);
             
-            const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
-            const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
-              ? (addon.config as any).originalDuration || 30
-              : 30;
-            const amount = (price * duration) / 30; // Calculate amount same as revenue calculation
+            logger.info('Final mapped addons', {
+              sortedAddonsCount: (sortedAddons || []).length,
+              mappedAddonsCount: mappedAddons.length,
+              sampleIds: mappedAddons.slice(0, 5).map((a: any) => a?.id),
+            });
             
-            // Use subscribedAt (it's required field, but handle null case)
-            const subscribedAt = addon?.subscribedAt ? new Date(addon.subscribedAt) : new Date();
-            
-            return {
-              id: addon.id || '',
-              addonId: addon.addonId || '',
-              addonName: addon?.addon?.name || addon?.addonName || 'Unknown',
-              tenantId: addon.tenantId || '',
-              tenantName: addon?.tenant?.name || 'Unknown',
-              status: addon.status || 'inactive',
-              subscribedAt: subscribedAt,
-              expiresAt: addon.expiresAt ? new Date(addon.expiresAt) : null,
-              price: price,
-              amount: amount, // Add amount field for display
-              addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false, // Handle if field doesn't exist yet
-            };
-          } catch (err: any) {
-            logger.warn('Error mapping addon', { error: err.message, addonId: addon?.id, stack: err.stack });
-            return null;
+            return mappedAddons;
+          } catch (error: any) {
+            logger.error('Error mapping addons array', { error: error.message, stack: error.stack });
+            return []; // Return empty array on error
           }
-        }).filter((addon: any) => addon !== null), // Filter out null entries
+        })(), // Filter out null entries
         tenantReports: tenantReports || [], // Add tenant reports for performance table
       };
     } catch (error: any) {
