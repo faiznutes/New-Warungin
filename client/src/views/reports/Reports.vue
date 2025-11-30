@@ -541,11 +541,23 @@ const reportRows = computed(() => {
         let revenue = item.revenue || 0;
         let costOfGoods = 0;
         
-        // Calculate cost of goods from products if available
-        if (item.products && Array.isArray(item.products)) {
-          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p.cost || 0), 0);
+        // Calculate cost of goods from orders if available (more accurate)
+        if (item.orders && Array.isArray(item.orders)) {
+          costOfGoods = item.orders.reduce((sum: number, order: any) => {
+            if (order.items && Array.isArray(order.items)) {
+              return sum + order.items.reduce((itemSum: number, orderItem: any) => {
+                const cost = Number(orderItem.cost || orderItem.product?.cost || 0);
+                const quantity = Number(orderItem.quantity || 0);
+                return itemSum + (cost * quantity);
+              }, 0);
+            }
+            return sum;
+          }, 0);
         } else if (item.costOfGoods) {
           costOfGoods = item.costOfGoods;
+        } else if (item.products && Array.isArray(item.products)) {
+          // Fallback to products if orders not available
+          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p.cost || 0), 0);
         }
         
         // Apply filter
