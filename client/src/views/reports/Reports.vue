@@ -207,7 +207,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <template v-for="(row, index) in reportRows" :key="index">
+              <template v-for="(row, index) in paginatedReportRows" :key="index">
                 <tr class="hover:bg-gray-50">
                   <td
                     v-for="(cell, cellIndex) in row"
@@ -470,6 +470,8 @@ const handleReportViewTypeChange = () => {
 };
 
 const handlePeriodChange = () => {
+  // Reset pagination when period changes
+  dailyPage.value = 1;
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
   loadReportTimeout = setTimeout(() => {
     loadReport();

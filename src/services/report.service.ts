@@ -982,7 +982,7 @@ export class ReportService {
 
       // Group by date based on period
       const byDate: any[] = [];
-      const dateGroups: Record<string, { orders: any[]; revenue: number; count: number }> = {};
+      const dateGroups: Record<string, { orders: any[]; revenue: number; count: number; dateLabel?: string }> = {};
 
       orders.forEach((order: any) => {
         const orderDate = new Date(order.createdAt);
@@ -1050,6 +1050,7 @@ export class ReportService {
             orders: [],
             revenue: 0,
             count: 0,
+            dateLabel: dateLabel, // Store dateLabel for later use
           };
         }
 
@@ -1083,9 +1084,10 @@ export class ReportService {
         const grossProfit = group.revenue - costOfGoods;
         const profitMargin = group.revenue > 0 ? (grossProfit / group.revenue) * 100 : 0;
 
-        // For weekly, we already have the formatted dateLabel from grouping
+        // Get dateLabel from group (stored during grouping)
+        let finalDateLabel = group.dateLabel || '';
+        
         // For monthly, format with date range (1 - last day of month)
-        let finalDateLabel = dateLabel;
         if (period === 'monthly') {
           const monthDate = new Date(dateKey + '-01');
           const lastDay = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
@@ -1094,7 +1096,7 @@ export class ReportService {
           finalDateLabel = `1-${lastDay.getDate()} ${monthName} ${year}`;
         } else if (period === 'weekly') {
           // dateLabel already formatted in grouping logic
-          finalDateLabel = dateLabel;
+          finalDateLabel = group.dateLabel || '';
         } else if (period === 'daily') {
           finalDateLabel = new Date(dateKey).toLocaleDateString('id-ID');
         }
