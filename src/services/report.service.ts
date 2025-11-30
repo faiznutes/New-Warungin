@@ -284,17 +284,31 @@ export class ReportService {
         };
       }
 
-      const allOrders = await dbClient.order.findMany({
-        where: orderWhere,
-        select: {
-          total: true,
-          tenantId: true,
-          id: true, // Add id for uniqueness
-        },
-      }).catch((error: any) => {
-        logger.error('Error fetching orders in getGlobalReport', { error: error.message });
-        return []; // Return empty array on error
-      });
+      let allOrders: any[] = [];
+      try {
+        const orderQuery = dbClient.order.findMany({
+          where: orderWhere,
+          select: {
+            total: true,
+            tenantId: true,
+            id: true, // Add id for uniqueness
+          },
+        });
+        
+        // Add timeout protection (30 seconds)
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Order query timeout')), 30000);
+        });
+        
+        allOrders = await Promise.race([orderQuery, timeoutPromise]) as any[];
+      } catch (error: any) {
+        logger.error('Error fetching orders in getGlobalReport', { 
+          error: error.message,
+          stack: error.stack,
+          code: error.code,
+        });
+        allOrders = []; // Return empty array on error
+      }
 
       // Calculate total revenue from all orders
       let totalSalesRevenue = 0;
@@ -324,23 +338,37 @@ export class ReportService {
       }
       // If no date range, get all subscriptions (same as dashboard logic)
 
-      const subscriptions = await dbClient.subscription.findMany({
-        where: subscriptionWhere,
-        include: {
-          tenant: {
-            select: {
-              id: true,
-              name: true,
+      let subscriptions: any[] = [];
+      try {
+        const subscriptionQuery = dbClient.subscription.findMany({
+          where: subscriptionWhere,
+          include: {
+            tenant: {
+              select: {
+                id: true,
+                name: true,
+              },
             },
           },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      }).catch((error: any) => {
-        logger.error('Error fetching subscriptions in getGlobalReport', { error: error.message });
-        return []; // Return empty array on error
-      });
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+        
+        // Add timeout protection (30 seconds)
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Subscription query timeout')), 30000);
+        });
+        
+        subscriptions = await Promise.race([subscriptionQuery, timeoutPromise]) as any[];
+      } catch (error: any) {
+        logger.error('Error fetching subscriptions in getGlobalReport', { 
+          error: error.message,
+          stack: error.stack,
+          code: error.code,
+        });
+        subscriptions = []; // Return empty array on error
+      }
 
       // Calculate subscription revenue (same logic as dashboard)
       let totalSubscriptionRevenue = 0;
@@ -379,7 +407,8 @@ export class ReportService {
       let addons: any[] = [];
       try {
         // Fetch ALL addons without status filter to ensure all data is shown
-        addons = await dbClient.tenantAddon.findMany({
+        // Use timeout protection to prevent hanging queries
+        const addonQuery = dbClient.tenantAddon.findMany({
           where: addonWhere,
           include: {
             addon: {
@@ -399,6 +428,13 @@ export class ReportService {
           // Don't use orderBy if subscribedAt might be null - sort manually instead
         });
         
+        // Add timeout protection (30 seconds)
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Addon query timeout')), 30000);
+        });
+        
+        addons = await Promise.race([addonQuery, timeoutPromise]) as any[];
+        
         logger.info('Fetched addons for global report', {
           addonsCount: addons.length,
           hasDateFilter: !!(start && end),
@@ -412,7 +448,12 @@ export class ReportService {
           } : null,
         });
       } catch (error: any) {
-        logger.error('Error fetching addons in getGlobalReport', { error: error.message, stack: error.stack });
+        logger.error('Error fetching addons in getGlobalReport', { 
+          error: error.message, 
+          stack: error.stack,
+          code: error.code,
+          name: error.name,
+        });
         addons = []; // Return empty array on error
       }
       
