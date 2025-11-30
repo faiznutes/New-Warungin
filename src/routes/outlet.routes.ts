@@ -130,7 +130,7 @@ router.get(
  *                 example: "Jl. Raya No. 123"
  *               phone:
  *                 type: string
- *                 example: "081234567890"
+ *                 example: "0851-5504-3133"
  *     responses:
  *       201:
  *         description: Outlet created successfully

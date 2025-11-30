@@ -126,7 +126,7 @@ Security contact information available at:
 ## Reporting Security Issues
 
 Report security vulnerabilities to:
-- Email: support@warungin.com
+- Email: faiznute07@gmail.com
 - Include: Description, steps to reproduce, impact
 
 ## Compliance

@@ -202,7 +202,7 @@ router.get(
  *                 example: john@example.com
  *               phone:
  *                 type: string
- *                 example: "081234567890"
+ *                 example: "0851-5504-3133"
  *               address:
  *                 type: string
  *                 example: "123 Main St"

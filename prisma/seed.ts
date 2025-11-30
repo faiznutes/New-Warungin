@@ -59,7 +59,7 @@ async function main() {
     create: {
       name: 'Demo Warung',
       email: 'demo@warungin.com',
-      phone: '+6281234567890',
+      phone: '085155043133',
       slug: 'demo-warung',
       isActive: true,
     },

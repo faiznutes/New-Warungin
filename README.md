@@ -291,7 +291,7 @@ MIT License - see LICENSE file for details
 
 Untuk bantuan dan pertanyaan:
 - Open an issue di GitHub
-- Email: support@warungin.com
+- Email: faiznute07@gmail.com
 
 ---
 
