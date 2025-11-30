@@ -187,7 +187,7 @@ services:
     # Aktifkan dengan: docker compose --profile cloudflare up -d cloudflared
     # Domain: pos.faiznute.site
     # Troubleshooting: Lihat CLOUDFLARE_TROUBLESHOOTING.md
-    # Fix Error 1033: Changed depends_on to service_healthy dan added --retries 5 untuk retry connection
+    # Fix Error 1033: Changed depends_on to service_healthy dan improved restart policy
 
 networks:
   warungin-network:
