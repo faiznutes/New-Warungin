@@ -470,7 +470,11 @@ async function getSuperAdminStats() {
       })),
     };
   } catch (error: any) {
-    console.error('Error in getSuperAdminStats:', error);
+    logger.error('Error in getSuperAdminStats:', {
+      error: error.message,
+      stack: error.stack,
+      code: error.code,
+    });
     
     // Return empty structure instead of throwing to prevent 502
     return {

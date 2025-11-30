@@ -185,14 +185,23 @@ try {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Don't exit the process, just log the error
+  logger.error('Unhandled Rejection at:', {
+    reason: reason?.message || reason,
+    stack: reason?.stack,
+    code: reason?.code,
+    promise: promise?.toString(),
+  });
+  // Don't exit the process, just log the error to prevent 502
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
-  logger.error('Uncaught Exception:', error);
-  // Don't exit the process, just log the error
+  logger.error('Uncaught Exception:', {
+    message: error.message,
+    stack: error.stack,
+    name: error.name,
+  });
+  // Don't exit the process, just log the error to prevent 502
 });
 
 console.log(`🚀 Starting HTTP server on port ${PORT}...`);
