@@ -157,7 +157,8 @@ services:
     restart: on-failure:5
     # Add loglevel for better debugging to prevent Error 1033
     # Use token from environment variable
-    command: tunnel --no-autoupdate run --loglevel info
+    # Note: --loglevel must be before 'run' (TUNNEL COMMAND OPTIONS, not SUBCOMMAND OPTIONS)
+    command: tunnel --no-autoupdate --loglevel info run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
     networks:
