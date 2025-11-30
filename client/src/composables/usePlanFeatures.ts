@@ -112,14 +112,38 @@ export function usePlanFeatures() {
     return activeAddons.value.some(addon => addon.type === addonType);
   };
 
+  // Check if addon is coming soon (hardcoded list of addons that require external API)
+  const isAddonComingSoon = (addonType: string): boolean => {
+    const comingSoonAddons = [
+      'DELIVERY_MARKETING',
+      'FINANCIAL_MANAGEMENT',
+      'INVENTORY_MANAGEMENT',
+      'AI_ML_FEATURES',
+    ];
+    return comingSoonAddons.includes(addonType);
+  };
+
   // Computed properties for common checks
+  // Hide menu if addon is coming soon (even if active)
   const hasInventory = computed(() => hasFeature('inventory'));
-  const hasDeliveryMarketing = computed(() => hasAddon('DELIVERY_MARKETING') || hasFeature('delivery'));
+  const hasDeliveryMarketing = computed(() => {
+    if (isAddonComingSoon('DELIVERY_MARKETING')) return false;
+    return hasAddon('DELIVERY_MARKETING') || hasFeature('delivery');
+  });
   const hasBusinessAnalytics = computed(() => hasAddon('BUSINESS_ANALYTICS') || hasFeature('advancedAnalytics'));
   const hasAdvancedReporting = computed(() => hasAddon('ADVANCED_REPORTING') || hasFeature('advancedReporting'));
-  const hasFinancialManagement = computed(() => hasAddon('FINANCIAL_MANAGEMENT') || hasFeature('financialManagement'));
-  const hasInventoryManagement = computed(() => hasAddon('INVENTORY_MANAGEMENT') || hasFeature('inventory'));
-  const hasAIMLFeatures = computed(() => hasAddon('AI_ML_FEATURES'));
+  const hasFinancialManagement = computed(() => {
+    if (isAddonComingSoon('FINANCIAL_MANAGEMENT')) return false;
+    return hasAddon('FINANCIAL_MANAGEMENT') || hasFeature('financialManagement');
+  });
+  const hasInventoryManagement = computed(() => {
+    if (isAddonComingSoon('INVENTORY_MANAGEMENT')) return false;
+    return hasAddon('INVENTORY_MANAGEMENT') || hasFeature('inventory');
+  });
+  const hasAIMLFeatures = computed(() => {
+    if (isAddonComingSoon('AI_ML_FEATURES')) return false;
+    return hasAddon('AI_ML_FEATURES');
+  });
   const hasMultiOutlet = computed(() => hasFeature('stores'));
   const hasRewards = computed(() => hasFeature('rewards'));
   const hasDiscounts = computed(() => hasFeature('discounts'));
