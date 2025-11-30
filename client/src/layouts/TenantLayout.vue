@@ -189,6 +189,7 @@
                 </router-link>
 
                 <router-link
+                  v-if="hasFinancialManagement"
                   to="/app/finance/management"
                   class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
                   active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -201,6 +202,7 @@
                 </router-link>
 
                 <router-link
+                  v-if="hasAIMLFeatures"
                   to="/app/ai-ml"
                   class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
                   active-class="bg-green-600 text-white font-semibold shadow-lg"
