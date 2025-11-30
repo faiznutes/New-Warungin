@@ -465,6 +465,23 @@
                 </span>
               </div>
               <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.startDate ? new Date(selectedSubscription.startDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal Berakhir</label>
+                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.endDate ? new Date(selectedSubscription.endDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Durasi Pemakaian</label>
+                <p class="mt-1 text-sm text-gray-900 font-semibold">
+                  <span v-if="selectedSubscription.startDate && selectedSubscription.endDate">
+                    {{ formatDuration(selectedSubscription.startDate, selectedSubscription.endDate) }}
+                  </span>
+                  <span v-else class="text-gray-500">-</span>
+                </p>
+              </div>
+              <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
                 <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
               </div>
@@ -555,8 +572,22 @@
                 </span>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Tanggal Berlangganan</label>
-                <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedAddon.subscribedAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+                <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.subscribedAt ? new Date(selectedAddon.subscribedAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal Berakhir</label>
+                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.expiresAt ? new Date(selectedAddon.expiresAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Tidak ada batas waktu' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Durasi Pemakaian</label>
+                <p class="mt-1 text-sm text-gray-900 font-semibold">
+                  <span v-if="selectedAddon.subscribedAt && selectedAddon.expiresAt">
+                    {{ formatDuration(selectedAddon.subscribedAt, selectedAddon.expiresAt) }}
+                  </span>
+                  <span v-else-if="selectedAddon.subscribedAt" class="text-gray-500">Berlangsung hingga sekarang</span>
+                  <span v-else class="text-gray-500">-</span>
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">ID Addon</label>
@@ -905,6 +936,33 @@ const printSubscription = async (subscription: any) => {
   } catch (error: any) {
     console.error('Error printing subscription:', error);
     await showError('Gagal mencetak subscription');
+  }
+};
+
+// Format duration helper
+const formatDuration = (startDate: string | Date, endDate: string | Date) => {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+      return `${diffDays} hari`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      const days = diffDays % 30;
+      return days > 0 ? `${months} bulan ${days} hari` : `${months} bulan`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      const months = Math.floor((diffDays % 365) / 30);
+      if (months > 0) {
+        return `${years} tahun ${months} bulan`;
+      }
+      return `${years} tahun`;
+    }
+  } catch (error) {
+    return '-';
   }
 };
 
