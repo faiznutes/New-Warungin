@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import { authGuard } from '../middlewares/auth';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -46,16 +48,17 @@ router.post(
         },
       });
       
-      res.json({
+      return res.json({
         success: true,
         message: 'Pesan Anda telah diterima. Tim kami akan menghubungi Anda segera.',
       });
     } catch (error: any) {
-      console.error('Error submitting contact form:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Gagal mengirim pesan. Silakan coba lagi.',
+      logger.error('Error submitting contact form:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
       });
+      return handleRouteError(res, error, 'Gagal mengirim pesan. Silakan coba lagi.', 'contact-form');
     }
   }
 );
@@ -84,16 +87,17 @@ router.post(
         },
       });
       
-      res.json({
+      return res.json({
         success: true,
         message: 'Permintaan demo Anda telah diterima. Tim kami akan menghubungi Anda segera.',
       });
     } catch (error: any) {
-      console.error('Error submitting demo request:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Gagal mengirim permintaan demo. Silakan coba lagi.',
+      logger.error('Error submitting demo request:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
       });
+      return handleRouteError(res, error, 'Gagal mengirim permintaan demo. Silakan coba lagi.', 'demo-request');
     }
   }
 );
@@ -132,12 +136,13 @@ router.get(
         data: submissions || [],
       });
     } catch (error: any) {
-      console.error('Error fetching contact submissions:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Gagal mengambil data pesan formulir.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      logger.error('Error fetching contact submissions:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
+        user: user?.role,
       });
+      return handleRouteError(res, error, 'Gagal mengambil data pesan formulir.', 'get-submissions');
     }
   }
 );
@@ -183,7 +188,13 @@ router.delete(
         message: 'Pesan formulir berhasil dihapus.',
       });
     } catch (error: any) {
-      console.error('Error deleting contact submission:', error);
+      logger.error('Error deleting contact submission:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
+        id: req.params.id,
+        user: user?.role,
+      });
       
       if (error.code === 'P2025') {
         return res.status(404).json({
@@ -192,11 +203,7 @@ router.delete(
         });
       }
 
-      return res.status(500).json({
-        success: false,
-        message: 'Gagal menghapus pesan formulir.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      });
+      return handleRouteError(res, error, 'Gagal menghapus pesan formulir.', 'delete-submission');
     }
   }
 );
@@ -241,12 +248,13 @@ router.post(
         deletedCount: result.count,
       });
     } catch (error: any) {
-      console.error('Error cleaning up contact submissions:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Gagal membersihkan pesan formulir lama.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      logger.error('Error cleaning up contact submissions:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
+        user: user?.role,
       });
+      return handleRouteError(res, error, 'Gagal membersihkan pesan formulir lama.', 'cleanup-submissions');
     }
   }
 );
@@ -295,7 +303,14 @@ router.patch(
         data: updated,
       });
     } catch (error: any) {
-      console.error('Error updating contact submission:', error);
+      logger.error('Error updating contact submission:', {
+        error: error.message,
+        stack: error.stack,
+        code: error.code,
+        id: req.params.id,
+        isProcessed: req.body.isProcessed,
+        user: user?.role,
+      });
       
       if (error.code === 'P2025') {
         return res.status(404).json({
@@ -304,11 +319,7 @@ router.patch(
         });
       }
 
-      return res.status(500).json({
-        success: false,
-        message: 'Gagal mengupdate status pesan.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      });
+      return handleRouteError(res, error, 'Gagal mengupdate status pesan.', 'update-submission');
     }
   }
 );

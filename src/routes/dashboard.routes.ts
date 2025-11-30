@@ -115,7 +115,7 @@ router.get(
       // Return empty stats instead of throwing to prevent 502
       if (userRole === 'SUPER_ADMIN' && !queryTenantId) {
         // Return empty super admin stats
-        res.status(500).json({
+        return res.status(500).json({
           overview: {
             totalAddonRevenue: 0,
             totalSubscriptionRevenue: 0,
@@ -141,7 +141,7 @@ router.get(
         });
       } else {
         // Return error message for other cases
-        res.status(500).json({
+        return res.status(500).json({
           message: error.message || 'Failed to load dashboard stats',
           error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         });

@@ -68,7 +68,7 @@ router.get(
       }
 
       const report = await reportService.getGlobalReport(start, end);
-      res.json(report);
+      return res.json(report);
     } catch (error: any) {
       logger.error('Error loading global report', {
         error: error.message,
@@ -76,7 +76,7 @@ router.get(
         query: req.query,
         user: (req as any).user?.role,
       });
-      res.status(500).json({ 
+      return res.status(500).json({ 
         message: error.message || 'Failed to load global report',
         error: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
@@ -207,16 +207,15 @@ router.get(
           report = await reportService.getTenantReport(tenantId, start, end, type);
       }
 
-      res.json(report);
+      return res.json(report);
     } catch (error: any) {
-      console.error('Error loading tenant report:', error);
       logger.error('Error loading tenant report', {
         error: error.message,
         stack: error.stack,
         tenantId: tenantId || 'unknown',
         query: req.query,
       });
-      res.status(500).json({ message: error.message || 'Failed to load tenant report' });
+      return res.status(500).json({ message: error.message || 'Failed to load tenant report' });
     }
   }
 );
@@ -307,16 +306,15 @@ router.get(
           report = await reportService.getTenantReport(tenantId, start, end, reportType);
       }
 
-      res.json(report);
+      return res.json(report);
     } catch (error: any) {
-      console.error('Error loading report:', error);
       logger.error('Error loading report', {
         error: error.message,
         stack: error.stack,
         tenantId: tenantId || 'unknown',
         query: req.query,
       });
-      res.status(500).json({ message: error.message || 'Failed to load report' });
+      return res.status(500).json({ message: error.message || 'Failed to load report' });
     }
   }
 );
@@ -354,10 +352,15 @@ router.get(
       // Set headers for PDF download
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
-      res.send(html);
+      return res.send(html);
     } catch (error: any) {
-      console.error('Error exporting global report PDF:', error);
-      res.status(500).json({ message: error.message || 'Failed to export PDF' });
+      logger.error('Error exporting global report PDF:', {
+        error: error.message,
+        stack: error.stack,
+        query: req.query,
+        user: (req as any).user?.role,
+      });
+      return res.status(500).json({ message: error.message || 'Failed to export PDF' });
     }
   }
 );
