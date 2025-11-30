@@ -116,10 +116,11 @@
           <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Keranjang</h3>
             <div v-if="cart.length === 0" class="text-center py-8 text-gray-400">
-              <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
               <p class="text-sm">Klik produk untuk menambah ke keranjang</p>
+              <p class="text-xs mt-1 text-gray-400">Demo Mode - Login untuk transaksi penuh</p>
             </div>
             <div v-else class="space-y-2 mb-4 max-h-64 overflow-y-auto">
               <div
@@ -148,12 +149,13 @@
                 <span class="font-semibold text-gray-900">{{ formatCurrency(cartTotal) }}</span>
               </div>
               <button
-                class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
+                class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold opacity-75 cursor-not-allowed"
                 disabled
+                title="Demo Mode - Login untuk transaksi penuh"
               >
                 Bayar (Demo Mode)
               </button>
-              <p class="text-xs text-center text-gray-500">Login untuk transaksi penuh</p>
+              <p class="text-xs text-center text-gray-500 mt-1">Login untuk transaksi penuh</p>
             </div>
           </div>
         </div>
@@ -164,7 +166,11 @@
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Daftar Produk</h3>
-            <button class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium" disabled>
+            <button 
+              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium opacity-75 cursor-not-allowed" 
+              disabled
+              title="Demo Mode - Login untuk fitur penuh"
+            >
               + Tambah Produk
             </button>
           </div>
@@ -244,13 +250,25 @@
         <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Export Laporan</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button class="px-4 py-3 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition text-sm font-medium text-green-700" disabled>
+            <button 
+              class="px-4 py-3 bg-green-50 border-2 border-green-200 rounded-lg hover:bg-green-100 transition text-sm font-medium text-green-700 opacity-75 cursor-not-allowed" 
+              disabled
+              title="Demo Mode - Login untuk export"
+            >
               Export Excel
             </button>
-            <button class="px-4 py-3 bg-red-50 border-2 border-red-200 rounded-lg hover:bg-red-100 transition text-sm font-medium text-red-700" disabled>
+            <button 
+              class="px-4 py-3 bg-red-50 border-2 border-red-200 rounded-lg hover:bg-red-100 transition text-sm font-medium text-red-700 opacity-75 cursor-not-allowed" 
+              disabled
+              title="Demo Mode - Login untuk export"
+            >
               Export PDF
             </button>
-            <button class="px-4 py-3 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition text-sm font-medium text-blue-700" disabled>
+            <button 
+              class="px-4 py-3 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition text-sm font-medium text-blue-700 opacity-75 cursor-not-allowed" 
+              disabled
+              title="Demo Mode - Login untuk export"
+            >
               Export CSV
             </button>
           </div>
@@ -263,7 +281,11 @@
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Daftar Pelanggan</h3>
-            <button class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium" disabled>
+            <button 
+              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium opacity-75 cursor-not-allowed" 
+              disabled
+              title="Demo Mode - Login untuk fitur penuh"
+            >
               + Tambah Pelanggan
             </button>
           </div>
