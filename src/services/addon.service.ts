@@ -49,6 +49,7 @@ export const AVAILABLE_ADDONS = [
     description: 'Fitur delivery orders dan marketing campaigns lengkap dengan email templates, email analytics, email scheduler, dan customer engagement',
     defaultLimit: null,
     price: 200000, // per month
+    comingSoon: true, // Requires external API
   },
   
   // Group 3: Business Analytics
@@ -82,6 +83,7 @@ export const AVAILABLE_ADDONS = [
     description: 'Manajemen keuangan lengkap: accounting, profit & loss report, cash flow, expenses, tax calculations, financial forecasts, dan bank reconciliations',
     defaultLimit: null,
     price: 200000, // per month
+    comingSoon: true, // Requires external API (bank reconciliation)
   },
   
   // Group 6: Inventory Management
@@ -93,6 +95,7 @@ export const AVAILABLE_ADDONS = [
     description: 'Manajemen inventory lengkap: suppliers, purchase orders, stock transfers, stock alerts, stock valuations, dan product adjustments',
     defaultLimit: null,
     price: 150000, // per month
+    comingSoon: true, // Requires external API (supplier integration)
   },
   
   // Group 7: AI/ML Features
@@ -104,6 +107,7 @@ export const AVAILABLE_ADDONS = [
     description: 'Fitur AI dan Machine Learning: prediksi penjualan, rekomendasi produk, analisis tren otomatis, dan insights berbasis AI',
     defaultLimit: null,
     price: 300000, // per month
+    comingSoon: true, // Requires external AI/ML API
   },
   
   // Group 8: Receipt & Export

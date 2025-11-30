@@ -91,9 +91,15 @@
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
-            class="border-2 border-gray-200 rounded-lg p-4 transition hover:border-primary-300"
+            class="border-2 rounded-lg p-4 transition"
+            :class="addon.comingSoon ? 'border-gray-300 bg-gray-50 opacity-75' : 'border-gray-200 hover:border-primary-300'"
           >
-            <h4 class="font-semibold text-gray-900 mb-2">{{ addon.name }}</h4>
+            <div class="flex items-start justify-between mb-2">
+              <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
+              <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                Coming Soon
+              </span>
+            </div>
             <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
             
             <div class="flex items-center justify-between mb-3">
@@ -107,9 +113,13 @@
             </div>
             <button
               @click="subscribeAddon(addon)"
-              class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+              :disabled="addon.comingSoon"
+              class="w-full px-4 py-2 rounded-lg transition font-medium"
+              :class="addon.comingSoon 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                : 'bg-primary-600 text-white hover:bg-primary-700'"
             >
-              Berlangganan
+              {{ addon.comingSoon ? 'Coming Soon' : 'Berlangganan' }}
             </button>
           </div>
         </div>
