@@ -299,6 +299,12 @@ const subscribeAddon = async (addon: any) => {
     return; // Don't proceed if tenant not selected
   }
   
+  // Prevent subscribing to coming soon addons
+  if (addon.comingSoon) {
+    await showError('Addon ini belum tersedia. Fitur ini sedang dalam pengembangan.');
+    return;
+  }
+  
   try {
     const response = await api.post('/payment/addon', {
       itemName: addon.name,
