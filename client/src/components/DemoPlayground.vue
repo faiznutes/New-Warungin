@@ -27,8 +27,9 @@
 
     <!-- Tab Content -->
     <div class="p-4 sm:p-6 min-h-[400px] sm:min-h-[500px] bg-gray-50">
-      <!-- Dashboard Tab -->
-      <div v-if="activeTab === 'dashboard'" class="space-y-6">
+      <Transition name="fade" mode="out-in">
+        <!-- Dashboard Tab -->
+        <div v-if="activeTab === 'dashboard'" key="dashboard" class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
             <div class="flex items-center justify-between mb-2">
@@ -91,10 +92,10 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      <!-- POS Tab -->
-      <div v-if="activeTab === 'pos'" class="space-y-4">
+        <!-- POS Tab -->
+        <div v-else-if="activeTab === 'pos'" key="pos" class="space-y-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <!-- Product Grid -->
           <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-4 border border-gray-200">
@@ -168,10 +169,10 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      <!-- Products Tab -->
-      <div v-if="activeTab === 'products'" class="space-y-4">
+        <!-- Products Tab -->
+        <div v-else-if="activeTab === 'products'" key="products" class="space-y-4">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Daftar Produk</h3>
@@ -203,10 +204,10 @@
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      <!-- Reports Tab -->
-      <div v-if="activeTab === 'reports'" class="space-y-4">
+        <!-- Reports Tab -->
+        <div v-else-if="activeTab === 'reports'" key="reports" class="space-y-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Laporan Penjualan</h3>
@@ -283,10 +284,10 @@
           </div>
           <p class="text-xs text-center text-gray-500 mt-3">Login untuk export laporan penuh</p>
         </div>
-      </div>
+        </div>
 
-      <!-- Customers Tab -->
-      <div v-if="activeTab === 'customers'" class="space-y-4">
+        <!-- Customers Tab -->
+        <div v-else-if="activeTab === 'customers'" key="customers" class="space-y-4">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Daftar Pelanggan</h3>
@@ -321,7 +322,8 @@
             </table>
           </div>
         </div>
-      </div>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -443,6 +445,7 @@ const addToCart = (product: DemoProduct) => {
       emoji: product.emoji,
     });
   }
+  // Visual feedback - bisa ditambahkan notification jika diperlukan
 };
 
 const removeFromCart = (productId: string) => {
@@ -486,6 +489,22 @@ const cartTotal = computed(() => {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: #a0aec0;
+}
+
+/* Tab Content Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
 
