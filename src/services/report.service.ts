@@ -386,15 +386,15 @@ export class ReportService {
       // Get addons - EXACTLY like subscriptions: if no date range, get ALL addons (no status filter, no date filter)
       // If date range provided, filter by subscribedAt (same as subscriptions filter by createdAt)
       const addonWhere: any = {};
-      if (start && end) {
+      if (start && end && startDate && endDate) {
         // If date range provided, filter by subscribedAt (same as subscriptions filter by createdAt)
         addonWhere.subscribedAt = {
           gte: startDate,
           lte: endDate,
         };
         logger.info('Addon query with date filter', {
-          startDate: startDate?.toISOString(),
-          endDate: endDate?.toISOString(),
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
         });
       } else {
         // If no date range, get ALL addons (no status filter, no date filter) - EXACTLY like subscriptions
