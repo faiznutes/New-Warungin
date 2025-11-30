@@ -640,6 +640,46 @@ export class ReportService {
         mappedSubscriptions = []; // Return empty array on error
       }
 
+      // Final logging before return
+      logger.info('Returning global report', {
+        subscriptionsCount: mappedSubscriptions.length,
+        addonsCount: (() => {
+          try {
+            const mappedAddons = (sortedAddons || []).map((addon: any) => {
+              try {
+                if (!addon || !addon.id) return null;
+                const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+                const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+                  ? (addon.config as any).originalDuration || 30
+                  : 30;
+                const amount = (price * duration) / 30;
+                const subscribedAt = addon?.subscribedAt ? new Date(addon.subscribedAt) : new Date();
+                return {
+                  id: addon.id || '',
+                  addonId: addon.addonId || '',
+                  addonName: addon?.addon?.name || addon?.addonName || 'Unknown',
+                  tenantId: addon.tenantId || '',
+                  tenantName: addon?.tenant?.name || 'Unknown',
+                  status: addon.status || 'inactive',
+                  subscribedAt: subscribedAt,
+                  expiresAt: addon.expiresAt ? new Date(addon.expiresAt) : null,
+                  price: price,
+                  amount: amount,
+                  addedBySuperAdmin: (addon.addedBySuperAdmin !== undefined) ? addon.addedBySuperAdmin : false,
+                };
+              } catch (err: any) {
+                return null;
+              }
+            }).filter((a: any) => a !== null);
+            return mappedAddons.length;
+          } catch (error: any) {
+            return 0;
+          }
+        })(),
+        sortedAddonsCount: (sortedAddons || []).length,
+        rawAddonsCount: (addons || []).length,
+      });
+
       return {
         summary: {
           totalGlobalRevenue,
