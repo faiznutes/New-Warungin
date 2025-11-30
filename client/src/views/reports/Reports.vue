@@ -562,6 +562,27 @@ const reportHeaders = computed(() => {
   }
 });
 
+// Paginated report rows for daily period
+const paginatedReportRows = computed(() => {
+  if (!reportData.value || !reportData.value.byDate) return [];
+  
+  const allRows = reportRows.value;
+  
+  // Only paginate for daily period
+  if (period.value === 'daily') {
+    const start = (dailyPage.value - 1) * dailyItemsPerPage;
+    const end = start + dailyItemsPerPage;
+    return allRows.slice(start, end);
+  }
+  
+  return allRows;
+});
+
+const totalDailyPages = computed(() => {
+  if (period.value !== 'daily' || !reportData.value?.byDate) return 1;
+  return Math.ceil((reportData.value.byDate.length || 0) / dailyItemsPerPage);
+});
+
 const reportRows = computed(() => {
   if (!reportData.value) return [];
   
