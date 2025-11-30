@@ -457,8 +457,18 @@ export class ReportService {
             addonName: addons[0].addon?.name,
             hasAddon: !!addons[0].addon,
             hasTenant: !!addons[0].tenant,
+            addedBySuperAdmin: addons[0].addedBySuperAdmin,
           } : null,
           allAddonIds: addons.map(a => a.id).slice(0, 10), // Log first 10 IDs
+          firstThreeAddons: addons.slice(0, 3).map(a => ({
+            id: a.id,
+            addonId: a.addonId,
+            tenantId: a.tenantId,
+            tenantName: a.tenant?.name,
+            addonName: a.addon?.name,
+            status: a.status,
+            subscribedAt: a.subscribedAt,
+          })),
         });
       } catch (error: any) {
         logger.error('Error fetching addons in getGlobalReport', { 
@@ -483,12 +493,24 @@ export class ReportService {
             if (!bDate) return -1; // Put null dates at the end
             return new Date(bDate).getTime() - new Date(aDate).getTime();
           } catch (err: any) {
-            logger.warn('Error sorting addon', { error: err.message });
+            logger.warn('Error sorting addon', { error: err.message, addonA: a?.id, addonB: b?.id });
             return 0;
           }
         });
+        
+        logger.info('Sorted addons', {
+          sortedCount: sortedAddons.length,
+          rawCount: (addons || []).length,
+          firstThreeSorted: sortedAddons.slice(0, 3).map(a => ({
+            id: a.id,
+            addonId: a.addonId,
+            subscribedAt: a.subscribedAt,
+            tenantName: a.tenant?.name,
+            addonName: a.addon?.name,
+          })),
+        });
       } catch (error: any) {
-        logger.error('Error sorting addons', { error: error.message });
+        logger.error('Error sorting addons', { error: error.message, stack: error.stack });
         sortedAddons = addons || []; // Use unsorted if sort fails
       }
 
