@@ -297,7 +297,20 @@ export class ReportService {
       });
 
       // Calculate total revenue from all orders
-      const totalSalesRevenue = (allOrders || []).reduce((sum: number, order: any) => sum + Number(order.total || 0), 0);
+      let totalSalesRevenue = 0;
+      try {
+        totalSalesRevenue = (allOrders || []).reduce((sum: number, order: any) => {
+          try {
+            return sum + Number(order?.total || 0);
+          } catch (err: any) {
+            logger.warn('Error calculating order revenue', { error: err.message, orderId: order?.id });
+            return sum; // Continue with sum if error
+          }
+        }, 0);
+      } catch (error: any) {
+        logger.error('Error calculating total sales revenue', { error: error.message });
+        totalSalesRevenue = 0; // Set to 0 on error
+      }
 
       // Get subscriptions - if no date range, get all subscriptions (same as dashboard)
       // If date range provided, filter by createdAt
@@ -330,7 +343,20 @@ export class ReportService {
       });
 
       // Calculate subscription revenue (same logic as dashboard)
-      const totalSubscriptionRevenue = (subscriptions || []).reduce((sum: number, sub: any) => sum + Number(sub.amount || 0), 0);
+      let totalSubscriptionRevenue = 0;
+      try {
+        totalSubscriptionRevenue = (subscriptions || []).reduce((sum: number, sub: any) => {
+          try {
+            return sum + Number(sub?.amount || 0);
+          } catch (err: any) {
+            logger.warn('Error calculating subscription revenue', { error: err.message, subId: sub?.id });
+            return sum; // Continue with sum if error
+          }
+        }, 0);
+      } catch (error: any) {
+        logger.error('Error calculating total subscription revenue', { error: error.message });
+        totalSubscriptionRevenue = 0; // Set to 0 on error
+      }
 
       // Get addon prices from service (same as dashboard)
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
@@ -435,10 +461,16 @@ export class ReportService {
       }
 
       // Total global revenue = subscription + addon revenue (platform revenue)
-      const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
+      let totalGlobalRevenue = 0;
+      try {
+        totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
+      } catch (error: any) {
+        logger.error('Error calculating total global revenue', { error: error.message });
+        totalGlobalRevenue = 0; // Set to 0 on error
+      }
 
       // Count total orders
-      const totalOrders = allOrders.length;
+      const totalOrders = (allOrders || []).length;
       
       // Calculate tenant reports (performance per tenant)
       let tenantReports: any[] = [];
