@@ -852,12 +852,27 @@ export class ReportService {
       if (options.startDate && options.endDate) {
         startDate = new Date(options.startDate);
         endDate = new Date(options.endDate);
+        
+        // For monthly period, always start from day 1 of the month
+        if (period === 'monthly') {
+          startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+          // Set endDate to last day of the month
+          endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+        }
+        
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
       } else if (period !== 'all') {
         // If period is specified but no date range, use default 30 days
         startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         endDate = new Date();
+        
+        // For monthly period, always start from day 1 of the month
+        if (period === 'monthly') {
+          startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+          endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
+        }
+        
         startDate.setHours(0, 0, 0, 0);
         endDate.setHours(23, 59, 59, 999);
       }
@@ -975,17 +990,55 @@ export class ReportService {
         let dateLabel: string;
 
         if (period === 'daily') {
-          dateKey = orderDate.toISOString().split('T')[0]; // YYYY-MM-DD
+          // Use date only (ignore time) to ensure correct grouping
+          // Normalize to local date to avoid timezone issues
+          const localDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+          // Format as YYYY-MM-DD using local date
+          const year = localDate.getFullYear();
+          const month = String(localDate.getMonth() + 1).padStart(2, '0');
+          const day = String(localDate.getDate()).padStart(2, '0');
+          dateKey = `${year}-${month}-${day}`;
           dateLabel = dateKey;
         } else if (period === 'weekly') {
-          // Get week start (Monday)
-          const weekStart = new Date(orderDate);
-          weekStart.setDate(orderDate.getDate() - orderDate.getDay() + (orderDate.getDay() === 0 ? -6 : 1));
-          dateKey = weekStart.toISOString().split('T')[0];
-          dateLabel = `${dateKey} (Week ${Math.ceil((orderDate.getDate() + new Date(orderDate.getFullYear(), orderDate.getMonth(), 1).getDay()) / 7)})`;
+          // Get week start (Monday) - ISO week calculation
+          // Use local date to avoid timezone issues
+          const localDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+          const dayOfWeek = localDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+          const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Convert to Monday-based week
+          const weekStart = new Date(localDate);
+          weekStart.setDate(localDate.getDate() + daysToMonday);
+          weekStart.setHours(0, 0, 0, 0); // Set to start of day
+          
+          // Get week end (Sunday)
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          weekEnd.setHours(23, 59, 59, 999);
+          
+          // Format dateKey as YYYY-MM-DD
+          const year = weekStart.getFullYear();
+          const month = String(weekStart.getMonth() + 1).padStart(2, '0');
+          const day = String(weekStart.getDate()).padStart(2, '0');
+          dateKey = `${year}-${month}-${day}`;
+          
+          // Format: "1-7 November 2025" (Senin-Minggu)
+          const startDay = weekStart.getDate();
+          const endDay = weekEnd.getDate();
+          const startMonth = weekStart.toLocaleDateString('id-ID', { month: 'long' });
+          const endMonth = weekEnd.toLocaleDateString('id-ID', { month: 'long' });
+          const weekYear = weekStart.getFullYear();
+          
+          if (startMonth === endMonth) {
+            dateLabel = `${startDay}-${endDay} ${startMonth} ${weekYear}`;
+          } else {
+            // Week spans across months
+            dateLabel = `${startDay} ${startMonth} - ${endDay} ${endMonth} ${weekYear}`;
+          }
         } else if (period === 'monthly') {
-          dateKey = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
-          dateLabel = new Date(orderDate.getFullYear(), orderDate.getMonth(), 1).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+          // Always use first day of month as key
+          // Use local date to avoid timezone issues
+          const localDate = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+          dateKey = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}`;
+          dateLabel = new Date(localDate.getFullYear(), localDate.getMonth(), 1).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
         } else {
           // 'all' - group all in one
           dateKey = 'all';
@@ -1030,15 +1083,25 @@ export class ReportService {
         const grossProfit = group.revenue - costOfGoods;
         const profitMargin = group.revenue > 0 ? (grossProfit / group.revenue) * 100 : 0;
 
+        // For weekly, we already have the formatted dateLabel from grouping
+        // For monthly, format with date range (1 - last day of month)
+        let finalDateLabel = dateLabel;
+        if (period === 'monthly') {
+          const monthDate = new Date(dateKey + '-01');
+          const lastDay = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+          const monthName = monthDate.toLocaleDateString('id-ID', { month: 'long' });
+          const year = monthDate.getFullYear();
+          finalDateLabel = `1-${lastDay.getDate()} ${monthName} ${year}`;
+        } else if (period === 'weekly') {
+          // dateLabel already formatted in grouping logic
+          finalDateLabel = dateLabel;
+        } else if (period === 'daily') {
+          finalDateLabel = new Date(dateKey).toLocaleDateString('id-ID');
+        }
+        
         byDate.push({
           date: dateObj.toISOString(),
-          dateLabel: period === 'daily' 
-            ? new Date(dateKey).toLocaleDateString('id-ID')
-            : period === 'monthly'
-            ? new Date(dateKey + '-01').toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })
-            : period === 'weekly'
-            ? `Week of ${new Date(dateKey).toLocaleDateString('id-ID')}`
-            : 'All Time',
+          dateLabel: finalDateLabel,
           revenue: group.revenue,
           count: group.count,
           orders: group.orders,

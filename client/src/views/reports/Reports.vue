@@ -430,6 +430,9 @@ const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
 const viewingDateDetail = ref<any>(null);
 const groupedProducts = ref<any[]>([]);
+// Pagination for daily period
+const dailyPage = ref(1);
+const dailyItemsPerPage = 10;
 
 // Margin display format (percentage or amount)
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
