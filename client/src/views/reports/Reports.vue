@@ -596,6 +596,7 @@ const reportRows = computed(() => {
             formatCurrency(costOfGoods),
             formatCurrency(grossProfit),
             `${(item.profitMargin || reportData.value.profitMargin || 0).toFixed(2)}%`,
+            null, // No action column for financial report
           ];
         });
       } else {
