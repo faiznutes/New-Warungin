@@ -200,7 +200,7 @@
             <div class="flex flex-wrap gap-3 mt-4">
               <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
                 <p class="text-xs text-indigo-100">Total Pendapatan</p>
-                <p class="text-xl font-bold">{{ formatCurrency(globalReportData?.summary?.totalGlobalRevenue || stats?.overview?.totalRevenue || stats?.overview?.totalGlobalRevenue || 0) }}</p>
+                <p class="text-xl font-bold">{{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}</p>
               </div>
               <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
                 <p class="text-xs text-indigo-100">Active Subscriptions</p>
@@ -254,7 +254,7 @@
               </svg>
             </div>
           </div>
-          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(globalReportData?.summary?.totalGlobalRevenue || stats?.overview?.totalRevenue || stats?.overview?.totalGlobalRevenue || 0) }}</p>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}</p>
           <p class="text-xs sm:text-sm text-gray-600">Subscriptions + Addons</p>
         </router-link>
 
