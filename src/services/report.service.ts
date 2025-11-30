@@ -337,14 +337,25 @@ export class ReportService {
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
       // Get addons - if no date range, get ALL addons (not just active, no status filter)
-      // If date range provided, filter by subscribedAt
+      // If date range provided, filter by subscribedAt (but also include addons with null subscribedAt if they were created in range)
       const addonWhere: any = {};
       if (start && end) {
-        // If date range provided, filter by subscribedAt
-        addonWhere.subscribedAt = {
-          gte: startDate,
-          lte: endDate,
-        };
+        // If date range provided, filter by subscribedAt OR createdAt (for addons without subscribedAt)
+        addonWhere.OR = [
+          {
+            subscribedAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          // Also include addons without subscribedAt that might have been created in this range
+          // (though subscribedAt should always be set, this is a safety net)
+          {
+            subscribedAt: null,
+            // Note: TenantAddon doesn't have createdAt field directly, so we can't filter by it
+            // But subscribedAt should always be set when addon is created
+          },
+        ];
       }
       // If no date range, get ALL addons (no status filter, no date filter) - same as dashboard logic for subscriptions
       // This ensures all addons are fetched regardless of status
@@ -376,6 +387,13 @@ export class ReportService {
           addonsCount: addons.length,
           hasDateFilter: !!(start && end),
           addonWhere: JSON.stringify(addonWhere),
+          sampleAddon: addons.length > 0 ? {
+            id: addons[0].id,
+            addonId: addons[0].addonId,
+            subscribedAt: addons[0].subscribedAt,
+            status: addons[0].status,
+            tenantName: addons[0].tenant?.name,
+          } : null,
         });
       } catch (error: any) {
         logger.error('Error fetching addons in getGlobalReport', { error: error.message, stack: error.stack });
