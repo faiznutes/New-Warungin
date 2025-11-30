@@ -180,7 +180,7 @@
               <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalExpenses) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Taxable Income</p>
+              <p class="text-sm text-gray-600">Pendapatan Kena Pajak</p>
               <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.taxableIncome) }}</p>
             </div>
             <div>
@@ -199,9 +199,9 @@
     <!-- Forecast Tab -->
     <div v-if="activeTab === 'forecast'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Forecast</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Perkiraan Keuangan</h3>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Months to Forecast</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Bulan untuk Diperkirakan</label>
           <input
             v-model.number="forecastMonths"
             type="number"
@@ -214,7 +214,7 @@
           @click="loadForecast"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
         >
-          Generate Forecast
+          Buat Perkiraan
         </button>
 
         <div v-if="forecast.length > 0" class="space-y-4">
@@ -229,15 +229,15 @@
             </div>
             <div class="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <p class="text-gray-600">Revenue</p>
+                <p class="text-gray-600">Pendapatan</p>
                 <p class="font-semibold text-green-600">Rp {{ formatCurrency(item.projectedRevenue) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">Expenses</p>
+                <p class="text-gray-600">Pengeluaran</p>
                 <p class="font-semibold text-red-600">Rp {{ formatCurrency(item.projectedExpenses) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">Profit</p>
+                <p class="text-gray-600">Laba</p>
                 <p class="font-semibold" :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'">
                   Rp {{ formatCurrency(item.projectedProfit) }}
                 </p>
@@ -251,12 +251,12 @@
     <!-- Bank Reconciliation Tab -->
     <div v-if="activeTab === 'reconciliation'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Bank Reconciliation</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Rekonsiliasi Bank</h3>
         <button
           @click="showReconciliationModal = true"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
         >
-          New Reconciliation
+          Rekonsiliasi Baru
         </button>
 
         <div v-if="reconciliations.length > 0" class="space-y-4">
@@ -305,7 +305,7 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Record Cash Flow</h3>
+            <h3 class="text-2xl font-bold text-gray-900">Catat Arus Kas</h3>
             <button @click="closeCashFlowModal" class="text-gray-400 hover:text-gray-600 transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -322,8 +322,8 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="">Pilih Type</option>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expense</option>
+                <option value="INCOME">Pendapatan</option>
+                <option value="EXPENSE">Pengeluaran</option>
               </select>
             </div>
 
@@ -410,7 +410,7 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Record Expense</h3>
+            <h3 class="text-2xl font-bold text-gray-900">Catat Pengeluaran</h3>
             <button @click="closeExpenseModal" class="text-gray-400 hover:text-gray-600 transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -511,7 +511,7 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Bank Reconciliation</h3>
+            <h3 class="text-2xl font-bold text-gray-900">Rekonsiliasi Bank</h3>
             <button @click="closeReconciliationModal" class="text-gray-400 hover:text-gray-600 transition">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -522,7 +522,7 @@
           <form @submit.prevent="saveReconciliation" class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Bank Account *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Akun Bank *</label>
                 <input
                   v-model="reconciliationForm.bankAccount"
                   type="text"
