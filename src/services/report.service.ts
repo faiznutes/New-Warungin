@@ -239,39 +239,46 @@ export class ReportService {
 
       // Get all tenants - filter subscriptions and orders by date range if provided
       // Use select instead of include to avoid potential null reference issues
-      const tenants = await dbClient.tenant.findMany({
-        where: {
-          name: {
-            not: 'System',
+      let tenants: any[] = [];
+      try {
+        tenants = await dbClient.tenant.findMany({
+          where: {
+            name: {
+              not: 'System',
+            },
           },
-        },
-        select: {
-          id: true,
-          name: true,
-          isActive: true,
-          _count: {
-            select: {
-              users: true,
-              orders: start && end ? {
-                where: {
-                  status: 'COMPLETED',
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
+          select: {
+            id: true,
+            name: true,
+            isActive: true,
+            _count: {
+              select: {
+                users: true,
+                orders: start && end ? {
+                  where: {
+                    status: 'COMPLETED',
+                    createdAt: {
+                      gte: startDate,
+                      lte: endDate,
+                    },
                   },
-                },
-              } : {
-                where: {
-                  status: 'COMPLETED',
+                } : {
+                  where: {
+                    status: 'COMPLETED',
+                  },
                 },
               },
             },
           },
-        },
-      }).catch((error: any) => {
-        logger.error('Error fetching tenants in getGlobalReport', { error: error.message });
-        return []; // Return empty array on error
-      });
+        });
+      } catch (error: any) {
+        logger.error('Error fetching tenants in getGlobalReport', { 
+          error: error.message,
+          stack: error.stack,
+          code: error.code,
+        });
+        tenants = []; // Return empty array on error
+      }
 
       // Get all completed orders - if no date range, get all (same as dashboard doesn't filter orders by date for tenant count)
       const orderWhere: any = {
