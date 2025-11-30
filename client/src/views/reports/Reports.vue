@@ -235,6 +235,28 @@
             </tbody>
           </table>
         </div>
+        <!-- Pagination for daily period -->
+        <div v-if="period === 'daily' && totalDailyPages > 1" class="px-4 sm:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="text-sm text-gray-600">
+            Halaman {{ dailyPage }} dari {{ totalDailyPages }}
+          </div>
+          <div class="flex gap-2">
+            <button
+              @click="dailyPage = Math.max(1, dailyPage - 1)"
+              :disabled="dailyPage === 1"
+              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Sebelumnya
+            </button>
+            <button
+              @click="dailyPage = Math.min(totalDailyPages, dailyPage + 1)"
+              :disabled="dailyPage === totalDailyPages"
+              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Selanjutnya
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Date Detail Modal (Grouped Products) -->
