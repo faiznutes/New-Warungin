@@ -1269,10 +1269,10 @@ export class ReportService {
 
       return {
         ...salesReport,
-        revenue: salesReport.summary.totalRevenue || 0,
+        revenue: totalRevenue,
         costOfGoods: totalCostOfGoods,
         grossProfit: totalGrossProfit,
-        profitMargin: overallProfitMargin,
+        profitMargin: Math.round(overallProfitMargin * 100) / 100, // Round to 2 decimal places
       };
     } catch (error: any) {
       logger.error('Error generating financial report', { 
@@ -1300,7 +1300,30 @@ export class ReportService {
   }
 
   generateGlobalReportPDF(report: any, start?: Date, end?: Date): string {
-    return `<html><body><h1>Global Report</h1><pre>${JSON.stringify(report, null, 2)}</pre></body></html>`;
+    try {
+      if (!report) {
+        logger.warn('generateGlobalReportPDF called with null/undefined report');
+        return `<html><body><h1>Global Report</h1><p>No data available</p></body></html>`;
+      }
+      
+      // Safely stringify report
+      let reportJson = 'No data available';
+      try {
+        reportJson = JSON.stringify(report, null, 2);
+      } catch (stringifyError: any) {
+        logger.error('Error stringifying report for PDF', { error: stringifyError.message });
+        reportJson = 'Error formatting report data';
+      }
+      
+      return `<html><body><h1>Global Report</h1><pre>${reportJson}</pre></body></html>`;
+    } catch (error: any) {
+      logger.error('Error generating global report PDF', {
+        error: error.message,
+        stack: error.stack,
+      });
+      // Return safe HTML instead of throwing
+      return `<html><body><h1>Global Report</h1><p>Error generating report: ${error.message || 'Unknown error'}</p></body></html>`;
+    }
   }
 }
 

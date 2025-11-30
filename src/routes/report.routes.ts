@@ -341,12 +341,35 @@ router.get(
       }
 
       const { startDate, endDate } = req.query;
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
+      
+      // Validate date format if provided
+      let start: Date | undefined;
+      let end: Date | undefined;
+      
+      if (startDate) {
+        start = new Date(startDate as string);
+        if (isNaN(start.getTime())) {
+          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+        }
+        start.setHours(0, 0, 0, 0);
+      }
+      
+      if (endDate) {
+        end = new Date(endDate as string);
+        if (isNaN(end.getTime())) {
+          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+        }
+        end.setHours(23, 59, 59, 999);
+      }
+      
+      // Validate date range
+      if (start && end && start > end) {
+        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
+      }
 
       const report = await reportService.getGlobalReport(start, end);
       
-      // Generate HTML for PDF
+      // Generate HTML for PDF (this method is safe and won't throw)
       const html = reportService.generateGlobalReportPDF(report, start, end);
       
       // Set headers for PDF download
