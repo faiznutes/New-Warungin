@@ -43,10 +43,14 @@ export const getRedisClient = (): Redis | null => {
             return delay;
           },
           maxRetriesPerRequest: null, // Required for BullMQ
-          lazyConnect: true,
+          lazyConnect: true, // Don't connect immediately
           enableOfflineQueue: false, // Disable offline queue to fail fast
           connectTimeout: 2000, // 2 second timeout
           showFriendlyErrorStack: false, // Don't show full error stack
+          // Suppress connection errors to prevent unhandled rejection
+          enableReadyCheck: false, // Disable ready check to prevent errors
+          autoResubscribe: false, // Disable auto resubscribe
+          autoResendUnfulfilledCommands: false, // Disable auto resend
         }
       );
 
