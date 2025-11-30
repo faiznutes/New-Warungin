@@ -720,9 +720,23 @@ const totalSubscriptionPages = computed(() => {
 
 // Filtered addons
 const filteredAddons = computed(() => {
-  if (!reportData.value || !reportData.value.addons) return [];
+  if (!reportData.value || !reportData.value.addons) {
+    console.log('filteredAddons: No reportData or addons', {
+      hasReportData: !!reportData.value,
+      hasAddons: !!reportData.value?.addons,
+      addonsType: typeof reportData.value?.addons,
+      addonsIsArray: Array.isArray(reportData.value?.addons),
+    });
+    return [];
+  }
   
   let filtered = [...reportData.value.addons];
+  console.log('filteredAddons: Before filter', {
+    totalAddons: filtered.length,
+    addonFilter: addonFilter.value,
+    addonInfoFilter: addonInfoFilter.value,
+    firstThree: filtered.slice(0, 3),
+  });
   
   if (addonFilter.value !== 'all') {
     filtered = filtered.filter((addon: any) => addon.status === addonFilter.value);
@@ -736,6 +750,11 @@ const filteredAddons = computed(() => {
       filtered = filtered.filter((addon: any) => addon.addedBySuperAdmin === false);
     }
   }
+  
+  console.log('filteredAddons: After filter', {
+    filteredCount: filtered.length,
+    firstThree: filtered.slice(0, 3),
+  });
   
   return filtered;
 });
@@ -776,6 +795,10 @@ const loadReport = async () => {
         tenantsCount: reportData.value.tenants?.length || 0,
         subscriptionsCount: reportData.value.subscriptions?.length || 0,
         addonsCount: reportData.value.addons?.length || 0,
+        hasAddons: !!reportData.value.addons,
+        addonsIsArray: Array.isArray(reportData.value.addons),
+        firstThreeAddons: reportData.value.addons?.slice(0, 3),
+        fullResponse: response.data,
       });
     }
     
