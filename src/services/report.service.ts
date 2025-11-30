@@ -1055,24 +1055,34 @@ export class ReportService {
                                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             const monthName = monthNames[month] || 'Unknown';
             dateLabel = `${monthName} ${year}`;
-        } else {
-          // 'all' - group all in one
-          dateKey = 'all';
-          dateLabel = 'All Time';
-        }
+          } else {
+            // 'all' - group all in one
+            dateKey = 'all';
+            dateLabel = 'All Time';
+          }
 
-        if (!dateGroups[dateKey]) {
-          dateGroups[dateKey] = {
-            orders: [],
-            revenue: 0,
-            count: 0,
-            dateLabel: dateLabel, // Store dateLabel for later use
-          };
-        }
+          if (!dateGroups[dateKey]) {
+            dateGroups[dateKey] = {
+              orders: [],
+              revenue: 0,
+              count: 0,
+              dateLabel: dateLabel, // Store dateLabel for later use
+            };
+          }
 
-        dateGroups[dateKey].orders.push(order);
-        dateGroups[dateKey].revenue += Number(order.total);
-        dateGroups[dateKey].count += 1;
+          dateGroups[dateKey].orders.push(order);
+          dateGroups[dateKey].revenue += Number(order.total);
+          dateGroups[dateKey].count += 1;
+        } catch (error: any) {
+          // Log error but continue processing other orders
+          logger.error('Error processing order date for grouping', {
+            error: error.message,
+            orderId: order.id,
+            createdAt: order.createdAt,
+            stack: error.stack,
+          });
+          // Skip this order if date parsing fails
+        }
       });
 
       // Convert to array format
@@ -1114,9 +1124,15 @@ export class ReportService {
           // dateLabel already formatted in grouping logic
           finalDateLabel = group.dateLabel || '';
         } else if (period === 'daily') {
-          // Parse dateKey (YYYY-MM-DD) and format in Indonesia timezone
-          const [year, month, day] = dateKey.split('-').map(Number);
-          finalDateLabel = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' });
+          // Parse dateKey (YYYY-MM-DD) and format safely
+          try {
+            const [year, month, day] = dateKey.split('-').map(Number);
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                               'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            finalDateLabel = `${day} ${monthNames[month - 1] || 'Unknown'} ${year}`;
+          } catch (error) {
+            finalDateLabel = dateKey; // Fallback to dateKey if parsing fails
+          }
         }
         
         byDate.push({
