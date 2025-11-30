@@ -186,7 +186,10 @@
               <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Laporan</h3>
               <p class="text-xs sm:text-sm text-gray-600 mt-1">
                 Periode: {{ getPeriodLabel(period) }} 
-                <span v-if="period !== 'all'">
+                <span v-if="period === 'monthly' && reportData?.byDate && reportData.byDate.length > 0">
+                  ({{ reportData.byDate[0]?.dateLabel || formatDate(dateRange.from) + ' - ' + formatDate(dateRange.to) }})
+                </span>
+                <span v-else-if="period !== 'all'">
                   ({{ formatDate(dateRange.from) }} - {{ formatDate(dateRange.to) }})
                 </span>
               </p>
