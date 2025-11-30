@@ -30,7 +30,7 @@
       <Transition name="fade" mode="out-in">
         <!-- Dashboard Tab -->
         <div v-if="activeTab === 'dashboard'" key="dashboard" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm text-gray-600">Total Penjualan</span>
