@@ -216,9 +216,9 @@ import { useSEO } from '../../composables/useSEO';
 import DemoPlayground from '../../components/DemoPlayground.vue';
 
 useSEO({
-  title: 'Request Demo Warungin - Lihat Demo Sistem Kasir | Warungin',
-  description: 'Lihat langsung bagaimana Warungin dapat membantu mengembangkan bisnis UMKM Anda. Demo personal 30-45 menit, gratis, tanpa komitmen. Semua fitur ditunjukkan.',
-  keywords: 'demo warungin, request demo, coba warungin, demo sistem kasir, trial warungin',
+  title: 'Test Demo Interaktif Warungin - Coba Fitur Sistem Kasir Gratis | Warungin',
+  description: 'Coba langsung fitur-fitur Warungin tanpa perlu login! Test demo interaktif untuk Dashboard, POS, Produk, Laporan, dan Pelanggan. Gratis, tanpa komitmen. Atau request demo personal 30-45 menit dengan tim kami.',
+  keywords: 'demo warungin, test demo interaktif, coba warungin gratis, demo sistem kasir online, trial warungin, demo pos online, coba fitur kasir, demo aplikasi kasir',
 });
 
 const { success: showSuccess, error: showError } = useNotification();

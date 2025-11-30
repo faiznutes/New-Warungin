@@ -2,26 +2,27 @@
   <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
     <!-- Tab Navigation -->
     <div class="border-b border-gray-200 bg-gray-50">
-      <div class="flex overflow-x-auto scrollbar-hide">
+      <div class="flex overflow-x-auto scrollbar-hide scroll-smooth">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           @click="activeTab = tab.id"
           :class="[
-            'px-4 sm:px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2',
+            'px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 sm:gap-2',
             activeTab === tab.id
               ? 'border-primary-600 text-primary-600 bg-white'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
           ]"
         >
-          <component :is="tab.icon" class="w-5 h-5" />
-          <span>{{ tab.label }}</span>
+          <component :is="tab.icon" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+          <span class="hidden xs:inline">{{ tab.label }}</span>
+          <span class="xs:hidden">{{ tab.labelShort || tab.label }}</span>
         </button>
       </div>
     </div>
 
     <!-- Tab Content -->
-    <div class="p-4 sm:p-6 min-h-[500px] bg-gray-50">
+    <div class="p-4 sm:p-6 min-h-[400px] sm:min-h-[500px] bg-gray-50">
       <!-- Dashboard Tab -->
       <div v-if="activeTab === 'dashboard'" class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -122,7 +123,7 @@
               <p class="text-sm">Klik produk untuk menambah ke keranjang</p>
               <p class="text-xs mt-1 text-gray-400">Demo Mode - Login untuk transaksi penuh</p>
             </div>
-            <div v-else class="space-y-2 mb-4 max-h-64 overflow-y-auto">
+            <div v-else class="space-y-2 mb-4 max-h-64 overflow-y-auto scrollbar-thin">
               <div
                 v-for="item in cart"
                 :key="item.id"
@@ -378,35 +379,40 @@ const tabs = [
   {
     id: 'dashboard',
     label: 'Dashboard',
-    icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+    labelShort: 'Dashboard',
+    icon: () => h('svg', { class: 'w-4 h-4 sm:w-5 sm:h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' })
     ])
   },
   {
     id: 'pos',
     label: 'POS',
-    icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+    labelShort: 'POS',
+    icon: () => h('svg', { class: 'w-4 h-4 sm:w-5 sm:h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' })
     ])
   },
   {
     id: 'products',
     label: 'Produk',
-    icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+    labelShort: 'Produk',
+    icon: () => h('svg', { class: 'w-4 h-4 sm:w-5 sm:h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' })
     ])
   },
   {
     id: 'reports',
     label: 'Laporan',
-    icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+    labelShort: 'Laporan',
+    icon: () => h('svg', { class: 'w-4 h-4 sm:w-5 sm:h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' })
     ])
   },
   {
     id: 'customers',
     label: 'Pelanggan',
-    icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
+    labelShort: 'Customer',
+    icon: () => h('svg', { class: 'w-4 h-4 sm:w-5 sm:h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' })
     ])
   },
@@ -450,6 +456,28 @@ const cartTotal = computed(() => {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #a0aec0;
 }
 </style>
 
