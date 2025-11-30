@@ -181,7 +181,7 @@ async function main() {
       tenantId: tenant1.id,
       name: 'Budi Santoso',
       email: 'budi@example.com',
-      phone: '+6281234567891',
+      phone: '085155043133',
       address: 'Jl. Contoh No. 123',
       loyaltyPoints: 100,
     },
