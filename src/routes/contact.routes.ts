@@ -115,9 +115,8 @@ router.get(
   '/submissions',
   authGuard,
   async (req: Request, res: Response) => {
+    const user = (req as any).user;
     try {
-      const user = (req as any).user;
-      
       if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
@@ -160,9 +159,8 @@ router.delete(
   '/submissions/:id',
   authGuard,
   async (req: Request, res: Response) => {
+    const user = (req as any).user;
     try {
-      const user = (req as any).user;
-      
       if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
@@ -221,9 +219,8 @@ router.post(
   '/submissions/cleanup',
   authGuard,
   async (req: Request, res: Response) => {
+    const user = (req as any).user;
     try {
-      const user = (req as any).user;
-      
       if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
@@ -272,9 +269,8 @@ router.patch(
   '/submissions/:id',
   authGuard,
   async (req: Request, res: Response) => {
+    const user = (req as any).user;
     try {
-      const user = (req as any).user;
-      
       if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
