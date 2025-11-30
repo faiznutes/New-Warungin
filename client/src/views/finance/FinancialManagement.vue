@@ -132,7 +132,7 @@
     <div v-if="activeTab === 'expenses'" class="space-y-6">
       <!-- Expenses by Category -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Expenses by Category</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Pengeluaran Berdasarkan Kategori</h3>
         <div class="space-y-2">
           <div
             v-for="(amount, category) in expensesByCategory"
@@ -172,11 +172,11 @@
         <div v-if="taxCalculation" class="border-t pt-4 space-y-3">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-gray-600">Total Revenue</p>
+              <p class="text-sm text-gray-600">Total Pendapatan</p>
               <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalRevenue) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Total Expenses</p>
+              <p class="text-sm text-gray-600">Total Pengeluaran</p>
               <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalExpenses) }}</p>
             </div>
             <div>
@@ -188,7 +188,7 @@
               <p class="text-lg font-semibold text-gray-900">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
             </div>
             <div class="col-span-2">
-              <p class="text-sm text-gray-600">Tax Amount</p>
+              <p class="text-sm text-gray-600">Jumlah Pajak</p>
               <p class="text-2xl font-bold text-red-600">Rp {{ formatCurrency(taxCalculation.taxAmount) }}</p>
             </div>
           </div>
@@ -281,7 +281,7 @@
                 <p class="font-semibold">Rp {{ formatCurrency(recon.statementBalance) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">Book Balance</p>
+                <p class="text-gray-600">Saldo Buku</p>
                 <p class="font-semibold">Rp {{ formatCurrency(recon.bookBalance) }}</p>
               </div>
               <div class="col-span-2">
