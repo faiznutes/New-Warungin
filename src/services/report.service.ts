@@ -1267,9 +1267,11 @@ export class ReportService {
       ? (totalGrossProfit / salesReport.summary.totalRevenue) * 100 
       : 0;
 
+      const finalRevenue = Number(salesReport.summary?.totalRevenue || 0);
+      
       return {
         ...salesReport,
-        revenue: totalRevenue,
+        revenue: finalRevenue,
         costOfGoods: totalCostOfGoods,
         grossProfit: totalGrossProfit,
         profitMargin: Math.round(overallProfitMargin * 100) / 100, // Round to 2 decimal places
