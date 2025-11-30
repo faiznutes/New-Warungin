@@ -383,23 +383,29 @@ export class ReportService {
       const { AVAILABLE_ADDONS } = await import('../services/addon.service');
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
-      // Get addons - if no date range, get ALL addons (not just active, no status filter)
-      // If date range provided, filter by subscribedAt
+      // Get addons - EXACTLY like subscriptions: if no date range, get ALL addons (no status filter, no date filter)
+      // If date range provided, filter by subscribedAt (same as subscriptions filter by createdAt)
       const addonWhere: any = {};
       if (start && end) {
-        // If date range provided, filter by subscribedAt
-        // Only filter if subscribedAt is not null (subscribedAt should always be set)
+        // If date range provided, filter by subscribedAt (same as subscriptions filter by createdAt)
         addonWhere.subscribedAt = {
           gte: startDate,
           lte: endDate,
         };
+        logger.info('Addon query with date filter', {
+          startDate: startDate?.toISOString(),
+          endDate: endDate?.toISOString(),
+        });
+      } else {
+        // If no date range, get ALL addons (no status filter, no date filter) - EXACTLY like subscriptions
+        // This ensures all addons are fetched regardless of status, same as subscriptions
+        logger.info('Addon query without date filter - fetching ALL addons');
       }
-      // If no date range, get ALL addons (no status filter, no date filter) - same as dashboard logic for subscriptions
-      // This ensures all addons are fetched regardless of status
 
       let addons: any[] = [];
       try {
-        // Fetch ALL addons without status filter to ensure all data is shown
+        // Fetch ALL addons without status filter - EXACTLY like subscriptions query
+        // Use same structure as subscriptions: include tenant, no status filter
         addons = await dbClient.tenantAddon.findMany({
           where: addonWhere,
           include: {
@@ -417,7 +423,7 @@ export class ReportService {
               },
             },
           },
-          // Don't use orderBy if subscribedAt might be null - sort manually instead
+          // Don't use orderBy - sort manually like subscriptions (subscriptions use createdAt desc, we use subscribedAt desc)
         });
         
         logger.info('Fetched addons for global report', {
