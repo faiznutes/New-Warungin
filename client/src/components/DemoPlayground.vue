@@ -15,8 +15,8 @@
           ]"
         >
           <component :is="tab.icon" class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-          <span class="hidden xs:inline">{{ tab.label }}</span>
-          <span class="xs:hidden">{{ tab.labelShort || tab.label }}</span>
+          <span class="hidden sm:inline">{{ tab.label }}</span>
+          <span class="sm:hidden">{{ tab.labelShort || tab.label }}</span>
         </button>
       </div>
     </div>
