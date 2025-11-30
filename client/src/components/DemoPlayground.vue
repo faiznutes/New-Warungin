@@ -79,8 +79,8 @@
             <p class="text-2xl font-bold text-gray-900">89</p>
             <p class="text-xs text-gray-500 mt-1">Terdaftar</p>
           </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
+          </div>
+          <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Grafik Penjualan (Demo)</h3>
           <div class="h-64 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg flex items-center justify-center">
             <div class="text-center">
@@ -134,7 +134,7 @@
               <div
                 v-for="item in cart"
                 :key="item.id"
-                class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                class="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div class="flex-1">
                   <p class="text-sm font-medium text-gray-900">{{ item.name }}</p>
@@ -311,7 +311,7 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="customer in demoCustomers" :key="customer.id" class="hover:bg-gray-50">
+                <tr v-for="customer in demoCustomers" :key="customer.id" class="hover:bg-gray-50 transition-colors">
                   <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ customer.name }}</td>
                   <td class="px-4 py-3 text-sm text-gray-600">{{ customer.email }}</td>
                   <td class="px-4 py-3 text-sm text-gray-600">{{ customer.phone }}</td>
@@ -445,7 +445,6 @@ const addToCart = (product: DemoProduct) => {
       emoji: product.emoji,
     });
   }
-  // Visual feedback - bisa ditambahkan notification jika diperlukan
 };
 
 const removeFromCart = (productId: string) => {
