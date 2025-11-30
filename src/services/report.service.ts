@@ -511,23 +511,80 @@ export class ReportService {
         tenantReports = []; // Return empty array on error
       }
       
+      // Calculate totalUsers safely
+      let totalUsers = 0;
+      try {
+        totalUsers = (tenants || []).reduce((sum: number, t: any) => {
+          try {
+            return sum + (t?._count?.users || 0);
+          } catch (err: any) {
+            logger.warn('Error calculating tenant users', { error: err.message, tenantId: t?.id });
+            return sum;
+          }
+        }, 0);
+      } catch (error: any) {
+        logger.error('Error calculating total users', { error: error.message });
+        totalUsers = 0; // Set to 0 on error
+      }
+
+      // Calculate activeTenants safely
+      let activeTenants = 0;
+      try {
+        activeTenants = (tenants || []).filter((t: any) => t?.isActive).length;
+      } catch (error: any) {
+        logger.error('Error calculating active tenants', { error: error.message });
+        activeTenants = 0; // Set to 0 on error
+      }
+
       // Log results for debugging
       logger.info('Global report query results', {
         totalSalesRevenue,
         totalSubscriptionRevenue,
         totalAddonRevenue,
         totalGlobalRevenue,
-        totalTenants: tenants.length,
-        activeTenants: tenants.filter((t: any) => t.isActive).length,
+        totalTenants: (tenants || []).length,
+        activeTenants,
+        totalUsers,
         totalOrders,
-        ordersCount: allOrders.length,
-        subscriptionsCount: subscriptions.length,
-        addonsCount: sortedAddons.length,
-        addonsRawCount: addons.length,
-        tenantReportsCount: tenantReports.length,
+        ordersCount: (allOrders || []).length,
+        subscriptionsCount: (subscriptions || []).length,
+        addonsCount: (sortedAddons || []).length,
+        addonsRawCount: (addons || []).length,
+        tenantReportsCount: (tenantReports || []).length,
         addonWhereFilter: JSON.stringify(addonWhere),
         hasDateRange: !!(start && end),
       });
+
+      // Map subscriptions safely
+      let mappedSubscriptions: any[] = [];
+      try {
+        mappedSubscriptions = (subscriptions || []).map((sub: any) => {
+          try {
+            if (!sub || !sub.id) {
+              logger.warn('Invalid subscription data', { sub });
+              return null;
+            }
+            return {
+              id: sub.id || '',
+              tenantId: sub.tenantId || '',
+              tenantName: sub.tenant?.name || 'Unknown',
+              plan: sub.plan || 'BASIC',
+              status: sub.status || 'EXPIRED',
+              amount: Number(sub.amount || 0),
+              startDate: sub.startDate || null,
+              endDate: sub.endDate || null,
+              createdAt: sub.createdAt || new Date(),
+              addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
+            };
+          } catch (err: any) {
+            logger.warn('Error mapping subscription', { error: err.message, subId: sub?.id, stack: err.stack });
+            return null;
+          }
+        }).filter((sub: any) => sub !== null); // Filter out null entries
+      } catch (error: any) {
+        logger.error('Error mapping subscriptions', { error: error.message });
+        mappedSubscriptions = []; // Return empty array on error
+      }
 
       return {
         summary: {
@@ -535,24 +592,13 @@ export class ReportService {
           totalSubscriptionRevenue,
           totalAddonRevenue,
           totalSalesRevenue, // Revenue from tenant sales
-          totalTenants: tenants.length,
-          activeTenants: tenants.filter((t: any) => t.isActive).length,
-          totalUsers: tenants.reduce((sum: number, t: any) => sum + (t._count?.users || 0), 0),
+          totalTenants: (tenants || []).length,
+          activeTenants,
+          totalUsers,
           totalOrders,
         },
         tenants: tenants || [],
-        subscriptions: (subscriptions || []).map((sub: any) => ({
-          id: sub.id,
-          tenantId: sub.tenantId,
-          tenantName: sub.tenant?.name || 'Unknown',
-          plan: sub.plan,
-          status: sub.status,
-          amount: Number(sub.amount || 0),
-          startDate: sub.startDate,
-          endDate: sub.endDate,
-          createdAt: sub.createdAt,
-          addedBySuperAdmin: (sub.addedBySuperAdmin !== undefined) ? sub.addedBySuperAdmin : false, // Handle if field doesn't exist yet
-        })),
+        subscriptions: mappedSubscriptions,
         addons: (sortedAddons || []).map((addon: any) => {
           try {
             if (!addon || !addon.id) {
