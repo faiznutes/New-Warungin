@@ -424,13 +424,19 @@ export class ReportService {
           addonsCount: addons.length,
           hasDateFilter: !!(start && end),
           addonWhere: JSON.stringify(addonWhere),
+          startDate: startDate?.toISOString(),
+          endDate: endDate?.toISOString(),
           sampleAddon: addons.length > 0 ? {
             id: addons[0].id,
             addonId: addons[0].addonId,
             subscribedAt: addons[0].subscribedAt,
             status: addons[0].status,
             tenantName: addons[0].tenant?.name,
+            addonName: addons[0].addon?.name,
+            hasAddon: !!addons[0].addon,
+            hasTenant: !!addons[0].tenant,
           } : null,
+          allAddonIds: addons.map(a => a.id).slice(0, 10), // Log first 10 IDs
         });
       } catch (error: any) {
         logger.error('Error fetching addons in getGlobalReport', { 

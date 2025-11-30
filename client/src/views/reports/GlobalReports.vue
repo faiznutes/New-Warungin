@@ -89,6 +89,15 @@
               <option value="ACTIVE">Aktif</option>
               <option value="EXPIRED">Expired</option>
             </select>
+            <select
+              v-model="subscriptionInfoFilter"
+              @change="subscriptionPage = 1"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua Info</option>
+              <option value="superadmin">Ditambahkan Super Admin</option>
+              <option value="self">Dibeli Sendiri</option>
+            </select>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -656,6 +665,7 @@ const editingAddon = ref<any>({ addedBySuperAdmin: false });
 // Subscription pagination and filter
 const subscriptionPage = ref(1);
 const subscriptionFilter = ref<'all' | 'ACTIVE' | 'EXPIRED'>('all');
+const subscriptionInfoFilter = ref<'all' | 'superadmin' | 'self'>('all');
 const itemsPerPage = 7;
 
 // Addon pagination and filter
@@ -681,6 +691,15 @@ const filteredSubscriptions = computed(() => {
   
   if (subscriptionFilter.value !== 'all') {
     filtered = filtered.filter((sub: any) => sub.status === subscriptionFilter.value);
+  }
+  
+  // Filter by addedBySuperAdmin
+  if (subscriptionInfoFilter.value !== 'all') {
+    if (subscriptionInfoFilter.value === 'superadmin') {
+      filtered = filtered.filter((sub: any) => sub.addedBySuperAdmin === true);
+    } else if (subscriptionInfoFilter.value === 'self') {
+      filtered = filtered.filter((sub: any) => sub.addedBySuperAdmin === false);
+    }
   }
   
   return filtered;
