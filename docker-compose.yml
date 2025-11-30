@@ -155,7 +155,8 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: warungin-cloudflared
     restart: unless-stopped
-    command: tunnel --no-autoupdate run
+    # Add retries and connection timeout to prevent Error 1033
+    command: tunnel --no-autoupdate run --retries 5 --loglevel info
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
     networks:

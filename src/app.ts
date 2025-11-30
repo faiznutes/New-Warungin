@@ -21,6 +21,14 @@ import './scheduler';
 console.log('📦 Loading Express app...');
 const app: Express = express();
 const httpServer = createServer(app);
+
+// Configure HTTP server for better Cloudflare Tunnel compatibility
+// Keep-alive settings to prevent connection termination (Error 1033)
+httpServer.keepAliveTimeout = 65000; // 65 seconds (slightly more than default 60s)
+httpServer.headersTimeout = 66000; // 66 seconds (must be > keepAliveTimeout)
+// Max connections per socket
+httpServer.maxConnections = 1000;
+
 console.log('✅ Express app and HTTP server created');
 
 // Trust proxy - Required when running behind reverse proxy (nginx, cloudflare, etc.)
