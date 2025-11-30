@@ -378,6 +378,28 @@ const viewSubmission = (submission: ContactSubmission) => {
   viewingSubmission.value = submission;
 };
 
+const toggleProcessed = async (id: string, event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const isProcessed = target.checked;
+
+  try {
+    await api.patch(`/contact/submissions/${id}`, { isProcessed });
+    await loadSubmissions();
+    
+    // Update viewingSubmission jika sedang dibuka
+    if (viewingSubmission.value && viewingSubmission.value.id === id) {
+      viewingSubmission.value.isProcessed = isProcessed;
+    }
+    
+    showSuccess(isProcessed ? 'Pesan ditandai sebagai sudah diproses.' : 'Pesan ditandai sebagai belum diproses.');
+  } catch (error: any) {
+    console.error('Error updating submission status:', error);
+    showError(error.response?.data?.message || 'Gagal mengupdate status pesan.');
+    // Revert checkbox
+    target.checked = !isProcessed;
+  }
+};
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('id-ID', {
