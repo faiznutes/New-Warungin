@@ -224,6 +224,12 @@ export class AddonService {
 
     // Check if addon has limit (can be purchased multiple times)
     const addonInfo = AVAILABLE_ADDONS.find(a => a.id === data.addonId);
+    
+    // Check if addon is coming soon
+    if (addonInfo?.comingSoon) {
+      throw new Error('Addon ini belum tersedia. Fitur ini sedang dalam pengembangan.');
+    }
+    
     const hasLimit = addonInfo?.defaultLimit !== null && addonInfo?.defaultLimit !== undefined;
 
     // For addons without limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
