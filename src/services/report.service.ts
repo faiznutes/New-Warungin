@@ -512,7 +512,7 @@ export class ReportService {
       try {
         totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
           try {
-            const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+            const price = addonPriceMap.get(addon?.addonId) || Number((addon?.config as any)?.price || 0);
             // Use same calculation as dashboard: (price * duration) / 30
             const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
               ? (addon.config as any).originalDuration || 30
@@ -663,7 +663,7 @@ export class ReportService {
             const mappedAddons = (sortedAddons || []).map((addon: any) => {
               try {
                 if (!addon || !addon.id) return null;
-                const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+                const price = addonPriceMap.get(addon?.addonId) || Number((addon?.config as any)?.price || 0);
                 const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
                   ? (addon.config as any).originalDuration || 30
                   : 30;
@@ -672,7 +672,7 @@ export class ReportService {
                 return {
                   id: addon.id || '',
                   addonId: addon.addonId || '',
-                  addonName: addon?.addon?.name || addon?.addonName || 'Unknown',
+                  addonName: addon.addonName || 'Unknown',
                   tenantId: addon.tenantId || '',
                   tenantName: addon?.tenant?.name || 'Unknown',
                   status: addon.status || 'inactive',
@@ -717,7 +717,7 @@ export class ReportService {
                   return null;
                 }
                 
-                const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+                const price = addonPriceMap.get(addon?.addonId) || Number((addon?.config as any)?.price || 0);
                 const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
                   ? (addon.config as any).originalDuration || 30
                   : 30;
@@ -729,7 +729,7 @@ export class ReportService {
                 const mapped = {
                   id: addon.id || '',
                   addonId: addon.addonId || '',
-                  addonName: addon?.addon?.name || addon?.addonName || 'Unknown',
+                  addonName: addon.addonName || 'Unknown',
                   tenantId: addon.tenantId || '',
                   tenantName: addon?.tenant?.name || 'Unknown',
                   status: addon.status || 'inactive',
