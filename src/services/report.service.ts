@@ -499,7 +499,7 @@ export class ReportService {
             addonId: a.addonId,
             subscribedAt: a.subscribedAt,
             tenantName: a.tenant?.name,
-            addonName: a.addon?.name,
+            addonName: a.addonName,
           })),
         });
       } catch (error: any) {
@@ -747,7 +747,7 @@ export class ReportService {
                     original: {
                       id: addon.id,
                       addonId: addon.addonId,
-                      hasAddon: !!addon.addon,
+                      addonName: addon.addonName,
                       hasTenant: !!addon.tenant,
                       status: addon.status,
                       subscribedAt: addon.subscribedAt,
