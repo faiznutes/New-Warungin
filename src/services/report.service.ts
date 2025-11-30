@@ -224,17 +224,27 @@ export class ReportService {
         dbClient = prisma;
       }
       
-      // Set date range - if no dates provided, get all data (use very old date)
-      const startDate = start || new Date('2000-01-01');
-      const endDate = end || new Date();
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(23, 59, 59, 999);
+      // IMPORTANT: Only use date filter if BOTH start AND end are provided
+      // If no date range, get ALL data (no date filter) - same as dashboard
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+      
+      if (start && end) {
+        // Both dates provided - use them for filtering
+        startDate = new Date(start);
+        endDate = new Date(end);
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+      }
+      // If no date range, startDate and endDate remain undefined (no date filter)
       
       // Log for debugging
       logger.info('Generating global report', {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        hasDateFilter: !!(start || end),
+        start: start?.toISOString(),
+        end: end?.toISOString(),
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+        hasDateFilter: !!(start && end),
       });
 
       // Get all tenants - filter subscriptions and orders by date range if provided
