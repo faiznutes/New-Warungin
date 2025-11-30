@@ -988,16 +988,15 @@ export class ReportService {
         // Parse ISO string and convert to Indonesia timezone (UTC+7)
         // This ensures consistency with frontend display
         const orderDate = new Date(order.createdAt);
-        // Convert to Indonesia timezone (UTC+7)
-        const indonesiaOffset = 7 * 60; // 7 hours in minutes
-        const utcTime = orderDate.getTime() + (orderDate.getTimezoneOffset() * 60000);
-        const indonesiaTime = new Date(utcTime + (indonesiaOffset * 60000));
+        // Convert to Indonesia timezone (UTC+7) by adding 7 hours
+        const indonesiaTime = new Date(orderDate.getTime() + (7 * 60 * 60 * 1000));
         
         let dateKey: string;
         let dateLabel: string;
 
         if (period === 'daily') {
           // Use date only (ignore time) in Indonesia timezone
+          // Use UTC methods since we've already adjusted the time
           const year = indonesiaTime.getUTCFullYear();
           const month = String(indonesiaTime.getUTCMonth() + 1).padStart(2, '0');
           const day = String(indonesiaTime.getUTCDate()).padStart(2, '0');
