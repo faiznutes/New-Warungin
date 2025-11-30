@@ -91,7 +91,7 @@
                 </p>
                 <p v-if="template?.header?.showPhone" 
                    class="text-xs sm:text-sm text-gray-600 mt-1">
-                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 081234567890' }}
+                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 085155043133' }}
                 </p>
               </div>
 
@@ -183,7 +183,7 @@
                    :class="getTemplateFooterStyle(template.templateType)">
                 <p v-if="template?.footer?.showThankYou" class="mb-1 sm:mb-2 font-semibold text-sm sm:text-base">Terima Kasih!</p>
                 <p v-if="template?.footer?.showContact" class="text-xs sm:text-sm text-gray-600">
-                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 081234567890' }}
+                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 085155043133' }}
                 </p>
               </div>
             </div>

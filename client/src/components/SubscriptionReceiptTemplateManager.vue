@@ -100,7 +100,7 @@
                   Warungin
                 </h1>
                 <p class="text-xs sm:text-sm text-gray-600">Platform Subscription Receipt</p>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">Telp: 081234567890</p>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1">Telp: 085155043133</p>
               </div>
               <div class="space-y-2 mb-4">
                 <div class="flex justify-between text-sm">

@@ -136,7 +136,7 @@
               Hubungi Support
             </router-link>
             <a
-              href="mailto:support@warungin.com"
+              href="mailto:faiznute07@gmail.com"
               class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-primary-600 transition font-semibold"
             >
               Kirim Email

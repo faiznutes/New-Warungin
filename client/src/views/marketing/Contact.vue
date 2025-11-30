@@ -95,7 +95,7 @@
                   </div>
                   <div>
                     <h3 class="font-semibold text-gray-800">Email</h3>
-                    <p class="text-gray-600">support@warungin.com</p>
+                    <p class="text-gray-600">faiznute07@gmail.com</p>
                   </div>
                 </div>
 
@@ -107,7 +107,7 @@
                   </div>
                   <div>
                     <h3 class="font-semibold text-gray-800">Telepon</h3>
-                    <p class="text-gray-600">+62 812-3456-7890</p>
+                    <p class="text-gray-600">085155043133</p>
                   </div>
                 </div>
 

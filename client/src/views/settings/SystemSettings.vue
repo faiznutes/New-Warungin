@@ -193,7 +193,7 @@ const { success: showSuccess, error: showError } = useNotification();
 
 const settings = ref({
   systemName: 'Warungin',
-  supportEmail: 'support@warungin.com',
+  supportEmail: 'faiznute07@gmail.com',
   timezone: 'Asia/Jakarta',
   requireStrongPassword: true,
   enable2FA: false,
