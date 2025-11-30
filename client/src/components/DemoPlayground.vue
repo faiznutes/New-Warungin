@@ -2,13 +2,17 @@
   <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
     <!-- Tab Navigation -->
     <div class="border-b border-gray-200 bg-gray-50">
-      <div class="flex overflow-x-auto scrollbar-hide scroll-smooth">
+      <div class="flex overflow-x-auto scrollbar-hide scroll-smooth" role="tablist" aria-label="Fitur demo Warungin">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           @click="activeTab = tab.id"
+          type="button"
+          :aria-label="`Buka tab ${tab.label}`"
+          :aria-selected="activeTab === tab.id"
+          role="tab"
           :class="[
-            'px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 sm:gap-2',
+            'px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 sm:gap-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
             activeTab === tab.id
               ? 'border-primary-600 text-primary-600 bg-white'
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -96,11 +100,13 @@
           <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Pilih Produk</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              <div
+              <button
                 v-for="product in demoProducts"
                 :key="product.id"
                 @click="addToCart(product)"
-                class="bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-primary-50 hover:border-primary-300 border-2 border-gray-200 transition"
+                type="button"
+                :aria-label="`Tambahkan ${product.name} ke keranjang`"
+                class="bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-primary-50 hover:border-primary-300 border-2 border-gray-200 transition focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 :class="{ 'border-primary-500 bg-primary-50': isInCart(product.id) }"
               >
                 <div class="text-center">
@@ -110,7 +116,7 @@
                   <h4 class="font-medium text-sm text-gray-900 mb-1">{{ product.name }}</h4>
                   <p class="text-sm font-semibold text-primary-600">{{ formatCurrency(product.price) }}</p>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
           <!-- Cart -->
@@ -137,7 +143,9 @@
                   <p class="text-sm font-semibold text-gray-900">{{ formatCurrency(item.price * item.quantity) }}</p>
                   <button
                     @click="removeFromCart(item.id)"
-                    class="text-xs text-red-600 hover:text-red-800 mt-1"
+                    type="button"
+                    :aria-label="`Hapus ${item.name} dari keranjang`"
+                    class="text-xs text-red-600 hover:text-red-800 mt-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 rounded"
                   >
                     Hapus
                   </button>
@@ -291,14 +299,14 @@
             </button>
           </div>
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200" aria-label="Daftar pelanggan demo">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telepon</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Belanja</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
+                  <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                  <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telepon</th>
+                  <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Belanja</th>
+                  <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
