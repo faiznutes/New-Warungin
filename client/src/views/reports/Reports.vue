@@ -191,13 +191,6 @@
                 </span>
               </p>
             </div>
-            <button
-              v-if="reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')"
-              @click="showProductDetails = !showProductDetails"
-              class="px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
-            >
-              {{ showProductDetails ? 'Sembunyikan' : 'Tampilkan' }} Detail Produk
-            </button>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -221,63 +214,92 @@
                     :key="cellIndex"
                     class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900"
                   >
-                    {{ cell }}
-                  </td>
-                </tr>
-                <!-- Product Details Row (only for sales report and admin tenant) -->
-                <tr
-                  v-if="showProductDetails && reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') && productDetails[index]"
-                  class="bg-gray-50"
-                >
-                  <td :colspan="reportHeaders.length" class="px-4 sm:px-6 py-3">
-                    <div class="space-y-2">
-                      <h4 class="text-xs font-semibold text-gray-700 mb-2">Detail Produk:</h4>
-                      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        <div
-                          v-for="product in productDetails[index]"
-                          :key="product.id"
-                          class="bg-white p-3 rounded border border-gray-200 hover:border-primary-300 cursor-pointer"
-                          @click="showProductDetailModal(product)"
-                        >
-                          <div class="flex justify-between items-start mb-1">
-                            <span class="text-xs font-medium text-gray-900">{{ product.name }}</span>
-                            <span class="text-xs text-gray-500">x{{ product.quantity }}</span>
-                          </div>
-                          <div class="space-y-1 text-xs">
-                            <div class="flex justify-between">
-                              <span class="text-gray-600">Harga Jual:</span>
-                              <span class="font-medium text-gray-900">{{ formatCurrency(product.sellingPrice) }}</span>
-                            </div>
-                            <div
-                              v-if="product.cost && product.cost > 0"
-                              class="flex justify-between"
-                            >
-                              <span class="text-gray-600">Harga Pokok:</span>
-                              <span class="font-medium text-red-600">{{ formatCurrency(product.cost) }}</span>
-                            </div>
-                            <div
-                              v-if="product.cost && product.cost > 0"
-                              class="flex justify-between"
-                            >
-                              <span class="text-gray-600">Untung:</span>
-                              <span class="font-medium text-green-600">{{ formatCurrency(product.profit) }}</span>
-                            </div>
-                            <div
-                              v-if="product.cost && product.cost > 0"
-                              class="flex justify-between pt-1 border-t border-gray-200"
-                            >
-                              <span class="text-gray-600">Margin:</span>
-                              <span class="font-medium text-green-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <template v-if="reportType === 'sales' && cellIndex === row.length - 1 && typeof cell === 'number' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR')">
+                      <button
+                        @click="viewDateDetail(cell)"
+                        class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition"
+                        title="Lihat Detail"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                    </template>
+                    <template v-else>
+                      {{ cell }}
+                    </template>
                   </td>
                 </tr>
               </template>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Date Detail Modal (Grouped Products) -->
+      <div
+        v-if="viewingDateDetail"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        @click.self="viewingDateDetail = null"
+      >
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Detail Laporan</h3>
+              <p class="text-sm text-gray-600 mt-1">{{ viewingDateDetail?.dateLabel || formatDate(viewingDateDetail?.date) }}</p>
+            </div>
+            <button
+              @click="viewingDateDetail = null"
+              class="text-gray-400 hover:text-gray-600 transition"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-6">
+            <div v-if="groupedProducts.length === 0" class="text-center text-gray-500 py-8">
+              Tidak ada data produk
+            </div>
+            <div v-else class="space-y-4">
+              <div
+                v-for="group in groupedProducts"
+                :key="group.key"
+                class="bg-gray-50 rounded-lg p-4 border border-gray-200"
+              >
+                <div class="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 class="text-base font-semibold text-gray-900">{{ group.name }}</h4>
+                    <p class="text-xs text-gray-600 mt-1">
+                      Terjual {{ group.totalQuantity }} unit dalam {{ group.orderCount }} nota
+                      <span v-if="group.hasDiscount" class="ml-2 text-orange-600 font-medium">(Dengan Diskon)</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span class="text-gray-600">Harga Jual:</span>
+                    <p class="font-semibold text-gray-900">{{ formatCurrency(group.totalSellingPrice) }}</p>
+                    <p class="text-xs text-gray-500">{{ formatCurrency(group.unitPrice) }} / unit</p>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Harga Pokok:</span>
+                    <p class="font-semibold text-red-600">{{ formatCurrency(group.totalCost) }}</p>
+                    <p class="text-xs text-gray-500">{{ formatCurrency(group.unitCost) }} / unit</p>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Untung:</span>
+                    <p class="font-semibold text-green-600">{{ formatCurrency(group.totalProfit) }}</p>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">Margin:</span>
+                    <p class="font-semibold text-green-600">{{ group.margin }}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -402,6 +424,8 @@ const reportViewType = ref('full'); // 'full', 'revenue', 'profit'
 const showProductDetails = ref(false);
 const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
+const viewingDateDetail = ref<any>(null);
+const groupedProducts = ref<any[]>([]);
 
 // Margin display format (percentage or amount)
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
@@ -457,10 +481,31 @@ const summaryStats = computed(() => {
   
   switch (reportType.value) {
     case 'sales':
+      // Calculate total revenue based on reportViewType
+      let totalRevenue = reportData.value.summary?.totalRevenue || 0;
+      let totalCostOfGoods = 0;
+      
+      // Calculate total cost of goods from byDate
+      if (reportData.value.byDate && Array.isArray(reportData.value.byDate)) {
+        totalCostOfGoods = reportData.value.byDate.reduce((sum: number, item: any) => {
+          return sum + (item.costOfGoods || 0);
+        }, 0);
+      }
+      
+      // Apply filter
+      if (reportViewType.value === 'profit') {
+        // Harga jual dikurangi harga pokok (untung)
+        totalRevenue = totalRevenue - totalCostOfGoods;
+      } else if (reportViewType.value === 'full') {
+        // Full: harga jual dikurangi harga pokok
+        totalRevenue = totalRevenue - totalCostOfGoods;
+      }
+      // revenue: tetap harga jual saja
+      
       return [
-        { label: 'Total Pendapatan', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-green-600' },
+        { label: 'Total Pendapatan', value: formatCurrency(totalRevenue), icon: '💰', color: 'text-green-600' },
         { label: 'Total Pesanan', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
-        { label: 'Rata-rata per Pesanan', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
+        { label: 'Rata-rata per Pesanan', value: formatCurrency(totalRevenue / (reportData.value.summary?.totalOrders || 1)), icon: '📊', color: 'text-purple-600' },
         { label: 'Total Item Terjual', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
       ];
     case 'financial':
@@ -478,7 +523,7 @@ const summaryStats = computed(() => {
 const reportHeaders = computed(() => {
   switch (reportType.value) {
     case 'sales':
-      return ['Tanggal', 'Total Pendapatan', 'Jumlah Transaksi', 'Rata-rata per Transaksi'];
+      return ['Tanggal', 'Total Pendapatan', 'Jumlah Transaksi', 'Rata-rata per Transaksi', 'Aksi'];
     case 'financial':
       return ['Tanggal', 'Pendapatan', 'Biaya Pokok', 'Laba Kotor', 'Margin Laba'];
     default:
@@ -511,8 +556,8 @@ const reportRows = computed(() => {
           // Harga jual dikurangi harga pokok (untung)
           revenue = (item.revenue || 0) - costOfGoods;
         } else {
-          // Full: tetap revenue asli
-          revenue = item.revenue || 0;
+          // Full: harga jual dikurangi harga pokok
+          revenue = (item.revenue || 0) - costOfGoods;
         }
         
         // Store product details for this row (sudah diproses di loadReport)
@@ -525,6 +570,7 @@ const reportRows = computed(() => {
           formatCurrency(revenue),
           item.count || 0,
           formatCurrency(revenue / (item.count || 1)),
+          index, // Store index for detail view
         ];
       }) || [];
       return salesRows;
@@ -596,6 +642,77 @@ const saveMarginFormat = () => {
 
 const showProductDetailModal = (product: any) => {
   selectedProductDetail.value = product;
+};
+
+const viewDateDetail = (dateIndex: number) => {
+  if (!reportData.value?.byDate || !reportData.value.byDate[dateIndex]) {
+    return;
+  }
+  
+  const dateItem = reportData.value.byDate[dateIndex];
+  viewingDateDetail.value = dateItem;
+  
+  // Group products by productId and discount status
+  const productGroups: Record<string, any> = {};
+  
+  if (dateItem.orders && Array.isArray(dateItem.orders)) {
+    dateItem.orders.forEach((order: any) => {
+      const hasDiscount = order.discount && Number(order.discount) > 0;
+      
+      if (order.items && Array.isArray(order.items)) {
+        order.items.forEach((orderItem: any) => {
+          const productId = orderItem.productId || orderItem.product?.id;
+          const productName = orderItem.product?.name || 'Unknown';
+          const price = Number(orderItem.price || 0);
+          const quantity = Number(orderItem.quantity || 0);
+          const cost = Number(orderItem.cost || orderItem.product?.cost || 0);
+          
+          // Create unique key: productId + discount status
+          const groupKey = `${productId}-${hasDiscount ? 'discount' : 'nodiscount'}`;
+          
+          if (!productGroups[groupKey]) {
+            productGroups[groupKey] = {
+              key: groupKey,
+              productId,
+              name: productName,
+              hasDiscount,
+              totalQuantity: 0,
+              totalSellingPrice: 0,
+              totalCost: 0,
+              orderCount: 0,
+              orderIds: new Set(),
+            };
+          }
+          
+          const group = productGroups[groupKey];
+          group.totalQuantity += quantity;
+          group.totalSellingPrice += price * quantity;
+          group.totalCost += cost * quantity;
+          if (!group.orderIds.has(order.id)) {
+            group.orderIds.add(order.id);
+            group.orderCount++;
+          }
+        });
+      }
+    });
+  }
+  
+  // Convert to array and calculate derived values
+  groupedProducts.value = Object.values(productGroups).map((group: any) => {
+    const unitPrice = group.totalQuantity > 0 ? group.totalSellingPrice / group.totalQuantity : 0;
+    const unitCost = group.totalQuantity > 0 ? group.totalCost / group.totalQuantity : 0;
+    const totalProfit = group.totalSellingPrice - group.totalCost;
+    const margin = group.totalSellingPrice > 0 ? ((totalProfit / group.totalSellingPrice) * 100).toFixed(2) : '0.00';
+    
+    return {
+      ...group,
+      unitPrice,
+      unitCost,
+      totalProfit,
+      margin,
+      orderIds: undefined, // Remove Set from output
+    };
+  });
 };
 
 const loadReport = async () => {
