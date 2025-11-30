@@ -421,17 +421,11 @@ export class ReportService {
       let addons: any[] = [];
       try {
         // Fetch ALL addons without status filter - EXACTLY like subscriptions query
-        // Use same structure as subscriptions: include tenant, no status filter
+        // NOTE: TenantAddon doesn't have an 'addon' relation, it has addonId and addonName fields directly
+        // So we only include tenant relation
         addons = await dbClient.tenantAddon.findMany({
           where: addonWhere,
           include: {
-            addon: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-              },
-            },
             tenant: {
               select: {
                 id: true,
@@ -451,11 +445,10 @@ export class ReportService {
           sampleAddon: addons.length > 0 ? {
             id: addons[0].id,
             addonId: addons[0].addonId,
+            addonName: addons[0].addonName, // Use addonName field directly
             subscribedAt: addons[0].subscribedAt,
             status: addons[0].status,
             tenantName: addons[0].tenant?.name,
-            addonName: addons[0].addon?.name,
-            hasAddon: !!addons[0].addon,
             hasTenant: !!addons[0].tenant,
             addedBySuperAdmin: addons[0].addedBySuperAdmin,
           } : null,
@@ -463,9 +456,9 @@ export class ReportService {
           firstThreeAddons: addons.slice(0, 3).map(a => ({
             id: a.id,
             addonId: a.addonId,
+            addonName: a.addonName, // Use addonName field directly
             tenantId: a.tenantId,
             tenantName: a.tenant?.name,
-            addonName: a.addon?.name,
             status: a.status,
             subscribedAt: a.subscribedAt,
           })),
