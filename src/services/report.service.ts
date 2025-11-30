@@ -336,17 +336,23 @@ export class ReportService {
         totalSalesRevenue = 0; // Set to 0 on error
       }
 
-      // Get subscriptions - if no date range, get all subscriptions (same as dashboard)
+      // Get subscriptions - EXACTLY like dashboard: if no date range, get ALL subscriptions (no date filter)
       // If date range provided, filter by createdAt
       const subscriptionWhere: any = {};
-      if (start && end) {
+      if (start && end && startDate && endDate) {
         // If date range provided, filter by createdAt
         subscriptionWhere.createdAt = {
           gte: startDate,
           lte: endDate,
         };
+        logger.info('Subscription query with date filter', {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        });
+      } else {
+        // If no date range, get ALL subscriptions (no date filter) - EXACTLY like dashboard
+        logger.info('Subscription query without date filter - fetching ALL subscriptions');
       }
-      // If no date range, get all subscriptions (same as dashboard logic)
 
       let subscriptions: any[] = [];
       try {
