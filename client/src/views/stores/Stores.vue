@@ -153,7 +153,7 @@
               <input
                 v-model="storeForm.phone"
                 type="tel"
-                placeholder="081234567890"
+                placeholder="085155043133"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
