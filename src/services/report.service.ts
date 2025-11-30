@@ -988,27 +988,26 @@ export class ReportService {
         // Parse ISO string and convert to Indonesia timezone (UTC+7)
         // This ensures consistency with frontend display
         // order.createdAt is in UTC, we need to convert to Indonesia timezone (UTC+7)
-        try {
-          const orderDate = new Date(order.createdAt);
-          
-          // Convert to Indonesia timezone (UTC+7) by adding 7 hours
-          // This is simpler and more reliable than parsing locale strings
-          const indonesiaTimestamp = orderDate.getTime() + (7 * 60 * 60 * 1000);
-          const indonesiaDate = new Date(indonesiaTimestamp);
-          
-          // Extract date components using UTC methods (since we've already adjusted the timestamp)
-          // This ensures consistency regardless of server timezone
-          const year = indonesiaDate.getUTCFullYear();
-          const month = indonesiaDate.getUTCMonth();
-          const day = indonesiaDate.getUTCDate();
-          
-          let dateKey: string;
-          let dateLabel: string;
+        const orderDate = new Date(order.createdAt);
+        
+        // Convert to Indonesia timezone (UTC+7) by adding 7 hours
+        // This is simpler and more reliable than parsing locale strings
+        const indonesiaTimestamp = orderDate.getTime() + (7 * 60 * 60 * 1000);
+        const indonesiaDate = new Date(indonesiaTimestamp);
+        
+        // Extract date components using UTC methods (since we've already adjusted the timestamp)
+        // This ensures consistency regardless of server timezone
+        const year = indonesiaDate.getUTCFullYear();
+        const month = indonesiaDate.getUTCMonth();
+        const day = indonesiaDate.getUTCDate();
+        
+        let dateKey: string;
+        let dateLabel: string;
 
-          if (period === 'daily') {
-            // Use date only (ignore time) in Indonesia timezone
-            dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            dateLabel = dateKey;
+        if (period === 'daily') {
+          // Use date only (ignore time) in Indonesia timezone
+          dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          dateLabel = dateKey;
         } else if (period === 'weekly') {
           // Get week start (Monday) - ISO week calculation in Indonesia timezone
           // Create a date object in Indonesia timezone for day calculation
