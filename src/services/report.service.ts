@@ -987,49 +987,55 @@ export class ReportService {
       orders.forEach((order: any) => {
         // Parse ISO string and convert to Indonesia timezone (UTC+7)
         // This ensures consistency with frontend display
+        // order.createdAt is in UTC, we need to convert to Indonesia timezone (UTC+7)
         const orderDate = new Date(order.createdAt);
-        // Convert to Indonesia timezone (UTC+7) by adding 7 hours
-        const indonesiaTime = new Date(orderDate.getTime() + (7 * 60 * 60 * 1000));
+        // Get UTC timestamp and add 7 hours (Indonesia timezone offset)
+        const utcTimestamp = orderDate.getTime();
+        const indonesiaTimestamp = utcTimestamp + (7 * 60 * 60 * 1000);
+        const indonesiaTime = new Date(indonesiaTimestamp);
+        
+        // Use UTC methods to get date components (since we've already adjusted the timestamp)
+        // This ensures we get the correct date in Indonesia timezone regardless of server timezone
+        const year = indonesiaTime.getUTCFullYear();
+        const month = indonesiaTime.getUTCMonth();
+        const day = indonesiaTime.getUTCDate();
         
         let dateKey: string;
         let dateLabel: string;
 
         if (period === 'daily') {
           // Use date only (ignore time) in Indonesia timezone
-          // Use regular methods since we've already adjusted the time to Indonesia timezone
-          const year = indonesiaTime.getFullYear();
-          const month = String(indonesiaTime.getMonth() + 1).padStart(2, '0');
-          const day = String(indonesiaTime.getDate()).padStart(2, '0');
-          dateKey = `${year}-${month}-${day}`;
+          dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           dateLabel = dateKey;
         } else if (period === 'weekly') {
           // Get week start (Monday) - ISO week calculation in Indonesia timezone
-          const year = indonesiaTime.getFullYear();
-          const month = indonesiaTime.getMonth();
-          const day = indonesiaTime.getDate();
-          
-          // Create a date object for day calculation
-          const localDate = new Date(year, month, day);
-          const dayOfWeek = localDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+          // Use UTC methods to ensure consistency
+          const dayOfWeek = indonesiaTime.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
           const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Convert to Monday-based week
           
-          const weekStart = new Date(year, month, day + daysToMonday);
-          const weekEnd = new Date(year, month, day + daysToMonday + 6);
+          // Calculate week start and end dates
+          const weekStartTimestamp = indonesiaTimestamp - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) * 24 * 60 * 60 * 1000;
+          const weekStart = new Date(weekStartTimestamp);
+          const weekEnd = new Date(weekStartTimestamp + 6 * 24 * 60 * 60 * 1000);
           
           // Format dateKey as YYYY-MM-DD
-          const weekStartYear = weekStart.getFullYear();
-          const weekStartMonth = String(weekStart.getMonth() + 1).padStart(2, '0');
-          const weekStartDay = String(weekStart.getDate()).padStart(2, '0');
+          const weekStartYear = weekStart.getUTCFullYear();
+          const weekStartMonth = String(weekStart.getUTCMonth() + 1).padStart(2, '0');
+          const weekStartDay = String(weekStart.getUTCDate()).padStart(2, '0');
           dateKey = `${weekStartYear}-${weekStartMonth}-${weekStartDay}`;
           
           // Format: "1-7 November 2025" (Senin-Minggu)
-          const startDay = weekStart.getDate();
-          const endDay = weekEnd.getDate();
-          const startMonthName = weekStart.toLocaleDateString('id-ID', { month: 'long' });
-          const endMonthName = weekEnd.toLocaleDateString('id-ID', { month: 'long' });
-          const weekYear = weekStart.getFullYear();
+          const startDay = weekStart.getUTCDate();
+          const endDay = weekEnd.getUTCDate();
+          const startMonth = weekStart.getUTCMonth();
+          const endMonth = weekEnd.getUTCMonth();
+          const weekYear = weekStart.getUTCFullYear();
           
-          if (weekStart.getMonth() === weekEnd.getMonth()) {
+          // Format month names using UTC date
+          const startMonthName = new Date(Date.UTC(weekYear, startMonth, 1)).toLocaleDateString('id-ID', { month: 'long', timeZone: 'UTC' });
+          const endMonthName = new Date(Date.UTC(weekYear, endMonth, 1)).toLocaleDateString('id-ID', { month: 'long', timeZone: 'UTC' });
+          
+          if (startMonth === endMonth) {
             dateLabel = `${startDay}-${endDay} ${startMonthName} ${weekYear}`;
           } else {
             // Week spans across months
@@ -1037,10 +1043,9 @@ export class ReportService {
           }
         } else if (period === 'monthly') {
           // Always use first day of month as key in Indonesia timezone
-          const year = indonesiaTime.getFullYear();
-          const month = indonesiaTime.getMonth();
+          // year and month already extracted from indonesiaTime using UTC methods
           dateKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-          dateLabel = new Date(year, month, 1).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+          dateLabel = new Date(Date.UTC(year, month, 1)).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', timeZone: 'UTC' });
         } else {
           // 'all' - group all in one
           dateKey = 'all';
