@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Financial Management</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Manajemen Keuangan</h2>
         <p class="text-gray-600">Cash flow, expenses, tax, forecasting, dan bank reconciliation</p>
       </div>
       <div class="flex space-x-3">
@@ -14,7 +14,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Record Cash Flow</span>
+          <span>Catat Arus Kas</span>
         </button>
         <button
           @click="showExpenseModal = true"
@@ -23,7 +23,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Record Expense</span>
+          <span>Catat Pengeluaran</span>
         </button>
       </div>
     </div>
@@ -36,14 +36,14 @@
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'cashflow' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Cash Flow
+          Arus Kas
         </button>
         <button
           @click="activeTab = 'expenses'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'expenses' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Expenses
+          Pengeluaran
         </button>
         <button
           @click="activeTab = 'tax'"

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Delivery Orders</h2>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pesanan Pengiriman</h2>
         <p class="text-sm sm:text-base text-gray-600">Kelola pesanan delivery dan tracking</p>
       </div>
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">

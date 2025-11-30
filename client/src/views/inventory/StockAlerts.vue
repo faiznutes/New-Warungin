@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Stock Alerts</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Peringatan Stok</h2>
         <p class="text-gray-600">Monitor produk dengan stock rendah</p>
       </div>
       <button

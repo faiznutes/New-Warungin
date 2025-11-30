@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">AI/ML Features</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Fitur AI/ML</h2>
         <p class="text-gray-600">Sales forecasting, product recommendations, customer segmentation, dan price optimization</p>
       </div>
     </div>

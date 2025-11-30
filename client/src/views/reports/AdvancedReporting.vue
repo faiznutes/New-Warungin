@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Advanced Reporting</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Laporan Lanjutan</h2>
         <p class="text-gray-600">Custom reports, scheduled reports, dan dashboard customization</p>
       </div>
       <div class="flex space-x-3">

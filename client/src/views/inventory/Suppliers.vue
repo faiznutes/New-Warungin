@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Suppliers</h2>
-        <p class="text-gray-600">Kelola supplier untuk purchase order</p>
+        <h2 class="text-2xl font-bold text-gray-900">Pemasok</h2>
+        <p class="text-gray-600">Kelola pemasok untuk pesanan pembelian</p>
       </div>
       <button
         @click="showCreateModal = true"
@@ -22,7 +22,7 @@
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Search suppliers..."
+        placeholder="Cari pemasok..."
         class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         @input="loadSuppliers"
       />
@@ -31,9 +31,9 @@
         @change="loadSuppliers"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">All Status</option>
-        <option value="true">Active</option>
-        <option value="false">Inactive</option>
+        <option value="">Semua Status</option>
+        <option value="true">Aktif</option>
+        <option value="false">Tidak Aktif</option>
       </select>
     </div>
 

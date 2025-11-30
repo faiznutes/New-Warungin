@@ -18,7 +18,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Advanced Analytics</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Analitik Lanjutan</h2>
         <p class="text-gray-600">Prediksi penjualan, forecasting, dan custom reports</p>
       </div>
       <button

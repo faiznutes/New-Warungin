@@ -527,7 +527,7 @@ const userInitials = computed(() => {
 
 const pageTitle = computed(() => {
   const titles: Record<string, string> = {
-    '/app/dashboard': 'Dashboard',
+    '/app/dashboard': 'Dasbor',
     '/app/products': 'Produk',
     '/app/orders': 'Pesanan & Transaksi',
     '/app/customers': 'Pelanggan',
@@ -535,7 +535,7 @@ const pageTitle = computed(() => {
     '/app/subscription': 'Berlangganan',
     '/app/addons': 'Addon',
     '/app/users': 'Pengguna',
-    '/app/analytics': 'Advanced Analytics',
+    '/app/analytics': 'Analitik Lanjutan',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',
   };

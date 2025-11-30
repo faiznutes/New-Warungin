@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Email Scheduler</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Penjadwal Email</h2>
         <p class="text-gray-600">Jadwalkan pengiriman email campaign</p>
       </div>
       <button
