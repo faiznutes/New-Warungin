@@ -156,11 +156,10 @@ router.post('/login', authLimiter, async (req, res, next) => {
     // Handle Prisma query errors
     if (err.code?.startsWith('P')) {
       logger.error('Prisma error:', { code: err.code, message: err.message });
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Database error occurred. Please try again.',
         message: 'An error occurred while processing your request.',
       });
-      return;
     }
     
     // Handle Zod validation errors

@@ -185,10 +185,26 @@ try {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+  const errorMessage = reason?.message || String(reason);
+  const errorCode = reason?.code || '';
+  
+  // Ignore Redis connection errors (Redis is optional)
+  if (
+    errorMessage.includes('Connection is closed') ||
+    errorMessage.includes('ENOTFOUND') ||
+    errorMessage.includes('getaddrinfo') ||
+    errorMessage.includes('ECONNREFUSED') ||
+    errorMessage.includes('Redis') ||
+    errorCode === 'ENOTFOUND'
+  ) {
+    // Silently ignore Redis errors - they're expected if Redis is not running
+    return;
+  }
+  
   logger.error('Unhandled Rejection at:', {
-    reason: reason?.message || reason,
+    reason: errorMessage,
     stack: reason?.stack,
-    code: reason?.code,
+    code: errorCode,
     promise: promise?.toString(),
   });
   // Don't exit the process, just log the error to prevent 502

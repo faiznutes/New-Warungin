@@ -51,16 +51,40 @@ export const getRedisClient = (): Redis | null => {
       );
 
       redisClient.on('error', (err) => {
-        // Only log if it's not a connection refused (which is expected if Redis is not running)
-        if (!err.message.includes('ECONNREFUSED') && !err.message.includes('connect')) {
-          logger.warn('Redis error (optional service):', err.message);
+        // Suppress all Redis connection errors to prevent unhandled rejection
+        // Redis is optional, so these errors are expected if Redis is not running
+        const errorMessage = err.message || String(err);
+        const isConnectionError = 
+          errorMessage.includes('ECONNREFUSED') || 
+          errorMessage.includes('connect') ||
+          errorMessage.includes('ENOTFOUND') ||
+          errorMessage.includes('Connection is closed') ||
+          errorMessage.includes('getaddrinfo');
+        
+        if (!isConnectionError) {
+          logger.warn('Redis error (optional service):', errorMessage);
         }
-        // Mark as failed and set to null
-        if (err.message.includes('ECONNREFUSED') || err.message.includes('connect')) {
+        
+        // Mark as failed and set to null for any connection-related error
+        if (isConnectionError) {
           logger.info('ℹ️  Redis not available - scheduled jobs disabled (this is normal if Redis is not installed)');
           redisFailed = true;
           redisClient = null;
         }
+      });
+      
+      // Handle connection close events to prevent unhandled rejection
+      redisClient.on('close', () => {
+        logger.info('ℹ️  Redis connection closed - scheduled jobs disabled');
+        redisFailed = true;
+        redisClient = null;
+      });
+      
+      // Handle end events
+      redisClient.on('end', () => {
+        logger.info('ℹ️  Redis connection ended - scheduled jobs disabled');
+        redisFailed = true;
+        redisClient = null;
       });
 
       redisClient.on('connect', () => {
