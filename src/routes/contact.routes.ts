@@ -9,6 +9,7 @@ const router = Router();
 const contactFormSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
+  phone: z.string().optional(),
   subject: z.string().min(1),
   message: z.string().min(1),
 });
@@ -39,6 +40,7 @@ router.post(
         data: {
           name: req.body.name,
           email: req.body.email,
+          phone: req.body.phone || null,
           subject: req.body.subject,
           message: req.body.message,
         },
@@ -243,6 +245,68 @@ router.post(
       return res.status(500).json({
         success: false,
         message: 'Gagal membersihkan pesan formulir lama.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/contact/submissions/:id:
+ *   patch:
+ *     summary: Update contact submission status (Super Admin only)
+ *     tags: [Contact]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch(
+  '/submissions/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      
+      if (!user || user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Access denied. Super Admin only.' 
+        });
+      }
+
+      const { id } = req.params;
+      const { isProcessed } = req.body;
+
+      if (typeof isProcessed !== 'boolean') {
+        return res.status(400).json({
+          success: false,
+          message: 'isProcessed harus berupa boolean.',
+        });
+      }
+
+      const updated = await prisma.contactSubmission.update({
+        where: { id },
+        data: { isProcessed },
+      });
+
+      return res.json({
+        success: true,
+        message: 'Status pesan berhasil diupdate.',
+        data: updated,
+      });
+    } catch (error: any) {
+      console.error('Error updating contact submission:', error);
+      
+      if (error.code === 'P2025') {
+        return res.status(404).json({
+          success: false,
+          message: 'Pesan formulir tidak ditemukan.',
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        message: 'Gagal mengupdate status pesan.',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }

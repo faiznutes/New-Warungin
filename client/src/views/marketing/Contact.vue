@@ -45,6 +45,15 @@
                 />
               </div>
               <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+                <input
+                  v-model="form.phone"
+                  type="tel"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="085155043133"
+                />
+              </div>
+              <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Subjek</label>
                 <input
                   v-model="form.subject"
@@ -179,6 +188,7 @@ onMounted(() => {
 const form = ref({
   name: '',
   email: '',
+  phone: '',
   subject: '',
   message: '',
 });
@@ -190,7 +200,7 @@ const handleSubmit = async () => {
   try {
     await api.post('/contact', form.value);
     await showSuccess('Terima kasih! Pesan Anda telah dikirim.');
-    form.value = { name: '', email: '', subject: '', message: '' };
+    form.value = { name: '', email: '', phone: '', subject: '', message: '' };
   } catch (error: any) {
     console.error('Error submitting contact form:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim pesan. Silakan coba lagi.');

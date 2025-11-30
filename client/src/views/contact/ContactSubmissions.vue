@@ -84,7 +84,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Cari nama, email, atau subjek..."
+              placeholder="Cari nama, email, telepon, atau subjek..."
               class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
             />
           </div>
@@ -112,8 +112,10 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50 sticky top-0">
             <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subjek</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesan</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
@@ -121,12 +123,28 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="submission in paginatedSubmissions" :key="submission.id" class="hover:bg-gray-50 transition">
+            <tr v-for="submission in paginatedSubmissions" :key="submission.id" :class="['hover:bg-gray-50 transition', submission.isProcessed ? 'bg-green-50' : 'bg-white']">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    :checked="submission.isProcessed"
+                    @change="toggleProcessed(submission.id, $event)"
+                    class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span class="ml-2 text-xs font-medium" :class="submission.isProcessed ? 'text-green-700' : 'text-gray-600'">
+                    {{ submission.isProcessed ? 'Sudah Diproses' : 'Belum Diproses' }}
+                  </span>
+                </label>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ submission.name }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">{{ submission.email }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ submission.phone || '-' }}</div>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm text-gray-900 max-w-xs truncate" :title="submission.subject">
@@ -234,12 +252,30 @@
             </a>
           </div>
           <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
+            <p class="text-gray-900">{{ viewingSubmission.phone || '-' }}</p>
+          </div>
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Subjek</label>
             <p class="text-gray-900">{{ viewingSubmission.subject }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
             <p class="text-gray-900 whitespace-pre-wrap">{{ viewingSubmission.message }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <div class="flex items-center gap-2">
+              <input
+                type="checkbox"
+                :checked="viewingSubmission.isProcessed"
+                @change="toggleProcessed(viewingSubmission.id, $event)"
+                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span class="text-sm font-medium" :class="viewingSubmission.isProcessed ? 'text-green-700' : 'text-gray-600'">
+                {{ viewingSubmission.isProcessed ? 'Sudah Diproses' : 'Belum Diproses' }}
+              </span>
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
@@ -375,6 +411,7 @@ const filteredSubmissions = computed(() => {
     (s) =>
       s.name.toLowerCase().includes(query) ||
       s.email.toLowerCase().includes(query) ||
+      (s.phone && s.phone.toLowerCase().includes(query)) ||
       s.subject.toLowerCase().includes(query) ||
       s.message.toLowerCase().includes(query)
   );
