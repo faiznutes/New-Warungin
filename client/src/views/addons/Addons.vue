@@ -97,7 +97,7 @@
             <div class="flex items-start justify-between mb-2">
               <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
               <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
-                Coming Soon
+                Segera Hadir
               </span>
             </div>
             <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
@@ -109,7 +109,7 @@
               </div>
             </div>
             <div v-if="addon.defaultLimit" class="text-sm text-gray-600 mb-3">
-              Limit: {{ addon.defaultLimit }}
+              Batas: {{ addon.defaultLimit }}
             </div>
             <button
               @click="subscribeAddon(addon)"
@@ -119,7 +119,7 @@
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                 : 'bg-primary-600 text-white hover:bg-primary-700'"
             >
-              {{ addon.comingSoon ? 'Coming Soon' : 'Berlangganan' }}
+              {{ addon.comingSoon ? 'Segera Hadir' : 'Berlangganan' }}
             </button>
           </div>
         </div>
