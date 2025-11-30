@@ -112,7 +112,7 @@ router.get(
     try {
       const user = (req as any).user;
       
-      if (user.role !== 'SUPER_ADMIN') {
+      if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
           message: 'Access denied. Super Admin only.' 
@@ -125,15 +125,16 @@ router.get(
         },
       });
 
-      res.json({
+      return res.json({
         success: true,
-        data: submissions,
+        data: submissions || [],
       });
     } catch (error: any) {
       console.error('Error fetching contact submissions:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: 'Gagal mengambil data pesan formulir.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }
   }
@@ -155,7 +156,7 @@ router.delete(
     try {
       const user = (req as any).user;
       
-      if (user.role !== 'SUPER_ADMIN') {
+      if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
           message: 'Access denied. Super Admin only.' 
@@ -164,19 +165,35 @@ router.delete(
 
       const { id } = req.params;
 
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID pesan tidak valid.',
+        });
+      }
+
       await prisma.contactSubmission.delete({
         where: { id },
       });
 
-      res.json({
+      return res.json({
         success: true,
         message: 'Pesan formulir berhasil dihapus.',
       });
     } catch (error: any) {
       console.error('Error deleting contact submission:', error);
-      res.status(500).json({
+      
+      if (error.code === 'P2025') {
+        return res.status(404).json({
+          success: false,
+          message: 'Pesan formulir tidak ditemukan.',
+        });
+      }
+
+      return res.status(500).json({
         success: false,
         message: 'Gagal menghapus pesan formulir.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }
   }
@@ -198,7 +215,7 @@ router.post(
     try {
       const user = (req as any).user;
       
-      if (user.role !== 'SUPER_ADMIN') {
+      if (!user || user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ 
           success: false,
           message: 'Access denied. Super Admin only.' 
@@ -216,16 +233,17 @@ router.post(
         },
       });
 
-      res.json({
+      return res.json({
         success: true,
         message: `Berhasil menghapus ${result.count} pesan formulir yang lebih dari 1 bulan.`,
         deletedCount: result.count,
       });
     } catch (error: any) {
       console.error('Error cleaning up contact submissions:', error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: 'Gagal membersihkan pesan formulir lama.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }
   }
