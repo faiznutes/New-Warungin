@@ -337,25 +337,15 @@ export class ReportService {
       const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
       // Get addons - if no date range, get ALL addons (not just active, no status filter)
-      // If date range provided, filter by subscribedAt (but also include addons with null subscribedAt if they were created in range)
+      // If date range provided, filter by subscribedAt
       const addonWhere: any = {};
       if (start && end) {
-        // If date range provided, filter by subscribedAt OR createdAt (for addons without subscribedAt)
-        addonWhere.OR = [
-          {
-            subscribedAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
-          // Also include addons without subscribedAt that might have been created in this range
-          // (though subscribedAt should always be set, this is a safety net)
-          {
-            subscribedAt: null,
-            // Note: TenantAddon doesn't have createdAt field directly, so we can't filter by it
-            // But subscribedAt should always be set when addon is created
-          },
-        ];
+        // If date range provided, filter by subscribedAt
+        // Only filter if subscribedAt is not null (subscribedAt should always be set)
+        addonWhere.subscribedAt = {
+          gte: startDate,
+          lte: endDate,
+        };
       }
       // If no date range, get ALL addons (no status filter, no date filter) - same as dashboard logic for subscriptions
       // This ensures all addons are fetched regardless of status
@@ -423,15 +413,26 @@ export class ReportService {
       }
 
       // Calculate addon revenue (same logic as dashboard)
-      const totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
-        const price = addonPriceMap.get(addon.addonId) || Number(addon.addon?.price || (addon.config as any)?.price || 0);
-        // Use same calculation as dashboard: (price * duration) / 30
-        const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
-          ? (addon.config as any).originalDuration || 30
-          : 30;
-        const revenue = (price * duration) / 30; // Convert to total revenue (same as dashboard)
-        return sum + revenue;
-      }, 0);
+      let totalAddonRevenue = 0;
+      try {
+        totalAddonRevenue = (sortedAddons || []).reduce((sum: number, addon: any) => {
+          try {
+            const price = addonPriceMap.get(addon?.addonId) || Number(addon?.addon?.price || (addon?.config as any)?.price || 0);
+            // Use same calculation as dashboard: (price * duration) / 30
+            const duration = addon?.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+              ? (addon.config as any).originalDuration || 30
+              : 30;
+            const revenue = (price * duration) / 30; // Convert to total revenue (same as dashboard)
+            return sum + revenue;
+          } catch (err: any) {
+            logger.warn('Error calculating addon revenue', { error: err.message, addonId: addon?.id });
+            return sum; // Continue with sum if error
+          }
+        }, 0);
+      } catch (error: any) {
+        logger.error('Error calculating total addon revenue', { error: error.message });
+        totalAddonRevenue = 0; // Set to 0 on error
+      }
 
       // Total global revenue = subscription + addon revenue (platform revenue)
       const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
