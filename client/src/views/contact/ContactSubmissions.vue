@@ -129,7 +129,7 @@
                   <input
                     type="checkbox"
                     :checked="submission.isProcessed"
-                    @change="toggleProcessed(submission.id, $event)"
+                    @change="(e) => toggleProcessed(submission.id, e)"
                     class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
                   <span class="ml-2 text-xs font-medium" :class="submission.isProcessed ? 'text-green-700' : 'text-gray-600'">
@@ -269,7 +269,7 @@
               <input
                 type="checkbox"
                 :checked="viewingSubmission.isProcessed"
-                @change="toggleProcessed(viewingSubmission.id, $event)"
+                @change="(e) => toggleProcessed(viewingSubmission.id, e)"
                 class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span class="text-sm font-medium" :class="viewingSubmission.isProcessed ? 'text-green-700' : 'text-gray-600'">
