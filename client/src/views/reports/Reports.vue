@@ -608,8 +608,11 @@ const reportRows = computed(() => {
           productDetails.value[index] = item.products;
         }
         
+        // Use dateLabel from backend if available, otherwise format date
+        const displayDate = item.dateLabel || formatDate(item.date);
+        
         return [
-          formatDate(item.date),
+          displayDate,
           formatCurrency(revenue),
           item.count || 0,
           formatCurrency(revenue / (item.count || 1)),
