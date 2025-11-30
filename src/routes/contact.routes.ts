@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
+import { authGuard } from '../middlewares/auth';
 import prisma from '../config/database';
 
 const router = Router();
@@ -90,6 +91,141 @@ router.post(
       res.status(500).json({
         success: false,
         message: 'Gagal mengirim permintaan demo. Silakan coba lagi.',
+      });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/contact/submissions:
+ *   get:
+ *     summary: Get all contact submissions (Super Admin only)
+ *     tags: [Contact]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/submissions',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      
+      if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Access denied. Super Admin only.' 
+        });
+      }
+
+      const submissions = await prisma.contactSubmission.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      res.json({
+        success: true,
+        data: submissions,
+      });
+    } catch (error: any) {
+      console.error('Error fetching contact submissions:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Gagal mengambil data pesan formulir.',
+      });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/contact/submissions/:id:
+ *   delete:
+ *     summary: Delete a contact submission (Super Admin only)
+ *     tags: [Contact]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete(
+  '/submissions/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      
+      if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Access denied. Super Admin only.' 
+        });
+      }
+
+      const { id } = req.params;
+
+      await prisma.contactSubmission.delete({
+        where: { id },
+      });
+
+      res.json({
+        success: true,
+        message: 'Pesan formulir berhasil dihapus.',
+      });
+    } catch (error: any) {
+      console.error('Error deleting contact submission:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Gagal menghapus pesan formulir.',
+      });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/contact/submissions/cleanup:
+ *   post:
+ *     summary: Clean up old contact submissions (older than 1 month) (Super Admin only)
+ *     tags: [Contact]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/submissions/cleanup',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      
+      if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Access denied. Super Admin only.' 
+        });
+      }
+
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+      const result = await prisma.contactSubmission.deleteMany({
+        where: {
+          createdAt: {
+            lt: oneMonthAgo,
+          },
+        },
+      });
+
+      res.json({
+        success: true,
+        message: `Berhasil menghapus ${result.count} pesan formulir yang lebih dari 1 bulan.`,
+        deletedCount: result.count,
+      });
+    } catch (error: any) {
+      console.error('Error cleaning up contact submissions:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Gagal membersihkan pesan formulir lama.',
       });
     }
   }

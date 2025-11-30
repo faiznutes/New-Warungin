@@ -364,6 +364,12 @@ const router = createRouter({
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {
+          path: 'contact/submissions',
+          name: 'contact-submissions',
+          component: () => import('../views/contact/ContactSubmissions.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
           path: 'products/adjustments',
           name: 'product-adjustments',
           component: () => import('../views/products/ProductAdjustments.vue'),
