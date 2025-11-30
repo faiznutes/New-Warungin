@@ -1101,7 +1101,9 @@ export class ReportService {
           // dateLabel already formatted in grouping logic
           finalDateLabel = group.dateLabel || '';
         } else if (period === 'daily') {
-          finalDateLabel = new Date(dateKey).toLocaleDateString('id-ID');
+          // Parse dateKey (YYYY-MM-DD) and format in Indonesia timezone
+          const [year, month, day] = dateKey.split('-').map(Number);
+          finalDateLabel = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' });
         }
         
         byDate.push({
