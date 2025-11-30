@@ -1497,7 +1497,7 @@ function formatLabel(key: string): string {
     activeTenants: 'Tenant Aktif',
     totalSubscriptionRevenue: 'Pendapatan Subscription',
     totalAddonRevenue: 'Pendapatan Addons',
-    totalGlobalRevenue: 'Total Pendapatan Global',
+    totalGlobalRevenue: 'Total Pendapatan',
     averagePerTenant: 'Rata-rata per Tenant',
     totalTransactions: 'Total Transaksi',
   };

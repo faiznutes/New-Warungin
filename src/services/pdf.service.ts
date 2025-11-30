@@ -71,7 +71,7 @@ function createSummaryCards(summary: any, colors: { bg: string; text: string; bo
     if (totalGlobalRevenue > 0 || summary.totalSubscriptionRevenue || summary.totalAddonRevenue) {
       cards.push({
         stack: [
-          { text: 'Total Pendapatan Global', style: 'summaryLabel', color: colors.text },
+          { text: 'Total Pendapatan', style: 'summaryLabel', color: colors.text },
           { text: formatCurrencyValue(totalGlobalRevenue), style: 'summaryValue', color: colors.text }
         ],
         fillColor: colors.bg,

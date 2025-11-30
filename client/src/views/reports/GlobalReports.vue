@@ -57,7 +57,7 @@
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Total Pendapatan Global</p>
+          <p class="text-sm text-gray-600 mb-2">Total Pendapatan</p>
           <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}</p>
           <p class="text-xs text-gray-500 mt-1">Subscription + Addons</p>
         </div>
