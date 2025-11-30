@@ -286,7 +286,7 @@ export class ReportService {
 
       let allOrders: any[] = [];
       try {
-        const orderQuery = dbClient.order.findMany({
+        allOrders = await dbClient.order.findMany({
           where: orderWhere,
           select: {
             total: true,
@@ -294,13 +294,6 @@ export class ReportService {
             id: true, // Add id for uniqueness
           },
         });
-        
-        // Add timeout protection (30 seconds)
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Order query timeout')), 30000);
-        });
-        
-        allOrders = await Promise.race([orderQuery, timeoutPromise]) as any[];
       } catch (error: any) {
         logger.error('Error fetching orders in getGlobalReport', { 
           error: error.message,
@@ -340,7 +333,7 @@ export class ReportService {
 
       let subscriptions: any[] = [];
       try {
-        const subscriptionQuery = dbClient.subscription.findMany({
+        subscriptions = await dbClient.subscription.findMany({
           where: subscriptionWhere,
           include: {
             tenant: {
@@ -354,13 +347,6 @@ export class ReportService {
             createdAt: 'desc',
           },
         });
-        
-        // Add timeout protection (30 seconds)
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Subscription query timeout')), 30000);
-        });
-        
-        subscriptions = await Promise.race([subscriptionQuery, timeoutPromise]) as any[];
       } catch (error: any) {
         logger.error('Error fetching subscriptions in getGlobalReport', { 
           error: error.message,
@@ -407,8 +393,7 @@ export class ReportService {
       let addons: any[] = [];
       try {
         // Fetch ALL addons without status filter to ensure all data is shown
-        // Use timeout protection to prevent hanging queries
-        const addonQuery = dbClient.tenantAddon.findMany({
+        addons = await dbClient.tenantAddon.findMany({
           where: addonWhere,
           include: {
             addon: {
@@ -427,13 +412,6 @@ export class ReportService {
           },
           // Don't use orderBy if subscribedAt might be null - sort manually instead
         });
-        
-        // Add timeout protection (30 seconds)
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Addon query timeout')), 30000);
-        });
-        
-        addons = await Promise.race([addonQuery, timeoutPromise]) as any[];
         
         logger.info('Fetched addons for global report', {
           addonsCount: addons.length,
