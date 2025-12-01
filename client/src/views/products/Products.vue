@@ -74,7 +74,6 @@
       </div>
       
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4 flex-wrap">
-      <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4 flex-wrap">
         <!-- Margin Display Format Selector (Admin Tenant & Super Admin only) -->
         <div
           v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
@@ -371,7 +370,6 @@
     @close="closeModal"
     @save="handleSaveProduct"
   />
-</template>
 </template>
 
 <script setup lang="ts">
