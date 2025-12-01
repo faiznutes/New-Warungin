@@ -119,7 +119,10 @@ router.put(
       
       // Only ADMIN_TENANT can update their tenant profile
       if (userRole !== 'ADMIN_TENANT') {
-        return res.status(403).json({ message: 'Access denied. Tenant admin only.' });
+        const error = new Error('Access denied. Tenant admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Tenant admin only.', 'UPDATE_TENANT_PROFILE');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -130,7 +133,10 @@ router.put(
       });
 
       if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'UPDATE_TENANT_PROFILE');
+        return;
       }
 
       // Prepare update data
