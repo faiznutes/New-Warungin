@@ -121,6 +121,131 @@ router.get(
 
 /**
  * @swagger
+ * /api/users/bulk-update-status:
+ *   post:
+ *     summary: Bulk update user status (activate/deactivate) (ADMIN_TENANT only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/bulk-update-status',
+  authGuard,
+  subscriptionGuard,
+  validate({ body: z.object({ 
+    userIds: z.array(z.string()).min(1),
+    isActive: z.boolean()
+  }) }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userRole = (req as any).user.role;
+      
+      // Only ADMIN_TENANT and SUPER_ADMIN can bulk update user status
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only admin can bulk update user status' });
+      }
+
+      const { userIds, isActive } = req.body;
+      const result = await userService.bulkUpdateUserStatus(tenantId, userIds, isActive);
+      res.json(result);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'USER');
+    }
+  }
+);
+
+// Get user password (only for SUPER_ADMIN)
+// Returns the default password if available, otherwise resets and returns new password
+router.get(
+  '/:id/password',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const userRole = (req as any).user.role;
+      
+      // Only SUPER_ADMIN can view user passwords
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can view user passwords' });
+      }
+
+      const tenantId = requireTenantId(req);
+      const result = await userService.getPassword(req.params.id, tenantId);
+      res.json(result);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'USER');
+    }
+  }
+);
+
+// Reset user password (only for SUPER_ADMIN)
+router.post(
+  '/:id/reset-password',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const userRole = (req as any).user.role;
+      
+      // Only SUPER_ADMIN can reset user passwords
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can reset user passwords' });
+      }
+
+      const tenantId = requireTenantId(req);
+      const result = await userService.resetPassword(req.params.id, tenantId);
+      res.json(result);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'USER');
+    }
+  }
+);
+
+// Activate user (only for SUPER_ADMIN)
+router.post(
+  '/:id/activate',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const userRole = (req as any).user.role;
+      
+      // Only SUPER_ADMIN can activate users
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can activate users' });
+      }
+
+      const tenantId = requireTenantId(req);
+      const user = await userService.updateUser(req.params.id, { isActive: true }, tenantId);
+      res.json(user);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'USER');
+    }
+  }
+);
+
+// Deactivate user (only for SUPER_ADMIN)
+router.post(
+  '/:id/deactivate',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const userRole = (req as any).user.role;
+      
+      // Only SUPER_ADMIN can deactivate users
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can deactivate users' });
+      }
+
+      const tenantId = requireTenantId(req);
+      const user = await userService.updateUser(req.params.id, { isActive: false }, tenantId);
+      res.json(user);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'USER');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get user by ID (ADMIN_TENANT only)
@@ -483,168 +608,6 @@ router.delete(
       const err = error as Error;
       await logAction(req as AuthRequest, 'DELETE', 'users', req.params.id, { error: err.message }, 'FAILED', err.message);
       handleRouteError(res, error, 'Failed to delete user', 'DELETE_USER');
-    }
-  }
-);
-
-// Get user password (only for SUPER_ADMIN)
-// Returns the default password if available, otherwise resets and returns new password
-router.get(
-  '/:id/password',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const userRole = (req as any).user.role;
-      
-      // Only SUPER_ADMIN can view user passwords
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can view user passwords' });
-      }
-
-      const tenantId = requireTenantId(req);
-      const result = await userService.getPassword(req.params.id, tenantId);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'USER');
-    }
-  }
-);
-
-// Reset user password (only for SUPER_ADMIN)
-router.post(
-  '/:id/reset-password',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const userRole = (req as any).user.role;
-      
-      // Only SUPER_ADMIN can reset user passwords
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can reset user passwords' });
-      }
-
-      const tenantId = requireTenantId(req);
-      const result = await userService.resetPassword(req.params.id, tenantId);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'USER');
-    }
-  }
-);
-
-// Activate user (only for SUPER_ADMIN)
-router.post(
-  '/:id/activate',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const userRole = (req as any).user.role;
-      
-      // Only SUPER_ADMIN can activate users
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can activate users' });
-      }
-
-      const tenantId = requireTenantId(req);
-      const user = await userService.updateUser(req.params.id, { isActive: true }, tenantId);
-      res.json(user);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'USER');
-    }
-  }
-);
-
-// Deactivate user (only for SUPER_ADMIN)
-router.post(
-  '/:id/deactivate',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const userRole = (req as any).user.role;
-      
-      // Only SUPER_ADMIN can deactivate users
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can deactivate users' });
-      }
-
-      const tenantId = requireTenantId(req);
-      const user = await userService.updateUser(req.params.id, { isActive: false }, tenantId);
-      res.json(user);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'USER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/users/bulk-update-status:
- *   post:
- *     summary: Bulk update user status (activate/deactivate) (ADMIN_TENANT only)
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - userIds
- *               - isActive
- *             properties:
- *               userIds:
- *                 type: array
- *                 items:
- *                   type: string
- *                 minItems: 1
- *                 example: ["user1", "user2"]
- *               isActive:
- *                 type: boolean
- *                 example: true
- *     responses:
- *       200:
- *         description: Users updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 updated:
- *                   type: integer
- *                 failed:
- *                   type: integer
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- *       403:
- *         description: Access denied - Only admin can bulk update user status
- */
-router.post(
-  '/bulk-update-status',
-  authGuard,
-  subscriptionGuard,
-  validate({ body: z.object({ 
-    userIds: z.array(z.string()).min(1),
-    isActive: z.boolean()
-  }) }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can bulk update user status
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can bulk update user status' });
-      }
-
-      const { userIds, isActive } = req.body;
-      const result = await userService.bulkUpdateUserStatus(tenantId, userIds, isActive);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'USER');
     }
   }
 );

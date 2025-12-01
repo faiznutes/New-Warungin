@@ -163,74 +163,6 @@ router.delete(
   }
 );
 
-router.get(
-  '/:id',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
-      
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant detail access attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can view tenant details' });
-      }
-
-      const tenant = await tenantService.getTenantById(req.params.id);
-      
-      if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
-      }
-      
-      res.json(tenant);
-    } catch (error: unknown) {
-      logRouteError(error, 'GET_TENANT_BY_ID', req);
-      handleRouteError(res, error, 'Failed to fetch tenant', 'GET_TENANT_BY_ID');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/tenants/{id}:
- *   put:
- *     summary: Update tenant
- *     tags: [Tenants]
- *     security:
- *       - bearerAuth: []
- */
-router.put(
-  '/:id',
-  authGuard,
-  require2FA, // Require 2FA for admin roles when updating tenants
-  validate({ body: updateTenantSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
-      
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant update attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can update tenants' });
-      }
-
-      const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
-      res.json(updatedTenant);
-    } catch (error: unknown) {
-      logRouteError(error, 'UPDATE_TENANT', req);
-      handleRouteError(res, error, 'Failed to update tenant', 'UPDATE_TENANT');
-    }
-  }
-);
-
 const upgradePlanSchema = z.object({
   subscriptionPlan: z.enum(['BASIC', 'PRO', 'CUSTOM']),
   durationDays: z.number().int().positive('Durasi harus lebih dari 0'),
@@ -412,6 +344,74 @@ router.put(
       
       // Handle all errors using handleRouteError
       handleRouteError(res, error, 'Failed to upgrade plan', 'UPGRADE_PLAN');
+    }
+  }
+);
+
+router.get(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+      
+      if (userRole !== 'SUPER_ADMIN') {
+        logger.warn('Unauthorized tenant detail access attempt', {
+          userId: authReq.userId,
+          role: userRole,
+          tenantId: req.params.id,
+        });
+        return res.status(403).json({ message: 'Only super admin can view tenant details' });
+      }
+
+      const tenant = await tenantService.getTenantById(req.params.id);
+      
+      if (!tenant) {
+        return res.status(404).json({ message: 'Tenant not found' });
+      }
+      
+      res.json(tenant);
+    } catch (error: unknown) {
+      logRouteError(error, 'GET_TENANT_BY_ID', req);
+      handleRouteError(res, error, 'Failed to fetch tenant', 'GET_TENANT_BY_ID');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/tenants/{id}:
+ *   put:
+ *     summary: Update tenant
+ *     tags: [Tenants]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put(
+  '/:id',
+  authGuard,
+  require2FA, // Require 2FA for admin roles when updating tenants
+  validate({ body: updateTenantSchema }),
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+      
+      if (userRole !== 'SUPER_ADMIN') {
+        logger.warn('Unauthorized tenant update attempt', {
+          userId: authReq.userId,
+          role: userRole,
+          tenantId: req.params.id,
+        });
+        return res.status(403).json({ message: 'Only super admin can update tenants' });
+      }
+
+      const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
+      res.json(updatedTenant);
+    } catch (error: unknown) {
+      logRouteError(error, 'UPDATE_TENANT', req);
+      handleRouteError(res, error, 'Failed to update tenant', 'UPDATE_TENANT');
     }
   }
 );

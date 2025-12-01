@@ -79,6 +79,63 @@ router.get(
 
 /**
  * @swagger
+ * /api/stock-transfers/{id}/receive:
+ *   post:
+ *     summary: Receive stock transfer (update stock)
+ *     tags: [Stock Transfers]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/:id/receive',
+  authGuard,
+  subscriptionGuard,
+  checkInventoryManagementAddon,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userId = requireUserId(req);
+      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
+      const transfer = await stockTransferService.receiveStockTransfer(
+        req.params.id,
+        tenantId,
+        userId,
+        receivedDate
+      );
+      res.json(transfer);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to receive stock transfer', 'RECEIVE_STOCK_TRANSFER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/stock-transfers/{id}/cancel:
+ *   post:
+ *     summary: Cancel stock transfer
+ *     tags: [Stock Transfers]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/:id/cancel',
+  authGuard,
+  subscriptionGuard,
+  checkInventoryManagementAddon,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const transfer = await stockTransferService.cancelStockTransfer(req.params.id, tenantId);
+      res.json(transfer);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to cancel stock transfer', 'CANCEL_STOCK_TRANSFER');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/stock-transfers/{id}:
  *   get:
  *     summary: Get stock transfer by ID
@@ -163,88 +220,6 @@ router.post(
   }
 );
 
-/**
- * @swagger
- * /api/stock-transfers/{id}/receive:
- *   post:
- *     summary: Receive stock transfer (update stock)
- *     tags: [Stock Transfers]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               receivedDate:
- *                 type: string
- *     responses:
- *       200:
- *         description: Stock transfer received
- */
-router.post(
-  '/:id/receive',
-  authGuard,
-  subscriptionGuard,
-  checkInventoryManagementAddon,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
-      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
-      const transfer = await stockTransferService.receiveStockTransfer(
-        req.params.id,
-        tenantId,
-        userId,
-        receivedDate
-      );
-      res.json(transfer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to receive stock transfer', 'RECEIVE_STOCK_TRANSFER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/stock-transfers/{id}/cancel:
- *   post:
- *     summary: Cancel stock transfer
- *     tags: [Stock Transfers]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Stock transfer cancelled
- */
-router.post(
-  '/:id/cancel',
-  authGuard,
-  subscriptionGuard,
-  checkInventoryManagementAddon,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const transfer = await stockTransferService.cancelStockTransfer(req.params.id, tenantId);
-      res.json(transfer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to cancel stock transfer', 'CANCEL_STOCK_TRANSFER');
-    }
-  }
-);
 
 export default router;
 
