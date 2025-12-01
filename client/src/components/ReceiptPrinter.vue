@@ -216,7 +216,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import { Teleport } from 'vue';
 import api from '../api';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
@@ -830,11 +830,8 @@ watch(() => props.show, (newShow) => {
   }
 });
 
-watch(() => props.receiptData, (newData) => {
-  if (newData) {
-    receiptData.value = newData;
-  }
-}, { immediate: true });
+// Watch for receiptData prop changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 watch(() => selectedTemplate.value, (newTemplateId) => {
   if (newTemplateId) {

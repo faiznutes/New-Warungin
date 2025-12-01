@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../api';
 
@@ -153,16 +153,23 @@ watch(() => authStore.selectedTenantId, (newTenantId) => {
   }
 });
 
-watch(() => shouldShow.value, (show) => {
-  if (show && props.autoLoad) {
-    loadStores();
-  }
-}, { immediate: true });
+// Watch for shouldShow changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
+  
+  // Initial load if needed
   if (props.autoLoad && shouldShow.value) {
     loadStores();
   }
+  
+  // Watch for shouldShow changes after mount
+  watch(() => shouldShow.value, (show) => {
+    if (show && props.autoLoad) {
+      loadStores();
+    }
+  });
 });
 </script>
 

@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useAuthStore } from '../stores/auth';
 
 interface Props {
@@ -125,12 +125,8 @@ const clearSelection = () => {
   emit('tenant-changed', null);
 };
 
-// Watch for super admin status and load tenants
-watch(() => authStore.isSuperAdmin, (isSuperAdmin) => {
-  if (isSuperAdmin) {
-    loadTenants();
-  }
-}, { immediate: true });
+// Watch for super admin status and load tenants (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 // Watch for tenant list updates
 watch(() => authStore.tenants, (newTenants) => {
@@ -139,10 +135,20 @@ watch(() => authStore.tenants, (newTenants) => {
   }
 }, { deep: true });
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
+  
+  // Initial load if super admin
   if (authStore.isSuperAdmin) {
     loadTenants();
   }
+  
+  // Watch for super admin status changes after mount
+  watch(() => authStore.isSuperAdmin, (isSuperAdmin) => {
+    if (isSuperAdmin) {
+      loadTenants();
+    }
+  });
 });
 </script>
 
