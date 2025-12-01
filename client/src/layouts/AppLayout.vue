@@ -691,10 +691,6 @@ onMounted(async () => {
   }
 });
 
-// Watch route changes to auto-expand menu (defer to onMounted to avoid initialization issues)
-// Route changes will be handled in onMounted and via router navigation
-// Use watchEffect in onMounted if needed for route changes
-
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
 });
