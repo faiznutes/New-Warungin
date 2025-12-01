@@ -495,7 +495,10 @@ router.patch(
       });
 
       if (!subscription) {
-        return res.status(404).json({ message: 'Subscription not found' });
+        const error = new Error('Subscription not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Subscription not found', 'UPDATE_SUBSCRIPTION');
+        return;
       }
 
       // Update subscription
