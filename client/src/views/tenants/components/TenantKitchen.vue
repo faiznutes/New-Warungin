@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted } from 'vue';
+import { watch, onMounted, nextTick } from 'vue';
 import { useAuthStore } from '../../../stores/auth';
 import { useSocket } from '../../../composables/useSocket';
 import KitchenComponent from '../../../views/kitchen/KitchenOrders.vue';
@@ -32,22 +32,35 @@ const props = defineProps<Props>();
 const authStore = useAuthStore();
 const { socket } = useSocket();
 
-watch(() => props.tenantId, (newTenantId) => {
-  if (newTenantId) {
-    localStorage.setItem('selectedTenantId', newTenantId);
-    authStore.setSelectedTenant(newTenantId);
+// Watch for tenantId changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
+
+onMounted(async () => {
+  await nextTick();
+  
+  // Initial setup if tenantId is provided
+  if (props.tenantId) {
+    localStorage.setItem('selectedTenantId', props.tenantId);
+    authStore.setSelectedTenant(props.tenantId);
     
     // Join tenant room for socket updates
     if (socket?.connected) {
-      socket.emit('join-tenant', newTenantId);
+      socket.emit('join-tenant', props.tenantId);
     }
   }
-}, { immediate: true });
-
-onMounted(() => {
-  if (props.tenantId && socket?.connected) {
-    socket.emit('join-tenant', props.tenantId);
-  }
+  
+  // Watch for tenantId changes after mount
+  watch(() => props.tenantId, (newTenantId) => {
+    if (newTenantId) {
+      localStorage.setItem('selectedTenantId', newTenantId);
+      authStore.setSelectedTenant(newTenantId);
+      
+      // Join tenant room for socket updates
+      if (socket?.connected) {
+        socket.emit('join-tenant', newTenantId);
+      }
+    }
+  });
 });
 </script>
 

@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
@@ -222,13 +222,7 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-watch(() => props.tenantId, (newTenantId) => {
-  if (newTenantId) {
-    localStorage.setItem('selectedTenantId', newTenantId);
-    setTimeout(() => {
-      loadDashboard();
-    }, 100);
-  }
-}, { immediate: true });
+// Watch for tenantId changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 </script>
 
