@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef, watch } from 'vue';
+import { computed, shallowRef, watch, onMounted, nextTick } from 'vue';
 import { useAuthStore } from '../stores/auth';
 
 const authStore = useAuthStore();
@@ -44,16 +44,26 @@ const loadLayout = async (role: string | undefined) => {
   }
 };
 
-// Watch for user changes and load appropriate layout
-watch(
-  () => authStore.user?.role,
-  (role) => {
+// Watch for user changes and load appropriate layout (defer to onMounted to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
+
+onMounted(async () => {
+  // Use nextTick to ensure all reactive dependencies are ready
+  await nextTick();
+  
+  // Initial load
+  if (authStore.user?.role) {
+    loadLayout(authStore.user.role);
+  }
+  
+  // Watch for role changes after mount (safe to do now)
+  watch(() => authStore.user?.role, (role) => {
     if (!authStore.user || !authStore.isAuthenticated) {
       layoutComponent.value = null;
       return;
     }
     loadLayout(role);
-  }
-);
+  });
+});
 </script>
 
