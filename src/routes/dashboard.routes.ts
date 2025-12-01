@@ -96,27 +96,15 @@ router.get(
         endDate ? new Date(endDate as string) : undefined
       );
       res.json(stats);
-    } catch (error: any) {
-      // Don't throw error - return error response to prevent 502
-      console.error('Error in dashboard stats route:', error);
-      
-      // Get user info for error handling
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
       const user = (req as any).user;
       const userRole = user?.role;
       const queryTenantId = req.query.tenantId as string;
       
-      // Import logger dynamically to avoid circular dependency
-      const logger = await import('../utils/logger');
-      logger.default.error('Error in dashboard stats route', {
-        error: error.message,
-        stack: error.stack,
-        userRole: userRole,
-      });
-      
-      // Return empty stats instead of throwing to prevent 502
+      // For Super Admin without tenant, return empty stats instead of error
       if (userRole === 'SUPER_ADMIN' && !queryTenantId) {
-        // Return empty super admin stats
-        return res.status(500).json({
+        return res.json({
           overview: {
             totalAddonRevenue: 0,
             totalSubscriptionRevenue: 0,
@@ -140,13 +128,9 @@ router.get(
           recentAddons: [],
           subscriptionBreakdown: [],
         });
-      } else {
-        // Return error message for other cases
-        return res.status(500).json({
-          message: error.message || 'Failed to load dashboard stats',
-          error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-        });
       }
+      
+      handleRouteError(res, error, 'Failed to load dashboard stats', 'DASHBOARD_STATS');
     }
   }
 );

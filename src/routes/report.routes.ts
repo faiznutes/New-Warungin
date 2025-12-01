@@ -69,17 +69,9 @@ router.get(
 
       const report = await reportService.getGlobalReport(start, end);
       return res.json(report);
-    } catch (error: any) {
-      logger.error('Error loading global report', {
-        error: error.message,
-        stack: error.stack,
-        query: req.query,
-        user: (req as any).user?.role,
-      });
-      return res.status(500).json({ 
-        message: error.message || 'Failed to load global report',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load global report', 'GLOBAL_REPORT');
     }
   }
 );
@@ -208,14 +200,9 @@ router.get(
       }
 
       return res.json(report);
-    } catch (error: any) {
-      logger.error('Error loading tenant report', {
-        error: error.message,
-        stack: error.stack,
-        tenantId: tenantId || 'unknown',
-        query: req.query,
-      });
-      return res.status(500).json({ message: error.message || 'Failed to load tenant report' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load tenant report', 'TENANT_REPORT');
     }
   }
 );
@@ -307,14 +294,9 @@ router.get(
       }
 
       return res.json(report);
-    } catch (error: any) {
-      logger.error('Error loading report', {
-        error: error.message,
-        stack: error.stack,
-        tenantId: tenantId || 'unknown',
-        query: req.query,
-      });
-      return res.status(500).json({ message: error.message || 'Failed to load report' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load report', 'REPORT');
     }
   }
 );
@@ -376,14 +358,9 @@ router.get(
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
       return res.send(html);
-    } catch (error: any) {
-      logger.error('Error exporting global report PDF:', {
-        error: error.message,
-        stack: error.stack,
-        query: req.query,
-        user: (req as any).user?.role,
-      });
-      return res.status(500).json({ message: error.message || 'Failed to export PDF' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to export PDF', 'EXPORT_PDF');
     }
   }
 );

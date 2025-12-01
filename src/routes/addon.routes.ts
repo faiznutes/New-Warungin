@@ -25,8 +25,9 @@ router.get(
       // Super Admin can view available addons for any tenant
       const addons = await addonService.getAvailableAddons();
       res.json(addons);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to get available addons', 'ADDON');
     }
   }
 );
@@ -39,8 +40,9 @@ router.get(
       const tenantId = requireTenantId(req);
       const addons = await addonService.getTenantAddons(tenantId);
       res.json(addons);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to get tenant addons', 'ADDON');
     }
   }
 );
@@ -84,9 +86,9 @@ router.post(
       }
       
       res.status(201).json(addon);
-    } catch (error: any) {
-      console.error('Error subscribing addon:', error);
-      res.status(400).json({ message: error.message || 'Gagal menambahkan addon' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to subscribe addon', 'ADDON');
     }
   }
 );
@@ -105,8 +107,9 @@ router.post(
 
       await addonService.unsubscribeAddon(tenantId, req.params.addonId);
       res.status(204).send();
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to unsubscribe addon', 'ADDON');
     }
   }
 );
@@ -119,8 +122,9 @@ router.get(
       const tenantId = requireTenantId(req);
       const result = await addonService.checkLimit(tenantId, req.params.type);
       res.json(result);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to check addon limit', 'ADDON');
     }
   }
 );
@@ -146,8 +150,9 @@ router.post(
 
       const result = await addonService.extendAddon(tenantId, req.body.addonId, req.body.duration);
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to extend addon', 'ADDON');
     }
   }
 );
@@ -173,8 +178,9 @@ router.post(
 
       const result = await addonService.reduceAddon(tenantId, req.body.addonId, req.body.duration);
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to reduce addon', 'ADDON');
     }
   }
 );
@@ -216,9 +222,9 @@ router.patch(
       });
 
       res.json(updated);
-    } catch (error: any) {
-      console.error('Error updating addon:', error);
-      res.status(500).json({ message: error.message || 'Failed to update addon' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to update addon', 'ADDON');
     }
   }
 );
@@ -256,9 +262,9 @@ router.delete(
       });
 
       res.json({ message: 'Addon deleted successfully' });
-    } catch (error: any) {
-      console.error('Error deleting addon:', error);
-      res.status(500).json({ message: error.message || 'Failed to delete addon' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to delete addon', 'ADDON');
     }
   }
 );
@@ -296,9 +302,9 @@ router.post(
         message: `${result.count} addon(s) deleted successfully`,
         deletedCount: result.count,
       });
-    } catch (error: any) {
-      console.error('Error bulk deleting addons:', error);
-      res.status(500).json({ message: error.message || 'Failed to bulk delete addons' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to bulk delete addons', 'ADDON');
     }
   }
 );

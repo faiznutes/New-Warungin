@@ -48,7 +48,7 @@ export const AVAILABLE_ADDONS = [
     category: 'MARKETING',
     description: 'Fitur delivery orders dan marketing campaigns lengkap dengan email templates, email analytics, email scheduler, dan customer engagement',
     defaultLimit: null,
-    price: 200000, // per month
+    price: 180000, // per month
     comingSoon: true, // Requires external API
   },
   
@@ -71,7 +71,7 @@ export const AVAILABLE_ADDONS = [
     category: 'REPORTING',
     description: 'Laporan lanjutan dengan export Excel, PDF, CSV. Custom report builder, scheduled reports, dan tanda tangan digital untuk keperluan legal.',
     defaultLimit: null,
-    price: 150000, // per month
+    price: 75000, // per month
   },
   
   // Group 5: Financial Management
@@ -82,7 +82,7 @@ export const AVAILABLE_ADDONS = [
     category: 'FINANCE',
     description: 'Manajemen keuangan lengkap: accounting, profit & loss report, cash flow, expenses, tax calculations, financial forecasts, dan bank reconciliations',
     defaultLimit: null,
-    price: 200000, // per month
+    price: 150000, // per month
     comingSoon: true, // Requires external API (bank reconciliation)
   },
   
@@ -94,7 +94,7 @@ export const AVAILABLE_ADDONS = [
     category: 'INVENTORY',
     description: 'Manajemen inventory lengkap: suppliers, purchase orders, stock transfers, stock alerts, stock valuations, dan product adjustments',
     defaultLimit: null,
-    price: 150000, // per month
+    price: 100000, // per month
     comingSoon: true, // Requires external API (supplier integration)
   },
   
@@ -106,7 +106,7 @@ export const AVAILABLE_ADDONS = [
     category: 'AI_ML',
     description: 'Fitur AI dan Machine Learning: prediksi penjualan, rekomendasi produk, analisis tren otomatis, dan insights berbasis AI',
     defaultLimit: null,
-    price: 300000, // per month
+    price: 200000, // per month
     comingSoon: true, // Requires external AI/ML API
   },
   
@@ -118,7 +118,7 @@ export const AVAILABLE_ADDONS = [
     category: 'RECEIPT',
     description: 'Kustomisasi tampilan nota: nama toko, pesan promo, logo. Preview real-time sebelum cetak untuk memastikan hasil. Edit header, footer, dan layout struk sesuai brand.',
     defaultLimit: null,
-    price: 50000, // per month
+    price: 60000, // per month
   },
   
   // Group 9: Multi-Outlet (Advanced)
@@ -129,7 +129,7 @@ export const AVAILABLE_ADDONS = [
     category: 'OUTLET',
     description: 'Fitur multi-outlet lanjutan: manajemen stok antar outlet, transfer otomatis, laporan per outlet, dan sinkronisasi real-time',
     defaultLimit: null,
-    price: 100000, // per month
+    price: 150000, // per month
   },
 ];
 

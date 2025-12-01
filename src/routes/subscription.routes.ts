@@ -21,12 +21,9 @@ router.get(
       const tenantId = requireTenantId(req);
       const result = await subscriptionService.getCurrentSubscription(tenantId);
       res.json(result);
-    } catch (error: any) {
-      console.error('Error in /subscriptions/current:', error);
-      res.status(500).json({ 
-        message: error.message || 'Failed to load subscription',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load subscription', 'SUBSCRIPTION_CURRENT');
     }
   }
 );
@@ -81,12 +78,9 @@ router.get(
         },
         activeAddons: result.activeAddons,
       });
-    } catch (error: any) {
-      console.error('Error in /subscription/plan-features:', error);
-      res.status(500).json({ 
-        message: error.message || 'Failed to load plan features',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load plan features', 'PLAN_FEATURES');
     }
   }
 );
@@ -122,8 +116,9 @@ router.post(
         const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration, true); // true = added by super admin
         res.json(result);
       }
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to extend subscription', 'EXTEND_SUBSCRIPTION');
     }
   }
 );
@@ -158,8 +153,9 @@ router.post(
         customDuration: req.body.customDuration,
       });
       res.json(result);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to upgrade subscription', 'UPGRADE_SUBSCRIPTION');
     }
   }
 );
@@ -180,8 +176,9 @@ router.post(
 
       const result = await subscriptionService.reduceSubscriptionCustom(tenantId, req.body.duration);
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to reduce subscription', 'REDUCE_SUBSCRIPTION');
     }
   }
 );
@@ -215,8 +212,9 @@ router.get(
           totalPages: Math.ceil(total / limit),
         },
       });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to load subscription history', 'SUBSCRIPTION_HISTORY');
     }
   }
 );
@@ -244,8 +242,9 @@ router.post(
         message: `Reverted ${result.reverted} temporary upgrades, ${result.failed} failed`,
         ...result,
       });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to revert temporary upgrades', 'REVERT_TEMPORARY');
     }
   }
 );
@@ -344,9 +343,9 @@ router.delete(
       }
 
       res.json({ message: 'Subscription deleted successfully' });
-    } catch (error: any) {
-      console.error('Error deleting subscription:', error);
-      res.status(500).json({ message: error.message || 'Failed to delete subscription' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to delete subscription', 'DELETE_SUBSCRIPTION');
     }
   }
 );
@@ -444,9 +443,9 @@ router.post(
         message: `${result.count} subscription(s) deleted successfully`,
         deletedCount: result.count,
       });
-    } catch (error: any) {
-      console.error('Error bulk deleting subscriptions:', error);
-      res.status(500).json({ message: error.message || 'Failed to bulk delete subscriptions' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to bulk delete subscriptions', 'BULK_DELETE_SUBSCRIPTIONS');
     }
   }
 );
@@ -488,9 +487,9 @@ router.patch(
       });
 
       res.json(updated);
-    } catch (error: any) {
-      console.error('Error updating subscription:', error);
-      res.status(500).json({ message: error.message || 'Failed to update subscription' });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to update subscription', 'UPDATE_SUBSCRIPTION');
     }
   }
 );

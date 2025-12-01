@@ -131,44 +131,80 @@
             <p class="text-sm text-gray-600">9 addons premium yang dapat ditambahkan ke paket</p>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          <div class="p-4 bg-white rounded-lg border border-purple-200">
+        <div v-if="loading" class="flex items-center justify-center py-8">
+          <div class="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          <!-- Resource Addons -->
+          <div v-if="resourceAddons.length > 0" class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">Addon Sumber Daya</h4>
             <ul class="text-sm text-gray-700 space-y-1">
-              <li>• Tambah Outlet (Rp 120rb/bulan)</li>
-              <li>• Tambah Pengguna (Rp 50rb/5 user/bulan)</li>
-              <li>• Tambah Produk (Rp 30rb/100 produk/bulan)</li>
+              <li v-for="addon in resourceAddons" :key="addon.id">
+                • {{ addon.name }}
+                <span v-if="addon.defaultLimit">({{ formatPrice(addon.price) }}/{{ addon.defaultLimit === 1 ? 'bulan' : addon.defaultLimit + ' ' + (addon.type === 'ADD_USERS' ? 'user' : addon.type === 'ADD_PRODUCTS' ? 'produk' : 'outlet') + '/bulan' }})</span>
+                <span v-else>({{ formatPrice(addon.price) }}/bulan)</span>
+              </li>
             </ul>
           </div>
-          <div class="p-4 bg-white rounded-lg border border-purple-200">
-            <h4 class="font-semibold text-gray-900 mb-2">Pemasaran & Pengiriman <span class="text-xs text-yellow-600 font-normal">(Coming Soon)</span></h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Pemasaran & Pengiriman (Rp 180rb/bulan)</li>
-                <li>• Template Email, Analitik & Penjadwal</li>
-                <li>• Alat Interaksi Pelanggan</li>
-              </ul>
+          
+          <!-- Marketing & Delivery -->
+          <div v-if="marketingAddons.length > 0" class="p-4 bg-white rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-gray-900 mb-2">
+              Pemasaran & Pengiriman
+              <span v-if="marketingAddons.some(a => a.comingSoon)" class="text-xs text-yellow-600 font-normal">(Coming Soon)</span>
+            </h4>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li v-for="addon in marketingAddons" :key="addon.id">
+                • {{ addon.name }}
+                <span v-if="addon.comingSoon" class="text-xs text-yellow-600">(Coming Soon)</span>
+                <span v-else>({{ formatPrice(addon.price) }}/bulan)</span>
+              </li>
+            </ul>
           </div>
-          <div class="p-4 bg-white rounded-lg border border-purple-200">
+          
+          <!-- Analytics & Reporting -->
+          <div v-if="analyticsAddons.length > 0 || reportingAddons.length > 0" class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">Analitik & Laporan</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Analitik Bisnis & Wawasan (Rp 250rb/bulan)</li>
-                <li>• Laporan Lanjutan (Rp 75rb/bulan)</li>
-              </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li v-for="addon in analyticsAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+              </li>
+              <li v-for="addon in reportingAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+              </li>
+            </ul>
           </div>
-          <div class="p-4 bg-white rounded-lg border border-purple-200">
+          
+          <!-- Financial & Inventory -->
+          <div v-if="financeAddons.length > 0 || inventoryAddons.length > 0" class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">Keuangan & Inventori</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Manajemen Keuangan (Rp 150rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
-                <li>• Manajemen Inventori (Rp 100rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
-              </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li v-for="addon in financeAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+                <span v-if="addon.comingSoon" class="text-xs text-yellow-600">(Coming Soon)</span>
+              </li>
+              <li v-for="addon in inventoryAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+                <span v-if="addon.comingSoon" class="text-xs text-yellow-600">(Coming Soon)</span>
+              </li>
+            </ul>
           </div>
-          <div class="p-4 bg-white rounded-lg border border-purple-200">
+          
+          <!-- AI/ML & Advanced -->
+          <div v-if="aiMlAddons.length > 0 || receiptAddons.length > 0 || outletAddons.length > 0" class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">AI/ML & Lanjutan</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Fitur AI/ML (Rp 200rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
-                <li>• Editor Struk Lanjutan (Rp 60rb/bulan)</li>
-                <li>• Multi-Outlet Lanjutan (Rp 150rb/bulan)</li>
-              </ul>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li v-for="addon in aiMlAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+                <span v-if="addon.comingSoon" class="text-xs text-yellow-600">(Coming Soon)</span>
+              </li>
+              <li v-for="addon in receiptAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+              </li>
+              <li v-for="addon in outletAddons" :key="addon.id">
+                • {{ addon.name }} ({{ formatPrice(addon.price) }}/bulan)
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -383,6 +419,70 @@
 </template>
 
 <script setup lang="ts">
-// System Info view - no additional logic needed
+import { ref, onMounted, computed } from 'vue';
+import api from '../../api';
+import { formatCurrency } from '../../utils/formatters';
+
+const availableAddons = ref<any[]>([]);
+const loading = ref(false);
+
+const loadAddons = async () => {
+  loading.value = true;
+  try {
+    const response = await api.get('/addons/available');
+    availableAddons.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading addons:', error);
+    // Set default addons if API fails
+    availableAddons.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Group addons by category
+const resourceAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'RESOURCE');
+});
+
+const marketingAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'MARKETING');
+});
+
+const analyticsAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'ANALYTICS');
+});
+
+const reportingAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'REPORTING');
+});
+
+const financeAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'FINANCE');
+});
+
+const inventoryAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'INVENTORY');
+});
+
+const aiMlAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'AI_ML');
+});
+
+const receiptAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'RECEIPT');
+});
+
+const outletAddons = computed(() => {
+  return availableAddons.value.filter(a => a.category === 'OUTLET');
+});
+
+const formatPrice = (price: number) => {
+  return formatCurrency(price);
+};
+
+onMounted(() => {
+  loadAddons();
+});
 </script>
 
