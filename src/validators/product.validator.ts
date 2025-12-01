@@ -20,7 +20,7 @@ export const updateProductSchema = createProductSchema.partial();
 
 export const getProductsQuerySchema = z.object({
   page: z.string().transform(Number).pipe(z.number().int().positive()).default('1'),
-  limit: z.string().transform(Number).pipe(z.number().int().positive().max(100)).default('10'),
+  limit: z.string().transform(Number).pipe(z.number().int().positive().max(10000)).default('10'),
   search: z.string().optional(),
   category: z.string().optional(),
   isActive: z.string().transform(val => val === 'true').optional(),

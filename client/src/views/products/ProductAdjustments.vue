@@ -221,6 +221,30 @@
             <!-- Reason -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Alasan *</label>
+              
+              <!-- Reason Dropdown -->
+              <div class="mb-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Alasan Umum:</label>
+                <select
+                  @change="selectReason"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                >
+                  <option value="">-- Pilih Alasan --</option>
+                  <option value="Stok opname / Stocktaking">Stok opname / Stocktaking</option>
+                  <option value="Retur ke supplier">Retur ke supplier</option>
+                  <option value="Barang rusak / Expired">Barang rusak / Expired</option>
+                  <option value="Penyesuaian sistem">Penyesuaian sistem</option>
+                  <option value="Koreksi data">Koreksi data</option>
+                  <option value="Barang hilang / Theft">Barang hilang / Theft</option>
+                  <option value="Sample / Promosi">Sample / Promosi</option>
+                  <option value="Pembelian tambahan">Pembelian tambahan</option>
+                  <option value="Transfer dari gudang lain">Transfer dari gudang lain</option>
+                  <option value="Transfer ke gudang lain">Transfer ke gudang lain</option>
+                  <option value="Barang cacat produksi">Barang cacat produksi</option>
+                  <option value="Lainnya">Lainnya (isi manual)</option>
+                </select>
+              </div>
+              
               <textarea
                 v-model="adjustmentForm.reason"
                 required
@@ -337,7 +361,32 @@ const loadProducts = async () => {
   }
 };
 
+const selectReason = (event: Event) => {
+  const target = event.target as HTMLSelectElement;
+  if (target.value && target.value !== 'Lainnya') {
+    adjustmentForm.value.reason = target.value;
+  } else if (target.value === 'Lainnya') {
+    adjustmentForm.value.reason = '';
+  }
+};
+
 const saveAdjustment = async () => {
+  // Validate form
+  if (!adjustmentForm.value.productId) {
+    await showError('Pilih produk terlebih dahulu');
+    return;
+  }
+  
+  if (!adjustmentForm.value.quantity || adjustmentForm.value.quantity <= 0) {
+    await showError('Jumlah penyesuaian harus lebih dari 0');
+    return;
+  }
+  
+  if (!adjustmentForm.value.reason || adjustmentForm.value.reason.trim() === '') {
+    await showError('Alasan penyesuaian wajib diisi');
+    return;
+  }
+  
   saving.value = true;
   try {
     await api.post('/products/adjustments', adjustmentForm.value);

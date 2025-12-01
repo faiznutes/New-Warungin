@@ -429,6 +429,10 @@ router.get(
         page: req.query.page ? parseInt(req.query.page as string) : 1,
         limit: req.query.limit ? parseInt(req.query.limit as string) : 50,
         productId: req.query.productId as string | undefined,
+        search: req.query.search as string | undefined,
+        type: req.query.type as string | undefined,
+        startDate: req.query.startDate as string | undefined,
+        endDate: req.query.endDate as string | undefined,
       };
       const result = await productAdjustmentService.getAdjustments(tenantId, query);
       res.json(result);
