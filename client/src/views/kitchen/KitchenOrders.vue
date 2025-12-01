@@ -235,9 +235,20 @@ const loadOrders = async () => {
         kitchenStatus: ['PENDING', 'COOKING', 'READY'], // Hanya yang belum selesai
       },
     });
-    orders.value = response.data.data || response.data;
+    const newOrders = response.data.data || response.data;
+    orders.value = newOrders;
+    
     // Clear selection when orders reload
     selectedOrders.value = [];
+    
+    // Manage polling based on orders
+    if (newOrders.length === 0) {
+      // Stop polling if no orders (standby mode)
+      stopPolling();
+    } else if (!pollInterval && !connected.value) {
+      // Start polling if we have orders and socket is not connected
+      startPolling();
+    }
   } catch (err: any) {
     // Suppress errors during logout (401/403)
     if (err.response?.status === 401 || err.response?.status === 403) {
@@ -254,18 +265,35 @@ const loadOrders = async () => {
 
 const updateStatus = async (orderId: string, status: string) => {
   try {
-    await api.put(`/orders/${orderId}/kitchen-status`, { status });
-    await loadOrders();
+    const response = await api.put(`/orders/${orderId}/kitchen-status`, { status });
+    
+    // Update local state immediately for better UX
+    const orderIndex = orders.value.findIndex(o => o.id === orderId);
+    if (orderIndex !== -1) {
+      orders.value[orderIndex] = { ...orders.value[orderIndex], kitchenStatus: status };
+    }
+    
+    // If status is SERVED, remove from list (it's filtered out in loadOrders)
+    if (status === 'SERVED') {
+      orders.value = orders.value.filter(o => o.id !== orderId);
+    }
     
     // Emit socket event for realtime update
     if (socket?.connected) {
-      socket.emit('order:update', { orderId, status });
+      socket.emit('order:update', { orderId, kitchenStatus: status });
     }
     
     success(`Status pesanan berhasil diubah menjadi "${getStatusLabel(status)}"`, 'Berhasil');
+    
+    // Reload orders to ensure consistency (but only if not SERVED, as it's already removed)
+    if (status !== 'SERVED') {
+      await loadOrders();
+    }
   } catch (err: any) {
     console.error('Error updating status:', err);
     error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
+    // Reload on error to ensure consistency
+    await loadOrders();
   }
 };
 
@@ -332,24 +360,40 @@ const setupSocketListeners = () => {
   if (!socket) return;
 
   socket.on('order:new', () => {
-    // Reload orders when new order comes in
+    // Reload orders when new order comes in (only if we have orders or this is a new order)
     loadOrders();
+    // Start polling if not already started (for cases where socket disconnects)
+    if (!pollInterval && !connected.value) {
+      startPolling();
+    }
   });
 
   socket.on('order:update', (data: any) => {
     // Update specific order if it exists
     const index = orders.value.findIndex(o => o.id === data.orderId);
     if (index !== -1) {
-      orders.value[index] = { ...orders.value[index], ...data };
+      // Update kitchenStatus if provided
+      if (data.kitchenStatus) {
+        orders.value[index] = { ...orders.value[index], kitchenStatus: data.kitchenStatus };
+        // If status is SERVED, remove from list
+        if (data.kitchenStatus === 'SERVED') {
+          orders.value = orders.value.filter(o => o.id !== data.orderId);
+        }
+      } else {
+        orders.value[index] = { ...orders.value[index], ...data };
+      }
     } else {
-      // Reload all orders if order not found
-      loadOrders();
+      // If order not found but has kitchenStatus, it might be a new order
+      if (data.kitchenStatus && ['PENDING', 'COOKING', 'READY'].includes(data.kitchenStatus)) {
+        loadOrders();
+      }
     }
   });
 };
 
 // Polling fallback if socket not connected
 // Disabled for Super Admin in Tenant Support to prevent auto-refresh
+// Only poll when there are orders (not in standby)
 let pollInterval: number | null = null;
 
 const startPolling = () => {
@@ -362,9 +406,20 @@ const startPolling = () => {
     return; // Disable polling to prevent auto-refresh
   }
   
+  // Only start polling if there are orders (not in standby)
+  if (orders.value.length === 0) {
+    return; // Don't poll when in standby (no orders)
+  }
+  
   pollInterval = window.setInterval(() => {
-    loadOrders();
-  }, 30000); // Poll every 30 seconds (reduced from 5 seconds)
+    // Only poll if there are orders
+    if (orders.value.length > 0) {
+      loadOrders();
+    } else {
+      // Stop polling if no orders
+      stopPolling();
+    }
+  }, 30000); // Poll every 30 seconds
 };
 
 const stopPolling = () => {

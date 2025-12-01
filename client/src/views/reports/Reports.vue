@@ -47,7 +47,6 @@
             @change="handleReportViewTypeChange"
             class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
-            <option value="full">Full (Harga Jual + Harga Pokok)</option>
             <option value="revenue">Hanya Harga Jual</option>
             <option value="profit">Dikurangi Harga Pokok (Untung)</option>
           </select>
@@ -449,7 +448,7 @@ const analyticsData = ref<any>(null);
 const reportType = ref('sales');
 const period = ref('all');
 const showExportModal = ref(false);
-const reportViewType = ref('full'); // 'full', 'revenue', 'profit'
+const reportViewType = ref('revenue'); // 'revenue', 'profit'
 const showProductDetails = ref(false);
 const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
@@ -526,15 +525,12 @@ const summaryStats = computed(() => {
         }, 0);
       }
       
-      // Apply filter
-      if (reportViewType.value === 'profit') {
-        // Harga jual dikurangi harga pokok (untung)
-        totalRevenue = totalRevenue - totalCostOfGoods;
-      } else if (reportViewType.value === 'full') {
-        // Full: harga jual dikurangi harga pokok
-        totalRevenue = totalRevenue - totalCostOfGoods;
-      }
-      // revenue: tetap harga jual saja
+        // Apply filter
+        if (reportViewType.value === 'profit') {
+          // Harga jual dikurangi harga pokok (untung)
+          totalRevenue = totalRevenue - totalCostOfGoods;
+        }
+        // revenue: tetap harga jual saja
       
       return [
         { label: 'Total Pendapatan', value: formatCurrency(totalRevenue), icon: '💰', color: 'text-green-600' },
@@ -621,9 +617,6 @@ const reportRows = computed(() => {
           revenue = item.revenue || 0;
         } else if (reportViewType.value === 'profit') {
           // Harga jual dikurangi harga pokok (untung)
-          revenue = (item.revenue || 0) - costOfGoods;
-        } else {
-          // Full: harga jual dikurangi harga pokok
           revenue = (item.revenue || 0) - costOfGoods;
         }
         

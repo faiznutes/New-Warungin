@@ -468,6 +468,7 @@ export class OrderService {
           updateData.sendToKitchen = data.sendToKitchen;
           updateData.kitchenStatus = data.sendToKitchen ? 'PENDING' : null;
         }
+        if (data.kitchenStatus !== undefined) updateData.kitchenStatus = data.kitchenStatus;
         if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName;
         if (data.notes !== undefined) updateData.notes = data.notes;
 
@@ -509,6 +510,7 @@ export class OrderService {
       updateData.sendToKitchen = data.sendToKitchen;
       updateData.kitchenStatus = data.sendToKitchen ? 'PENDING' : null;
     }
+    if (data.kitchenStatus !== undefined) updateData.kitchenStatus = data.kitchenStatus;
     if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName;
     if (data.notes !== undefined) updateData.notes = data.notes;
 
