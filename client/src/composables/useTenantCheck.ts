@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 
@@ -28,20 +28,8 @@ export const useTenantCheck = () => {
     }
   };
 
-  // Watch for Super Admin login and fetch tenants
-  watch(
-    () => authStore.isSuperAdmin,
-    async (isSuperAdmin) => {
-      if (isSuperAdmin && authStore.tenants.length === 0) {
-        try {
-          await authStore.fetchTenants();
-        } catch (error) {
-          console.error('Error fetching tenants:', error);
-        }
-      }
-    },
-    { immediate: true }
-  );
+  // Watch for Super Admin login and fetch tenants (defer to onMounted to avoid initialization issues)
+  // Don't watch immediately - handle in onMounted instead
 
   // Watch for selectedTenantId changes and auto-close modal
   watch(
@@ -52,6 +40,25 @@ export const useTenantCheck = () => {
       }
     }
   );
+
+  // Set up watch for Super Admin after mount
+  onMounted(async () => {
+    await nextTick();
+    
+    // Watch for Super Admin login and fetch tenants
+    watch(
+      () => authStore.isSuperAdmin,
+      async (isSuperAdmin) => {
+        if (isSuperAdmin && authStore.tenants.length === 0) {
+          try {
+            await authStore.fetchTenants();
+          } catch (error) {
+            console.error('Error fetching tenants:', error);
+          }
+        }
+      }
+    );
+  });
 
   return {
     needsTenantSelection,

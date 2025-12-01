@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, nextTick } from 'vue';
 
 interface Customer {
   id?: string;
@@ -121,23 +121,8 @@ const form = ref<Partial<Customer>>({
 const saving = ref(false);
 const editingCustomer = computed(() => !!props.customer);
 
-watch(() => props.customer, (newCustomer) => {
-  if (newCustomer) {
-    form.value = {
-      name: newCustomer.name || '',
-      email: newCustomer.email || '',
-      phone: newCustomer.phone || '',
-      address: newCustomer.address || '',
-    };
-  } else {
-    form.value = {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-    };
-  }
-}, { immediate: true });
+// Watch for customer prop changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 watch(() => props.show, (newShow) => {
   if (!newShow) {
@@ -157,5 +142,39 @@ const handleSubmit = () => {
     saving.value = false;
   }, 500);
 };
+
+// Set up watch for customer prop after mount
+onMounted(async () => {
+  await nextTick();
+  
+  // Watch for customer prop changes
+  watch(() => props.customer, (newCustomer) => {
+    if (newCustomer) {
+      form.value = {
+        name: newCustomer.name || '',
+        email: newCustomer.email || '',
+        phone: newCustomer.phone || '',
+        address: newCustomer.address || '',
+      };
+    } else {
+      form.value = {
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+      };
+    }
+  });
+  
+  // Initial setup if customer is already provided
+  if (props.customer) {
+    form.value = {
+      name: props.customer.name || '',
+      email: props.customer.email || '',
+      phone: props.customer.phone || '',
+      address: props.customer.address || '',
+    };
+  }
+});
 </script>
 
