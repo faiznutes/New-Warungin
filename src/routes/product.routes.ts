@@ -520,6 +520,59 @@ router.get(
 
 /**
  * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get product by ID
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 stock:
+ *                   type: integer
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.get(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.getProductById(req.params.id, tenantId);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.json(product);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/products/bulk-import:
  *   post:
  *     summary: Bulk import products from CSV/Excel file
