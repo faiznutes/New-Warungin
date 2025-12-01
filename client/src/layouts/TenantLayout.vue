@@ -729,12 +729,8 @@ const autoExpandMenu = () => {
     expandedMenus.value.inventory = true;
   }
   
-  if (currentPath.includes('/stores') || currentPath.includes('/discounts')) {
+  if (currentPath.includes('/stores') || currentPath.includes('/discounts') || currentPath.includes('/users')) {
     expandedMenus.value.manajemen = true;
-  }
-  
-  if (currentPath.includes('/users')) {
-    // Users is now standalone, no need to expand menu
   }
   
   if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
