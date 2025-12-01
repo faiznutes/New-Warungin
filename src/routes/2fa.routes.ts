@@ -115,7 +115,7 @@ router.post(
         userId: req.userId,
         tokenLength: req.body?.token?.length
       });
-      res.status(400).json({ message: error.message });
+      handleRouteError(res, error, 'Failed to enable 2FA', 'ENABLE_2FA');
     }
   }
 );
@@ -141,9 +141,9 @@ router.post(
       await twoFactorService.disable2FA(userId, password);
 
       res.json({ message: '2FA berhasil dinonaktifkan' });
-    } catch (error: any) {
-      logger.error('Error disabling 2FA', { error: error.message, userId: req.userId });
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      logger.error('Error disabling 2FA', { error: (error as Error).message, userId: req.userId });
+      handleRouteError(res, error, 'Failed to disable 2FA', 'DISABLE_2FA');
     }
   }
 );
@@ -169,7 +169,10 @@ router.post(
       const isValid = await twoFactorService.verifyToken(userId, token);
 
       if (!isValid) {
-        return res.status(401).json({ message: 'Token 2FA tidak valid' });
+        const error = new Error('Token 2FA tidak valid');
+        (error as any).statusCode = 401;
+        handleRouteError(res, error, 'Token 2FA tidak valid', 'VERIFY_2FA');
+        return;
       }
 
       res.json({ message: 'Token 2FA valid' });

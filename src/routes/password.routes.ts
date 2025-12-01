@@ -22,7 +22,10 @@ router.post(
       const { password } = req.body;
 
       if (!password || typeof password !== 'string') {
-        return res.status(400).json({ message: 'Password is required' });
+        const error = new Error('Password is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Password is required', 'CHECK_PASSWORD_STRENGTH');
+        return;
       }
 
       const strength = passwordService.checkStrength(password);
@@ -59,9 +62,9 @@ router.post(
       await passwordService.updatePassword(userId, oldPassword, newPassword);
 
       res.json({ message: 'Password berhasil diubah' });
-    } catch (error: any) {
-      logger.error('Error updating password', { error: error.message, userId: req.userId });
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      logger.error('Error updating password', { error: (error as Error).message, userId: req.userId });
+      handleRouteError(res, error, 'Failed to update password', 'UPDATE_PASSWORD');
     }
   }
 );

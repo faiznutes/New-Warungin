@@ -118,10 +118,10 @@ router.get(
     const user = (req as any).user;
     try {
       if (!user || user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ 
-          success: false,
-          message: 'Access denied. Super Admin only.' 
-        });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
+        return;
       }
 
       const submissions = await prisma.contactSubmission.findMany({
@@ -162,19 +162,19 @@ router.delete(
     const user = (req as any).user;
     try {
       if (!user || user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ 
-          success: false,
-          message: 'Access denied. Super Admin only.' 
-        });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
+        return;
       }
 
       const { id } = req.params;
 
       if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: 'ID pesan tidak valid.',
-        });
+        const error = new Error('ID pesan tidak valid.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'ID pesan tidak valid.', 'DELETE_CONTACT_SUBMISSION');
+        return;
       }
 
       await prisma.contactSubmission.delete({
@@ -195,10 +195,10 @@ router.delete(
       });
       
       if (error.code === 'P2025') {
-        return res.status(404).json({
-          success: false,
-          message: 'Pesan formulir tidak ditemukan.',
-        });
+        const err = new Error('Pesan formulir tidak ditemukan.');
+        (err as any).statusCode = 404;
+        handleRouteError(res, err, 'Pesan formulir tidak ditemukan.', 'DELETE_CONTACT_SUBMISSION');
+        return;
       }
 
       return handleRouteError(res, error, 'Gagal menghapus pesan formulir.', 'delete-submission');
@@ -222,10 +222,10 @@ router.post(
     const user = (req as any).user;
     try {
       if (!user || user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ 
-          success: false,
-          message: 'Access denied. Super Admin only.' 
-        });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
+        return;
       }
 
       const oneMonthAgo = new Date();
@@ -272,20 +272,20 @@ router.patch(
     const user = (req as any).user;
     try {
       if (!user || user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ 
-          success: false,
-          message: 'Access denied. Super Admin only.' 
-        });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
+        return;
       }
 
       const { id } = req.params;
       const { isProcessed } = req.body;
 
       if (typeof isProcessed !== 'boolean') {
-        return res.status(400).json({
-          success: false,
-          message: 'isProcessed harus berupa boolean.',
-        });
+        const error = new Error('isProcessed harus berupa boolean.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'isProcessed harus berupa boolean.', 'UPDATE_CONTACT_SUBMISSION');
+        return;
       }
 
       const updated = await prisma.contactSubmission.update({
@@ -309,10 +309,10 @@ router.patch(
       });
       
       if (error.code === 'P2025') {
-        return res.status(404).json({
-          success: false,
-          message: 'Pesan formulir tidak ditemukan.',
-        });
+        const err = new Error('Pesan formulir tidak ditemukan.');
+        (err as any).statusCode = 404;
+        handleRouteError(res, err, 'Pesan formulir tidak ditemukan.', 'DELETE_CONTACT_SUBMISSION');
+        return;
       }
 
       return handleRouteError(res, error, 'Gagal mengupdate status pesan.', 'update-submission');

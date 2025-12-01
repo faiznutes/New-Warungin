@@ -5,6 +5,7 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -22,7 +23,6 @@ router.get(
       const result = await subscriptionService.getCurrentSubscription(tenantId);
       res.json(result);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to load subscription', 'SUBSCRIPTION_CURRENT');
     }
   }
@@ -79,7 +79,6 @@ router.get(
         activeAddons: result.activeAddons,
       });
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to load plan features', 'PLAN_FEATURES');
     }
   }
@@ -96,7 +95,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can extend subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can extend subscription' });
+        const error = new Error('Only tenant admin or super admin can extend subscription');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can extend subscription', 'EXTEND_SUBSCRIPTION');
+        return;
       }
 
       // If plan is provided, use extendSubscription
@@ -111,7 +113,10 @@ router.post(
       } else {
         // Super Admin can extend with custom duration without changing plan
         if (userRole !== 'SUPER_ADMIN') {
-          return res.status(403).json({ message: 'Plan is required for tenant admin' });
+          const error = new Error('Plan is required for tenant admin');
+          (error as any).statusCode = 403;
+          handleRouteError(res, error, 'Plan is required for tenant admin', 'EXTEND_SUBSCRIPTION');
+          return;
         }
         const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration, true); // true = added by super admin
         res.json(result);
@@ -144,7 +149,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can upgrade subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can upgrade subscription' });
+        const error = new Error('Only tenant admin or super admin can upgrade subscription');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can upgrade subscription', 'UPGRADE_SUBSCRIPTION');
+        return;
       }
 
       const result = await subscriptionService.upgradeSubscription(tenantId, {
@@ -171,7 +179,10 @@ router.post(
       
       // Only SUPER_ADMIN can reduce subscription
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can reduce subscription' });
+        const error = new Error('Only super admin can reduce subscription');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can reduce subscription', 'REDUCE_SUBSCRIPTION');
+        return;
       }
 
       const result = await subscriptionService.reduceSubscriptionCustom(tenantId, req.body.duration);
@@ -233,7 +244,10 @@ router.post(
       
       // Only SUPER_ADMIN can trigger manual revert
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can trigger revert' });
+        const error = new Error('Only super admin can trigger revert');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can trigger revert', 'REVERT_SUBSCRIPTION');
+        return;
       }
 
       const result = await subscriptionService.revertTemporaryUpgrades();
@@ -363,13 +377,19 @@ router.post(
       
       // Only SUPER_ADMIN can bulk delete subscriptions
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can bulk delete subscriptions' });
+        const error = new Error('Only super admin can bulk delete subscriptions');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can bulk delete subscriptions', 'BULK_DELETE_SUBSCRIPTIONS');
+        return;
       }
 
       const { ids } = req.body;
       
       if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ message: 'IDs array is required' });
+        const error = new Error('IDs array is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'IDs array is required', 'BULK_DELETE_SUBSCRIPTIONS');
+        return;
       }
 
       // Get subscriptions to be deleted to check their tenantIds
