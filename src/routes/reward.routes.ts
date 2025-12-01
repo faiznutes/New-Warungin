@@ -256,8 +256,8 @@ router.post(
           ? `${expiredPoints} point telah kadaluarsa`
           : 'Tidak ada point yang kadaluarsa',
       });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to check expiration', 'CHECK_EXPIRATION');
     }
   }
 );
@@ -273,14 +273,17 @@ router.get(
     try {
       const user = (req as any).user;
       if (user?.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
+        const error = new Error('Only Super Admin can access this endpoint');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_BALANCE');
+        return;
       }
 
       const tenantId = req.params.tenantId;
       const balance = await rewardPointService.getTenantBalance(tenantId);
       res.json(balance);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get tenant balance', 'GET_TENANT_BALANCE');
     }
   }
 );
@@ -296,15 +299,18 @@ router.get(
     try {
       const user = (req as any).user;
       if (user?.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
+        const error = new Error('Only Super Admin can access this endpoint');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_TRANSACTIONS');
+        return;
       }
 
       const tenantId = req.params.tenantId;
       const limit = parseInt(req.query.limit as string) || 50;
       const transactions = await rewardPointService.getTenantTransactions(tenantId, limit);
       res.json(transactions);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get tenant transactions', 'GET_TENANT_TRANSACTIONS');
     }
   }
 );
@@ -320,20 +326,26 @@ router.post(
     try {
       const user = (req as any).user;
       if (user?.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
+        const error = new Error('Only Super Admin can access this endpoint');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'UPDATE_TENANT_POINTS');
+        return;
       }
 
       const tenantId = req.params.tenantId;
       const { points, reason } = req.body;
 
       if (typeof points !== 'number') {
-        return res.status(400).json({ message: 'Points must be a number' });
+        const error = new Error('Points must be a number');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Points must be a number', 'UPDATE_TENANT_POINTS');
+        return;
       }
 
       const result = await rewardPointService.updateTenantPoints(tenantId, points, reason || '');
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update tenant points', 'UPDATE_TENANT_POINTS');
     }
   }
 );
@@ -362,20 +374,29 @@ router.post(
         });
 
         if (!targetUser || targetUser.tenantId !== tenantId) {
-          return res.status(403).json({ message: 'User not found or does not belong to your tenant' });
+          const error = new Error('User not found or does not belong to your tenant');
+          (error as any).statusCode = 403;
+          handleRouteError(res, error, 'User not found or does not belong to your tenant', 'UPDATE_USER_POINTS');
+          return;
         }
       } else if (user?.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only Admin Tenant or Super Admin can access this endpoint' });
+        const error = new Error('Only Admin Tenant or Super Admin can access this endpoint');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only Admin Tenant or Super Admin can access this endpoint', 'UPDATE_USER_POINTS');
+        return;
       }
 
       if (typeof points !== 'number') {
-        return res.status(400).json({ message: 'Points must be a number' });
+        const error = new Error('Points must be a number');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Points must be a number', 'UPDATE_USER_POINTS');
+        return;
       }
 
       const result = await rewardPointService.updateUserPoints(tenantId, targetUserId, points, reason || '');
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update user points', 'UPDATE_USER_POINTS');
     }
   }
 );
