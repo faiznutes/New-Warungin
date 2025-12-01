@@ -683,10 +683,10 @@ onMounted(async () => {
   }
 });
 
-// Watch route changes to auto-expand menu
+// Watch route changes to auto-expand menu (defer immediate to avoid initialization issues)
 watch(() => route.path, () => {
   autoExpandMenu();
-}, { immediate: true });
+});
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
