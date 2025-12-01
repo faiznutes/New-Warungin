@@ -100,59 +100,6 @@ router.get(
 
 /**
  * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Get product by ID
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Product ID
- *     responses:
- *       200:
- *         description: Product details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 price:
- *                   type: number
- *                 stock:
- *                   type: integer
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.get(
-  '/:id',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.getProductById(req.params.id, tenantId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      res.json(product);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
  * /api/products:
  *   post:
  *     summary: Create new product
@@ -520,6 +467,57 @@ router.get(
 
 /**
  * @swagger
+ * /api/products/bulk-import:
+ *   post:
+ *     summary: Bulk import products from CSV/Excel file
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - file
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: CSV or Excel file containing products
+ *     responses:
+ *       200:
+ *         description: Products imported successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.post(
+  '/bulk-import',
+  authGuard,
+  subscriptionGuard,
+  checkAddProductsAddon,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userId = req.userId!;
+
+      // TODO: Implement bulk import service
+      // For now, return placeholder
+      res.status(501).json({ 
+        message: 'Bulk import feature is under development',
+        note: 'This endpoint will support CSV and Excel file uploads with product variants (color, size, taste)'
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to import products', 'BULK_IMPORT_PRODUCTS');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/products/{id}:
  *   get:
  *     summary: Get product by ID
@@ -567,57 +565,6 @@ router.get(
       res.json(product);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products/bulk-import:
- *   post:
- *     summary: Bulk import products from CSV/Excel file
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             required:
- *               - file
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *                 description: CSV or Excel file containing products
- *     responses:
- *       200:
- *         description: Products imported successfully
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.post(
-  '/bulk-import',
-  authGuard,
-  subscriptionGuard,
-  checkAddProductsAddon,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-
-      // TODO: Implement bulk import service
-      // For now, return placeholder
-      res.status(501).json({ 
-        message: 'Bulk import feature is under development',
-        note: 'This endpoint will support CSV and Excel file uploads with product variants (color, size, taste)'
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to import products', 'BULK_IMPORT_PRODUCTS');
     }
   }
 );
