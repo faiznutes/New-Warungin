@@ -844,9 +844,36 @@ const hasAvailableAddons = computed(() => {
 });
 
 // Load menu state on mount
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
+  
   loadMenuState();
-  loadAvailableAddons();
+  autoExpandMenu();
+  
+  // Initialize role-based checks after mount (when everything is ready)
+  if (authStore.user?.role) {
+    checkUnreadInfo();
+    if (checkShouldShowInfo()) {
+      showInfoModal.value = true;
+    }
+    loadPlanFeatures();
+    await loadAvailableAddons();
+  }
+  
+  // Watch route changes after mount (safe to do now)
+  watch(() => route.path, () => {
+    autoExpandMenu();
+  });
+  
+  // Watch for role changes after mount
+  watch(() => authStore.user?.role, () => {
+    checkUnreadInfo();
+    if (checkShouldShowInfo()) {
+      showInfoModal.value = true;
+    }
+    loadPlanFeatures();
+    loadAvailableAddons();
+  });
 });
 
 const userName = computed(() => authStore.user?.name || 'Tenant');
