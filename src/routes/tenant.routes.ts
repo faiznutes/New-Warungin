@@ -66,7 +66,10 @@ router.post(
           role: userRole,
           path: req.url,
         });
-        return res.status(403).json({ message: 'Only super admin can create tenants' });
+        const error = new Error('Only super admin can create tenants');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can create tenants', 'CREATE_TENANT');
+        return;
       }
 
       const result = await tenantService.createTenant(req.body);
@@ -154,7 +157,10 @@ router.delete(
           role: userRole,
           tenantId: req.params.id,
         });
-        return res.status(403).json({ message: 'Only super admin can delete tenants' });
+        const error = new Error('Only super admin can delete tenants');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can delete tenants', 'DELETE_TENANT');
+        return;
       }
 
       await tenantService.deleteTenant(req.params.id);
@@ -189,7 +195,10 @@ router.put(
           role: userRole,
           tenantId: req.params.id,
         });
-        return res.status(403).json({ message: 'Only super admin can upgrade tenant plans' });
+        const error = new Error('Only super admin can upgrade tenant plans');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can upgrade tenant plans', 'UPGRADE_PLAN');
+        return;
       }
 
       const tenantId = req.params.id;
@@ -198,7 +207,10 @@ router.put(
       // Get current tenant
       const tenant = await tenantService.getTenantById(tenantId);
       if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'UPGRADE_PLAN');
+        return;
       }
 
       const currentPlan = tenant.subscriptionPlan || 'BASIC';
@@ -365,13 +377,19 @@ router.get(
           role: userRole,
           tenantId: req.params.id,
         });
-        return res.status(403).json({ message: 'Only super admin can view tenant details' });
+        const error = new Error('Only super admin can view tenant details');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can view tenant details', 'GET_TENANT_BY_ID');
+        return;
       }
 
       const tenant = await tenantService.getTenantById(req.params.id);
       
       if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'GET_TENANT_BY_ID');
+        return;
       }
       
       res.json(tenant);
@@ -407,7 +425,10 @@ router.put(
           role: userRole,
           tenantId: req.params.id,
         });
-        return res.status(403).json({ message: 'Only super admin can update tenants' });
+        const error = new Error('Only super admin can update tenants');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can update tenants', 'UPDATE_TENANT');
+        return;
       }
 
       const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
@@ -436,7 +457,10 @@ router.put(
           role: userRole,
           tenantId: req.params.id,
         });
-        return res.status(403).json({ message: 'Only super admin can deactivate subscriptions' });
+        const error = new Error('Only super admin can deactivate subscriptions');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can deactivate subscriptions', 'DEACTIVATE_SUBSCRIPTION');
+        return;
       }
 
       const tenantId = req.params.id;
@@ -444,7 +468,10 @@ router.put(
       // Get current tenant
       const tenant = await tenantService.getTenantById(tenantId);
       if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'DEACTIVATE_SUBSCRIPTION');
+        return;
       }
 
       // Deactivate subscription by setting subscriptionEnd to null
