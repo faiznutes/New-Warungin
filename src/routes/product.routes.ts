@@ -281,6 +281,7 @@ router.get(
         type: req.query.type as string | undefined,
         startDate: req.query.startDate as string | undefined,
         endDate: req.query.endDate as string | undefined,
+        reason: req.query.reason as string | undefined,
       };
       const result = await productAdjustmentService.getAdjustments(tenantId, query);
       res.json(result);

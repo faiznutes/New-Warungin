@@ -22,6 +22,7 @@ export class ProductAdjustmentService {
     type?: string;
     startDate?: string;
     endDate?: string;
+    reason?: string;
   }) {
     const page = query.page || 1;
     const limit = query.limit || 50;
@@ -31,6 +32,7 @@ export class ProductAdjustmentService {
       tenantId,
       ...(query.productId && { productId: query.productId }),
       ...(query.type && { type: query.type }),
+      ...(query.reason && { reason: { contains: query.reason, mode: 'insensitive' as const } }),
     };
 
     // Handle date range

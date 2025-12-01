@@ -19,7 +19,7 @@
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Cari Produk</label>
           <input
@@ -41,6 +41,16 @@
             <option value="INCREASE">Penambahan</option>
             <option value="DECREASE">Pengurangan</option>
           </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Alasan</label>
+          <input
+            v-model="filters.reason"
+            type="text"
+            placeholder="Cari alasan..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            @input="loadAdjustments"
+          />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
@@ -441,6 +451,7 @@ const loadingStores = ref(false);
 const filters = ref({
   search: '',
   type: '',
+  reason: '',
   startDate: '',
   endDate: '',
 });
@@ -469,6 +480,7 @@ const loadAdjustments = async (page = 1) => {
 
     if (filters.value.search) params.search = filters.value.search;
     if (filters.value.type) params.type = filters.value.type;
+    if (filters.value.reason) params.reason = filters.value.reason;
     if (filters.value.startDate) params.startDate = filters.value.startDate;
     if (filters.value.endDate) params.endDate = filters.value.endDate;
 
