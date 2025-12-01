@@ -358,7 +358,10 @@ router.get(
         tenantId
       );
       if (!adjustment) {
-        return res.status(404).json({ message: 'Adjustment not found' });
+        const error = new Error('Adjustment not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Adjustment not found', 'GET_ADJUSTMENT');
+        return;
       }
       res.json(adjustment);
     } catch (error: unknown) {
@@ -554,7 +557,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const product = await productService.getProductById(req.params.id, tenantId);
       if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
+        const error = new Error('Product not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Product not found', 'GET_PRODUCT');
+        return;
       }
       res.json(product);
     } catch (error: unknown) {

@@ -87,7 +87,10 @@ router.get(
       
       // Only ADMIN_TENANT can view users
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can view users' });
+        const error = new Error('Only tenant admin can view users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can view users', 'GET_USERS');
+        return;
       }
 
       const page = parseInt(req.query.page as string) || 1;
@@ -143,7 +146,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can bulk update user status
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can bulk update user status' });
+        const error = new Error('Only admin can bulk update user status');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only admin can bulk update user status', 'BULK_UPDATE_USER_STATUS');
+        return;
       }
 
       const { userIds, isActive } = req.body;
@@ -166,7 +172,10 @@ router.get(
       
       // Only SUPER_ADMIN can view user passwords
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can view user passwords' });
+        const error = new Error('Only super admin can view user passwords');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can view user passwords', 'GET_USER_PASSWORD');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -188,7 +197,10 @@ router.post(
       
       // Only SUPER_ADMIN can reset user passwords
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can reset user passwords' });
+        const error = new Error('Only super admin can reset user passwords');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can reset user passwords', 'RESET_USER_PASSWORD');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -210,7 +222,10 @@ router.post(
       
       // Only SUPER_ADMIN can activate users
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can activate users' });
+        const error = new Error('Only super admin can activate users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can activate users', 'ACTIVATE_USER');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -232,7 +247,10 @@ router.post(
       
       // Only SUPER_ADMIN can deactivate users
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can deactivate users' });
+        const error = new Error('Only super admin can deactivate users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can deactivate users', 'DEACTIVATE_USER');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -283,12 +301,18 @@ router.get(
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can view user details' });
+        const error = new Error('Only tenant admin can view user details');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can view user details', 'GET_USER');
+        return;
       }
 
       const user = await userService.getUserById(req.params.id, tenantId);
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        const error = new Error('User not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'User not found', 'GET_USER');
+        return;
       }
       res.json(user);
     } catch (error: unknown) {
@@ -355,7 +379,10 @@ router.post(
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can create users' });
+        const error = new Error('Only tenant admin can create users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can create users', 'CREATE_USER');
+        return;
       }
 
       const result = await userService.createUser(req.body, tenantId);
@@ -467,7 +494,10 @@ router.put(
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can update users' });
+        const error = new Error('Only tenant admin can update users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can update users', 'UPDATE_USER');
+        return;
       }
 
       // Check subscription status for ADMIN_TENANT when trying to activate user
@@ -499,7 +529,10 @@ router.put(
         });
 
         if (!tenant) {
-          return res.status(404).json({ message: 'Tenant not found' });
+          const error = new Error('Tenant not found');
+          (error as any).statusCode = 404;
+          handleRouteError(res, error, 'Tenant not found', 'CREATE_USER');
+          return;
         }
 
         // Get the latest endDate from all sources
@@ -520,10 +553,11 @@ router.put(
         // Block ADMIN_TENANT from activating users if ALL subscriptions are expired (basic 0, boost 0, max 0)
         // Only SUPER_ADMIN can activate users when all subscriptions are expired
         if (!latestEndDate || latestEndDate <= now) {
-          return res.status(403).json({ 
-            message: 'Tidak dapat mengaktifkan user. Semua langganan (basic, boost, max) telah kedaluwarsa. Silakan perpanjang langganan terlebih dahulu atau hubungi Super Admin.',
-            code: 'SUBSCRIPTION_EXPIRED'
-          });
+          const error = new Error('Tidak dapat mengaktifkan user. Semua langganan (basic, boost, max) telah kedaluwarsa. Silakan perpanjang langganan terlebih dahulu atau hubungi Super Admin.');
+          (error as any).statusCode = 403;
+          (error as any).code = 'SUBSCRIPTION_EXPIRED';
+          handleRouteError(res, error, error.message, 'CREATE_USER');
+          return;
         }
       }
 
@@ -583,12 +617,18 @@ router.delete(
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can delete users' });
+        const error = new Error('Only tenant admin can delete users');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can delete users', 'DELETE_USER');
+        return;
       }
 
       const user = await userService.getUserById(req.params.id, tenantId);
       if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        const error = new Error('User not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'User not found', 'DELETE_USER');
+        return;
       }
       
       await userService.deleteUser(req.params.id, tenantId);

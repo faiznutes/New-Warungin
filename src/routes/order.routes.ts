@@ -256,12 +256,18 @@ router.put(
       const tenantId = requireTenantId(req);
       const order = await orderService.getOrderById(req.params.id, tenantId);
       if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
+        const error = new Error('Order not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Order not found', 'UPDATE_KITCHEN_STATUS');
+        return;
       }
 
       // Only update if order is sent to kitchen
       if (!order.sendToKitchen) {
-        return res.status(400).json({ message: 'Order is not sent to kitchen' });
+        const error = new Error('Order is not sent to kitchen');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Order is not sent to kitchen', 'UPDATE_KITCHEN_STATUS');
+        return;
       }
 
       const updatedOrder = await orderService.updateOrder(req.params.id, {
@@ -328,7 +334,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can refund orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can refund orders' });
+        const error = new Error('Only admin can refund orders');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only admin can refund orders', 'REFUND_ORDER');
+        return;
       }
 
       const { orderIds } = req.body;
@@ -374,7 +383,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const order = await orderService.getOrderById(req.params.id, tenantId);
       if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
+        const error = new Error('Order not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Order not found', 'GET_ORDER');
+        return;
       }
       res.json(order);
     } catch (error: unknown) {
