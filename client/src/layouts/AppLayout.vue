@@ -527,16 +527,8 @@ const loadAvailableAddons = async () => {
   }
 };
 
-// Watch for role changes to check info status (defer immediate to avoid initialization issues)
-watch(() => userRole.value, () => {
-  if (!userRole.value) return; // Skip if no role yet
-  
-  checkUnreadInfo();
-  if (checkShouldShowInfo()) {
-    showInfoModal.value = true;
-  }
-  loadAvailableAddons();
-});
+// Watch for role changes to check info status (defer to onMounted to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 const hasBusinessAnalytics = computed(() => {
   return activeAddons.value.some(
