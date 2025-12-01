@@ -1897,12 +1897,26 @@ const handleDeactivateSubscription = async () => {
 };
 
 // Watch for route changes to update selectedTenantId
-watch(() => route.params.id, (newTenantId) => {
-  if (newTenantId && authStore.isSuperAdmin) {
-    authStore.setSelectedTenant(newTenantId as string);
-    localStorage.setItem('selectedTenantId', newTenantId as string);
+// Watch for route params changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
+
+onMounted(async () => {
+  await nextTick();
+  
+  // Initial setup if route param is provided
+  if (route.params.id && authStore.isSuperAdmin) {
+    authStore.setSelectedTenant(route.params.id as string);
+    localStorage.setItem('selectedTenantId', route.params.id as string);
   }
-}, { immediate: true });
+  
+  // Watch for route params changes after mount
+  watch(() => route.params.id, (newTenantId) => {
+    if (newTenantId && authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(newTenantId as string);
+      localStorage.setItem('selectedTenantId', newTenantId as string);
+    }
+  });
+});
 
 // Countdown real-time
 const startCountdown = () => {
