@@ -372,15 +372,28 @@ import AdminInfoModal from '../components/AdminInfoModal.vue';
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+
+// Initialize all refs and computed first
+const sidebarOpen = ref(false);
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+const selectedTenant = ref<string>('');
+const openSubmenus = ref<Record<string, boolean>>({});
+const activeAddons = ref<any[]>([]);
+const availableAddons = ref<any[]>([]);
+const userRole = computed(() => authStore.user?.role || '');
+const showInfoModal = ref(false);
+const hasUnreadInfo = ref(false);
+
+// Initialize permissions after refs are defined
 const { canManageProducts, canViewReports, canEditOrders, canManageCustomers } = usePermissions();
 
-// Watch for permission changes to update menu visibility
+// Watch for permission changes to update menu visibility (defer immediate execution)
 watch(() => authStore.user, (newUser) => {
   if (newUser) {
     // Force reactivity update when user/permissions change
     console.log('User permissions updated:', (newUser as any).permissions);
   }
-}, { deep: true, immediate: true });
+}, { deep: true });
 
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
@@ -515,14 +528,16 @@ const loadAvailableAddons = async () => {
   }
 };
 
-// Watch for role changes to check info status
+// Watch for role changes to check info status (defer immediate to avoid initialization issues)
 watch(() => userRole.value, () => {
+  if (!userRole.value) return; // Skip if no role yet
+  
   checkUnreadInfo();
   if (checkShouldShowInfo()) {
     showInfoModal.value = true;
   }
   loadAvailableAddons();
-}, { immediate: true });
+});
 
 const hasBusinessAnalytics = computed(() => {
   return activeAddons.value.some(
