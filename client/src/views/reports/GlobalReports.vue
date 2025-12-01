@@ -20,12 +20,27 @@
 
     <!-- Date Range Filter -->
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
+          <select
+            v-model="periodFilter"
+            @change="applyPeriodFilter"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="custom">Custom</option>
+            <option value="daily">Harian (Hari Ini)</option>
+            <option value="weekly">Mingguan (Minggu Ini)</option>
+            <option value="monthly">Bulanan (Bulan Ini)</option>
+            <option value="yearly">Tahunan (Tahun Ini)</option>
+          </select>
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
           <input
             v-model="dateRange.from"
             type="date"
+            @change="periodFilter = 'custom'"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -34,6 +49,7 @@
           <input
             v-model="dateRange.to"
             type="date"
+            @change="periodFilter = 'custom'"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -673,6 +689,9 @@ const addonPage = ref(1);
 const addonFilter = ref<'all' | 'active' | 'expired'>('all');
 const addonInfoFilter = ref<'all' | 'superadmin' | 'self'>('all');
 
+// Period filter
+const periodFilter = ref<'custom' | 'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+
 // Set default date range: bulan ini (month)
 const now = new Date();
 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -682,6 +701,55 @@ const dateRange = ref({
   from: startOfMonth.toISOString().split('T')[0],
   to: endOfMonth.toISOString().split('T')[0],
 });
+
+// Apply period filter
+const applyPeriodFilter = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  let startDate: Date;
+  let endDate: Date = new Date(today);
+  endDate.setHours(23, 59, 59, 999);
+  
+  switch (periodFilter.value) {
+    case 'daily':
+      // Hari ini
+      startDate = new Date(today);
+      break;
+      
+    case 'weekly':
+      // Minggu ini (Senin - Minggu)
+      const dayOfWeek = today.getDay();
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Jika hari Minggu, mundur 6 hari
+      startDate = new Date(today);
+      startDate.setDate(today.getDate() + diffToMonday);
+      break;
+      
+    case 'monthly':
+      // Bulan ini
+      startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      break;
+      
+    case 'yearly':
+      // Tahun ini
+      startDate = new Date(today.getFullYear(), 0, 1);
+      break;
+      
+    default:
+      // Custom - tidak ubah tanggal
+      return;
+  }
+  
+  dateRange.value = {
+    from: startDate.toISOString().split('T')[0],
+    to: endDate.toISOString().split('T')[0],
+  };
+  
+  // Auto load report when period changes
+  if (shouldLoadReport.value || reportData.value) {
+    loadReport();
+  }
+};
 
 // Filtered subscriptions
 const filteredSubscriptions = computed(() => {
