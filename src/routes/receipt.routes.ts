@@ -61,7 +61,10 @@ router.get(
         },
       });
       if (!template) {
-        return res.status(404).json({ message: 'Template not found' });
+        const error = new Error('Template not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Template not found', 'GET_RECEIPT_TEMPLATE');
+        return;
       }
       res.json(template);
     } catch (error: unknown) {
@@ -80,8 +83,8 @@ router.post(
       const tenantId = requireTenantId(req);
       const template = await receiptService.createTemplate(tenantId, req.body);
       res.status(201).json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to create receipt template', 'CREATE_RECEIPT_TEMPLATE');
     }
   }
 );

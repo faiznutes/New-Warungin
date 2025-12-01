@@ -24,9 +24,10 @@ const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Fu
     );
     
     if (!hasBusinessAnalytics) {
-      return res.status(403).json({ 
-        message: 'Business Analytics & Insight addon is required to access this feature' 
-      });
+      const error = new Error('Business Analytics & Insight addon is required to access this feature');
+      (error as any).statusCode = 403;
+      handleRouteError(res, error, 'Business Analytics & Insight addon is required to access this feature', 'CHECK_BUSINESS_ANALYTICS_ADDON');
+      return;
     }
     
     next();

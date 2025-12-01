@@ -64,7 +64,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const employee = await employeeService.getEmployeeById(req.params.id, tenantId);
       if (!employee) {
-        return res.status(404).json({ message: 'Employee not found' });
+        const error = new Error('Employee not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Employee not found', 'GET_EMPLOYEE');
+        return;
       }
       res.json(employee);
     } catch (error: unknown) {

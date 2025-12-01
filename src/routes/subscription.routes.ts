@@ -297,7 +297,10 @@ router.delete(
       });
 
       if (!subscription) {
-        return res.status(404).json({ message: 'Subscription not found' });
+        const error = new Error('Subscription not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Subscription not found', 'DELETE_SUBSCRIPTION');
+        return;
       }
 
       const tenantId = subscription.tenantId;

@@ -36,7 +36,10 @@ router.get(
       
       // Only ADMIN_TENANT and SUPERVISOR can access their own tenant profile
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
-        return res.status(403).json({ message: 'Access denied. Tenant admin only.' });
+        const error = new Error('Access denied. Tenant admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Tenant admin only.', 'GET_TENANT_PROFILE');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -55,7 +58,10 @@ router.get(
       });
 
       if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'GET_TENANT_PROFILE');
+        return;
       }
 
       // Get default receipt template for header/footer
@@ -136,7 +142,10 @@ router.put(
           where: { email: req.body.email },
         });
         if (existingTenant) {
-          return res.status(400).json({ message: 'Email already exists' });
+          const error = new Error('Email already exists');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Email already exists', 'UPDATE_TENANT_PROFILE');
+          return;
         }
         updateData.email = req.body.email;
         updateData.slug = req.body.email.toLowerCase().replace(/[^a-z0-9]/g, '-');

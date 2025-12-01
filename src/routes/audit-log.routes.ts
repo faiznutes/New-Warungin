@@ -72,7 +72,10 @@ router.get(
       const log = await auditLogService.getLogById(req.params.id, tenantId);
       
       if (!log) {
-        return res.status(404).json({ message: 'Audit log not found' });
+        const error = new Error('Audit log not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Audit log not found', 'GET_AUDIT_LOG');
+        return;
       }
       
       res.json(log);

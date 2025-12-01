@@ -63,9 +63,10 @@ router.post(
       // Require confirmation
       const { confirm } = req.body;
       if (!confirm || confirm !== 'DELETE_MY_DATA') {
-        return res.status(400).json({
-          message: 'Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.',
-        });
+        const error = new Error('Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.', 'GDPR_DELETE_USER');
+        return;
       }
 
       await gdprService.deleteUserData(userId, tenantId);
@@ -99,7 +100,10 @@ router.get(
 
       // Only ADMIN_TENANT and SUPER_ADMIN can export tenant data
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can export tenant data' });
+        const error = new Error('Only tenant admin can export tenant data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can export tenant data', 'GDPR_EXPORT_TENANT');
+        return;
       }
 
       const data = await gdprService.exportTenantData(tenantId);
