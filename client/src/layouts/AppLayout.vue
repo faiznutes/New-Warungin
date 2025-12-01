@@ -362,7 +362,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { usePermissions } from '../composables/usePermissions';
@@ -373,18 +373,20 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-// Initialize all refs and computed first
+// Initialize all refs first (before any computed or composables)
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const selectedTenant = ref<string>('');
 const openSubmenus = ref<Record<string, boolean>>({});
 const activeAddons = ref<any[]>([]);
 const availableAddons = ref<any[]>([]);
-const userRole = computed(() => authStore.user?.role || '');
 const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
 
-// Initialize permissions after refs are defined
+// Initialize computed after refs
+const userRole = computed(() => authStore.user?.role || '');
+
+// Initialize permissions after computed (to avoid circular dependency)
 const { canManageProducts, canViewReports, canEditOrders, canManageCustomers } = usePermissions();
 
 // Watch for permission changes to update menu visibility (defer immediate execution)
