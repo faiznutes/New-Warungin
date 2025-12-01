@@ -77,7 +77,10 @@ router.get(
       });
 
       if (!discount) {
-        return res.status(404).json({ message: 'Discount not found' });
+        const error = new Error('Discount not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Discount not found', 'GET_DISCOUNT');
+        return;
       }
 
       res.json(discount);
@@ -108,7 +111,10 @@ router.post(
 
       // Only ADMIN_TENANT and SUPER_ADMIN can create discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Forbidden: Only admin can create discounts' });
+        const error = new Error('Forbidden: Only admin can create discounts');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Forbidden: Only admin can create discounts', 'CREATE_DISCOUNT');
+        return;
       }
 
       const discountData = {
@@ -155,7 +161,10 @@ router.put(
 
       // Only ADMIN_TENANT and SUPER_ADMIN can update discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Forbidden: Only admin can update discounts' });
+        const error = new Error('Forbidden: Only admin can update discounts');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Forbidden: Only admin can update discounts', 'UPDATE_DISCOUNT');
+        return;
       }
 
       const existingDiscount = await prisma.discount.findFirst({
@@ -166,7 +175,10 @@ router.put(
       });
 
       if (!existingDiscount) {
-        return res.status(404).json({ message: 'Discount not found' });
+        const error = new Error('Discount not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Discount not found', 'UPDATE_DISCOUNT');
+        return;
       }
 
       const updateData: any = { ...req.body };
@@ -212,7 +224,10 @@ router.delete(
 
       // Only ADMIN_TENANT and SUPER_ADMIN can delete discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Forbidden: Only admin can delete discounts' });
+        const error = new Error('Forbidden: Only admin can delete discounts');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Forbidden: Only admin can delete discounts', 'DELETE_DISCOUNT');
+        return;
       }
 
       const existingDiscount = await prisma.discount.findFirst({
@@ -223,7 +238,10 @@ router.delete(
       });
 
       if (!existingDiscount) {
-        return res.status(404).json({ message: 'Discount not found' });
+        const error = new Error('Discount not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Discount not found', 'DELETE_DISCOUNT');
+        return;
       }
 
       await prisma.discount.delete({

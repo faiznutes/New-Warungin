@@ -110,9 +110,10 @@ router.post(
       );
       
       if (!hasMultiOutletAdvanced) {
-        return res.status(403).json({ 
-          message: 'MULTI_OUTLET_ADVANCED addon is required for automatic stock transfers' 
-        });
+        const error = new Error('MULTI_OUTLET_ADVANCED addon is required for automatic stock transfers');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'MULTI_OUTLET_ADVANCED addon is required for automatic stock transfers', 'CREATE_AUTO_TRANSFER');
+        return;
       }
 
       const autoTransfer = await outletService.createAutoTransfer(tenantId, req.body);
@@ -148,9 +149,10 @@ router.post(
       );
       
       if (!hasMultiOutletAdvanced) {
-        return res.status(403).json({ 
-          message: 'MULTI_OUTLET_ADVANCED addon is required for real-time synchronization' 
-        });
+        const error = new Error('MULTI_OUTLET_ADVANCED addon is required for real-time synchronization');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'MULTI_OUTLET_ADVANCED addon is required for real-time synchronization', 'SYNC_OUTLETS');
+        return;
       }
 
       const syncResult = await outletService.syncAllOutlets(tenantId);
@@ -187,9 +189,10 @@ router.get(
       );
       
       if (!hasMultiOutletAdvanced) {
-        return res.status(403).json({ 
-          message: 'MULTI_OUTLET_ADVANCED addon is required for outlet-specific reports' 
-        });
+        const error = new Error('MULTI_OUTLET_ADVANCED addon is required for outlet-specific reports');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'MULTI_OUTLET_ADVANCED addon is required for outlet-specific reports', 'GET_OUTLET_REPORTS');
+        return;
       }
 
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;

@@ -97,7 +97,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const customer = await customerService.getCustomerById(req.params.id, tenantId);
       if (!customer) {
-        return res.status(404).json({ message: 'Customer not found' });
+        const error = new Error('Customer not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Customer not found', 'GET_CUSTOMER');
+        return;
       }
       res.json(customer);
     } catch (error: unknown) {
