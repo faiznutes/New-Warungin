@@ -53,7 +53,22 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const outlets = await outletService.getOutlets(tenantId);
-      res.json({ data: outlets });
+      
+      // Get outlet limit info
+      const { getTenantPlanFeatures } = await import('../services/plan-features.service');
+      const features = await getTenantPlanFeatures(tenantId);
+      const outletLimit = features.limits.outlets;
+      const activeOutletsCount = outlets.filter((o: any) => o.isActive).length;
+      
+      res.json({ 
+        data: outlets,
+        limit: {
+          max: outletLimit,
+          current: activeOutletsCount,
+          remaining: outletLimit === -1 ? -1 : Math.max(0, outletLimit - activeOutletsCount),
+          isUnlimited: outletLimit === -1,
+        }
+      });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
     }

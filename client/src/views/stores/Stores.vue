@@ -9,13 +9,70 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
+        :disabled="!canAddStore"
+        class="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span>Tambah Store</span>
       </button>
+    </div>
+
+    <!-- Store Limit Progress Bar -->
+    <div v-if="storeLimit" class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6 mx-4 sm:mx-6">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-blue-100 rounded-lg">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Limit Store</h3>
+            <p class="text-xs text-gray-600">
+              <span class="font-medium text-gray-900">{{ storeLimit.current }}</span>
+              <span v-if="!storeLimit.isUnlimited"> / {{ storeLimit.max }}</span>
+              <span v-else> / Unlimited</span>
+              <span v-if="!storeLimit.isUnlimited"> store digunakan</span>
+              <span v-else> store aktif</span>
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-lg font-bold" :class="getLimitColorClass()">
+            <span v-if="!storeLimit.isUnlimited">
+              {{ storeLimit.remaining }} tersisa
+            </span>
+            <span v-else class="text-green-600">Unlimited</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div v-if="!storeLimit.isUnlimited" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div
+          class="h-full rounded-full transition-all duration-300"
+          :class="getProgressBarColorClass()"
+          :style="{ width: `${getProgressPercentage()}%` }"
+        ></div>
+      </div>
+      <div v-else class="w-full bg-gray-200 rounded-full h-3">
+        <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+      </div>
+      
+      <!-- Warning message if limit reached -->
+      <div v-if="!storeLimit.isUnlimited && storeLimit.remaining === 0" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-yellow-800">Limit store telah tercapai</p>
+            <p class="text-xs text-yellow-700 mt-1">Beli addon "Tambah Outlet" untuk menambah slot store, atau upgrade ke plan yang lebih tinggi.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Stores List -->
@@ -194,7 +251,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 
@@ -215,6 +272,12 @@ const loading = ref(false);
 const processing = ref(false);
 const showCreateModal = ref(false);
 const editingStore = ref<Store | null>(null);
+const storeLimit = ref<{
+  max: number;
+  current: number;
+  remaining: number;
+  isUnlimited: boolean;
+} | null>(null);
 
 const storeForm = ref({
   name: '',
@@ -228,6 +291,11 @@ const loadStores = async () => {
   try {
     const response = await api.get('/outlets');
     stores.value = response.data.data || [];
+    
+    // Get store limit info
+    if (response.data.limit) {
+      storeLimit.value = response.data.limit;
+    }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat data store');
   } finally {
@@ -291,6 +359,33 @@ const closeModal = () => {
     phone: '',
     isActive: true,
   };
+};
+
+const canAddStore = computed(() => {
+  if (!storeLimit.value) return true;
+  if (storeLimit.value.isUnlimited) return true;
+  return storeLimit.value.remaining > 0;
+});
+
+const getProgressPercentage = () => {
+  if (!storeLimit.value || storeLimit.value.isUnlimited) return 0;
+  if (storeLimit.value.max === 0) return 0;
+  return Math.min(100, (storeLimit.value.current / storeLimit.value.max) * 100);
+};
+
+const getProgressBarColorClass = () => {
+  if (!storeLimit.value) return 'bg-gray-400';
+  const percentage = getProgressPercentage();
+  if (percentage >= 100) return 'bg-red-500';
+  if (percentage >= 80) return 'bg-yellow-500';
+  return 'bg-green-500';
+};
+
+const getLimitColorClass = () => {
+  if (!storeLimit.value || storeLimit.value.isUnlimited) return 'text-green-600';
+  if (storeLimit.value.remaining === 0) return 'text-red-600';
+  if (storeLimit.value.remaining <= 2) return 'text-yellow-600';
+  return 'text-green-600';
 };
 
 onMounted(() => {
