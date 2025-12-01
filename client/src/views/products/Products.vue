@@ -8,39 +8,8 @@
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
 
-    <!-- Tabs Navigation -->
-    <div class="px-4 sm:px-6 pt-4 sm:pt-6">
-      <div class="border-b border-gray-200">
-        <nav class="flex -mb-px space-x-8">
-          <button
-            @click="activeTab = 'products'"
-            :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm transition-colors',
-              activeTab === 'products'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
-            Daftar Produk
-          </button>
-          <button
-            v-if="authStore.user?.role === 'ADMIN_TENANT'"
-            @click="activeTab = 'adjustments'"
-            :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm transition-colors',
-              activeTab === 'adjustments'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
-            Penyesuaian Produk
-          </button>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Products Tab Content -->
-    <div v-if="activeTab === 'products'" class="flex flex-col h-full">
+    <!-- Products Content -->
+    <div class="flex flex-col h-full">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
@@ -400,12 +369,7 @@
     @close="closeModal"
     @save="handleSaveProduct"
   />
-
-    <!-- Adjustments Tab Content (Admin Tenant Only) -->
-    <div v-if="activeTab === 'adjustments' && authStore.user?.role === 'ADMIN_TENANT'" class="flex-1 overflow-auto px-4 sm:px-6 py-6">
-      <ProductAdjustments />
-    </div>
-    </div>
+</template>
 </template>
 
 <script setup lang="ts">
@@ -418,7 +382,6 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
 import ExportButton from '../../components/ExportButton.vue';
 import ProductModal from '../../components/ProductModal.vue';
-import ProductAdjustments from '../../components/ProductAdjustments.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
@@ -449,14 +412,6 @@ const products = ref<Product[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<Product | null>(null);
-const activeTab = ref<'products' | 'adjustments'>('products');
-
-// Watch activeTab to prevent Super Admin from accessing adjustments tab
-watch(activeTab, (newTab) => {
-  if (newTab === 'adjustments' && authStore.user?.role !== 'ADMIN_TENANT') {
-    activeTab.value = 'products';
-  }
-});
 const categories = ref<string[]>([]);
 const productLimit = ref<{
   max: number;
