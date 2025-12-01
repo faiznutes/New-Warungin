@@ -308,16 +308,32 @@ const formatDateTime = (date: string) => {
   return new Date(date).toLocaleString('id-ID');
 };
 
-watch(() => props.tenantId, (newTenantId, oldTenantId) => {
-  // Only reload if tenantId actually changed
-  if (newTenantId && newTenantId !== oldTenantId) {
-    // Ensure tenantId is set in localStorage for API interceptor
-    localStorage.setItem('selectedTenantId', newTenantId);
-    // Small delay to ensure localStorage is updated
+// Watch for tenantId changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
+
+onMounted(async () => {
+  await nextTick();
+  
+  // Initial load if tenantId is provided
+  if (props.tenantId) {
+    localStorage.setItem('selectedTenantId', props.tenantId);
     setTimeout(() => {
       loadOrders();
     }, 100);
   }
-}, { immediate: true });
+  
+  // Watch for tenantId changes after mount
+  watch(() => props.tenantId, (newTenantId, oldTenantId) => {
+    // Only reload if tenantId actually changed
+    if (newTenantId && newTenantId !== oldTenantId) {
+      // Ensure tenantId is set in localStorage for API interceptor
+      localStorage.setItem('selectedTenantId', newTenantId);
+      // Small delay to ensure localStorage is updated
+      setTimeout(() => {
+        loadOrders();
+      }, 100);
+    }
+  });
+});
 </script>
 

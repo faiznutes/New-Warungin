@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
@@ -177,19 +177,33 @@ const loadReports = async () => {
   }
 };
 
-watch(() => props.tenantId, (newTenantId) => {
-  if (newTenantId) {
-    // Ensure tenantId is set in localStorage for API interceptor
-    localStorage.setItem('selectedTenantId', newTenantId);
-    // Small delay to ensure localStorage is updated
+// Watch for tenantId changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
+
+onMounted(async () => {
+  await nextTick();
+  
+  loadTenants();
+  
+  // Initial load if tenantId is provided
+  if (props.tenantId) {
+    localStorage.setItem('selectedTenantId', props.tenantId);
     setTimeout(() => {
       loadReports();
     }, 100);
   }
-}, { immediate: true });
-
-onMounted(() => {
-  loadTenants();
+  
+  // Watch for tenantId changes after mount
+  watch(() => props.tenantId, (newTenantId) => {
+    if (newTenantId) {
+      // Ensure tenantId is set in localStorage for API interceptor
+      localStorage.setItem('selectedTenantId', newTenantId);
+      // Small delay to ensure localStorage is updated
+      setTimeout(() => {
+        loadReports();
+      }, 100);
+    }
+  });
 });
 </script>
 

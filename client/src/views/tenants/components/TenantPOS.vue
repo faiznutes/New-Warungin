@@ -38,35 +38,39 @@ if (props.tenantId) {
   authStore.setSelectedTenant(props.tenantId);
 }
 
-watch(() => props.tenantId, (newTenantId) => {
-  if (newTenantId) {
-    // Set immediately to ensure it's available before POS component mounts
-    localStorage.setItem('selectedTenantId', newTenantId);
-    authStore.setSelectedTenant(newTenantId);
-    
-    // Join tenant room for socket updates
-    if (socket?.connected) {
-      socket.emit('join-tenant', newTenantId);
-    }
-  } else {
-    localStorage.removeItem('selectedTenantId');
-    authStore.setSelectedTenant(null);
-  }
-}, { immediate: true });
+// Watch for tenantId changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 onMounted(async () => {
+  await nextTick();
+  
   // Ensure tenantId is set before POS component tries to load products
   if (props.tenantId) {
     localStorage.setItem('selectedTenantId', props.tenantId);
     authStore.setSelectedTenant(props.tenantId);
     
-    // Wait for next tick to ensure localStorage is updated
-    await nextTick();
-    
+    // Join tenant room for socket updates
     if (socket?.connected) {
       socket.emit('join-tenant', props.tenantId);
     }
   }
+  
+  // Watch for tenantId changes after mount
+  watch(() => props.tenantId, (newTenantId) => {
+    if (newTenantId) {
+      // Set immediately to ensure it's available before POS component mounts
+      localStorage.setItem('selectedTenantId', newTenantId);
+      authStore.setSelectedTenant(newTenantId);
+      
+      // Join tenant room for socket updates
+      if (socket?.connected) {
+        socket.emit('join-tenant', newTenantId);
+      }
+    } else {
+      localStorage.removeItem('selectedTenantId');
+      authStore.setSelectedTenant(null);
+    }
+  });
 });
 </script>
 
