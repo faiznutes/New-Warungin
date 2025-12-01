@@ -1161,6 +1161,8 @@ const printAddon = async (addon: any) => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Apply default monthly filter
+  applyPeriodFilter();
   loadReport();
 });
 </script>
