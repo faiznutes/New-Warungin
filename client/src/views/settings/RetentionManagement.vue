@@ -560,12 +560,12 @@
               Total data yang akan dihapus:
             </p>
             <ul class="text-sm text-red-800 mt-2 list-disc list-inside">
-              <li>{{ stats.ordersToDelete || 0 }} orders</li>
-              <li>{{ stats.transactionsToDelete || 0 }} transactions</li>
-              <li>{{ stats.reportsToDelete || 0 }} reports</li>
-              <li>{{ stats.auditLogsToDelete || 0 }} audit logs</li>
-              <li>{{ stats.contactSubmissionsToDelete || 0 }} contact submissions</li>
-              <li>{{ stats.demoRequestsToDelete || 0 }} demo requests</li>
+              <li>{{ stats.ordersToDelete || 0 }} pesanan</li>
+              <li>{{ stats.transactionsToDelete || 0 }} transaksi</li>
+              <li>{{ stats.reportsToDelete || 0 }} laporan</li>
+              <li>{{ stats.auditLogsToDelete || 0 }} log audit</li>
+              <li>{{ stats.contactSubmissionsToDelete || 0 }} pengajuan kontak</li>
+              <li>{{ stats.demoRequestsToDelete || 0 }} permintaan demo</li>
             </ul>
           </div>
           <div class="flex space-x-3 pt-4">

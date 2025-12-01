@@ -164,7 +164,7 @@
                 type="text"
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="Email subject"
+                placeholder="Subjek email"
               />
             </div>
 
@@ -175,14 +175,14 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="PROMOTION">Promotion</option>
-                <option value="NOTIFICATION">Notification</option>
-                <option value="TRANSACTIONAL">Transactional</option>
+                <option value="PROMOTION">Promosi</option>
+                <option value="NOTIFICATION">Notifikasi</option>
+                <option value="TRANSACTIONAL">Transaksional</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">HTML Content</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Konten HTML</label>
               <textarea
                 v-model="templateForm.htmlContent"
                 required
@@ -196,12 +196,12 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Text Content (Optional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Konten Teks (Opsional)</label>
               <textarea
                 v-model="templateForm.textContent"
                 rows="5"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
-                placeholder="Plain text version"
+                placeholder="Versi teks biasa"
               ></textarea>
             </div>
 
