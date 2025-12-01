@@ -467,6 +467,65 @@ const handleImageCropped = (imageDataUrl: string) => {
   selectedImageSrc.value = '';
 };
 
+// Set up watch for product prop after mount
+onMounted(async () => {
+  await nextTick();
+  
+  // Watch for product prop changes
+  watch(() => props.product, (newProduct) => {
+    if (newProduct) {
+      form.value = {
+        name: newProduct.name || '',
+        description: newProduct.description || '',
+        price: typeof newProduct.price === 'string' ? parseFloat(newProduct.price) : newProduct.price || 0,
+        cost: typeof (newProduct as any).cost === 'string' ? parseFloat((newProduct as any).cost) : (newProduct as any).cost || undefined,
+        stock: newProduct.stock || 0,
+        minStock: newProduct.minStock || 0,
+        category: newProduct.category || '',
+        image: newProduct.image || '',
+        emoji: newProduct.emoji || '',
+        isActive: newProduct.isActive !== false,
+        isConsignment: (newProduct as any).isConsignment || false,
+      };
+      // Set image type based on what exists
+      imageType.value = newProduct.emoji ? 'emoji' : 'image';
+    } else {
+      form.value = {
+        name: '',
+        description: '',
+        price: 0,
+        cost: undefined,
+        stock: 0,
+        minStock: 0,
+        category: '',
+        image: '',
+        emoji: '',
+        isActive: true,
+        isConsignment: false,
+      };
+      imageType.value = 'image';
+    }
+  });
+  
+  // Initial setup if product is already provided
+  if (props.product) {
+    form.value = {
+      name: props.product.name || '',
+      description: props.product.description || '',
+      price: typeof props.product.price === 'string' ? parseFloat(props.product.price) : props.product.price || 0,
+      cost: typeof (props.product as any).cost === 'string' ? parseFloat((props.product as any).cost) : (props.product as any).cost || undefined,
+      stock: props.product.stock || 0,
+      minStock: props.product.minStock || 0,
+      category: props.product.category || '',
+      image: props.product.image || '',
+      emoji: props.product.emoji || '',
+      isActive: props.product.isActive !== false,
+      isConsignment: (props.product as any).isConsignment || false,
+    };
+    imageType.value = props.product.emoji ? 'emoji' : 'image';
+  }
+});
+
 const handleSubmit = () => {
   saving.value = true;
   

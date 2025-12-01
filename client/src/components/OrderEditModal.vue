@@ -224,17 +224,8 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-watch(() => props.order, (newOrder) => {
-  if (newOrder) {
-    // Clone items untuk editing
-    orderItems.value = newOrder.items.map(item => ({
-      ...item,
-      quantity: item.quantity,
-      price: Number(item.price),
-      subtotal: Number(item.subtotal),
-    }));
-  }
-}, { immediate: true });
+// Watch for order prop changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 const updateItemQuantity = (index: number, delta: number) => {
   const item = orderItems.value[index];
