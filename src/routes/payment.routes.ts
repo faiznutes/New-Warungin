@@ -200,7 +200,9 @@ router.post(
       if (result.success) {
         res.json(result);
       } else {
-        res.status(400).json(result);
+        const error = new Error(result.message || 'Addon payment creation failed');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, result.message || 'Addon payment creation failed', 'CREATE_ADDON_PAYMENT');
       }
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create addon payment', 'CREATE_ADDON_PAYMENT');
