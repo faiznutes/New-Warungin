@@ -809,20 +809,11 @@ const loadPlanFeatures = async () => {
   }
 };
 
-// Watch for role changes to check info status
-watch(() => authStore.user?.role, () => {
-  checkUnreadInfo();
-  if (checkShouldShowInfo()) {
-    showInfoModal.value = true;
-  }
-  loadPlanFeatures();
-  loadAvailableAddons();
-}, { immediate: true });
+// Watch for role changes to check info status (defer to onMounted to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
-// Watch route changes to auto-expand menu
-watch(() => route.path, () => {
-  autoExpandMenu();
-}, { immediate: true });
+// Watch route changes to auto-expand menu (defer to onMounted to avoid initialization issues)
+// Route changes will be handled in onMounted
 
 // Load available addons to check for coming soon
 const loadAvailableAddons = async () => {

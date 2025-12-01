@@ -53,8 +53,7 @@ watch(
       return;
     }
     loadLayout(role);
-  },
-  { immediate: true }
+  }
 );
 </script>
 

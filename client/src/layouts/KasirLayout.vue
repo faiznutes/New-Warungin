@@ -172,20 +172,8 @@ const route = useRoute();
 const authStore = useAuthStore();
 const { canManageProducts, canManageCustomers, canViewReports, canEditOrders } = usePermissions();
 
-// Debug: Log permissions when they change
-watch(() => authStore.user, (newUser) => {
-  if (newUser) {
-    const permissions = (newUser as any).permissions || {};
-    console.log('Kasir Layout - User permissions:', {
-      role: newUser.role,
-      permissions,
-      canManageProducts: canManageProducts.value,
-      canManageCustomers: canManageCustomers.value,
-      canViewReports: canViewReports.value,
-      canEditOrders: canEditOrders.value,
-    });
-  }
-}, { deep: true, immediate: true });
+// Debug: Log permissions when they change (defer to onMounted to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
@@ -236,12 +224,29 @@ const handleLogout = () => {
   window.location.replace('/login');
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await nextTick();
+  
   windowWidth.value = window.innerWidth;
   if (windowWidth.value >= 1024) {
     sidebarOpen.value = true;
   }
   window.addEventListener('resize', handleResize);
+  
+  // Watch for user changes after mount (safe to do now)
+  watch(() => authStore.user, (newUser) => {
+    if (newUser) {
+      const permissions = (newUser as any).permissions || {};
+      console.log('Kasir Layout - User permissions:', {
+        role: newUser.role,
+        permissions,
+        canManageProducts: canManageProducts.value,
+        canManageCustomers: canManageCustomers.value,
+        canViewReports: canViewReports.value,
+        canEditOrders: canEditOrders.value,
+      });
+    }
+  }, { deep: true });
 });
 
 onUnmounted(() => {

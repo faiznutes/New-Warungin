@@ -148,17 +148,20 @@ export function usePlanFeatures() {
   const hasRewards = computed(() => hasFeature('rewards'));
   const hasDiscounts = computed(() => hasFeature('discounts'));
 
-  // Watch for tenantId changes and refetch
-  watch(() => authStore.user?.tenantId, (newTenantId, oldTenantId) => {
-    if (newTenantId && newTenantId !== oldTenantId) {
-      fetchPlanFeatures();
-    } else if (!newTenantId) {
-      planFeatures.value = null;
-    }
-  }, { immediate: true });
+  // Watch for tenantId changes and refetch (defer to onMounted to avoid initialization issues)
+  // Don't watch immediately - handle in onMounted instead
 
   onMounted(() => {
     fetchPlanFeatures();
+    
+    // Watch for tenantId changes after mount (safe to do now)
+    watch(() => authStore.user?.tenantId, (newTenantId, oldTenantId) => {
+      if (newTenantId && newTenantId !== oldTenantId) {
+        fetchPlanFeatures();
+      } else if (!newTenantId) {
+        planFeatures.value = null;
+      }
+    });
   });
 
   return {
