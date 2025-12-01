@@ -453,6 +453,42 @@ router.post(
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  */
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get product by ID
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 stock:
+ *                   type: integer
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
 router.get(
   '/:id',
   authGuard,
@@ -466,6 +502,105 @@ router.get(
       res.json(product);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Update product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateProductRequest'
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.put(
+  '/:id',
+  authGuard,
+  validateImageUpload, // Validate image upload security
+  validate({ body: updateProductSchema }),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.updateProduct(req.params.id, req.body, tenantId);
+      
+      // Log audit
+      await logAction(req, 'UPDATE', 'products', product.id, { changes: req.body }, 'SUCCESS');
+      
+      res.json(product);
+    } catch (error: unknown) {
+      await logAction(req, 'UPDATE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
+      handleRouteError(res, error, 'Failed to update product', 'UPDATE_PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Delete product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Product ID
+ *     responses:
+ *       204:
+ *         description: Product deleted successfully
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.delete(
+  '/:id',
+  authGuard,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.getProductById(req.params.id, tenantId);
+      await productService.deleteProduct(req.params.id, tenantId);
+      
+      // Log audit
+      if (product) {
+        await logAction(req, 'DELETE', 'products', req.params.id, { name: product.name }, 'SUCCESS');
+      }
+      
+      res.status(204).send();
+    } catch (error: unknown) {
+      await logAction(req, 'DELETE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
+      handleRouteError(res, error, 'Failed to delete product', 'DELETE_PRODUCT');
     }
   }
 );
