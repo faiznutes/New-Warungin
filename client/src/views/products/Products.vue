@@ -74,56 +74,6 @@
       </div>
       
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4 flex-wrap">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-sm font-semibold text-gray-900">Limit Produk</h3>
-              <p class="text-xs text-gray-600">
-                <span class="font-medium text-gray-900">{{ productLimit.current }}</span>
-                <span v-if="!productLimit.isUnlimited"> / {{ productLimit.max }}</span>
-                <span v-else> / Unlimited</span>
-                <span v-if="!productLimit.isUnlimited"> produk digunakan</span>
-                <span v-else> produk aktif</span>
-              </p>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="text-lg font-bold" :class="getLimitColorClass()">
-              <span v-if="!productLimit.isUnlimited">
-                {{ productLimit.remaining }} tersisa
-              </span>
-              <span v-else class="text-green-600">Unlimited</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Progress Bar -->
-        <div v-if="!productLimit.isUnlimited" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-          <div
-            class="h-full rounded-full transition-all duration-300"
-            :class="getProgressBarColorClass()"
-            :style="{ width: `${getProgressPercentage()}%` }"
-          ></div>
-        </div>
-        <div v-else class="w-full bg-gray-200 rounded-full h-3">
-          <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
-        </div>
-        
-        <!-- Warning message if limit reached -->
-        <div v-if="!productLimit.isUnlimited && productLimit.remaining === 0" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <div class="flex-1">
-              <p class="text-sm font-medium text-yellow-800">Limit produk telah tercapai</p>
-              <p class="text-xs text-yellow-700 mt-1">Beli addon "Tambah Produk" untuk menambah slot produk, atau upgrade ke plan yang lebih tinggi.</p>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4 flex-wrap">
         <!-- Margin Display Format Selector (Admin Tenant & Super Admin only) -->
         <div
