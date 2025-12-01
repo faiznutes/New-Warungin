@@ -3,6 +3,7 @@ import { authGuard } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import financeService from '../services/finance.service';
 import { checkBusinessAnalyticsAddon } from '../middlewares/addon-guard';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -54,12 +55,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const summary = await financeService.getFinancialSummary(tenantId, startDate, endDate);
       res.json(summary);
-    } catch (error: any) {
-      console.error('Error loading financial summary:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to load financial summary',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load financial summary', 'FINANCE_SUMMARY');
     }
   }
 );
@@ -181,12 +178,8 @@ router.get(
       }
       
       res.json(profitLoss);
-    } catch (error: any) {
-      console.error('Error loading profit-loss statement:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to load profit-loss statement',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load profit-loss statement', 'PROFIT_LOSS');
     }
   }
 );
@@ -239,12 +232,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const balanceSheet = await financeService.getBalanceSheet(tenantId, startDate, endDate);
       res.json(balanceSheet);
-    } catch (error: any) {
-      console.error('Error loading balance sheet:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to load balance sheet',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load balance sheet', 'BALANCE_SHEET');
     }
   }
 );
@@ -299,12 +288,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const cashFlow = await financeService.getCashFlow(tenantId, startDate, endDate);
       res.json(cashFlow);
-    } catch (error: any) {
-      console.error('Error loading cash flow statement:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to load cash flow statement',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load cash flow statement', 'CASH_FLOW');
     }
   }
 );

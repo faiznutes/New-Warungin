@@ -4,6 +4,7 @@ import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -86,9 +87,8 @@ router.get(
         receiptHeader,
         receiptFooter,
       });
-    } catch (error: any) {
-      console.error('Error loading tenant profile:', error);
-      res.status(500).json({ message: error.message || 'Failed to load tenant profile' });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load tenant profile', 'GET_TENANT_PROFILE');
     }
   }
 );
@@ -228,9 +228,8 @@ router.put(
         receiptHeader,
         receiptFooter,
       });
-    } catch (error: any) {
-      console.error('Error updating tenant profile:', error);
-      res.status(500).json({ message: error.message || 'Failed to update tenant profile' });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update tenant profile', 'UPDATE_TENANT_PROFILE');
     }
   }
 );
