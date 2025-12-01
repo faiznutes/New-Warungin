@@ -61,7 +61,10 @@ router.post(
       const userId = (req as any).user?.id;
 
       if (!userId) {
-        return res.status(401).json({ message: 'User ID required' });
+        const error = new Error('User ID required');
+        (error as any).statusCode = 401;
+        handleRouteError(res, error, 'User ID required', 'WATCH_AD');
+        return;
       }
 
       const { adMetadata } = req.body;
@@ -73,8 +76,8 @@ router.post(
       );
 
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to record ad view', 'WATCH_AD');
     }
   }
 );
@@ -99,8 +102,8 @@ router.get(
       );
 
       res.json(transactions);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get transactions', 'GET_TRANSACTIONS');
     }
   }
 );
@@ -118,15 +121,19 @@ router.post(
       const userId = (req as any).user?.id;
 
       if (!userId) {
-        return res.status(401).json({ message: 'User ID required' });
+        const error = new Error('User ID required');
+        (error as any).statusCode = 401;
+        handleRouteError(res, error, 'User ID required', 'REDEEM_SUBSCRIPTION');
+        return;
       }
 
       const { planId, pointsRequired } = req.body;
 
       if (!planId || !pointsRequired) {
-        return res.status(400).json({
-          message: 'planId and pointsRequired are required',
-        });
+        const error = new Error('planId and pointsRequired are required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'planId and pointsRequired are required', 'REDEEM_SUBSCRIPTION');
+        return;
       }
 
       logger.info('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
@@ -162,15 +169,19 @@ router.post(
       const userId = (req as any).user?.id;
 
       if (!userId) {
-        return res.status(401).json({ message: 'User ID required' });
+        const error = new Error('User ID required');
+        (error as any).statusCode = 401;
+        handleRouteError(res, error, 'User ID required', 'REDEEM_ADDON');
+        return;
       }
 
       const { addonId, addonName, pointsRequired } = req.body;
 
       if (!addonId || !addonName || !pointsRequired) {
-        return res.status(400).json({
-          message: 'addonId, addonName, and pointsRequired are required',
-        });
+        const error = new Error('addonId, addonName, and pointsRequired are required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'addonId, addonName, and pointsRequired are required', 'REDEEM_ADDON');
+        return;
       }
 
       logger.info('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
