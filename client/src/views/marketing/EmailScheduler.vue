@@ -25,10 +25,10 @@
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
         <option value="">Semua Status</option>
-        <option value="PENDING">Pending</option>
-        <option value="SENT">Sent</option>
-        <option value="CANCELLED">Cancelled</option>
-        <option value="FAILED">Failed</option>
+        <option value="PENDING">Menunggu</option>
+        <option value="SENT">Terkirim</option>
+        <option value="CANCELLED">Dibatalkan</option>
+        <option value="FAILED">Gagal</option>
       </select>
     </div>
 
@@ -42,7 +42,7 @@
       <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-500">Belum ada scheduled emails</p>
+      <p class="text-gray-500">Belum ada email terjadwal</p>
     </div>
 
     <!-- Schedules List -->
@@ -67,7 +67,7 @@
             <p class="text-sm text-gray-600 mb-4">{{ schedule.content.substring(0, 100) }}...</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p class="text-gray-500">Scheduled At</p>
+                <p class="text-gray-500">Terjadwal Pada</p>
                 <p class="font-semibold text-gray-900">{{ formatDateTime(schedule.scheduledAt) }}</p>
               </div>
               <div>
@@ -75,12 +75,12 @@
                 <p class="font-semibold text-gray-900">{{ schedule.target }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Campaign ID</p>
+                <p class="text-gray-500">ID Kampanye</p>
                 <p class="font-semibold text-gray-900 text-xs">{{ schedule.campaignId }}</p>
               </div>
               <div>
                 <p class="text-gray-500">Template</p>
-                <p class="font-semibold text-gray-900 text-xs">{{ schedule.templateId || 'No template' }}</p>
+                <p class="font-semibold text-gray-900 text-xs">{{ schedule.templateId || 'Tidak ada template' }}</p>
               </div>
             </div>
           </div>
@@ -90,7 +90,7 @@
               @click="cancelSchedule(schedule)"
               class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
             >
-              Cancel
+              Batal
             </button>
             <button
               v-if="schedule.status === 'PENDING'"
@@ -114,7 +114,7 @@
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">
-              {{ editingSchedule ? 'Edit Schedule' : 'Jadwalkan Email' }}
+              {{ editingSchedule ? 'Edit Jadwal' : 'Jadwalkan Email' }}
             </h3>
             <button
               @click="closeModal"
@@ -128,13 +128,13 @@
 
           <form @submit.prevent="saveSchedule" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Campaign ID</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">ID Kampanye</label>
               <input
                 v-model="scheduleForm.campaignId"
                 type="text"
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="Campaign ID"
+                placeholder="ID Kampanye"
               />
             </div>
 
@@ -161,7 +161,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Target Audiens</label>
               <select
                 v-model="scheduleForm.target"
                 required
@@ -185,12 +185,12 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Template ID (Optional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">ID Template (Opsional)</label>
               <input
                 v-model="scheduleForm.templateId"
                 type="text"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="Template ID"
+                placeholder="ID Template"
               />
             </div>
 
@@ -314,7 +314,7 @@ const editSchedule = (schedule: ScheduledEmail) => {
 
 const cancelSchedule = async (schedule: ScheduledEmail) => {
   const confirmed = await showConfirm(
-    'Cancel Schedule',
+    'Batal Jadwal',
     `Apakah Anda yakin ingin membatalkan schedule ini?`
   );
   if (!confirmed) return;

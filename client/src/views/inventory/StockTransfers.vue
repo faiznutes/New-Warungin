@@ -24,11 +24,11 @@
         @change="loadTransfers"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">All Status</option>
-        <option value="PENDING">Pending</option>
-        <option value="IN_TRANSIT">In Transit</option>
-        <option value="COMPLETED">Completed</option>
-        <option value="CANCELLED">Cancelled</option>
+        <option value="">Semua Status</option>
+        <option value="PENDING">Menunggu</option>
+        <option value="IN_TRANSIT">Dalam Perjalanan</option>
+        <option value="COMPLETED">Selesai</option>
+        <option value="CANCELLED">Dibatalkan</option>
       </select>
     </div>
 
@@ -58,24 +58,24 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
               <div>
-                <p class="text-gray-500">From Outlet</p>
+                <p class="text-gray-500">Dari Outlet</p>
                 <p class="font-semibold text-gray-900">{{ transfer.fromOutletId }}</p>
               </div>
               <div>
-                <p class="text-gray-500">To Outlet</p>
+                <p class="text-gray-500">Ke Outlet</p>
                 <p class="font-semibold text-gray-900">{{ transfer.toOutletId }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Transfer Date</p>
+                <p class="text-gray-500">Tanggal Transfer</p>
                 <p class="font-semibold text-gray-900">{{ formatDate(transfer.transferDate) }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Items</p>
-                <p class="font-semibold text-gray-900">{{ transfer.items.length }} items</p>
+                <p class="text-gray-500">Item</p>
+                <p class="font-semibold text-gray-900">{{ transfer.items.length }} item</p>
               </div>
             </div>
             <div class="border-t pt-4">
-              <p class="text-sm font-semibold text-gray-700 mb-2">Items:</p>
+              <p class="text-sm font-semibold text-gray-700 mb-2">Item:</p>
               <div class="space-y-2">
                 <div
                   v-for="item in transfer.items"
@@ -94,7 +94,7 @@
               @click="receiveTransfer(transfer)"
               class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
             >
-              Receive
+              Terima
             </button>
             <button
               v-if="transfer.status !== 'COMPLETED' && transfer.status !== 'CANCELLED'"

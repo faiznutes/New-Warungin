@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="text-2xl font-bold text-gray-900">Pesanan Pembelian</h2>
-        <p class="text-gray-600">Kelola purchase order untuk restock produk</p>
+        <p class="text-gray-600">Kelola pesanan pembelian untuk restok produk</p>
       </div>
       <button
         @click="showCreateModal = true"
@@ -13,7 +13,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        <span>Buat Purchase Order</span>
+        <span>Buat Pesanan Pembelian</span>
       </button>
     </div>
 
@@ -24,19 +24,19 @@
         @change="loadPurchaseOrders"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">All Status</option>
-        <option value="PENDING">Pending</option>
-        <option value="APPROVED">Approved</option>
-        <option value="ORDERED">Ordered</option>
-        <option value="RECEIVED">Received</option>
-        <option value="CANCELLED">Cancelled</option>
+        <option value="">Semua Status</option>
+        <option value="PENDING">Menunggu</option>
+        <option value="APPROVED">Disetujui</option>
+        <option value="ORDERED">Dipesan</option>
+        <option value="RECEIVED">Diterima</option>
+        <option value="CANCELLED">Dibatalkan</option>
       </select>
       <select
         v-model="supplierFilter"
         @change="loadPurchaseOrders"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">All Suppliers</option>
+        <option value="">Semua Pemasok</option>
         <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
           {{ supplier.name }}
         </option>
@@ -72,24 +72,24 @@
             </p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
               <div>
-                <p class="text-gray-500">Order Date</p>
+                <p class="text-gray-500">Tanggal Pesanan</p>
                 <p class="font-semibold text-gray-900">{{ formatDate(po.orderDate) }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Expected Date</p>
+                <p class="text-gray-500">Tanggal Diharapkan</p>
                 <p class="font-semibold text-gray-900">{{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Total Amount</p>
+                <p class="text-gray-500">Total Jumlah</p>
                 <p class="font-semibold text-gray-900">Rp {{ formatCurrency(po.totalAmount) }}</p>
               </div>
               <div>
-                <p class="text-gray-500">Items</p>
-                <p class="font-semibold text-gray-900">{{ po.items.length }} items</p>
+                <p class="text-gray-500">Item</p>
+                <p class="font-semibold text-gray-900">{{ po.items.length }} item</p>
               </div>
             </div>
             <div class="border-t pt-4">
-              <p class="text-sm font-semibold text-gray-700 mb-2">Items:</p>
+              <p class="text-sm font-semibold text-gray-700 mb-2">Item:</p>
               <div class="space-y-2">
                 <div
                   v-for="item in po.items"

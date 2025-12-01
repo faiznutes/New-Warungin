@@ -141,7 +141,7 @@
             </ul>
           </div>
           <div class="p-4 bg-white rounded-lg border border-purple-200">
-            <h4 class="font-semibold text-gray-900 mb-2">Pemasaran & Pengiriman</h4>
+            <h4 class="font-semibold text-gray-900 mb-2">Pemasaran & Pengiriman <span class="text-xs text-yellow-600 font-normal">(Coming Soon)</span></h4>
               <ul class="text-sm text-gray-700 space-y-1">
                 <li>• Pemasaran & Pengiriman (Rp 180rb/bulan)</li>
                 <li>• Template Email, Analitik & Penjadwal</li>
@@ -158,14 +158,14 @@
           <div class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">Keuangan & Inventori</h4>
               <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Manajemen Keuangan (Rp 150rb/bulan)</li>
-                <li>• Manajemen Inventori (Rp 100rb/bulan)</li>
+                <li>• Manajemen Keuangan (Rp 150rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
+                <li>• Manajemen Inventori (Rp 100rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
               </ul>
           </div>
           <div class="p-4 bg-white rounded-lg border border-purple-200">
             <h4 class="font-semibold text-gray-900 mb-2">AI/ML & Lanjutan</h4>
               <ul class="text-sm text-gray-700 space-y-1">
-                <li>• Fitur AI/ML (Rp 200rb/bulan)</li>
+                <li>• Fitur AI/ML (Rp 200rb/bulan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
                 <li>• Editor Struk Lanjutan (Rp 60rb/bulan)</li>
                 <li>• Multi-Outlet Lanjutan (Rp 150rb/bulan)</li>
               </ul>
@@ -192,10 +192,10 @@
             <ul class="text-sm text-gray-700 space-y-1">
               <li>• Kelola produk (Semua tier)</li>
               <li>• Product Adjustments (Pro, Custom/Max)</li>
-              <li>• Pemasok (Pro, Custom/Max, atau Addon Manajemen Inventori)</li>
-              <li>• Pesanan Pembelian (Pro, Custom/Max, atau Addon Manajemen Inventori)</li>
-              <li>• Transfer Stok (Pro, Custom/Max, atau Addon Manajemen Inventori)</li>
-              <li>• Peringatan Stok (Pro, Custom/Max, atau Addon Manajemen Inventori)</li>
+              <li>• Pemasok (Pro, Custom/Max, atau Addon Manajemen Inventori) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
+              <li>• Pesanan Pembelian (Pro, Custom/Max, atau Addon Manajemen Inventori) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
+              <li>• Transfer Stok (Pro, Custom/Max, atau Addon Manajemen Inventori) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
+              <li>• Peringatan Stok (Pro, Custom/Max, atau Addon Manajemen Inventori) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
@@ -203,7 +203,7 @@
             <ul class="text-sm text-gray-700 space-y-1">
               <li>• Kelola pesanan (Semua tier)</li>
               <li>• Point of Sale (POS) (Semua tier)</li>
-              <li>• Pesanan Pengiriman (Pro, Custom/Max, atau Addon Pemasaran & Pengiriman)</li>
+              <li>• Pesanan Pengiriman (Pro, Custom/Max, atau Addon Pemasaran & Pengiriman) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
@@ -219,13 +219,13 @@
               <li>• Laporan penjualan (Semua tier)</li>
               <li>• Laporan Lanjutan (Pro, Custom/Max, atau Addon Laporan Lanjutan)</li>
               <li>• Analitik Lanjutan (Pro, Custom/Max, atau Addon Analitik Bisnis)</li>
-              <li>• Manajemen Keuangan (Pro, Custom/Max, atau Addon Manajemen Keuangan)</li>
+              <li>• Manajemen Keuangan (Pro, Custom/Max, atau Addon Manajemen Keuangan) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
               <li>• Laba Rugi (Pro, Custom/Max, atau Addon Analitik Bisnis)</li>
-              <li>• Fitur AI/ML (Custom/Max, atau Addon Fitur AI/ML)</li>
+              <li>• Fitur AI/ML (Custom/Max, atau Addon Fitur AI/ML) <span class="text-xs text-yellow-600">(Coming Soon)</span></li>
             </ul>
           </div>
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
-            <h4 class="font-semibold text-gray-900 mb-2">Pemasaran</h4>
+            <h4 class="font-semibold text-gray-900 mb-2">Pemasaran <span class="text-xs text-yellow-600 font-normal">(Coming Soon)</span></h4>
             <ul class="text-sm text-gray-700 space-y-1">
               <li>• Kampanye Pemasaran (Pro, Custom/Max, atau Addon Pemasaran & Pengiriman)</li>
               <li>• Template Email (Pro, Custom/Max, atau Addon Pemasaran & Pengiriman)</li>

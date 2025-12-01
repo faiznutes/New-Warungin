@@ -25,9 +25,9 @@
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
         <option value="">Semua Kategori</option>
-        <option value="PROMOTION">Promotion</option>
-        <option value="NOTIFICATION">Notification</option>
-        <option value="TRANSACTIONAL">Transactional</option>
+        <option value="PROMOTION">Promosi</option>
+        <option value="NOTIFICATION">Notifikasi</option>
+        <option value="TRANSACTIONAL">Transaksional</option>
       </select>
     </div>
 
@@ -68,19 +68,19 @@
               v-if="template.isActive"
               class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800"
             >
-              Active
+              Aktif
             </span>
             <span
               v-else
               class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"
             >
-              Inactive
+              Tidak Aktif
             </span>
           </div>
         </div>
 
         <div class="mb-4">
-          <p class="text-xs text-gray-500 mb-2">Variables:</p>
+          <p class="text-xs text-gray-500 mb-2">Variabel:</p>
           <div class="flex flex-wrap gap-1">
             <span
               v-for="variable in template.variables || []"
@@ -90,7 +90,7 @@
               {{ variable }}
             </span>
             <span v-if="!template.variables || template.variables.length === 0" class="text-xs text-gray-400">
-              No variables
+              Tidak ada variabel
             </span>
           </div>
         </div>
@@ -206,7 +206,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Variables (comma-separated)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Variabel (dipisahkan koma)</label>
               <input
                 v-model="templateForm.variablesString"
                 type="text"
@@ -225,7 +225,7 @@
                 id="isActive"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <label for="isActive" class="ml-2 text-sm text-gray-700">Active</label>
+              <label for="isActive" class="ml-2 text-sm text-gray-700">Aktif</label>
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">

@@ -12,7 +12,7 @@
           type="date"
           class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         />
-        <span class="text-gray-600">to</span>
+          <span class="text-gray-600">sampai</span>
         <input
           v-model="dateRange.end"
           type="date"
@@ -39,7 +39,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Sent</p>
+              <p class="text-sm text-gray-600 mb-1">Total Terkirim</p>
               <p class="text-3xl font-bold text-gray-900">{{ overallAnalytics.sent || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -53,7 +53,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Open Rate</p>
+              <p class="text-sm text-gray-600 mb-1">Tingkat Buka</p>
               <p class="text-3xl font-bold text-gray-900">{{ formatPercentage(overallAnalytics.openRate || 0) }}%</p>
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -68,7 +68,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Click Rate</p>
+              <p class="text-sm text-gray-600 mb-1">Tingkat Klik</p>
               <p class="text-3xl font-bold text-gray-900">{{ formatPercentage(overallAnalytics.clickRate || 0) }}%</p>
             </div>
             <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -82,7 +82,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Bounce Rate</p>
+              <p class="text-sm text-gray-600 mb-1">Tingkat Bounce</p>
               <p class="text-3xl font-bold text-gray-900">{{ formatPercentage(overallAnalytics.bounceRate || 0) }}%</p>
             </div>
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -97,7 +97,7 @@
       <!-- Campaign Analytics -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-gray-900">Campaign Performance</h3>
+          <h3 class="text-xl font-bold text-gray-900">Performa Kampanye</h3>
           <select
             v-model="selectedCampaignId"
             @change="loadCampaignAnalytics"
@@ -118,27 +118,27 @@
           <div class="p-4 bg-gray-50 rounded-lg">
             <p class="text-sm text-gray-600 mb-1">Opened</p>
             <p class="text-2xl font-bold text-green-600">{{ campaignAnalytics.opened || 0 }}</p>
-            <p class="text-xs text-gray-500 mt-1">Open Rate: {{ formatPercentage(campaignAnalytics.openRate || 0) }}%</p>
+            <p class="text-xs text-gray-500 mt-1">Tingkat Buka: {{ formatPercentage(campaignAnalytics.openRate || 0) }}%</p>
           </div>
           <div class="p-4 bg-gray-50 rounded-lg">
             <p class="text-sm text-gray-600 mb-1">Clicked</p>
             <p class="text-2xl font-bold text-purple-600">{{ campaignAnalytics.clicked || 0 }}</p>
-            <p class="text-xs text-gray-500 mt-1">Click Rate: {{ formatPercentage(campaignAnalytics.clickRate || 0) }}%</p>
+            <p class="text-xs text-gray-500 mt-1">Tingkat Klik: {{ formatPercentage(campaignAnalytics.clickRate || 0) }}%</p>
           </div>
           <div class="p-4 bg-gray-50 rounded-lg">
             <p class="text-sm text-gray-600 mb-1">Unique Opens</p>
             <p class="text-2xl font-bold text-blue-600">{{ campaignAnalytics.uniqueOpens || 0 }}</p>
-            <p class="text-xs text-gray-500 mt-1">Unique Open Rate: {{ formatPercentage(campaignAnalytics.uniqueOpenRate || 0) }}%</p>
+            <p class="text-xs text-gray-500 mt-1">Tingkat Buka Unik: {{ formatPercentage(campaignAnalytics.uniqueOpenRate || 0) }}%</p>
           </div>
           <div class="p-4 bg-gray-50 rounded-lg">
             <p class="text-sm text-gray-600 mb-1">Unique Clicks</p>
             <p class="text-2xl font-bold text-indigo-600">{{ campaignAnalytics.uniqueClicks || 0 }}</p>
-            <p class="text-xs text-gray-500 mt-1">Unique Click Rate: {{ formatPercentage(campaignAnalytics.uniqueClickRate || 0) }}%</p>
+            <p class="text-xs text-gray-500 mt-1">Tingkat Klik Unik: {{ formatPercentage(campaignAnalytics.uniqueClickRate || 0) }}%</p>
           </div>
           <div class="p-4 bg-gray-50 rounded-lg">
             <p class="text-sm text-gray-600 mb-1">Bounced</p>
             <p class="text-2xl font-bold text-red-600">{{ campaignAnalytics.bounced || 0 }}</p>
-            <p class="text-xs text-gray-500 mt-1">Bounce Rate: {{ formatPercentage(campaignAnalytics.bounceRate || 0) }}%</p>
+            <p class="text-xs text-gray-500 mt-1">Tingkat Bounce: {{ formatPercentage(campaignAnalytics.bounceRate || 0) }}%</p>
           </div>
         </div>
 

@@ -63,7 +63,7 @@
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
             >
-              Pending
+              Menunggu
             </button>
             <button
               @click="filters.status = 'PROCESSING'"
@@ -72,7 +72,7 @@
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
             >
-              Processing
+              Diproses
             </button>
             <button
               @click="filters.status = 'SHIPPED'"
@@ -81,7 +81,7 @@
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
             >
-              Shipped
+              Dikirim
             </button>
             <button
               @click="filters.status = 'DELIVERED'"
@@ -90,7 +90,7 @@
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
             >
-              Delivered
+              Terkirim
             </button>
             <button
               @click="filters.status = 'CANCELLED'"
@@ -99,7 +99,7 @@
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
             >
-              Cancelled
+              Dibatalkan
             </button>
           </div>
         </div>
@@ -193,12 +193,12 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pesanan</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelanggan</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kurir</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tracking</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pelacakan</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
             </tr>
           </thead>
@@ -278,7 +278,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Kunci API</label>
               <input
                 v-model="courierForm.apiKey"
                 type="text"

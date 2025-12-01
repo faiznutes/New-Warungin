@@ -20,7 +20,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">High Engagement</p>
+              <p class="text-sm text-gray-600 mb-1">Interaksi Tinggi</p>
               <p class="text-3xl font-bold text-gray-900">{{ overallStats.high || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -34,7 +34,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Medium Engagement</p>
+              <p class="text-sm text-gray-600 mb-1">Interaksi Sedang</p>
               <p class="text-3xl font-bold text-gray-900">{{ overallStats.medium || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -48,7 +48,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-yellow-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Low Engagement</p>
+              <p class="text-sm text-gray-600 mb-1">Interaksi Rendah</p>
               <p class="text-3xl font-bold text-gray-900">{{ overallStats.low || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -62,7 +62,7 @@
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-gray-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Inactive</p>
+              <p class="text-sm text-gray-600 mb-1">Tidak Aktif</p>
               <p class="text-3xl font-bold text-gray-900">{{ overallStats.inactive || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
@@ -82,16 +82,16 @@
             @change="loadCustomers"
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           >
-            <option value="">All Levels</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-            <option value="INACTIVE">Inactive</option>
+            <option value="">Semua Level</option>
+            <option value="HIGH">Tinggi</option>
+            <option value="MEDIUM">Sedang</option>
+            <option value="LOW">Rendah</option>
+            <option value="INACTIVE">Tidak Aktif</option>
           </select>
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search customers..."
+            placeholder="Cari pelanggan..."
             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
             @input="loadCustomers"
           />

@@ -36,21 +36,21 @@
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'templates' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Report Templates
+          Template Laporan
         </button>
         <button
           @click="activeTab = 'scheduled'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'scheduled' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Scheduled Reports
+          Laporan Terjadwal
         </button>
         <button
           @click="activeTab = 'dashboard'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'dashboard' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
         >
-          Dashboard Settings
+          Pengaturan Dashboard
         </button>
       </nav>
     </div>
@@ -67,7 +67,7 @@
           class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition"
         >
           <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ template.name }}</h3>
-          <p class="text-sm text-gray-600 mb-4">{{ template.description || 'No description' }}</p>
+          <p class="text-sm text-gray-600 mb-4">{{ template.description || 'Tidak ada deskripsi' }}</p>
           <div class="flex items-center justify-between">
             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
               {{ template.type }}
@@ -77,7 +77,7 @@
                 @click="generateReport(template)"
                 class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
               >
-                Generate
+                Buat
               </button>
               <button
                 @click="editTemplate(template)"
@@ -203,7 +203,7 @@
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">
-              {{ editingTemplate ? 'Edit Template' : 'Buat Report Template' }}
+              {{ editingTemplate ? 'Edit Template' : 'Buat Template Laporan' }}
             </h3>
             <button
               @click="closeTemplateModal"

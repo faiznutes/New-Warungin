@@ -90,19 +90,57 @@
               </svg>
               <span class="font-medium">Pesanan</span>
             </router-link>
+            </div>
+          </div>
 
+          <!-- Customers & Members Section -->
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+            <button
+              @click="toggleMenu('customers')"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+            >
+              <span>Customers & Members</span>
+              <svg
+                class="w-4 h-4 transition-transform duration-200"
+                :class="{ 'rotate-180': expandedMenus.customers }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div
+              v-show="expandedMenus.customers"
+              class="mt-1 space-y-1 transition-all duration-200"
+            >
+              <router-link
+                to="/app/customers"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
+                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                @click="closeSidebarOnMobile"
+              >
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span class="font-medium">Pelanggan</span>
+              </router-link>
+            </div>
+          </div>
+
+          <!-- Users Section (Standalone for all Admin Tenant) -->
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
             <router-link
-              to="/app/customers"
+              to="/app/users"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
               active-class="bg-green-600 text-white font-semibold shadow-lg"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-              <span class="font-medium">Pelanggan</span>
+              <span class="font-medium">Pengguna</span>
             </router-link>
-            </div>
           </div>
 
           <!-- Laporan & Analitik Section -->
@@ -405,18 +443,6 @@
               class="mt-1 space-y-1 transition-all duration-200"
             >
               <router-link
-                to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
-                @click="closeSidebarOnMobile"
-              >
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <span class="font-medium">Pengguna</span>
-              </router-link>
-
-              <router-link
                 v-if="hasMultiOutlet"
                 to="/app/stores"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
@@ -478,6 +504,7 @@
               </router-link>
 
               <router-link
+                v-if="hasAvailableAddons"
                 to="/app/addons"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
                 active-class="bg-green-600 text-white font-semibold shadow-lg"
@@ -628,6 +655,7 @@ const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
+const availableAddons = ref<any[]>([]);
 
 // Use plan features composable
 const {
@@ -649,6 +677,7 @@ const {
 // Menu expand/collapse state
 const expandedMenus = ref({
   operasional: true,
+  customers: true,
   laporan: true,
   marketing: false,
   inventory: false,
@@ -681,9 +710,12 @@ const autoExpandMenu = () => {
   const currentPath = route.path;
   
   // Check which section contains the current route
-  if (currentPath.includes('/products') || 
-      currentPath.includes('/orders') || currentPath.includes('/customers')) {
+  if (currentPath.includes('/products') || currentPath.includes('/orders')) {
     expandedMenus.value.operasional = true;
+  }
+  
+  if (currentPath.includes('/customers')) {
+    expandedMenus.value.customers = true;
   }
   
   if (currentPath.includes('/reports') || currentPath.includes('/analytics') || 
@@ -700,9 +732,12 @@ const autoExpandMenu = () => {
     expandedMenus.value.inventory = true;
   }
   
-  if (currentPath.includes('/users') || currentPath.includes('/stores') || 
-      currentPath.includes('/discounts')) {
+  if (currentPath.includes('/stores') || currentPath.includes('/discounts')) {
     expandedMenus.value.manajemen = true;
+  }
+  
+  if (currentPath.includes('/users')) {
+    // Users is now standalone, no need to expand menu
   }
   
   if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
@@ -781,6 +816,7 @@ watch(() => authStore.user?.role, () => {
     showInfoModal.value = true;
   }
   loadPlanFeatures();
+  loadAvailableAddons();
 }, { immediate: true });
 
 // Watch route changes to auto-expand menu
@@ -788,9 +824,38 @@ watch(() => route.path, () => {
   autoExpandMenu();
 }, { immediate: true });
 
+// Load available addons to check for coming soon
+const loadAvailableAddons = async () => {
+  if (authStore.user?.role !== 'ADMIN_TENANT') {
+    return;
+  }
+  
+  try {
+    const response = await api.get('/addons/available');
+    availableAddons.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading available addons:', error);
+    availableAddons.value = [];
+  }
+};
+
+// Check if there are addons that are not coming soon
+const hasAvailableAddons = computed(() => {
+  if (availableAddons.value.length === 0) {
+    return true; // Show menu if we haven't loaded yet
+  }
+  
+  // Filter out addons that are coming soon
+  const nonComingSoonAddons = availableAddons.value.filter(addon => !addon.comingSoon);
+  
+  // Only show menu if there are addons that are not coming soon
+  return nonComingSoonAddons.length > 0;
+});
+
 // Load menu state on mount
 onMounted(() => {
   loadMenuState();
+  loadAvailableAddons();
 });
 
 const userName = computed(() => authStore.user?.name || 'Tenant');

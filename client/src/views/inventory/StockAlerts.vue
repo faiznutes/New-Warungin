@@ -23,7 +23,7 @@
       <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-yellow-500">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Low Stock</p>
+            <p class="text-sm text-gray-600 mb-1">Stok Rendah</p>
             <p class="text-3xl font-bold text-gray-900">{{ stats.lowStockCount || 0 }}</p>
           </div>
           <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -37,7 +37,7 @@
       <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Out of Stock</p>
+            <p class="text-sm text-gray-600 mb-1">Stok Habis</p>
             <p class="text-3xl font-bold text-gray-900">{{ stats.outOfStockCount || 0 }}</p>
           </div>
           <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -51,7 +51,7 @@
       <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600 mb-1">Total Alerts</p>
+            <p class="text-sm text-gray-600 mb-1">Total Peringatan</p>
             <p class="text-3xl font-bold text-gray-900">{{ stats.totalAlerts || 0 }}</p>
           </div>
           <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -70,7 +70,7 @@
 
     <!-- Low Stock Products -->
     <div v-else class="bg-white rounded-lg shadow-lg p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Low Stock Products</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Produk Stok Rendah</h3>
       <div v-if="lowStockProducts.length === 0" class="text-center py-12 text-gray-500">
         <p>Semua produk memiliki stock yang cukup</p>
       </div>
@@ -78,18 +78,18 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min Stock</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Saat Ini</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Minimum</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="product in lowStockProducts" :key="product.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
-                <div class="text-xs text-gray-500">{{ product.sku || 'No SKU' }}</div>
+                <div class="text-xs text-gray-500">{{ product.sku || 'Tidak Ada SKU' }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="text-sm font-semibold" :class="product.stock === 0 ? 'text-red-600' : 'text-yellow-600'">
@@ -104,7 +104,7 @@
                   class="px-2 py-1 text-xs font-semibold rounded-full"
                   :class="product.stock === 0 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'"
                 >
-                  {{ product.stock === 0 ? 'Out of Stock' : 'Low Stock' }}
+                   {{ product.stock === 0 ? 'Stok Habis' : 'Stok Rendah' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -112,7 +112,7 @@
                   :to="`/app/inventory/purchase-orders`"
                   class="text-blue-600 hover:text-blue-900"
                 >
-                  Create PO
+                   Buat PO
                 </router-link>
               </td>
             </tr>
@@ -154,7 +154,7 @@ const loadLowStockProducts = async () => {
     stats.value = statsResponse.data;
   } catch (error: any) {
     console.error('Error loading low stock products:', error);
-    await showError('Gagal memuat low stock products');
+     await showError('Gagal memuat produk stok rendah');
   } finally {
     loading.value = false;
   }

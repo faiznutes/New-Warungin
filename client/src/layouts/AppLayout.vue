@@ -236,7 +236,7 @@
               </router-link>
 
               <router-link
-                v-if="userRole === 'ADMIN_TENANT'"
+                v-if="userRole === 'ADMIN_TENANT' && hasAvailableAddons"
                 to="/app/addons"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
@@ -387,6 +387,7 @@ const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024
 const selectedTenant = ref<string>('');
 const openSubmenus = ref<Record<string, boolean>>({});
 const activeAddons = ref<any[]>([]);
+const availableAddons = ref<any[]>([]);
 const userRole = computed(() => authStore.user?.role || '');
 const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
@@ -505,6 +506,7 @@ watch(() => userRole.value, () => {
   if (checkShouldShowInfo()) {
     showInfoModal.value = true;
   }
+  loadAvailableAddons();
 }, { immediate: true });
 
 const hasBusinessAnalytics = computed(() => {
@@ -616,6 +618,34 @@ const loadAddons = async () => {
   }
 };
 
+// Load available addons to check for coming soon
+const loadAvailableAddons = async () => {
+  if (userRole.value !== 'ADMIN_TENANT') {
+    return;
+  }
+  
+  try {
+    const response = await api.get('/addons/available');
+    availableAddons.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading available addons:', error);
+    availableAddons.value = [];
+  }
+};
+
+// Check if there are addons that are not coming soon
+const hasAvailableAddons = computed(() => {
+  if (availableAddons.value.length === 0) {
+    return true; // Show menu if we haven't loaded yet
+  }
+  
+  // Filter out addons that are coming soon
+  const nonComingSoonAddons = availableAddons.value.filter(addon => !addon.comingSoon);
+  
+  // Only show menu if there are addons that are not coming soon
+  return nonComingSoonAddons.length > 0;
+});
+
 onMounted(async () => {
   windowWidth.value = window.innerWidth;
   
@@ -635,6 +665,7 @@ onMounted(async () => {
   
   // Load addons for menu visibility
   await loadAddons();
+  await loadAvailableAddons();
   window.addEventListener('resize', handleResize);
   
   // Fetch tenants if super admin
