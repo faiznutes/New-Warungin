@@ -5,6 +5,7 @@ import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -37,7 +38,10 @@ router.get(
       
       // Only Super Admin can access global reports
       if (!user || user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GLOBAL_REPORT');
+        return;
       }
 
       const { startDate, endDate } = req.query;
@@ -49,7 +53,10 @@ router.get(
       if (startDate) {
         start = new Date(startDate as string);
         if (isNaN(start.getTime())) {
-          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         start.setHours(0, 0, 0, 0);
       }
@@ -57,20 +64,25 @@ router.get(
       if (endDate) {
         end = new Date(endDate as string);
         if (isNaN(end.getTime())) {
-          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         end.setHours(23, 59, 59, 999);
       }
       
       // Validate date range
       if (start && end && start > end) {
-        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
+        const error = new Error('startDate must be before or equal to endDate.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
+        return;
       }
 
       const report = await reportService.getGlobalReport(start, end);
       return res.json(report);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to load global report', 'GLOBAL_REPORT');
     }
   }
@@ -120,9 +132,10 @@ router.get(
         );
         
         if (!hasExportAddon) {
-          return res.status(403).json({ 
-            message: 'Export Laporan addon is required to export reports' 
-          });
+          const error = new Error('Export Laporan addon is required to export reports');
+          (error as any).statusCode = 403;
+          handleRouteError(res, error, 'Export Laporan addon is required to export reports', 'EXPORT_REPORT');
+          return;
         }
       }
 
@@ -133,7 +146,10 @@ router.get(
       if (startDate) {
         start = new Date(startDate as string);
         if (isNaN(start.getTime())) {
-          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         start.setHours(0, 0, 0, 0);
       }
@@ -141,14 +157,20 @@ router.get(
       if (endDate) {
         end = new Date(endDate as string);
         if (isNaN(end.getTime())) {
-          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         end.setHours(23, 59, 59, 999);
       }
       
       // Validate date range
       if (start && end && start > end) {
-        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
+        const error = new Error('startDate must be before or equal to endDate.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
+        return;
       }
       
       const type = (reportType as string) || 'sales';
@@ -233,7 +255,10 @@ router.get(
       if (startDate) {
         start = new Date(startDate as string);
         if (isNaN(start.getTime())) {
-          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         start.setHours(0, 0, 0, 0);
       }
@@ -241,14 +266,20 @@ router.get(
       if (endDate) {
         end = new Date(endDate as string);
         if (isNaN(end.getTime())) {
-          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         end.setHours(23, 59, 59, 999);
       }
       
       // Validate date range
       if (start && end && start > end) {
-        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
+        const error = new Error('startDate must be before or equal to endDate.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
+        return;
       }
       
       const reportType = (type as string) || 'sales';
@@ -319,7 +350,10 @@ router.get(
       
       // Only Super Admin can access global reports
       if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'EXPORT_GLOBAL_REPORT');
+        return;
       }
 
       const { startDate, endDate } = req.query;
@@ -331,7 +365,10 @@ router.get(
       if (startDate) {
         start = new Date(startDate as string);
         if (isNaN(start.getTime())) {
-          return res.status(400).json({ message: 'Invalid startDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         start.setHours(0, 0, 0, 0);
       }
@@ -339,14 +376,20 @@ router.get(
       if (endDate) {
         end = new Date(endDate as string);
         if (isNaN(end.getTime())) {
-          return res.status(400).json({ message: 'Invalid endDate format. Use YYYY-MM-DD.' });
+          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
+          return;
         }
         end.setHours(23, 59, 59, 999);
       }
       
       // Validate date range
       if (start && end && start > end) {
-        return res.status(400).json({ message: 'startDate must be before or equal to endDate.' });
+        const error = new Error('startDate must be before or equal to endDate.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
+        return;
       }
 
       const report = await reportService.getGlobalReport(start, end);

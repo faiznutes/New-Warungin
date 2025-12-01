@@ -122,7 +122,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const member = await memberService.getMemberByCode(req.params.code, tenantId);
       if (!member) {
-        return res.status(404).json({ message: 'Member not found' });
+        const error = new Error('Member not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Member not found', 'GET_MEMBER_BY_CODE');
+        return;
       }
       res.json(member);
     } catch (error: unknown) {
@@ -166,7 +169,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const member = await memberService.getMemberById(req.params.id, tenantId);
       if (!member) {
-        return res.status(404).json({ message: 'Member not found' });
+        const error = new Error('Member not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Member not found', 'GET_MEMBER');
+        return;
       }
       res.json(member);
     } catch (error: unknown) {

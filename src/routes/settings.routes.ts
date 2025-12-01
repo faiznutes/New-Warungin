@@ -50,7 +50,10 @@ router.put(
       const user = (req as any).user;
       
       if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'UPDATE_SYSTEM_SETTINGS');
+        return;
       }
 
       const updatedSettings = await settingsService.updateSystemSettings(req.body);

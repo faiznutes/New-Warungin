@@ -178,10 +178,10 @@ router.post(
       });
 
       if (!tenant) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Tenant not found' 
-        });
+        const error = new Error('Tenant not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Tenant not found', 'GET_PAYMENT_METHODS');
+        return;
       }
 
       const result = await paymentService.createAddonPayment({

@@ -83,10 +83,11 @@ router.get(
         tenantId = requireTenantId(req);
       } catch (error: any) {
         // If tenantId is missing, return 400 with helpful message
-        return res.status(400).json({ 
-          message: error.message || 'Tenant ID is required',
-          error: 'TENANT_ID_REQUIRED'
-        });
+        const err = new Error(error.message || 'Tenant ID is required');
+        (err as any).statusCode = 400;
+        (err as any).code = 'TENANT_ID_REQUIRED';
+        handleRouteError(res, err, error.message || 'Tenant ID is required', 'GET_DASHBOARD_STATS');
+        return;
       }
       
       const { startDate, endDate } = req.query;
@@ -152,7 +153,10 @@ router.get(
     try {
       const user = (req as any).user;
       if (user.role !== 'CASHIER') {
-        return res.status(403).json({ message: 'Access denied. Cashier only.' });
+        const error = new Error('Access denied. Cashier only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Cashier only.', 'GET_CASHIER_DASHBOARD');
+        return;
       }
 
       const tenantId = requireTenantId(req);
@@ -219,7 +223,10 @@ router.get(
     try {
       const user = (req as any).user;
       if (user.role !== 'KITCHEN') {
-        return res.status(403).json({ message: 'Access denied. Kitchen only.' });
+        const error = new Error('Access denied. Kitchen only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Kitchen only.', 'GET_KITCHEN_DASHBOARD');
+        return;
       }
 
       const tenantId = requireTenantId(req);
