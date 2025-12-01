@@ -35,10 +35,12 @@ function cleanDatabaseUrl(url: string | undefined): string {
 // Get cleaned DATABASE_URL
 const databaseUrl = cleanDatabaseUrl(process.env.DATABASE_URL);
 
-// Configure connection pool for 50 concurrent users
+// Configure connection pool for 500 concurrent users (50 tenants x 10 users)
 // Each user may have multiple concurrent requests, so we need adequate connections
-const connectionPoolSize = 50; // Base pool size for 50 users
-const maxConnections = 100; // Maximum connections (2x users for peak load)
+// Formula: (number of tenants * users per tenant * concurrent requests per user)
+// 50 tenants * 10 users * 1-2 concurrent requests = 500-1000 connections needed
+const connectionPoolSize = 500; // Base pool size for 500 users
+const maxConnections = 1000; // Maximum connections (2x users for peak load)
 
 // Check if using pgbouncer (Supabase pooler)
 const isPgbouncer = databaseUrl.includes('pooler.supabase.com') || databaseUrl.includes('pgbouncer=true');

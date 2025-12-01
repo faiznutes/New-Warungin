@@ -85,11 +85,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
-          memory: 2G
+          cpus: '4.0'  # Increased for 500 concurrent users
+          memory: 4G  # Increased for 500 concurrent users
         reservations:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '1.0'  # Increased base reservation
+          memory: 1G  # Increased base reservation
 
   # Frontend Service
   frontend:
@@ -104,6 +104,14 @@ services:
       - backend
     networks:
       - warungin-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'  # Added limits for frontend
+          memory: 1G  # Added limits for frontend
+        reservations:
+          cpus: '0.5'  # Base reservation
+          memory: 256M  # Base reservation
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s

@@ -26,8 +26,9 @@ const httpServer = createServer(app);
 // Keep-alive settings to prevent connection termination (Error 1033)
 httpServer.keepAliveTimeout = 65000; // 65 seconds (slightly more than default 60s)
 httpServer.headersTimeout = 66000; // 66 seconds (must be > keepAliveTimeout)
-// Max connections per socket
-httpServer.maxConnections = 1000;
+// Max connections per socket - increased for 500 concurrent users
+// 500 users * 2 concurrent requests = 1000 connections minimum
+httpServer.maxConnections = 2000;  // Increased for 500 concurrent users
 
 console.log('✅ Express app and HTTP server created');
 
