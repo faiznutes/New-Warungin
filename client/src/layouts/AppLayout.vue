@@ -390,20 +390,11 @@ const userRole = computed(() => {
 
 // Initialize permissions after computed (to avoid circular dependency)
 // Ensure authStore is ready before calling usePermissions
-// Defer permissions initialization to avoid issues
-let permissionsComposable: ReturnType<typeof usePermissions> | null = null;
-const getPermissions = () => {
-  if (!permissionsComposable) {
-    permissionsComposable = usePermissions();
-  }
-  return permissionsComposable;
-};
-
-// Lazy getters for permissions - will be initialized in onMounted
-const canManageProducts = computed(() => getPermissions().canManageProducts.value);
-const canViewReports = computed(() => getPermissions().canViewReports.value);
-const canEditOrders = computed(() => getPermissions().canEditOrders.value);
-const canManageCustomers = computed(() => getPermissions().canManageCustomers.value);
+const permissionsComposable = usePermissions();
+const canManageProducts = permissionsComposable.canManageProducts;
+const canViewReports = permissionsComposable.canViewReports;
+const canEditOrders = permissionsComposable.canEditOrders;
+const canManageCustomers = permissionsComposable.canManageCustomers;
 
 // Menu expand/collapse state - all closed by default
 const expandedMenus = ref({
