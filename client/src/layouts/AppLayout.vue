@@ -500,6 +500,21 @@ const handleDontShowToday = () => {
   handleInfoModalClose();
 };
 
+// Load available addons to check for coming soon
+const loadAvailableAddons = async () => {
+  if (userRole.value !== 'ADMIN_TENANT') {
+    return;
+  }
+  
+  try {
+    const response = await api.get('/addons/available');
+    availableAddons.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading available addons:', error);
+    availableAddons.value = [];
+  }
+};
+
 // Watch for role changes to check info status
 watch(() => userRole.value, () => {
   checkUnreadInfo();
@@ -615,21 +630,6 @@ const loadAddons = async () => {
   } catch (error: any) {
     console.error('Error loading addons:', error);
     activeAddons.value = [];
-  }
-};
-
-// Load available addons to check for coming soon
-const loadAvailableAddons = async () => {
-  if (userRole.value !== 'ADMIN_TENANT') {
-    return;
-  }
-  
-  try {
-    const response = await api.get('/addons/available');
-    availableAddons.value = response.data || [];
-  } catch (error: any) {
-    console.error('Error loading available addons:', error);
-    availableAddons.value = [];
   }
 };
 
