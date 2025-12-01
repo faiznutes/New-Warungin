@@ -345,14 +345,30 @@
                 <p v-else-if="suppliers.length === 0" class="mt-1 text-xs text-yellow-600">Belum ada supplier. Tambahkan supplier terlebih dahulu.</p>
               </div>
               
-              <textarea
-                v-model="adjustmentForm.reason"
-                required
-                rows="3"
-                placeholder="Contoh: Retur dari supplier, Barang rusak, Stok opname, dll"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              ></textarea>
-              <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
+              <!-- Textarea untuk manual reason (hanya muncul saat checkbox dicentang) -->
+              <div v-if="useManualReason">
+                <textarea
+                  v-model="adjustmentForm.reason"
+                  required
+                  rows="3"
+                  placeholder="Tuliskan alasan penyesuaian stok secara detail..."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                ></textarea>
+                <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
+              </div>
+              
+              <!-- Textarea untuk auto-filled reason (hanya muncul saat tidak manual mode) -->
+              <div v-else>
+                <textarea
+                  v-model="adjustmentForm.reason"
+                  required
+                  rows="3"
+                  placeholder="Alasan akan terisi otomatis setelah memilih alasan umum atau akan muncul setelah memilih dari sub-dropdown"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50"
+                  readonly
+                ></textarea>
+                <p class="mt-1 text-xs text-gray-500">Alasan akan terisi otomatis berdasarkan pilihan Anda di atas</p>
+              </div>
             </div>
 
             <!-- Suggestion -->
