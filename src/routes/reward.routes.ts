@@ -4,6 +4,7 @@ import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { handleRouteError } from '../utils/route-error-handler';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -21,8 +22,8 @@ router.get(
 
       const balance = await rewardPointService.getBalance(tenantId, userId);
       res.json(balance);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get reward balance', 'GET_REWARD_BALANCE');
     }
   }
 );
@@ -41,8 +42,8 @@ router.get(
 
       const limit = await rewardPointService.checkDailyLimit(tenantId, userId);
       res.json(limit);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to check daily limit', 'GET_DAILY_LIMIT');
     }
   }
 );
@@ -128,7 +129,7 @@ router.post(
         });
       }
 
-      console.log('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
+      logger.info('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
 
       const result = await rewardPointService.redeemForSubscription(
         tenantId,
@@ -172,7 +173,7 @@ router.post(
         });
       }
 
-      console.log('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
+      logger.info('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
 
       const result = await rewardPointService.redeemForAddon(
         tenantId,
@@ -203,15 +204,15 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      console.log('[Rewards Config] Request from tenantId:', tenantId);
+      logger.debug('[Rewards Config] Request from tenantId:', tenantId);
       
       const config = rewardPointService.getPointConfig();
       const redemptions = rewardPointService.getAvailableRedemptions();
 
-      console.log('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
-      console.log('[Rewards Config] Addons:', redemptions.addons.length);
-      console.log('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
-      console.log('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
+      logger.debug('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
+      logger.debug('[Rewards Config] Addons:', redemptions.addons.length);
+      logger.debug('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
+      logger.debug('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
 
       res.json({
         config,

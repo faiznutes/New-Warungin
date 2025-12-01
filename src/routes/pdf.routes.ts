@@ -3,6 +3,7 @@ import { authGuard } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
 import { handleRouteError } from '../utils/route-error-handler';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -38,21 +39,25 @@ router.post(
       const { template, data } = req.body;
       
       // Debug: Log received template
-      console.log(`Received template request: ${template}`);
+      logger.debug(`Received template request: ${template}`);
       
       if (!template || !['minimalist', 'modern', 'classic', 'colorful', 'elegant'].includes(template)) {
-        return res.status(400).json({ 
-          message: 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant' 
-        });
+        const error = new Error('Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant', 'GENERATE_PDF');
+        return;
       }
       
       if (!data) {
-        return res.status(400).json({ message: 'Data is required' });
+        const error = new Error('Data is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Data is required', 'GENERATE_PDF');
+        return;
       }
       
       try {
         // Generate PDF using PDFMake
-        console.log(`Generating PDF with template: ${template}`);
+        logger.debug(`Generating PDF with template: ${template}`);
         const pdfBuffer = await generatePDF(template, data);
         
         // Send PDF as response with CORS headers already set
