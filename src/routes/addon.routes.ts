@@ -5,6 +5,7 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -26,7 +27,6 @@ router.get(
       const addons = await addonService.getAvailableAddons();
       res.json(addons);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to get available addons', 'ADDON');
     }
   }
@@ -41,7 +41,6 @@ router.get(
       const addons = await addonService.getTenantAddons(tenantId);
       res.json(addons);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to get tenant addons', 'ADDON');
     }
   }
@@ -58,7 +57,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can subscribe to addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can subscribe to addons' });
+        const error = new Error('Only tenant admin or super admin can subscribe to addons');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can subscribe to addons', 'ADDON_SUBSCRIBE');
+        return;
       }
 
       // For SUPER_ADMIN, addon is activated immediately without payment
@@ -78,7 +80,8 @@ router.post(
       
       // Log for Super Admin direct activation
       if (userRole === 'SUPER_ADMIN') {
-        console.log(`✅ Super Admin activated addon for tenant ${tenantId}:`, {
+        const logger = (await import('../utils/logger')).default;
+        logger.info(`Super Admin activated addon for tenant ${tenantId}`, {
           addonId: addon.id,
           addonName: addonData.addonName,
           addonType: addonData.addonType,
@@ -87,7 +90,6 @@ router.post(
       
       res.status(201).json(addon);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to subscribe addon', 'ADDON');
     }
   }
@@ -102,13 +104,15 @@ router.post(
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can unsubscribe from addons' });
+        const error = new Error('Only tenant admin can unsubscribe from addons');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin can unsubscribe from addons', 'ADDON_UNSUBSCRIBE');
+        return;
       }
 
       await addonService.unsubscribeAddon(tenantId, req.params.addonId);
       res.status(204).send();
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to unsubscribe addon', 'ADDON');
     }
   }
@@ -123,7 +127,6 @@ router.get(
       const result = await addonService.checkLimit(tenantId, req.params.type);
       res.json(result);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to check addon limit', 'ADDON');
     }
   }
@@ -145,13 +148,15 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can extend addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can extend addons' });
+        const error = new Error('Only tenant admin or super admin can extend addons');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can extend addons', 'ADDON_EXTEND');
+        return;
       }
 
       const result = await addonService.extendAddon(tenantId, req.body.addonId, req.body.duration);
       res.json(result);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to extend addon', 'ADDON');
     }
   }
@@ -173,13 +178,15 @@ router.post(
       
       // Only SUPER_ADMIN can reduce addons
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can reduce addons' });
+        const error = new Error('Only super admin can reduce addons');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can reduce addons', 'ADDON_REDUCE');
+        return;
       }
 
       const result = await addonService.reduceAddon(tenantId, req.body.addonId, req.body.duration);
       res.json(result);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to reduce addon', 'ADDON');
     }
   }
@@ -198,13 +205,19 @@ router.post(
       
       // Only SUPER_ADMIN can bulk delete addons
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can bulk delete addons' });
+        const error = new Error('Only super admin can bulk delete addons');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can bulk delete addons', 'ADDON_BULK_DELETE');
+        return;
       }
 
       const { ids } = req.body;
       
       if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ message: 'IDs array is required' });
+        const error = new Error('IDs array is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'IDs array is required', 'ADDON_BULK_DELETE');
+        return;
       }
 
       // Delete addons
@@ -219,7 +232,6 @@ router.post(
         deletedCount: result.count,
       });
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to bulk delete addons', 'ADDON');
     }
   }
@@ -238,7 +250,10 @@ router.patch(
       
       // Only SUPER_ADMIN can update addon
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can update addon' });
+        const error = new Error('Only super admin can update addon');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can update addon', 'ADDON_UPDATE');
+        return;
       }
 
       const addonId = req.params.id;
@@ -250,7 +265,10 @@ router.patch(
       });
 
       if (!addon) {
-        return res.status(404).json({ message: 'Addon not found' });
+        const error = new Error('Addon not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Addon not found', 'ADDON_UPDATE');
+        return;
       }
 
       // Update addon
@@ -263,7 +281,6 @@ router.patch(
 
       res.json(updated);
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to update addon', 'ADDON');
     }
   }
@@ -282,7 +299,10 @@ router.delete(
       
       // Only SUPER_ADMIN can delete addon
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can delete addon' });
+        const error = new Error('Only super admin can delete addon');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can delete addon', 'ADDON_DELETE');
+        return;
       }
 
       const addonId = req.params.id;
@@ -293,7 +313,10 @@ router.delete(
       });
 
       if (!addon) {
-        return res.status(404).json({ message: 'Addon not found' });
+        const error = new Error('Addon not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Addon not found', 'ADDON_DELETE');
+        return;
       }
 
       // Delete addon
@@ -303,7 +326,6 @@ router.delete(
 
       res.json({ message: 'Addon deleted successfully' });
     } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to delete addon', 'ADDON');
     }
   }

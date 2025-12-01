@@ -96,7 +96,10 @@ router.get(
           role: userRole,
           path: req.url,
         });
-        return res.status(403).json({ message: 'Only super admin can view all tenants' });
+        const error = new Error('Only super admin can view all tenants');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can view all tenants', 'GET_TENANTS');
+        return;
       }
 
       const page = parseInt(req.query.page as string) || 1;

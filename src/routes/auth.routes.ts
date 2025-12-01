@@ -134,11 +134,10 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
   try {
     // Validate userId exists
     if (!req.userId) {
-      logRouteError(new Error('User ID not found in request'), 'ME_USER_ID_MISSING', req);
-      res.status(401).json({ 
-        error: 'Unauthorized: User ID not found',
-        message: 'Authentication required. Please login again.',
-      });
+      const error = new Error('User ID not found in request');
+      (error as any).statusCode = 401;
+      logRouteError(error, 'ME_USER_ID_MISSING', req);
+      handleRouteError(res, error, 'Authentication required. Please login again.', 'ME_USER_ID_MISSING');
       return;
     }
 
@@ -173,11 +172,10 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
     }
 
     if (!user) {
-      logRouteError(new Error('User not found in database'), 'ME_USER_NOT_FOUND', req);
-      res.status(404).json({ 
-        error: 'User not found',
-        message: 'User account not found. Please contact support.',
-      });
+      const error = new Error('User not found in database');
+      (error as any).statusCode = 404;
+      logRouteError(error, 'ME_USER_NOT_FOUND', req);
+      handleRouteError(res, error, 'User account not found. Please contact support.', 'ME_USER_NOT_FOUND');
       return;
     }
 
