@@ -525,9 +525,110 @@ watch(() => form.value.role, (newRole, oldRole) => {
   }
 });
 
-onMounted(() => {
-  // Stores will be loaded by watch if needed
-  // No need to load again here to prevent duplicate requests
+onMounted(async () => {
+  await nextTick();
+  
+  // Watch for user prop changes
+  watch(() => props.user, async (newUser) => {
+    if (newUser) {
+      // Reset stores cache when user changes
+      storesLoaded.value = false;
+      
+      form.value = {
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        isActive: newUser.isActive,
+        password: '',
+        permissions: newUser.permissions || {
+          canEditOrders: false,
+          canDeleteOrders: false,
+          canCancelOrders: false,
+          canRefundOrders: false,
+          canViewReports: false,
+          canEditReports: false,
+          canExportReports: false,
+          canManageProducts: false,
+          canManageCustomers: false,
+          allowedStoreIds: newUser.role === 'SUPERVISOR' ? [] : undefined,
+          assignedStoreId: (newUser.role === 'CASHIER' || newUser.role === 'KITCHEN') ? '' : undefined,
+        },
+      };
+      
+      // Set current password if available (for Super Admin)
+      if (authStore.isSuperAdmin) {
+        // First check if defaultPassword is already in the user object
+        if ((newUser as any).defaultPassword) {
+          currentPassword.value = (newUser as any).defaultPassword;
+        } else {
+          // If not available, try to load it automatically when modal opens
+          currentPassword.value = '';
+          // Auto-load password when modal opens for Super Admin (with delay to ensure modal is ready)
+          setTimeout(async () => {
+            try {
+              await loadPassword();
+            } catch (error) {
+              // Silently fail - user can click "Lihat Password" manually
+              console.log('Password not available yet, user can click to load');
+            }
+          }, 300); // Small delay to ensure modal is fully rendered
+        }
+      } else {
+        currentPassword.value = '';
+      }
+      
+      // Load stores if role requires it (SUPERVISOR, CASHIER, or KITCHEN)
+      if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(newUser.role)) {
+        loadStores(true); // Force reload when user changes
+      }
+    }
+  });
+  
+  // Initial setup if user is already provided
+  if (props.user) {
+    storesLoaded.value = false;
+    form.value = {
+      name: props.user.name,
+      email: props.user.email,
+      role: props.user.role,
+      isActive: props.user.isActive,
+      password: '',
+      permissions: props.user.permissions || {
+        canEditOrders: false,
+        canDeleteOrders: false,
+        canCancelOrders: false,
+        canRefundOrders: false,
+        canViewReports: false,
+        canEditReports: false,
+        canExportReports: false,
+        canManageProducts: false,
+        canManageCustomers: false,
+        allowedStoreIds: props.user.role === 'SUPERVISOR' ? [] : undefined,
+        assignedStoreId: (props.user.role === 'CASHIER' || props.user.role === 'KITCHEN') ? '' : undefined,
+      },
+    };
+    
+    if (authStore.isSuperAdmin) {
+      if ((props.user as any).defaultPassword) {
+        currentPassword.value = (props.user as any).defaultPassword;
+      } else {
+        currentPassword.value = '';
+        setTimeout(async () => {
+          try {
+            await loadPassword();
+          } catch (error) {
+            console.log('Password not available yet, user can click to load');
+          }
+        }, 300);
+      }
+    } else {
+      currentPassword.value = '';
+    }
+    
+    if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(props.user.role)) {
+      loadStores(true);
+    }
+  }
 });
 
 onUnmounted(() => {
