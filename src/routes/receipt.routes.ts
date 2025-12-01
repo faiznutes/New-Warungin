@@ -113,8 +113,8 @@ router.post(
       const tenantId = requireTenantId(req);
       const template = await receiptService.setDefaultTemplate(req.params.id, tenantId);
       res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to set default receipt template', 'SET_DEFAULT_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -128,8 +128,8 @@ router.delete(
       const tenantId = requireTenantId(req);
       await receiptService.deleteTemplate(req.params.id, tenantId);
       res.json({ message: 'Template deleted successfully' });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to delete receipt template', 'DELETE_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -143,8 +143,8 @@ router.get(
       const templateId = req.query.templateId as string | undefined;
       const receipt = await receiptService.generateReceipt(req.params.orderId, tenantId, templateId);
       res.json(receipt);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to generate receipt', 'GENERATE_RECEIPT');
     }
   }
 );
