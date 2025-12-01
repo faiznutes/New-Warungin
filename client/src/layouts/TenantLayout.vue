@@ -128,21 +128,6 @@
             </div>
           </div>
 
-          <!-- Users Section (Standalone for all Admin Tenant) -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
-            <router-link
-              to="/app/users"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
-              @click="closeSidebarOnMobile"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              <span class="font-medium">Pengguna</span>
-            </router-link>
-          </div>
-
           <!-- Laporan & Analitik Section -->
           <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPERVISOR' || authStore.user?.role === 'CASHIER'" class="pt-4 mt-4 border-t border-green-600">
             <button
@@ -422,7 +407,7 @@
           </div>
 
           <!-- Manajemen Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && (currentPlan === 'PRO' || currentPlan === 'CUSTOM')" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
             <button
               @click="toggleMenu('manajemen')"
               class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
@@ -442,6 +427,18 @@
               v-show="expandedMenus.manajemen"
               class="mt-1 space-y-1 transition-all duration-200"
             >
+              <router-link
+                to="/app/users"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
+                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                @click="closeSidebarOnMobile"
+              >
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span class="font-medium">Pengguna</span>
+              </router-link>
+
               <router-link
                 v-if="hasMultiOutlet"
                 to="/app/stores"
