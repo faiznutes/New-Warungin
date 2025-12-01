@@ -186,6 +186,46 @@ router.post(
 );
 
 /**
+ * Bulk delete addons (Super Admin only)
+ */
+router.post(
+  '/bulk-delete',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as any;
+      const userRole = authReq.role || authReq.user?.role;
+      
+      // Only SUPER_ADMIN can bulk delete addons
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can bulk delete addons' });
+      }
+
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: 'IDs array is required' });
+      }
+
+      // Delete addons
+      const result = await prisma.tenantAddon.deleteMany({
+        where: {
+          id: { in: ids },
+        },
+      });
+
+      res.json({ 
+        message: `${result.count} addon(s) deleted successfully`,
+        deletedCount: result.count,
+      });
+    } catch (error: unknown) {
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to bulk delete addons', 'ADDON');
+    }
+  }
+);
+
+/**
  * PATCH /api/addons/:id
  * Update addon (Super Admin only)
  */
@@ -265,46 +305,6 @@ router.delete(
     } catch (error: unknown) {
       const { handleRouteError } = await import('../utils/route-error-handler');
       handleRouteError(res, error, 'Failed to delete addon', 'ADDON');
-    }
-  }
-);
-
-/**
- * Bulk delete addons (Super Admin only)
- */
-router.post(
-  '/bulk-delete',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as any;
-      const userRole = authReq.role || authReq.user?.role;
-      
-      // Only SUPER_ADMIN can bulk delete addons
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can bulk delete addons' });
-      }
-
-      const { ids } = req.body;
-      
-      if (!Array.isArray(ids) || ids.length === 0) {
-        return res.status(400).json({ message: 'IDs array is required' });
-      }
-
-      // Delete addons
-      const result = await prisma.tenantAddon.deleteMany({
-        where: {
-          id: { in: ids },
-        },
-      });
-
-      res.json({ 
-        message: `${result.count} addon(s) deleted successfully`,
-        deletedCount: result.count,
-      });
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to bulk delete addons', 'ADDON');
     }
   }
 );
