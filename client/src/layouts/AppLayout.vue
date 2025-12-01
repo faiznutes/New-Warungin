@@ -395,16 +395,6 @@ watch(() => authStore.user, (newUser) => {
   }
 }, { deep: true });
 
-const sidebarOpen = ref(false);
-const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
-const selectedTenant = ref<string>('');
-const openSubmenus = ref<Record<string, boolean>>({});
-const activeAddons = ref<any[]>([]);
-const availableAddons = ref<any[]>([]);
-const userRole = computed(() => authStore.user?.role || '');
-const showInfoModal = ref(false);
-const hasUnreadInfo = ref(false);
-
 // Menu expand/collapse state - all closed by default
 const expandedMenus = ref({
   operasional: false,
@@ -667,11 +657,14 @@ onMounted(async () => {
   // Load menu state
   loadMenuState();
   
-  // Check and show info modal for Admin Tenant (once per day)
-  if (checkShouldShowInfo()) {
-    showInfoModal.value = true;
+  // Initialize role-based checks after mount (when everything is ready)
+  if (userRole.value) {
+    checkUnreadInfo();
+    if (checkShouldShowInfo()) {
+      showInfoModal.value = true;
+    }
+    await loadAvailableAddons();
   }
-  checkUnreadInfo();
   
   // Auto-open sidebar on desktop
   if (windowWidth.value >= 1024) {
@@ -680,7 +673,6 @@ onMounted(async () => {
   
   // Load addons for menu visibility
   await loadAddons();
-  await loadAvailableAddons();
   window.addEventListener('resize', handleResize);
   
   // Fetch tenants if super admin
