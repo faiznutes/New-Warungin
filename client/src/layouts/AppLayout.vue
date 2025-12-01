@@ -384,10 +384,17 @@ const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
 
 // Initialize computed after refs
-const userRole = computed(() => authStore.user?.role || '');
+const userRole = computed(() => {
+  return authStore.user?.role || '';
+});
 
 // Initialize permissions after computed (to avoid circular dependency)
-const { canManageProducts, canViewReports, canEditOrders, canManageCustomers } = usePermissions();
+// Ensure authStore is ready before calling usePermissions
+const permissionsComposable = usePermissions();
+const canManageProducts = permissionsComposable.canManageProducts;
+const canViewReports = permissionsComposable.canViewReports;
+const canEditOrders = permissionsComposable.canEditOrders;
+const canManageCustomers = permissionsComposable.canManageCustomers;
 
 // Watch for permission changes to update menu visibility (defer immediate execution)
 watch(() => authStore.user, (newUser) => {
