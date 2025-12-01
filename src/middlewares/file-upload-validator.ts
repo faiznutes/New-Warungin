@@ -5,6 +5,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 // Allowed MIME types
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -64,10 +65,10 @@ export const validateImageUpload = (req: Request, res: Response, next: NextFunct
           ip: req.ip,
           path: req.path,
         });
-        return res.status(400).json({
-          message: 'Image validation failed',
-          error: validation.error,
-        });
+        const error = new Error(validation.error || 'Image validation failed');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Image validation failed', 'IMAGE_UPLOAD_VALIDATION');
+        return;
       }
 
       // Add validated metadata to request
@@ -85,7 +86,7 @@ export const validateImageUpload = (req: Request, res: Response, next: NextFunct
       ip: req.ip,
       path: req.path,
     });
-    return res.status(500).json({ message: 'Error validating image upload' });
+    handleRouteError(res, error, 'Error validating image upload', 'IMAGE_UPLOAD_VALIDATION');
   }
 };
 
@@ -104,9 +105,10 @@ export const validateCSVUpload = (req: Request, res: Response, next: NextFunctio
           ip: req.ip,
           path: req.path,
         });
-        return res.status(400).json({
-          message: 'Invalid file type. Only CSV files are allowed.',
-        });
+        const error = new Error('Invalid file type. Only CSV files are allowed.');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Invalid file type. Only CSV files are allowed.', 'CSV_UPLOAD_VALIDATION');
+        return;
       }
 
       // Check file size
@@ -117,9 +119,10 @@ export const validateCSVUpload = (req: Request, res: Response, next: NextFunctio
           ip: req.ip,
           path: req.path,
         });
-        return res.status(400).json({
-          message: `File size exceeds limit: ${(req.file.size / 1024 / 1024).toFixed(2)}MB > ${(MAX_CSV_SIZE / 1024 / 1024).toFixed(2)}MB`,
-        });
+        const error = new Error(`File size exceeds limit: ${(req.file.size / 1024 / 1024).toFixed(2)}MB > ${(MAX_CSV_SIZE / 1024 / 1024).toFixed(2)}MB`);
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, error.message, 'CSV_UPLOAD_VALIDATION');
+        return;
       }
 
       // Add validated metadata to request
@@ -139,9 +142,10 @@ export const validateCSVUpload = (req: Request, res: Response, next: NextFunctio
           ip: req.ip,
           path: req.path,
         });
-        return res.status(400).json({
-          message: `CSV data size exceeds limit: ${(size / 1024 / 1024).toFixed(2)}MB > ${(MAX_CSV_SIZE / 1024 / 1024).toFixed(2)}MB`,
-        });
+        const error = new Error(`CSV data size exceeds limit: ${(size / 1024 / 1024).toFixed(2)}MB > ${(MAX_CSV_SIZE / 1024 / 1024).toFixed(2)}MB`);
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, error.message, 'CSV_UPLOAD_VALIDATION');
+        return;
       }
 
       // Add validated metadata to request
@@ -158,7 +162,7 @@ export const validateCSVUpload = (req: Request, res: Response, next: NextFunctio
       ip: req.ip,
       path: req.path,
     });
-    return res.status(500).json({ message: 'Error validating CSV upload' });
+    handleRouteError(res, error, 'Error validating CSV upload', 'CSV_UPLOAD_VALIDATION');
   }
 };
 

@@ -406,11 +406,67 @@ router.post(
       const tenantId = requireTenantId(req);
       const userId = req.userId!;
 
-      // TODO: Implement bulk import service
-      // For now, return placeholder
-      res.status(501).json({ 
-        message: 'Bulk import feature is under development',
-        note: 'This endpoint will support CSV and Excel file uploads with product variants (color, size, taste)'
+      // Bulk import implementation - accepts JSON array of products
+      // Request body: { products: [{ name, price, stock, ... }] }
+      const { products } = req.body;
+
+      if (!Array.isArray(products) || products.length === 0) {
+        const error = new Error('Products array is required and must not be empty');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Products array is required and must not be empty', 'BULK_IMPORT_PRODUCTS');
+        return;
+      }
+
+      const createdProducts = [];
+      const errors = [];
+
+      for (let i = 0; i < products.length; i++) {
+        const row = products[i];
+        try {
+          const productData = {
+            name: row.name?.trim(),
+            sku: row.sku?.trim() || undefined,
+            barcode: row.barcode?.trim() || undefined,
+            price: parseFloat(row.price) || 0,
+            cost: row.cost ? parseFloat(row.cost) : undefined,
+            stock: parseInt(row.stock) || 0,
+            minStock: row.minStock ? parseInt(row.minStock) : undefined,
+            category: row.category?.trim() || undefined,
+            description: row.description?.trim() || undefined,
+            isActive: row.isActive !== false && row.isActive !== 'false',
+          };
+
+          if (!productData.name) {
+            errors.push({ index: i, row, error: 'Name is required' });
+            continue;
+          }
+
+          if (productData.price <= 0) {
+            errors.push({ index: i, row, error: 'Price must be greater than 0' });
+            continue;
+          }
+
+          const product = await productService.createProduct(productData, tenantId);
+          createdProducts.push({ id: product.id, name: product.name });
+        } catch (error: any) {
+          errors.push({ index: i, row, error: error.message || 'Failed to create product' });
+        }
+      }
+
+      // Log audit
+      await logAction(req, 'BULK_IMPORT', 'products', null, { 
+        created: createdProducts.length, 
+        errors: errors.length,
+        total: products.length 
+      }, createdProducts.length > 0 ? 'SUCCESS' : 'FAILED');
+
+      res.json({
+        message: `Bulk import completed: ${createdProducts.length} products created, ${errors.length} errors`,
+        created: createdProducts.length,
+        errors: errors.length,
+        total: products.length,
+        createdProducts: createdProducts,
+        errorDetails: errors.length > 0 ? errors : undefined,
       });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to import products', 'BULK_IMPORT_PRODUCTS');

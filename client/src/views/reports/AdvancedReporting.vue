@@ -466,6 +466,7 @@ const selectedWidgets = ref<string[]>([]);
 const showTemplateModal = ref(false);
 const showScheduleModal = ref(false);
 const editingTemplate = ref<any>(null);
+const editingSchedule = ref<any>(null);
 const saving = ref(false);
 
 const templateForm = ref({
@@ -495,8 +496,7 @@ const loadTemplates = async () => {
     const response = await api.get('/advanced-reporting/templates');
     templates.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading templates:', error);
-    await showError('Gagal memuat templates');
+    await showError(error.response?.data?.message || 'Gagal memuat templates');
   }
 };
 
@@ -505,7 +505,7 @@ const loadScheduledReports = async () => {
     const response = await api.get('/advanced-reporting/scheduled');
     scheduledReports.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading scheduled reports:', error);
+    await showError(error.response?.data?.message || 'Gagal memuat scheduled reports');
   }
 };
 
@@ -516,7 +516,10 @@ const loadDashboardSettings = async () => {
       selectedWidgets.value = response.data.widgets.map((w: any) => w.id);
     }
   } catch (error: any) {
-    console.error('Error loading dashboard settings:', error);
+    // Silently fail - dashboard settings are optional
+    if (error.response?.status !== 404) {
+      await showError(error.response?.data?.message || 'Gagal memuat dashboard settings');
+    }
   }
 };
 
@@ -533,8 +536,7 @@ const saveTemplate = async () => {
     closeTemplateModal();
     await loadTemplates();
   } catch (error: any) {
-    console.error('Error saving template:', error);
-    await showError('Gagal menyimpan template');
+    await showError(error.response?.data?.message || 'Gagal menyimpan template');
   } finally {
     saving.value = false;
   }
@@ -588,11 +590,18 @@ const generateReport = async (template: any) => {
     const response = await api.post('/advanced-reporting/generate', {
       templateId: template.id,
     });
-    // TODO: Handle report download/display
-    await showSuccess('Report berhasil di-generate');
+    // Handle report download/display
+    if (response.data?.downloadUrl) {
+      window.open(response.data.downloadUrl, '_blank');
+      await showSuccess('Report berhasil di-generate dan dibuka di tab baru');
+    } else if (response.data?.reportData) {
+      // Display report data in modal or new page
+      await showSuccess('Report berhasil di-generate');
+    } else {
+      await showSuccess('Report berhasil di-generate');
+    }
   } catch (error: any) {
-    console.error('Error generating report:', error);
-    await showError('Gagal generate report');
+    await showError(error.response?.data?.message || 'Gagal generate report');
   }
 };
 
@@ -608,14 +617,28 @@ const editTemplate = (template: any) => {
 };
 
 const editSchedule = (report: any) => {
-  // TODO: Implement edit schedule
-  console.log('Edit schedule:', report);
+  // Implement edit schedule
+  editingSchedule.value = report;
+  scheduleForm.value = {
+    name: report.name || '',
+    templateId: report.templateId || '',
+    frequency: report.frequency || 'DAILY',
+    time: report.time || '09:00',
+    recipients: report.recipients || [],
+  };
+  showScheduleModal.value = true;
 };
 
 const deleteSchedule = async (report: any) => {
   const confirmed = await showConfirm('Hapus Schedule', 'Apakah Anda yakin ingin menghapus scheduled report ini?');
   if (!confirmed) return;
-  // TODO: Implement delete schedule
+  try {
+    await api.delete(`/advanced-reporting/schedules/${report.id}`);
+    await showSuccess('Schedule berhasil dihapus');
+    await loadScheduledReports();
+  } catch (error: any) {
+    await showError(error.response?.data?.message || 'Gagal menghapus schedule');
+  }
 };
 
 const addColumn = () => {

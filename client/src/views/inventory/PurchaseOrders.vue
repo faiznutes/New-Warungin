@@ -278,6 +278,80 @@
         </div>
       </div>
     </div>
+
+    <!-- Detail Modal -->
+    <div
+      v-if="showDetailModal && viewingPO"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showDetailModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-900">Detail Purchase Order</h3>
+            <button
+              @click="showDetailModal = false"
+              class="text-gray-400 hover:text-gray-600 transition"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Order Number</p>
+                <p class="font-semibold text-gray-900">{{ viewingPO.orderNumber }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Status</p>
+                <span
+                  class="px-2 py-1 text-xs font-semibold rounded-full"
+                  :class="getStatusClass(viewingPO.status)"
+                >
+                  {{ viewingPO.status }}
+                </span>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Supplier</p>
+                <p class="font-semibold text-gray-900">{{ viewingPO.supplier.name }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Order Date</p>
+                <p class="font-semibold text-gray-900">{{ formatDate(viewingPO.orderDate) }}</p>
+              </div>
+              <div v-if="viewingPO.expectedDate">
+                <p class="text-sm text-gray-500">Expected Date</p>
+                <p class="font-semibold text-gray-900">{{ formatDate(viewingPO.expectedDate) }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Total Amount</p>
+                <p class="font-semibold text-gray-900">Rp {{ formatCurrency(viewingPO.totalAmount) }}</p>
+              </div>
+            </div>
+
+            <div class="border-t pt-4">
+              <p class="text-sm font-semibold text-gray-700 mb-2">Items:</p>
+              <div class="space-y-2">
+                <div
+                  v-for="item in viewingPO.items"
+                  :key="item.id"
+                  class="flex items-center justify-between text-sm bg-gray-50 p-3 rounded"
+                >
+                  <div>
+                    <span class="font-medium">{{ item.product.name }}</span>
+                    <span class="text-gray-500 ml-2">({{ item.quantity }}x @ Rp {{ formatCurrency(item.unitPrice) }})</span>
+                  </div>
+                  <span class="font-semibold">Rp {{ formatCurrency(item.totalPrice) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -336,8 +410,7 @@ const loadPurchaseOrders = async () => {
     const response = await api.get('/purchase-orders', { params });
     purchaseOrders.value = response.data.data;
   } catch (error: any) {
-    console.error('Error loading purchase orders:', error);
-    await showError('Gagal memuat purchase orders');
+    await showError(error.response?.data?.message || 'Gagal memuat purchase orders');
   } finally {
     loading.value = false;
   }
@@ -357,7 +430,7 @@ const loadProducts = async () => {
     const response = await api.get('/products', { params: { limit: 100, isActive: true } });
     products.value = response.data.data;
   } catch (error: any) {
-    console.error('Error loading products:', error);
+    // Silently fail - products are optional
   }
 };
 
@@ -387,8 +460,7 @@ const savePurchaseOrder = async () => {
     closeModal();
     await loadPurchaseOrders();
   } catch (error: any) {
-    console.error('Error saving purchase order:', error);
-    await showError('Gagal menyimpan purchase order');
+    await showError(error.response?.data?.message || 'Gagal menyimpan purchase order');
   } finally {
     saving.value = false;
   }
@@ -400,8 +472,7 @@ const approvePurchaseOrder = async (po: PurchaseOrder) => {
     await showSuccess('Purchase order berhasil diapprove');
     await loadPurchaseOrders();
   } catch (error: any) {
-    console.error('Error approving purchase order:', error);
-    await showError('Gagal approve purchase order');
+    await showError(error.response?.data?.message || 'Gagal approve purchase order');
   }
 };
 
@@ -417,8 +488,7 @@ const receivePurchaseOrder = async (po: PurchaseOrder) => {
     await showSuccess('Purchase order berhasil di-receive, stock telah diupdate');
     await loadPurchaseOrders();
   } catch (error: any) {
-    console.error('Error receiving purchase order:', error);
-    await showError('Gagal receive purchase order');
+    await showError(error.response?.data?.message || 'Gagal receive purchase order');
   }
 };
 
@@ -434,14 +504,16 @@ const cancelPurchaseOrder = async (po: PurchaseOrder) => {
     await showSuccess('Purchase order berhasil dibatalkan');
     await loadPurchaseOrders();
   } catch (error: any) {
-    console.error('Error cancelling purchase order:', error);
-    await showError('Gagal membatalkan purchase order');
+    await showError(error.response?.data?.message || 'Gagal membatalkan purchase order');
   }
 };
 
+const viewingPO = ref<PurchaseOrder | null>(null);
+const showDetailModal = ref(false);
+
 const viewPurchaseOrder = (po: PurchaseOrder) => {
-  // TODO: Implement detail view modal
-  console.log('View PO:', po);
+  viewingPO.value = po;
+  showDetailModal.value = true;
 };
 
 const getStatusClass = (status: string): string => {
