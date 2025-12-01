@@ -296,7 +296,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import api from '../api';
 import { useAuthStore } from '../stores/auth';
 import { useNotification } from '../composables/useNotification';
@@ -478,60 +478,8 @@ const handleSelectAllStores = (checked: boolean) => {
   }
 };
 
-watch(() => props.user, async (newUser) => {
-  if (newUser) {
-    // Reset stores cache when user changes
-    storesLoaded.value = false;
-    
-    form.value = {
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-      isActive: newUser.isActive,
-      password: '',
-      permissions: newUser.permissions || {
-        canEditOrders: false,
-        canDeleteOrders: false,
-        canCancelOrders: false,
-        canRefundOrders: false,
-        canViewReports: false,
-        canEditReports: false,
-        canExportReports: false,
-        canManageProducts: false,
-        canManageCustomers: false,
-        allowedStoreIds: newUser.role === 'SUPERVISOR' ? [] : undefined,
-        assignedStoreId: (newUser.role === 'CASHIER' || newUser.role === 'KITCHEN') ? '' : undefined,
-      },
-    };
-    
-    // Set current password if available (for Super Admin)
-    if (authStore.isSuperAdmin) {
-      // First check if defaultPassword is already in the user object
-      if ((newUser as any).defaultPassword) {
-        currentPassword.value = (newUser as any).defaultPassword;
-      } else {
-        // If not available, try to load it automatically when modal opens
-        currentPassword.value = '';
-        // Auto-load password when modal opens for Super Admin (with delay to ensure modal is ready)
-        setTimeout(async () => {
-          try {
-            await loadPassword();
-          } catch (error) {
-            // Silently fail - user can click "Lihat Password" manually
-            console.log('Password not available yet, user can click to load');
-          }
-        }, 300); // Small delay to ensure modal is fully rendered
-      }
-    } else {
-      currentPassword.value = '';
-    }
-    
-    // Load stores if role requires it (SUPERVISOR, CASHIER, or KITCHEN)
-    if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(newUser.role)) {
-      loadStores(true); // Force reload when user changes
-    }
-  }
-}, { immediate: true });
+// Watch for user prop changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 watch(() => form.value.role, (newRole, oldRole) => {
   // Only reload stores if role changed to a role that needs stores

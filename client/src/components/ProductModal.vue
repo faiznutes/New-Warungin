@@ -310,7 +310,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import ImageCropperModal from './ImageCropperModal.vue';
 import { useNotification } from '../composables/useNotification';
 
@@ -379,40 +379,8 @@ const popularEmojis = [
   '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾',
 ];
 
-watch(() => props.product, (newProduct) => {
-  if (newProduct) {
-    form.value = {
-      name: newProduct.name || '',
-      description: newProduct.description || '',
-      price: typeof newProduct.price === 'string' ? parseFloat(newProduct.price) : newProduct.price || 0,
-      cost: typeof (newProduct as any).cost === 'string' ? parseFloat((newProduct as any).cost) : (newProduct as any).cost || undefined,
-      stock: newProduct.stock || 0,
-      minStock: newProduct.minStock || 0,
-      category: newProduct.category || '',
-      image: newProduct.image || '',
-      emoji: newProduct.emoji || '',
-      isActive: newProduct.isActive !== false,
-      isConsignment: (newProduct as any).isConsignment || false,
-    };
-    // Set image type based on what exists
-    imageType.value = newProduct.emoji ? 'emoji' : 'image';
-  } else {
-    form.value = {
-      name: '',
-      description: '',
-      price: 0,
-      cost: undefined,
-      stock: 0,
-      minStock: 0,
-      category: '',
-      image: '',
-      emoji: '',
-      isActive: true,
-      isConsignment: false,
-    };
-    imageType.value = 'image';
-  }
-}, { immediate: true });
+// Watch for product prop changes (defer immediate to avoid initialization issues)
+// Don't watch immediately - handle in onMounted instead
 
 watch(() => props.show, (newShow) => {
   if (!newShow) {
