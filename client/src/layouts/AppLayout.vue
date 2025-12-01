@@ -653,10 +653,16 @@ const hasAvailableAddons = computed(() => {
 });
 
 onMounted(async () => {
+  // Use nextTick to ensure all reactive dependencies are ready
+  await nextTick();
+  
   windowWidth.value = window.innerWidth;
   
   // Load menu state
   loadMenuState();
+  
+  // Auto-expand menu for current route
+  autoExpandMenu();
   
   // Initialize role-based checks after mount (when everything is ready)
   if (userRole.value) {
