@@ -220,29 +220,129 @@
 
             <!-- Reason -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan *</label>
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-gray-700">Alasan *</label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    v-model="useManualReason"
+                    type="checkbox"
+                    @change="handleManualReasonToggle"
+                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  />
+                  <span class="text-xs font-medium text-gray-600">Gunakan alasan manual</span>
+                </label>
+              </div>
               
-              <!-- Reason Dropdown -->
-              <div class="mb-2">
+              <!-- Reason Dropdown (hidden if manual mode) -->
+              <div v-if="!useManualReason" class="mb-2">
                 <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Alasan Umum:</label>
                 <select
-                  @change="selectReason"
+                  v-model="selectedReasonType"
+                  @change="handleReasonTypeChange"
                   class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
                 >
                   <option value="">-- Pilih Alasan --</option>
-                  <option value="Stok opname / Stocktaking">Stok opname / Stocktaking</option>
-                  <option value="Retur ke supplier">Retur ke supplier</option>
-                  <option value="Barang rusak / Expired">Barang rusak / Expired</option>
-                  <option value="Penyesuaian sistem">Penyesuaian sistem</option>
-                  <option value="Koreksi data">Koreksi data</option>
-                  <option value="Barang hilang / Theft">Barang hilang / Theft</option>
-                  <option value="Sample / Promosi">Sample / Promosi</option>
-                  <option value="Pembelian tambahan">Pembelian tambahan</option>
-                  <option value="Transfer dari gudang lain">Transfer dari gudang lain</option>
-                  <option value="Transfer ke gudang lain">Transfer ke gudang lain</option>
-                  <option value="Barang cacat produksi">Barang cacat produksi</option>
-                  <option value="Lainnya">Lainnya (isi manual)</option>
+                  <option value="STOCKTAKING">Stok opname / Stocktaking</option>
+                  <option value="RETURN_SUPPLIER">Retur ke supplier</option>
+                  <option value="DAMAGED_EXPIRED">Barang rusak / Expired</option>
+                  <option value="SYSTEM_ADJUSTMENT">Penyesuaian sistem</option>
+                  <option value="DATA_CORRECTION">Koreksi data</option>
+                  <option value="LOST_THEFT">Barang hilang / Theft</option>
+                  <option value="SAMPLE_PROMO">Sample / Promosi</option>
+                  <option value="ADDITIONAL_PURCHASE">Pembelian tambahan</option>
+                  <option value="TRANSFER_FROM_WAREHOUSE">Transfer dari gudang lain</option>
+                  <option value="TRANSFER_TO_WAREHOUSE">Transfer ke gudang lain</option>
+                  <option value="DEFECTIVE_PRODUCTION">Barang cacat produksi</option>
+                  <option value="OTHER">Lainnya (isi manual)</option>
                 </select>
+              </div>
+
+              <!-- Sub-dropdown untuk Supplier (Retur ke supplier) -->
+              <div v-if="!useManualReason && selectedReasonType === 'RETURN_SUPPLIER'" class="mb-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Supplier:</label>
+                <select
+                  v-model="selectedSupplierId"
+                  @change="updateReasonFromSubDropdown"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  :disabled="loadingSuppliers"
+                >
+                  <option value="">-- Pilih Supplier --</option>
+                  <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                    {{ supplier.name }}
+                  </option>
+                </select>
+                <p v-if="loadingSuppliers" class="mt-1 text-xs text-gray-500">Memuat supplier...</p>
+                <p v-else-if="suppliers.length === 0" class="mt-1 text-xs text-yellow-600">Belum ada supplier. Tambahkan supplier terlebih dahulu.</p>
+              </div>
+
+              <!-- Sub-dropdown untuk Transfer dari gudang -->
+              <div v-if="!useManualReason && selectedReasonType === 'TRANSFER_FROM_WAREHOUSE'" class="mb-2 space-y-2">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Dari Gudang:</label>
+                  <select
+                    v-model="selectedFromStoreId"
+                    @change="updateReasonFromSubDropdown"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                    :disabled="loadingStores"
+                  >
+                    <option value="">-- Pilih Gudang Asal --</option>
+                    <option v-for="store in stores" :key="store.id" :value="store.id">
+                      {{ store.name }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Ke Gudang:</label>
+                  <select
+                    v-model="selectedToStoreId"
+                    @change="updateReasonFromSubDropdown"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                    :disabled="loadingStores"
+                  >
+                    <option value="">-- Pilih Gudang Tujuan --</option>
+                    <option v-for="store in stores" :key="store.id" :value="store.id">
+                      {{ store.name }}
+                    </option>
+                  </select>
+                </div>
+                <p v-if="loadingStores" class="text-xs text-gray-500">Memuat gudang...</p>
+                <p v-else-if="stores.length === 0" class="text-xs text-yellow-600">Belum ada gudang. Tambahkan gudang terlebih dahulu.</p>
+              </div>
+
+              <!-- Sub-dropdown untuk Transfer ke gudang -->
+              <div v-if="!useManualReason && selectedReasonType === 'TRANSFER_TO_WAREHOUSE'" class="mb-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Ke Gudang:</label>
+                <select
+                  v-model="selectedToStoreId"
+                  @change="updateReasonFromSubDropdown"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  :disabled="loadingStores"
+                >
+                  <option value="">-- Pilih Gudang Tujuan --</option>
+                  <option v-for="store in stores" :key="store.id" :value="store.id">
+                    {{ store.name }}
+                  </option>
+                </select>
+                <p v-if="loadingStores" class="mt-1 text-xs text-gray-500">Memuat gudang...</p>
+                <p v-else-if="stores.length === 0" class="mt-1 text-xs text-yellow-600">Belum ada gudang. Tambahkan gudang terlebih dahulu.</p>
+              </div>
+
+              <!-- Sub-dropdown untuk Pembelian tambahan -->
+              <div v-if="!useManualReason && selectedReasonType === 'ADDITIONAL_PURCHASE'" class="mb-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Dari Supplier:</label>
+                <select
+                  v-model="selectedSupplierId"
+                  @change="updateReasonFromSubDropdown"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                  :disabled="loadingSuppliers"
+                >
+                  <option value="">-- Pilih Supplier --</option>
+                  <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                    {{ supplier.name }}
+                  </option>
+                </select>
+                <p v-if="loadingSuppliers" class="mt-1 text-xs text-gray-500">Memuat supplier...</p>
+                <p v-else-if="suppliers.length === 0" class="mt-1 text-xs text-yellow-600">Belum ada supplier. Tambahkan supplier terlebih dahulu.</p>
               </div>
               
               <textarea
@@ -306,6 +406,19 @@ const adjustments = ref<any[]>([]);
 const products = ref<any[]>([]);
 const showAdjustmentModal = ref(false);
 
+// Reason management
+const useManualReason = ref(false);
+const selectedReasonType = ref('');
+const selectedSupplierId = ref('');
+const selectedFromStoreId = ref('');
+const selectedToStoreId = ref('');
+
+// Data for sub-dropdowns
+const suppliers = ref<any[]>([]);
+const stores = ref<any[]>([]);
+const loadingSuppliers = ref(false);
+const loadingStores = ref(false);
+
 const filters = ref({
   search: '',
   type: '',
@@ -361,11 +474,125 @@ const loadProducts = async () => {
   }
 };
 
-const selectReason = (event: Event) => {
-  const target = event.target as HTMLSelectElement;
-  if (target.value && target.value !== 'Lainnya') {
-    adjustmentForm.value.reason = target.value;
-  } else if (target.value === 'Lainnya') {
+// Load suppliers
+const loadSuppliers = async () => {
+  if (loadingSuppliers.value) return;
+  loadingSuppliers.value = true;
+  try {
+    const response = await api.get('/suppliers', { params: { limit: 1000, isActive: true } });
+    suppliers.value = response.data.data || [];
+  } catch (error: any) {
+    console.error('Error loading suppliers:', error);
+    suppliers.value = [];
+  } finally {
+    loadingSuppliers.value = false;
+  }
+};
+
+// Load stores/outlets
+const loadStores = async () => {
+  if (loadingStores.value) return;
+  loadingStores.value = true;
+  try {
+    const response = await api.get('/outlets');
+    stores.value = (response.data.data || []).filter((store: any) => store.isActive !== false);
+  } catch (error: any) {
+    console.error('Error loading stores:', error);
+    stores.value = [];
+  } finally {
+    loadingStores.value = false;
+  }
+};
+
+// Handle reason type change
+const handleReasonTypeChange = () => {
+  // Reset sub-dropdown selections
+  selectedSupplierId.value = '';
+  selectedFromStoreId.value = '';
+  selectedToStoreId.value = '';
+  
+  // Load data if needed
+  if (selectedReasonType.value === 'RETURN_SUPPLIER' || selectedReasonType.value === 'ADDITIONAL_PURCHASE') {
+    if (suppliers.value.length === 0) {
+      loadSuppliers();
+    }
+  }
+  
+  if (selectedReasonType.value === 'TRANSFER_FROM_WAREHOUSE' || selectedReasonType.value === 'TRANSFER_TO_WAREHOUSE') {
+    if (stores.value.length === 0) {
+      loadStores();
+    }
+  }
+  
+  // Set reason text for simple types
+  const reasonMap: Record<string, string> = {
+    'STOCKTAKING': 'Stok opname / Stocktaking',
+    'DAMAGED_EXPIRED': 'Barang rusak / Expired',
+    'SYSTEM_ADJUSTMENT': 'Penyesuaian sistem',
+    'DATA_CORRECTION': 'Koreksi data',
+    'LOST_THEFT': 'Barang hilang / Theft',
+    'SAMPLE_PROMO': 'Sample / Promosi',
+    'DEFECTIVE_PRODUCTION': 'Barang cacat produksi',
+    'OTHER': '',
+  };
+  
+  if (reasonMap[selectedReasonType.value]) {
+    adjustmentForm.value.reason = reasonMap[selectedReasonType.value];
+  } else {
+    // For types with sub-dropdowns, wait for selection
+    adjustmentForm.value.reason = '';
+  }
+};
+
+// Update reason from sub-dropdown
+const updateReasonFromSubDropdown = () => {
+  if (selectedReasonType.value === 'RETURN_SUPPLIER') {
+    const supplier = suppliers.value.find(s => s.id === selectedSupplierId.value);
+    if (supplier) {
+      adjustmentForm.value.reason = `Retur ke supplier: ${supplier.name}`;
+    } else {
+      adjustmentForm.value.reason = 'Retur ke supplier';
+    }
+  } else if (selectedReasonType.value === 'ADDITIONAL_PURCHASE') {
+    const supplier = suppliers.value.find(s => s.id === selectedSupplierId.value);
+    if (supplier) {
+      adjustmentForm.value.reason = `Pembelian tambahan dari supplier: ${supplier.name}`;
+    } else {
+      adjustmentForm.value.reason = 'Pembelian tambahan';
+    }
+  } else if (selectedReasonType.value === 'TRANSFER_FROM_WAREHOUSE') {
+    const fromStore = stores.value.find(s => s.id === selectedFromStoreId.value);
+    const toStore = stores.value.find(s => s.id === selectedToStoreId.value);
+    if (fromStore && toStore) {
+      adjustmentForm.value.reason = `Transfer dari gudang ${fromStore.name} ke gudang ${toStore.name}`;
+    } else if (fromStore) {
+      adjustmentForm.value.reason = `Transfer dari gudang ${fromStore.name}`;
+    } else if (toStore) {
+      adjustmentForm.value.reason = `Transfer ke gudang ${toStore.name}`;
+    } else {
+      adjustmentForm.value.reason = 'Transfer dari gudang lain';
+    }
+  } else if (selectedReasonType.value === 'TRANSFER_TO_WAREHOUSE') {
+    const toStore = stores.value.find(s => s.id === selectedToStoreId.value);
+    if (toStore) {
+      adjustmentForm.value.reason = `Transfer ke gudang ${toStore.name}`;
+    } else {
+      adjustmentForm.value.reason = 'Transfer ke gudang lain';
+    }
+  }
+};
+
+// Handle manual reason toggle
+const handleManualReasonToggle = () => {
+  if (useManualReason.value) {
+    // Clear all dropdown selections
+    selectedReasonType.value = '';
+    selectedSupplierId.value = '';
+    selectedFromStoreId.value = '';
+    selectedToStoreId.value = '';
+    adjustmentForm.value.reason = '';
+  } else {
+    // Reset to default
     adjustmentForm.value.reason = '';
   }
 };
@@ -392,12 +619,19 @@ const saveAdjustment = async () => {
     await api.post('/products/adjustments', adjustmentForm.value);
     await showSuccess('Penyesuaian produk berhasil disimpan');
     showAdjustmentModal.value = false;
+    // Reset form
     adjustmentForm.value = {
       productId: '',
       type: 'INCREASE',
       quantity: 1,
       reason: '',
     };
+    useManualReason.value = false;
+    selectedReasonType.value = '';
+    selectedSupplierId.value = '';
+    selectedFromStoreId.value = '';
+    selectedToStoreId.value = '';
+    
     await loadAdjustments(pagination.value.page);
     await loadProducts();
   } catch (error: any) {
