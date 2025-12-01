@@ -25,7 +25,8 @@
   "exclude": ["node_modules", "dist"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "vueCompilerOptions": {
-    "target": 3
+    "target": 3,
+    "globalTypesPath": "./src/env.d.ts"
   }
 }
 
