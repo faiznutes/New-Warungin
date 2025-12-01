@@ -7,7 +7,7 @@
         <p class="text-gray-600">Riwayat penyesuaian stok produk</p>
       </div>
       <button
-        @click="showAdjustmentModal = true"
+        @click="openAdjustmentModal"
         class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,14 +161,14 @@
     <div
       v-if="showAdjustmentModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showAdjustmentModal = false"
+      @click.self="closeAdjustmentModal"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Tambah Penyesuaian Produk</h3>
             <button
-              @click="showAdjustmentModal = false"
+              @click="closeAdjustmentModal"
               class="text-gray-400 hover:text-gray-600"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,7 +253,6 @@
                   <option value="TRANSFER_FROM_WAREHOUSE">Transfer dari gudang lain</option>
                   <option value="TRANSFER_TO_WAREHOUSE">Transfer ke gudang lain</option>
                   <option value="DEFECTIVE_PRODUCTION">Barang cacat produksi</option>
-                  <option value="OTHER">Lainnya (isi manual)</option>
                 </select>
               </div>
 
@@ -346,29 +345,33 @@
               </div>
               
               <!-- Textarea untuk manual reason (hanya muncul saat checkbox dicentang) -->
-              <div v-if="useManualReason">
-                <textarea
-                  v-model="adjustmentForm.reason"
-                  required
-                  rows="3"
-                  placeholder="Tuliskan alasan penyesuaian stok secara detail..."
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                ></textarea>
-                <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
-              </div>
+              <template v-if="useManualReason">
+                <div class="mt-2">
+                  <textarea
+                    v-model="adjustmentForm.reason"
+                    required
+                    rows="3"
+                    placeholder="Contoh: Retur dari supplier, Barang rusak, Stok opname, dll"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  ></textarea>
+                  <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
+                </div>
+              </template>
               
-              <!-- Textarea untuk auto-filled reason (hanya muncul saat tidak manual mode) -->
-              <div v-else>
-                <textarea
-                  v-model="adjustmentForm.reason"
-                  required
-                  rows="3"
-                  placeholder="Alasan akan terisi otomatis setelah memilih alasan umum atau akan muncul setelah memilih dari sub-dropdown"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50"
-                  readonly
-                ></textarea>
-                <p class="mt-1 text-xs text-gray-500">Alasan akan terisi otomatis berdasarkan pilihan Anda di atas</p>
-              </div>
+              <!-- Textarea untuk auto-filled reason (hanya muncul saat tidak manual mode dan ada alasan yang dipilih) -->
+              <template v-else>
+                <div v-if="selectedReasonType && adjustmentForm.reason" class="mt-2">
+                  <textarea
+                    v-model="adjustmentForm.reason"
+                    required
+                    rows="3"
+                    placeholder="Alasan akan terisi otomatis setelah memilih alasan umum atau akan muncul setelah memilih dari sub-dropdown"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50"
+                    readonly
+                  ></textarea>
+                  <p class="mt-1 text-xs text-gray-500">Alasan akan terisi otomatis berdasarkan pilihan Anda di atas</p>
+                </div>
+              </template>
             </div>
 
             <!-- Suggestion -->
@@ -393,13 +396,13 @@
               >
                 {{ saving ? 'Menyimpan...' : 'Simpan' }}
               </button>
-              <button
-                type="button"
-                @click="showAdjustmentModal = false"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-              >
-                Batal
-              </button>
+            <button
+              type="button"
+              @click="closeAdjustmentModal"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
+              Batal
+            </button>
             </div>
           </form>
         </div>
@@ -549,7 +552,6 @@ const handleReasonTypeChange = () => {
     'LOST_THEFT': 'Barang hilang / Theft',
     'SAMPLE_PROMO': 'Sample / Promosi',
     'DEFECTIVE_PRODUCTION': 'Barang cacat produksi',
-    'OTHER': '',
   };
   
   if (reasonMap[selectedReasonType.value]) {
@@ -598,6 +600,33 @@ const updateReasonFromSubDropdown = () => {
   }
 };
 
+// Reset form function
+const resetForm = () => {
+  adjustmentForm.value = {
+    productId: '',
+    type: 'INCREASE',
+    quantity: 1,
+    reason: '',
+  };
+  useManualReason.value = false;
+  selectedReasonType.value = '';
+  selectedSupplierId.value = '';
+  selectedFromStoreId.value = '';
+  selectedToStoreId.value = '';
+};
+
+// Open modal and reset form
+const openAdjustmentModal = () => {
+  resetForm();
+  showAdjustmentModal.value = true;
+};
+
+// Close modal and reset form
+const closeAdjustmentModal = () => {
+  showAdjustmentModal.value = false;
+  resetForm();
+};
+
 // Handle manual reason toggle
 const handleManualReasonToggle = () => {
   if (useManualReason.value) {
@@ -636,17 +665,7 @@ const saveAdjustment = async () => {
     await showSuccess('Penyesuaian produk berhasil disimpan');
     showAdjustmentModal.value = false;
     // Reset form
-    adjustmentForm.value = {
-      productId: '',
-      type: 'INCREASE',
-      quantity: 1,
-      reason: '',
-    };
-    useManualReason.value = false;
-    selectedReasonType.value = '';
-    selectedSupplierId.value = '';
-    selectedFromStoreId.value = '';
-    selectedToStoreId.value = '';
+    resetForm();
     
     await loadAdjustments(pagination.value.page);
     await loadProducts();

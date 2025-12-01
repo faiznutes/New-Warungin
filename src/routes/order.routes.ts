@@ -153,49 +153,6 @@ router.get(
 
 /**
  * @swagger
- * /api/orders/{id}:
- *   get:
- *     summary: Get order by ID
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Order ID
- *     responses:
- *       200:
- *         description: Order details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Order'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.get(
-  '/:id',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
  * /api/orders:
  *   post:
  *     summary: Create new order
@@ -252,67 +209,6 @@ router.post(
       res.status(201).json(order);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create order', 'CREATE_ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/{id}:
- *   put:
- *     summary: Update order
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Order ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 enum: [PENDING, PROCESSING, COMPLETED, CANCELLED]
- *               notes:
- *                 type: string
- *     responses:
- *       200:
- *         description: Order updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Order'
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.put(
-  '/:id',
-  authGuard,
-  validate({ body: updateOrderSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Pass all validated data to updateOrder service
-      const updatedOrder = await orderService.updateOrder(req.params.id, req.body, tenantId);
-      res.json(updatedOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
     }
   }
 );
@@ -438,6 +334,110 @@ router.post(
       const { orderIds } = req.body;
       const result = await orderService.bulkRefundOrders(tenantId, orderIds);
       res.json(result);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get order by ID
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.get(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const order = await orderService.getOrderById(req.params.id, tenantId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+      res.json(order);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   put:
+ *     summary: Update order
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, PROCESSING, COMPLETED, CANCELLED]
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.put(
+  '/:id',
+  authGuard,
+  validate({ body: updateOrderSchema }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const order = await orderService.getOrderById(req.params.id, tenantId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Pass all validated data to updateOrder service
+      const updatedOrder = await orderService.updateOrder(req.params.id, req.body, tenantId);
+      res.json(updatedOrder);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'ORDER');
     }
