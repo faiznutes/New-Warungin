@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import settingsService from '../services/settings.service';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -26,12 +27,8 @@ router.get(
 
       const settings = await settingsService.getSystemSettings();
       res.json(settings);
-    } catch (error: any) {
-      console.error('Error loading system settings:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to load system settings',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load system settings', 'GET_SYSTEM_SETTINGS');
     }
   }
 );
@@ -61,12 +58,8 @@ router.put(
         message: 'Settings updated successfully',
         settings: updatedSettings,
       });
-    } catch (error: any) {
-      console.error('Error updating system settings:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to update system settings',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update system settings', 'UPDATE_SYSTEM_SETTINGS');
     }
   }
 );

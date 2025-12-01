@@ -4,7 +4,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import { handleApiError } from '../utils/error-handler';
+import { handleRouteError } from '../utils/route-error-handler';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -196,8 +196,8 @@ router.get(
         todayRevenue: Number(todayRevenue._sum.total || 0),
         recentTransactions,
       });
-    } catch (error: any) {
-      handleApiError(res, error, 'Failed to load cashier stats');
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load cashier stats', 'CASHIER_STATS');
     }
   }
 );
@@ -254,8 +254,8 @@ router.get(
         readyOrders,
         totalOrders: pendingOrders + cookingOrders + readyOrders,
       });
-    } catch (error: any) {
-      handleApiError(res, error, 'Failed to load kitchen stats');
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to load kitchen stats', 'KITCHEN_STATS');
     }
   }
 );

@@ -383,8 +383,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const products = await productService.getLowStockProducts(tenantId);
       res.json(products);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }
   }
 );
@@ -412,8 +412,8 @@ router.get(
       };
       const result = await productAdjustmentService.getAdjustments(tenantId, query);
       res.json(result);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }
   }
 );
@@ -460,10 +460,7 @@ router.post(
       res.status(201).json(adjustment);
     } catch (error: any) {
       await logAction(req, 'CREATE', 'product_adjustments', null, { error: error.message }, 'FAILED', error.message);
-      if (error.message === 'Product not found') {
-        return res.status(404).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
+      handleRouteError(res, error, 'Failed to create product adjustment', 'CREATE_PRODUCT_ADJUSTMENT');
     }
   }
 );
@@ -491,8 +488,8 @@ router.get(
         return res.status(404).json({ message: 'Adjustment not found' });
       }
       res.json(adjustment);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }
   }
 );

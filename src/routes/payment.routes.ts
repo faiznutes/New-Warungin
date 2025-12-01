@@ -5,6 +5,7 @@ import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -48,12 +49,8 @@ router.post(
       } else {
         res.status(400).json(result);
       }
-    } catch (error: any) {
-      console.error('Payment creation error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to create payment' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to create payment', 'CREATE_PAYMENT');
     }
   }
 );
@@ -74,12 +71,8 @@ router.get(
     try {
       const result = await paymentService.checkPaymentStatus(req.params.orderId);
       res.json(result);
-    } catch (error: any) {
-      console.error('Payment status check error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to check payment status' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to check payment status', 'CHECK_PAYMENT_STATUS');
     }
   }
 );
@@ -122,12 +115,8 @@ router.post(
       // Just process the payment directly
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: any) {
-      console.error('n8n webhook processing error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to process webhook' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process webhook', 'N8N_WEBHOOK');
     }
   }
 );
@@ -148,12 +137,8 @@ router.post(
     try {
       const result = await paymentService.cancelPayment(req.params.orderId);
       res.json(result);
-    } catch (error: any) {
-      console.error('Payment cancellation error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to cancel payment' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to cancel payment', 'CANCEL_PAYMENT');
     }
   }
 );
@@ -221,12 +206,8 @@ router.post(
       } else {
         res.status(400).json(result);
       }
-    } catch (error: any) {
-      console.error('Addon payment creation error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to create payment' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to create addon payment', 'CREATE_ADDON_PAYMENT');
     }
   }
 );
