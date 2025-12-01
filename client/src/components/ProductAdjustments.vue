@@ -231,6 +231,22 @@ const loadProducts = async () => {
 };
 
 const saveAdjustment = async () => {
+  // Validate form
+  if (!adjustmentForm.value.productId) {
+    await showError('Pilih produk terlebih dahulu');
+    return;
+  }
+  
+  if (!adjustmentForm.value.quantity || adjustmentForm.value.quantity <= 0) {
+    await showError('Jumlah penyesuaian harus lebih dari 0');
+    return;
+  }
+  
+  if (!adjustmentForm.value.reason || adjustmentForm.value.reason.trim() === '') {
+    await showError('Alasan penyesuaian wajib diisi');
+    return;
+  }
+  
   try {
     await api.post('/products/adjustments', adjustmentForm.value);
     await showSuccess('Penyesuaian produk berhasil disimpan');
@@ -245,7 +261,8 @@ const saveAdjustment = async () => {
     await loadProducts(); // Reload products to get updated stock
   } catch (error: any) {
     console.error('Error saving adjustment:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan penyesuaian');
+    const errorMessage = error.response?.data?.message || error.message || 'Gagal menyimpan penyesuaian';
+    await showError(errorMessage);
   }
 };
 
