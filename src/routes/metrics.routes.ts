@@ -5,6 +5,7 @@
 
 import { Router, Request, Response } from 'express';
 import { register } from '../utils/metrics';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -19,16 +20,17 @@ const router = Router();
 router.get('/', async (req: Request, res: Response) => {
   try {
     if (!register || typeof register.metrics !== 'function') {
-      return res.status(503).json({ 
-        message: 'Metrics not available. Please install prom-client: npm install prom-client' 
-      });
+      const error = new Error('Metrics not available. Please install prom-client: npm install prom-client');
+      (error as any).statusCode = 503;
+      handleRouteError(res, error, 'Metrics not available', 'GET_METRICS');
+      return;
     }
     
     res.set('Content-Type', register.contentType || 'text/plain');
     const metrics = await register.metrics();
     res.end(metrics);
-  } catch (error: any) {
-    res.status(500).json({ message: 'Error generating metrics', error: error.message });
+  } catch (error: unknown) {
+    handleRouteError(res, error, 'Error generating metrics', 'GET_METRICS');
   }
 });
 

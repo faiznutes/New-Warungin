@@ -93,7 +93,26 @@ router.get(
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const result = await userService.getUsers(tenantId, page, limit);
-      res.json(result);
+      
+      // Get user limit info
+      const { getTenantPlanFeatures } = await import('../services/plan-features.service');
+      const features = await getTenantPlanFeatures(tenantId);
+      const userLimit = features.limits.users;
+      
+      // Get total active users count
+      const totalActiveUsers = await prisma.user.count({
+        where: { tenantId, isActive: true },
+      });
+      
+      res.json({ 
+        ...result,
+        limit: {
+          max: userLimit,
+          current: totalActiveUsers,
+          remaining: userLimit === -1 ? -1 : Math.max(0, userLimit - totalActiveUsers),
+          isUnlimited: userLimit === -1,
+        }
+      });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'USER');
     }

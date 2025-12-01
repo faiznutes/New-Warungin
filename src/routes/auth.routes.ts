@@ -7,6 +7,7 @@ import { logAction } from '../middlewares/audit-logger';
 import prisma from '../config/database';
 import { AuthRequest } from '../middlewares/auth';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -123,72 +124,8 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     res.json(result);
   } catch (error: unknown) {
-    const err = error as Error & { 
-      code?: string; 
-      statusCode?: number; 
-      issues?: Array<{ path: (string | number)[]; message: string }>;
-      message?: string;
-      name?: string;
-    };
-    
     logRouteError(error, 'LOGIN', req);
-    
-    // Handle Prisma prepared statement errors (pgbouncer issue)
-    if (err.message?.includes('prepared statement') || err.code === '42P05') {
-      logger.warn('Prisma prepared statement error detected - this is a pgbouncer issue');
-      res.status(503).json({
-        error: 'Database connection issue. Please try again in a moment.',
-        message: 'The database connection pool is busy. Please retry the request.',
-      });
-      return;
-    }
-    
-    // Handle database connection errors
-    if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect ECONNREFUSED')) {
-      logger.error('Database connection error:', err.message);
-      res.status(503).json({
-        error: 'Database connection failed. Please try again in a moment.',
-        message: 'Unable to connect to database. Please retry the request.',
-      });
-      return;
-    }
-    
-    // Handle Prisma query errors
-    if (err.code?.startsWith('P')) {
-      logger.error('Prisma error:', { code: err.code, message: err.message });
-      return res.status(500).json({
-        error: 'Database error occurred. Please try again.',
-        message: 'An error occurred while processing your request.',
-      });
-    }
-    
-    // Handle Zod validation errors
-    if (err.name === 'ZodError' && err.issues) {
-      res.status(400).json({
-        error: 'Validation failed',
-        details: err.issues.map((issue) => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-        })),
-      });
-      return;
-    }
-    
-    // Handle AppError (from auth service)
-    if (err.statusCode) {
-      res.status(err.statusCode).json({
-        error: err.message,
-        message: err.message,
-      });
-      return;
-    }
-    
-    // Handle any other errors - ensure response is sent
-    logger.error('Unhandled login error:', err);
-    res.status(500).json({
-      error: 'Internal server error',
-      message: 'An unexpected error occurred. Please try again.',
-    });
+    handleRouteError(res, error, 'Login failed', 'LOGIN');
   }
 });
 
@@ -228,29 +165,11 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
         },
       });
     } catch (dbError: unknown) {
-      const err = dbError as Error & { code?: string; message?: string };
       logRouteError(dbError, 'ME_DATABASE_QUERY', req);
       
-      // Handle database connection errors
-      if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-        res.status(503).json({ 
-          error: 'Database connection failed',
-          message: 'Unable to connect to database. Please try again.',
-        });
-        return;
-      }
-      
-      // Handle Prisma query errors
-      if (err.code?.startsWith('P')) {
-        res.status(500).json({
-          error: 'Database error occurred',
-          message: 'An error occurred while fetching user data.',
-        });
-        return;
-      }
-      
-      // Re-throw other errors to be handled by outer catch
-      throw dbError;
+      // Handle all database errors using handleRouteError
+      handleRouteError(res, dbError, 'Unable to connect to database. Please try again.', 'ME_DATABASE_QUERY');
+      return;
     }
 
     if (!user) {
@@ -276,17 +195,14 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
       },
     });
   } catch (error: unknown) {
-    const err = error as Error & { code?: string; message?: string };
     logRouteError(error, 'ME_UNEXPECTED_ERROR', req);
     
     // Ensure response hasn't been sent
     if (!res.headersSent) {
-      // Return error response instead of next(error) to prevent 502
-      res.status(500).json({
-        message: err.message || 'Failed to get current user',
-        error: 'INTERNAL_SERVER_ERROR',
-      });
+      // Use handleRouteError for consistent error handling
+      handleRouteError(res, error, 'Failed to get current user', 'ME_UNEXPECTED_ERROR');
     } else {
+      const err = error as Error;
       logger.warn('Error in /auth/me but response already sent:', {
         error: err.message,
         path: req.url,

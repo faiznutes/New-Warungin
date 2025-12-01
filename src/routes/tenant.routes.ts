@@ -9,6 +9,7 @@ import prisma from '../config/database';
 import logger from '../utils/logger';
 import { AuthRequest } from '../middlewares/auth';
 import { auditLogger } from '../middlewares/audit-logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -75,66 +76,8 @@ router.post(
       
       res.status(201).json(result);
     } catch (error: unknown) {
-      const err = error as Error & { 
-        statusCode?: number; 
-        message?: string; 
-        code?: string;
-        issues?: Array<{ path: (string | number)[]; message: string }>;
-      };
-      
       logRouteError(error, 'CREATE_TENANT', req);
-      
-      // Handle validation errors (Zod)
-      // Note: Validator middleware should catch this first, but handle here as fallback
-      if (err.name === 'ZodError' || err.issues || (err as any).errors) {
-        const issues = err.issues || (err as any).errors || [];
-        return res.status(400).json({
-          error: 'VALIDATION_ERROR',
-          message: 'Data tidak valid. Silakan periksa field yang diisi.',
-          errors: issues.map((issue: any) => ({
-            path: Array.isArray(issue.path) ? issue.path.join('.') : (issue.path || 'unknown'),
-            message: issue.message,
-          })),
-        });
-      }
-      
-      // Handle AppError with statusCode
-      if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500) {
-        return res.status(err.statusCode).json({
-          error: err.name || 'ERROR',
-          message: err.message || 'Gagal membuat tenant',
-        });
-      }
-      
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          return res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else if (err.code === 'P2002') {
-          return res.status(409).json({
-            message: 'Tenant dengan email ini sudah ada',
-            error: 'DUPLICATE_ENTRY',
-          });
-        } else {
-          return res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-      }
-      
-      // Default error
-      const statusCode = err.statusCode || 500;
-      const message = err.message || 'Gagal membuat tenant';
-      
-      res.status(statusCode).json({ 
-        error: err.name || 'ERROR',
-        message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-      });
+      handleRouteError(res, error, 'Gagal membuat tenant', 'CREATE_TENANT');
     }
   }
 );
@@ -167,26 +110,9 @@ router.get(
         const err = serviceError as Error & { code?: string; message?: string };
         logRouteError(serviceError, 'GET_TENANTS_SERVICE', req);
         
-        // Handle database connection errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-        
-        // Handle Prisma query errors
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred while fetching tenants',
-            error: err.code,
-          });
-          return;
-        }
-        
-        // Re-throw to be handled by outer catch
-        throw serviceError;
+        // Handle database connection errors and Prisma errors
+        handleRouteError(res, serviceError, 'Database error occurred while fetching tenants', 'GET_TENANTS');
+        return;
       }
       
       // Log for debugging
@@ -201,21 +127,9 @@ router.get(
       // Return just the data array for easier frontend consumption
       res.json(result.data || []);
     } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
       logRouteError(error, 'GET_TENANTS', req);
-      
-      // Ensure response hasn't been sent
       if (!res.headersSent) {
-        // Return error response instead of next(error) to prevent 502
-        res.status(500).json({
-          message: err.message || 'Failed to fetch tenants',
-          error: 'INTERNAL_SERVER_ERROR',
-        });
-      } else {
-        logger.warn('Error in GET /tenants but response already sent:', {
-          error: err.message,
-          path: req.url,
-        });
+        handleRouteError(res, error, 'Failed to fetch tenants', 'GET_TENANTS');
       }
     }
   }
@@ -243,30 +157,8 @@ router.delete(
       await tenantService.deleteTenant(req.params.id);
       res.status(200).json({ message: 'Tenant deleted successfully' });
     } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string; code?: string };
       logRouteError(error, 'DELETE_TENANT', req);
-      
-      if (err.statusCode) {
-        return res.status(err.statusCode).json({ message: err.message });
-      }
-      
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-      
-      res.status(500).json({ message: err.message || 'Failed to delete tenant' });
+      handleRouteError(res, error, 'Failed to delete tenant', 'DELETE_TENANT');
     }
   }
 );
@@ -288,61 +180,16 @@ router.get(
         return res.status(403).json({ message: 'Only super admin can view tenant details' });
       }
 
-      let tenant;
-      try {
-        tenant = await tenantService.getTenantById(req.params.id);
-      } catch (serviceError: unknown) {
-        const err = serviceError as Error & { code?: string; message?: string };
-        logRouteError(serviceError, 'GET_TENANT_BY_ID_SERVICE', req);
-        
-        // Handle database connection errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-        
-        // Handle Prisma query errors
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred while fetching tenant',
-            error: err.code,
-          });
-          return;
-        }
-        
-        throw serviceError;
-      }
+      const tenant = await tenantService.getTenantById(req.params.id);
       
       if (!tenant) {
-        res.status(404).json({ message: 'Tenant not found' });
-        return;
+        return res.status(404).json({ message: 'Tenant not found' });
       }
       
       res.json(tenant);
     } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
       logRouteError(error, 'GET_TENANT_BY_ID', req);
-      
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-      
-      res.status(500).json({ message: err.message || 'Failed to fetch tenant' });
+      handleRouteError(res, error, 'Failed to fetch tenant', 'GET_TENANT_BY_ID');
     }
   }
 );
@@ -378,30 +225,8 @@ router.put(
       const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
       res.json(updatedTenant);
     } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string; code?: string };
       logRouteError(error, 'UPDATE_TENANT', req);
-      
-      if (err.statusCode) {
-        return res.status(err.statusCode).json({ message: err.message });
-      }
-      
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-      
-      res.status(500).json({ message: err.message || 'Failed to update tenant' });
+      handleRouteError(res, error, 'Failed to update tenant', 'UPDATE_TENANT');
     }
   }
 );
@@ -564,24 +389,9 @@ router.put(
         const err = txError as Error & { code?: string; message?: string };
         logRouteError(txError, 'UPGRADE_PLAN_TRANSACTION', req);
         
-        // Handle database errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-        
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred during plan upgrade',
-            error: err.code,
-          });
-          return;
-        }
-        
-        throw txError;
+        // Handle database connection errors and Prisma errors
+        handleRouteError(res, txError, 'Database error occurred during plan upgrade', 'UPGRADE_PLAN');
+        return;
       }
 
       res.json({
@@ -600,23 +410,8 @@ router.put(
         return res.status(err.statusCode).json({ message: err.message });
       }
       
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-      
-      res.status(500).json({ message: err.message || 'Failed to upgrade plan' });
+      // Handle all errors using handleRouteError
+      handleRouteError(res, error, 'Failed to upgrade plan', 'UPGRADE_PLAN');
     }
   }
 );
@@ -714,24 +509,9 @@ router.put(
         const err = txError as Error & { code?: string; message?: string };
         logRouteError(txError, 'DEACTIVATE_SUBSCRIPTION_TRANSACTION', req);
         
-        // Handle database errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-        
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred during subscription deactivation',
-            error: err.code,
-          });
-          return;
-        }
-        
-        throw txError;
+        // Handle database connection errors and Prisma errors
+        handleRouteError(res, txError, 'Database error occurred during subscription deactivation', 'DEACTIVATE_SUBSCRIPTION');
+        return;
       }
 
       // Apply BASIC plan features
@@ -756,20 +536,14 @@ router.put(
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
+          handleRouteError(res, error, 'Database connection failed. Please try again.', 'DEACTIVATE_SUBSCRIPTION');
         } else {
-          res.status(500).json({ 
-            message: 'Database error occurred',
-            error: err.code,
-          });
+          handleRouteError(res, error, 'Database error occurred', 'DEACTIVATE_SUBSCRIPTION');
         }
         return;
       }
       
-      res.status(500).json({ message: err.message || 'Gagal menonaktifkan langganan' });
+      handleRouteError(res, error, 'Gagal menonaktifkan langganan', 'DEACTIVATE_SUBSCRIPTION');
     }
   }
 );

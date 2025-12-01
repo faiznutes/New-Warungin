@@ -3,6 +3,7 @@ import { authGuard } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import quickInsightService from '../services/quick-insight.service';
 import addonService from '../services/addon.service';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -29,8 +30,8 @@ const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Fu
     }
     
     next();
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    handleRouteError(res, error, 'Failed to check Business Analytics addon', 'CHECK_BUSINESS_ANALYTICS_ADDON');
   }
 };
 
@@ -52,8 +53,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const insight = await quickInsightService.getQuickInsight(tenantId, period as 'daily' | 'weekly' | 'monthly');
       res.json(insight);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get quick insight', 'GET_QUICK_INSIGHT');
     }
   }
 );

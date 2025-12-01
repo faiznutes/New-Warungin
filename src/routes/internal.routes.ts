@@ -8,6 +8,7 @@ import logger from '../utils/logger';
 import { getRedisClient } from '../config/redis';
 import * as path from 'path';
 import * as fs from 'fs';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -44,12 +45,8 @@ router.post(
       // Just process the payment
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: any) {
-      logger.error('Internal webhook processing error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to process webhook' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process webhook', 'INTERNAL_WEBHOOK');
     }
   }
 );
@@ -122,12 +119,8 @@ router.post(
           content: backupContent, // For n8n to send via Gmail API
         }
       });
-    } catch (error: any) {
-      logger.error('Internal backup error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to process backup' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process backup', 'INTERNAL_BACKUP');
     }
   }
 );
@@ -153,12 +146,8 @@ router.post(
         message: 'Subscription revert completed',
         data: result
       });
-    } catch (error: any) {
-      logger.error('Internal subscription revert error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to revert subscriptions' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to revert subscriptions', 'INTERNAL_SUBSCRIPTION_REVERT');
     }
   }
 );
@@ -188,10 +177,10 @@ router.post(
       
       const redis = getRedisClient();
       if (!redis) {
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Redis not available for caching' 
-        });
+        const error = new Error('Redis not available for caching');
+        (error as any).statusCode = 503;
+        handleRouteError(res, error, 'Redis not available for caching', 'INTERNAL_ANALYTICS_PRECOMPUTE');
+        return;
       }
       
       // Pre-compute predictions
@@ -229,12 +218,8 @@ router.post(
           topProducts: topProducts.length,
         }
       });
-    } catch (error: any) {
-      logger.error('Internal analytics precompute error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to pre-compute analytics' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to pre-compute analytics', 'INTERNAL_ANALYTICS_PRECOMPUTE');
     }
   }
 );
@@ -320,12 +305,8 @@ router.post(
           errors,
         }
       });
-    } catch (error: any) {
-      logger.error('Internal analytics precompute-all error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to pre-compute analytics for all tenants' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to pre-compute analytics for all tenants', 'INTERNAL_ANALYTICS_PRECOMPUTE_ALL');
     }
   }
 );
@@ -366,12 +347,8 @@ router.get(
         success: true, 
         data: tenants 
       });
-    } catch (error: any) {
-      logger.error('Internal get active tenants error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to get active tenants' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get active tenants', 'INTERNAL_GET_ACTIVE_TENANTS');
     }
   }
 );

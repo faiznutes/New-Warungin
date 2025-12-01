@@ -22,22 +22,57 @@
       </div>
     </div>
 
-    <!-- User Limit Info -->
-    <div v-if="userLimit && userLimit.limit" class="mb-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="font-semibold text-blue-900">Limit Pengguna</p>
-          <p class="text-sm text-blue-700">
-            {{ userLimit.currentUsage }} / {{ userLimit.limit }} pengguna aktif
-          </p>
+    <!-- User Limit Progress Bar -->
+    <div v-if="userLimit" class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6 mx-4 sm:mx-6">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-blue-100 rounded-lg">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Limit Pengguna</h3>
+            <p class="text-xs text-gray-600">
+              <span class="font-medium text-gray-900">{{ userLimit.currentUsage }}</span>
+              <span v-if="!userLimit.isUnlimited"> / {{ userLimit.limit }}</span>
+              <span v-else> / Unlimited</span>
+              <span v-if="!userLimit.isUnlimited"> pengguna digunakan</span>
+              <span v-else> pengguna aktif</span>
+            </p>
+          </div>
         </div>
-        <div class="flex-1 max-w-xs ml-4">
-          <div class="w-full bg-blue-200 rounded-full h-2">
-            <div
-              class="bg-blue-600 h-2 rounded-full transition-all"
-              :class="userLimit.currentUsage >= userLimit.limit ? 'bg-red-600' : ''"
-              :style="{ width: `${Math.min(100, (userLimit.currentUsage / userLimit.limit) * 100)}%` }"
-            ></div>
+        <div class="text-right">
+          <div class="text-lg font-bold" :class="getLimitColorClass()">
+            <span v-if="!userLimit.isUnlimited">
+              {{ userLimit.remaining }} tersisa
+            </span>
+            <span v-else class="text-green-600">Unlimited</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div v-if="!userLimit.isUnlimited" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div
+          class="h-full rounded-full transition-all duration-300"
+          :class="getProgressBarColorClass()"
+          :style="{ width: `${getProgressPercentage()}%` }"
+        ></div>
+      </div>
+      <div v-else class="w-full bg-gray-200 rounded-full h-3">
+        <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+      </div>
+      
+      <!-- Warning message if limit reached -->
+      <div v-if="!userLimit.isUnlimited && userLimit.remaining === 0" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div class="flex items-start gap-2">
+          <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-yellow-800">Limit pengguna telah tercapai</p>
+            <p class="text-xs text-yellow-700 mt-1">Beli addon "Tambah Pengguna" untuk menambah slot pengguna, atau upgrade ke plan yang lebih tinggi.</p>
           </div>
         </div>
       </div>
@@ -166,17 +201,17 @@
     </div>
   </div>
 
-  <!-- User Edit Modal -->
+  <!-- User Create/Edit Modal -->
   <UserEditModal
-    :show="showEditModal"
+    :show="showCreateModal || showEditModal"
     :user="editingUser"
-    @close="showEditModal = false; editingUser = null"
+    @close="showCreateModal = false; showEditModal = false; editingUser = null"
     @save="handleSaveUser"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -195,7 +230,12 @@ const loading = ref(false);
 const showCreateModal = ref(false);
 const showEditModal = ref(false);
 const editingUser = ref<any>(null);
-const userLimit = ref<any>(null);
+const userLimit = ref<{
+  limit: number;
+  currentUsage: number;
+  remaining: number;
+  isUnlimited: boolean;
+} | null>(null);
 const pagination = ref({
   page: 1,
   limit: 10,
@@ -216,12 +256,14 @@ const loadUsers = async (page = 1) => {
     users.value = response.data.data;
     pagination.value = response.data.pagination;
 
-    // Load user limit
-    try {
-      const limitRes = await api.get('/addons/check-limit/ADD_USERS');
-      userLimit.value = limitRes.data;
-    } catch (e) {
-      // Ignore if no addon
+    // Get user limit info from response
+    if (response.data.limit) {
+      userLimit.value = {
+        limit: response.data.limit.max,
+        currentUsage: response.data.limit.current,
+        remaining: response.data.limit.remaining,
+        isUnlimited: response.data.limit.isUnlimited,
+      };
     }
   } catch (error: any) {
     console.error('Error loading users:', error);
@@ -259,18 +301,25 @@ const editUser = (user: any) => {
 const handleSaveUser = async (userData: any) => {
   try {
     if (editingUser.value) {
+      // Update existing user
       await api.put(`/users/${editingUser.value.id}`, userData);
+      await showSuccess('Pengguna berhasil diupdate');
+    } else {
+      // Create new user
+      await api.post('/users', userData);
+      await showSuccess('Pengguna berhasil ditambahkan');
     }
     // Close modal first
+    showCreateModal.value = false;
     showEditModal.value = false;
     editingUser.value = null;
-    // Wait a bit for modal to close, then show success
+    // Wait a bit for modal to close, then reload
     await new Promise(resolve => setTimeout(resolve, 100));
-    await showSuccess('Pengguna berhasil diupdate');
     await loadUsers(pagination.value.page);
   } catch (error: any) {
     console.error('Error saving user:', error);
     // Close modal first even on error
+    showCreateModal.value = false;
     showEditModal.value = false;
     editingUser.value = null;
     // Wait a bit for modal to close, then show error
@@ -297,6 +346,33 @@ const handleTenantChange = (tenantId: string | null) => {
       loadUsers();
     }
   }
+};
+
+const canAddUser = computed(() => {
+  if (!userLimit.value) return true;
+  if (userLimit.value.isUnlimited) return true;
+  return userLimit.value.remaining > 0;
+});
+
+const getProgressPercentage = () => {
+  if (!userLimit.value || userLimit.value.isUnlimited) return 0;
+  if (userLimit.value.limit === 0) return 0;
+  return Math.min(100, (userLimit.value.currentUsage / userLimit.value.limit) * 100);
+};
+
+const getProgressBarColorClass = () => {
+  if (!userLimit.value) return 'bg-gray-400';
+  const percentage = getProgressPercentage();
+  if (percentage >= 100) return 'bg-red-500';
+  if (percentage >= 80) return 'bg-yellow-500';
+  return 'bg-green-500';
+};
+
+const getLimitColorClass = () => {
+  if (!userLimit.value || userLimit.value.isUnlimited) return 'text-green-600';
+  if (userLimit.value.remaining === 0) return 'text-red-600';
+  if (userLimit.value.remaining <= 2) return 'text-yellow-600';
+  return 'text-green-600';
 };
 
 // Watch for tenant changes and auto-refetch

@@ -8,6 +8,7 @@ import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -46,8 +47,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const discounts = await discountService.getDiscounts(tenantId);
       res.json({ data: discounts });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
     }
   }
 );
@@ -80,8 +81,8 @@ router.get(
       }
 
       res.json(discount);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
     }
   }
 );
@@ -127,8 +128,8 @@ router.post(
       await invalidateAnalyticsCache(tenantId);
 
       res.status(201).json(discount);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
     }
   }
 );
@@ -185,8 +186,8 @@ router.put(
       await invalidateAnalyticsCache(tenantId);
 
       res.json(discount);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
     }
   }
 );
@@ -233,8 +234,8 @@ router.delete(
       await invalidateAnalyticsCache(tenantId);
 
       res.json({ message: 'Discount deleted successfully' });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
     }
   }
 );

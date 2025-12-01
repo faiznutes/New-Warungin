@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -62,17 +63,13 @@ router.post(
         
         res.send(pdfBuffer);
         
-      } catch (error: any) {
-        console.error('Error generating PDF with PDFMake:', error);
-        return res.status(500).json({ 
-          message: 'Failed to generate PDF', 
-          error: error.message
-        });
+      } catch (error: unknown) {
+        handleRouteError(res, error, 'Failed to generate PDF', 'PDF_GENERATION');
+        return;
       }
       
-    } catch (error: any) {
-      console.error('PDF generation error:', error);
-      res.status(500).json({ message: error.message || 'Failed to generate PDF' });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to generate PDF', 'PDF_GENERATION');
     }
   }
 );

@@ -90,12 +90,8 @@ router.post(
     try {
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: any) {
-      console.error('Webhook handling error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to handle webhook' 
-      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to handle webhook', 'WEBHOOK');
     }
   }
 );

@@ -9,7 +9,9 @@
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-gray-900">Edit Pengguna</h3>
+              <h3 class="text-xl font-bold text-gray-900">
+                {{ props.user ? 'Edit Pengguna' : 'Tambah Pengguna' }}
+              </h3>
               <button
                 @click="$emit('close')"
                 class="text-gray-400 hover:text-gray-600 transition"
@@ -58,7 +60,7 @@
                   </select>
                 </div>
 
-                <div>
+                <div v-if="props.user">
                   <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                   <select
                     v-model="form.isActive"
@@ -71,12 +73,14 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru (opsional)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  {{ props.user ? 'Password Baru (opsional)' : 'Password (opsional, akan dibuat otomatis jika kosong)' }}
+                </label>
                 <input
                   v-model="form.password"
                   type="password"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Kosongkan jika tidak ingin mengubah password"
+                  :placeholder="props.user ? 'Kosongkan jika tidak ingin mengubah password' : 'Kosongkan untuk password otomatis'"
                 />
                 <div v-if="authStore.isSuperAdmin && props.user" class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <p class="text-xs font-medium text-gray-700 mb-2">
@@ -284,7 +288,7 @@
                   :disabled="saving"
                   class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                  {{ saving ? 'Menyimpan...' : (props.user ? 'Update' : 'Simpan') }}
                 </button>
               </div>
             </form>
@@ -404,9 +408,9 @@ const isCashierOrKitchen = computed(() => {
 const selectAllStores = computed({
   get: () => {
     if (!permissions.value.allowedStoreIds) return false;
-    const activeStores = stores.value.filter(s => s.isActive);
+    const activeStores = stores.value.filter((s: Store) => s.isActive);
     return activeStores.length > 0 && 
-           activeStores.every(store => permissions.value.allowedStoreIds?.includes(store.id));
+           activeStores.every((store: Store) => permissions.value.allowedStoreIds?.includes(store.id));
   },
   set: (value: boolean) => {
     handleSelectAllStores(value);
@@ -470,7 +474,7 @@ const loadStores = async (force = false) => {
 const handleSelectAllStores = (checked: boolean) => {
   if (checked) {
     // Select all active stores
-    const activeStoreIds = stores.value.filter(s => s.isActive).map(s => s.id);
+    const activeStoreIds = stores.value.filter((s: Store) => s.isActive).map((s: Store) => s.id);
     permissions.value.allowedStoreIds = activeStoreIds;
   } else {
     // Deselect all
@@ -481,10 +485,10 @@ const handleSelectAllStores = (checked: boolean) => {
 // Watch for user prop changes (defer immediate to avoid initialization issues)
 // Don't watch immediately - handle in onMounted instead
 
-watch(() => form.value.role, (newRole, oldRole) => {
+watch(() => form.value.role, (newRole: string | undefined, oldRole: string | undefined) => {
   // Only reload stores if role changed to a role that needs stores
   const rolesNeedingStores = ['SUPERVISOR', 'CASHIER', 'KITCHEN'] as const;
-  const oldNeededStores = oldRole && rolesNeedingStores.includes(oldRole as any);
+  const oldNeededStores = oldRole && rolesNeedingStores.includes(oldRole as typeof rolesNeedingStores[number]);
   
   // Ensure permissions object exists
   if (!form.value.permissions) {
@@ -529,7 +533,7 @@ onMounted(async () => {
   await nextTick();
   
   // Watch for user prop changes
-  watch(() => props.user, async (newUser) => {
+  watch(() => props.user, async (newUser: User | null) => {
     if (newUser) {
       // Reset stores cache when user changes
       storesLoaded.value = false;
@@ -628,7 +632,56 @@ onMounted(async () => {
     if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(props.user.role)) {
       loadStores(true);
     }
+  } else {
+    // Create mode - reset form to defaults
+    form.value = {
+      name: '',
+      email: '',
+      role: 'CASHIER',
+      isActive: true,
+      password: '',
+      permissions: {
+        canEditOrders: false,
+        canDeleteOrders: false,
+        canCancelOrders: false,
+        canRefundOrders: false,
+        canViewReports: false,
+        canEditReports: false,
+        canExportReports: false,
+        canManageProducts: false,
+        canManageCustomers: false,
+      },
+    };
+    currentPassword.value = '';
+    storesLoaded.value = false;
   }
+  
+  // Watch for show prop to reset form when modal opens for create
+  watch(() => props.show, (newShow: boolean) => {
+    if (newShow && !props.user) {
+      // Reset form when modal opens for create
+      form.value = {
+        name: '',
+        email: '',
+        role: 'CASHIER',
+        isActive: true,
+        password: '',
+        permissions: {
+          canEditOrders: false,
+          canDeleteOrders: false,
+          canCancelOrders: false,
+          canRefundOrders: false,
+          canViewReports: false,
+          canEditReports: false,
+          canExportReports: false,
+          canManageProducts: false,
+          canManageCustomers: false,
+        },
+      };
+      currentPassword.value = '';
+      storesLoaded.value = false;
+    }
+  });
 });
 
 onUnmounted(() => {

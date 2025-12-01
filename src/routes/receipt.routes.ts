@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { checkReceiptEditorAddon } from '../middlewares/addon-guard';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -27,8 +28,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const templates = await receiptService.getReceiptTemplates(tenantId);
       res.json(templates);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
     }
   }
 );
@@ -41,8 +42,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const template = await receiptService.getDefaultTemplate(tenantId);
       res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
     }
   }
 );
@@ -63,8 +64,8 @@ router.get(
         return res.status(404).json({ message: 'Template not found' });
       }
       res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
     }
   }
 );

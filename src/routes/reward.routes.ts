@@ -3,6 +3,7 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -141,9 +142,8 @@ router.post(
         message: 'Point berhasil ditukar untuk langganan',
         balance: result,
       });
-    } catch (error: any) {
-      console.error('[Redeem Subscription] Error:', error);
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to redeem subscription', 'REDEEM_SUBSCRIPTION');
     }
   }
 );
@@ -187,9 +187,8 @@ router.post(
         message: 'Point berhasil ditukar untuk addon',
         balance: result,
       });
-    } catch (error: any) {
-      console.error('[Redeem Addon] Error:', error);
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to redeem addon', 'REDEEM_ADDON');
     }
   }
 );
@@ -218,9 +217,8 @@ router.get(
         config,
         redemptions,
       });
-    } catch (error: any) {
-      console.error('[Rewards Config] Error:', error);
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get rewards config', 'REWARDS_CONFIG');
     }
   }
 );

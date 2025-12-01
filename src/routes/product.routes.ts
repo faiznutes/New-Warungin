@@ -11,6 +11,7 @@ import { AuthRequest } from '../middlewares/auth';
 import { logAction } from '../middlewares/audit-logger';
 import { validateImageUpload } from '../middlewares/file-upload-validator';
 import { handleRouteError } from '../utils/route-error-handler';
+import prisma from '../config/database';
 
 const router = Router();
 
@@ -71,7 +72,26 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const result = await productService.getProducts(tenantId, req.query as any);
-      res.json(result);
+      
+      // Get product limit info
+      const { getTenantPlanFeatures } = await import('../services/plan-features.service');
+      const features = await getTenantPlanFeatures(tenantId);
+      const productLimit = features.limits.products;
+      
+      // Get total active products count (always get from database for accuracy)
+      const totalActiveProducts = await prisma.product.count({
+        where: { tenantId, isActive: true },
+      });
+      
+      res.json({ 
+        ...result,
+        limit: {
+          max: productLimit,
+          current: totalActiveProducts,
+          remaining: productLimit === -1 ? -1 : Math.max(0, productLimit - totalActiveProducts),
+          isUnlimited: productLimit === -1,
+        }
+      });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }

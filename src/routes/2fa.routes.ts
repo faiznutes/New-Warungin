@@ -6,6 +6,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -73,9 +74,8 @@ router.post(
         backupCodes: result.backupCodes,
         message: 'Simpan backup codes di tempat yang aman!',
       });
-    } catch (error: any) {
-      logger.error('Error generating 2FA secret', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to generate 2FA secret', 'GENERATE_2FA_SECRET');
     }
   }
 );
@@ -173,9 +173,8 @@ router.post(
       }
 
       res.json({ message: 'Token 2FA valid' });
-    } catch (error: any) {
-      logger.error('Error verifying 2FA token', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to verify 2FA token', 'VERIFY_2FA_TOKEN');
     }
   }
 );
@@ -203,9 +202,8 @@ router.get(
         enabled: isEnabled,
         remainingBackupCodes,
       });
-    } catch (error: any) {
-      logger.error('Error getting 2FA status', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get 2FA status', 'GET_2FA_STATUS');
     }
   }
 );

@@ -4,6 +4,7 @@ import passwordService from '../services/password.service';
 import { updatePasswordSchema } from '../validators/password.validator';
 import { validate } from '../middlewares/validator';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -31,9 +32,8 @@ router.post(
         feedback: strength.feedback,
         meetsRequirements: strength.meetsRequirements,
       });
-    } catch (error: any) {
-      logger.error('Error checking password strength', { error: error.message });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to check password strength', 'CHECK_PASSWORD_STRENGTH');
     }
   }
 );
@@ -84,9 +84,8 @@ router.get(
       const mustChange = await passwordService.mustChangePassword(userId);
 
       res.json({ mustChange });
-    } catch (error: any) {
-      logger.error('Error checking must change password', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to check must change password', 'CHECK_MUST_CHANGE_PASSWORD');
     }
   }
 );

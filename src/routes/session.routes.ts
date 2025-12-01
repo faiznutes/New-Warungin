@@ -3,6 +3,7 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import sessionService from '../services/session.service';
 import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -24,9 +25,8 @@ router.get(
       const sessions = await sessionService.getUserSessions(userId);
 
       res.json({ sessions });
-    } catch (error: any) {
-      logger.error('Error getting user sessions', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get user sessions', 'GET_USER_SESSIONS');
     }
   }
 );
@@ -57,9 +57,8 @@ router.delete(
       await sessionService.revokeSession(sessionId);
 
       res.json({ message: 'Session berhasil di-revoke' });
-    } catch (error: any) {
-      logger.error('Error revoking session', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to revoke session', 'REVOKE_SESSION');
     }
   }
 );
@@ -87,9 +86,8 @@ router.post(
         message: `${revokedCount} session berhasil di-revoke`,
         revokedCount,
       });
-    } catch (error: any) {
-      logger.error('Error revoking all sessions', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to revoke all sessions', 'REVOKE_ALL_SESSIONS');
     }
   }
 );
@@ -112,9 +110,8 @@ router.get(
       const count = await sessionService.getSessionCount(userId);
 
       res.json({ count });
-    } catch (error: any) {
-      logger.error('Error getting session count', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get session count', 'GET_SESSION_COUNT');
     }
   }
 );

@@ -4,6 +4,7 @@ import subscriptionReceiptService from '../services/subscription-receipt.service
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import prisma from '../config/database';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -34,8 +35,8 @@ router.get(
     try {
       const templates = await subscriptionReceiptService.getReceiptTemplates();
       res.json(templates);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get receipt templates', 'GET_RECEIPT_TEMPLATES');
     }
   }
 );
@@ -48,8 +49,8 @@ router.get(
     try {
       const template = await subscriptionReceiptService.getDefaultTemplate();
       res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get receipt templates', 'GET_RECEIPT_TEMPLATES');
     }
   }
 );
@@ -70,8 +71,8 @@ router.get(
         return res.status(404).json({ message: 'Template not found' });
       }
       res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get receipt templates', 'GET_RECEIPT_TEMPLATES');
     }
   }
 );

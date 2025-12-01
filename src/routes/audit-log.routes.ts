@@ -4,6 +4,7 @@ import auditLogService from '../services/audit-log.service';
 import { requireTenantId } from '../utils/tenant';
 import { AuthRequest } from '../middlewares/auth';
 import { z } from 'zod';
+import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -47,8 +48,8 @@ router.get(
       });
       
       res.json(result);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get audit logs', 'GET_AUDIT_LOGS');
     }
   }
 );
@@ -75,8 +76,8 @@ router.get(
       }
       
       res.json(log);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get audit log', 'GET_AUDIT_LOG');
     }
   }
 );
