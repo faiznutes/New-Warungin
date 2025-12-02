@@ -305,6 +305,7 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
+import { formatDate } from '../../utils/formatters';
 
 const { success: showSuccess, error: showError } = useNotification();
 
@@ -402,14 +403,7 @@ const toggleProcessed = async (id: string, event: Event) => {
   }
 };
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
+// formatDate is already imported from formatters utility above
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);

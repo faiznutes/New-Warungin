@@ -304,9 +304,8 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-const formatDateTime = (date: string) => {
-  return new Date(date).toLocaleString('id-ID');
-};
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../../utils/formatters';
 
 // Watch for tenantId changes (defer immediate to avoid initialization issues)
 // Don't watch immediately - handle in onMounted instead

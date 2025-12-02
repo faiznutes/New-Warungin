@@ -515,6 +515,8 @@ const restoreArchive = async (archiveFile: string) => {
   }
 };
 
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../utils/formatters';
 const formatDate = (date: string | Date) => {
   if (!date) return '-';
   return formatDateTime(date);

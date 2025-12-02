@@ -155,16 +155,9 @@ const revokeAllSessions = async () => {
   }
 };
 
-const formatDate = (date: string) => {
-  const d = new Date(date);
-  return d.toLocaleString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../utils/formatters';
+const formatDate = formatDateTime;
 
 onMounted(() => {
   loadSessions();

@@ -411,12 +411,9 @@ const redeemAddon = async (addon: any) => {
   }
 };
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../utils/formatters';
+const formatDate = formatDateTime; // Use formatDateTime for full date-time display
     minute: '2-digit',
   });
 };
