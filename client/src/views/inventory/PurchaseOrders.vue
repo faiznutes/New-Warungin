@@ -566,10 +566,7 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-// Use formatters utility instead of local functions
-import { formatDate as formatDateUtil, formatCurrency as formatCurrencyUtil } from '../../utils/formatters';
-const formatDate = formatDateUtil;
-const formatCurrency = formatCurrencyUtil;
+// formatDate and formatCurrency are already imported from formatters utility above
 
 const closeModal = () => {
   showCreateModal.value = false;

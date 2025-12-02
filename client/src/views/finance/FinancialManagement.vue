@@ -640,6 +640,7 @@
 import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
+import { formatCurrency } from '../../utils/formatters';
 
 const { success: showSuccess, error: showError } = useNotification();
 
@@ -911,9 +912,7 @@ const closeReconciliationModal = () => {
   };
 };
 
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('id-ID').format(value);
-};
+// formatCurrency is already imported from formatters utility above
 
 onMounted(() => {
   loadCashFlowSummary();

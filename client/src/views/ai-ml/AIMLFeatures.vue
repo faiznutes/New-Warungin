@@ -462,9 +462,7 @@ const getSegmentBorderClass = (segment: string): string => {
   return classes[segment] || 'border-gray-500 bg-gray-50';
 };
 
-// Use formatters utility instead of local function
-import { formatCurrency as formatCurrencyUtil } from '../../utils/formatters';
-const formatCurrency = formatCurrencyUtil;
+// formatCurrency is already imported from formatters utility above
 
 onMounted(() => {
   // Auto-load segments on mount
