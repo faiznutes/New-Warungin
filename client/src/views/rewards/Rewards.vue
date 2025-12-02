@@ -309,12 +309,11 @@ const loadTransactions = async () => {
 const loadConfig = async () => {
   try {
     const response = await api.get('/rewards/config');
-    console.log('Rewards config response:', response.data);
     
     const { redemptions } = response.data;
     
     if (!redemptions) {
-      console.error('No redemptions data in response');
+      await showError('No redemptions data in response');
       return;
     }
     
@@ -326,9 +325,7 @@ const loadConfig = async () => {
         description: `Paket ${sub.name} selama 1 bulan`,
         pointsRequired: sub.pointsRequired,
       }));
-      console.log('Loaded subscription plans:', subscriptionPlans.value);
     } else {
-      console.warn('No subscriptions in redemptions');
       subscriptionPlans.value = [];
     }
     
@@ -340,16 +337,11 @@ const loadConfig = async () => {
         description: `Aktifkan addon ${addon.name}`,
         pointsRequired: addon.pointsRequired,
       }));
-      console.log('Loaded addons:', availableAddons.value);
     } else {
-      console.warn('No addons in redemptions');
       availableAddons.value = [];
     }
   } catch (error: any) {
-    console.error('Error loading config:', error);
-    console.error('Error details:', error.response?.data);
     const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-    console.error('Error message:', errorMessage);
     
     // Show detailed error message
     if (errorMessage.includes('Tenant ID')) {

@@ -455,7 +455,6 @@ const loadStores = async (force = false) => {
       }));
       storesLoaded.value = true; // Mark as loaded
     } catch (error: any) {
-      console.error('Error loading stores:', error);
       // Don't clear stores on 429 error (rate limiting)
       if (error.response?.status !== 429) {
         stores.value = [];

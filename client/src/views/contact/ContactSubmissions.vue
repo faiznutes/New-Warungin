@@ -334,7 +334,6 @@ const loadSubmissions = async () => {
     const response = await api.get('/contact/submissions');
     submissions.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading submissions:', error);
     showError(error.response?.data?.message || 'Gagal memuat pesan formulir.');
   } finally {
     loading.value = false;

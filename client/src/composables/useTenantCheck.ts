@@ -53,7 +53,7 @@ export const useTenantCheck = () => {
           try {
             await authStore.fetchTenants();
           } catch (error) {
-            console.error('Error fetching tenants:', error);
+            // Silently fail - tenant selection is optional
           }
         }
       }
