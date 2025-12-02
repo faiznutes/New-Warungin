@@ -5,8 +5,10 @@ import prisma from '../config/database';
  * Background job untuk auto-expire reward points
  * Run setiap hari untuk expire points yang sudah kadaluarsa
  */
+import logger from '../utils/logger';
+
 export async function expireRewardPointsJob() {
-  console.log('[Reward Points Job] Starting expiration check...');
+  logger.info('[Reward Points Job] Starting expiration check...');
 
   try {
     // Get all reward points

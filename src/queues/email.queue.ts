@@ -17,7 +17,8 @@ export const addEmailJob = async (
   html: string
 ): Promise<void> => {
   if (!emailQueue) {
-    console.warn('Email queue not available (Redis not configured)');
+    // Email queue not available (Redis not configured) - fail silently
+    // This is expected in development environments without Redis
     return;
   }
   await emailQueue.add('send-email', {
