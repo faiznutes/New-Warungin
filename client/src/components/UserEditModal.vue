@@ -730,6 +730,47 @@ const copyPassword = async () => {
 };
 
 const handleSubmit = () => {
+  // Client-side validation
+  if (!form.value.name || form.value.name.trim() === '') {
+    showError('Nama pengguna wajib diisi');
+    return;
+  }
+  
+  if (!form.value.email || form.value.email.trim() === '') {
+    showError('Email wajib diisi');
+    return;
+  }
+  
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.value.email)) {
+    showError('Format email tidak valid');
+    return;
+  }
+  
+  if (!form.value.role) {
+    showError('Role wajib dipilih');
+    return;
+  }
+  
+  // Password validation (only if creating new user or password is provided)
+  if (!props.user && (!form.value.password || form.value.password.trim() === '')) {
+    showError('Password wajib diisi untuk pengguna baru');
+    return;
+  }
+  
+  if (form.value.password && form.value.password.length < 6) {
+    showError('Password minimal 6 karakter');
+    return;
+  }
+  
+  // Store assignment validation for CASHIER and KITCHEN
+  if ((form.value.role === 'CASHIER' || form.value.role === 'KITCHEN') && 
+      (!form.value.permissions?.assignedStoreId || form.value.permissions.assignedStoreId === '')) {
+    showError('Store wajib dipilih untuk Kasir dan Kitchen');
+    return;
+  }
+  
   const userData: Partial<User & { password?: string; permissions?: UserPermissions }> = {
     name: form.value.name,
     email: form.value.email,

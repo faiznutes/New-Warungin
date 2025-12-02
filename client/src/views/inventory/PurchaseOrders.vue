@@ -421,7 +421,7 @@ const loadSuppliers = async () => {
     const response = await api.get('/suppliers', { params: { limit: 100 } });
     suppliers.value = response.data.data;
   } catch (error: any) {
-    console.error('Error loading suppliers:', error);
+    // Silently fail - suppliers will be empty
   }
 };
 

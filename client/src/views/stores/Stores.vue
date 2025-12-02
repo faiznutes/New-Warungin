@@ -304,6 +304,12 @@ const loadStores = async () => {
 };
 
 const handleSubmit = async () => {
+  // Client-side validation
+  if (!storeForm.value.name || storeForm.value.name.trim() === '') {
+    await showError('Nama store wajib diisi');
+    return;
+  }
+  
   processing.value = true;
   try {
     if (editingStore.value) {

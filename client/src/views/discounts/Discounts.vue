@@ -414,7 +414,6 @@ const saveDiscount = async () => {
     closeModal();
     await loadDiscounts();
   } catch (error: any) {
-    console.error('Error saving discount:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan diskon');
   }
 };
@@ -428,7 +427,6 @@ const deleteDiscount = async (id: string) => {
     await showSuccess('Diskon berhasil dihapus');
     await loadDiscounts();
   } catch (error: any) {
-    console.error('Error deleting discount:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus diskon');
   }
 };

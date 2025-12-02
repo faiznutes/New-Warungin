@@ -182,9 +182,9 @@ export function handleRouteError(
  * Automatically catches errors and handles them properly
  */
 export function asyncHandler(
-  fn: (req: any, res: Response, next?: any) => Promise<any>
+  fn: (req: Request, res: Response, next?: NextFunction) => Promise<unknown>
 ) {
-  return (req: any, res: Response, next: any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch((error) => {
       handleRouteError(res, error, 'An error occurred', `${req.method} ${req.path}`);
     });
