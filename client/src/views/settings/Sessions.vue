@@ -153,7 +153,7 @@ const revokeAllSessions = async () => {
   }
 };
 
-const { error: showError } = useNotification();
+const { error: showError, success: showSuccess } = useNotification();
 // formatDateTime is already imported from formatters utility above
 const formatDate = formatDateTime;
 

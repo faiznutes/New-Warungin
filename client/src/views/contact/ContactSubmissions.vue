@@ -341,7 +341,8 @@ const loadSubmissions = async () => {
 };
 
 const deleteSubmission = async (id: string) => {
-  if (!confirm('Apakah Anda yakin ingin menghapus pesan ini?')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus pesan ini?');
+  if (!confirmed) {
     return;
   }
 
@@ -358,7 +359,8 @@ const deleteSubmission = async (id: string) => {
 };
 
 const handleCleanup = async () => {
-  if (!confirm('Apakah Anda yakin ingin menghapus semua pesan yang lebih dari 1 bulan?')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus semua pesan yang lebih dari 1 bulan?');
+  if (!confirmed) {
     return;
   }
 

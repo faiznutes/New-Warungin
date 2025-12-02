@@ -345,9 +345,9 @@ const loadConfig = async () => {
     
     // Show detailed error message
     if (errorMessage.includes('Tenant ID')) {
-      alert('Error: ' + errorMessage + '\n\nPastikan Anda sudah memilih tenant (untuk Super Admin) atau sudah login dengan benar.');
+      await showError('Error: ' + errorMessage + '\n\nPastikan Anda sudah memilih tenant (untuk Super Admin) atau sudah login dengan benar.');
     } else {
-      alert('Gagal memuat data langganan dan addon.\n\nError: ' + errorMessage + '\n\nSilakan refresh halaman atau hubungi administrator.');
+      await showError('Gagal memuat data langganan dan addon.\n\nError: ' + errorMessage + '\n\nSilakan refresh halaman atau hubungi administrator.');
     }
   }
 };

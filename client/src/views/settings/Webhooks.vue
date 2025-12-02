@@ -225,7 +225,7 @@ import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
 
-const { error: showError, success: showSuccess } = useNotification();
+const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 
 const loading = ref(true);
 const webhooks = ref<any[]>([]);
@@ -306,7 +306,8 @@ const editWebhook = (webhook: any) => {
 };
 
 const deleteWebhook = async (id: string) => {
-  if (!confirm('Apakah Anda yakin ingin menghapus webhook ini?')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus webhook ini?');
+  if (!confirmed) {
     return;
   }
 
