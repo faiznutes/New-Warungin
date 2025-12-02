@@ -356,20 +356,10 @@ export class OrderService {
    */
   private async invalidateAnalyticsCache(tenantId: string): Promise<void> {
     try {
-      const redis = getRedisClient();
-      if (redis) {
-        // Delete all analytics cache keys for this tenant
-        const keys = await redis.keys(`analytics:*:${tenantId}`);
-        const keys2 = await redis.keys(`analytics:${tenantId}:*`);
-        const allKeys = [...keys, ...keys2];
-        if (allKeys.length > 0) {
-          await redis.del(...allKeys);
-          logger.info('Invalidated analytics cache after order operation', {
-            tenantId,
-            cacheKeysDeleted: allKeys.length
-          });
-        }
-      }
+      // Delete all analytics cache keys for this tenant
+      await CacheService.deletePattern(`analytics:*:${tenantId}`);
+      await CacheService.deletePattern(`analytics:${tenantId}:*`);
+      logger.info('Invalidated analytics cache after order operation', { tenantId });
     } catch (error: any) {
       logger.warn('Failed to invalidate analytics cache', {
         error: error.message,
