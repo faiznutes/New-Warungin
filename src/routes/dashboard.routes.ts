@@ -147,10 +147,10 @@ router.get(
   '/stats/cashier',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      if (user.role !== 'CASHIER') {
+      const userRole = req.user?.role || req.role;
+      if (userRole !== 'CASHIER') {
         const error = new Error('Access denied. Cashier only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Cashier only.', 'GET_CASHIER_DASHBOARD');
