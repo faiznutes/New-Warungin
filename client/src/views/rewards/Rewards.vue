@@ -259,6 +259,9 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
+import { useNotification } from '../../composables/useNotification';
+
+const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 
 const router = useRouter();
 const activeTab = ref<'earn' | 'redeem' | 'history'>('earn');
@@ -364,7 +367,8 @@ const claimReward = () => {
 };
 
 const redeemSubscription = async (plan: any) => {
-  if (!confirm(`Tukar ${plan.pointsRequired} point untuk ${plan.name}?`)) return;
+  const confirmed = await showConfirm(`Tukar ${plan.pointsRequired} point untuk ${plan.name}?`);
+  if (!confirmed) return;
   
   redeeming.value = true;
   try {
@@ -373,18 +377,19 @@ const redeemSubscription = async (plan: any) => {
       pointsRequired: plan.pointsRequired,
     });
     
-    alert('Berhasil! Langganan Anda telah diperpanjang.');
+    await showSuccess('Berhasil! Langganan Anda telah diperpanjang.');
     await loadBalance();
     await loadTransactions();
   } catch (error: any) {
-    alert(error.response?.data?.message || 'Error menukar point');
+    await showError(error.response?.data?.message || 'Error menukar point');
   } finally {
     redeeming.value = false;
   }
 };
 
 const redeemAddon = async (addon: any) => {
-  if (!confirm(`Tukar ${addon.pointsRequired} point untuk ${addon.name}?`)) return;
+  const confirmed = await showConfirm(`Tukar ${addon.pointsRequired} point untuk ${addon.name}?`);
+  if (!confirmed) return;
   
   redeeming.value = true;
   try {
@@ -394,11 +399,11 @@ const redeemAddon = async (addon: any) => {
       pointsRequired: addon.pointsRequired,
     });
     
-    alert('Berhasil! Addon telah diaktifkan.');
+    await showSuccess('Berhasil! Addon telah diaktifkan.');
     await loadBalance();
     await loadTransactions();
   } catch (error: any) {
-    alert(error.response?.data?.message || 'Error menukar point');
+    await showError(error.response?.data?.message || 'Error menukar point');
   } finally {
     redeeming.value = false;
   }
