@@ -138,10 +138,9 @@ const exportData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    alert('Data berhasil diekspor');
+    await showSuccess('Data berhasil diekspor');
   } catch (error: any) {
-    console.error('Error exporting data:', error);
-    alert(error.response?.data?.message || 'Gagal mengekspor data');
+    await showError(error.response?.data?.message || 'Gagal mengekspor data');
   } finally {
     exporting.value = false;
   }
@@ -164,10 +163,9 @@ const exportTenantData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    alert('Data tenant berhasil diekspor');
+    await showSuccess('Data tenant berhasil diekspor');
   } catch (error: any) {
-    console.error('Error exporting tenant data:', error);
-    alert(error.response?.data?.message || 'Gagal mengekspor data tenant');
+    await showError(error.response?.data?.message || 'Gagal mengekspor data tenant');
   } finally {
     exportingTenant.value = false;
   }
@@ -178,7 +176,8 @@ const deleteData = async () => {
     return;
   }
 
-  if (!confirm('Apakah Anda yakin ingin menghapus semua data pribadi Anda? Tindakan ini tidak dapat dibatalkan dan akun Anda akan dinonaktifkan.')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus semua data pribadi Anda? Tindakan ini tidak dapat dibatalkan dan akun Anda akan dinonaktifkan.');
+  if (!confirmed) {
     return;
   }
 
@@ -188,14 +187,13 @@ const deleteData = async () => {
       confirm: 'DELETE_MY_DATA',
     });
 
-    alert('Data Anda telah dihapus. Anda akan diarahkan ke halaman login.');
+    await showSuccess('Data Anda telah dihapus. Anda akan diarahkan ke halaman login.');
     
     // Clear auth and redirect to login
     authStore.clearAuth();
     window.location.href = '/login';
   } catch (error: any) {
-    console.error('Error deleting data:', error);
-    alert(error.response?.data?.message || 'Gagal menghapus data');
+    await showError(error.response?.data?.message || 'Gagal menghapus data');
   } finally {
     deleting.value = false;
   }

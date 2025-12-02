@@ -260,9 +260,8 @@ const enable2FA = async () => {
     verificationToken.value = '';
     
     // Show success message
-    alert('2FA berhasil diaktifkan!');
+    await showSuccess('2FA berhasil diaktifkan!');
   } catch (error: any) {
-    console.error('Error enabling 2FA:', error);
     verifyError.value = error.response?.data?.message || 'Token tidak valid';
   } finally {
     enabling.value = false;
@@ -292,26 +291,25 @@ const disable2FA = async () => {
     disablePassword.value = '';
     
     // Show success message
-    alert('2FA berhasil dinonaktifkan');
+    await showSuccess('2FA berhasil dinonaktifkan');
   } catch (error: any) {
-    console.error('Error disabling 2FA:', error);
     disableError.value = error.response?.data?.message || 'Password tidak valid';
   } finally {
     disabling.value = false;
   }
 };
 
-const copySecret = () => {
+const copySecret = async () => {
   if (qrData.value) {
-    navigator.clipboard.writeText(qrData.value.secret);
-    alert('Secret berhasil disalin!');
+    await navigator.clipboard.writeText(qrData.value.secret);
+    await showSuccess('Secret berhasil disalin!');
   }
 };
 
-const copyBackupCodes = () => {
+const copyBackupCodes = async () => {
   if (qrData.value) {
-    navigator.clipboard.writeText(qrData.value.backupCodes.join('\n'));
-    alert('Backup codes berhasil disalin!');
+    await navigator.clipboard.writeText(qrData.value.backupCodes.join('\n'));
+    await showSuccess('Backup codes berhasil disalin!');
   }
 };
 
