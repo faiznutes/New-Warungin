@@ -5,6 +5,7 @@ import { authGuard } from '../middlewares/auth';
 import prisma from '../config/database';
 import { handleRouteError } from '../utils/route-error-handler';
 import logger from '../utils/logger';
+import { authLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
 
@@ -34,6 +35,7 @@ const demoRequestSchema = z.object({
  */
 router.post(
   '/',
+  authLimiter, // Rate limit contact form submissions
   validate({ body: contactFormSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -72,6 +74,7 @@ router.post(
  */
 router.post(
   '/demo',
+  authLimiter, // Rate limit demo requests
   validate({ body: demoRequestSchema }),
   async (req: Request, res: Response) => {
     try {

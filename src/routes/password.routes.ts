@@ -5,6 +5,7 @@ import { updatePasswordSchema } from '../validators/password.validator';
 import { validate } from '../middlewares/validator';
 import logger from '../utils/logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import { authLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ const router = Router();
  */
 router.post(
   '/check-strength',
+  authLimiter, // Rate limit password strength checks
   async (req: Request, res: Response) => {
     try {
       const { password } = req.body;
