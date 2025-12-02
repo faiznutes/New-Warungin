@@ -775,19 +775,13 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
   });
 
   // Invalidate cache
-  const redis = getRedisClient();
-  if (redis) {
-    try {
-      // Invalidate tenant cache
-      await redis.del(`tenant:${id}`);
-      // Invalidate tenants list cache (all pages)
-      const keys = await redis.keys('tenants:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-    } catch (error) {
-      logger.warn('Failed to invalidate tenant cache:', error);
-    }
+  try {
+    // Invalidate tenant cache
+    await CacheService.delete(`tenant:${id}`);
+    // Invalidate tenants list cache (all pages)
+    await CacheService.deletePattern('tenants:*');
+  } catch (error) {
+    logger.warn('Failed to invalidate tenant cache:', error);
   }
 
   return updatedTenant;
@@ -907,19 +901,13 @@ export const deleteTenant = async (id: string) => {
   });
 
   // Invalidate cache
-  const redis = getRedisClient();
-  if (redis) {
-    try {
-      // Invalidate tenant cache
-      await redis.del(`tenant:${id}`);
-      // Invalidate tenants list cache (all pages)
-      const keys = await redis.keys('tenants:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-    } catch (error) {
-      logger.warn('Failed to invalidate tenant cache:', error);
-    }
+  try {
+    // Invalidate tenant cache
+    await CacheService.delete(`tenant:${id}`);
+    // Invalidate tenants list cache (all pages)
+    await CacheService.deletePattern('tenants:*');
+  } catch (error) {
+    logger.warn('Failed to invalidate tenant cache:', error);
   }
 
   return { message: 'Tenant deleted successfully' };
