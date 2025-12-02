@@ -154,26 +154,34 @@ export class AddonService {
       orderBy: { subscribedAt: 'desc' },
     });
 
+    // Get total limits from plan features (base plan + all addons)
+    const planFeaturesService = (await import('./plan-features.service')).default;
+    const planFeatures = await planFeaturesService.getTenantPlanFeatures(tenantId);
+
     // Get current usage for each addon
     const addonsWithUsage = await Promise.all(
       addons.map(async (addon) => {
         let currentUsage = 0;
+        let totalLimit: number | null = null;
         
         switch (addon.addonType) {
           case 'ADD_USERS':
             currentUsage = await prisma.user.count({
               where: { tenantId, isActive: true },
             });
+            totalLimit = planFeatures.limits.users === -1 ? null : planFeatures.limits.users;
             break;
           case 'ADD_PRODUCTS':
             currentUsage = await prisma.product.count({
               where: { tenantId, isActive: true },
             });
+            totalLimit = planFeatures.limits.products === -1 ? null : planFeatures.limits.products;
             break;
           case 'ADD_OUTLETS':
             currentUsage = await prisma.outlet.count({
               where: { tenantId, isActive: true },
             });
+            totalLimit = planFeatures.limits.outlets === -1 ? null : planFeatures.limits.outlets;
             break;
           case 'BUSINESS_ANALYTICS':
           case 'ADVANCED_REPORTING':
@@ -186,13 +194,20 @@ export class AddonService {
           case 'EXPORT_REPORTS':
             // These addons don't have usage limits
             currentUsage = 0;
+            totalLimit = null;
             break;
         }
 
+        // Use total limit (base plan + all addons) instead of individual addon limit
+        const displayLimit = totalLimit !== null ? totalLimit : addon.limit;
+        
         return {
           ...addon,
           currentUsage,
-          isLimitReached: addon.limit ? currentUsage >= addon.limit : false,
+          limit: displayLimit, // Use total limit for display
+          totalLimit: displayLimit, // Total limit (base plan + all addons)
+          addonLimit: addon.limit, // Individual addon limit (for reference)
+          isLimitReached: displayLimit !== null ? currentUsage >= displayLimit : false,
         };
       })
     );
