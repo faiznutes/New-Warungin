@@ -4,17 +4,20 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
 import advancedAuditService from '../services/advanced-audit.service';
 import { getTenantId } from '../utils/tenant';
+import logger from '../utils/logger';
 
 /**
  * Middleware to log API requests
  */
 export const auditMiddleware = (action: string, resource: string, severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'MEDIUM') => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request | AuthRequest, res: Response, next: NextFunction) => {
     try {
       const tenantId = getTenantId(req);
-      const user = (req as any).user;
+      const authReq = req as AuthRequest;
+      const user = authReq.user;
 
       if (tenantId) {
         await advancedAuditService.logEvent(tenantId, {
@@ -34,7 +37,7 @@ export const auditMiddleware = (action: string, resource: string, severity: 'LOW
       }
     } catch (error) {
       // Don't break the request if audit logging fails
-      console.error('Audit middleware error:', error);
+      logger.error('Audit middleware error', { error: error instanceof Error ? error.message : String(error) });
     }
     next();
   };
@@ -44,7 +47,7 @@ export const auditMiddleware = (action: string, resource: string, severity: 'LOW
  * Middleware to log data changes (for PUT/PATCH/DELETE)
  */
 export const auditDataChangeMiddleware = (resource: string) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request | AuthRequest, res: Response, next: NextFunction) => {
     const originalSend = res.send.bind(res);
     let responseBody: any;
 
@@ -57,7 +60,8 @@ export const auditDataChangeMiddleware = (resource: string) => {
       try {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           const tenantId = getTenantId(req);
-          const user = (req as any).user;
+          const authReq = req as AuthRequest;
+          const user = authReq.user;
 
           if (tenantId && user) {
             const action = req.method === 'DELETE' ? 'DELETE' : req.method === 'POST' ? 'CREATE' : 'UPDATE';
@@ -79,7 +83,7 @@ export const auditDataChangeMiddleware = (resource: string) => {
           }
         }
       } catch (error) {
-        console.error('Audit data change middleware error:', error);
+        logger.error('Audit data change middleware error', { error: error instanceof Error ? error.message : String(error) });
       }
     });
 

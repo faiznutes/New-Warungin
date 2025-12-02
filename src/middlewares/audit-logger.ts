@@ -25,8 +25,8 @@ export const auditLogger = (
           const tenantId = req.tenantId || null;
           const userId = req.userId || null;
           // Get user info from request if available, otherwise null
-          const userEmail = (req as any).user?.email || null;
-          const userName = (req as any).user?.name || null;
+          const userEmail = req.user?.email || null;
+          const userName = req.user?.name || null;
           const resourceId = getResourceId ? getResourceId(req) : null;
           const details = getDetails ? getDetails(req, res) : null;
           const requestInfo = extractRequestInfo(req);
@@ -64,7 +64,7 @@ export const auditLogger = (
           });
         } catch (error: any) {
           // Don't log audit errors - silent fail
-          console.error('Audit logging error:', error.message);
+          logger.error('Audit logging error', { error: error.message });
         }
       });
 
@@ -96,8 +96,8 @@ export const logAction = async (
     const tenantId = req.tenantId || null;
     const userId = req.userId || null;
     // Get user info from request if available, otherwise null
-    const userEmail = (req as any).user?.email || null;
-    const userName = (req as any).user?.name || null;
+    const userEmail = req.user?.email || null;
+    const userName = req.user?.name || null;
     const requestInfo = extractRequestInfo(req);
 
     await auditLogService.createLog({
@@ -116,7 +116,7 @@ export const logAction = async (
     });
   } catch (error: any) {
     // Silent fail - don't break application
-    console.error('Failed to log action:', error.message);
+    logger.error('Failed to log action', { error: error.message });
   }
 };
 

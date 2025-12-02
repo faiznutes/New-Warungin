@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from './auth';
 import addonService from '../services/addon.service';
 import { requireTenantId } from '../utils/tenant';
 
@@ -7,9 +8,10 @@ import { requireTenantId } from '../utils/tenant';
  * Super Admin and Admin Tenant bypass addon check for basic features
  */
 export const checkAddon = (addonType: string) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request | AuthRequest, res: Response, next: NextFunction) => {
     try {
-      const userRole = (req as any).user?.role;
+      const authReq = req as AuthRequest;
+      const userRole = authReq.user?.role || authReq.role;
       
       // Super Admin bypass addon check
       if (userRole === 'SUPER_ADMIN') {
