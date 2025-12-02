@@ -223,6 +223,9 @@
 import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
+import { useNotification } from '../../composables/useNotification';
+
+const { error: showError, success: showSuccess } = useNotification();
 
 const loading = ref(true);
 const webhooks = ref<any[]>([]);
@@ -284,8 +287,7 @@ const saveWebhook = async () => {
     await loadWebhooks();
     closeModal();
   } catch (error: any) {
-    console.error('Error saving webhook:', error);
-    alert(error.response?.data?.message || 'Gagal menyimpan webhook');
+    await showError(error.response?.data?.message || 'Gagal menyimpan webhook');
   } finally {
     saving.value = false;
   }
