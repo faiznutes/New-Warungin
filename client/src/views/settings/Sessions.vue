@@ -126,7 +126,8 @@ const loadSessions = async () => {
 };
 
 const revokeSession = async (sessionId: string) => {
-  if (!confirm('Apakah Anda yakin ingin mengakhiri sesi ini?')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin mengakhiri sesi ini?');
+  if (!confirmed) {
     return;
   }
 
@@ -154,7 +155,7 @@ const revokeAllSessions = async () => {
   }
 };
 
-const { error: showError, success: showSuccess } = useNotification();
+const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 // formatDateTime is already imported from formatters utility above
 const formatDate = formatDateTime;
 
