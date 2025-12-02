@@ -140,7 +140,8 @@ const revokeSession = async (sessionId: string) => {
 };
 
 const revokeAllSessions = async () => {
-  if (!confirm('Apakah Anda yakin ingin mengakhiri semua sesi lainnya? Anda akan tetap login di perangkat ini.')) {
+  const confirmed = await showConfirm('Apakah Anda yakin ingin mengakhiri semua sesi lainnya? Anda akan tetap login di perangkat ini.');
+  if (!confirmed) {
     return;
   }
 
