@@ -981,19 +981,9 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-const formatDate = (date: string | Date | null | undefined) => {
-  if (!date) return '-';
-  try {
-    const d = new Date(date);
-    return d.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch {
-    return '-';
-  }
-};
+// Use formatters utility instead of local function
+import { formatDate as formatDateUtil } from '../../utils/formatters';
+const formatDate = formatDateUtil;
 
 const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {

@@ -219,9 +219,9 @@ const getEngagementLevelClass = (level: string): string => {
   return classes[level] || 'bg-gray-100 text-gray-800';
 };
 
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('id-ID').format(value);
-};
+// Use formatters utility instead of local function
+import { formatCurrency as formatCurrencyUtil } from '../../utils/formatters';
+const formatCurrency = formatCurrencyUtil;
 
 const formatPercentage = (value: number): string => {
   return value.toFixed(2);

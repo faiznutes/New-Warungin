@@ -462,9 +462,9 @@ const getSegmentBorderClass = (segment: string): string => {
   return classes[segment] || 'border-gray-500 bg-gray-50';
 };
 
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('id-ID').format(value);
-};
+// Use formatters utility instead of local function
+import { formatCurrency as formatCurrencyUtil } from '../../utils/formatters';
+const formatCurrency = formatCurrencyUtil;
 
 onMounted(() => {
   // Auto-load segments on mount

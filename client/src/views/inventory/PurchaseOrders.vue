@@ -566,13 +566,10 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('id-ID');
-};
-
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('id-ID').format(value);
-};
+// Use formatters utility instead of local functions
+import { formatDate as formatDateUtil, formatCurrency as formatCurrencyUtil } from '../../utils/formatters';
+const formatDate = formatDateUtil;
+const formatCurrency = formatCurrencyUtil;
 
 const closeModal = () => {
   showCreateModal.value = false;
