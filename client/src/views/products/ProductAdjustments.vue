@@ -368,20 +368,8 @@
                 </div>
               </template>
               
-              <!-- Textarea untuk auto-filled reason (hanya muncul saat tidak manual mode dan ada alasan yang dipilih) -->
-              <template v-else>
-                <div v-if="selectedReasonType && adjustmentForm.reason" class="mt-2">
-                  <textarea
-                    v-model="adjustmentForm.reason"
-                    required
-                    rows="3"
-                    placeholder="Alasan akan terisi otomatis setelah memilih alasan umum atau akan muncul setelah memilih dari sub-dropdown"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50"
-                    readonly
-                  ></textarea>
-                  <p class="mt-1 text-xs text-gray-500">Alasan akan terisi otomatis berdasarkan pilihan Anda di atas</p>
-                </div>
-              </template>
+              <!-- Textarea untuk auto-filled reason - HIDDEN, hanya reason text yang terisi otomatis -->
+              <!-- Reason akan terisi otomatis di background, tidak perlu textarea untuk ditampilkan -->
             </div>
 
             <!-- Suggestion -->
