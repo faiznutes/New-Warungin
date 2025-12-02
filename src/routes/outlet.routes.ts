@@ -106,7 +106,7 @@ router.post(
       const addonService = (await import('../services/addon.service')).default;
       const addons = await addonService.getTenantAddons(tenantId);
       const hasMultiOutletAdvanced = addons.some(
-        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+        (addon: any) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
       );
       
       if (!hasMultiOutletAdvanced) {
@@ -145,7 +145,7 @@ router.post(
       const addonService = (await import('../services/addon.service')).default;
       const addons = await addonService.getTenantAddons(tenantId);
       const hasMultiOutletAdvanced = addons.some(
-        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+        (addon: any) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
       );
       
       if (!hasMultiOutletAdvanced) {
@@ -185,7 +185,7 @@ router.get(
       const addonService = (await import('../services/addon.service')).default;
       const addons = await addonService.getTenantAddons(tenantId);
       const hasMultiOutletAdvanced = addons.some(
-        (addon) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
+        (addon: any) => addon.addonType === 'MULTI_OUTLET_ADVANCED' && addon.status === 'active'
       );
       
       if (!hasMultiOutletAdvanced) {

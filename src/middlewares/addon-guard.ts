@@ -29,7 +29,7 @@ export const checkAddon = (addonType: string) => {
       const addons = await addonService.getTenantAddons(tenantId);
       
       const hasAddon = addons.some(
-        (addon) => addon.addonType === addonType && addon.status === 'active'
+        (addon: any) => addon.addonType === addonType && addon.status === 'active'
       );
       
       if (!hasAddon) {

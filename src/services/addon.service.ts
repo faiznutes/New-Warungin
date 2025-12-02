@@ -139,7 +139,7 @@ export class AddonService {
     return AVAILABLE_ADDONS;
   }
 
-  async getTenantAddons(tenantId: string) {
+  async getTenantAddons(tenantId: string): Promise<any[]> {
     const now = new Date();
     const addons = await prisma.tenantAddon.findMany({
       where: {
@@ -156,10 +156,10 @@ export class AddonService {
 
     // Get total limits from plan features (base plan + all addons)
     const planFeaturesService = (await import('./plan-features.service')).default;
-    const planFeatures = await planFeaturesService.getTenantPlanFeatures(tenantId);
+    const planFeatures: any = await planFeaturesService.getTenantPlanFeatures(tenantId);
 
     // Get current usage for each addon
-    const addonsWithUsage = await Promise.all(
+    const addonsWithUsage: any[] = await Promise.all(
       addons.map(async (addon) => {
         let currentUsage = 0;
         let totalLimit: number | null = null;
@@ -199,7 +199,7 @@ export class AddonService {
         }
 
         // Use total limit (base plan + all addons) instead of individual addon limit
-        const displayLimit = totalLimit !== null ? totalLimit : addon.limit;
+        const displayLimit: number | null = totalLimit !== null ? totalLimit : addon.limit;
         
         return {
           ...addon,

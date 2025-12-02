@@ -128,7 +128,7 @@ router.get(
         // Check addon for export
         const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
         const hasExportAddon = addons.some(
-          (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'active'
+          (addon: any) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'active'
         );
         
         if (!hasExportAddon) {

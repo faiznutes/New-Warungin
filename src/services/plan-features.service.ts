@@ -358,7 +358,7 @@ export async function applyPlanFeatures(tenantId: string, planName: string) {
  * Get tenant plan features and limits
  * Combines base plan limits with active addons
  */
-export async function getTenantPlanFeatures(tenantId: string) {
+export async function getTenantPlanFeatures(tenantId: string): Promise<any> {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: {
@@ -380,7 +380,7 @@ export async function getTenantPlanFeatures(tenantId: string) {
   const baseLimits = PLAN_BASE_LIMITS[planKey] || PLAN_BASE_LIMITS.BASIC;
 
   // Get active addons
-  const activeAddons = await addonService.getTenantAddons(tenantId);
+  const activeAddons: any[] = await addonService.getTenantAddons(tenantId);
 
   // Calculate total limits (base + addons)
   let totalProducts = baseLimits.products === -1 ? -1 : baseLimits.products;
@@ -479,7 +479,7 @@ export async function getTenantPlanFeatures(tenantId: string) {
     planFeatures: PLAN_FEATURES[planKey] || PLAN_FEATURES.BASIC,
     tenantsLimit: tenant.tenantsLimit || PLAN_FEATURES[planKey]?.tenantsLimit || 1,
     tenantsActive: tenant.tenantsActive || 0,
-    activeAddons: activeAddons.map(a => ({
+    activeAddons: activeAddons.map((a: any) => ({
       id: a.addonId,
       type: a.addonType,
       name: a.addonName,
