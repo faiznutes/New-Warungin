@@ -214,7 +214,6 @@ const loadAdjustments = async () => {
     const response = await api.get('/products/adjustments');
     adjustments.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading adjustments:', error);
     await showError(error.response?.data?.message || 'Gagal memuat data penyesuaian');
   } finally {
     loading.value = false;
@@ -226,7 +225,7 @@ const loadProducts = async () => {
     const response = await api.get('/products', { params: { limit: 1000 } });
     products.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading products:', error);
+    // Silently fail - products will be empty
   }
 };
 
@@ -260,7 +259,6 @@ const saveAdjustment = async () => {
     await loadAdjustments();
     await loadProducts(); // Reload products to get updated stock
   } catch (error: any) {
-    console.error('Error saving adjustment:', error);
     const errorMessage = error.response?.data?.message || error.message || 'Gagal menyimpan penyesuaian';
     await showError(errorMessage);
   }
