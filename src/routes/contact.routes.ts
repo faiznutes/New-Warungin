@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import prisma from '../config/database';
 import { handleRouteError } from '../utils/route-error-handler';
 import logger from '../utils/logger';
@@ -117,10 +117,10 @@ router.post(
 router.get(
   '/submissions',
   authGuard,
-  async (req: Request, res: Response) => {
-    const user = (req as any).user;
+  async (req: AuthRequest, res: Response) => {
+    const user = req.user;
     try {
-      if (!user || user.role !== 'SUPER_ADMIN') {
+      if (!user || (user.role !== 'SUPER_ADMIN' && req.role !== 'SUPER_ADMIN')) {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
@@ -161,10 +161,10 @@ router.get(
 router.delete(
   '/submissions/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    const user = (req as any).user;
+  async (req: AuthRequest, res: Response) => {
+    const user = req.user;
     try {
-      if (!user || user.role !== 'SUPER_ADMIN') {
+      if (!user || (user.role !== 'SUPER_ADMIN' && req.role !== 'SUPER_ADMIN')) {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
@@ -221,10 +221,10 @@ router.delete(
 router.post(
   '/submissions/cleanup',
   authGuard,
-  async (req: Request, res: Response) => {
-    const user = (req as any).user;
+  async (req: AuthRequest, res: Response) => {
+    const user = req.user;
     try {
-      if (!user || user.role !== 'SUPER_ADMIN') {
+      if (!user || (user.role !== 'SUPER_ADMIN' && req.role !== 'SUPER_ADMIN')) {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');
@@ -271,10 +271,10 @@ router.post(
 router.patch(
   '/submissions/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    const user = (req as any).user;
+  async (req: AuthRequest, res: Response) => {
+    const user = req.user;
     try {
-      if (!user || user.role !== 'SUPER_ADMIN') {
+      if (!user || (user.role !== 'SUPER_ADMIN' && req.role !== 'SUPER_ADMIN')) {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_CONTACT_SUBMISSIONS');

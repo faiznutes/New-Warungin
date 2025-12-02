@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import orderService from '../services/order.service';
 import { createOrderSchema, updateOrderStatusSchema, getOrdersQuerySchema, updateOrderSchema } from '../validators/order.validator';
@@ -56,10 +56,10 @@ router.get(
   authGuard,
   subscriptionGuard,
   validate({ query: getOrdersQuerySchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       const result = await orderService.getOrders(tenantId, req.query as any, userRole);
       res.json(result);
     } catch (error: unknown) {
@@ -201,10 +201,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createOrderSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user.id;
+      const userId = req.user?.id || req.userId || '';
       const order = await orderService.createOrder(req.body, userId, tenantId);
       res.status(201).json(order);
     } catch (error: unknown) {
@@ -294,10 +294,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -330,10 +330,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can refund orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -475,10 +475,10 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {

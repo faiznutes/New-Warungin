@@ -8,6 +8,13 @@ export interface AuthRequest extends Request {
   userId?: string;
   tenantId?: string | null;
   role?: string;
+  user?: {
+    id: string;
+    tenantId: string | null;
+    role: string;
+    email: string;
+    name: string;
+  };
 }
 
 /**
@@ -234,16 +241,7 @@ export const authGuard = async (
     req.role = decoded.role;
     
     // Also attach to req.user for compatibility with routes
-    interface ExtendedRequest extends Request {
-      user?: {
-        id: string;
-        tenantId: string | null;
-        role: string;
-        email: string;
-        name: string;
-      };
-    }
-    (req as ExtendedRequest).user = {
+    req.user = {
       id: decoded.userId,
       tenantId: tenantId,
       role: decoded.role,

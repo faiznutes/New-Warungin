@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { AuthRequest } from '../middlewares/auth';
 import logger from './logger';
 
 /**
@@ -6,9 +7,10 @@ import logger from './logger';
  * For SUPER_ADMIN: uses tenantId from query parameter
  * For other roles: uses tenantId from user object
  */
-export const getTenantId = (req: Request): string | null => {
-  const user = (req as any).user;
-  const role = user?.role;
+export const getTenantId = (req: Request | AuthRequest): string | null => {
+  const authReq = req as AuthRequest;
+  const user = authReq.user;
+  const role = user?.role || authReq.role;
   
   // SUPER_ADMIN can specify tenantId via query parameter
   if (role === 'SUPER_ADMIN') {
@@ -22,14 +24,14 @@ export const getTenantId = (req: Request): string | null => {
   
   // For other roles, use tenantId from user
   // Check both req.user.tenantId and req.tenantId (from auth middleware)
-  const tenantId = user?.tenantId || (req as any).tenantId;
+  const tenantId = user?.tenantId || authReq.tenantId;
   
   if (!tenantId) {
     logger.error('Tenant ID not found in request', {
       role,
       hasUser: !!user,
       userTenantId: user?.tenantId,
-      reqTenantId: (req as any).tenantId,
+      reqTenantId: authReq.tenantId,
       userId: user?.id,
     });
   }
@@ -40,20 +42,23 @@ export const getTenantId = (req: Request): string | null => {
 /**
  * Get userId from request
  */
-export const requireUserId = (req: Request): string => {
-  const user = (req as any).user;
-  if (!user || !user.id) {
+export const requireUserId = (req: Request | AuthRequest): string => {
+  const authReq = req as AuthRequest;
+  const user = authReq.user;
+  const userId = user?.id || authReq.userId;
+  if (!userId) {
     throw new Error('User ID is required. Please authenticate first.');
   }
-  return user.id;
+  return userId;
 };
 
 /**
  * Validate that tenantId exists (required for all roles except SUPER_ADMIN without selected tenant)
  */
-export const requireTenantId = (req: Request): string => {
-  const user = (req as any).user;
-  const role = user?.role;
+export const requireTenantId = (req: Request | AuthRequest): string => {
+  const authReq = req as AuthRequest;
+  const user = authReq.user;
+  const role = user?.role || authReq.role;
   const tenantId = getTenantId(req);
   
   if (!tenantId) {
