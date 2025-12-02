@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import subscriptionService from '../services/subscription.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -88,10 +88,10 @@ router.post(
   '/extend',
   authGuard,
   validate({ body: extendSubscriptionSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can extend subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -142,10 +142,10 @@ router.post(
   '/upgrade',
   authGuard,
   validate({ body: upgradeSubscriptionSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can upgrade subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -172,10 +172,10 @@ router.post(
   '/reduce',
   authGuard,
   validate({ body: reduceSubscriptionSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only SUPER_ADMIN can reduce subscription
       if (userRole !== 'SUPER_ADMIN') {

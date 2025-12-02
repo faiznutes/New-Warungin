@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
@@ -32,12 +32,12 @@ const router = Router();
 router.get(
   '/global',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
+      const userRole = req.user?.role || req.role;
       
       // Only Super Admin can access global reports
-      if (!user || user.role !== 'SUPER_ADMIN') {
+      if (!userRole || userRole !== 'SUPER_ADMIN') {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GLOBAL_REPORT');
@@ -344,12 +344,12 @@ router.get(
 router.get(
   '/global/export/pdf',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
+      const userRole = req.user?.role || req.role;
       
       // Only Super Admin can access global reports
-      if (user.role !== 'SUPER_ADMIN') {
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'EXPORT_GLOBAL_REPORT');
