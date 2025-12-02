@@ -544,17 +544,9 @@ export const getTenants = async (page: number = 1, limit: number = 10, includeCo
 
   // Try to get from cache first
   if (useCache && !includeCounts) {
-    const redis = getRedisClient();
-    if (redis) {
-      try {
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-          return JSON.parse(cached);
-        }
-      } catch (error) {
-        // If cache read fails, continue with database query
-        logger.warn('Failed to read tenants from cache:', error);
-      }
+    const cached = await CacheService.get(cacheKey);
+    if (cached) {
+      return cached;
     }
   }
 
@@ -609,15 +601,7 @@ export const getTenants = async (page: number = 1, limit: number = 10, includeCo
 
     // Cache the result (10 minutes TTL for tenants list, only if not including counts)
     if (useCache && !includeCounts) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(cacheKey, 600, JSON.stringify(result));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache tenants:', error);
-        }
-      }
+      await CacheService.set(cacheKey, result, 600);
     }
 
     return result;
@@ -673,15 +657,7 @@ export const getTenantById = async (id: string, useCache: boolean = true) => {
 
   // Cache the result (15 minutes TTL for individual tenant)
   if (tenant && useCache) {
-    const redis = getRedisClient();
-    if (redis) {
-      try {
-        await redis.setex(cacheKey, 900, JSON.stringify(tenant));
-      } catch (error) {
-        // If cache write fails, continue without caching
-        logger.warn('Failed to cache tenant:', error);
-      }
-    }
+    await CacheService.set(cacheKey, tenant, 900);
   }
 
   return tenant;
