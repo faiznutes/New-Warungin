@@ -86,7 +86,8 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Tambah Penyesuaian Produk</h3>
             <button
-              @click="showAdjustmentModal = false"
+              @click="closeAdjustmentModal"
+              type="button"
               class="text-gray-400 hover:text-gray-600"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,15 +139,53 @@
 
             <!-- Reason -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan</label>
-              <textarea
-                v-model="adjustmentForm.reason"
-                required
-                rows="3"
-                placeholder="Contoh: Retur dari supplier, Barang rusak, Stok opname, dll"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              ></textarea>
-              <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-gray-700">Alasan *</label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input
+                    v-model="useManualReason"
+                    type="checkbox"
+                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  />
+                  <span class="text-xs font-medium text-gray-600">Gunakan alasan manual</span>
+                </label>
+              </div>
+              
+              <!-- Reason Dropdown (hidden if manual mode) -->
+              <div v-if="!useManualReason" class="mb-2">
+                <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Alasan Umum:</label>
+                <select
+                  v-model="selectedReasonType"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                >
+                  <option value="">-- Pilih Alasan --</option>
+                  <option value="STOCKTAKING">Stok opname / Stocktaking</option>
+                  <option value="RETURN_SUPPLIER">Retur ke supplier</option>
+                  <option value="DAMAGED_EXPIRED">Barang rusak / Expired</option>
+                  <option value="SYSTEM_ADJUSTMENT">Penyesuaian sistem</option>
+                  <option value="DATA_CORRECTION">Koreksi data</option>
+                  <option value="LOST_THEFT">Barang hilang / Theft</option>
+                  <option value="SAMPLE_PROMO">Sample / Promosi</option>
+                  <option value="ADDITIONAL_PURCHASE">Pembelian tambahan</option>
+                  <option value="TRANSFER_FROM_WAREHOUSE">Transfer dari gudang lain</option>
+                  <option value="TRANSFER_TO_WAREHOUSE">Transfer ke gudang lain</option>
+                  <option value="DEFECTIVE_PRODUCTION">Barang cacat produksi</option>
+                </select>
+              </div>
+              
+              <!-- Textarea untuk manual reason (hanya muncul saat checkbox dicentang) -->
+              <template v-if="useManualReason">
+                <div class="mt-2">
+                  <textarea
+                    v-model="adjustmentForm.reason"
+                    required
+                    rows="3"
+                    placeholder="Contoh: Retur dari supplier, Barang rusak, Stok opname, dll"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  ></textarea>
+                  <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
+                </div>
+              </template>
             </div>
 
             <!-- Suggestion -->
@@ -172,7 +211,7 @@
               </button>
               <button
                 type="button"
-                @click="showAdjustmentModal = false"
+                @click="closeAdjustmentModal"
                 class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               >
                 Batal
@@ -208,6 +247,9 @@ const adjustmentForm = ref({
   reason: '',
 });
 
+const useManualReason = ref(false);
+const selectedReasonType = ref('');
+
 const loadAdjustments = async () => {
   loading.value = true;
   try {
@@ -241,7 +283,18 @@ const saveAdjustment = async () => {
     return;
   }
   
-  if (!adjustmentForm.value.reason || adjustmentForm.value.reason.trim() === '') {
+  // Validate reason - must be filled either from dropdown or manual
+  if (!useManualReason.value && !selectedReasonType.value) {
+    await showError('Pilih alasan umum atau gunakan alasan manual');
+    return;
+  }
+  
+  if (useManualReason.value && (!adjustmentForm.value.reason || adjustmentForm.value.reason.trim() === '')) {
+    await showError('Alasan penyesuaian wajib diisi');
+    return;
+  }
+  
+  if (!useManualReason.value && (!adjustmentForm.value.reason || adjustmentForm.value.reason.trim() === '')) {
     await showError('Alasan penyesuaian wajib diisi');
     return;
   }
@@ -249,19 +302,37 @@ const saveAdjustment = async () => {
   try {
     await api.post('/products/adjustments', adjustmentForm.value);
     await showSuccess('Penyesuaian produk berhasil disimpan');
-    showAdjustmentModal.value = false;
-    adjustmentForm.value = {
-      productId: '',
-      type: 'INCREASE',
-      quantity: 1,
-      reason: '',
-    };
+    closeAdjustmentModal();
     await loadAdjustments();
     await loadProducts(); // Reload products to get updated stock
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message || 'Gagal menyimpan penyesuaian';
     await showError(errorMessage);
   }
+};
+
+// Reset form function
+const resetForm = () => {
+  adjustmentForm.value = {
+    productId: '',
+    type: 'INCREASE',
+    quantity: 1,
+    reason: '',
+  };
+  useManualReason.value = false;
+  selectedReasonType.value = '';
+};
+
+// Open modal and reset form
+const openAdjustmentModal = () => {
+  resetForm();
+  showAdjustmentModal.value = true;
+};
+
+// Close modal and reset form
+const closeAdjustmentModal = () => {
+  showAdjustmentModal.value = false;
+  resetForm();
 };
 
 onMounted(() => {

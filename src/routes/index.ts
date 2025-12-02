@@ -43,7 +43,8 @@ import emailSchedulerRoutes from './email-scheduler.routes';
 import customerEngagementRoutes from './customer-engagement.routes';
 import supplierRoutes from './supplier.routes';
 import purchaseOrderRoutes from './purchase-order.routes';
-import stockTransferRoutes from './stock-transfer.routes';
+// Stock transfers functionality merged into product adjustments
+// import stockTransferRoutes from './stock-transfer.routes';
 import stockAlertRoutes from './stock-alert.routes';
 import smsGatewayRoutes from './sms-gateway.routes';
 import pushNotificationRoutes from './push-notification.routes';
@@ -114,7 +115,8 @@ router.use('/email-scheduler', emailSchedulerRoutes);
 router.use('/customer-engagement', customerEngagementRoutes);
 router.use('/suppliers', supplierRoutes);
 router.use('/purchase-orders', purchaseOrderRoutes);
-router.use('/stock-transfers', stockTransferRoutes);
+// Stock transfers functionality merged into product adjustments
+// router.use('/stock-transfers', stockTransferRoutes);
 router.use('/stock-alerts', stockAlertRoutes);
 router.use('/sms-gateway', smsGatewayRoutes);
 router.use('/push-notifications', pushNotificationRoutes);
