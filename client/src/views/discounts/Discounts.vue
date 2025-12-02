@@ -368,7 +368,6 @@ const loadDiscounts = async () => {
     const response = await api.get('/discounts');
     discounts.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error loading discounts:', error);
     await showError(error.response?.data?.message || 'Gagal memuat diskon');
   } finally {
     loading.value = false;
