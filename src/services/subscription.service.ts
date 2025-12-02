@@ -804,44 +804,49 @@ export class SubscriptionService {
         const upgradeEndDate = temporarySubscription.endDate || now;
         const upgradeDurationMs = upgradeEndDate.getTime() - tempUpgradeStartDate.getTime();
         
-        console.log(`📊 Calculating remaining time for tenant ${tenantId}:`);
-        console.log(`  - originalSubscriptionEnd: ${originalSubscriptionEnd.toISOString()}`);
-        console.log(`  - tempUpgradeStartDate: ${tempUpgradeStartDate.toISOString()}`);
-        console.log(`  - upgradeEndDate: ${upgradeEndDate.toISOString()}`);
-        console.log(`  - upgradeDurationMs: ${upgradeDurationMs}ms (${Math.floor(upgradeDurationMs / (1000 * 60 * 60 * 24))} days)`);
+        logger.debug('Calculating remaining time', {
+          tenantId,
+          originalSubscriptionEnd: originalSubscriptionEnd.toISOString(),
+          tempUpgradeStartDate: tempUpgradeStartDate.toISOString(),
+          upgradeEndDate: upgradeEndDate.toISOString(),
+          upgradeDurationDays: Math.floor(upgradeDurationMs / (1000 * 60 * 60 * 24)),
+        });
         
         // Calculate remaining time from original subscription at the time of upgrade
         // remainingTimeFromOriginal = sisa waktu dari original subscription saat upgrade dimulai
         const remainingTimeFromOriginal = originalSubscriptionEnd.getTime() - tempUpgradeStartDate.getTime();
-        
-        console.log(`  - remainingTimeFromOriginal: ${remainingTimeFromOriginal}ms (${Math.floor(remainingTimeFromOriginal / (1000 * 60 * 60 * 24))} days)`);
+        const remainingTimeDays = Math.floor(remainingTimeFromOriginal / (1000 * 60 * 60 * 24));
         
         // New remaining time = remaining time from original - duration of temporary upgrade
         // Ini adalah logika: sisa basic - durasi boost = sisa basic baru
         const newRemainingTime = Math.max(0, remainingTimeFromOriginal - upgradeDurationMs);
-        
-        console.log(`  - newRemainingTime: ${newRemainingTime}ms (${Math.floor(newRemainingTime / (1000 * 60 * 60 * 24))} days)`);
+        const newRemainingTimeDays = Math.floor(newRemainingTime / (1000 * 60 * 60 * 24));
         
         // Set new subscription end = now + new remaining time
         newSubscriptionEnd = new Date(now.getTime() + newRemainingTime);
         
-        console.log(`  - newSubscriptionEnd: ${newSubscriptionEnd.toISOString()}`);
+        logger.debug('Remaining time calculation result', {
+          tenantId,
+          remainingTimeFromOriginalDays: remainingTimeDays,
+          newRemainingTimeDays,
+          newSubscriptionEnd: newSubscriptionEnd.toISOString(),
+        });
         
         // IMPORTANT: Ensure newSubscriptionEnd is in the future (not expired)
         // If newRemainingTime > 0, newSubscriptionEnd should be in the future
         // Only set to now if newRemainingTime is 0 or negative
         if (newRemainingTime <= 0) {
           // No remaining time, set to now (expired)
-          console.log(`  ⚠️  No remaining time, setting to now (expired)`);
+          logger.warn('No remaining time, setting to now (expired)', { tenantId });
           newSubscriptionEnd = now;
         } else {
           // Still have remaining time, ensure it's in the future
           if (newSubscriptionEnd <= now) {
             // This shouldn't happen if calculation is correct, but add safety check
-            console.log(`  ⚠️  newSubscriptionEnd is in the past, recalculating...`);
+            logger.warn('newSubscriptionEnd is in the past, recalculating', { tenantId });
             newSubscriptionEnd = new Date(now.getTime() + newRemainingTime);
           }
-          console.log(`  ✅ newSubscriptionEnd is in the future: ${newSubscriptionEnd.toISOString()}`);
+          logger.debug('newSubscriptionEnd is in the future', { tenantId, newSubscriptionEnd: newSubscriptionEnd.toISOString() });
         }
       } else {
         // Fallback: if we can't find originalSubscriptionEnd, use current time
