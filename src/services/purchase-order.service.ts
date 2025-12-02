@@ -7,6 +7,7 @@ import prisma from '../config/database';
 import logger from '../utils/logger';
 import productService from './product.service';
 import supplierService from './supplier.service';
+import { sanitizeText } from '../utils/sanitize';
 
 interface CreatePurchaseOrderInput {
   supplierId: string;
@@ -162,7 +163,7 @@ class PurchaseOrderService {
             orderNumber,
             expectedDate: data.expectedDate,
             totalAmount,
-            notes: data.notes,
+            notes: data.notes ? sanitizeText(data.notes) : undefined,
             createdBy: userId,
             status: 'PENDING',
             items: {
@@ -171,7 +172,7 @@ class PurchaseOrderService {
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
                 totalPrice: item.quantity * item.unitPrice,
-                notes: item.notes,
+                notes: item.notes ? sanitizeText(item.notes) : undefined,
               })),
             },
           },
@@ -221,7 +222,7 @@ class PurchaseOrderService {
           data: {
             status: data.status || purchaseOrder.status,
             expectedDate: data.expectedDate || purchaseOrder.expectedDate,
-            notes: data.notes || purchaseOrder.notes,
+            notes: data.notes !== undefined ? (data.notes ? sanitizeText(data.notes) : null) : purchaseOrder.notes,
             totalAmount,
             ...(data.status === 'APPROVED' && { approvedBy: userId }),
           },
