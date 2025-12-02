@@ -18,10 +18,10 @@ const validateInternalApiKey = (req: Request, res: Response, next: Function) => 
   const expectedKey = process.env.INTERNAL_API_KEY || 'change-me-in-production';
   
   if (!apiKey || apiKey !== expectedKey) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Invalid or missing internal API key' 
-    });
+    const error = new Error('Invalid or missing internal API key');
+    (error as any).statusCode = 401;
+    handleRouteError(res, error, 'Invalid or missing internal API key', 'VALIDATE_INTERNAL_API_KEY');
+    return;
   }
   
   next();
@@ -99,10 +99,10 @@ router.post(
       const latestBackup = files[0];
       
       if (!latestBackup) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Backup file not found' 
-        });
+        const error = new Error('Backup file not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Backup file not found', 'GET_BACKUP');
+        return;
       }
       
       // Read backup file content
@@ -169,10 +169,10 @@ router.post(
       const { tenantId } = req.body;
       
       if (!tenantId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'tenantId is required' 
-        });
+        const error = new Error('tenantId is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'tenantId is required', 'GET_ANALYTICS');
+        return;
       }
       
       const redis = getRedisClient();

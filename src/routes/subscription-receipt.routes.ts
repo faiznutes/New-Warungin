@@ -22,7 +22,10 @@ const createTemplateSchema = z.object({
 const requireSuperAdmin = (req: Request, res: Response, next: Function) => {
   const userRole = (req as any).user?.role;
   if (userRole !== 'SUPER_ADMIN') {
-    return res.status(403).json({ message: 'Access denied. Super Admin only.' });
+    const error = new Error('Access denied. Super Admin only.');
+    (error as any).statusCode = 403;
+    handleRouteError(res, error, 'Access denied. Super Admin only.', 'REQUIRE_SUPER_ADMIN');
+    return;
   }
   next();
 };
@@ -68,7 +71,10 @@ router.get(
         },
       });
       if (!template) {
-        return res.status(404).json({ message: 'Template not found' });
+        const error = new Error('Template not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Template not found', 'GET_RECEIPT_TEMPLATE');
+        return;
       }
       res.json(template);
     } catch (error: unknown) {

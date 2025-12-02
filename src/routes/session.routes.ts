@@ -51,7 +51,10 @@ router.delete(
       // Verify session belongs to user
       const session = await sessionService.getSession(sessionId);
       if (!session || session.userId !== userId) {
-        return res.status(404).json({ message: 'Session not found' });
+        const error = new Error('Session not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Session not found', 'REVOKE_SESSION');
+        return;
       }
 
       await sessionService.revokeSession(sessionId);
