@@ -268,11 +268,14 @@ router.put(
       }
       const schedule = await emailSchedulerService.updateSchedule(req.params.id, tenantId, updateData);
       res.json(schedule);
-    } catch (error: any) {
-      if (error.message === 'Scheduled campaign not found') {
-        return res.status(404).json({ message: error.message });
+    } catch (error: unknown) {
+      if ((error as Error).message === 'Scheduled campaign not found') {
+        const err = new Error((error as Error).message);
+        (err as any).statusCode = 404;
+        handleRouteError(res, err, (error as Error).message, 'UPDATE_SCHEDULE');
+        return;
       }
-      res.status(400).json({ message: error.message });
+      handleRouteError(res, error, 'Failed to update schedule', 'UPDATE_SCHEDULE');
     }
   }
 );
@@ -312,11 +315,14 @@ router.post(
       const tenantId = requireTenantId(req);
       const schedule = await emailSchedulerService.cancelSchedule(req.params.id, tenantId);
       res.json(schedule);
-    } catch (error: any) {
-      if (error.message === 'Scheduled campaign not found') {
-        return res.status(404).json({ message: error.message });
+    } catch (error: unknown) {
+      if ((error as Error).message === 'Scheduled campaign not found') {
+        const err = new Error((error as Error).message);
+        (err as any).statusCode = 404;
+        handleRouteError(res, err, (error as Error).message, 'CANCEL_SCHEDULE');
+        return;
       }
-      res.status(400).json({ message: error.message });
+      handleRouteError(res, error, 'Failed to cancel schedule', 'CANCEL_SCHEDULE');
     }
   }
 );

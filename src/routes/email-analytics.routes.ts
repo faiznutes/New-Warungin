@@ -329,20 +329,25 @@ router.get(
       const tenantId = req.query.tenantId as string;
 
       if (!email || !url || !tenantId) {
-        return res.status(400).json({ message: 'Email, url, and tenantId are required' });
+        const error = new Error('Email, url, and tenantId are required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Email, url, and tenantId are required', 'TRACK_CLICK');
+        return;
       }
 
       await emailAnalyticsService.trackClick(campaignId, email, url, tenantId);
 
       // Redirect to target URL
       res.redirect(url);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Still redirect even if tracking fails
       const url = req.query.url as string;
       if (url) {
         res.redirect(url);
       } else {
-        res.status(400).json({ message: 'Invalid URL' });
+        const err = new Error('Invalid URL');
+        (err as any).statusCode = 400;
+        handleRouteError(res, err, 'Invalid URL', 'TRACK_CLICK');
       }
     }
   }
