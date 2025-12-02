@@ -214,11 +214,11 @@ router.put(
         return;
       }
 
-      const currentPlan = tenant.subscriptionPlan || 'BASIC';
+      const currentPlan = (tenant as any).subscriptionPlan || 'BASIC';
       
       // Calculate end date: now + durationDays (duration in days)
       const now = new Date();
-      const originalSubscriptionEnd = tenant.subscriptionEnd;
+      const originalSubscriptionEnd = (tenant as any).subscriptionEnd;
       
       // Always use now as base date for temporary upgrade (ignore current subscription end)
       const endDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
@@ -293,10 +293,10 @@ router.put(
                   subscriptionId: subscription.id,
                   tenantId: tenantId,
                   planType: currentPlan,
-                  startDate: tenant.subscriptionStart || now,
+                  startDate: (tenant as any).subscriptionStart || now,
                   endDate: originalSubscriptionEnd,
                   price: '0',
-                  durationDays: Math.ceil((originalSubscriptionEnd.getTime() - (tenant.subscriptionStart?.getTime() || now.getTime())) / (1000 * 60 * 60 * 24)),
+                  durationDays: Math.ceil((originalSubscriptionEnd.getTime() - ((tenant as any).subscriptionStart?.getTime() || now.getTime())) / (1000 * 60 * 60 * 24)),
                   isTemporary: false,
                   reverted: false,
                 },

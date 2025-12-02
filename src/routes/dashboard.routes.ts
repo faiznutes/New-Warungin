@@ -158,6 +158,15 @@ router.get(
       }
 
       const tenantId = requireTenantId(req);
+      const user = req.user;
+      
+      if (!user) {
+        const error = new Error('User not found');
+        (error as any).statusCode = 401;
+        handleRouteError(res, error, 'User not found', 'GET_CASHIER_DASHBOARD');
+        return;
+      }
+      
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 

@@ -174,6 +174,16 @@ export class CustomerService {
       throw new Error('Customer not found');
     }
 
+    // Sanitize input data
+    const sanitizedData: UpdateCustomerInput = {
+      ...data,
+      name: data.name ? sanitizeString(data.name, 255) : undefined,
+      email: data.email ? sanitizeEmail(data.email) : undefined,
+      phone: data.phone ? sanitizePhone(data.phone) : undefined,
+      address: data.address ? sanitizeText(data.address) : undefined,
+      notes: data.notes ? sanitizeText(data.notes) : undefined,
+    };
+
     const updatedCustomer = await prisma.customer.update({
       where: { id },
       data: sanitizedData,

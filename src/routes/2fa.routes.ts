@@ -36,6 +36,12 @@ router.post(
       const userId = req.userId!;
       const user = req.user;
       
+      if (!user) {
+        const error = new AppError('User not found', 401);
+        handleRouteError(res, error, 'User not found', 'GENERATE_2FA');
+        return;
+      }
+      
       // Get tenant ID - for SUPER_ADMIN, try query param or user's tenantId
       // For other roles, use user's tenantId
       let tenantId: string | null = null;

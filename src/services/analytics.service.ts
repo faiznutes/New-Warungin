@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import CacheService from '../utils/cache';
+import { getRedisClient } from '../config/redis';
 
 interface Prediction {
   nextMonth: number;
@@ -268,7 +269,8 @@ class AnalyticsService {
     
     // Cache the result (1 hour TTL for trends)
     if (useCache) {
-      await CacheService.set(cacheKey, result, 3600);
+      const trendsCacheKey = `analytics:trends:${period}:${tenantId}`;
+      await CacheService.set(trendsCacheKey, result, 3600);
     }
 
     return result;

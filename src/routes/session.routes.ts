@@ -83,7 +83,7 @@ router.post(
       const userId = req.userId!;
       // Get sessionId from request headers or token
       const authHeader = req.headers.authorization;
-      const currentSessionId = authHeader?.replace('Bearer ', '').split('.')[0] || null;
+      const currentSessionId = authHeader?.replace('Bearer ', '').split('.')[0] || undefined;
 
       const revokedCount = await sessionService.revokeAllUserSessions(userId, currentSessionId);
 

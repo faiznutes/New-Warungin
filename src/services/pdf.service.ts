@@ -1,5 +1,6 @@
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import logger from '../utils/logger';
 
 interface ReportData {
   title?: string;

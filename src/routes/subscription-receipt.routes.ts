@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import subscriptionReceiptService from '../services/subscription-receipt.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';

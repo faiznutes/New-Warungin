@@ -33,12 +33,6 @@ export class DashboardService {
         return cached;
       }
     }
-    // Create cache key based on tenant, dates
-    const cacheKey = `dashboard:${tenantId}:${startDate?.toISOString() || 'all'}:${endDate?.toISOString() || 'all'}`;
-
-    // Try to get from cache first
-    if (useCache) {
-      const cached = await CacheService.get(cacheKey);
       if (cached) {
         return cached;
       }

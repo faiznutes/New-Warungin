@@ -437,6 +437,7 @@ router.post(
             category: row.category?.trim() || undefined,
             description: row.description?.trim() || undefined,
             isActive: row.isActive !== false && row.isActive !== 'false',
+            isConsignment: row.isConsignment === true || row.isConsignment === 'true' || false,
           };
 
           if (!productData.name) {

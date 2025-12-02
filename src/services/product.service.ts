@@ -136,10 +136,10 @@ export class ProductService {
     const sanitizedData: UpdateProductInput = {
       ...data,
       ...(data.name && { name: sanitizeString(data.name, 255) }),
-      ...(data.description !== undefined && { description: data.description ? sanitizeText(data.description) : null }),
-      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : null }),
-      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : null }),
-      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : null }),
+      ...(data.description !== undefined && { description: data.description ? sanitizeText(data.description) : (data.description === null ? null : undefined) }),
+      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : undefined }),
+      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : undefined }),
+      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : undefined }),
     };
     
     // Verify product belongs to tenant
@@ -219,7 +219,7 @@ export class ProductService {
         });
       } catch (error) {
         // Ignore socket errors
-        logger.warn('Failed to emit stock update socket event', { error: error instanceof Error ? error.message : String(error), tenantId, productId });
+        logger.warn('Failed to emit stock update socket event', { error: error instanceof Error ? error.message : String(error), tenantId, productId: id });
       }
     }
 

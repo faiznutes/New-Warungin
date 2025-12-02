@@ -178,7 +178,7 @@ class PaymentService {
         message: status.status_message,
       };
     } catch (error: any) {
-      logger.error('Payment status check error', { error: error.message, paymentId });
+      logger.error('Payment status check error', { error: error.message, orderId });
       return {
         success: false,
         message: error.message || 'Failed to check payment status',
@@ -574,7 +574,7 @@ class PaymentService {
         message: 'Payment cancelled',
       };
     } catch (error: any) {
-      logger.error('Payment cancellation error', { error: error instanceof Error ? error.message : String(error), paymentId });
+      logger.error('Payment cancellation error', { error: error instanceof Error ? error.message : String(error), orderId });
       return {
         success: false,
         message: error.message || 'Failed to cancel payment',
