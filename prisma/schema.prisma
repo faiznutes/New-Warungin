@@ -104,6 +104,9 @@ model User {
 
   @@unique([tenantId, email])
   @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@index([tenantId, role])
+  @@index([tenantId, createdAt])
   @@map("users")
 }
 

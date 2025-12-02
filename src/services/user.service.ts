@@ -5,6 +5,7 @@ import addonService from './addon.service';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 import { sanitizeString, sanitizeEmail } from '../utils/sanitize';
+import CacheService from '../utils/cache';
 
 export interface CreateUserInput {
   name: string;
@@ -35,8 +36,19 @@ export interface UpdateUserInput {
 }
 
 export class UserService {
-  async getUsers(tenantId: string, page: number = 1, limit: number = 10) {
+  async getUsers(tenantId: string, page: number = 1, limit: number = 10, useCache: boolean = true) {
     const skip = (page - 1) * limit;
+
+    // Create cache key
+    const cacheKey = `users:${tenantId}:${page}:${limit}`;
+
+    // Try to get from cache first
+    if (useCache) {
+      const cached = await CacheService.get(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -59,7 +71,7 @@ export class UserService {
       prisma.user.count({ where: { tenantId } }),
     ]);
 
-    return {
+    const result = {
       data: users,
       pagination: {
         page,
@@ -68,6 +80,13 @@ export class UserService {
         totalPages: Math.ceil(total / limit),
       },
     };
+
+    // Cache result for 5 minutes
+    if (useCache) {
+      await CacheService.set(cacheKey, result, 300);
+    }
+
+    return result;
   }
 
   async getUserById(id: string, tenantId: string) {
