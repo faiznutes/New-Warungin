@@ -222,6 +222,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { formatDateTime } from '../../utils/formatters';
 
 const loading = ref(true);
 const webhooks = ref<any[]>([]);
