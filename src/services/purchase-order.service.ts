@@ -244,7 +244,7 @@ class PurchaseOrderService {
               unitPrice: item.unitPrice,
               totalPrice: item.quantity * item.unitPrice,
               receivedQuantity: item.receivedQuantity || 0,
-              notes: item.notes,
+              notes: item.notes ? sanitizeText(item.notes) : undefined,
             })),
           });
         }
