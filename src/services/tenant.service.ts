@@ -3,7 +3,6 @@ import prisma from '../config/database';
 import { AppError } from '../middlewares/errorHandler';
 import logger from '../utils/logger';
 import CacheService from '../utils/cache';
-import { getRedisClient } from '../config/redis';
 
 export interface CreateTenantInput {
   name: string;
