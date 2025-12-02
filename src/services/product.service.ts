@@ -56,15 +56,7 @@ export class ProductService {
 
     // Cache the result (5 minutes TTL for products list)
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(cacheKey, 300, JSON.stringify(result));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache products', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
-      }
+      await CacheService.set(cacheKey, result, 300);
     }
 
     return result;
@@ -75,17 +67,9 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(cacheKey);
-          if (cached) {
-            return JSON.parse(cached);
-          }
-        } catch (error) {
-          // If cache read fails, continue with database query
-          logger.warn('Failed to read product from cache', { error });
-        }
+      const cached = await CacheService.get(cacheKey);
+      if (cached) {
+        return cached;
       }
     }
 
@@ -95,15 +79,7 @@ export class ProductService {
 
     // Cache the result (10 minutes TTL for individual product)
     if (product && useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(cacheKey, 600, JSON.stringify(product));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache product', { error });
-        }
-      }
+      await CacheService.set(cacheKey, product, 600);
     }
 
     return product;
@@ -237,10 +213,7 @@ export class ProductService {
     
     // Also invalidate analytics cache that depends on products
     try {
-      const redis = getRedisClient();
-      if (redis) {
-        await redis.del(`analytics:top-products:${tenantId}`);
-      }
+      await CacheService.delete(`analytics:top-products:${tenantId}`);
     } catch (error) {
       logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error), tenantId });
     }

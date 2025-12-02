@@ -1,6 +1,5 @@
 import { PrismaClient, Employee } from '@prisma/client';
 import prisma from '../config/database';
-import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 
 export interface CreateEmployeeInput {
