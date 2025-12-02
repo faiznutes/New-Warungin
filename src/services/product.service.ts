@@ -3,6 +3,7 @@ import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../val
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import { sanitizeText, sanitizeString } from '../utils/sanitize';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -117,6 +118,16 @@ export class ProductService {
   }
 
   async createProduct(data: CreateProductInput, tenantId: string): Promise<Product> {
+    // Sanitize text fields
+    const sanitizedData = {
+      ...data,
+      name: sanitizeString(data.name, 255),
+      description: data.description ? sanitizeText(data.description) : undefined,
+      category: data.category ? sanitizeString(data.category, 100) : undefined,
+      sku: data.sku ? sanitizeString(data.sku, 100) : undefined,
+      barcode: data.barcode ? sanitizeString(data.barcode, 100) : undefined,
+    };
+    
     // Check limit using plan-features service (includes base plan + addons)
     const planFeaturesService = (await import('./plan-features.service')).default;
     const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'products');
@@ -162,6 +173,16 @@ export class ProductService {
   }
 
   async updateProduct(id: string, data: UpdateProductInput, tenantId: string): Promise<Product> {
+    // Sanitize text fields
+    const sanitizedData: UpdateProductInput = {
+      ...data,
+      ...(data.name && { name: sanitizeString(data.name, 255) }),
+      ...(data.description !== undefined && { description: data.description ? sanitizeText(data.description) : null }),
+      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : null }),
+      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : null }),
+      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : null }),
+    };
+    
     // Verify product belongs to tenant
     const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
     if (!product) {
@@ -170,7 +191,7 @@ export class ProductService {
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data,
+      data: sanitizedData,
     });
 
     // Invalidate cache

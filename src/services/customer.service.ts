@@ -3,6 +3,7 @@ import { CreateCustomerInput, UpdateCustomerInput, GetCustomersQuery } from '../
 import prisma from '../config/database';
 import CacheService from '../utils/cache';
 import logger from '../utils/logger';
+import { sanitizeText, sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 export class CustomerService {
   async getCustomers(tenantId: string, query: GetCustomersQuery, useCache: boolean = true) {
@@ -134,10 +135,20 @@ export class CustomerService {
   }
 
   async createCustomer(data: CreateCustomerInput, tenantId: string): Promise<Customer> {
+    // Sanitize text fields
+    const sanitizedData = {
+      ...data,
+      name: sanitizeString(data.name, 255),
+      email: data.email ? sanitizeEmail(data.email) : undefined,
+      phone: data.phone ? sanitizePhone(data.phone) : undefined,
+      address: data.address ? sanitizeText(data.address) : undefined,
+      notes: data.notes ? sanitizeText(data.notes) : undefined,
+    };
+    
     try {
       const customer = await prisma.customer.create({
         data: {
-          ...data,
+          ...sanitizedData,
           tenantId,
         },
       });
@@ -165,7 +176,7 @@ export class CustomerService {
 
     const updatedCustomer = await prisma.customer.update({
       where: { id },
-      data,
+      data: sanitizedData,
     });
 
     // Invalidate analytics cache after customer update
