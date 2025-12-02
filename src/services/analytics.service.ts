@@ -150,11 +150,18 @@ class AnalyticsService {
       accuracy = Math.round(Math.max(0, Math.min(100, rSquared * 100)));
     }
 
-    return {
+    const result = {
       nextMonth: Math.round(nextMonth * 100) / 100,
       trend: Math.round(trend * 100) / 100,
       accuracy,
     };
+
+    // Cache the result (1 hour TTL for predictions)
+    if (useCache) {
+      await CacheService.set(cacheKey, result, 3600);
+    }
+
+    return result;
   }
 
   async getTrends(tenantId: string, period: 'daily' | 'weekly' | 'monthly' = 'monthly', useCache: boolean = true) {
