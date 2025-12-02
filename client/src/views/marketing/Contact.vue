@@ -196,13 +196,50 @@ const form = ref({
 const loading = ref(false);
 
 const handleSubmit = async () => {
+  // Client-side validation
+  if (!form.value.name || form.value.name.trim() === '') {
+    await showError('Nama wajib diisi');
+    return;
+  }
+  
+  if (!form.value.email || form.value.email.trim() === '') {
+    await showError('Email wajib diisi');
+    return;
+  }
+  
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.value.email)) {
+    await showError('Format email tidak valid');
+    return;
+  }
+  
+  if (!form.value.subject || form.value.subject.trim() === '') {
+    await showError('Subjek wajib diisi');
+    return;
+  }
+  
+  if (!form.value.message || form.value.message.trim() === '') {
+    await showError('Pesan wajib diisi');
+    return;
+  }
+  
+  if (form.value.phone && form.value.phone.trim() !== '') {
+    // Basic phone validation (numbers only, min 10 digits)
+    const phoneRegex = /^[0-9]{10,15}$/;
+    const cleanPhone = form.value.phone.replace(/\D/g, '');
+    if (cleanPhone.length < 10 || cleanPhone.length > 15) {
+      await showError('Nomor telepon harus 10-15 digit');
+      return;
+    }
+  }
+  
   loading.value = true;
   try {
     await api.post('/contact', form.value);
     await showSuccess('Terima kasih! Pesan Anda telah dikirim.');
     form.value = { name: '', email: '', phone: '', subject: '', message: '' };
   } catch (error: any) {
-    console.error('Error submitting contact form:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim pesan. Silakan coba lagi.');
   } finally {
     loading.value = false;

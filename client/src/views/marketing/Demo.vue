@@ -239,13 +239,61 @@ const form = ref({
 const loading = ref(false);
 
 const handleSubmit = async () => {
+  // Client-side validation
+  if (!form.value.name || form.value.name.trim() === '') {
+    await showError('Nama wajib diisi');
+    return;
+  }
+  
+  if (!form.value.email || form.value.email.trim() === '') {
+    await showError('Email wajib diisi');
+    return;
+  }
+  
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(form.value.email)) {
+    await showError('Format email tidak valid');
+    return;
+  }
+  
+  if (!form.value.businessName || form.value.businessName.trim() === '') {
+    await showError('Nama bisnis wajib diisi');
+    return;
+  }
+  
+  if (!form.value.phone || form.value.phone.trim() === '') {
+    await showError('Nomor telepon wajib diisi');
+    return;
+  }
+  
+  // Basic phone validation (numbers only, min 10 digits)
+  const phoneRegex = /^[0-9]{10,15}$/;
+  const cleanPhone = form.value.phone.replace(/\D/g, '');
+  if (cleanPhone.length < 10 || cleanPhone.length > 15) {
+    await showError('Nomor telepon harus 10-15 digit');
+    return;
+  }
+  
+  if (!form.value.dateTime) {
+    await showError('Tanggal dan waktu demo wajib dipilih');
+    return;
+  }
+  
+  // Validate date is not in the past
+  const selectedDate = new Date(form.value.dateTime);
+  const now = new Date();
+  if (selectedDate < now) {
+    await showError('Tanggal dan waktu demo tidak boleh di masa lalu');
+    return;
+  }
+  
   loading.value = true;
   try {
     await api.post('/contact/demo', form.value);
     await showSuccess('Terima kasih! Permintaan demo Anda telah dikirim. Tim kami akan menghubungi Anda segera.');
     form.value = { name: '', email: '', businessName: '', phone: '', dateTime: '', message: '' };
   } catch (error: any) {
-    console.error('Error submitting demo request:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim permintaan demo. Silakan coba lagi.');
   } finally {
     loading.value = false;
