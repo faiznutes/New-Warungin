@@ -1130,7 +1130,8 @@ export class SubscriptionService {
         const newRemainingTimeForLog = newSubscriptionEnd.getTime() - now.getTime();
         const newRemainingDaysForLog = newRemainingTimeForLog / (1000 * 60 * 60 * 24);
 
-        console.log(`Reverting temporary upgrade for tenant ${upgrade.tenantId}:`, {
+        logger.info('Reverting temporary upgrade for tenant', {
+          tenantId: upgrade.tenantId,
           upgradeStartDate: upgradeStartDateForLog,
           upgradeEndDate: upgrade.endDate,
           originalSubscriptionEnd: originalSubscriptionEnd?.toISOString(),
@@ -1167,7 +1168,12 @@ export class SubscriptionService {
 
         // Verify the update was successful
         if (updatedTenant.subscriptionPlan !== revertPlan || updatedTenant.temporaryUpgrade !== false) {
-          console.error(`❌ Failed to revert tenant ${upgrade.tenantId}: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
+          logger.error('Failed to revert tenant', {
+            tenantId: upgrade.tenantId,
+            subscriptionPlan: updatedTenant.subscriptionPlan,
+            temporaryUpgrade: updatedTenant.temporaryUpgrade,
+            expectedPlan: revertPlan,
+          });
           throw new Error(`Failed to revert tenant: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
         }
 
@@ -1200,9 +1206,17 @@ export class SubscriptionService {
           type: 'temporary_upgrade',
         });
 
-        console.log(`✅ Reverted temporary upgrade for tenant ${upgrade.tenantId}: ${upgrade.plan} -> ${revertPlan}`);
+        logger.info('Reverted temporary upgrade for tenant', {
+          tenantId: upgrade.tenantId,
+          oldPlan: upgrade.plan,
+          newPlan: revertPlan,
+        });
       } catch (error: any) {
-        console.error(`Failed to revert temporary upgrade ${upgrade.id}:`, error);
+        logger.error('Failed to revert temporary upgrade', {
+          upgradeId: upgrade.id,
+          tenantId: upgrade.tenantId,
+          error: error.message,
+        });
         results.push({
           subscriptionId: upgrade.id,
           tenantId: upgrade.tenantId,
@@ -1220,7 +1234,7 @@ export class SubscriptionService {
         const subscriptionId = subscription.id;
 
         if (!tenantId || !plan) {
-          console.warn(`Skipping subscription ${subscriptionId}: missing tenantId or plan`);
+          logger.warn('Skipping subscription: missing tenantId or plan', { subscriptionId });
           continue;
         }
 
@@ -1235,7 +1249,7 @@ export class SubscriptionService {
             });
           } catch (error: any) {
             // Subscription might not exist, continue anyway
-            console.warn(`Could not update subscription ${subscriptionId}:`, error.message);
+            logger.warn('Could not update subscription', { subscriptionId, error: error.message });
           }
         }
 
@@ -1292,9 +1306,18 @@ export class SubscriptionService {
           subscriptionEnd: verifyTenant?.subscriptionEnd,
         });
 
-        console.log(`✅ Reverted expired ${plan} subscription for tenant ${tenantId}: ${plan} -> BASIC (subscriptionEnd: ${verifyTenant?.subscriptionEnd?.toISOString()})`);
+        logger.info('Reverted expired subscription', {
+          tenantId,
+          oldPlan: plan,
+          newPlan: 'BASIC',
+          subscriptionEnd: verifyTenant?.subscriptionEnd?.toISOString(),
+        });
       } catch (error: any) {
-        console.error(`Failed to revert expired subscription ${subscription.id}:`, error);
+        logger.error('Failed to revert expired subscription', {
+          subscriptionId: subscription.id,
+          tenantId,
+          error: error.message,
+        });
         results.push({
           subscriptionId: subscription.id || null,
           tenantId: subscription.tenantId || subscription.tenant?.id || null,
@@ -1310,7 +1333,11 @@ export class SubscriptionService {
       results,
     };
 
-    console.log(`✅ Revert job completed: ${summary.reverted} reverted, ${summary.failed} failed`);
+    logger.info('Revert job completed', {
+      reverted: summary.reverted,
+      failed: summary.failed,
+      total: summary.reverted + summary.failed,
+    });
 
     return summary;
   }
