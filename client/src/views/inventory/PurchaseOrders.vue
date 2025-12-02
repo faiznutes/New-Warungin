@@ -359,6 +359,7 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
+import { formatDate, formatCurrency } from '../../utils/formatters';
 
 const { success: showSuccess, error: showError, confirm: showConfirm } = useNotification();
 
@@ -566,7 +567,7 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-// formatDate and formatCurrency are already imported from formatters utility above
+// formatDate and formatCurrency are imported from formatters utility
 
 const closeModal = () => {
   showCreateModal.value = false;
