@@ -3,6 +3,8 @@
  * Application metrics for monitoring
  */
 
+import logger from './logger';
+
 let client: any;
 let register: any;
 
@@ -19,7 +21,7 @@ try {
   });
 } catch (error) {
   // prom-client not installed, create mock registry
-  console.warn('prom-client not installed, metrics will be disabled');
+      logger.warn('prom-client not installed, metrics will be disabled');
   register = {
     contentType: 'text/plain',
     metrics: async () => '# prom-client not installed\n',

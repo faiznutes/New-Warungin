@@ -1365,9 +1365,9 @@ export function generatePDF(template: string, data: ReportData): Promise<Buffer>
       
       // Debug: Log template being used
       if (!templateFunctions[template]) {
-        console.warn(`Template "${template}" not found, using default (modern)`);
+        logger.warn('Template not found, using default (modern)', { template });
       } else {
-        console.log(`Using template: ${template}`);
+        logger.debug('Using template', { template });
       }
       
       const docDefinition = templateFunction(data);

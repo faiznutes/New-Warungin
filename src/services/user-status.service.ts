@@ -1,4 +1,5 @@
 import prisma from '../config/database';
+import logger from '../utils/logger';
 
 /**
  * Calculate total remaining time from all active subscriptions (basic, boost, max)
@@ -113,7 +114,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
         },
       });
       
-      console.log(`✅ Deactivated CASHIER, KITCHEN, SUPERVISOR users for tenant ${tenantId} due to expired subscription (ADMIN_TENANT excluded)`);
+      logger.info('Deactivated CASHIER, KITCHEN, SUPERVISOR users due to expired subscription', { tenantId });
     } else {
       // Activate CASHIER, KITCHEN, SUPERVISOR users if subscription is active
       // ADMIN_TENANT can be activated manually by SUPER_ADMIN
@@ -130,7 +131,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
         },
       });
       
-      console.log(`✅ Activated CASHIER, KITCHEN, SUPERVISOR users for tenant ${tenantId} due to active subscription`);
+      logger.info('Activated CASHIER, KITCHEN, SUPERVISOR users due to active subscription', { tenantId });
     }
 
     return {
@@ -139,7 +140,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
       usersUpdated: users.length,
     };
   } catch (error: any) {
-    console.error(`Error updating user status for tenant ${tenantId}:`, error);
+      logger.error('Error updating user status for tenant', { tenantId, error: error.message });
     throw error;
   }
 }
@@ -168,7 +169,7 @@ export async function checkAndUpdateAllTenantsUserStatus() {
     const successful = results.filter(r => r.status === 'fulfilled').length;
     const failed = results.filter(r => r.status === 'rejected').length;
 
-    console.log(`✅ Updated user status for ${successful} tenants, ${failed} failed`);
+    logger.info('Updated user status for all tenants', { successful, failed, total: results.length });
 
     return {
       total: tenants.length,
@@ -176,7 +177,7 @@ export async function checkAndUpdateAllTenantsUserStatus() {
       failed,
     };
   } catch (error: any) {
-    console.error('Error checking and updating all tenants user status:', error);
+      logger.error('Error checking and updating all tenants user status', { error: error.message });
     throw error;
   }
 }

@@ -1,5 +1,6 @@
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
+import logger from '../utils/logger';
 
 interface Prediction {
   nextMonth: number;
@@ -42,7 +43,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read from cache, calculating predictions:', error);
+          logger.warn('Failed to read from cache, calculating predictions', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -68,7 +69,7 @@ class AnalyticsService {
     });
 
     // Log for debugging
-    console.log(`[Analytics] getPredictions for tenant ${tenantId}: Found ${orders.length} completed orders in last 6 months`);
+    logger.debug('getPredictions: Found completed orders', { tenantId, orderCount: orders.length });
 
     // Calculate monthly totals
     const monthlyTotals: Record<string, number> = {};
@@ -80,12 +81,11 @@ class AnalyticsService {
     const months = Object.keys(monthlyTotals).sort();
     const values = months.map(month => monthlyTotals[month] || 0);
 
-    console.log(`[Analytics] Monthly totals:`, monthlyTotals);
-    console.log(`[Analytics] Values array:`, values);
+    logger.debug('Monthly totals and values', { tenantId, monthlyTotals, values });
 
     // If no data at all, return 0
     if (values.length === 0 || values.every(v => v === 0)) {
-      console.log(`[Analytics] No data available for predictions`);
+      logger.debug('No data available for predictions', { tenantId });
       return {
         nextMonth: 0,
         trend: 0,
@@ -95,7 +95,7 @@ class AnalyticsService {
 
     // If only one month of data, use that month as prediction
     if (values.length === 1) {
-      console.log(`[Analytics] Only one month of data, using that as prediction`);
+      logger.debug('Only one month of data, using that as prediction', { tenantId });
       return {
         nextMonth: values[0],
         trend: 0,
@@ -174,7 +174,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read trends from cache, calculating:', error);
+          logger.warn('Failed to read trends from cache, calculating', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -273,7 +273,7 @@ class AnalyticsService {
           await redis.setex(`analytics:trends:${period}:${tenantId}`, 3600, JSON.stringify(result));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache trends:', error);
+          logger.warn('Failed to cache trends', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -295,7 +295,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read top products from cache, calculating:', error);
+          logger.warn('Failed to read top products from cache, calculating', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -338,7 +338,7 @@ class AnalyticsService {
           await redis.setex(`analytics:top-products:${tenantId}`, 3600, JSON.stringify(allProducts));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache top products:', error);
+          logger.warn('Failed to cache top products', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }

@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import logger from '../utils/logger';
 
 /**
  * Clean database URL (remove query parameters for connection pooling)
@@ -54,7 +55,7 @@ export function getReadReplicaClient(): PrismaClient {
       
       if (!readReplicaUrl) {
         // Fallback to main database connection if no URL is set
-        console.warn('DATABASE_READ_URL not set, using main DATABASE_URL');
+        logger.warn('DATABASE_READ_URL not set, using main DATABASE_URL');
         const mainUrl = process.env.DATABASE_URL;
         if (!mainUrl) {
           throw new Error('DATABASE_URL must be set');
@@ -70,7 +71,7 @@ export function getReadReplicaClient(): PrismaClient {
             log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
           });
         } catch (cleanError: any) {
-          console.error('Failed to clean database URL:', cleanError.message);
+          logger.error('Failed to clean database URL', { error: cleanError.message });
           // Use URL as-is if cleaning fails
           readReplicaClient = new PrismaClient({
             datasources: {
@@ -107,7 +108,7 @@ export function getReadReplicaClient(): PrismaClient {
       }
     } catch (error: any) {
       // If read replica fails, fallback to main database
-      console.error('Failed to initialize read replica, falling back to main database:', error.message);
+      logger.error('Failed to initialize read replica, falling back to main database', { error: error.message });
       const mainUrl = process.env.DATABASE_URL;
       if (!mainUrl) {
         throw new Error('DATABASE_URL must be set');
