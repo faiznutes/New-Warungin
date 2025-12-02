@@ -270,7 +270,6 @@ const handleSave = async () => {
     emit('saved', response.data);
     emit('close');
   } catch (error: any) {
-    console.error('Error updating order:', error);
     // Error handling will be done by parent component
     throw error;
   } finally {

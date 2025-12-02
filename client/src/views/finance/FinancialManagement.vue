@@ -706,7 +706,7 @@ const loadCashFlowSummary = async () => {
     const response = await api.get('/financial-management/cash-flow/summary', { params });
     cashFlowSummary.value = response.data;
   } catch (error: any) {
-    console.error('Error loading cash flow summary:', error);
+    // Error already handled by showError
     await showError('Gagal memuat cash flow summary');
   }
 };
@@ -719,7 +719,7 @@ const loadExpensesByCategory = async () => {
     const response = await api.get('/financial-management/expenses/by-category', { params });
     expensesByCategory.value = response.data;
   } catch (error: any) {
-    console.error('Error loading expenses:', error);
+    // Error already handled by showError
   }
 };
 
@@ -731,7 +731,7 @@ const calculateTax = async () => {
     taxCalculation.value = response.data;
     await showSuccess('Tax calculation berhasil');
   } catch (error: any) {
-    console.error('Error calculating tax:', error);
+    // Error already handled by showError
     await showError('Gagal menghitung tax');
   }
 };
@@ -743,12 +743,28 @@ const loadForecast = async () => {
     });
     forecast.value = response.data;
   } catch (error: any) {
-    console.error('Error loading forecast:', error);
+    // Error already handled by showError
     await showError('Gagal memuat forecast');
   }
 };
 
 const saveCashFlow = async () => {
+  // Client-side validation
+  if (!cashFlowForm.value.type) {
+    await showError('Tipe cash flow wajib dipilih');
+    return;
+  }
+  
+  if (!cashFlowForm.value.amount || cashFlowForm.value.amount <= 0) {
+    await showError('Jumlah cash flow harus lebih dari 0');
+    return;
+  }
+  
+  if (!cashFlowForm.value.date) {
+    await showError('Tanggal cash flow wajib diisi');
+    return;
+  }
+  
   saving.value = true;
   try {
     await api.post('/financial-management/cash-flow', {
@@ -759,7 +775,6 @@ const saveCashFlow = async () => {
     closeCashFlowModal();
     await loadCashFlowSummary();
   } catch (error: any) {
-    console.error('Error saving cash flow:', error);
     await showError('Gagal menyimpan cash flow');
   } finally {
     saving.value = false;
@@ -805,6 +820,22 @@ const saveExpense = async () => {
 };
 
 const saveReconciliation = async () => {
+  // Client-side validation
+  if (!reconciliationForm.value.bankAccount || reconciliationForm.value.bankAccount.trim() === '') {
+    await showError('Akun bank wajib diisi');
+    return;
+  }
+  
+  if (!reconciliationForm.value.statementDate) {
+    await showError('Tanggal statement wajib diisi');
+    return;
+  }
+  
+  if (reconciliationForm.value.statementBalance === undefined || reconciliationForm.value.statementBalance === null) {
+    await showError('Saldo statement wajib diisi');
+    return;
+  }
+  
   saving.value = true;
   try {
     const data = {
@@ -820,7 +851,6 @@ const saveReconciliation = async () => {
     await showSuccess('Bank reconciliation berhasil dibuat');
     closeReconciliationModal();
   } catch (error: any) {
-    console.error('Error saving reconciliation:', error);
     await showError('Gagal menyimpan reconciliation');
   } finally {
     saving.value = false;
