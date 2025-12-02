@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import paymentService from '../services/payment.service';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
@@ -163,10 +163,10 @@ router.post(
   '/addon',
   authGuard,
   validate({ body: createAddonPaymentSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const user = (req as any).user;
+      const user = req.user;
       
       // Get tenant info with subscription plan
       const tenant = await prisma.tenant.findUnique({

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import settingsService from '../services/settings.service';
 import { handleRouteError } from '../utils/route-error-handler';
 
@@ -17,11 +17,11 @@ const router = Router();
 router.get(
   '/system',
   authGuard,
-  async (req: Request, res: Response, next) => {
+  async (req: AuthRequest, res: Response, next) => {
     try {
-      const user = (req as any).user;
+      const userRole = req.user?.role || req.role;
       
-      if (user.role !== 'SUPER_ADMIN') {
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_SYSTEM_SETTINGS');
@@ -48,11 +48,11 @@ router.get(
 router.put(
   '/system',
   authGuard,
-  async (req: Request, res: Response, next) => {
+  async (req: AuthRequest, res: Response, next) => {
     try {
-      const user = (req as any).user;
+      const userRole = req.user?.role || req.role;
       
-      if (user.role !== 'SUPER_ADMIN') {
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Access denied. Super Admin only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Super Admin only.', 'UPDATE_SYSTEM_SETTINGS');

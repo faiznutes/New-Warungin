@@ -82,16 +82,19 @@ router.post(
   validate({ body: demoRequestSchema }),
   async (req: Request, res: Response) => {
     try {
+      // Sanitize input
+      const sanitizedData = {
+        name: sanitizeString(req.body.name, 255),
+        email: sanitizeEmail(req.body.email),
+        businessName: sanitizeString(req.body.businessName, 255),
+        phone: sanitizePhone(req.body.phone),
+        dateTime: req.body.dateTime || null,
+        message: req.body.message ? sanitizeText(req.body.message) : null,
+      };
+      
       // Save to database
       await prisma.demoRequest.create({
-        data: {
-          name: req.body.name,
-          email: req.body.email,
-          businessName: req.body.businessName,
-          phone: req.body.phone,
-          dateTime: req.body.dateTime || null,
-          message: req.body.message || null,
-        },
+        data: sanitizedData,
       });
       
       return res.json({

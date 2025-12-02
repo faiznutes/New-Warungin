@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
@@ -54,10 +54,9 @@ router.get(
   '/stats',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      const userRole = user?.role;
+      const userRole = req.user?.role || req.role;
       
       // For Super Admin without selected tenant, return addon & subscription stats
       if (userRole === 'SUPER_ADMIN') {
@@ -99,8 +98,7 @@ router.get(
       res.json(stats);
     } catch (error: unknown) {
       const { handleRouteError } = await import('../utils/route-error-handler');
-      const user = (req as any).user;
-      const userRole = user?.role;
+      const userRole = (req as AuthRequest).user?.role || (req as AuthRequest).role;
       const queryTenantId = req.query.tenantId as string;
       
       // For Super Admin without tenant, return empty stats instead of error
