@@ -283,8 +283,8 @@ const loadBalance = async () => {
   try {
     const response = await api.get('/rewards/balance');
     balance.value = response.data;
-  } catch (error) {
-    console.error('Error loading balance:', error);
+  } catch (error: any) {
+    await showError('Gagal memuat balance');
   }
 };
 
@@ -292,8 +292,8 @@ const loadDailyLimit = async () => {
   try {
     const response = await api.get('/rewards/daily-limit');
     dailyLimit.value = response.data;
-  } catch (error) {
-    console.error('Error loading daily limit:', error);
+  } catch (error: any) {
+    await showError('Gagal memuat daily limit');
   }
 };
 
@@ -301,8 +301,8 @@ const loadTransactions = async () => {
   try {
     const response = await api.get('/rewards/transactions');
     transactions.value = response.data;
-  } catch (error) {
-    console.error('Error loading transactions:', error);
+  } catch (error: any) {
+    await showError('Gagal memuat transactions');
   }
 };
 

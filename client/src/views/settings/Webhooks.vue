@@ -261,7 +261,7 @@ const loadWebhooks = async () => {
     const response = await api.get('/webhooks?includeInactive=true');
     webhooks.value = response.data.webhooks || [];
   } catch (error: any) {
-    console.error('Error loading webhooks:', error);
+    await showError('Gagal memuat webhooks');
   } finally {
     loading.value = false;
   }
@@ -312,18 +312,16 @@ const deleteWebhook = async (id: string) => {
     await api.delete(`/webhooks/${id}`);
     await loadWebhooks();
   } catch (error: any) {
-    console.error('Error deleting webhook:', error);
-    alert(error.response?.data?.message || 'Gagal menghapus webhook');
+    await showError(error.response?.data?.message || 'Gagal menghapus webhook');
   }
 };
 
 const testWebhook = async (id: string) => {
   try {
     await api.post(`/webhooks/${id}/test`);
-    alert('Test webhook berhasil dikirim!');
+    await showSuccess('Test webhook berhasil dikirim!');
   } catch (error: any) {
-    console.error('Error testing webhook:', error);
-    alert(error.response?.data?.message || 'Gagal mengirim test webhook');
+    await showError(error.response?.data?.message || 'Gagal mengirim test webhook');
   }
 };
 

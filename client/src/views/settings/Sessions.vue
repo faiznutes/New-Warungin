@@ -135,8 +135,7 @@ const revokeSession = async (sessionId: string) => {
     await loadSessions();
     alert('Sesi berhasil diakhiri');
   } catch (error: any) {
-    console.error('Error revoking session:', error);
-    alert(error.response?.data?.message || 'Gagal mengakhiri sesi');
+    await showError(error.response?.data?.message || 'Gagal mengakhiri sesi');
   }
 };
 
@@ -150,8 +149,7 @@ const revokeAllSessions = async () => {
     await loadSessions();
     alert('Semua sesi lainnya berhasil diakhiri');
   } catch (error: any) {
-    console.error('Error revoking all sessions:', error);
-    alert(error.response?.data?.message || 'Gagal mengakhiri sesi');
+    await showError(error.response?.data?.message || 'Gagal mengakhiri sesi');
   }
 };
 

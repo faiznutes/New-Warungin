@@ -418,7 +418,6 @@ const loadArchiveFiles = async () => {
     const response = await api.get('/archives/files');
     archiveFiles.value = response.data.files || [];
   } catch (error: any) {
-    console.error('Error loading archive files:', error);
     showError('Gagal memuat daftar file archive');
   }
 };

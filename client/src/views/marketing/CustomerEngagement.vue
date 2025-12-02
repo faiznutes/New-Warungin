@@ -182,7 +182,6 @@ const loadOverallStats = async () => {
     const response = await api.get('/customer-engagement/stats/overall');
     overallStats.value = response.data.distribution || {};
   } catch (error: any) {
-    console.error('Error loading overall stats:', error);
     await showError('Gagal memuat overall stats');
   } finally {
     loading.value = false;
@@ -202,7 +201,6 @@ const loadCustomers = async () => {
     const response = await api.get('/customer-engagement', { params });
     customers.value = response.data || [];
   } catch (error: any) {
-    console.error('Error loading customers:', error);
     await showError('Gagal memuat customers');
   } finally {
     customersLoading.value = false;

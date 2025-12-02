@@ -244,7 +244,7 @@ const loadAddons = async () => {
     activeAddons.value = activeRes.data;
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
-    console.error('Error loading addons:', error);
+    await showError('Gagal memuat addons');
   } finally {
     loading.value = false;
   }
@@ -320,7 +320,6 @@ const subscribeAddon = async (addon: any) => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error creating payment:', error);
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
   }
 };
@@ -404,7 +403,6 @@ const handleExtendAddon = async () => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error extending addon:', error);
     await showError(error.response?.data?.message || 'Gagal memperpanjang addon');
   } finally {
     processing.value = false;

@@ -354,7 +354,6 @@ const deleteSubmission = async (id: string) => {
       viewingSubmission.value = null;
     }
   } catch (error: any) {
-    console.error('Error deleting submission:', error);
     showError(error.response?.data?.message || 'Gagal menghapus pesan.');
   }
 };
@@ -370,7 +369,6 @@ const handleCleanup = async () => {
     showSuccess(response.data.message || 'Pesan lama berhasil dihapus.');
     await loadSubmissions();
   } catch (error: any) {
-    console.error('Error cleaning up submissions:', error);
     showError(error.response?.data?.message || 'Gagal membersihkan pesan lama.');
   } finally {
     cleaningUp.value = false;
@@ -396,7 +394,6 @@ const toggleProcessed = async (id: string, event: Event) => {
     
     showSuccess(isProcessed ? 'Pesan ditandai sebagai sudah diproses.' : 'Pesan ditandai sebagai belum diproses.');
   } catch (error: any) {
-    console.error('Error updating submission status:', error);
     showError(error.response?.data?.message || 'Gagal mengupdate status pesan.');
     // Revert checkbox
     target.checked = !isProcessed;

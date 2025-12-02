@@ -262,7 +262,6 @@ const loadSchedules = async () => {
     const response = await api.get('/email-scheduler', { params });
     schedules.value = response.data;
   } catch (error: any) {
-    console.error('Error loading schedules:', error);
     await showError('Gagal memuat schedules');
   } finally {
     loading.value = false;
@@ -292,7 +291,6 @@ const saveSchedule = async () => {
     closeModal();
     await loadSchedules();
   } catch (error: any) {
-    console.error('Error saving schedule:', error);
     await showError('Gagal menyimpan schedule');
   } finally {
     saving.value = false;
@@ -324,7 +322,6 @@ const cancelSchedule = async (schedule: ScheduledEmail) => {
     await showSuccess('Schedule berhasil dibatalkan');
     await loadSchedules();
   } catch (error: any) {
-    console.error('Error cancelling schedule:', error);
     await showError('Gagal membatalkan schedule');
   }
 };

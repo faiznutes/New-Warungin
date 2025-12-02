@@ -248,7 +248,6 @@ const loadAnalytics = async () => {
     // Note: This would need a new endpoint or we can use the existing track endpoint
     // For now, we'll skip this or implement a separate endpoint
   } catch (error: any) {
-    console.error('Error loading analytics:', error);
     await showError('Gagal memuat analytics');
   } finally {
     loading.value = false;
@@ -265,7 +264,6 @@ const loadCampaignAnalytics = async () => {
     const response = await api.get(`/email-analytics/campaign/${selectedCampaignId.value}`);
     campaignAnalytics.value = response.data;
   } catch (error: any) {
-    console.error('Error loading campaign analytics:', error);
     await showError('Gagal memuat campaign analytics');
   }
 };

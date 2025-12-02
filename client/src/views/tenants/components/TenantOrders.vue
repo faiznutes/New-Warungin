@@ -193,7 +193,6 @@ const loadOrders = async () => {
     
     orders.value = allOrders;
   } catch (err: any) {
-    console.error('Error loading orders:', err);
     error('Gagal memuat pesanan', 'Terjadi Kesalahan');
   } finally {
     loading.value = false;
@@ -235,7 +234,6 @@ const updateOrder = async (orderId: string, data: any) => {
     showEditModal.value = false;
     editingOrder.value = null;
   } catch (err: any) {
-    console.error('Error updating order:', err);
     error(err.response?.data?.message || 'Gagal mengupdate pesanan', 'Terjadi Kesalahan');
   }
 };
@@ -256,7 +254,6 @@ const updateOrderStatus = async (orderId: string, status: string) => {
     await loadOrders();
     success(`Status pesanan berhasil diubah menjadi "${statusLabel}"`, 'Berhasil');
   } catch (err: any) {
-    console.error('Error updating order status:', err);
     error(err.response?.data?.message || 'Gagal mengupdate status pesanan', 'Terjadi Kesalahan');
   }
 };
@@ -278,7 +275,6 @@ const deleteOrder = async (orderId: string) => {
     await loadOrders();
     success('Pesanan berhasil dibatalkan', 'Berhasil');
   } catch (err: any) {
-    console.error('Error deleting order:', err);
     error(err.response?.data?.message || 'Gagal menghapus pesanan', 'Terjadi Kesalahan');
   }
 };
