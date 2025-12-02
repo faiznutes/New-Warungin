@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import CacheService from '../utils/cache';
 
 interface Prediction {
   nextMonth: number;
@@ -32,19 +33,13 @@ interface CreateCustomReportInput {
 
 class AnalyticsService {
   async getPredictions(tenantId: string, method: 'moving_average' | 'linear_regression' = 'moving_average', useCache: boolean = true): Promise<Prediction> {
+    const cacheKey = `analytics:predictions:${tenantId}:${method}`;
+    
     // Check cache first if enabled
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(`analytics:predictions:${tenantId}`);
-          if (cached) {
-            return JSON.parse(cached);
-          }
-        } catch (error) {
-          // If cache read fails, continue with calculation
-          logger.warn('Failed to read from cache, calculating predictions', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
+      const cached = await CacheService.get<Prediction>(cacheKey);
+      if (cached) {
+        return cached;
       }
     }
     
@@ -282,21 +277,14 @@ class AnalyticsService {
   }
 
   async getTopProducts(tenantId: string, limit: number = 10, useCache: boolean = true): Promise<TopProduct[]> {
+    const cacheKey = `analytics:top-products:${tenantId}`;
+    
     // Check cache first if enabled
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(`analytics:top-products:${tenantId}`);
-          if (cached) {
-            const cachedProducts = JSON.parse(cached);
-            // Return limited results from cache
-            return cachedProducts.slice(0, limit);
-          }
-        } catch (error) {
-          // If cache read fails, continue with calculation
-          logger.warn('Failed to read top products from cache, calculating', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
+      const cached = await CacheService.get<TopProduct[]>(cacheKey);
+      if (cached) {
+        // Return limited results from cache
+        return cached.slice(0, limit);
       }
     }
     const products = await prisma.product.findMany({
