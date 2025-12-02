@@ -400,7 +400,6 @@ const addToCart = async (product: any) => {
       products.value[productIndex].stock = updatedProduct.stock;
     }
   } catch (error: any) {
-    console.error('Error checking product stock:', error);
     // Fallback to local check if API fails
     if (product.stock <= 0) {
       await showWarning('Stok produk habis');
@@ -451,7 +450,6 @@ const increaseQuantity = async (productId: string) => {
         products.value[productIndex].stock = updatedProduct.stock;
       }
     } catch (error: any) {
-      console.error('Error checking product stock:', error);
       // Fallback to local check
       const product = products.value.find(p => p.id === productId);
       if (product && item.quantity >= product.stock) {
