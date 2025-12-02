@@ -557,7 +557,6 @@ const saveSchedule = async () => {
     closeScheduleModal();
     await loadScheduledReports();
   } catch (error: any) {
-    console.error('Error saving schedule:', error);
     await showError('Gagal menyimpan schedule');
   } finally {
     saving.value = false;
@@ -578,7 +577,6 @@ const saveDashboardSettings = async () => {
     await api.put('/advanced-reporting/dashboard-settings', settings);
     await showSuccess('Dashboard settings berhasil disimpan');
   } catch (error: any) {
-    console.error('Error saving dashboard settings:', error);
     await showError('Gagal menyimpan dashboard settings');
   } finally {
     saving.value = false;
