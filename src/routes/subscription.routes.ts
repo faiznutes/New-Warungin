@@ -483,9 +483,9 @@ router.post(
 router.patch(
   '/:id',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only SUPER_ADMIN can update subscription
       if (userRole !== 'SUPER_ADMIN') {
