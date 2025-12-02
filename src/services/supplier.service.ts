@@ -128,9 +128,18 @@ class SupplierService {
     try {
       const supplier = await this.getSupplierById(id, tenantId);
 
+      const updateData: any = {};
+      if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
+      if (data.email !== undefined) updateData.email = data.email ? sanitizeEmail(data.email) : null;
+      if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
+      if (data.address !== undefined) updateData.address = data.address ? sanitizeText(data.address) : null;
+      if (data.contactPerson !== undefined) updateData.contactPerson = data.contactPerson ? sanitizeString(data.contactPerson, 255) : null;
+      if (data.notes !== undefined) updateData.notes = data.notes ? sanitizeText(data.notes) : null;
+      if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
       return await prisma.supplier.update({
         where: { id: supplier.id },
-        data,
+        data: updateData,
       });
     } catch (error: any) {
       logger.error('Error updating supplier:', error);
