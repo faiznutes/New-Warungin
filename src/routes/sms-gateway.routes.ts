@@ -74,7 +74,10 @@ router.post(
       requireTenantId(req);
       const { to, message } = req.body;
       if (!to || !message) {
-        return res.status(400).json({ error: 'to and message are required' });
+        const error = new Error('to and message are required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'to and message are required', 'SEND_SMS');
+        return;
       }
       const result = await smsGatewayService.sendSMS({ to, message });
       res.json(result);

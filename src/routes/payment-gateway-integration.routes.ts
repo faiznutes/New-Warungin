@@ -81,7 +81,10 @@ router.post(
           });
           break;
         default:
-          return res.status(400).json({ error: 'Unsupported provider' });
+          const error = new Error('Unsupported provider');
+          (error as any).statusCode = 400;
+          handleRouteError(res, error, 'Unsupported provider', 'CREATE_PAYMENT_GATEWAY');
+          return;
       }
 
       res.json(result);
@@ -117,7 +120,10 @@ router.get(
       };
 
       if (!paymentId) {
-        return res.status(400).json({ error: 'paymentId is required' });
+        const error = new Error('paymentId is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'paymentId is required', 'CHECK_PAYMENT_STATUS');
+        return;
       }
 
       const status = await paymentGatewayService.checkPaymentStatus(config, paymentId);

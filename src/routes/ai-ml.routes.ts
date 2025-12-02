@@ -111,7 +111,10 @@ router.post(
       const tenantId = requireTenantId(req);
       const { productId } = req.body;
       if (!productId) {
-        return res.status(400).json({ error: 'productId is required' });
+        const error = new Error('productId is required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'productId is required', 'OPTIMIZE_PRICE');
+        return;
       }
       const optimization = await aiMlService.optimizePrice(tenantId, productId);
       res.json(optimization);

@@ -242,7 +242,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can archive
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can archive data' });
+        const error = new Error('Only tenant admin or super admin can archive data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
+        return;
       }
 
       const count = await archiveService.archiveOldOrders(tenantId, olderThanDays);
@@ -295,7 +298,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can archive
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can archive data' });
+        const error = new Error('Only tenant admin or super admin can archive data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
+        return;
       }
 
       const count = await archiveService.archiveOldTransactions(tenantId, olderThanDays);
@@ -348,7 +354,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can archive
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can archive data' });
+        const error = new Error('Only tenant admin or super admin can archive data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
+        return;
       }
 
       const count = await archiveService.archiveOldReports(tenantId, olderThanDays);
@@ -421,7 +430,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can archive
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can archive data' });
+        const error = new Error('Only tenant admin or super admin can archive data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
+        return;
       }
 
       const result = await archiveService.archiveAllOldData(tenantId, req.body);
@@ -485,12 +497,18 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can restore
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can restore data' });
+        const error = new Error('Only tenant admin or super admin can restore data');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can restore data', 'RESTORE_ARCHIVE');
+        return;
       }
 
       // Verify archive file belongs to tenant
       if (!archiveFile.includes(tenantId)) {
-        return res.status(403).json({ message: 'Archive file does not belong to this tenant' });
+        const error = new Error('Archive file does not belong to this tenant');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Archive file does not belong to this tenant', 'RESTORE_ARCHIVE');
+        return;
       }
 
       await archiveService.restoreArchivedData(tenantId, archiveFile);

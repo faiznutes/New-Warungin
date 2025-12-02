@@ -123,7 +123,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -178,7 +180,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -233,7 +237,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -286,7 +292,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -338,7 +346,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -390,7 +400,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
@@ -460,7 +472,9 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can apply retention
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only tenant admin or super admin can apply retention policies' });
+        const error = new Error('Only tenant admin or super admin can apply retention policies');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only tenant admin or super admin can apply retention policies', 'APPLY_RETENTION');
         return;
       }
 
