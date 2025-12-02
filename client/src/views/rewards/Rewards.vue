@@ -414,9 +414,6 @@ const redeemAddon = async (addon: any) => {
 
 // Use formatDateTime for full date-time display
 const formatDate = formatDateTime;
-    minute: '2-digit',
-  });
-};
 
 const getDaysUntilExpiration = (expirationDate: string): number => {
   const expDate = new Date(expirationDate);

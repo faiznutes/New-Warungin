@@ -218,7 +218,6 @@ const viewOrder = async (order: any) => {
     // Show order details in info notification
     await showInfo(message);
   } catch (err: any) {
-    console.error('Error loading order details:', err);
     await showError('Gagal memuat detail pesanan');
   }
 };
@@ -304,8 +303,7 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../../utils/formatters';
+// formatDateTime is already imported from formatters utility above
 
 // Watch for tenantId changes (defer immediate to avoid initialization issues)
 // Don't watch immediately - handle in onMounted instead

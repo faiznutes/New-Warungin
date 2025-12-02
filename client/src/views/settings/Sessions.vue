@@ -119,7 +119,7 @@ const loadSessions = async () => {
         lastActivityAt: session.lastActivity || session.lastActivityAt || session.createdAt,
       }));
   } catch (error: any) {
-    console.error('Error loading sessions:', error);
+    showError('Gagal memuat sesi');
   } finally {
     loading.value = false;
   }
@@ -155,8 +155,8 @@ const revokeAllSessions = async () => {
   }
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../utils/formatters';
+const { error: showError } = useNotification();
+// formatDateTime is already imported from formatters utility above
 const formatDate = formatDateTime;
 
 onMounted(() => {

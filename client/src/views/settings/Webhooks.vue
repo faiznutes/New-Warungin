@@ -338,8 +338,7 @@ const closeModal = () => {
   };
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../utils/formatters';
+// formatDateTime is already imported from formatters utility above
 const formatDate = formatDateTime;
 
 onMounted(() => {

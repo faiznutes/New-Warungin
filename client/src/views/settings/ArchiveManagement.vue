@@ -409,7 +409,7 @@ const loadStats = async () => {
     const response = await api.get('/archives/stats');
     stats.value = response.data;
   } catch (error: any) {
-    console.error('Error loading archive stats:', error);
+    showError('Gagal memuat statistik archive');
   }
 };
 
