@@ -443,6 +443,34 @@ const removeItem = (index: number) => {
 };
 
 const savePurchaseOrder = async () => {
+  // Client-side validation
+  if (!poForm.value.supplierId || poForm.value.supplierId === '') {
+    await showError('Supplier wajib dipilih');
+    return;
+  }
+  
+  if (!poForm.value.items || poForm.value.items.length === 0) {
+    await showError('Minimal harus ada 1 item produk');
+    return;
+  }
+  
+  // Validate each item
+  for (let i = 0; i < poForm.value.items.length; i++) {
+    const item = poForm.value.items[i];
+    if (!item.productId || item.productId === '') {
+      await showError(`Item ke-${i + 1}: Produk wajib dipilih`);
+      return;
+    }
+    if (!item.quantity || item.quantity <= 0) {
+      await showError(`Item ke-${i + 1}: Jumlah harus lebih dari 0`);
+      return;
+    }
+    if (!item.unitPrice || item.unitPrice <= 0) {
+      await showError(`Item ke-${i + 1}: Harga unit harus lebih dari 0`);
+      return;
+    }
+  }
+  
   saving.value = true;
   try {
     const data = {

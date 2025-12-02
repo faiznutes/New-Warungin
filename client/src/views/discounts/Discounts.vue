@@ -396,6 +396,31 @@ const editDiscount = (discount: any) => {
 };
 
 const saveDiscount = async () => {
+  // Client-side validation
+  if (!discountForm.value.name || discountForm.value.name.trim() === '') {
+    await showError('Nama diskon wajib diisi');
+    return;
+  }
+  
+  if (!discountForm.value.discountValue || discountForm.value.discountValue <= 0) {
+    await showError('Nilai diskon harus lebih dari 0');
+    return;
+  }
+  
+  if (discountForm.value.discountValueType === 'PERCENTAGE' && discountForm.value.discountValue > 100) {
+    await showError('Diskon persentase tidak boleh lebih dari 100%');
+    return;
+  }
+  
+  if (discountForm.value.startDate && discountForm.value.endDate) {
+    const startDate = new Date(discountForm.value.startDate);
+    const endDate = new Date(discountForm.value.endDate);
+    if (endDate < startDate) {
+      await showError('Tanggal akhir tidak boleh sebelum tanggal mulai');
+      return;
+    }
+  }
+  
   try {
     const data = {
       ...discountForm.value,

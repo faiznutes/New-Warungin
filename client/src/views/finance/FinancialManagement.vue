@@ -767,6 +767,27 @@ const saveCashFlow = async () => {
 };
 
 const saveExpense = async () => {
+  // Client-side validation
+  if (!expenseForm.value.category || expenseForm.value.category.trim() === '') {
+    await showError('Kategori expense wajib diisi');
+    return;
+  }
+  
+  if (!expenseForm.value.amount || expenseForm.value.amount <= 0) {
+    await showError('Jumlah expense harus lebih dari 0');
+    return;
+  }
+  
+  if (!expenseForm.value.description || expenseForm.value.description.trim() === '') {
+    await showError('Deskripsi expense wajib diisi');
+    return;
+  }
+  
+  if (!expenseForm.value.date) {
+    await showError('Tanggal expense wajib diisi');
+    return;
+  }
+  
   saving.value = true;
   try {
     await api.post('/financial-management/expenses', {
@@ -777,7 +798,6 @@ const saveExpense = async () => {
     closeExpenseModal();
     await loadExpensesByCategory();
   } catch (error: any) {
-    console.error('Error saving expense:', error);
     await showError('Gagal menyimpan expense');
   } finally {
     saving.value = false;

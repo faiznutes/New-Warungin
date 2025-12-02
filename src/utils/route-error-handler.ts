@@ -3,14 +3,14 @@
  * Provides consistent error handling for all routes to prevent 502/503 errors
  */
 
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import logger from './logger';
 import { Prisma } from '@prisma/client';
 
 interface ErrorWithCode extends Error {
   code?: string;
   statusCode?: number;
-  meta?: any;
+  meta?: Record<string, unknown>;
 }
 
 /**
