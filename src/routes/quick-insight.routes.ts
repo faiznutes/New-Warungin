@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import quickInsightService from '../services/quick-insight.service';
 import addonService from '../services/addon.service';
@@ -8,9 +8,9 @@ import { handleRouteError } from '../utils/route-error-handler';
 const router = Router();
 
 // Middleware to check Business Analytics addon (Super Admin bypass)
-const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Function) => {
+const checkBusinessAnalyticsAddon = async (req: AuthRequest, res: Response, next: Function) => {
   try {
-    const userRole = (req as any).user?.role;
+    const userRole = req.user?.role || req.role;
     
     // Super Admin bypass addon check
     if (userRole === 'SUPER_ADMIN') {
@@ -40,9 +40,9 @@ router.get(
   '/',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user?.role;
+      const userRole = req.user?.role || req.role;
       const period = (req.query.period as string) || (userRole === 'SUPER_ADMIN' ? 'monthly' : 'daily');
       
       // For Super Admin, use global stats (all tenants)

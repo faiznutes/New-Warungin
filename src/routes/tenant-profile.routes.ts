@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { z } from 'zod';
@@ -29,10 +29,9 @@ const updateProfileSchema = z.object({
 router.get(
   '/profile',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      const userRole = user?.role;
+      const userRole = req.user?.role || req.role;
       
       // Only ADMIN_TENANT and SUPERVISOR can access their own tenant profile
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
@@ -112,10 +111,9 @@ router.put(
   '/profile',
   authGuard,
   validate({ body: updateProfileSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      const userRole = user?.role;
+      const userRole = req.user?.role || req.role;
       
       // Only ADMIN_TENANT can update their tenant profile
       if (userRole !== 'ADMIN_TENANT') {

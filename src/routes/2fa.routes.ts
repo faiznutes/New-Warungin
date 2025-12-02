@@ -33,7 +33,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      const user = (req as any).user;
+      const user = req.user;
       
       // Get tenant ID - for SUPER_ADMIN, try query param or user's tenantId
       // For other roles, use user's tenantId

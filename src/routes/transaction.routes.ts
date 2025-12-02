@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import transactionService from '../services/transaction.service';
 import { requireTenantId } from '../utils/tenant';
@@ -79,10 +79,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createTransactionSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user.id;
+      const userId = req.user?.id || req.userId || '';
       
       const transaction = await transactionService.createTransaction(
         req.body,

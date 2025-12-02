@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import financeService from '../services/finance.service';
 import { checkBusinessAnalyticsAddon } from '../middlewares/addon-guard';
@@ -114,9 +114,9 @@ router.get(
   '/profit-loss',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: Request, res: Response, next) => {
+  async (req: AuthRequest, res: Response, next) => {
     try {
-      const userRole = (req as any).user?.role;
+      const userRole = req.user?.role || req.role;
       
       // For Super Admin, return platform revenue profit-loss (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {

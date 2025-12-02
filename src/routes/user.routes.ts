@@ -80,10 +80,10 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT can view users
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -139,10 +139,10 @@ router.post(
     userIds: z.array(z.string()).min(1),
     isActive: z.boolean()
   }) }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can bulk update user status
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -241,9 +241,9 @@ router.post(
 router.post(
   '/:id/deactivate',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only SUPER_ADMIN can deactivate users
       if (userRole !== 'SUPER_ADMIN') {
@@ -295,10 +295,10 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only tenant admin can view user details');
@@ -373,10 +373,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createUserSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only tenant admin can create users');
@@ -488,10 +488,10 @@ router.put(
   authGuard,
   subscriptionGuard,
   validate({ body: updateUserSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only tenant admin can update users');
@@ -611,10 +611,10 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only tenant admin can delete users');

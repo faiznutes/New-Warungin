@@ -359,7 +359,7 @@ router.post(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
+      const user = req.user;
       const tenantId = requireTenantId(req);
       const targetUserId = req.params.userId;
       const { points, reason } = req.body;
