@@ -33,10 +33,6 @@ export class DashboardService {
         return cached;
       }
     }
-      if (cached) {
-        return cached;
-      }
-    }
 
     try {
       const where: Prisma.OrderWhereInput = {
