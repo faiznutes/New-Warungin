@@ -2,6 +2,7 @@ import { PrismaClient, Prisma } from '@prisma/client';
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import CacheService from '../utils/cache';
+import { sanitizeString, sanitizePhone, sanitizeText } from '../utils/sanitize';
 
 export interface CreateOutletInput {
   name: string;
@@ -81,7 +82,9 @@ export class OutletService {
     const outlet = await prisma.outlet.create({
       data: {
         tenantId,
-        ...data,
+        name: sanitizeString(data.name, 255),
+        address: data.address ? sanitizeText(data.address) : undefined,
+        phone: data.phone ? sanitizePhone(data.phone) : undefined,
       },
     });
 
