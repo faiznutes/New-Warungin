@@ -301,7 +301,10 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can delete orders' });
+        const error = new Error('Only admin can delete orders');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only admin can delete orders', 'DELETE_ORDER');
+        return;
       }
 
       const { orderIds } = req.body;
@@ -444,7 +447,10 @@ router.put(
       const tenantId = requireTenantId(req);
       const order = await orderService.getOrderById(req.params.id, tenantId);
       if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
+        const error = new Error('Order not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Order not found', 'GET_ORDER');
+        return;
       }
 
       // Pass all validated data to updateOrder service
@@ -476,7 +482,10 @@ router.delete(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can delete orders' });
+        const error = new Error('Only admin can delete orders');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only admin can delete orders', 'DELETE_ORDER');
+        return;
       }
 
       await orderService.deleteOrder(req.params.id, tenantId);

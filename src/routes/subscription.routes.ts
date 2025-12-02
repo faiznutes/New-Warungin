@@ -276,7 +276,10 @@ router.delete(
       
       // Only SUPER_ADMIN can delete subscription
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can delete subscription' });
+        const error = new Error('Only super admin can delete subscription');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can delete subscription', 'DELETE_SUBSCRIPTION');
+        return;
       }
 
       const subscriptionId = req.params.id;
@@ -486,7 +489,10 @@ router.patch(
       
       // Only SUPER_ADMIN can update subscription
       if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can update subscription' });
+        const error = new Error('Only super admin can update subscription');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Only super admin can update subscription', 'UPDATE_SUBSCRIPTION');
+        return;
       }
 
       const subscriptionId = req.params.id;

@@ -98,8 +98,8 @@ router.put(
       const tenantId = requireTenantId(req);
       const template = await receiptService.updateTemplate(req.params.id, tenantId, req.body);
       res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update receipt template', 'UPDATE_RECEIPT_TEMPLATE');
     }
   }
 );

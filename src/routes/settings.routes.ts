@@ -22,7 +22,10 @@ router.get(
       const user = (req as any).user;
       
       if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
+        const error = new Error('Access denied. Super Admin only.');
+        (error as any).statusCode = 403;
+        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GET_SYSTEM_SETTINGS');
+        return;
       }
 
       const settings = await settingsService.getSystemSettings();
