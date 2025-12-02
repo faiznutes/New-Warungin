@@ -47,7 +47,9 @@ router.post(
       if (result.success) {
         res.json(result);
       } else {
-        res.status(400).json(result);
+        const error = new Error(result.message || 'Payment creation failed');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, result.message || 'Payment creation failed', 'CREATE_PAYMENT');
       }
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create payment', 'CREATE_PAYMENT');
