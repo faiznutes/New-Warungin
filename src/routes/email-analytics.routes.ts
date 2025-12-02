@@ -258,7 +258,10 @@ router.get(
       const tenantId = req.query.tenantId as string;
 
       if (!email || !tenantId) {
-        return res.status(400).json({ message: 'Email and tenantId are required' });
+        const error = new Error('Email and tenantId are required');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'Email and tenantId are required', 'TRACK_OPEN');
+        return;
       }
 
       await emailAnalyticsService.trackOpen(campaignId, email, tenantId);

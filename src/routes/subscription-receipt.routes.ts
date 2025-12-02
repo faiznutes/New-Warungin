@@ -92,8 +92,8 @@ router.post(
     try {
       const template = await subscriptionReceiptService.createTemplate(req.body);
       res.status(201).json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to create receipt template', 'CREATE_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -106,8 +106,8 @@ router.put(
     try {
       const template = await subscriptionReceiptService.updateTemplate(req.params.id, req.body);
       res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to update receipt template', 'UPDATE_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -120,8 +120,8 @@ router.post(
     try {
       const template = await subscriptionReceiptService.setDefaultTemplate(req.params.id);
       res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to set default receipt template', 'SET_DEFAULT_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -134,8 +134,8 @@ router.delete(
     try {
       await subscriptionReceiptService.deleteTemplate(req.params.id);
       res.json({ message: 'Template deleted successfully' });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to delete receipt template', 'DELETE_RECEIPT_TEMPLATE');
     }
   }
 );
@@ -149,8 +149,8 @@ router.get(
       const templateId = req.query.templateId as string | undefined;
       const receipt = await subscriptionReceiptService.generateReceipt(req.params.subscriptionId, templateId);
       res.json(receipt);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to generate receipt', 'GENERATE_RECEIPT');
     }
   }
 );
