@@ -133,7 +133,7 @@ const revokeSession = async (sessionId: string) => {
   try {
     await api.delete(`/sessions/${sessionId}`);
     await loadSessions();
-    alert('Sesi berhasil diakhiri');
+    await showSuccess('Sesi berhasil diakhiri');
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal mengakhiri sesi');
   }
@@ -147,7 +147,7 @@ const revokeAllSessions = async () => {
   try {
     await api.post('/sessions/revoke-all');
     await loadSessions();
-    alert('Semua sesi lainnya berhasil diakhiri');
+    await showSuccess('Semua sesi lainnya berhasil diakhiri');
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal mengakhiri sesi');
   }

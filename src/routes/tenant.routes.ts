@@ -10,6 +10,7 @@ import logger from '../utils/logger';
 import { AuthRequest } from '../middlewares/auth';
 import { auditLogger } from '../middlewares/audit-logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -100,8 +101,7 @@ router.get(
           role: userRole,
           path: req.url,
         });
-        const error = new Error('Only super admin can view all tenants');
-        (error as any).statusCode = 403;
+        const error = new AppError('Only super admin can view all tenants', 403, 'FORBIDDEN');
         handleRouteError(res, error, 'Only super admin can view all tenants', 'GET_TENANTS');
         return;
       }

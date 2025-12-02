@@ -8,6 +8,7 @@ import prisma from '../config/database';
 import { AuthRequest } from '../middlewares/auth';
 import logger from '../utils/logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -172,8 +173,7 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
     }
 
     if (!user) {
-      const error = new Error('User not found in database');
-      (error as any).statusCode = 404;
+      const error = new AppError('User not found in database', 404, 'USER_NOT_FOUND');
       logRouteError(error, 'ME_USER_NOT_FOUND', req);
       handleRouteError(res, error, 'User account not found. Please contact support.', 'ME_USER_NOT_FOUND');
       return;

@@ -7,6 +7,7 @@ import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
 import prisma from '../config/database';
 import { handleRouteError } from '../utils/route-error-handler';
+import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -169,8 +170,7 @@ router.post(
       const isValid = await twoFactorService.verifyToken(userId, token);
 
       if (!isValid) {
-        const error = new Error('Token 2FA tidak valid');
-        (error as any).statusCode = 401;
+        const error = new AppError('Token 2FA tidak valid', 401, 'INVALID_2FA_TOKEN');
         handleRouteError(res, error, 'Token 2FA tidak valid', 'VERIFY_2FA');
         return;
       }

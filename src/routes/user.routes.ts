@@ -9,6 +9,7 @@ import prisma from '../config/database';
 import { AuthRequest } from '../middlewares/auth';
 import { logAction } from '../middlewares/audit-logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -172,8 +173,7 @@ router.get(
       
       // Only SUPER_ADMIN can view user passwords
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can view user passwords');
-        (error as any).statusCode = 403;
+        const error = new AppError('Only super admin can view user passwords', 403, 'FORBIDDEN');
         handleRouteError(res, error, 'Only super admin can view user passwords', 'GET_USER_PASSWORD');
         return;
       }
@@ -197,8 +197,7 @@ router.post(
       
       // Only SUPER_ADMIN can reset user passwords
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can reset user passwords');
-        (error as any).statusCode = 403;
+        const error = new AppError('Only super admin can reset user passwords', 403, 'FORBIDDEN');
         handleRouteError(res, error, 'Only super admin can reset user passwords', 'RESET_USER_PASSWORD');
         return;
       }
@@ -222,8 +221,7 @@ router.post(
       
       // Only SUPER_ADMIN can activate users
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can activate users');
-        (error as any).statusCode = 403;
+        const error = new AppError('Only super admin can activate users', 403, 'FORBIDDEN');
         handleRouteError(res, error, 'Only super admin can activate users', 'ACTIVATE_USER');
         return;
       }
