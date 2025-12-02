@@ -455,21 +455,14 @@ export const createTenant = async (input: CreateTenantInput) => {
 
   // Invalidate cache for tenants list and individual tenant
   try {
-    const redis = getRedisClient();
-    if (redis) {
-      // Delete individual tenant cache
-      await redis.del(`tenant:${result.tenant.id}`);
-      
-      // Delete all tenants list cache (tenants:*)
-      const keys = await redis.keys('tenants:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-        logger.info('Invalidated tenants list cache after creating tenant', {
-          tenantId: result.tenant.id,
-          cacheKeysDeleted: keys.length
-        });
-      }
-    }
+    // Delete individual tenant cache
+    await CacheService.delete(`tenant:${result.tenant.id}`);
+    
+    // Delete all tenants list cache (tenants:*)
+    await CacheService.deletePattern('tenants:*');
+    logger.info('Invalidated tenants list cache after creating tenant', {
+      tenantId: result.tenant.id,
+    });
   } catch (cacheError: any) {
     // Log but don't fail tenant creation if cache invalidation fails
     logger.warn('Failed to invalidate cache after creating tenant', {
@@ -627,17 +620,9 @@ export const getTenantById = async (id: string, useCache: boolean = true) => {
 
   // Try to get from cache first
   if (useCache) {
-    const redis = getRedisClient();
-    if (redis) {
-      try {
-        const cached = await redis.get(cacheKey);
-        if (cached) {
-          return JSON.parse(cached);
-        }
-      } catch (error) {
-        // If cache read fails, continue with database query
-        logger.warn('Failed to read tenant from cache:', error);
-      }
+    const cached = await CacheService.get(cacheKey);
+    if (cached) {
+      return cached;
     }
   }
 
