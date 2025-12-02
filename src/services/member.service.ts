@@ -2,6 +2,7 @@ import { PrismaClient, Member } from '@prisma/client';
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import CacheService from '../utils/cache';
+import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeText } from '../utils/sanitize';
 
 export interface CreateMemberInput {
   name: string;
@@ -97,7 +98,12 @@ export class MemberService {
 
     const member = await prisma.member.create({
       data: {
-        ...data,
+        name: sanitizeString(data.name, 255),
+        email: data.email ? sanitizeEmail(data.email) : undefined,
+        phone: sanitizePhone(data.phone),
+        address: data.address ? sanitizeText(data.address) : undefined,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
         tenantId,
         memberCode,
       },
@@ -115,9 +121,18 @@ export class MemberService {
       throw new Error('Member not found');
     }
 
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
+    if (data.email !== undefined) updateData.email = data.email ? sanitizeEmail(data.email) : null;
+    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
+    if (data.address !== undefined) updateData.address = data.address ? sanitizeText(data.address) : null;
+    if (data.discountType !== undefined) updateData.discountType = data.discountType;
+    if (data.discountValue !== undefined) updateData.discountValue = data.discountValue;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
     const updatedMember = await prisma.member.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
     // Invalidate analytics cache after member update

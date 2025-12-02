@@ -1,6 +1,7 @@
 import { PrismaClient, Employee } from '@prisma/client';
 import prisma from '../config/database';
 import logger from '../utils/logger';
+import { sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 export interface CreateEmployeeInput {
   name: string;
@@ -79,7 +80,10 @@ export class EmployeeService {
 
     const employee = await prisma.employee.create({
       data: {
-        ...data,
+        name: sanitizeString(data.name, 255),
+        email: sanitizeEmail(data.email),
+        phone: data.phone ? sanitizePhone(data.phone) : undefined,
+        position: sanitizeString(data.position, 255),
         tenantId,
       },
     });
