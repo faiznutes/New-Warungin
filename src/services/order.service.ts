@@ -4,6 +4,7 @@ import prisma from '../config/database';
 import productService from './product.service';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import { sanitizeText, sanitizeString } from '../utils/sanitize';
 
 export class OrderService {
   async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string) {
@@ -118,8 +119,15 @@ export class OrderService {
   }
 
   async createOrder(data: CreateOrderInput, userId: string, tenantId: string): Promise<Order> {
+    // Sanitize text fields
+    const sanitizedData = {
+      ...data,
+      temporaryCustomerName: data.temporaryCustomerName ? sanitizeString(data.temporaryCustomerName, 255) : undefined,
+      notes: data.notes ? sanitizeText(data.notes) : undefined,
+    };
+    
     // Calculate subtotal from items (before any discounts)
-    const subtotal = data.items.reduce((sum, item) => {
+    const subtotal = sanitizedData.items.reduce((sum, item) => {
       return sum + (item.price * item.quantity);
     }, 0);
 
@@ -251,7 +259,7 @@ export class OrderService {
         throw new Error('Failed to generate unique order number after multiple attempts');
       }
       // Verify and update product stock
-      for (const item of data.items) {
+      for (const item of sanitizedData.items) {
         const product = await productService.getProductById(item.productId, tenantId);
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
@@ -263,7 +271,7 @@ export class OrderService {
 
       // Prepare order items with cost and profit calculation
       const orderItemsData = await Promise.all(
-        data.items.map(async (item) => {
+        sanitizedData.items.map(async (item) => {
           // Get product to retrieve cost
           const product = await productService.getProductById(item.productId, tenantId);
           if (!product) {
@@ -293,17 +301,17 @@ export class OrderService {
           tenantId,
           userId,
           orderNumber,
-          customerId: data.customerId,
-          memberId: data.memberId,
-          temporaryCustomerName: data.temporaryCustomerName,
-          outletId: data.outletId,
+          customerId: sanitizedData.customerId,
+          memberId: sanitizedData.memberId,
+          temporaryCustomerName: sanitizedData.temporaryCustomerName,
+          outletId: sanitizedData.outletId,
           subtotal: subtotal.toString(),
           discount: totalDiscount.toString(),
           total: total.toString(),
           status: 'PENDING',
-          sendToKitchen: data.sendToKitchen || false,
-          kitchenStatus: data.sendToKitchen ? 'PENDING' : null,
-          notes: data.notes,
+          sendToKitchen: sanitizedData.sendToKitchen || false,
+          kitchenStatus: sanitizedData.sendToKitchen ? 'PENDING' : null,
+          notes: sanitizedData.notes,
           items: {
             create: orderItemsData,
           },
@@ -469,8 +477,8 @@ export class OrderService {
           updateData.kitchenStatus = data.sendToKitchen ? 'PENDING' : null;
         }
         if (data.kitchenStatus !== undefined) updateData.kitchenStatus = data.kitchenStatus;
-        if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName;
-        if (data.notes !== undefined) updateData.notes = data.notes;
+        if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName ? sanitizeString(data.temporaryCustomerName, 255) : null;
+        if (data.notes !== undefined) updateData.notes = data.notes ? sanitizeText(data.notes) : null;
 
         // Emit stock updates via socket
         const { emitToTenant } = await import('../socket/socket');

@@ -6,6 +6,7 @@ import prisma from '../config/database';
 import { handleRouteError } from '../utils/route-error-handler';
 import logger from '../utils/logger';
 import { authLimiter } from '../middlewares/rateLimiter';
+import { sanitizeText, sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 const router = Router();
 
@@ -39,15 +40,18 @@ router.post(
   validate({ body: contactFormSchema }),
   async (req: Request, res: Response) => {
     try {
+      // Sanitize input
+      const sanitizedData = {
+        name: sanitizeString(req.body.name, 255),
+        email: sanitizeEmail(req.body.email),
+        phone: req.body.phone ? sanitizePhone(req.body.phone) : null,
+        subject: sanitizeString(req.body.subject, 255),
+        message: sanitizeText(req.body.message),
+      };
+      
       // Save to database
       await prisma.contactSubmission.create({
-        data: {
-          name: req.body.name,
-          email: req.body.email,
-          phone: req.body.phone || null,
-          subject: req.body.subject,
-          message: req.body.message,
-        },
+        data: sanitizedData,
       });
       
       return res.json({
