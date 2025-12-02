@@ -217,10 +217,10 @@ router.get(
   '/stats/kitchen',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      if (user.role !== 'KITCHEN') {
+      const userRole = req.user?.role || req.role;
+      if (userRole !== 'KITCHEN') {
         const error = new Error('Access denied. Kitchen only.');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Access denied. Kitchen only.', 'GET_KITCHEN_DASHBOARD');
