@@ -237,7 +237,6 @@ const handleLogin = async () => {
         await showError('Email atau password salah');
       }
     }
-    console.error('Login error:', error);
   } finally {
     loading.value = false;
   }

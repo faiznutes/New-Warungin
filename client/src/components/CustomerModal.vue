@@ -136,6 +136,31 @@ watch(() => props.show, (newShow) => {
 });
 
 const handleSubmit = () => {
+  // Client-side validation
+  if (!form.value.name || form.value.name.trim() === '') {
+    showError('Nama pelanggan wajib diisi');
+    return;
+  }
+  
+  if (form.value.email && form.value.email.trim() !== '') {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.value.email)) {
+      showError('Format email tidak valid');
+      return;
+    }
+  }
+  
+  if (form.value.phone && form.value.phone.trim() !== '') {
+    // Basic phone validation (numbers only, min 10 digits)
+    const phoneRegex = /^[0-9]{10,15}$/;
+    const cleanPhone = form.value.phone.replace(/\D/g, '');
+    if (cleanPhone.length < 10 || cleanPhone.length > 15) {
+      showError('Nomor telepon harus 10-15 digit');
+      return;
+    }
+  }
+  
   saving.value = true;
   emit('save', { ...form.value });
   setTimeout(() => {

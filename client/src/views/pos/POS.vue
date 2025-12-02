@@ -632,7 +632,6 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
       orderData.memberId = selectedMember.value.id;
     }
 
-    console.log('Creating order with data:', orderData);
     const orderResponse = await api.post('/orders', orderData);
     const order = orderResponse.data;
     

@@ -527,6 +527,32 @@ onMounted(async () => {
 });
 
 const handleSubmit = () => {
+  // Client-side validation
+  if (!form.value.name || form.value.name.trim() === '') {
+    showError('Nama produk wajib diisi');
+    return;
+  }
+  
+  if (!form.value.price || form.value.price <= 0) {
+    showError('Harga produk harus lebih dari 0');
+    return;
+  }
+  
+  if (form.value.stock < 0) {
+    showError('Stok produk tidak boleh negatif');
+    return;
+  }
+  
+  if (form.value.minStock < 0) {
+    showError('Stok minimum tidak boleh negatif');
+    return;
+  }
+  
+  if (form.value.cost !== undefined && form.value.cost < 0) {
+    showError('Harga pokok tidak boleh negatif');
+    return;
+  }
+  
   saving.value = true;
   
   // Prepare data - ensure emoji/image are properly set based on type
