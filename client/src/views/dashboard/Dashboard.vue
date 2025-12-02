@@ -981,9 +981,7 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-// Use formatters utility instead of local function
-import { formatDate as formatDateUtil } from '../../utils/formatters';
-const formatDate = formatDateUtil;
+// formatDate is already imported from formatters utility above
 
 const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
