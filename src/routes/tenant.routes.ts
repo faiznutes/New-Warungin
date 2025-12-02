@@ -33,8 +33,8 @@ function logRouteError(error: unknown, context: string, req: any) {
     stack: err.stack,
     path: req.url || req.path,
     method: req.method,
-    userId: (req as AuthRequest).userId,
-    tenantId: (req as AuthRequest).tenantId,
+    userId: req.userId,
+    tenantId: req.tenantId,
   });
 }
 
@@ -46,7 +46,8 @@ router.post(
   validate({ body: createTenantSchema }),
   auditLogger('CREATE', 'tenants', (req) => {
     // Get tenant ID from response if available
-    return (req as any).createdTenantId || null;
+    // Get tenant ID from response if available (set by route handler)
+    return (req as AuthRequest & { createdTenantId?: string }).createdTenantId || null;
   }),
   async (req: Request, res: Response) => {
     try {

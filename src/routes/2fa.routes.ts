@@ -45,7 +45,7 @@ router.post(
         tenantId = (req.query.tenantId as string) || user.tenantId || null;
       } else {
         // For other roles, use tenantId from user
-        tenantId = user.tenantId || (req as any).tenantId || null;
+        tenantId = user.tenantId || req.tenantId || null;
       }
 
       // Get tenant name for service name (optional - if tenantId exists)

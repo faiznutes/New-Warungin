@@ -81,7 +81,9 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      const currentSessionId = (req as any).sessionId; // Should be set by middleware
+      // Get sessionId from request headers or token
+      const authHeader = req.headers.authorization;
+      const currentSessionId = authHeader?.replace('Bearer ', '').split('.')[0] || null;
 
       const revokedCount = await sessionService.revokeAllUserSessions(userId, currentSessionId);
 
