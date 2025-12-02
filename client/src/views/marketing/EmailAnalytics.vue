@@ -273,9 +273,9 @@ const formatPercentage = (value: number): string => {
   return value.toFixed(2);
 };
 
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleString('id-ID');
-};
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../utils/formatters';
+const formatDate = formatDateTime; // Use formatDateTime for full date-time display
 
 const getEventTypeClass = (eventType: string): string => {
   const classes: Record<string, string> = {

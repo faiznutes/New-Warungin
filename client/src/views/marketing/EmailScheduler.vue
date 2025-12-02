@@ -349,9 +349,8 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-const formatDateTime = (dateString: string): string => {
-  return new Date(dateString).toLocaleString('id-ID');
-};
+// Use formatters utility instead of local function
+import { formatDateTime } from '../../utils/formatters';
 
 const closeModal = () => {
   showScheduleModal.value = false;

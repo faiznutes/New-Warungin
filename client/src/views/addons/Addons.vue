@@ -344,15 +344,8 @@ const openExtendModal = (addon: any) => {
   showExtendModal.value = true;
 };
 
-const formatDate = (dateString: string | Date) => {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
+// Use formatters utility instead of local function
+import { formatDate } from '../../utils/formatters';
 
 const getDaysUntilExpiry = (expiresAt: string | Date) => {
   if (!expiresAt) return 0;
