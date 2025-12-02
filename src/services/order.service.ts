@@ -139,7 +139,7 @@ export class OrderService {
       autoDiscount = autoDiscountResult.discountAmount;
     } catch (error: any) {
       // If discount service fails (e.g., table doesn't exist yet), continue without auto discount
-      console.warn('Failed to apply automatic discounts:', error.message);
+      logger.warn('Failed to apply automatic discounts', { error: error.message, tenantId });
       autoDiscount = 0;
     }
 
@@ -604,7 +604,7 @@ export class OrderService {
       });
     } catch (error: any) {
       // If transaction doesn't exist or already deleted, continue
-      console.warn('Transaction deletion warning (may not exist):', error.message);
+      logger.warn('Transaction deletion warning (may not exist)', { error: error.message, orderId });
     }
 
     // Delete order items first
@@ -654,7 +654,7 @@ export class OrderService {
           });
         } catch (error: any) {
           // If transaction doesn't exist or already deleted, continue
-          console.warn(`Transaction deletion warning for order ${orderId} (may not exist):`, error.message);
+          logger.warn('Transaction deletion warning for order (may not exist)', { error: error.message, orderId });
         }
 
         // Delete order items first

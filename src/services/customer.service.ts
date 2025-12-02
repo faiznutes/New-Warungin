@@ -148,7 +148,7 @@ export class CustomerService {
       return customer;
     } catch (error: any) {
       // Log the error for debugging
-      console.error('Prisma error in createCustomer:', error);
+      logger.error('Prisma error in createCustomer', { error: error.message, code: error.code, tenantId });
       // Re-throw with more context
       if (error.code === 'P1001' || error.code === 'P1002' || error.message?.includes('connect')) {
         throw new Error('Database connection failed. Please try again.');

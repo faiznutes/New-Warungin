@@ -2,6 +2,7 @@ import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../validators/product.validator';
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
+import logger from '../utils/logger';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -22,7 +23,7 @@ export class ProductService {
           }
         } catch (error) {
           // If cache read fails, continue with database query
-          console.warn('Failed to read products from cache:', error);
+          logger.warn('Failed to read products from cache', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -68,7 +69,7 @@ export class ProductService {
           await redis.setex(cacheKey, 300, JSON.stringify(result));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache products:', error);
+          logger.warn('Failed to cache products', { error: error instanceof Error ? error.message : String(error), tenantId });
         }
       }
     }
@@ -155,7 +156,7 @@ export class ProductService {
         }
       } catch (error) {
         // If cache invalidation fails, log but don't throw
-        console.warn('Failed to invalidate product cache:', error);
+        logger.warn('Failed to invalidate product cache', { error: error instanceof Error ? error.message : String(error), tenantId });
       }
     }
   }
@@ -228,7 +229,7 @@ export class ProductService {
         await redis.del(`analytics:top-products:${tenantId}`);
       }
     } catch (error) {
-      console.warn('Failed to invalidate analytics cache:', error);
+      logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error), tenantId });
     }
 
     // Emit socket event if requested (usually from order service, not from direct product update)
@@ -241,7 +242,7 @@ export class ProductService {
         });
       } catch (error) {
         // Ignore socket errors
-        console.warn('Failed to emit stock update socket event:', error);
+        logger.warn('Failed to emit stock update socket event', { error: error instanceof Error ? error.message : String(error), tenantId, productId });
       }
     }
 
