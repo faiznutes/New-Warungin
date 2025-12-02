@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import prisma from '../config/database';
-import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import CacheService from '../utils/cache';
 
 export interface CreateOutletInput {
   name: string;

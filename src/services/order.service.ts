@@ -2,9 +2,9 @@ import { PrismaClient, Order, OrderStatus, Prisma } from '@prisma/client';
 import { CreateOrderInput, GetOrdersQuery, UpdateOrderStatusInput } from '../validators/order.validator';
 import prisma from '../config/database';
 import productService from './product.service';
-import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 import { sanitizeText, sanitizeString } from '../utils/sanitize';
+import CacheService from '../utils/cache';
 
 export class OrderService {
   async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string) {

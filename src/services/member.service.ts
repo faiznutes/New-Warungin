@@ -1,7 +1,7 @@
 import { PrismaClient, Member } from '@prisma/client';
 import prisma from '../config/database';
-import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import CacheService from '../utils/cache';
 
 export interface CreateMemberInput {
   name: string;

@@ -1,9 +1,9 @@
 import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../validators/product.validator';
 import prisma from '../config/database';
-import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 import { sanitizeText, sanitizeString } from '../utils/sanitize';
+import CacheService from '../utils/cache';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -15,17 +15,9 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(cacheKey);
-          if (cached) {
-            return JSON.parse(cached);
-          }
-        } catch (error) {
-          // If cache read fails, continue with database query
-          logger.warn('Failed to read products from cache', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
+      const cached = await CacheService.get(cacheKey);
+      if (cached) {
+        return cached;
       }
     }
 
