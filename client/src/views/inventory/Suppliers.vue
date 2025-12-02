@@ -309,6 +309,21 @@ const changePage = (page: number) => {
 };
 
 const saveSupplier = async () => {
+  // Client-side validation
+  if (!supplierForm.value.name || supplierForm.value.name.trim() === '') {
+    await showError('Nama supplier wajib diisi');
+    return;
+  }
+  
+  if (supplierForm.value.email && supplierForm.value.email.trim() !== '') {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(supplierForm.value.email)) {
+      await showError('Format email tidak valid');
+      return;
+    }
+  }
+  
   saving.value = true;
   try {
     if (editingSupplier.value) {
@@ -321,7 +336,6 @@ const saveSupplier = async () => {
     closeModal();
     await loadSuppliers();
   } catch (error: any) {
-    console.error('Error saving supplier:', error);
     await showError('Gagal menyimpan supplier');
   } finally {
     saving.value = false;

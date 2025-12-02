@@ -4,6 +4,7 @@ import prisma from '../config/database';
 import addonService from './addon.service';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import { sanitizeString, sanitizeEmail } from '../utils/sanitize';
 
 export interface CreateUserInput {
   name: string;
@@ -116,8 +117,8 @@ export class UserService {
     const user = await prisma.user.create({
       data: {
         tenantId,
-        name: data.name,
-        email: data.email,
+        name: sanitizeString(data.name, 255),
+        email: sanitizeEmail(data.email),
         password: hashedPassword,
         defaultPassword: password, // Store default password (plaintext) for Super Admin to view
         role: data.role,
@@ -146,8 +147,8 @@ export class UserService {
     }
 
     const updateData: any = {};
-    if (data.name) updateData.name = data.name;
-    if (data.email) updateData.email = data.email;
+    if (data.name) updateData.name = sanitizeString(data.name, 255);
+    if (data.email) updateData.email = sanitizeEmail(data.email);
     if (data.role) updateData.role = data.role;
     
     // Allow isActive update based on role and subscription status

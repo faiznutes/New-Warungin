@@ -5,6 +5,7 @@
 
 import prisma from '../config/database';
 import logger from '../utils/logger';
+import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeText } from '../utils/sanitize';
 
 interface CreateSupplierInput {
   name: string;
@@ -106,7 +107,12 @@ class SupplierService {
       return await prisma.supplier.create({
         data: {
           tenantId,
-          ...data,
+          name: sanitizeString(data.name, 255),
+          email: data.email ? sanitizeEmail(data.email) : undefined,
+          phone: data.phone ? sanitizePhone(data.phone) : undefined,
+          address: data.address ? sanitizeText(data.address) : undefined,
+          contactPerson: data.contactPerson ? sanitizeString(data.contactPerson, 255) : undefined,
+          notes: data.notes ? sanitizeText(data.notes) : undefined,
         },
       });
     } catch (error: any) {
