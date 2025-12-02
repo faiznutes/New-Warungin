@@ -188,6 +188,7 @@
 import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
+import { formatDateTime } from '../../utils/formatters';
 
 const { error: showError } = useNotification();
 
@@ -273,9 +274,8 @@ const formatPercentage = (value: number): string => {
   return value.toFixed(2);
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../utils/formatters';
-const formatDate = formatDateTime; // Use formatDateTime for full date-time display
+// Use formatDateTime for full date-time display
+const formatDate = formatDateTime;
 
 const getEventTypeClass = (eventType: string): string => {
   const classes: Record<string, string> = {

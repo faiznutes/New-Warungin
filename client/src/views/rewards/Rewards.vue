@@ -258,6 +258,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import api from '../../api';
+import { formatDateTime } from '../../utils/formatters';
 
 const router = useRouter();
 const activeTab = ref<'earn' | 'redeem' | 'history'>('earn');
@@ -411,9 +412,8 @@ const redeemAddon = async (addon: any) => {
   }
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../utils/formatters';
-const formatDate = formatDateTime; // Use formatDateTime for full date-time display
+// Use formatDateTime for full date-time display
+const formatDate = formatDateTime;
     minute: '2-digit',
   });
 };
