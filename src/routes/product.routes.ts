@@ -433,7 +433,7 @@ router.post(
             price: parseFloat(row.price) || 0,
             cost: row.cost ? parseFloat(row.cost) : undefined,
             stock: parseInt(row.stock) || 0,
-            minStock: row.minStock ? parseInt(row.minStock) : undefined,
+            minStock: row.minStock ? parseInt(row.minStock) : 0,
             category: row.category?.trim() || undefined,
             description: row.description?.trim() || undefined,
             isActive: row.isActive !== false && row.isActive !== 'false',

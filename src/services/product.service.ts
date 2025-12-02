@@ -69,7 +69,7 @@ export class ProductService {
     if (useCache) {
       const cached = await CacheService.get(cacheKey);
       if (cached) {
-        return cached;
+        return cached as Product | null;
       }
     }
 
@@ -133,13 +133,13 @@ export class ProductService {
 
   async updateProduct(id: string, data: UpdateProductInput, tenantId: string): Promise<Product> {
     // Sanitize text fields
-    const sanitizedData: UpdateProductInput = {
+    const sanitizedData: any = {
       ...data,
       ...(data.name && { name: sanitizeString(data.name, 255) }),
       ...(data.description !== undefined && { description: data.description ? sanitizeText(data.description) : (data.description === null ? null : undefined) }),
-      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : undefined }),
-      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : undefined }),
-      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : undefined }),
+      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : (data.category === null ? null : undefined) }),
+      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : (data.sku === null ? null : undefined) }),
+      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : (data.barcode === null ? null : undefined) }),
     };
     
     // Verify product belongs to tenant

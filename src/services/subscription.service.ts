@@ -1318,9 +1318,10 @@ export class SubscriptionService {
           subscriptionEnd: verifyTenant?.subscriptionEnd?.toISOString(),
         });
       } catch (error: any) {
+        const errorTenantId = subscription.tenantId || subscription.tenant?.id || null;
         logger.error('Failed to revert expired subscription', {
           subscriptionId: subscription.id,
-          tenantId,
+          tenantId: errorTenantId,
           error: error.message,
         });
         results.push({

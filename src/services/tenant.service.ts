@@ -538,7 +538,15 @@ export const getTenants = async (page: number = 1, limit: number = 10, includeCo
   if (useCache && !includeCounts) {
     const cached = await CacheService.get(cacheKey);
     if (cached) {
-      return cached;
+      return cached as {
+        data: any[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      };
     }
   }
 
