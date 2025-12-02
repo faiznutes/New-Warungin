@@ -88,6 +88,9 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, nextTick } from 'vue';
+import { useNotification } from '../composables/useNotification';
+
+const { error: showError } = useNotification();
 
 interface Customer {
   id?: string;

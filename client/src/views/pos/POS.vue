@@ -561,8 +561,8 @@ const loadProducts = async () => {
   if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
     const selectedTenantId = localStorage.getItem('selectedTenantId');
     if (!selectedTenantId) {
-      console.log('Waiting for tenant selection...');
-      return;
+    // Waiting for tenant selection
+    return;
     }
     // Ensure authStore has the selected tenant
     authStore.setSelectedTenant(selectedTenantId);
@@ -575,7 +575,6 @@ const loadProducts = async () => {
     });
     products.value = response.data.data || response.data;
   } catch (err: any) {
-    console.error('Error loading products:', err);
     const errorMessage = err.response?.data?.message || 'Gagal memuat produk';
     showError(errorMessage, 'Terjadi Kesalahan');
   } finally {
@@ -591,7 +590,6 @@ const loadMembers = async () => {
     const result = response.data.data || response.data;
     members.value = Array.isArray(result) ? result : [];
   } catch (error: any) {
-    console.error('Error loading members:', error);
     members.value = [];
   }
 };
@@ -702,9 +700,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
     // Refresh products untuk update stock
     await loadProducts();
   } catch (error: any) {
-    console.error('Error processing payment:', error);
     const errorMessage = error.response?.data?.message || error.message || 'Gagal memproses pembayaran';
-    console.error('Error details:', error.response?.data);
     showError(errorMessage, 'Gagal Memproses Pembayaran');
   } finally {
     processing.value = false;
