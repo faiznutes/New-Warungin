@@ -190,7 +190,10 @@ router.get(
       const transaction = await transactionService.getTransactionById(req.params.id, tenantId);
       
       if (!transaction) {
-        return res.status(404).json({ message: 'Transaction not found' });
+        const error = new Error('Transaction not found');
+        (error as any).statusCode = 404;
+        handleRouteError(res, error, 'Transaction not found', 'GET_TRANSACTION');
+        return;
       }
       
       res.json(transaction);

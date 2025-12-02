@@ -130,7 +130,10 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       if (req.body.type !== 'EMAIL') {
-        return res.status(400).json({ message: 'This endpoint is only for EMAIL campaigns' });
+        const error = new Error('This endpoint is only for EMAIL campaigns');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'This endpoint is only for EMAIL campaigns', 'SEND_EMAIL_CAMPAIGN');
+        return;
       }
       
       const result = await marketingService.sendEmailCampaign(tenantId, {
@@ -160,7 +163,10 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       if (req.body.type !== 'SMS' && req.body.type !== 'WHATSAPP') {
-        return res.status(400).json({ message: 'This endpoint is only for SMS/WhatsApp campaigns' });
+        const error = new Error('This endpoint is only for SMS/WhatsApp campaigns');
+        (error as any).statusCode = 400;
+        handleRouteError(res, error, 'This endpoint is only for SMS/WhatsApp campaigns', 'SEND_SMS_CAMPAIGN');
+        return;
       }
       
       const result = await marketingService.sendSMSCampaign(tenantId, {
