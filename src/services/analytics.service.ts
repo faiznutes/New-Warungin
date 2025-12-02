@@ -267,17 +267,9 @@ class AnalyticsService {
 
     const result = { period, data };
     
-    // Cache the result if enabled
+    // Cache the result (1 hour TTL for trends)
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(`analytics:trends:${period}:${tenantId}`, 3600, JSON.stringify(result));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache trends', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
-      }
+      await CacheService.set(cacheKey, result, 3600);
     }
 
     return result;
@@ -321,21 +313,13 @@ class AnalyticsService {
       .sort((a, b) => b.sales - a.sales)
       .slice(0, limit);
     
-    // Cache the result if enabled (cache top 50 for flexibility)
+    // Cache top 50 products for flexibility (1 hour TTL)
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const allProducts = productsWithSales
-            .filter(product => product.sales > 0) // Filter out products with 0 sales
-            .sort((a, b) => b.sales - a.sales)
-            .slice(0, 50);
-          await redis.setex(`analytics:top-products:${tenantId}`, 3600, JSON.stringify(allProducts));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache top products', { error: error instanceof Error ? error.message : String(error), tenantId });
-        }
-      }
+      const allProducts = productsWithSales
+        .filter(product => product.sales > 0) // Filter out products with 0 sales
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 50);
+      await CacheService.set(cacheKey, allProducts, 3600);
     }
     
     return result;
