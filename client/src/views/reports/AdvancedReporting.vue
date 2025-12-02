@@ -717,14 +717,7 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-// Use formatters utility instead of local function
-import { formatDate as formatDateUtil } from '../../utils/formatters';
-const formatDate = formatDateUtil;
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
+// formatDate and formatDateTime are already imported from formatters utility above
 
 onMounted(() => {
   loadTemplates();
