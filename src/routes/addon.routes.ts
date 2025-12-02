@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import addonService from '../services/addon.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -50,10 +50,10 @@ router.post(
   '/subscribe',
   authGuard,
   validate({ body: subscribeAddonSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can subscribe to addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -98,10 +98,10 @@ router.post(
 router.post(
   '/unsubscribe/:addonId',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only tenant admin can unsubscribe from addons');
@@ -141,10 +141,10 @@ router.post(
   '/extend',
   authGuard,
   validate({ body: extendAddonSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only ADMIN_TENANT and SUPER_ADMIN can extend addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -171,10 +171,10 @@ router.post(
   '/reduce',
   authGuard,
   validate({ body: reduceAddonSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
       
       // Only SUPER_ADMIN can reduce addons
       if (userRole !== 'SUPER_ADMIN') {

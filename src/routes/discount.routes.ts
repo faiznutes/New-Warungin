@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import discountService from '../services/discount.service';
 import { validate } from '../middlewares/validator';
@@ -104,10 +104,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createDiscountSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
 
       // Only ADMIN_TENANT and SUPER_ADMIN can create discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -154,10 +154,10 @@ router.put(
   authGuard,
   subscriptionGuard,
   validate({ body: updateDiscountSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
 
       // Only ADMIN_TENANT and SUPER_ADMIN can update discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
@@ -217,10 +217,10 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+      const userRole = req.user?.role || req.role || '';
 
       // Only ADMIN_TENANT and SUPER_ADMIN can delete discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {

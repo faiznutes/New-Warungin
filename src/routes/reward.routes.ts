@@ -18,7 +18,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       const balance = await rewardPointService.getBalance(tenantId, userId);
       res.json(balance);
@@ -38,7 +38,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       const limit = await rewardPointService.checkDailyLimit(tenantId, userId);
       res.json(limit);
@@ -58,7 +58,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       if (!userId) {
         const error = new Error('User ID required');
@@ -92,7 +92,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
       const limit = parseInt(req.query.limit as string) || 50;
 
       const transactions = await rewardPointService.getTransactions(
@@ -118,7 +118,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       if (!userId) {
         const error = new Error('User ID required');
@@ -166,7 +166,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       if (!userId) {
         const error = new Error('User ID required');
@@ -245,7 +245,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id || req.userId;
 
       const expiredPoints = await rewardPointService.checkAndExpirePoints(tenantId, userId);
 
@@ -271,8 +271,8 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      if (user?.role !== 'SUPER_ADMIN') {
+      const userRole = req.user?.role || req.role;
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only Super Admin can access this endpoint');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_BALANCE');
@@ -297,8 +297,8 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      if (user?.role !== 'SUPER_ADMIN') {
+      const userRole = req.user?.role || req.role;
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only Super Admin can access this endpoint');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_TRANSACTIONS');
@@ -324,8 +324,8 @@ router.post(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = (req as any).user;
-      if (user?.role !== 'SUPER_ADMIN') {
+      const userRole = req.user?.role || req.role;
+      if (userRole !== 'SUPER_ADMIN') {
         const error = new Error('Only Super Admin can access this endpoint');
         (error as any).statusCode = 403;
         handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'UPDATE_TENANT_POINTS');
