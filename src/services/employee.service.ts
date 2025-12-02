@@ -107,9 +107,16 @@ export class EmployeeService {
       }
     }
 
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
+    if (data.email !== undefined) updateData.email = sanitizeEmail(data.email);
+    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
+    if (data.position !== undefined) updateData.position = sanitizeString(data.position, 255);
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
     const updatedEmployee = await prisma.employee.update({
       where: { id },
-      data,
+      data: updateData,
     });
 
     logger.info(`Employee updated: ${updatedEmployee.id} for tenant: ${tenantId}`);

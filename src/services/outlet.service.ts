@@ -97,9 +97,15 @@ export class OutletService {
   async updateOutlet(tenantId: string, outletId: string, data: UpdateOutletInput) {
     const outlet = await this.getOutlet(tenantId, outletId);
     
+    const updateData: any = {};
+    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
+    if (data.address !== undefined) updateData.address = data.address ? sanitizeText(data.address) : null;
+    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
     const updated = await prisma.outlet.update({
       where: { id: outletId },
-      data,
+      data: updateData,
     });
 
     // Invalidate analytics cache after outlet update
