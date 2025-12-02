@@ -121,22 +121,13 @@ export class ProductService {
    * Invalidate product cache for a tenant
    */
   private async invalidateProductCache(tenantId: string): Promise<void> {
-    const redis = getRedisClient();
-    if (redis) {
-      try {
-        // Delete all product-related cache keys for this tenant
-        const keys = await redis.keys(`products:${tenantId}:*`);
-        const productKeys = await redis.keys(`product:${tenantId}:*`);
-        if (keys.length > 0) {
-          await redis.del(...keys);
-        }
-        if (productKeys.length > 0) {
-          await redis.del(...productKeys);
-        }
-      } catch (error) {
-        // If cache invalidation fails, log but don't throw
-        logger.warn('Failed to invalidate product cache', { error: error instanceof Error ? error.message : String(error), tenantId });
-      }
+    try {
+      // Delete all product-related cache keys for this tenant
+      await CacheService.deletePattern(`products:${tenantId}:*`);
+      await CacheService.deletePattern(`product:${tenantId}:*`);
+    } catch (error) {
+      // If cache invalidation fails, log but don't throw
+      logger.warn('Failed to invalidate product cache', { error: error instanceof Error ? error.message : String(error), tenantId });
     }
   }
 
