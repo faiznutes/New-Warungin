@@ -94,7 +94,7 @@ export function getReadReplicaClient(): PrismaClient {
             log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
           });
         } catch (cleanError: any) {
-          console.error('Failed to clean read replica URL:', cleanError.message);
+          logger.error('Failed to clean read replica URL', { error: cleanError.message });
           // Use URL as-is if cleaning fails
           readReplicaClient = new PrismaClient({
             datasources: {
@@ -124,7 +124,7 @@ export function getReadReplicaClient(): PrismaClient {
           log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
         });
       } catch (cleanError: any) {
-        console.error('Failed to clean main database URL:', cleanError.message);
+        logger.error('Failed to clean main database URL', { error: cleanError.message });
         // Use URL as-is if cleaning fails
         readReplicaClient = new PrismaClient({
           datasources: {

@@ -166,9 +166,9 @@ router.post(
 router.get(
   '/:id/password',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user.role;
+      const userRole = req.role;
       
       // Only SUPER_ADMIN can view user passwords
       if (userRole !== 'SUPER_ADMIN') {
@@ -191,9 +191,9 @@ router.get(
 router.post(
   '/:id/reset-password',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user.role;
+      const userRole = req.role;
       
       // Only SUPER_ADMIN can reset user passwords
       if (userRole !== 'SUPER_ADMIN') {
@@ -216,9 +216,9 @@ router.post(
 router.post(
   '/:id/activate',
   authGuard,
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = (req as any).user.role;
+      const userRole = req.role;
       
       // Only SUPER_ADMIN can activate users
       if (userRole !== 'SUPER_ADMIN') {

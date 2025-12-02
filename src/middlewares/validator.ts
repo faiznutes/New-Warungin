@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
+import logger from '../utils/logger';
 
 export const validate = (schemas: { body?: AnyZodObject; query?: AnyZodObject; params?: AnyZodObject }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -17,11 +18,10 @@ export const validate = (schemas: { body?: AnyZodObject; query?: AnyZodObject; p
     } catch (error) {
       if (error instanceof ZodError) {
         // Log validation errors for debugging
-        console.error('Validation error:', {
+        logger.warn('Validation error', {
           path: req.path,
           method: req.method,
           errors: error.errors,
-          body: req.body,
         });
         
         return res.status(400).json({

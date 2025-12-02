@@ -91,7 +91,7 @@ export class ProductService {
           }
         } catch (error) {
           // If cache read fails, continue with database query
-          console.warn('Failed to read product from cache:', error);
+          logger.warn('Failed to read product from cache', { error });
         }
       }
     }
@@ -108,7 +108,7 @@ export class ProductService {
           await redis.setex(cacheKey, 600, JSON.stringify(product));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache product:', error);
+          logger.warn('Failed to cache product', { error });
         }
       }
     }

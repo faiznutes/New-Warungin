@@ -366,7 +366,7 @@ export class AddonService {
                   data.addonType
                 );
               } catch (error: any) {
-                console.error('Error awarding points from addon:', error);
+                logger.error('Error awarding points from addon', { error, tenantId, addonId: data.addonId });
               }
             }
           }
@@ -418,7 +418,7 @@ export class AddonService {
           );
         } catch (error: any) {
           // Log error but don't fail the addon subscription
-          console.error('Error awarding points from addon:', error);
+          logger.error('Error awarding points from addon', { error, tenantId, addonId: addon.id });
         }
       }
     }
