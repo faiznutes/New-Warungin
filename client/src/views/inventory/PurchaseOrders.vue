@@ -172,35 +172,42 @@
                     {{ supplier.name }}
                   </option>
                 </select>
+                <p class="text-xs text-gray-500 mt-1">Pilih supplier yang akan mengirim produk</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Expected Date</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Diharapkan (Opsional)</label>
                 <input
                   v-model="poForm.expectedDate"
                   type="date"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
+                <p class="text-xs text-gray-500 mt-1">Tanggal kapan produk diharapkan tiba (opsional)</p>
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Catatan (Opsional)</label>
               <textarea
                 v-model="poForm.notes"
                 rows="3"
+                placeholder="Contoh: Mohon kirim sebelum tanggal yang ditentukan, atau catatan khusus lainnya"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               ></textarea>
+              <p class="text-xs text-gray-500 mt-1">Tambahkan catatan atau instruksi khusus untuk supplier (opsional)</p>
             </div>
 
             <div>
               <div class="flex items-center justify-between mb-2">
-                <label class="block text-sm font-medium text-gray-700">Items *</label>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Item Produk *</label>
+                  <p class="text-xs text-gray-500">Tambahkan produk yang akan dibeli dari supplier</p>
+                </div>
                 <button
                   type="button"
                   @click="addItem"
                   class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
                 >
-                  + Add Item
+                  + Tambah Item
                 </button>
               </div>
               <div class="space-y-2">
@@ -210,37 +217,44 @@
                   class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
                 >
                   <div class="col-span-5">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Produk *</label>
                     <select
                       v-model="item.productId"
                       required
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     >
-                      <option value="">Pilih Product</option>
+                      <option value="">Pilih Produk</option>
                       <option v-for="product in products" :key="product.id" :value="product.id">
-                        {{ product.name }} (Stock: {{ product.stock }})
+                        {{ product.name }} (Stok: {{ product.stock }})
                       </option>
                     </select>
+                    <p class="text-xs text-gray-500 mt-1">Pilih produk yang akan dibeli</p>
                   </div>
                   <div class="col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Jumlah *</label>
                     <input
                       v-model.number="item.quantity"
                       type="number"
                       min="1"
+                      step="1"
                       required
-                      placeholder="Qty"
+                      placeholder="Contoh: 10"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     />
+                    <p class="text-xs text-gray-500 mt-1">Jumlah unit produk</p>
                   </div>
                   <div class="col-span-3">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Harga per Produk *</label>
                     <input
                       v-model.number="item.unitPrice"
                       type="number"
-                      min="0"
+                      min="0.01"
                       step="0.01"
                       required
-                      placeholder="Unit Price"
+                      placeholder="Contoh: 50000"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     />
+                    <p class="text-xs text-gray-500 mt-1">Harga satuan produk (Rp)</p>
                   </div>
                   <div class="col-span-2 flex items-center justify-end">
                     <button
@@ -462,34 +476,51 @@ const savePurchaseOrder = async () => {
       await showError(`Item ke-${i + 1}: Produk wajib dipilih`);
       return;
     }
-    if (!item.quantity || item.quantity <= 0) {
-      await showError(`Item ke-${i + 1}: Jumlah harus lebih dari 0`);
+    if (!item.quantity || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+      await showError(`Item ke-${i + 1}: Jumlah harus bilangan bulat lebih dari 0`);
       return;
     }
-    if (!item.unitPrice || item.unitPrice <= 0) {
-      await showError(`Item ke-${i + 1}: Harga unit harus lebih dari 0`);
+    if (!item.unitPrice || item.unitPrice <= 0 || isNaN(item.unitPrice)) {
+      await showError(`Item ke-${i + 1}: Harga per produk harus lebih dari 0`);
       return;
     }
   }
   
   saving.value = true;
   try {
+    // Format expectedDate to ISO datetime string if provided
+    let expectedDate: string | undefined = undefined;
+    if (poForm.value.expectedDate) {
+      const date = new Date(poForm.value.expectedDate);
+      if (isNaN(date.getTime())) {
+        await showError('Format tanggal tidak valid');
+        saving.value = false;
+        return;
+      }
+      expectedDate = date.toISOString();
+    }
+    
     const data = {
       supplierId: poForm.value.supplierId,
-      expectedDate: poForm.value.expectedDate || undefined,
-      notes: poForm.value.notes || undefined,
+      expectedDate: expectedDate,
+      notes: poForm.value.notes?.trim() || undefined,
       items: poForm.value.items.map(item => ({
         productId: item.productId,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
+        quantity: Math.floor(Number(item.quantity)), // Ensure integer
+        unitPrice: Number(item.unitPrice), // Ensure number
       })),
     };
+    
     await api.post('/purchase-orders', data);
     await showSuccess('Purchase order berhasil dibuat');
     closeModal();
     await loadPurchaseOrders();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menyimpan purchase order');
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        error.message || 
+                        'Gagal menyimpan purchase order';
+    await showError(errorMessage);
   } finally {
     saving.value = false;
   }
