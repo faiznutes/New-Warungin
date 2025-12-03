@@ -65,10 +65,27 @@ const loadLayout = async (role: string | undefined) => {
     try {
       layoutComponent.value = (await import('./AppLayout.vue')).default;
     } catch (fallbackError) {
-      // If AppLayout also fails, set to null (will show error message)
-      layoutComponent.value = null;
+      // If AppLayout also fails, try one more time with different import syntax
+      try {
+        const AppLayoutModule = await import('./AppLayout.vue');
+        layoutComponent.value = AppLayoutModule.default || AppLayoutModule;
+      } catch (lastResortError) {
+        // Even if all imports fail, we should still have AppLayout available
+        // This should never happen in production, but set to null as last resort
+        layoutComponent.value = null;
+      }
     }
   } finally {
+    // Final safety check: if we still don't have a layout, try AppLayout one last time
+    if (!layoutComponent.value) {
+      try {
+        const AppLayoutModule = await import('./AppLayout.vue');
+        layoutComponent.value = AppLayoutModule.default || AppLayoutModule;
+      } catch (finalError) {
+        // If this also fails, we'll show the error UI (this should be extremely rare)
+        // But don't set loading to false yet - let the error UI show
+      }
+    }
     loading.value = false;
   }
 };

@@ -2099,8 +2099,10 @@ const loadSubscription = async () => {
     }
   } catch (error: any) {
     // Ignore 404 or other errors - subscription might not exist yet
+    // Silently handle error - subscription might not exist yet
     currentSubscription.value = null;
   } finally {
+    // Always ensure loading is set to false, even if there's an error
     subscriptionLoading.value = false;
   }
 };
