@@ -93,7 +93,7 @@ const errorMessage = ref<string>('');
 const showDetails = ref(false);
 
 onErrorCaptured((err: Error, instance: any, info: string) => {
-  console.error('ErrorBoundary caught error:', err, info);
+  // Capture error silently (ErrorBoundary will display user-friendly message)
   hasError.value = true;
   error.value = err;
   
