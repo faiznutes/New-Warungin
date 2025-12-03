@@ -357,28 +357,55 @@ const pagination = ref({
 
 const loadUsers = async (page = 1) => {
   if (needsTenantSelection.value) {
+    users.value = [];
     return; // Don't load if tenant not selected
+  }
+  
+  // For admin tenant, ensure tenantId is available
+  if (userRole === 'ADMIN_TENANT' && !authStore.currentTenantId) {
+    users.value = [];
+    return;
   }
   
   loading.value = true;
   try {
+    // Ensure tenantId is set in localStorage for API interceptor
+    if (userRole === 'ADMIN_TENANT' && authStore.currentTenantId) {
+      localStorage.setItem('selectedTenantId', authStore.currentTenantId);
+    }
+    
+    // Wait a bit to ensure localStorage is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     const response = await api.get('/users', {
       params: { page, limit: pagination.value.limit },
     });
-    users.value = response.data.data;
-    pagination.value = response.data.pagination;
+    
+    const userData = response.data?.data || [];
+    users.value = Array.isArray(userData) ? userData : [];
+    
+    const paginationData = response.data?.pagination || {};
+    pagination.value = {
+      page: paginationData.page || page,
+      limit: paginationData.limit || pagination.value.limit,
+      total: paginationData.total || 0,
+      totalPages: paginationData.totalPages || 1,
+    };
 
     // Get user limit info from response
-    if (response.data.limit) {
+    if (response.data?.limit) {
       userLimit.value = {
-        limit: response.data.limit.max,
-        currentUsage: response.data.limit.current,
-        remaining: response.data.limit.remaining,
-        isUnlimited: response.data.limit.isUnlimited,
+        limit: response.data.limit.max || 0,
+        currentUsage: response.data.limit.current || 0,
+        remaining: response.data.limit.remaining || 0,
+        isUnlimited: response.data.limit.isUnlimited || false,
       };
+    } else {
+      userLimit.value = null;
     }
   } catch (error: any) {
     console.error('Error loading users:', error);
+    users.value = [];
     await showError(error.response?.data?.message || 'Gagal memuat pengguna');
   } finally {
     loading.value = false;

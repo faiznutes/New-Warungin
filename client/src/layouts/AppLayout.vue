@@ -349,6 +349,29 @@
               class="mt-1 space-y-1 transition-all duration-200"
             >
               <router-link
+                v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
+                to="/app/settings/store"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                active-class="bg-primary-50 text-primary-600 font-semibold"
+                @click="closeSidebarOnMobile"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+                <span class="font-medium">Atur Toko</span>
+              </router-link>
+
+              <router-link
                 to="/app/subscription"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
@@ -646,7 +669,7 @@ const autoExpandMenu = () => {
   } else if (currentPath.includes('/users')) {
     expandedMenus.value.manajemen = true;
   } else if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
-      currentPath.includes('/settings')) {
+      currentPath.includes('/settings') || currentPath.includes('/rewards')) {
     expandedMenus.value.pengaturan = true;
   } else {
     // Default: if on dashboard route, open operasional menu
@@ -751,6 +774,7 @@ const pageTitle = computed(() => {
     '/app/subscription': 'Berlangganan',
     '/app/addons': 'Addon',
     '/app/users': 'Pengguna',
+    '/app/settings/store': 'Atur Toko',
     '/app/analytics': 'Analitik Lanjutan',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',
