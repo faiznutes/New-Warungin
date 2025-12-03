@@ -155,17 +155,14 @@ const loadStores = async () => {
     return;
   }
   
-    // Ensure tenantId is set in localStorage for API interceptor
-    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
-      localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
-      // Wait a bit to ensure localStorage is updated
-      await new Promise(resolve => setTimeout(resolve, 50));
-    }
+  // For admin tenant, they already have tenantId in JWT token, no need to wait
+  // Only set localStorage for super admin
+  if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+    localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
+  }
   
   loading.value = true;
   try {
-    const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
-    
     const response = await api.get('/outlets');
     
     // Parse response - backend returns { data: [], limit: {} }
@@ -192,8 +189,14 @@ const loadStores = async () => {
       handleStoreChange({ target: { value: stores.value[0].id } } as any);
     }
   } catch (error: any) {
-    // Don't show error notification in StoreSelector - let parent handle it
-    // Just log and set empty array
+    // Log error for debugging (but don't show notification in StoreSelector)
+    console.error('[StoreSelector] Error loading stores:', {
+      message: error?.message,
+      response: error?.response?.data,
+      status: error?.response?.status,
+      role: authStore.user?.role,
+      tenantId: authStore.currentTenantId
+    });
     stores.value = [];
   } finally {
     loading.value = false;
@@ -231,15 +234,8 @@ watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
     // Ensure tenantId is in localStorage
     localStorage.setItem('selectedTenantId', newTenantId);
     
-    // Wait before loading to ensure tenantId is fully propagated
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    // Verify tenantId is still set
-    const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
-    
-    if (currentTenantId === newTenantId && currentTenantId) {
-      await loadStores();
-    }
+    // Load stores immediately (no delay needed)
+    await loadStores();
   } else if (!newTenantId && authStore.isSuperAdmin) {
     // Clear stores if tenant is deselected
     stores.value = [];
@@ -255,16 +251,19 @@ onMounted(async () => {
   
   // Initial load if needed
   if (props.autoLoad && shouldShow.value) {
-    // Wait a bit to ensure tenant is set (if in TenantSupport page)
-    await new Promise(resolve => setTimeout(resolve, 150));
+    // Load immediately for admin tenant (they have tenantId in JWT)
+    // Only wait for super admin if tenant is not yet selected
+    if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+      // Wait a bit for super admin to select tenant (if in TenantSupport page)
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
     await loadStores();
   }
   
   // Watch for shouldShow changes after mount
   watch(() => shouldShow.value, async (show) => {
     if (show && props.autoLoad) {
-      // Wait a bit before loading
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Load immediately (no delay needed)
       await loadStores();
     }
   });
