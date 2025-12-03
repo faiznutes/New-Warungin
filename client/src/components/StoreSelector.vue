@@ -162,6 +162,7 @@ const selectedStoreName = computed(() => {
 });
 
 const loadStores = async () => {
+  // Early return if should not show
   if (!shouldShow.value) {
     stores.value = [];
     loading.value = false;
@@ -181,9 +182,22 @@ const loadStores = async () => {
     localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
   }
   
+  // Set loading state
   loading.value = true;
+  
+  // Add timeout to prevent infinite loading
+  const timeoutId = setTimeout(() => {
+    if (loading.value) {
+      loading.value = false;
+      stores.value = [];
+    }
+  }, 15000); // 15 seconds timeout
+  
   try {
     const response = await api.get('/outlets');
+    
+    // Clear timeout on success
+    clearTimeout(timeoutId);
     
     // Parse response - backend returns { data: [], limit: {} }
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
@@ -209,10 +223,14 @@ const loadStores = async () => {
       handleStoreChange({ target: { value: stores.value[0].id } } as any);
     }
   } catch (error: any) {
+    // Clear timeout on error
+    clearTimeout(timeoutId);
+    
     // Silently handle error - stores will be empty
     // Error details can be checked in browser dev tools if needed
     stores.value = [];
   } finally {
+    // Always ensure loading is set to false
     loading.value = false;
   }
 };
@@ -265,20 +283,21 @@ onMounted(async () => {
   
   // Initial load if needed
   if (props.autoLoad && shouldShow.value) {
-    // Load immediately for admin tenant (they have tenantId in JWT)
-    // Only wait for super admin if tenant is not yet selected
-    if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
-      // Wait a bit for super admin to select tenant (if in TenantSupport page)
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
+    // Load immediately - no delays needed
+    // Admin tenant already has tenantId in JWT token
+    // Super admin will wait for tenant selection automatically via shouldShow computed
     await loadStores();
   }
   
   // Watch for shouldShow changes after mount
   watch(() => shouldShow.value, async (show) => {
     if (show && props.autoLoad) {
-      // Load immediately (no delay needed)
+      // Load immediately when shouldShow becomes true
       await loadStores();
+    } else if (!show) {
+      // Clear stores and reset loading when shouldShow becomes false
+      stores.value = [];
+      loading.value = false;
     }
   });
 });
