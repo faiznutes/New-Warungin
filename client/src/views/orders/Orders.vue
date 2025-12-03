@@ -191,7 +191,7 @@
             <input
               type="checkbox"
               :checked="isOrderSelected(order.id)"
-              class="mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              class="w-4 h-4 mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               @change="toggleOrderSelection(order)"
             />
             <div class="flex-1 ml-3">
@@ -300,7 +300,7 @@
                   <input
                     type="checkbox"
                     :checked="selectedOrders.length === orders.length && orders.length > 0"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     @change="toggleSelectAll"
                   />
                 </th>
@@ -335,7 +335,7 @@
                   <input
                     type="checkbox"
                     :checked="isOrderSelected(order.id)"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     @change="toggleOrderSelection(order)"
                   />
                 </td>

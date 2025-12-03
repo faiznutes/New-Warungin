@@ -133,7 +133,7 @@
             <input
               type="checkbox"
               :checked="selectedOrders.includes(order.id)"
-              class="mt-1.5 w-5 h-5 text-primary-600 border-2 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+              class="mt-1.5 w-4 h-4 text-primary-600 border-2 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
               @change="toggleOrderSelection(order.id)"
             />
             <div class="flex-1">

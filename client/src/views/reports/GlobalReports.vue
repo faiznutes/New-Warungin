@@ -192,7 +192,7 @@
                   <input
                     type="checkbox"
                     :checked="selectedSubscriptions.length === paginatedSubscriptions.length && paginatedSubscriptions.length > 0"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     @change="toggleSelectAllSubscriptions"
                   />
                 </th>
@@ -239,7 +239,7 @@
                     v-model="selectedSubscriptions"
                     type="checkbox"
                     :value="sub.id"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -427,7 +427,7 @@
                   <input
                     type="checkbox"
                     :checked="selectedAddons.length === paginatedAddons.length && paginatedAddons.length > 0"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     @change="toggleSelectAllAddons"
                   />
                 </th>
@@ -474,7 +474,7 @@
                     v-model="selectedAddons"
                     type="checkbox"
                     :value="addon.id"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">

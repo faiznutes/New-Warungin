@@ -355,7 +355,7 @@
             <input
               v-model="sendToKitchen"
               type="checkbox"
-              class="w-3.5 h-3.5 text-primary-600 rounded focus:ring-primary-500"
+              class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
             />
             <span class="text-xs text-gray-700">Kirim ke dapur</span>
           </label>

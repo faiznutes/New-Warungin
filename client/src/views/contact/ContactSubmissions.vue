@@ -242,7 +242,7 @@
                   <input
                     type="checkbox"
                     :checked="submission.isProcessed"
-                    class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     @change="(e) => toggleProcessed(submission.id, e)"
                   />
                   <span
@@ -455,7 +455,7 @@
               <input
                 type="checkbox"
                 :checked="viewingSubmission.isProcessed"
-                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 @change="(e) => toggleProcessed(viewingSubmission.id, e)"
               />
               <span

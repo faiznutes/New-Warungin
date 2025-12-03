@@ -453,7 +453,7 @@
                     <input
                       type="checkbox"
                       :checked="selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
-                      class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       @change="toggleSelectAllUsers"
                     />
                   </th>
@@ -488,7 +488,7 @@
                     <input
                       type="checkbox"
                       :checked="isUserSelected(user.id)"
-                      class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       @change="toggleUserSelection(user)"
                     />
                   </td>

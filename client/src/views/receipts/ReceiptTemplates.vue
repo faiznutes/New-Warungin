@@ -247,7 +247,7 @@
                   <input
                     v-model="templateForm.header.showName"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Nama Toko</span>
                 </label>
@@ -255,7 +255,7 @@
                   <input
                     v-model="templateForm.header.showAddress"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Alamat</span>
                 </label>
@@ -263,7 +263,7 @@
                   <input
                     v-model="templateForm.header.showPhone"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Telepon</span>
                 </label>
@@ -279,7 +279,7 @@
                   <input
                     v-model="templateForm.fields.showOrderNumber"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Nomor Order</span>
                 </label>
@@ -287,7 +287,7 @@
                   <input
                     v-model="templateForm.fields.showDate"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tanggal</span>
                 </label>
@@ -295,7 +295,7 @@
                   <input
                     v-model="templateForm.fields.showTime"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Waktu</span>
                 </label>
@@ -303,7 +303,7 @@
                   <input
                     v-model="templateForm.fields.showCustomer"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Customer</span>
                 </label>
@@ -311,7 +311,7 @@
                   <input
                     v-model="templateForm.fields.showItems"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Items</span>
                 </label>
@@ -319,7 +319,7 @@
                   <input
                     v-model="templateForm.fields.showSubtotal"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Subtotal</span>
                 </label>
@@ -327,7 +327,7 @@
                   <input
                     v-model="templateForm.fields.showDiscount"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Discount</span>
                 </label>
@@ -335,7 +335,7 @@
                   <input
                     v-model="templateForm.fields.showTotal"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Total</span>
                 </label>
@@ -343,7 +343,7 @@
                   <input
                     v-model="templateForm.fields.showPaymentMethod"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Payment Method</span>
                 </label>
@@ -351,7 +351,7 @@
                   <input
                     v-model="templateForm.fields.showChange"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Change</span>
                 </label>
@@ -367,7 +367,7 @@
                   <input
                     v-model="templateForm.footer.showThankYou"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Thank You Message</span>
                 </label>
@@ -375,7 +375,7 @@
                   <input
                     v-model="templateForm.footer.showContact"
                     type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Contact Info</span>
                 </label>

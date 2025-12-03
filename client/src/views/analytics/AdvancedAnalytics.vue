@@ -321,7 +321,7 @@
                     v-model="reportForm.metrics"
                     type="checkbox"
                     value="REVENUE"
-                    class="mr-2"
+                    class="w-4 h-4 mr-2"
                   />
                   <span class="text-sm text-gray-700">Revenue</span>
                 </label>
@@ -330,7 +330,7 @@
                     v-model="reportForm.metrics"
                     type="checkbox"
                     value="QUANTITY"
-                    class="mr-2"
+                    class="w-4 h-4 mr-2"
                   />
                   <span class="text-sm text-gray-700">Quantity</span>
                 </label>
@@ -339,7 +339,7 @@
                     v-model="reportForm.metrics"
                     type="checkbox"
                     value="PROFIT"
-                    class="mr-2"
+                    class="w-4 h-4 mr-2"
                   />
                   <span class="text-sm text-gray-700">Profit</span>
                 </label>
