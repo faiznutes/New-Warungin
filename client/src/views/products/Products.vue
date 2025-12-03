@@ -613,27 +613,37 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
     const response = await api.get('/products', { params });
-    products.value = response.data?.data || response.data || [];
+    products.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
     pagination.value = response.data?.pagination || {
-      page: 1,
-      limit: pagination.value.limit,
+      page: page || 1,
+      limit: pagination.value?.limit || 20,
       total: 0,
       totalPages: 0
     };
 
     // Extract unique categories
     const uniqueCategories = new Set<string>();
-    (products.value || []).forEach(p => {
+    (products.value || []).forEach((p: any) => {
       if (p?.category) uniqueCategories.add(p.category);
     });
     categories.value = Array.from(uniqueCategories);
 
     // Get product limit info from response
-    if (response.data.limit) {
+    if (response.data?.limit) {
       productLimit.value = response.data.limit;
     }
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat produk');
+    if (error.response?.status !== 429) { // Don't show error for rate limiting
+      const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat produk';
+      await showError(errorMessage);
+    }
+    products.value = [];
+    pagination.value = {
+      page: page || 1,
+      limit: pagination.value?.limit || 20,
+      total: 0,
+      totalPages: 0
+    };
   } finally {
     loading.value = false;
   }

@@ -138,6 +138,28 @@
                 </svg>
                 <span class="font-medium">Pesanan</span>
               </router-link>
+
+              <router-link
+                to="/app/pos"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
+                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                @click="closeSidebarOnMobile"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                <span class="font-medium">POS (Kasir)</span>
+              </router-link>
             </div>
           </div>
 

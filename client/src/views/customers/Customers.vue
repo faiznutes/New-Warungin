@@ -285,17 +285,25 @@ const loadCustomers = async (page = 1) => {
         ...(filters.value.search && { search: filters.value.search }),
       };
       const response = await api.get('/customers', { params });
-      customers.value = response.data?.data || response.data || [];
+      customers.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
       pagination.value = response.data?.pagination || {
-        page: 1,
-        limit: pagination.value.limit,
+        page: page || 1,
+        limit: pagination.value?.limit || 20,
         total: 0,
         totalPages: 0
       };
     } catch (error: any) {
       if (error.response?.status !== 429) { // Don't show error for rate limiting
-        await showError(error.response?.data?.message || 'Gagal memuat pelanggan');
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat pelanggan';
+        await showError(errorMessage);
       }
+      customers.value = [];
+      pagination.value = {
+        page: page || 1,
+        limit: pagination.value?.limit || 20,
+        total: 0,
+        totalPages: 0
+      };
     } finally {
       loading.value = false;
     }

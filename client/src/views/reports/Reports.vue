@@ -1069,8 +1069,23 @@ const loadReport = async () => {
     
     // Don't load analytics here to prevent rate limiting - it's called separately
   } catch (error: any) {
-    if (error.response?.status !== 401 && error.response?.status !== 403) {
-      await showError(error.response?.data?.message || 'Gagal memuat laporan');
+    if (error.response?.status !== 401 && error.response?.status !== 403 && error.response?.status !== 429) {
+      const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat laporan';
+      await showError(errorMessage);
+    }
+    // Set default empty structure on error
+    if (!reportData.value) {
+      reportData.value = {
+        summary: {
+          totalRevenue: 0,
+          totalOrders: 0,
+          totalItems: 0,
+          averageOrderValue: 0,
+        },
+        byDate: [],
+        orders: [],
+        transactions: [],
+      };
     }
   } finally {
     loading.value = false;

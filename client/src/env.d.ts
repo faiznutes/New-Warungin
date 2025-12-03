@@ -1,12 +1,11 @@
 // @ts-nocheck
 export {};
 
- declare module 'vue' {
+; declare module 'vue' {
 	export interface GlobalComponents { }
 	export interface GlobalDirectives { }
 }
- declare global {
-	// eslint-disable-next-line no-var
+; declare global {
 	var __VLS_PROPS_FALLBACK: Record<string, unknown>;
 
 	const __VLS_directiveBindingRestFields: { instance: null, oldValue: null, modifiers: any, dir: any };

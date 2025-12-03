@@ -817,17 +817,25 @@ const loadOrders = async (page = 1) => {
         }),
       };
       const response = await api.get('/orders', { params });
-      orders.value = response.data?.data || response.data || [];
+      orders.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
       pagination.value = response.data?.pagination || {
-        page: 1,
-        limit: pagination.value.limit,
+        page: page || 1,
+        limit: pagination.value?.limit || 20,
         total: 0,
         totalPages: 0
       };
     } catch (error: any) {
       if (error.response?.status !== 429) { // Don't show error for rate limiting
-        await showError(error.response?.data?.message || 'Gagal memuat pesanan');
+        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat pesanan';
+        await showError(errorMessage);
       }
+      orders.value = [];
+      pagination.value = {
+        page: page || 1,
+        limit: pagination.value?.limit || 20,
+        total: 0,
+        totalPages: 0
+      };
     } finally {
       loading.value = false;
     }

@@ -205,6 +205,7 @@ const filteredProducts = computed(() => {
 const loadProducts = async () => {
   if (!props.tenantId) {
     products.value = [];
+    loading.value = false;
     return;
   }
   
@@ -214,15 +215,16 @@ const loadProducts = async () => {
     localStorage.setItem('selectedTenantId', props.tenantId);
     
     // Wait a bit to ensure localStorage is updated
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 50));
     
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
     let allProducts: any[] = [];
     let page = 1;
     let hasMore = true;
+    const maxPages = 10; // Safety limit to prevent infinite loops
     
-    while (hasMore) {
+    while (hasMore && page <= maxPages) {
       const response = await api.get('/products', {
         params: { 
           page,
@@ -230,28 +232,36 @@ const loadProducts = async () => {
         },
       });
       
-      const pageData = response.data?.data || response.data || [];
-      if (Array.isArray(pageData)) {
+      // Handle different response formats
+      const pageData = response?.data?.data || response?.data || [];
+      if (Array.isArray(pageData) && pageData.length > 0) {
         allProducts = [...allProducts, ...pageData];
-      } else if (Array.isArray(response.data)) {
+      } else if (Array.isArray(response?.data) && response.data.length > 0) {
         allProducts = [...allProducts, ...response.data];
       } else {
-        break; // No more data
+        // No more data or empty response
+        hasMore = false;
+        break;
       }
       
       // Check if there are more pages
-      const pagination = response.data?.pagination;
-      if (pagination) {
-        hasMore = page < pagination.totalPages;
+      const pagination = response?.data?.pagination;
+      if (pagination && typeof pagination === 'object') {
+        const totalPages = pagination.totalPages || 0;
+        hasMore = page < totalPages;
         page++;
       } else {
-        hasMore = false;
+        // If no pagination info, assume no more pages if current page has less than limit items
+        hasMore = pageData.length >= 100;
+        page++;
       }
     }
     
-    products.value = allProducts;
+    products.value = Array.isArray(allProducts) ? allProducts : [];
   } catch (err: any) {
-    await error(err.response?.data?.message || 'Gagal memuat produk', 'Terjadi Kesalahan');
+    console.error('Error loading products:', err);
+    const errorMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Gagal memuat produk';
+    await error(errorMessage, 'Terjadi Kesalahan');
     products.value = [];
   } finally {
     loading.value = false;
