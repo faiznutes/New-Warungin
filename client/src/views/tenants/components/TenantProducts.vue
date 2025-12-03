@@ -203,10 +203,19 @@ const filteredProducts = computed(() => {
 });
 
 const loadProducts = async () => {
-  if (!props.tenantId) return;
+  if (!props.tenantId) {
+    products.value = [];
+    return;
+  }
   
   loading.value = true;
   try {
+    // Ensure tenantId is set in localStorage for API interceptor
+    localStorage.setItem('selectedTenantId', props.tenantId);
+    
+    // Wait a bit to ensure localStorage is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
     let allProducts: any[] = [];
@@ -221,15 +230,17 @@ const loadProducts = async () => {
         },
       });
       
-      const pageData = response.data.data || response.data;
+      const pageData = response.data?.data || response.data;
       if (Array.isArray(pageData)) {
         allProducts = [...allProducts, ...pageData];
       } else if (Array.isArray(response.data)) {
         allProducts = [...allProducts, ...response.data];
+      } else {
+        break; // No more data
       }
       
       // Check if there are more pages
-      const pagination = response.data.pagination;
+      const pagination = response.data?.pagination;
       if (pagination) {
         hasMore = page < pagination.totalPages;
         page++;
@@ -241,7 +252,8 @@ const loadProducts = async () => {
     products.value = allProducts;
   } catch (err: any) {
     console.error('Error loading products:', err);
-    error('Gagal memuat produk', 'Terjadi Kesalahan');
+    error(err.response?.data?.message || 'Gagal memuat produk', 'Terjadi Kesalahan');
+    products.value = [];
   } finally {
     loading.value = false;
   }

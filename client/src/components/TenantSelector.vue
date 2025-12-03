@@ -130,6 +130,12 @@ const selectedTenantName = computed(() => {
 });
 
 const loadTenants = async () => {
+  // Only load if super admin
+  if (!authStore.isSuperAdmin) {
+    tenants.value = [];
+    return;
+  }
+  
   // Use cached tenants if available
   if (authStore.tenants.length > 0) {
     tenants.value = authStore.tenants;
@@ -139,9 +145,10 @@ const loadTenants = async () => {
   loading.value = true;
   try {
     await authStore.fetchTenants();
-    tenants.value = authStore.tenants;
+    tenants.value = authStore.tenants || [];
   } catch (error) {
     console.error('Error loading tenants:', error);
+    tenants.value = [];
   } finally {
     loading.value = false;
   }

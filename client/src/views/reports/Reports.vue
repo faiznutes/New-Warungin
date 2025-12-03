@@ -662,14 +662,22 @@ const marginDisplayFormat = ref<'percentage' | 'amount'>(
   (localStorage.getItem('marginDisplayFormat') as 'percentage' | 'amount') || 'percentage'
 );
 
-// Set default date range: bulan ini (month)
+// Set default date range: bulan ini (tanggal 1 sampai akhir bulan)
 const now = new Date();
 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-const endOfMonth = new Date(now);
+const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of month
+
+// Format to YYYY-MM-DD for date input (HTML5 date input format)
+const formatDateForInput = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const dateRange = ref({
-  from: startOfMonth.toISOString().split('T')[0],
-  to: endOfMonth.toISOString().split('T')[0],
+  from: formatDateForInput(startOfMonth),
+  to: formatDateForInput(endOfMonth),
 });
 
 const setPeriod = (p: string) => {

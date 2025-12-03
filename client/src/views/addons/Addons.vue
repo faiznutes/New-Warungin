@@ -318,21 +318,33 @@ const durationOptions = [
 
 const loadAddons = async () => {
   if (needsTenantSelection.value) {
+    availableAddons.value = [];
+    activeAddons.value = [];
     return; // Don't load if tenant not selected
+  }
+  
+  // For super admin, ensure tenant is selected
+  if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+    availableAddons.value = [];
+    activeAddons.value = [];
+    return;
   }
   
   loading.value = true;
   try {
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
-      api.get('/addons/available'),
-      api.get('/addons'),
+      api.get('/addons/available').catch(() => ({ data: [] })),
+      api.get('/addons').catch(() => ({ data: [] })),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
-    availableAddons.value = availableRes.data;
-    activeAddons.value = activeRes.data;
+    availableAddons.value = Array.isArray(availableRes.data) ? availableRes.data : [];
+    activeAddons.value = Array.isArray(activeRes.data) ? activeRes.data : [];
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
-    await showError('Gagal memuat addons');
+    console.error('Error loading addons:', error);
+    await showError(error.response?.data?.message || 'Gagal memuat addons');
+    availableAddons.value = [];
+    activeAddons.value = [];
   } finally {
     loading.value = false;
   }

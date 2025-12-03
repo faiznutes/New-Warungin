@@ -146,8 +146,16 @@ const loadStores = async () => {
   
   loading.value = true;
   try {
+    // For super admin, ensure tenant is selected first
+    if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+      stores.value = [];
+      loading.value = false;
+      return;
+    }
+    
     const response = await api.get('/outlets');
-    stores.value = response.data.data || [];
+    const storeList = response.data.data || response.data || [];
+    stores.value = Array.isArray(storeList) ? storeList : [];
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {

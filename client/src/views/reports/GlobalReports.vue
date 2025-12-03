@@ -62,19 +62,25 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
           <input
-            v-model="dateRange.from"
-            type="date"
+            :value="formatDateDisplay(dateRange.from)"
+            type="text"
+            placeholder="dd/mm/yyyy"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            @input="handleDateFromInput"
             @change="periodFilter = 'custom'"
+            @blur="validateAndUpdateDate('from', $event)"
           />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
           <input
-            v-model="dateRange.to"
-            type="date"
+            :value="formatDateDisplay(dateRange.to)"
+            type="text"
+            placeholder="dd/mm/yyyy"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            @input="handleDateToInput"
             @change="periodFilter = 'custom'"
+            @blur="validateAndUpdateDate('to', $event)"
           />
         </div>
         <div class="flex items-end">
@@ -967,6 +973,7 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
+import { formatDateInput, parseDateInput, toHtml5Date, getCurrentMonthRange } from '../../utils/date-formatter';
 import { useNotification } from '../../composables/useNotification';
 import GlobalReportExportModal from '../../components/GlobalReportExportModal.vue';
 
@@ -998,15 +1005,51 @@ const addonInfoFilter = ref<'all' | 'superadmin' | 'self'>('all');
 // Period filter
 const periodFilter = ref<'custom' | 'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
 
-// Set default date range: bulan ini (month)
-const now = new Date();
-const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-const endOfMonth = new Date(now);
-
+// Set default date range: bulan ini (tanggal 1 sampai akhir bulan)
+const monthRange = getCurrentMonthRange();
 const dateRange = ref({
-  from: startOfMonth.toISOString().split('T')[0],
-  to: endOfMonth.toISOString().split('T')[0],
+  from: toHtml5Date(monthRange.from), // Store as YYYY-MM-DD internally
+  to: toHtml5Date(monthRange.to), // Store as YYYY-MM-DD internally
 });
+
+// Format date for display (dd/mm/yyyy)
+const formatDateDisplay = (dateString: string): string => {
+  if (!dateString) return '';
+  const date = parseDateInput(dateString);
+  return date ? formatDateInput(date) : '';
+};
+
+// Handle date input changes
+const handleDateFromInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  // Allow user to type, validate on blur
+};
+
+const handleDateToInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  // Allow user to type, validate on blur
+};
+
+// Validate and update date
+const validateAndUpdateDate = (field: 'from' | 'to', event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value.trim();
+  
+  if (!value) return;
+  
+  const parsedDate = parseDateInput(value);
+  if (parsedDate) {
+    dateRange.value[field] = toHtml5Date(parsedDate);
+    // Update input display
+    target.value = formatDateInput(parsedDate);
+    periodFilter.value = 'custom';
+  } else {
+    // Invalid date, revert to current value
+    target.value = formatDateDisplay(dateRange.value[field]);
+  }
+};
 
 // Apply period filter
 const applyPeriodFilter = () => {
@@ -1032,10 +1075,13 @@ const applyPeriodFilter = () => {
       break;
     }
       
-    case 'monthly':
-      // Bulan ini
+    case 'monthly': {
+      // Bulan ini (tanggal 1 sampai akhir bulan)
       startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+      endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Last day of month
+      endDate.setHours(23, 59, 59, 999);
       break;
+    }
       
     case 'yearly':
       // Tahun ini
@@ -1047,9 +1093,10 @@ const applyPeriodFilter = () => {
       return;
   }
   
+  // Update dateRange (store as YYYY-MM-DD internally)
   dateRange.value = {
-    from: startDate.toISOString().split('T')[0],
-    to: endDate.toISOString().split('T')[0],
+    from: toHtml5Date(startDate),
+    to: toHtml5Date(endDate),
   };
   
   // Auto load report when period changes
