@@ -67,8 +67,10 @@ input[type="submit"] {
 input[type="checkbox"],
 input[type="radio"] {
   /* Remove min-size constraint to allow w-4 h-4 (16px) sizing */
-  min-height: auto;
-  min-width: auto;
+  min-height: auto !important;
+  min-width: auto !important;
+  height: auto !important;
+  width: auto !important;
 }
 
 /* Ensure sufficient color contrast */

@@ -147,6 +147,7 @@
               v-model="rememberMe"
               type="checkbox"
               class="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              style="min-height: 1rem; min-width: 1rem; height: 1rem; width: 1rem;"
             />
             <label
               for="remember-me"
