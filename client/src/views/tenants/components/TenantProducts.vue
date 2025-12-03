@@ -259,7 +259,6 @@ const loadProducts = async () => {
     
     products.value = Array.isArray(allProducts) ? allProducts : [];
   } catch (err: any) {
-    console.error('Error loading products:', err);
     const errorMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Gagal memuat produk';
     await error(errorMessage, 'Terjadi Kesalahan');
     products.value = [];
