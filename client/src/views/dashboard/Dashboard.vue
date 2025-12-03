@@ -1594,7 +1594,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
 import api from '../../api';
-import { formatCurrency, formatDateTime, formatRemainingTime } from '../../utils/formatters';
+import { formatCurrency, formatDateTime, formatRemainingTime, formatDate } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
