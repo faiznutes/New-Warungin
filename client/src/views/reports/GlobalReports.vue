@@ -1162,9 +1162,6 @@ const filteredAddons = computed(() => {
   }
   
   return filtered;
-  });
-  
-  return filtered;
 });
 
 // Paginated addons
