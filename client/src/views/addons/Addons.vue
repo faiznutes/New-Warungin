@@ -330,6 +330,13 @@ const loadAddons = async () => {
     return;
   }
   
+  // Ensure tenantId is set in localStorage for API interceptor
+  if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+    localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
+    // Wait a bit to ensure localStorage is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
   loading.value = true;
   try {
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
@@ -337,9 +344,21 @@ const loadAddons = async () => {
       api.get('/addons').catch(() => ({ data: [] })),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
-    availableAddons.value = Array.isArray(availableRes.data) ? availableRes.data : [];
-    activeAddons.value = Array.isArray(activeRes.data) ? activeRes.data : [];
+    
+    // Parse response data correctly
+    const availableData = availableRes.data || [];
+    const activeData = activeRes.data || [];
+    
+    availableAddons.value = Array.isArray(availableData) ? availableData : [];
+    activeAddons.value = Array.isArray(activeData) ? activeData : [];
     currentSubscription.value = subscriptionRes.data;
+    
+    // Debug log
+    if (activeAddons.value.length > 0) {
+      console.log('Active addons loaded:', activeAddons.value.length, activeAddons.value);
+    } else {
+      console.log('No active addons found for tenant:', authStore.selectedTenantId || authStore.currentTenantId);
+    }
   } catch (error: any) {
     console.error('Error loading addons:', error);
     await showError(error.response?.data?.message || 'Gagal memuat addons');
@@ -509,10 +528,24 @@ const handleExtendAddon = async () => {
   }
 };
 
-const handleTenantChange = (tenantId: string | null) => {
+const handleTenantChange = async (tenantId: string | null) => {
   // Auto-refetch addons when tenant changes
-  if (tenantId && !needsTenantSelection.value) {
-    loadAddons();
+  if (tenantId) {
+    // Ensure tenantId is set in authStore and localStorage
+    authStore.setSelectedTenant(tenantId);
+    localStorage.setItem('selectedTenantId', tenantId);
+    
+    // Wait a bit to ensure state is updated
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Only load if tenant selection is no longer needed
+    if (!needsTenantSelection.value) {
+      await loadAddons();
+    }
+  } else {
+    // Clear addons if tenant is deselected
+    availableAddons.value = [];
+    activeAddons.value = [];
   }
 };
 

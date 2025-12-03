@@ -314,11 +314,14 @@ const handleStoreChange = (storeId: string | null) => {
 };
 
 // Watch for selectedTenantId changes
-watch(selectedTenantId, (newId) => {
-  if (newId) {
+watch(selectedTenantId, async (newId, oldId) => {
+  if (newId && newId !== oldId) {
     authStore.setSelectedTenant(newId);
     localStorage.setItem('selectedTenantId', newId);
-  } else {
+    
+    // Wait a bit to ensure state is updated before child components try to load
+    await new Promise(resolve => setTimeout(resolve, 200));
+  } else if (!newId) {
     authStore.setSelectedTenant(null);
     localStorage.removeItem('selectedTenantId');
   }

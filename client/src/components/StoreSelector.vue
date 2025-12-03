@@ -142,20 +142,34 @@ const selectedStoreName = computed(() => {
 });
 
 const loadStores = async () => {
-  if (!shouldShow.value) return;
+  if (!shouldShow.value) {
+    stores.value = [];
+    loading.value = false;
+    return;
+  }
+  
+  // For super admin, ensure tenant is selected first
+  if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+    stores.value = [];
+    loading.value = false;
+    return;
+  }
+  
+  // Ensure tenantId is set in localStorage for API interceptor
+  if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+    localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
+    // Wait a bit to ensure localStorage is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
   
   loading.value = true;
   try {
-    // For super admin, ensure tenant is selected first
-    if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
-      stores.value = [];
-      loading.value = false;
-      return;
-    }
-    
     const response = await api.get('/outlets');
-    const storeList = response.data.data || response.data || [];
+    const storeList = response.data?.data || response.data || [];
     stores.value = Array.isArray(storeList) ? storeList : [];
+    
+    // Debug log
+    console.log('Stores loaded:', stores.value.length, stores.value);
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {
@@ -163,6 +177,8 @@ const loadStores = async () => {
     }
   } catch (error: any) {
     console.error('Error loading stores:', error);
+    // Don't show error notification in StoreSelector - let parent handle it
+    // Just log and set empty array
     stores.value = [];
   } finally {
     loading.value = false;
@@ -192,11 +208,17 @@ const clearSelection = () => {
   emit('store-changed', null);
 };
 
-watch(() => authStore.selectedTenantId, (newTenantId) => {
-  if (newTenantId && authStore.isSuperAdmin) {
+watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
+  if (newTenantId && authStore.isSuperAdmin && newTenantId !== oldTenantId) {
     // Clear store selection when tenant changes
     clearSelection();
-    loadStores();
+    // Wait a bit before loading to ensure tenantId is set
+    await new Promise(resolve => setTimeout(resolve, 200));
+    await loadStores();
+  } else if (!newTenantId && authStore.isSuperAdmin) {
+    // Clear stores if tenant is deselected
+    stores.value = [];
+    clearSelection();
   }
 });
 
