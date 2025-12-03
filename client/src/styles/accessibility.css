@@ -58,11 +58,17 @@
 button,
 a[role="button"],
 input[type="button"],
-input[type="submit"],
-input[type="checkbox"],
-input[type="radio"] {
+input[type="submit"] {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Checkbox and radio should respect their size classes */
+input[type="checkbox"],
+input[type="radio"] {
+  /* Remove min-size constraint to allow w-4 h-4 (16px) sizing */
+  min-height: auto;
+  min-width: auto;
 }
 
 /* Ensure sufficient color contrast */
