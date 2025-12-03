@@ -67,7 +67,7 @@
 
     <!-- Empty State -->
     <div
-      v-else-if="suppliers.length === 0"
+      v-else-if="!suppliers || suppliers.length === 0"
       class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
     >
       <svg
