@@ -1146,7 +1146,7 @@ const loadMenuState = () => {
     try {
       expandedMenus.value = { ...expandedMenus.value, ...JSON.parse(saved) };
     } catch (e) {
-      console.error('Failed to load menu state:', e);
+      // Silently handle parse error - use default menu state
     }
   }
   // Auto-expand based on current route
@@ -1218,7 +1218,7 @@ const loadAvailableAddons = async () => {
     const response = await api.get('/addons/available');
     availableAddons.value = response.data || [];
   } catch (error: any) {
-    console.error('Error loading available addons:', error);
+    // Silently handle error - addons are optional
     availableAddons.value = [];
   }
 };

@@ -761,7 +761,7 @@ const loadAvailableAddons = async () => {
     const response = await api.get('/addons/available');
     availableAddons.value = response.data || [];
   } catch (error: any) {
-    console.error('Error loading available addons:', error);
+    // Silently handle error - addons are optional
     availableAddons.value = [];
   }
 };
@@ -840,7 +840,7 @@ const toggleSubmenu = (menu: string) => {
              try {
                await authStore.fetchMe();
              } catch (error) {
-               console.error('Session expired, redirecting to login');
+               // Session expired, redirect to login
                router.push('/login');
                return;
              }
@@ -874,7 +874,7 @@ const loadAddons = async () => {
     const response = await api.get('/addons');
     activeAddons.value = response.data || [];
   } catch (error: any) {
-    console.error('Error loading addons:', error);
+    // Silently handle error - addons are optional
     activeAddons.value = [];
   }
 };

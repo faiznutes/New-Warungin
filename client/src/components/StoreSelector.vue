@@ -209,14 +209,8 @@ const loadStores = async () => {
       handleStoreChange({ target: { value: stores.value[0].id } } as any);
     }
   } catch (error: any) {
-    // Log error for debugging (but don't show notification in StoreSelector)
-    console.error('[StoreSelector] Error loading stores:', {
-      message: error?.message,
-      response: error?.response?.data,
-      status: error?.response?.status,
-      role: authStore.user?.role,
-      tenantId: authStore.currentTenantId
-    });
+    // Silently handle error - stores will be empty
+    // Error details can be checked in browser dev tools if needed
     stores.value = [];
   } finally {
     loading.value = false;

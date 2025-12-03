@@ -147,7 +147,7 @@ const loadTenants = async () => {
     await authStore.fetchTenants();
     tenants.value = authStore.tenants || [];
   } catch (error) {
-    console.error('Error loading tenants:', error);
+    // Silently handle error - tenants will be empty
     tenants.value = [];
   } finally {
     loading.value = false;

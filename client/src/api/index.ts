@@ -105,20 +105,6 @@ api.interceptors.request.use(
         }
         if (!config.params.tenantId) {
           config.params.tenantId = selectedTenantId;
-          // Debug log for tenantId injection (only for /addons and /outlets)
-          if (config.url?.includes('/addons') || config.url?.includes('/outlets')) {
-            console.log(`[API] ✅ Adding tenantId to request: ${config.method?.toUpperCase()} ${config.url}`, { 
-              tenantId: selectedTenantId,
-              params: config.params
-            });
-          }
-        } else {
-          // Log if tenantId already exists
-          if (config.url?.includes('/addons') || config.url?.includes('/outlets')) {
-            console.log(`[API] ℹ️ tenantId already in params: ${config.method?.toUpperCase()} ${config.url}`, { 
-              tenantId: config.params.tenantId
-            });
-          }
         }
       }
     }
