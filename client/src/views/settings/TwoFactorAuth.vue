@@ -192,6 +192,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 const loading = ref(true);
 const status = ref({

@@ -215,13 +215,14 @@ import { useNotification } from '../../composables/useNotification';
 import { useSEO } from '../../composables/useSEO';
 import DemoPlayground from '../../components/DemoPlayground.vue';
 
+// ✅ Composable declarations MUST be before other composables
+const { success: showSuccess, error: showError } = useNotification();
+
 useSEO({
   title: 'Test Demo Interaktif Warungin - Coba Fitur Sistem Kasir Gratis | Warungin',
   description: 'Coba langsung fitur-fitur Warungin tanpa perlu login! Test demo interaktif untuk Dashboard, POS, Produk, Laporan, dan Pelanggan. Gratis, tanpa komitmen. Atau request demo personal 30-45 menit dengan tim kami.',
   keywords: 'demo warungin, test demo interaktif, coba warungin gratis, demo sistem kasir online, trial warungin, demo pos online, coba fitur kasir, demo aplikasi kasir',
 });
-
-const { success: showSuccess, error: showError } = useNotification();
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });

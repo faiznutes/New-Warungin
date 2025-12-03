@@ -428,7 +428,7 @@ const archiveOrders = async () => {
     const response = await api.post('/archives/orders', {
       olderThanDays: archiveOrdersDays.value || 365,
     });
-    showSuccess(`Berhasil meng-archive ${response.data.count} orders`);
+    await showSuccess(`Berhasil meng-archive ${response.data.count} orders`);
     showArchiveOrdersModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
@@ -444,7 +444,7 @@ const archiveTransactions = async () => {
     const response = await api.post('/archives/transactions', {
       olderThanDays: archiveTransactionsDays.value || 365,
     });
-    showSuccess(`Berhasil meng-archive ${response.data.count} transactions`);
+    await showSuccess(`Berhasil meng-archive ${response.data.count} transactions`);
     showArchiveTransactionsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
@@ -460,7 +460,7 @@ const archiveReports = async () => {
     const response = await api.post('/archives/reports', {
       olderThanDays: archiveReportsDays.value || 180,
     });
-    showSuccess(`Berhasil meng-archive ${response.data.count} reports`);
+    await showSuccess(`Berhasil meng-archive ${response.data.count} reports`);
     showArchiveReportsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
@@ -483,7 +483,7 @@ const archiveAll = async () => {
   archiving.value = true;
   try {
     const response = await api.post('/archives/all', archiveAllConfig.value);
-    showSuccess(
+    await showSuccess(
       `Berhasil meng-archive: ${response.data.orders} orders, ${response.data.transactions} transactions, ${response.data.reports} reports`
     );
     showArchiveAllModal.value = false;
@@ -507,7 +507,7 @@ const restoreArchive = async (archiveFile: string) => {
 
   try {
     await api.post('/archives/restore', { archiveFile });
-    showSuccess('Berhasil restore data dari archive');
+    await showSuccess('Berhasil restore data dari archive');
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
     showError(error.response?.data?.message || 'Gagal restore archive');

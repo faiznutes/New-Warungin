@@ -348,7 +348,7 @@ const deleteSubmission = async (id: string) => {
 
   try {
     await api.delete(`/contact/submissions/${id}`);
-    showSuccess('Pesan berhasil dihapus.');
+    await showSuccess('Pesan berhasil dihapus.');
     await loadSubmissions();
     if (viewingSubmission?.id === id) {
       viewingSubmission.value = null;
@@ -367,7 +367,7 @@ const handleCleanup = async () => {
   cleaningUp.value = true;
   try {
     const response = await api.post('/contact/submissions/cleanup');
-    showSuccess(response.data.message || 'Pesan lama berhasil dihapus.');
+    await showSuccess(response.data.message || 'Pesan lama berhasil dihapus.');
     await loadSubmissions();
   } catch (error: any) {
     showError(error.response?.data?.message || 'Gagal membersihkan pesan lama.');
@@ -393,7 +393,7 @@ const toggleProcessed = async (id: string, event: Event) => {
       viewingSubmission.value.isProcessed = isProcessed;
     }
     
-    showSuccess(isProcessed ? 'Pesan ditandai sebagai sudah diproses.' : 'Pesan ditandai sebagai belum diproses.');
+    await showSuccess(isProcessed ? 'Pesan ditandai sebagai sudah diproses.' : 'Pesan ditandai sebagai belum diproses.');
   } catch (error: any) {
     showError(error.response?.data?.message || 'Gagal mengupdate status pesan.');
     // Revert checkbox

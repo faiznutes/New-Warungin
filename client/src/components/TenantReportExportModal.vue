@@ -123,6 +123,9 @@ import { ref, watch } from 'vue';
 import { useNotification } from '../composables/useNotification';
 import { generateReportPDF } from '../utils/report-templates';
 
+// ✅ Composable declarations MUST be before props/emits
+const { error: showError, success: showSuccess } = useNotification();
+
 interface Tenant {
   id: string;
   name: string;
@@ -143,8 +146,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   close: [];
 }>();
-
-const { error: showError, success: showSuccess } = useNotification();
 
 const exportForm = ref({
   storeSelection: 'current',

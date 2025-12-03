@@ -55,7 +55,9 @@
     "check:all": "npm run type-check && npm run lint && cd client && npm run lint && cd .. && npx prisma validate && npm run prisma:generate",
     "check:all:with-tests": "npm run check:all && npm test -- --run",
     "check:quick": "npx tsc --noEmit && cd client && npx vue-tsc --noEmit && cd .. && npm run lint && cd client && npm run lint && cd ..",
-    "pre-commit": "npm run type-check && npm run lint && npx prisma validate"
+    "pre-commit": "npm run type-check && npm run lint && npx prisma validate",
+    "check:vue": "node scripts/check-vue-components.js",
+    "check:vue:all": "node scripts/check-vue-components.js client/src"
   },
   "keywords": [
     "warungin",

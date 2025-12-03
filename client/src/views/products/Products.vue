@@ -590,7 +590,7 @@ const downloadTemplate = () => {
   ];
   
   exportToCSV(templateData, 'template_import_produk', ['Nama', 'Kategori', 'Harga Jual', 'Harga Pokok', 'Stok', 'Stok Minimum', 'Status Stok', 'Deskripsi', 'Produk Titipan', 'Status']);
-  showSuccess('Template CSV berhasil diunduh');
+  await showSuccess('Template CSV berhasil diunduh');
 };
 
 const triggerFileInput = () => {

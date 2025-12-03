@@ -34,8 +34,10 @@ import {
   handleNotificationClose as handleClose,
 } from './composables/useNotification';
 
-const authStore = useAuthStore();
+// ✅ Composable declarations MUST be before other composables
 const { showNotification, notificationOptions } = useNotification();
+
+const authStore = useAuthStore();
 
 onMounted(async () => {
   // Skip restore if we're on login page (to avoid flash)

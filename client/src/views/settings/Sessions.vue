@@ -102,6 +102,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { formatDateTime } from '../../utils/formatters';
+import { useNotification } from '../../composables/useNotification';
+
+// ✅ Import dan deklarasi composables HARUS di atas, sebelum digunakan
+const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
+const formatDate = formatDateTime;
 
 const loading = ref(true);
 const sessions = ref<any[]>([]);
@@ -119,7 +125,7 @@ const loadSessions = async () => {
         lastActivityAt: session.lastActivity || session.lastActivityAt || session.createdAt,
       }));
   } catch (error: any) {
-    showError('Gagal memuat sesi');
+    await showError('Gagal memuat sesi');
   } finally {
     loading.value = false;
   }
@@ -154,10 +160,6 @@ const revokeAllSessions = async () => {
     await showError(error.response?.data?.message || 'Gagal mengakhiri sesi');
   }
 };
-
-const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
-// formatDateTime is already imported from formatters utility above
-const formatDate = formatDateTime;
 
 onMounted(() => {
   loadSessions();

@@ -1885,7 +1885,7 @@ const handleDeactivateSubscription = async () => {
   try {
     await api.put(`/tenants/${tenant.value.id}/deactivate-subscription`);
     
-    showSuccess('Langganan berhasil dinonaktifkan');
+    await showSuccess('Langganan berhasil dinonaktifkan');
     showDeactivateSubscriptionModal.value = false;
     await loadTenantDetail();
   } catch (error: any) {

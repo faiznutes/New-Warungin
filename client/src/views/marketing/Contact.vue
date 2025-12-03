@@ -173,13 +173,14 @@ import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { useSEO } from '../../composables/useSEO';
 
+// ✅ Composable declarations MUST be before other composables
+const { success: showSuccess, error: showError } = useNotification();
+
 useSEO({
   title: 'Hubungi Kami - Warungin Support',
   description: 'Punya pertanyaan tentang Warungin? Tim support kami siap membantu Anda! Hubungi kami melalui email, telepon, atau form kontak. Tersedia Senin-Jumat 09:00-18:00 WIB.',
   keywords: 'kontak warungin, support warungin, hubungi kami, customer service, bantuan warungin',
 });
-
-const { success: showSuccess, error: showError } = useNotification();
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });

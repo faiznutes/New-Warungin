@@ -449,10 +449,12 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { useNotification } from '../../composables/useNotification';
 
+// ✅ Composable declarations MUST be before other composables
+const { error: showError, warning: showWarning } = useNotification();
+
 const authStore = useAuthStore();
 const userRole = computed(() => authStore.user?.role || '');
 const { needsTenantSelection } = useTenantCheck();
-const { error: showError, warning: showWarning } = useNotification();
 
 const loading = ref(false);
 const isReloading = ref(false); // Flag to prevent multiple reloads
