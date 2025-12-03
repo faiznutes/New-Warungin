@@ -294,13 +294,22 @@ const loadTenants = async () => {
   }
 };
 
-const handleTenantChange = () => {
+const handleTenantChange = async () => {
   showError.value = false;
+  console.log('Tenant changed in TenantSupport:', selectedTenantId.value);
+  
   if (selectedTenantId.value) {
     // Set selected tenant in auth store and localStorage
     // This ensures API interceptor can access it
     authStore.setSelectedTenant(selectedTenantId.value);
     localStorage.setItem('selectedTenantId', selectedTenantId.value);
+    
+    // Wait a bit to ensure state propagation
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Verify tenantId is set
+    const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
+    console.log('TenantId set in TenantSupport:', currentTenantId);
   } else {
     authStore.setSelectedTenant(null);
     localStorage.removeItem('selectedTenantId');

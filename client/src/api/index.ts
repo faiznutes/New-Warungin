@@ -105,6 +105,8 @@ api.interceptors.request.use(
         }
         if (!config.params.tenantId) {
           config.params.tenantId = selectedTenantId;
+          // Debug log for tenantId injection
+          console.log(`[API] Adding tenantId to request: ${config.method?.toUpperCase()} ${config.url}`, { tenantId: selectedTenantId });
         }
       }
     }

@@ -339,25 +339,56 @@ const loadAddons = async () => {
   
   loading.value = true;
   try {
+    // Log tenantId for debugging
+    const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
+    console.log('Loading addons for tenant:', currentTenantId);
+    
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
-      api.get('/addons/available').catch(() => ({ data: [] })),
-      api.get('/addons').catch(() => ({ data: [] })),
+      api.get('/addons/available').catch((err) => {
+        console.error('Error loading available addons:', err);
+        return { data: [] };
+      }),
+      api.get('/addons').catch((err) => {
+        console.error('Error loading active addons:', err);
+        return { data: [] };
+      }),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
     
     // Parse response data correctly
-    const availableData = availableRes.data || [];
-    const activeData = activeRes.data || [];
+    // Backend returns array directly for /addons, not { data: [...] }
+    let availableData = availableRes.data;
+    let activeData = activeRes.data;
+    
+    // Handle case where response is array directly (axios wraps in .data)
+    // Or if response.data is the array
+    if (Array.isArray(availableData)) {
+      // Already an array
+    } else if (availableData && Array.isArray(availableData.data)) {
+      availableData = availableData.data;
+    } else {
+      availableData = [];
+    }
+    
+    if (Array.isArray(activeData)) {
+      // Already an array
+    } else if (activeData && Array.isArray(activeData.data)) {
+      activeData = activeData.data;
+    } else {
+      activeData = [];
+    }
     
     availableAddons.value = Array.isArray(availableData) ? availableData : [];
     activeAddons.value = Array.isArray(activeData) ? activeData : [];
     currentSubscription.value = subscriptionRes.data;
     
     // Debug log
-    if (activeAddons.value.length > 0) {
-      console.log('Active addons loaded:', activeAddons.value.length, activeAddons.value);
-    } else {
-      console.log('No active addons found for tenant:', authStore.selectedTenantId || authStore.currentTenantId);
+    console.log('Available addons:', availableAddons.value.length, availableAddons.value);
+    console.log('Active addons:', activeAddons.value.length, activeAddons.value);
+    
+    if (activeAddons.value.length === 0) {
+      console.warn('No active addons found for tenant:', currentTenantId);
+      console.warn('Response was:', activeRes);
     }
   } catch (error: any) {
     console.error('Error loading addons:', error);
@@ -529,17 +560,23 @@ const handleExtendAddon = async () => {
 };
 
 const handleTenantChange = async (tenantId: string | null) => {
+  console.log('Tenant changed in Addons page:', tenantId);
+  
   // Auto-refetch addons when tenant changes
   if (tenantId) {
     // Ensure tenantId is set in authStore and localStorage
     authStore.setSelectedTenant(tenantId);
     localStorage.setItem('selectedTenantId', tenantId);
     
-    // Wait a bit to ensure state is updated
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait a bit longer to ensure state is fully updated
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Double-check tenantId is set
+    const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
+    console.log('Current tenantId after setting:', currentTenantId);
     
     // Only load if tenant selection is no longer needed
-    if (!needsTenantSelection.value) {
+    if (!needsTenantSelection.value && currentTenantId) {
       await loadAddons();
     }
   } else {
