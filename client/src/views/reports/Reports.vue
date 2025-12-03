@@ -220,7 +220,7 @@
     </div>
 
     <div
-      v-else-if="reportData"
+      v-else-if="reportData || !loading"
       class="space-y-4 sm:space-y-6"
     >
       <!-- Summary Cards -->
