@@ -214,8 +214,7 @@ const loadProducts = async () => {
     // Ensure tenantId is set in localStorage for API interceptor
     localStorage.setItem('selectedTenantId', props.tenantId);
     
-    // Wait a bit to ensure localStorage is updated
-    await new Promise(resolve => setTimeout(resolve, 50));
+    // No delay needed - localStorage is synchronous
     
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
@@ -320,9 +319,8 @@ onMounted(async () => {
   // Initial load if tenantId is provided
   if (props.tenantId) {
     localStorage.setItem('selectedTenantId', props.tenantId);
-    setTimeout(() => {
-      loadProducts();
-    }, 100);
+    // Load immediately - localStorage is synchronous
+    loadProducts();
   }
   
   // Watch for tenantId changes after mount
@@ -331,10 +329,8 @@ onMounted(async () => {
     if (newTenantId && newTenantId !== oldTenantId) {
       // Ensure tenantId is set in localStorage for API interceptor
       localStorage.setItem('selectedTenantId', newTenantId);
-      // Small delay to ensure localStorage is updated
-      setTimeout(() => {
-        loadProducts();
-      }, 100);
+      // Load immediately - localStorage is synchronous
+      loadProducts();
     }
   });
 });
