@@ -1594,13 +1594,18 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
 import api from '../../api';
-import { formatCurrency, formatDateTime, formatRemainingTime, formatDate } from '../../utils/formatters';
+import { formatCurrency, formatDateTime, formatRemainingTime, formatDate as formatDateUtil } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
 import QuickInsightWidget from '../../components/QuickInsightWidget.vue';
 
 const authStore = useAuthStore();
+
+// Ensure formatDate is available in template by creating a wrapper
+const formatDate = (date: Date | string | null | undefined): string => {
+  return formatDateUtil(date);
+};
 const { error: showError } = useNotification();
 const loading = ref(false);
 const dateRange = ref('month'); // Default bulan ini
