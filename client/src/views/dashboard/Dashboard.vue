@@ -1008,9 +1008,9 @@
       </div>
     </div>
 
-    <!-- Tenant Stats (when tenant is selected) -->
+    <!-- Tenant Stats (when tenant is selected or for admin tenant/supervisor) -->
     <div
-      v-else-if="stats"
+      v-else-if="stats || isAdminOrSupervisor || userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR'"
       class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8"
     >
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
@@ -1568,6 +1568,26 @@
         </div>
       </div>
     </div>
+
+    <!-- Fallback for other roles or when stats not loaded yet -->
+    <div
+      v-else
+      class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8"
+    >
+      <!-- Welcome Section -->
+      <div class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+        <div class="relative z-10">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">
+            Selamat Datang! 👋
+          </h2>
+          <p class="text-primary-100 text-lg sm:text-xl">
+            Memuat dashboard...
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1978,6 +1998,8 @@ const loadStats = async () => {
     
     const errorMessage = error.response?.data?.message || 'Gagal memuat statistik';
     await showError(errorMessage);
+    // Set stats to empty object to show fallback UI
+    stats.value = stats.value || {};
   } finally {
     loading.value = false;
   }
@@ -2245,8 +2267,10 @@ watch(() => authStore.selectedTenantId, () => {
   }
 });
 
-onMounted(() => {
+onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Load stats on mount
+  await loadStats();
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
     loadStats();
