@@ -1704,8 +1704,6 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-// formatDate is already imported from formatters utility above
-
 const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
     BASIC: 'Starter',
