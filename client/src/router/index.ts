@@ -446,7 +446,7 @@ router.beforeEach(async (to, from, next) => {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        console.error('Failed to restore session:', error);
+        // Session restore failed, redirect to login
         authStore.clearAuth();
         localStorage.removeItem('rememberMe');
         next({ name: 'login', query: { redirect: to.fullPath } });
@@ -550,7 +550,7 @@ router.beforeEach(async (to, from, next) => {
       }
     } catch (error: any) {
       // If error loading addons, allow access (will be handled by backend)
-      console.error('Error checking addon:', error);
+      // Silently continue - backend will handle addon validation
     }
   }
   
