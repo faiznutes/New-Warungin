@@ -14,11 +14,33 @@ Sistem Point of Sale (POS) multi-tenant untuk UMKM dengan teknologi modern: Node
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/Warungin.git
-cd Warungin
+git clone https://github.com/faiznutes/New-Warungin.git
+cd New-Warungin
 ```
 
-### 2. Setup Environment Variables
+### 2. Quick Deploy (Recommended)
+
+**Linux/Mac:**
+```bash
+./scripts/pull-and-compose.sh
+```
+
+**Windows:**
+```cmd
+scripts\pull-and-compose.bat
+```
+
+Script ini akan secara otomatis:
+- Pull latest code
+- Install dependencies (backend & frontend)
+- Generate Prisma client
+- Build Docker images
+- Run migrations
+- Start all services
+
+### 3. Manual Setup (Alternative)
+
+#### Setup Environment Variables
 
 ```bash
 cp env.example .env
