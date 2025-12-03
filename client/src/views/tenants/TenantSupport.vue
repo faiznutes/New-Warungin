@@ -281,14 +281,13 @@ const loadTenants = async () => {
   loading.value = true;
   try {
     const response = await api.get('/tenants');
-    const tenantList = response.data.data || response.data;
+    const tenantList = response.data?.data || response.data || [];
     // Filter out System tenant (double check, backend already filters)
     tenants.value = Array.isArray(tenantList) 
-      ? tenantList.filter((tenant: any) => tenant.name !== 'System')
+      ? tenantList.filter((tenant: any) => tenant?.name !== 'System')
       : [];
   } catch (error: any) {
-    console.error('Error loading tenants:', error);
-    await showErrorNotification('Gagal memuat daftar tenant');
+    await showErrorNotification(error.response?.data?.message || 'Gagal memuat daftar tenant');
   } finally {
     loading.value = false;
   }
@@ -296,8 +295,6 @@ const loadTenants = async () => {
 
 const handleTenantChange = async () => {
   showError.value = false;
-  console.log('Tenant changed in TenantSupport:', selectedTenantId.value);
-  
   if (selectedTenantId.value) {
     // Set selected tenant in auth store and localStorage
     // This ensures API interceptor can access it
@@ -306,10 +303,6 @@ const handleTenantChange = async () => {
     
     // Wait a bit to ensure state propagation
     await new Promise(resolve => setTimeout(resolve, 300));
-    
-    // Verify tenantId is set
-    const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
-    console.log('TenantId set in TenantSupport:', currentTenantId);
   } else {
     authStore.setSelectedTenant(null);
     localStorage.removeItem('selectedTenantId');
@@ -319,7 +312,6 @@ const handleTenantChange = async () => {
 const handleStoreChange = (storeId: string | null) => {
   // Store selection is handled by StoreSelector component
   // This function is just for event handling if needed
-  console.log('Store changed:', storeId);
 };
 
 // Watch for selectedTenantId changes

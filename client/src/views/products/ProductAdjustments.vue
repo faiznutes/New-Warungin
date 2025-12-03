@@ -670,11 +670,10 @@ const loadAdjustments = async (page = 1) => {
     if (filters.value.endDate) params.endDate = filters.value.endDate;
 
     const response = await api.get('/products/adjustments', { params });
-    adjustments.value = response.data.data || [];
-    pagination.value = response.data.pagination || pagination.value;
+    adjustments.value = response.data?.data || response.data || [];
+    pagination.value = response.data?.pagination || pagination.value;
     pagination.value.page = page;
   } catch (error: any) {
-    console.error('Error loading adjustments:', error);
     await showError(error.response?.data?.message || 'Gagal memuat data penyesuaian');
   } finally {
     loading.value = false;
@@ -684,9 +683,9 @@ const loadAdjustments = async (page = 1) => {
 const loadProducts = async () => {
   try {
     const response = await api.get('/products', { params: { limit: 1000 } });
-    products.value = response.data.data || [];
+    products.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading products:', error);
+    // Silently fail - products are optional
   }
 };
 
@@ -696,9 +695,8 @@ const loadSuppliers = async () => {
   loadingSuppliers.value = true;
   try {
     const response = await api.get('/suppliers', { params: { limit: 1000, isActive: true } });
-    suppliers.value = response.data.data || [];
+    suppliers.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading suppliers:', error);
     suppliers.value = [];
   } finally {
     loadingSuppliers.value = false;
@@ -711,9 +709,8 @@ const loadStores = async () => {
   loadingStores.value = true;
   try {
     const response = await api.get('/outlets');
-    stores.value = (response.data.data || []).filter((store: any) => store.isActive !== false);
+    stores.value = (response.data?.data || response.data || []).filter((store: any) => store?.isActive !== false);
   } catch (error: any) {
-    console.error('Error loading stores:', error);
     stores.value = [];
   } finally {
     loadingStores.value = false;
@@ -867,7 +864,6 @@ const saveAdjustment = async () => {
     await loadAdjustments(pagination.value.page);
     await loadProducts();
   } catch (error: any) {
-    console.error('Error saving adjustment:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan penyesuaian');
   } finally {
     saving.value = false;

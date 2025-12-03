@@ -650,7 +650,7 @@ const scheduleForm = ref({
 const loadTemplates = async () => {
   try {
     const response = await api.get('/advanced-reporting/templates');
-    templates.value = response.data.data || [];
+    templates.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat templates');
   }
@@ -659,7 +659,7 @@ const loadTemplates = async () => {
 const loadScheduledReports = async () => {
   try {
     const response = await api.get('/advanced-reporting/scheduled');
-    scheduledReports.value = response.data.data || [];
+    scheduledReports.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat scheduled reports');
   }

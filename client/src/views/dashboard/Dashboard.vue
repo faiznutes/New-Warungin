@@ -1738,8 +1738,8 @@ const getSubscriptionStatusGroups = () => {
   if (!globalReportData.value?.subscriptions) return [];
   
   const statusMap = new Map<string, number>();
-  globalReportData.value.subscriptions.forEach((sub: any) => {
-    const status = sub.status || 'UNKNOWN';
+  (globalReportData.value?.subscriptions || []).forEach((sub: any) => {
+    const status = sub?.status || 'UNKNOWN';
     statusMap.set(status, (statusMap.get(status) || 0) + 1);
   });
   
@@ -1808,19 +1808,11 @@ const loadGlobalReport = async () => {
     };
     
     const response = await api.get('/reports/global', { params });
-    globalReportData.value = response.data;
+    globalReportData.value = response.data || {};
     
-    console.log('Global report data loaded:', {
-      summary: globalReportData.value?.summary,
-      addonsCount: globalReportData.value?.addons?.length || 0,
-      subscriptionsCount: globalReportData.value?.subscriptions?.length || 0,
-    });
   } catch (error: any) {
-    console.error('Error loading global report:', error);
     // Don't show error for 401/403 (user might not be authenticated)
-    if (error.response?.status !== 401 && error.response?.status !== 403) {
-      console.warn('Failed to load global report data, using stats only');
-    }
+    // Silently fail - global report is optional
   }
 };
 
@@ -1828,7 +1820,7 @@ const loadSuperAdminStats = async () => {
   try {
     // Load stats from API (includes addon & subscription revenue) - ini cepat
     const response = await api.get('/dashboard/stats');
-    stats.value = response.data;
+    stats.value = response.data || {};
     
     // Also load global report data for detailed information
     await loadGlobalReport();
@@ -1845,12 +1837,10 @@ const loadSuperAdminStats = async () => {
     
     // Handle database connection errors (503)
     if (error.response?.status === 503) {
-      console.error('Database connection error:', error.response?.data?.message);
       await showError('Koneksi database terputus. Silakan periksa konfigurasi database atau hubungi administrator.');
       return;
     }
     
-    console.error('Error loading super admin stats:', error);
     const errorMessage = error.response?.data?.message || 'Gagal memuat statistik super admin';
     await showError(errorMessage);
   }
@@ -1862,10 +1852,10 @@ const loadCashierStats = async () => {
   try {
     const response = await api.get('/dashboard/stats/cashier');
     cashierStats.value = {
-      todayTransactions: response.data.todayTransactions || response.data.todayOrders || 0,
-      todayRevenue: response.data.todayRevenue || 0,
-      averageTransaction: response.data.averageTransaction || 0,
-      recentTransactions: response.data.recentTransactions || [],
+      todayTransactions: response.data?.todayTransactions || response.data?.todayOrders || 0,
+      todayRevenue: response.data?.todayRevenue || 0,
+      averageTransaction: response.data?.averageTransaction || 0,
+      recentTransactions: response.data?.recentTransactions || [],
     };
   } catch (error: any) {
     // Suppress errors during logout (401/403)
@@ -1876,7 +1866,7 @@ const loadCashierStats = async () => {
     if (error.response?.status === 503) {
       return;
     }
-    console.error('Error loading cashier stats:', error);
+    // Silently fail - cashier stats are optional
   }
 };
 
@@ -1886,10 +1876,10 @@ const loadKitchenStats = async () => {
   try {
     const response = await api.get('/dashboard/stats/kitchen');
     kitchenStats.value = {
-      pendingOrders: response.data.pendingOrders || 0,
-      cookingOrders: response.data.cookingOrders || 0,
-      readyOrders: response.data.readyOrders || 0,
-      totalOrders: response.data.totalOrders || 0,
+      pendingOrders: response.data?.pendingOrders || 0,
+      cookingOrders: response.data?.cookingOrders || 0,
+      readyOrders: response.data?.readyOrders || 0,
+      totalOrders: response.data?.totalOrders || 0,
     };
   } catch (error: any) {
     // Suppress errors during logout (401/403)
@@ -1900,7 +1890,7 @@ const loadKitchenStats = async () => {
     if (error.response?.status === 503) {
       return;
     }
-    console.error('Error loading kitchen stats:', error);
+    // Silently fail - kitchen stats are optional
   }
 };
 
@@ -1956,7 +1946,7 @@ const loadStats = async () => {
     }
     
     const response = await api.get('/dashboard/stats', { params });
-    stats.value = response.data;
+    stats.value = response.data || {};
     renderCharts();
   } catch (error: any) {
     // Don't show alert if user is not authenticated (likely logged out)
@@ -1966,13 +1956,11 @@ const loadStats = async () => {
     
     // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
-      console.log('Unauthorized - user may have logged out');
       return;
     }
     
     // Handle database connection errors (503)
     if (error.response?.status === 503) {
-      console.error('Database connection error:', error.response?.data?.message);
       await showError('Koneksi database terputus. Silakan periksa konfigurasi database atau hubungi administrator.');
       return;
     }
@@ -1982,15 +1970,12 @@ const loadStats = async () => {
       const errorMessage = error.response?.data?.message || 'Gagal memuat statistik';
       // If it's tenant ID required, don't show alert (will be handled by tenant selector)
       if (errorMessage.includes('Tenant ID') || errorMessage.includes('tenant')) {
-        console.log('Tenant ID required - will be handled by tenant selector');
         return;
       }
-      console.error('Error loading stats:', error);
       await showError(errorMessage);
       return;
     }
     
-    console.error('Error loading stats:', error);
     const errorMessage = error.response?.data?.message || 'Gagal memuat statistik';
     await showError(errorMessage);
   } finally {
@@ -2004,10 +1989,9 @@ let countdownInterval: NodeJS.Timeout | null = null;
 const loadAddons = async () => {
   try {
     const response = await api.get('/addons');
-    activeAddons.value = response.data || [];
+    activeAddons.value = response.data?.data || response.data || [];
   } catch (error: any) {
     // Silently fail if addons can't be loaded
-    console.error('Error loading addons:', error);
     activeAddons.value = [];
   }
 };
@@ -2017,12 +2001,12 @@ const loadSubscription = async () => {
   try {
     const response = await api.get('/subscriptions/current');
     if (response.data) {
-      currentSubscription.value = response.data;
+      currentSubscription.value = response.data || {};
       
       // IMPORTANT: Use isExpired from backend response directly
       // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
       // Backend already calculated isExpired correctly after revert
-      if (response.data.isExpired !== undefined) {
+      if (response.data?.isExpired !== undefined) {
         // Use isExpired from backend
         currentSubscription.value.isExpired = response.data.isExpired;
       }
@@ -2095,9 +2079,6 @@ const loadSubscription = async () => {
     }
   } catch (error: any) {
     // Ignore 404 or other errors - subscription might not exist yet
-    if (error.response?.status !== 404 && error.response?.status !== 429) {
-      console.error('Error loading subscription:', error);
-    }
     currentSubscription.value = null;
   } finally {
     subscriptionLoading.value = false;
@@ -2189,10 +2170,10 @@ const renderCharts = () => {
     topProductsChart = new Chart(topProductsCtx, {
       type: 'bar',
       data: {
-        labels: stats.value.charts.topProducts.map((p: any) => p.name),
+        labels: (stats.value?.charts?.topProducts || []).map((p: any) => p?.name || 'Unknown'),
         datasets: [{
           label: 'Jumlah Terjual',
-          data: stats.value.charts.topProducts.map((p: any) => p.quantity),
+          data: (stats.value?.charts?.topProducts || []).map((p: any) => p?.quantity || 0),
           backgroundColor: 'rgba(75, 192, 192, 0.6)',
           borderColor: 'rgba(75, 192, 192, 1)',
           borderWidth: 1,
@@ -2215,9 +2196,9 @@ const renderCharts = () => {
     salesByStatusChart = new Chart(salesByStatusCtx, {
       type: 'pie',
       data: {
-        labels: stats.value.charts.salesByStatus.map((s: any) => getStatusLabel(s.status)),
+        labels: (stats.value?.charts?.salesByStatus || []).map((s: any) => getStatusLabel(s?.status)),
         datasets: [{
-          data: stats.value.charts.salesByStatus.map((s: any) => s.count),
+          data: (stats.value?.charts?.salesByStatus || []).map((s: any) => s?.count || 0),
           backgroundColor: [
             'rgba(255, 206, 86, 0.6)', // PENDING
             'rgba(54, 162, 235, 0.6)', // PROCESSING

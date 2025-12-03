@@ -481,7 +481,7 @@ const loadFinancialData = async () => {
     cashFlow.value = cashFlowRes.data;
     showPeriodModal.value = false;
   } catch (error: any) {
-    console.error('Error loading financial data:', error);
+    await showError(error.response?.data?.message || 'Gagal memuat data keuangan');
   } finally {
     loading.value = false;
   }
@@ -499,8 +499,7 @@ const exportFinancialReport = async () => {
     });
     await showSuccess('Export berhasil! PDF telah didownload.');
   } catch (error: any) {
-    console.error('Error exporting report:', error);
-    await showError(error.message || 'Gagal mengekspor laporan');
+    await showError(error.response?.data?.message || error.message || 'Gagal mengekspor laporan');
   }
 };
 

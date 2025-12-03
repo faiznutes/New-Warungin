@@ -726,9 +726,9 @@ const summaryStats = computed(() => {
       let totalCostOfGoods = 0;
       
       // Calculate total cost of goods from byDate
-      if (reportData.value.byDate && Array.isArray(reportData.value.byDate)) {
+      if (reportData.value?.byDate && Array.isArray(reportData.value.byDate)) {
         totalCostOfGoods = reportData.value.byDate.reduce((sum: number, item: any) => {
-          return sum + (item.costOfGoods || 0);
+          return sum + (item?.costOfGoods || 0);
         }, 0);
       }
       
@@ -802,22 +802,22 @@ const reportRows = computed(() => {
         let costOfGoods = 0;
         
         // Calculate cost of goods from orders if available (more accurate)
-        if (item.orders && Array.isArray(item.orders)) {
+        if (item?.orders && Array.isArray(item.orders)) {
           costOfGoods = item.orders.reduce((sum: number, order: any) => {
-            if (order.items && Array.isArray(order.items)) {
+            if (order?.items && Array.isArray(order.items)) {
               return sum + order.items.reduce((itemSum: number, orderItem: any) => {
-                const cost = Number(orderItem.cost || orderItem.product?.cost || 0);
-                const quantity = Number(orderItem.quantity || 0);
+                const cost = Number(orderItem?.cost || orderItem?.product?.cost || 0);
+                const quantity = Number(orderItem?.quantity || 0);
                 return itemSum + (cost * quantity);
               }, 0);
             }
             return sum;
           }, 0);
-        } else if (item.costOfGoods) {
+        } else if (item?.costOfGoods) {
           costOfGoods = item.costOfGoods;
-        } else if (item.products && Array.isArray(item.products)) {
+        } else if (item?.products && Array.isArray(item.products)) {
           // Fallback to products if orders not available
-          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p.cost || 0), 0);
+          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p?.cost || 0), 0);
         }
         
         // Apply filter
@@ -930,17 +930,17 @@ const viewDateDetail = (dateIndex: number) => {
   // Group products by productId and discount status
   const productGroups: Record<string, any> = {};
   
-  if (dateItem.orders && Array.isArray(dateItem.orders)) {
+  if (dateItem?.orders && Array.isArray(dateItem.orders)) {
     dateItem.orders.forEach((order: any) => {
-      const hasDiscount = order.discount && Number(order.discount) > 0;
+      const hasDiscount = order?.discount && Number(order.discount) > 0;
       
-      if (order.items && Array.isArray(order.items)) {
+      if (order?.items && Array.isArray(order.items)) {
         order.items.forEach((orderItem: any) => {
-          const productId = orderItem.productId || orderItem.product?.id;
-          const productName = orderItem.product?.name || 'Unknown';
-          const price = Number(orderItem.price || 0);
-          const quantity = Number(orderItem.quantity || 0);
-          const cost = Number(orderItem.cost || orderItem.product?.cost || 0);
+          const productId = orderItem?.productId || orderItem?.product?.id;
+          const productName = orderItem?.product?.name || 'Unknown';
+          const price = Number(orderItem?.price || 0);
+          const quantity = Number(orderItem?.quantity || 0);
+          const cost = Number(orderItem?.cost || orderItem?.product?.cost || 0);
           
           // Create unique key: productId + discount status
           const groupKey = `${productId}-${hasDiscount ? 'discount' : 'nodiscount'}`;
@@ -963,7 +963,7 @@ const viewDateDetail = (dateIndex: number) => {
           group.totalQuantity += quantity;
           group.totalSellingPrice += price * quantity;
           group.totalCost += cost * quantity;
-          if (!group.orderIds.has(order.id)) {
+          if (order?.id && !group.orderIds.has(order.id)) {
             group.orderIds.add(order.id);
             group.orderCount++;
           }
@@ -1006,22 +1006,12 @@ const loadReport = async () => {
     }
 
     const reportResponse = await api.get('/reports/tenant', { params }).catch((error: any) => {
-      console.error('Error fetching report:', error);
       return { data: null };
     });
     
     reportData.value = reportResponse.data;
     
-    // Log for debugging
-    if (!reportData.value) {
-      console.warn('Report data is null or empty', { params });
-    } else {
-      console.log('Report data loaded:', {
-        summary: reportData.value.summary,
-        byDateCount: reportData.value.byDate?.length || 0,
-        ordersCount: reportData.value.orders?.length || 0,
-      });
-    }
+    // Ensure reportData has proper structure even if empty
     
     // Ensure reportData has proper structure even if empty
     if (!reportData.value) {
@@ -1079,9 +1069,8 @@ const loadReport = async () => {
     
     // Don't load analytics here to prevent rate limiting - it's called separately
   } catch (error: any) {
-    console.error('Error loading report:', error);
     if (error.response?.status !== 401 && error.response?.status !== 403) {
-      await showError('Gagal memuat laporan');
+      await showError(error.response?.data?.message || 'Gagal memuat laporan');
     }
   } finally {
     loading.value = false;
@@ -1100,7 +1089,6 @@ const loadAnalytics = async () => {
       topProducts: topProductsRes.data || [],
     };
   } catch (error: any) {
-    console.error('Error loading analytics:', error);
     // Don't show error, just set to null
     analyticsData.value = null;
   }

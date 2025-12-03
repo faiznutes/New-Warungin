@@ -346,7 +346,7 @@ const loadSchedules = async () => {
       params.status = statusFilter.value;
     }
     const response = await api.get('/email-scheduler', { params });
-    schedules.value = response.data;
+    schedules.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError('Gagal memuat schedules');
   } finally {

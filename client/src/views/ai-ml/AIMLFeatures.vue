@@ -512,12 +512,15 @@ const salesForecastSummary = computed(() => {
       confidence: 0,
     };
   }
-  const total = salesForecast.value.reduce((sum: number, f: any) => sum + f.forecastedRevenue, 0);
-  const avg = total / salesForecast.value.length;
-  const growth = salesForecast.value.length > 1
-    ? (salesForecast.value[salesForecast.value.length - 1].forecastedRevenue - salesForecast.value[0].forecastedRevenue) / salesForecast.value[0].forecastedRevenue
+  const forecastArray = Array.isArray(salesForecast.value) ? salesForecast.value : [];
+  const total = forecastArray.reduce((sum: number, f: any) => sum + (f?.forecastedRevenue || 0), 0);
+  const avg = forecastArray.length > 0 ? total / forecastArray.length : 0;
+  const growth = forecastArray.length > 1
+    ? ((forecastArray[forecastArray.length - 1]?.forecastedRevenue || 0) - (forecastArray[0]?.forecastedRevenue || 0)) / (forecastArray[0]?.forecastedRevenue || 1)
     : 0;
-  const avgConfidence = salesForecast.value.reduce((sum: number, f: any) => sum + f.confidence, 0) / salesForecast.value.length;
+  const avgConfidence = forecastArray.length > 0 
+    ? forecastArray.reduce((sum: number, f: any) => sum + (f?.confidence || 0), 0) / forecastArray.length 
+    : 0;
   return {
     totalRevenue: total,
     averageMonthly: avg,
@@ -532,7 +535,7 @@ const loadSalesForecast = async () => {
     const response = await api.get('/ai-ml/sales-forecast', {
       params: { months: forecastPeriod.value },
     });
-    salesForecast.value = response.data;
+    salesForecast.value = response.data || {};
     await showSuccess('Sales forecast berhasil di-generate');
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Gagal memuat sales forecast';
@@ -550,7 +553,7 @@ const loadProductRecommendations = async () => {
       params.customerId = customerIdForRecommendation.value;
     }
     const response = await api.get('/ai-ml/product-recommendations', { params });
-    productRecommendations.value = response.data;
+    productRecommendations.value = response.data || {};
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Gagal memuat product recommendations';
     await showError(errorMessage);
@@ -563,7 +566,7 @@ const loadCustomerSegments = async () => {
   loading.value = true;
   try {
     const response = await api.get('/ai-ml/customer-segments');
-    customerSegments.value = response.data;
+    customerSegments.value = response.data || {};
     await showSuccess('Customer segments berhasil di-refresh');
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Gagal memuat customer segments';
@@ -579,7 +582,7 @@ const loadPriceOptimization = async () => {
     const response = await api.get('/ai-ml/price-optimization', {
       params: { strategy: optimizationStrategy.value },
     });
-    priceOptimizations.value = response.data;
+    priceOptimizations.value = response.data || {};
     await showSuccess('Price optimization berhasil di-generate');
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || 'Gagal memuat price optimization';

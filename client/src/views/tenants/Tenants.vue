@@ -372,13 +372,12 @@ const loadTenants = async () => {
   loading.value = true;
   try {
     const response = await api.get('/tenants');
-    tenants.value = response.data.data || response.data;
+    tenants.value = response.data?.data || response.data || [];
   } catch (error: any) {
     // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
-    console.error('Error loading tenants:', error);
     if (authStore.isAuthenticated) {
       await showError('Gagal memuat tenant');
     }

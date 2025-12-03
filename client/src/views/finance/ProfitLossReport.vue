@@ -265,7 +265,7 @@ const loadProfitLoss = async () => {
         endDate: endDate.value,
       },
     });
-    profitLoss.value = response.data;
+    profitLoss.value = response.data || {};
   } catch (err: any) {
     if (err.response?.status === 403) {
       error.value = 'Business Analytics & Insight addon diperlukan untuk mengakses fitur ini';

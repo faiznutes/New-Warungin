@@ -306,9 +306,9 @@ const showTemplateManager = ref(false);
 const loadSettings = async () => {
   try {
     const response = await api.get('/settings/system');
-    settings.value = { ...settings.value, ...response.data };
+    settings.value = { ...settings.value, ...(response.data || {}) };
   } catch (error: any) {
-    console.error('Error loading settings:', error);
+    await showError(error.response?.data?.message || 'Gagal memuat pengaturan sistem');
   }
 };
 

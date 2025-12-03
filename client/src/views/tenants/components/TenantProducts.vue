@@ -230,7 +230,7 @@ const loadProducts = async () => {
         },
       });
       
-      const pageData = response.data?.data || response.data;
+      const pageData = response.data?.data || response.data || [];
       if (Array.isArray(pageData)) {
         allProducts = [...allProducts, ...pageData];
       } else if (Array.isArray(response.data)) {
@@ -251,8 +251,7 @@ const loadProducts = async () => {
     
     products.value = allProducts;
   } catch (err: any) {
-    console.error('Error loading products:', err);
-    error(err.response?.data?.message || 'Gagal memuat produk', 'Terjadi Kesalahan');
+    await error(err.response?.data?.message || 'Gagal memuat produk', 'Terjadi Kesalahan');
     products.value = [];
   } finally {
     loading.value = false;
@@ -278,8 +277,7 @@ const deleteProduct = async (id: string) => {
     await loadProducts();
     success('Produk berhasil dihapus', 'Berhasil');
   } catch (err: any) {
-    console.error('Error deleting product:', err);
-    error(err.response?.data?.message || 'Gagal menghapus produk', 'Terjadi Kesalahan');
+    await error(err.response?.data?.message || 'Gagal menghapus produk', 'Terjadi Kesalahan');
   }
 };
 
@@ -300,8 +298,7 @@ const handleSaveProduct = async (productData: any) => {
     await loadProducts();
     closeModal();
   } catch (err: any) {
-    console.error('Error saving product:', err);
-    error(err.response?.data?.message || 'Gagal menyimpan produk', 'Terjadi Kesalahan');
+    await error(err.response?.data?.message || 'Gagal menyimpan produk', 'Terjadi Kesalahan');
   }
 };
 

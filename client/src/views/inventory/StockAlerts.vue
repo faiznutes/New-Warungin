@@ -244,8 +244,7 @@ const loadLowStockProducts = async () => {
     lowStockProducts.value = productsResponse.data;
     stats.value = statsResponse.data;
   } catch (error: any) {
-    console.error('Error loading low stock products:', error);
-     await showError('Gagal memuat produk stok rendah');
+    await showError(error.response?.data?.message || 'Gagal memuat produk stok rendah');
   } finally {
     loading.value = false;
   }
@@ -258,8 +257,7 @@ const sendAlerts = async () => {
     await showSuccess(response.data.message || 'Stock alerts berhasil dikirim');
     await loadLowStockProducts();
   } catch (error: any) {
-    console.error('Error sending alerts:', error);
-    await showError('Gagal mengirim stock alerts');
+    await showError(error.response?.data?.message || 'Gagal mengirim stock alerts');
   } finally {
     sending.value = false;
   }

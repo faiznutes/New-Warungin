@@ -302,7 +302,7 @@ const loadCustomers = async () => {
       params.search = searchQuery.value;
     }
     const response = await api.get('/customer-engagement', { params });
-    customers.value = response.data || [];
+    customers.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError('Gagal memuat customers');
   } finally {

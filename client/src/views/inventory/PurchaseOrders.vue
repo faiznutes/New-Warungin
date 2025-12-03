@@ -558,7 +558,7 @@ const loadPurchaseOrders = async () => {
     if (statusFilter.value) params.status = statusFilter.value;
     if (supplierFilter.value) params.supplierId = supplierFilter.value;
     const response = await api.get('/purchase-orders', { params });
-    purchaseOrders.value = response.data.data;
+    purchaseOrders.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat purchase orders');
   } finally {
@@ -569,7 +569,7 @@ const loadPurchaseOrders = async () => {
 const loadSuppliers = async () => {
   try {
     const response = await api.get('/suppliers', { params: { limit: 100 } });
-    suppliers.value = response.data.data;
+    suppliers.value = response.data?.data || response.data || [];
   } catch (error: any) {
     // Silently fail - suppliers will be empty
   }
@@ -578,7 +578,7 @@ const loadSuppliers = async () => {
 const loadProducts = async () => {
   try {
     const response = await api.get('/products', { params: { limit: 100, isActive: true } });
-    products.value = response.data.data;
+    products.value = response.data?.data || response.data || [];
   } catch (error: any) {
     // Silently fail - products are optional
   }

@@ -293,7 +293,6 @@ const loadDashboard = async () => {
       .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5);
   } catch (error: any) {
-    console.error('Error loading dashboard:', error);
     const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat dashboard';
     await showError(errorMessage);
   } finally {

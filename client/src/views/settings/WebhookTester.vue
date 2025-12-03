@@ -385,8 +385,7 @@ const loadWebhooks = async () => {
     const response = await api.get('/webhooks?includeInactive=true');
     webhooks.value = response.data.webhooks || [];
   } catch (error: any) {
-    console.error('Error loading webhooks:', error);
-    await showError('Gagal memuat webhooks');
+    await showError(error.response?.data?.message || 'Gagal memuat webhooks');
   }
 };
 
@@ -416,12 +415,11 @@ const loadDeliveries = async (page = 1) => {
     }
 
     const response = await api.get(`/webhooks/${selectedWebhookId.value}/deliveries`, { params });
-    deliveries.value = response.data.data || [];
-    deliveryPagination.value = response.data.pagination || deliveryPagination.value;
+    deliveries.value = response.data?.data || response.data || [];
+    deliveryPagination.value = response.data?.pagination || deliveryPagination.value;
     deliveryPagination.value.page = page;
   } catch (error: any) {
-    console.error('Error loading deliveries:', error);
-    await showError('Gagal memuat delivery history');
+    await showError(error.response?.data?.message || 'Gagal memuat delivery history');
   } finally {
     loadingDeliveries.value = false;
   }
@@ -453,7 +451,6 @@ const testWebhook = async () => {
     await showSuccess('Test webhook berhasil dikirim!');
     await loadDeliveries(deliveryPagination.value.page);
   } catch (error: any) {
-    console.error('Error testing webhook:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim test webhook');
   } finally {
     testing.value = false;
@@ -469,7 +466,6 @@ const replayDelivery = async (deliveryId: string) => {
     await showSuccess('Webhook delivery berhasil di-replay!');
     await loadDeliveries(deliveryPagination.value.page);
   } catch (error: any) {
-    console.error('Error replaying delivery:', error);
     await showError(error.response?.data?.message || 'Gagal replay delivery');
   } finally {
     replaying.value = false;

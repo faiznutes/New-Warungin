@@ -495,10 +495,9 @@ const loadTemplates = async () => {
   loading.value = true;
   try {
     const response = await api.get('/receipts/templates');
-    templates.value = response.data;
+    templates.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading templates:', error);
-    await showError('Gagal memuat template');
+    await showError(error.response?.data?.message || 'Gagal memuat template');
   } finally {
     loading.value = false;
   }
@@ -517,7 +516,6 @@ const saveTemplate = async () => {
     closeModal();
     await loadTemplates();
   } catch (error: any) {
-    console.error('Error saving template:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan template');
   } finally {
     saving.value = false;
@@ -565,8 +563,7 @@ const setAsDefault = async (id: string) => {
     await loadTemplates();
     await showSuccess('Template berhasil dijadikan default');
   } catch (error: any) {
-    console.error('Error setting default:', error);
-    await showError('Gagal mengatur template default');
+    await showError(error.response?.data?.message || 'Gagal mengatur template default');
   }
 };
 
@@ -585,7 +582,6 @@ const deleteTemplate = async (id: string) => {
     await loadTemplates();
     await showSuccess('Template berhasil dihapus');
   } catch (error: any) {
-    console.error('Error deleting template:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus template');
   }
 };

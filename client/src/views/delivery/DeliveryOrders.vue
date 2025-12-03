@@ -547,18 +547,18 @@ const filteredOrders = computed(() => {
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase();
     result = result.filter(o =>
-      o.orderNumber.toLowerCase().includes(search) ||
-      o.customerName.toLowerCase().includes(search) ||
-      o.trackingNumber?.toLowerCase().includes(search)
+      o?.orderNumber?.toLowerCase().includes(search) ||
+      o?.customerName?.toLowerCase().includes(search) ||
+      o?.trackingNumber?.toLowerCase().includes(search)
     );
   }
 
   if (filters.value.status) {
-    result = result.filter(o => o.status === filters.value.status);
+    result = result.filter(o => o?.status === filters.value.status);
   }
 
   if (filters.value.courier) {
-    result = result.filter(o => o.courier === filters.value.courier);
+    result = result.filter(o => o?.courier === filters.value.courier);
   }
 
   return result;
@@ -604,10 +604,9 @@ const loadDeliveryOrders = async () => {
   loading.value = true;
   try {
     const response = await api.get('/delivery/orders');
-    deliveryOrders.value = response.data.data || response.data || [];
+    deliveryOrders.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading delivery orders:', error);
-    // If endpoint doesn't exist, use empty array
+    await showError(error.response?.data?.message || 'Gagal memuat pesanan pengiriman');
     deliveryOrders.value = [];
   } finally {
     loading.value = false;
@@ -630,7 +629,6 @@ const processDelivery = async (orderId: string) => {
     await loadDeliveryOrders();
     await showSuccess('Order berhasil diproses');
   } catch (error: any) {
-    console.error('Error processing delivery:', error);
     await showError(error.response?.data?.message || 'Gagal memproses order');
   }
 };
@@ -642,7 +640,6 @@ const saveCourier = async () => {
     showCourierModal.value = false;
     courierForm.value = { courier: '', apiKey: '' };
   } catch (error: any) {
-    console.error('Error saving courier:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan kurir');
   }
 };
@@ -661,7 +658,6 @@ const savePromo = async () => {
       endDate: '',
     };
   } catch (error: any) {
-    console.error('Error saving promo:', error);
     await showError(error.response?.data?.message || 'Gagal membuat promo');
   }
 };

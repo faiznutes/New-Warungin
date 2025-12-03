@@ -285,10 +285,14 @@ const loadCustomers = async (page = 1) => {
         ...(filters.value.search && { search: filters.value.search }),
       };
       const response = await api.get('/customers', { params });
-      customers.value = response.data.data;
-      pagination.value = response.data.pagination;
+      customers.value = response.data?.data || response.data || [];
+      pagination.value = response.data?.pagination || {
+        page: 1,
+        limit: pagination.value.limit,
+        total: 0,
+        totalPages: 0
+      };
     } catch (error: any) {
-      console.error('Error loading customers:', error);
       if (error.response?.status !== 429) { // Don't show error for rate limiting
         await showError(error.response?.data?.message || 'Gagal memuat pelanggan');
       }
@@ -322,7 +326,6 @@ const handleSaveCustomer = async (customerData: Partial<Customer>) => {
     closeModal();
     await loadCustomers(pagination.value.page);
   } catch (error: any) {
-    console.error('Error saving customer:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan pelanggan');
   }
 };

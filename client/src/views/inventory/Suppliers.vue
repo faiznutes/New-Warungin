@@ -389,11 +389,15 @@ const loadSuppliers = async () => {
       params.isActive = isActiveFilter.value === 'true';
     }
     const response = await api.get('/suppliers', { params });
-    suppliers.value = response.data.data;
-    pagination.value = response.data.pagination;
+    suppliers.value = response.data?.data || response.data || [];
+    pagination.value = response.data?.pagination || {
+      page: 1,
+      limit: pagination.value.limit,
+      total: 0,
+      totalPages: 0
+    };
   } catch (error: any) {
-    console.error('Error loading suppliers:', error);
-    await showError('Gagal memuat suppliers');
+    await showError(error.response?.data?.message || 'Gagal memuat suppliers');
   } finally {
     loading.value = false;
   }
@@ -464,7 +468,6 @@ const deleteSupplier = async (supplier: Supplier) => {
     await showSuccess('Supplier berhasil dihapus');
     await loadSuppliers();
   } catch (error: any) {
-    console.error('Error deleting supplier:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus supplier');
   }
 };

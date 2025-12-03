@@ -466,7 +466,6 @@ const loadAnalytics = async () => {
     topProducts.value = productsRes.data || [];
     customReports.value = reportsRes.data?.data || reportsRes.data || [];
   } catch (error: any) {
-    console.error('Error loading analytics:', error);
     if (error.response?.status === 403) {
       addonError.value = 'Business Analytics & Insight addon diperlukan untuk mengakses fitur ini';
       await showError('Business Analytics & Insight addon diperlukan untuk mengakses fitur ini');
@@ -496,8 +495,7 @@ const exportReport = async (report: CustomReport) => {
     link.click();
     link.remove();
   } catch (error: any) {
-    console.error('Error exporting report:', error);
-    await showError('Gagal mengekspor report');
+    await showError(error.response?.data?.message || 'Gagal mengekspor report');
   }
 };
 
@@ -515,7 +513,6 @@ const saveCustomReport = async () => {
     };
     await loadAnalytics();
   } catch (error: any) {
-    console.error('Error saving custom report:', error);
     await showError(error.response?.data?.message || 'Gagal membuat custom report');
   }
 };

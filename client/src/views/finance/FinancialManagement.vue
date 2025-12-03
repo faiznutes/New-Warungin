@@ -893,7 +893,7 @@ const loadCashFlowSummary = async () => {
     if (dateRange.value.startDate) params.startDate = dateRange.value.startDate;
     if (dateRange.value.endDate) params.endDate = dateRange.value.endDate;
     const response = await api.get('/financial-management/cash-flow/summary', { params });
-    cashFlowSummary.value = response.data;
+    cashFlowSummary.value = response.data || {};
   } catch (error: any) {
     // Error already handled by showError
     await showError('Gagal memuat cash flow summary');
@@ -906,7 +906,7 @@ const loadExpensesByCategory = async () => {
     if (dateRange.value.startDate) params.startDate = dateRange.value.startDate;
     if (dateRange.value.endDate) params.endDate = dateRange.value.endDate;
     const response = await api.get('/financial-management/expenses/by-category', { params });
-    expensesByCategory.value = response.data;
+    expensesByCategory.value = response.data || {};
   } catch (error: any) {
     // Error already handled by showError
   }
@@ -917,7 +917,7 @@ const calculateTax = async () => {
     const response = await api.post('/financial-management/tax/calculate', {
       period: taxPeriod.value,
     });
-    taxCalculation.value = response.data;
+    taxCalculation.value = response.data || {};
     await showSuccess('Tax calculation berhasil');
   } catch (error: any) {
     // Error already handled by showError
@@ -930,7 +930,7 @@ const loadForecast = async () => {
     const response = await api.get('/financial-management/forecast', {
       params: { months: forecastMonths.value },
     });
-    forecast.value = response.data;
+    forecast.value = response.data || {};
   } catch (error: any) {
     // Error already handled by showError
     await showError('Gagal memuat forecast');
@@ -1036,7 +1036,7 @@ const saveReconciliation = async () => {
       })),
     };
     const response = await api.post('/financial-management/bank-reconciliation', data);
-    reconciliations.value.push(response.data);
+    reconciliations.value.push(response.data || {});
     await showSuccess('Bank reconciliation berhasil dibuat');
     closeReconciliationModal();
   } catch (error: any) {

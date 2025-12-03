@@ -730,10 +730,9 @@ const loadStats = async () => {
     const response = await api.get('/retention/stats', {
       params: { policy: JSON.stringify(policy) },
     });
-    stats.value = response.data;
+    stats.value = response.data || {};
   } catch (error: any) {
-    console.error('Error loading retention stats:', error);
-    showError('Gagal memuat statistik retensi');
+    await showError(error.response?.data?.message || 'Gagal memuat statistik retensi');
   }
 };
 
@@ -759,7 +758,7 @@ const applyOrdersRetention = async () => {
     showApplyOrdersModal.value = false;
     await loadStats();
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal menghapus orders');
+    await showError(error.response?.data?.message || 'Gagal menghapus orders');
   } finally {
     applying.value = false;
   }

@@ -152,9 +152,8 @@ const loadSettings = async () => {
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
-    console.error('Error loading settings:', error);
     if (authStore.isAuthenticated && error.response?.status !== 404) {
-      await showError('Gagal memuat pengaturan toko');
+      await showError(error.response?.data?.message || 'Gagal memuat pengaturan toko');
     }
   }
 };
@@ -176,7 +175,6 @@ const saveSettings = async () => {
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
-    console.error('Error saving settings:', error);
     const errorMessage = error.response?.data?.message || 'Gagal menyimpan pengaturan';
     await showError(errorMessage);
   }

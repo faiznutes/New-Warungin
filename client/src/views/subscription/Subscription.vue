@@ -754,7 +754,7 @@ const loadSubscription = async () => {
   loading.value = true;
   try {
     const response = await api.get('/subscriptions/current');
-    subscription.value = response.data;
+    subscription.value = response.data || {};
     
     // IMPORTANT: Use isExpired from backend response directly
     // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
@@ -812,7 +812,7 @@ const loadSubscription = async () => {
       }
     }
   } catch (error: any) {
-    console.error('Error loading subscription:', error);
+    // Silently fail - subscription might not exist yet
   } finally {
     loading.value = false;
   }
@@ -925,7 +925,6 @@ const handleUpgrade = async () => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error creating payment:', error);
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
   } finally {
     processing.value = false;
@@ -961,7 +960,6 @@ const handleExtend = async () => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error creating payment:', error);
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
   } finally {
     processing.value = false;

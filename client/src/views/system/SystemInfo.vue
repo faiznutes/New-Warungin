@@ -661,9 +661,8 @@ const loadAddons = async () => {
   loading.value = true;
   try {
     const response = await api.get('/addons/available');
-    availableAddons.value = response.data || [];
+    availableAddons.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading addons:', error);
     // Set default addons if API fails
     availableAddons.value = [];
   } finally {

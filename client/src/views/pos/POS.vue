@@ -484,15 +484,15 @@ const lastOrderId = ref<string | undefined>(undefined);
 const estimatedDiscount = ref(0);
 
 const filteredProducts = computed(() => {
-  if (!searchQuery.value) return products.value.filter(p => p.isActive && p.stock > 0);
+  if (!searchQuery.value) return (products.value || []).filter((p: any) => p?.isActive && (p?.stock || 0) > 0);
   const query = searchQuery.value.toLowerCase();
-  return products.value.filter(
-    p => p.isActive && p.stock > 0 && (p.name.toLowerCase().includes(query) || p.category?.toLowerCase().includes(query))
+  return (products.value || []).filter(
+    (p: any) => p?.isActive && (p?.stock || 0) > 0 && (p?.name?.toLowerCase().includes(query) || p?.category?.toLowerCase().includes(query))
   );
 });
 
 const subtotal = computed(() => {
-  return cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return (cart.value || []).reduce((sum: number, item: any) => sum + ((item?.price || 0) * (item?.quantity || 0)), 0);
 });
 
 const total = computed(() => {
@@ -507,26 +507,26 @@ const addToCart = async (product: any) => {
   // Refresh product stock dari database sebelum add to cart
   try {
     const response = await api.get(`/products/${product.id}`);
-    const updatedProduct = response.data;
+    const updatedProduct = response.data || {};
     
-    if (updatedProduct.stock <= 0) {
-      showError('Stok produk habis', 'Stok Tidak Tersedia');
+    if (updatedProduct?.stock <= 0) {
+      await showError('Stok produk habis', 'Stok Tidak Tersedia');
       // Update local product data
-      const productIndex = products.value.findIndex(p => p.id === product.id);
-      if (productIndex !== -1) {
+      const productIndex = (products.value || []).findIndex((p: any) => p?.id === product?.id);
+      if (productIndex !== -1 && updatedProduct?.stock !== undefined && products.value) {
         products.value[productIndex].stock = updatedProduct.stock;
       }
       return;
     }
 
-    const existingItem = cart.value.find(item => item.id === product.id);
+    const existingItem = (cart.value || []).find((item: any) => item?.id === product?.id);
     if (existingItem) {
       // Check stock dari database
       if (existingItem.quantity >= updatedProduct.stock) {
         await showWarning('Stok tidak mencukupi');
         // Update local product data
-        const productIndex = products.value.findIndex(p => p.id === product.id);
-        if (productIndex !== -1) {
+        const productIndex = (products.value || []).findIndex((p: any) => p?.id === product?.id);
+        if (productIndex !== -1 && products.value && updatedProduct?.stock !== undefined) {
           products.value[productIndex].stock = updatedProduct.stock;
         }
         return;
@@ -554,7 +554,7 @@ const addToCart = async (product: any) => {
       await showWarning('Stok produk habis');
       return;
     }
-    const existingItem = cart.value.find(item => item.id === product.id);
+    const existingItem = (cart.value || []).find((item: any) => item?.id === product?.id);
     if (existingItem) {
       if (existingItem.quantity >= product.stock) {
         await showWarning('Stok tidak mencukupi');
@@ -575,34 +575,34 @@ const addToCart = async (product: any) => {
 };
 
 const increaseQuantity = async (productId: string) => {
-  const item = cart.value.find(item => item.id === productId);
+  const item = (cart.value || []).find((item: any) => item?.id === productId);
   if (item) {
     // Check stock dari database
     try {
       const response = await api.get(`/products/${productId}`);
-      const updatedProduct = response.data;
+      const updatedProduct = response.data || {};
       
-      if (item.quantity >= updatedProduct.stock) {
-        showError('Stok tidak mencukupi', 'Stok Tidak Tersedia');
+      if (updatedProduct?.stock !== undefined && item.quantity >= updatedProduct.stock) {
+        await showError('Stok tidak mencukupi', 'Stok Tidak Tersedia');
         // Update local product data
-        const productIndex = products.value.findIndex(p => p.id === productId);
-        if (productIndex !== -1) {
-          products.value[productIndex].stock = updatedProduct.stock;
-        }
+      const productIndex = (products.value || []).findIndex((p: any) => p?.id === productId);
+      if (productIndex !== -1 && products.value && updatedProduct?.stock !== undefined) {
+        products.value[productIndex].stock = updatedProduct.stock;
+      }
         return;
       }
       item.quantity++;
       
       // Update local product stock
       const productIndex = products.value.findIndex(p => p.id === productId);
-      if (productIndex !== -1) {
+      if (productIndex !== -1 && updatedProduct?.stock !== undefined) {
         products.value[productIndex].stock = updatedProduct.stock;
       }
     } catch (error: any) {
       // Fallback to local check
       const product = products.value.find(p => p.id === productId);
       if (product && item.quantity >= product.stock) {
-        showError('Stok tidak mencukupi', 'Stok Tidak Tersedia');
+        await showError('Stok tidak mencukupi', 'Stok Tidak Tersedia');
         return;
       }
       item.quantity++;
@@ -611,7 +611,7 @@ const increaseQuantity = async (productId: string) => {
 };
 
 const decreaseQuantity = (productId: string) => {
-  const item = cart.value.find(item => item.id === productId);
+  const item = (cart.value || []).find((item: any) => item?.id === productId);
   if (item) {
     if (item.quantity > 1) {
       item.quantity--;
@@ -622,7 +622,7 @@ const decreaseQuantity = (productId: string) => {
 };
 
 const removeFromCart = (productId: string) => {
-  cart.value = cart.value.filter(item => item.id !== productId);
+  cart.value = (cart.value || []).filter((item: any) => item?.id !== productId);
 };
 
 const clearCart = async () => {
@@ -720,7 +720,7 @@ const loadProducts = async () => {
     const response = await api.get('/products', {
       params: { isActive: true },
     });
-    products.value = response.data.data || response.data;
+    products.value = response.data?.data || response.data || [];
   } catch (err: any) {
     const errorMessage = err.response?.data?.message || 'Gagal memuat produk';
     showError(errorMessage, 'Terjadi Kesalahan');
@@ -734,7 +734,7 @@ const loadMembers = async () => {
     const response = await api.get('/members', {
       params: { limit: 100, isActive: 'true' },
     });
-    const result = response.data.data || response.data;
+    const result = response.data?.data || response.data || [];
     members.value = Array.isArray(result) ? result : [];
   } catch (error: any) {
     members.value = [];
@@ -754,7 +754,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
   try {
     // Create order first
     const orderData: any = {
-      items: cart.value.map(item => ({
+      items: (cart.value || []).map((item: any) => ({
         productId: item.id,
         quantity: Number(item.quantity),
         price: Number(item.price),
@@ -809,7 +809,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
       date: order.createdAt,
       customerName: customerName.value || null,
       memberName: selectedMember.value?.name || null,
-      items: cart.value.map(item => ({
+      items: (cart.value || []).map((item: any) => ({
         name: item.name,
         quantity: item.quantity,
         price: item.price,
@@ -848,7 +848,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
     await loadProducts();
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message || 'Gagal memproses pembayaran';
-    showError(errorMessage, 'Gagal Memproses Pembayaran');
+    await showError(errorMessage, 'Gagal Memproses Pembayaran');
   } finally {
     processing.value = false;
   }
@@ -925,19 +925,19 @@ onMounted(() => {
   // Listen for stock updates via socket
   if (socket) {
     socket.on('product:stock-update', (data: { productId: string; stock: number }) => {
-      const productIndex = products.value.findIndex(p => p.id === data.productId);
-      if (productIndex !== -1) {
+      const productIndex = (products.value || []).findIndex((p: any) => p?.id === data?.productId);
+      if (productIndex !== -1 && products.value && data?.stock !== undefined) {
         products.value[productIndex].stock = data.stock;
       }
     });
     
     socket.on('order:created', (data: any) => {
       // Only update stock for affected products, don't reload all products
-      if (data.orderId && data.items) {
+      if (data.orderId && data.items && Array.isArray(data.items)) {
         // Update stock for products in the order
         data.items.forEach((item: any) => {
-          const productIndex = products.value.findIndex(p => p.id === item.id || p.id === item.productId);
-          if (productIndex !== -1 && item.stock !== undefined) {
+          const productIndex = (products.value || []).findIndex((p: any) => p?.id === item?.id || p?.id === item?.productId);
+          if (productIndex !== -1 && item?.stock !== undefined && products.value) {
             products.value[productIndex].stock = item.stock;
           }
         });

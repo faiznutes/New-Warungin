@@ -523,9 +523,9 @@ const loadSubmissions = async () => {
   loading.value = true;
   try {
     const response = await api.get('/contact/submissions');
-    submissions.value = response.data.data || [];
+    submissions.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal memuat pesan formulir.');
+    await showError(error.response?.data?.message || 'Gagal memuat pesan formulir.');
   } finally {
     loading.value = false;
   }
@@ -545,7 +545,7 @@ const deleteSubmission = async (id: string) => {
       viewingSubmission.value = null;
     }
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal menghapus pesan.');
+    await showError(error.response?.data?.message || 'Gagal menghapus pesan.');
   }
 };
 
@@ -561,7 +561,7 @@ const handleCleanup = async () => {
     await showSuccess(response.data.message || 'Pesan lama berhasil dihapus.');
     await loadSubmissions();
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal membersihkan pesan lama.');
+    await showError(error.response?.data?.message || 'Gagal membersihkan pesan lama.');
   } finally {
     cleaningUp.value = false;
   }
@@ -586,7 +586,7 @@ const toggleProcessed = async (id: string, event: Event) => {
     
     await showSuccess(isProcessed ? 'Pesan ditandai sebagai sudah diproses.' : 'Pesan ditandai sebagai belum diproses.');
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal mengupdate status pesan.');
+    await showError(error.response?.data?.message || 'Gagal mengupdate status pesan.');
     // Revert checkbox
     target.checked = !isProcessed;
   }

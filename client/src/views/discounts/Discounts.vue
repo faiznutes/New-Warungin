@@ -456,7 +456,7 @@ const loadDiscounts = async () => {
   loading.value = true;
   try {
     const response = await api.get('/discounts');
-    discounts.value = response.data.data || [];
+    discounts.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat diskon');
   } finally {

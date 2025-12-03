@@ -221,12 +221,12 @@ const stats = ref({
 const loadTenants = async () => {
   try {
     const response = await api.get('/tenants');
-    tenants.value = (response.data.data || response.data || []).map((t: any) => ({
+    tenants.value = (response.data?.data || response.data || []).map((t: any) => ({
       id: t.id,
       name: t.name,
     }));
-  } catch (error) {
-    console.error('Error loading tenants:', error);
+  } catch (error: any) {
+    await showError(error.response?.data?.message || 'Gagal memuat data tenant');
   }
 };
 
@@ -246,20 +246,19 @@ const loadReports = async () => {
     const products = productsRes.data.data || productsRes.data || [];
     const customers = customersRes.data.data || customersRes.data || [];
 
-    stats.value.totalOrders = orders.length;
-    stats.value.totalSales = orders.reduce((sum: number, o: any) => sum + (parseFloat(o.total) || 0), 0);
-    stats.value.totalProducts = products.length;
-    stats.value.totalCustomers = customers.length;
-    stats.value.activeProducts = products.filter((p: any) => p.isActive).length;
+    stats.value.totalOrders = (orders || []).length;
+    stats.value.totalSales = (orders || []).reduce((sum: number, o: any) => sum + (parseFloat(o?.total) || 0), 0);
+    stats.value.totalProducts = (products || []).length;
+    stats.value.totalCustomers = (customers || []).length;
+    stats.value.activeProducts = (products || []).filter((p: any) => p?.isActive).length;
 
     // Today's stats
     const today = new Date().toISOString().split('T')[0];
-    const todayOrders = orders.filter((o: any) => o.createdAt?.startsWith(today));
+    const todayOrders = (orders || []).filter((o: any) => o?.createdAt?.startsWith(today));
     stats.value.todayOrders = todayOrders.length;
     stats.value.todaySales = todayOrders.reduce((sum: number, o: any) => sum + (parseFloat(o.total) || 0), 0);
   } catch (error: any) {
-    console.error('Error loading reports:', error);
-    await showError('Gagal memuat laporan');
+    await showError(error.response?.data?.message || 'Gagal memuat laporan');
   } finally {
     loading.value = false;
   }

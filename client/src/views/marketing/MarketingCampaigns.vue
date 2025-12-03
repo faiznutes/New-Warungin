@@ -256,9 +256,9 @@ const loadCampaigns = async () => {
   loading.value = true;
   try {
     const response = await api.get('/marketing/campaigns');
-    campaigns.value = response.data.data || response.data || [];
+    campaigns.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading campaigns:', error);
+    await showError(error.response?.data?.message || 'Gagal memuat kampanye');
     campaigns.value = [];
   } finally {
     loading.value = false;
@@ -286,7 +286,6 @@ const sendCampaign = async (campaignId: string) => {
     await loadCampaigns();
     await showSuccess('Campaign berhasil dikirim');
   } catch (error: any) {
-    console.error('Error sending campaign:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim campaign');
   }
 };
@@ -305,7 +304,6 @@ const saveCampaign = async () => {
     };
     await loadCampaigns();
   } catch (error: any) {
-    console.error('Error saving campaign:', error);
     await showError(error.response?.data?.message || 'Gagal membuat campaign');
   }
 };

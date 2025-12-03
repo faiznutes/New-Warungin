@@ -817,10 +817,14 @@ const loadOrders = async (page = 1) => {
         }),
       };
       const response = await api.get('/orders', { params });
-      orders.value = response.data.data;
-      pagination.value = response.data.pagination;
+      orders.value = response.data?.data || response.data || [];
+      pagination.value = response.data?.pagination || {
+        page: 1,
+        limit: pagination.value.limit,
+        total: 0,
+        totalPages: 0
+      };
     } catch (error: any) {
-      console.error('Error loading orders:', error);
       if (error.response?.status !== 429) { // Don't show error for rate limiting
         await showError(error.response?.data?.message || 'Gagal memuat pesanan');
       }
@@ -856,17 +860,16 @@ const viewOrder = async (order: Order) => {
   try {
     // Load full order data
     const response = await api.get(`/orders/${order.id}`);
-    const orderData = response.data;
+    const orderData = response.data || {};
     // Ensure required fields have default values
     selectedOrder.value = {
       ...orderData,
-      subtotal: orderData.subtotal ?? orderData.total ?? 0,
-      discount: orderData.discount ?? 0,
-      items: orderData.items ?? [],
+      subtotal: orderData?.subtotal ?? orderData?.total ?? 0,
+      discount: orderData?.discount ?? 0,
+      items: orderData?.items || [],
     };
   } catch (error: any) {
-    console.error('Error loading order details:', error);
-    await showError('Gagal memuat detail pesanan');
+    await showError(error.response?.data?.message || 'Gagal memuat detail pesanan');
   }
 };
 
@@ -888,32 +891,31 @@ const printReceipt = async (order: Order) => {
   try {
     // Load full order data for receipt
     const response = await api.get(`/orders/${order.id}`);
-    const fullOrder = response.data;
+    const fullOrder = response.data || {};
     
     // Prepare receipt data
     const receiptData = {
-      orderNumber: fullOrder.orderNumber,
-      date: fullOrder.createdAt,
-      customerName: fullOrder.member?.name || fullOrder.customer?.name || fullOrder.temporaryCustomerName || null,
-      memberName: fullOrder.member?.name || null,
-      items: fullOrder.items?.map((item: any) => ({
-        name: item.product?.name || item.name,
-        quantity: item.quantity,
-        price: Number(item.price),
-        subtotal: Number(item.subtotal),
-      })) || [],
-      subtotal: Number(fullOrder.subtotal || fullOrder.total),
-      discount: Number(fullOrder.discount || 0),
-      total: Number(fullOrder.total),
-      paymentMethod: fullOrder.transaction?.paymentMethod || 'CASH',
-      servedBy: fullOrder.transaction?.servedBy || null, // Nama kasir/admin yang melayani
+      orderNumber: fullOrder?.orderNumber || '',
+      date: fullOrder?.createdAt || new Date().toISOString(),
+      customerName: fullOrder?.member?.name || fullOrder?.customer?.name || fullOrder?.temporaryCustomerName || null,
+      memberName: fullOrder?.member?.name || null,
+      items: (fullOrder?.items || []).map((item: any) => ({
+        name: item?.product?.name || item?.name || 'Unknown',
+        quantity: item?.quantity || 0,
+        price: Number(item?.price || 0),
+        subtotal: Number(item?.subtotal || 0),
+      })),
+      subtotal: Number(fullOrder?.subtotal || fullOrder?.total || 0),
+      discount: Number(fullOrder?.discount || 0),
+      total: Number(fullOrder?.total || 0),
+      paymentMethod: fullOrder?.transaction?.paymentMethod || 'CASH',
+      servedBy: fullOrder?.transaction?.servedBy || null, // Nama kasir/admin yang melayani
     };
     
     selectedOrderForReceipt.value = { ...order, receiptData } as any;
     showReceiptModal.value = true;
   } catch (error: any) {
-    console.error('Error loading order for receipt:', error);
-    await showError('Gagal memuat data order untuk receipt');
+    await showError(error.response?.data?.message || 'Gagal memuat data order untuk receipt');
   }
 };
 
@@ -945,11 +947,11 @@ const editOrder = async (order: Order) => {
   try {
     // Load full order data
     const response = await api.get(`/orders/${order.id}`);
-    const orderData = response.data;
+    const orderData = response.data || {};
     // Ensure required fields have default values
     editingOrder.value = {
       ...orderData,
-      subtotal: orderData.subtotal ?? orderData.total ?? 0,
+      subtotal: orderData?.subtotal ?? orderData?.total ?? 0,
       discount: orderData.discount ?? 0,
       items: orderData.items ?? [],
     };

@@ -1398,9 +1398,8 @@ const loadActiveAddons = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons');
-    activeAddons.value = response.data || [];
+    activeAddons.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading active addons:', error);
     // Don't show error for addons, just set empty array
     activeAddons.value = [];
   }
@@ -1411,9 +1410,8 @@ const loadAvailableAddons = async () => {
     // Available addons are the same for all tenants
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons/available');
-    availableAddons.value = response.data || [];
+    availableAddons.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading available addons:', error);
     // Don't show error for addons, just set empty array
     availableAddons.value = [];
   }
@@ -1431,7 +1429,7 @@ const loadUsers = async () => {
         limit: 100, // Get all users for this tenant
       },
     });
-    tenantUsers.value = response.data.data || [];
+    tenantUsers.value = response.data?.data || response.data || [];
     
     // Load user usage limit
     try {
@@ -1441,7 +1439,6 @@ const loadUsers = async () => {
         limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      console.error('Error loading user usage:', error);
       // Set default if error
       userUsage.value = {
         currentUsage: tenantUsers.value.length,
@@ -1449,8 +1446,7 @@ const loadUsers = async () => {
       };
     }
   } catch (error: any) {
-    console.error('Error loading users:', error);
-    showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
+    await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
   } finally {
     loadingUsers.value = false;
   }
@@ -1463,7 +1459,7 @@ const loadStores = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/outlets');
-    tenantStores.value = response.data.data || [];
+    tenantStores.value = response.data?.data || response.data || [];
     
     // Load outlet usage limit
     try {
@@ -1473,7 +1469,6 @@ const loadStores = async () => {
         limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      console.error('Error loading outlet usage:', error);
       // Set default if error
       outletUsage.value = {
         currentUsage: tenantStores.value.filter((s: any) => s.isActive !== false).length,
@@ -1481,8 +1476,7 @@ const loadStores = async () => {
       };
     }
   } catch (error: any) {
-    console.error('Error loading stores:', error);
-    showError(error.response?.data?.message || 'Gagal memuat daftar store');
+    await showError(error.response?.data?.message || 'Gagal memuat daftar store');
   } finally {
     loadingStores.value = false;
   }
@@ -1501,7 +1495,6 @@ const loadTenantPoints = async () => {
     });
     pointTransactions.value = transactionsRes.data;
   } catch (error: any) {
-    console.error('Error loading tenant points:', error);
     // Don't show error, just set defaults
     tenantPoints.value = { currentPoints: 0, totalEarned: 0, totalSpent: 0 };
     pointTransactions.value = [];
@@ -1539,7 +1532,6 @@ const handleUpdatePoints = async () => {
       await showError(response.data.message || 'Gagal mengupdate point');
     }
   } catch (error: any) {
-    console.error('Error updating points:', error);
     await showError(error.response?.data?.message || 'Gagal mengupdate point');
   } finally {
     updatingPoints.value = false;
@@ -1712,7 +1704,6 @@ const handleUpdateUser = async () => {
     await showSuccess('Pengguna berhasil diperbarui');
     await loadUsers(); // Auto-reload users after update
   } catch (error: any) {
-    console.error('Error updating user:', error);
     await showError(error.response?.data?.message || 'Gagal memperbarui pengguna');
   } finally {
     updatingUser.value = false;
@@ -1848,7 +1839,6 @@ const loadTenantDetail = async () => {
       router.push('/login');
       return;
     }
-    console.error('Error loading tenant detail:', error);
     // Only show error if it's not a navigation error
     if (error.response?.status !== 401) {
       await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
@@ -1879,7 +1869,6 @@ const handleExtendSubscription = async () => {
     await showSuccess('Langganan berhasil diperpanjang');
     await loadTenantDetail();
   } catch (error: any) {
-    console.error('Error extending subscription:', error);
     await showError(error.response?.data?.message || 'Gagal memperpanjang langganan');
   } finally {
     extending.value = false;
@@ -1917,7 +1906,6 @@ const handleReduceSubscription = async () => {
     await showSuccess('Durasi langganan berhasil dikurangi');
     await loadTenantDetail();
   } catch (error: any) {
-    console.error('Error reducing subscription:', error);
     const errorMessage = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || 'Gagal mengurangi durasi langganan';
     await showError(errorMessage);
   } finally {
@@ -1943,7 +1931,6 @@ const handleEditPlan = async () => {
     await showSuccess('Paket berhasil diupdate (temporary upgrade)');
     await loadTenantDetail();
   } catch (error: any) {
-    console.error('Error updating plan:', error);
     await showError(error.response?.data?.message || 'Gagal mengupdate paket');
   }
 };
@@ -1980,7 +1967,6 @@ const handleExtendAddon = async () => {
     // Reload addons to show updated list
     await loadActiveAddons();
   } catch (error: any) {
-    console.error('Error extending addon:', error);
     await showError(error.response?.data?.message || 'Gagal memperpanjang addon');
   } finally {
     extending.value = false;
@@ -2007,7 +1993,6 @@ const handleReduceAddon = async () => {
     // Reload addons to show updated list
     await loadActiveAddons();
   } catch (error: any) {
-    console.error('Error reducing addon:', error);
     await showError(error.response?.data?.message || 'Gagal mengurangi durasi addon');
   } finally {
     reducing.value = false;
@@ -2048,7 +2033,6 @@ const subscribeAddon = async (addon: AvailableAddon) => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
   }
 };
@@ -2095,7 +2079,6 @@ const handleSubscribeAddon = async () => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
-    console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
   }
 };
@@ -2112,7 +2095,6 @@ const unsubscribeAddon = async (addonId: string) => {
     await loadActiveAddons();
     await loadAvailableAddons();
   } catch (error: any) {
-    console.error('Error unsubscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menonaktifkan addon');
   }
 };
@@ -2128,8 +2110,7 @@ const handleDeactivateSubscription = async () => {
     showDeactivateSubscriptionModal.value = false;
     await loadTenantDetail();
   } catch (error: any) {
-    console.error('Error deactivating subscription:', error);
-    showError(error.response?.data?.message || 'Gagal menonaktifkan langganan');
+    await showError(error.response?.data?.message || 'Gagal menonaktifkan langganan');
   } finally {
     deactivatingSubscription.value = false;
   }

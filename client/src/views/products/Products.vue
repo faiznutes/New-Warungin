@@ -613,13 +613,18 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
     const response = await api.get('/products', { params });
-    products.value = response.data.data;
-    pagination.value = response.data.pagination;
+    products.value = response.data?.data || response.data || [];
+    pagination.value = response.data?.pagination || {
+      page: 1,
+      limit: pagination.value.limit,
+      total: 0,
+      totalPages: 0
+    };
 
     // Extract unique categories
     const uniqueCategories = new Set<string>();
-    products.value.forEach(p => {
-      if (p.category) uniqueCategories.add(p.category);
+    (products.value || []).forEach(p => {
+      if (p?.category) uniqueCategories.add(p.category);
     });
     categories.value = Array.from(uniqueCategories);
 
@@ -628,7 +633,6 @@ const loadProducts = async (page = 1) => {
       productLimit.value = response.data.limit;
     }
   } catch (error: any) {
-    console.error('Error loading products:', error);
     await showError(error.response?.data?.message || 'Gagal memuat produk');
   } finally {
     loading.value = false;
@@ -659,7 +663,6 @@ const handleSaveProduct = async (productData: Partial<Product>) => {
     closeModal();
     await loadProducts(pagination.value.page);
   } catch (error: any) {
-    console.error('Error saving product:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan produk');
   }
 };
@@ -910,7 +913,6 @@ const handleFileImport = async (event: Event) => {
             await api.post('/products', product);
             successCount++;
           } catch (error: any) {
-            console.error('Error importing product:', product.name, error);
             failCount++;
           }
         })
@@ -931,8 +933,7 @@ const handleFileImport = async (event: Event) => {
       fileInput.value.value = '';
     }
   } catch (error: any) {
-    console.error('Error importing CSV:', error);
-    await showError('Gagal membaca file CSV. Pastikan format file benar.');
+    await showError(error.response?.data?.message || 'Gagal membaca file CSV. Pastikan format file benar.');
   } finally {
     importing.value = false;
   }

@@ -424,7 +424,7 @@ const availableAddons = ref<any[]>([]);
 const loadBalance = async () => {
   try {
     const response = await api.get('/rewards/balance');
-    balance.value = response.data;
+    balance.value = response.data || {};
   } catch (error: any) {
     await showError('Gagal memuat balance');
   }
@@ -433,7 +433,7 @@ const loadBalance = async () => {
 const loadDailyLimit = async () => {
   try {
     const response = await api.get('/rewards/daily-limit');
-    dailyLimit.value = response.data;
+    dailyLimit.value = response.data || {};
   } catch (error: any) {
     await showError('Gagal memuat daily limit');
   }
@@ -442,7 +442,7 @@ const loadDailyLimit = async () => {
 const loadTransactions = async () => {
   try {
     const response = await api.get('/rewards/transactions');
-    transactions.value = response.data;
+    transactions.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError('Gagal memuat transactions');
   }
@@ -452,7 +452,7 @@ const loadConfig = async () => {
   try {
     const response = await api.get('/rewards/config');
     
-    const { redemptions } = response.data;
+    const { redemptions } = response.data || {};
     
     if (!redemptions) {
       await showError('No redemptions data in response');

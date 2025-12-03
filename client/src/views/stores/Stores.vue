@@ -447,7 +447,7 @@ const loadStores = async () => {
   loading.value = true;
   try {
     const response = await api.get('/outlets');
-    stores.value = response.data.data || [];
+    stores.value = response.data?.data || response.data || [];
     
     // Get store limit info
     if (response.data.limit) {

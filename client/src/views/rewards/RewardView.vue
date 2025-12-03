@@ -229,10 +229,9 @@ const checkAdAvailability = async () => {
       };
     }
   } catch (error: any) {
-    console.error('Error checking ad availability:', error);
     statusMessage.value = {
       type: 'error',
-      text: error.message || 'Gagal memuat iklan. Pastikan ad blocker dinonaktifkan dan coba refresh halaman.',
+      text: error.response?.data?.message || error.message || 'Gagal memuat iklan. Pastikan ad blocker dinonaktifkan dan coba refresh halaman.',
     };
   } finally {
     loading.value = false;
@@ -267,10 +266,9 @@ const showAd = async () => {
       loading.value = false;
     }
   } catch (error: any) {
-    console.error('Error showing ad:', error);
     statusMessage.value = {
       type: 'error',
-      text: error.message || 'Gagal menampilkan iklan. Silakan coba lagi.',
+      text: error.response?.data?.message || error.message || 'Gagal menampilkan iklan. Silakan coba lagi.',
     };
     adShown.value = false;
     loading.value = false;
@@ -311,7 +309,6 @@ const awardPoints = async () => {
       };
     }
   } catch (error: any) {
-    console.error('Error awarding points:', error);
     statusMessage.value = {
       type: 'error',
       text: error.response?.data?.message || 'Terjadi kesalahan saat memproses point',
@@ -338,10 +335,9 @@ onMounted(async () => {
       initializing.value = false;
     }, 1000);
   } catch (error: any) {
-    console.error('Error initializing IronSource:', error);
     statusMessage.value = {
       type: 'error',
-      text: 'Gagal menginisialisasi iklan. Silakan refresh halaman.',
+      text: error.response?.data?.message || error.message || 'Gagal menginisialisasi iklan. Silakan refresh halaman.',
     };
     initializing.value = false;
   }

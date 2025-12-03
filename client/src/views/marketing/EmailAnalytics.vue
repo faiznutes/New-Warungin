@@ -411,7 +411,7 @@ const loadCampaignAnalytics = async () => {
 
   try {
     const response = await api.get(`/email-analytics/campaign/${selectedCampaignId.value}`);
-    campaignAnalytics.value = response.data;
+    campaignAnalytics.value = response.data || {};
   } catch (error: any) {
     await showError('Gagal memuat campaign analytics');
   }

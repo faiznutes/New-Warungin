@@ -1107,20 +1107,20 @@ const applyPeriodFilter = () => {
 
 // Filtered subscriptions
 const filteredSubscriptions = computed(() => {
-  if (!reportData.value || !reportData.value.subscriptions) return [];
+  if (!reportData.value || !reportData.value?.subscriptions || !Array.isArray(reportData.value.subscriptions)) return [];
   
   let filtered = [...reportData.value.subscriptions];
   
   if (subscriptionFilter.value !== 'all') {
-    filtered = filtered.filter((sub: any) => sub.status === subscriptionFilter.value);
+    filtered = filtered.filter((sub: any) => sub?.status === subscriptionFilter.value);
   }
   
   // Filter by addedBySuperAdmin
   if (subscriptionInfoFilter.value !== 'all') {
     if (subscriptionInfoFilter.value === 'superadmin') {
-      filtered = filtered.filter((sub: any) => sub.addedBySuperAdmin === true);
+      filtered = filtered.filter((sub: any) => sub?.addedBySuperAdmin === true);
     } else if (subscriptionInfoFilter.value === 'self') {
-      filtered = filtered.filter((sub: any) => sub.addedBySuperAdmin === false);
+      filtered = filtered.filter((sub: any) => sub?.addedBySuperAdmin === false);
     }
   }
   
@@ -1142,40 +1142,26 @@ const totalSubscriptionPages = computed(() => {
 
 // Filtered addons
 const filteredAddons = computed(() => {
-  if (!reportData.value || !reportData.value.addons) {
-    console.log('filteredAddons: No reportData or addons', {
-      hasReportData: !!reportData.value,
-      hasAddons: !!reportData.value?.addons,
-      addonsType: typeof reportData.value?.addons,
-      addonsIsArray: Array.isArray(reportData.value?.addons),
-    });
+  if (!reportData.value || !reportData.value?.addons || !Array.isArray(reportData.value.addons)) {
     return [];
   }
   
   let filtered = [...reportData.value.addons];
-  console.log('filteredAddons: Before filter', {
-    totalAddons: filtered.length,
-    addonFilter: addonFilter.value,
-    addonInfoFilter: addonInfoFilter.value,
-    firstThree: filtered.slice(0, 3),
-  });
   
   if (addonFilter.value !== 'all') {
-    filtered = filtered.filter((addon: any) => addon.status === addonFilter.value);
+    filtered = filtered.filter((addon: any) => addon?.status === addonFilter.value);
   }
   
   // Filter by addedBySuperAdmin
   if (addonInfoFilter.value !== 'all') {
     if (addonInfoFilter.value === 'superadmin') {
-      filtered = filtered.filter((addon: any) => addon.addedBySuperAdmin === true);
+      filtered = filtered.filter((addon: any) => addon?.addedBySuperAdmin === true);
     } else if (addonInfoFilter.value === 'self') {
-      filtered = filtered.filter((addon: any) => addon.addedBySuperAdmin === false);
+      filtered = filtered.filter((addon: any) => addon?.addedBySuperAdmin === false);
     }
   }
   
-  console.log('filteredAddons: After filter', {
-    filteredCount: filtered.length,
-    firstThree: filtered.slice(0, 3),
+  return filtered;
   });
   
   return filtered;
@@ -1206,23 +1192,9 @@ const loadReport = async () => {
     }
     
     const response = await api.get('/reports/global', { params });
-    reportData.value = response.data;
+    reportData.value = response.data || {};
     
-    // Log for debugging
-    if (!reportData.value) {
-      console.warn('Global report data is null or empty', { params });
-    } else {
-      console.log('Global report data loaded:', {
-        summary: reportData.value.summary,
-        tenantsCount: reportData.value.tenants?.length || 0,
-        subscriptionsCount: reportData.value.subscriptions?.length || 0,
-        addonsCount: reportData.value.addons?.length || 0,
-        hasAddons: !!reportData.value.addons,
-        addonsIsArray: Array.isArray(reportData.value.addons),
-        firstThreeAddons: reportData.value.addons?.slice(0, 3),
-        fullResponse: response.data,
-      });
-    }
+    // Ensure reportData has proper structure
     
     // Ensure reportData has proper structure even if empty
     if (!reportData.value) {
@@ -1247,9 +1219,8 @@ const loadReport = async () => {
     subscriptionPage.value = 1;
     addonPage.value = 1;
   } catch (error: any) {
-    console.error('Error loading global report:', error);
     if (error.response?.status !== 401 && error.response?.status !== 403) {
-      await showError('Gagal memuat laporan global');
+      await showError(error.response?.data?.message || 'Gagal memuat laporan global');
     }
   } finally {
     loading.value = false;
@@ -1260,7 +1231,7 @@ const toggleSelectAllSubscriptions = () => {
   if (selectedSubscriptions.value.length === paginatedSubscriptions.value.length) {
     selectedSubscriptions.value = [];
   } else {
-    selectedSubscriptions.value = paginatedSubscriptions.value.map((sub: any) => sub.id);
+    selectedSubscriptions.value = (paginatedSubscriptions.value || []).map((sub: any) => sub?.id).filter((id: any) => id);
   }
 };
 
@@ -1268,7 +1239,7 @@ const toggleSelectAllAddons = () => {
   if (selectedAddons.value.length === paginatedAddons.value.length) {
     selectedAddons.value = [];
   } else {
-    selectedAddons.value = paginatedAddons.value.map((addon: any) => addon.id);
+    selectedAddons.value = (paginatedAddons.value || []).map((addon: any) => addon?.id).filter((id: any) => id);
   }
 };
 
@@ -1291,7 +1262,6 @@ const bulkDeleteSubscriptions = async () => {
     selectedSubscriptions.value = [];
     await loadReport();
   } catch (error: any) {
-    console.error('Error bulk deleting subscriptions:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus subscription');
   }
 };
@@ -1315,7 +1285,6 @@ const bulkDeleteAddons = async () => {
     selectedAddons.value = [];
     await loadReport();
   } catch (error: any) {
-    console.error('Error bulk deleting addons:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus addon');
   }
 };
@@ -1340,7 +1309,6 @@ const updateSubscription = async () => {
     showSubscriptionModal.value = false;
     await loadReport();
   } catch (error: any) {
-    console.error('Error updating subscription:', error);
     await showError(error.response?.data?.message || 'Gagal memperbarui subscription');
   }
 };
@@ -1357,7 +1325,6 @@ const deleteSubscription = async (subscription: any) => {
     showSubscriptionModal.value = false;
     await loadReport();
   } catch (error: any) {
-    console.error('Error deleting subscription:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus subscription');
   }
 };
@@ -1398,8 +1365,7 @@ const printSubscription = async (subscription: any) => {
       }, 250);
     }
   } catch (error: any) {
-    console.error('Error printing subscription:', error);
-    await showError('Gagal mencetak subscription');
+    await showError(error.response?.data?.message || 'Gagal mencetak subscription');
   }
 };
 
@@ -1450,7 +1416,6 @@ const updateAddon = async () => {
     showAddonModal.value = false;
     await loadReport();
   } catch (error: any) {
-    console.error('Error updating addon:', error);
     await showError(error.response?.data?.message || 'Gagal memperbarui addon');
   }
 };
@@ -1467,7 +1432,6 @@ const deleteAddon = async (addon: any) => {
     showAddonModal.value = false;
     await loadReport();
   } catch (error: any) {
-    console.error('Error deleting addon:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus addon');
   }
 };
@@ -1508,8 +1472,7 @@ const printAddon = async (addon: any) => {
       }, 250);
     }
   } catch (error: any) {
-    console.error('Error printing addon:', error);
-    await showError('Gagal mencetak addon');
+    await showError(error.response?.data?.message || 'Gagal mencetak addon');
   }
 };
 

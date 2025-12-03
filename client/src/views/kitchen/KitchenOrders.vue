@@ -361,14 +361,14 @@ const loadOrders = async () => {
         kitchenStatus: ['PENDING', 'COOKING', 'READY'], // Hanya yang belum selesai
       },
     });
-    const newOrders = response.data.data || response.data;
-    orders.value = newOrders;
+    const newOrders = response.data?.data || response.data || [];
+    orders.value = Array.isArray(newOrders) ? newOrders : [];
     
     // Clear selection when orders reload
     selectedOrders.value = [];
     
     // Manage polling based on orders
-    if (newOrders.length === 0) {
+    if (!Array.isArray(newOrders) || newOrders.length === 0) {
       // Stop polling if no orders (standby mode)
       stopPolling();
     } else if (!pollInterval && !connected.value) {
@@ -380,9 +380,8 @@ const loadOrders = async () => {
     if (err.response?.status === 401 || err.response?.status === 403) {
       return;
     }
-    console.error('Error loading orders:', err);
     if (authStore.isAuthenticated) {
-      error('Gagal memuat pesanan', 'Terjadi Kesalahan');
+      await error('Gagal memuat pesanan', 'Terjadi Kesalahan');
     }
   } finally {
     loading.value = false;
@@ -416,8 +415,7 @@ const updateStatus = async (orderId: string, status: string) => {
       await loadOrders();
     }
   } catch (err: any) {
-    console.error('Error updating status:', err);
-    error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
+    await error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
     // Reload on error to ensure consistency
     await loadOrders();
   }
@@ -474,8 +472,7 @@ const bulkUpdateStatus = async () => {
       });
     }
   } catch (err: any) {
-    console.error('Error bulk updating status:', err);
-    error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
+    await error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
   } finally {
     bulkUpdating.value = false;
   }

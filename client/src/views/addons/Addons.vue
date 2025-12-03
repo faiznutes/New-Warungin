@@ -339,34 +339,13 @@ const loadAddons = async () => {
   
   loading.value = true;
   try {
-    // Log tenantId for debugging
     const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
-    console.log('Loading addons for tenant:', currentTenantId);
-    
-    // Verify tenantId is in localStorage before making API calls
-    const storedTenantId = localStorage.getItem('selectedTenantId');
-    console.log('[Addons] TenantId in localStorage:', storedTenantId);
-    console.log('[Addons] TenantId in authStore:', authStore.selectedTenantId);
     
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
-      api.get('/addons/available').catch((err) => {
-        console.error('❌ Error loading available addons:', err);
-        console.error('❌ Error response:', err.response);
+      api.get('/addons/available').catch(() => {
         return { data: [] };
       }),
-      api.get('/addons').catch((err) => {
-        console.error('❌ Error loading active addons:', err);
-        console.error('❌ Error response:', err.response);
-        console.error('❌ Error message:', err.message);
-        
-        // Check if it's a tenantId error
-        if (err.response?.status === 400 || err.response?.status === 500) {
-          const errorMsg = err.response?.data?.error || err.response?.data?.message;
-          if (errorMsg && errorMsg.includes('Tenant ID')) {
-            console.error('❌ Tenant ID error - check if tenantId is being sent in request');
-          }
-        }
-        
+      api.get('/addons').catch(() => {
         return { data: [] };
       }),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
@@ -379,10 +358,6 @@ const loadAddons = async () => {
     
     let availableData = availableRes.data;
     let activeData = activeRes.data;
-    
-    // Debug: Log raw responses
-    console.log('Raw availableRes:', availableRes);
-    console.log('Raw activeRes:', activeRes);
     
     // Handle case where response is array directly (axios wraps in .data)
     // Backend returns array, so availableRes.data and activeRes.data should be arrays
@@ -413,23 +388,7 @@ const loadAddons = async () => {
     availableAddons.value = Array.isArray(availableData) ? availableData : [];
     activeAddons.value = Array.isArray(activeData) ? activeData : [];
     currentSubscription.value = subscriptionRes.data;
-    
-    // Debug log
-    console.log('Parsed available addons:', availableAddons.value.length, availableAddons.value);
-    console.log('Parsed active addons:', activeAddons.value.length, activeAddons.value);
-    
-    if (activeAddons.value.length === 0) {
-      console.warn('⚠️ No active addons found for tenant:', currentTenantId);
-      console.warn('⚠️ Raw active response:', activeRes);
-      console.warn('⚠️ Parsed activeData:', activeData);
-      
-      // Check if there's an error in the response
-      if (activeRes.status !== 200) {
-        console.error('❌ Non-200 status:', activeRes.status);
-      }
-    }
   } catch (error: any) {
-    console.error('Error loading addons:', error);
     await showError(error.response?.data?.message || 'Gagal memuat addons');
     availableAddons.value = [];
     activeAddons.value = [];
@@ -598,7 +557,6 @@ const handleExtendAddon = async () => {
 };
 
 const handleTenantChange = async (tenantId: string | null) => {
-  console.log('Tenant changed in Addons page:', tenantId);
   
   // Auto-refetch addons when tenant changes
   if (tenantId) {
@@ -611,7 +569,6 @@ const handleTenantChange = async (tenantId: string | null) => {
     
     // Double-check tenantId is set
     const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
-    console.log('Current tenantId after setting:', currentTenantId);
     
     // Only load if tenant selection is no longer needed
     if (!needsTenantSelection.value && currentTenantId) {

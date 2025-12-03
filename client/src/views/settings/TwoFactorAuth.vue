@@ -274,9 +274,9 @@ const disabling = ref(false);
 const loadStatus = async () => {
   try {
     const response = await api.get('/2fa/status');
-    status.value = response.data;
+    status.value = response.data || {};
   } catch (error: any) {
-    console.error('Error loading 2FA status:', error);
+    // Silently fail - 2FA might not be enabled
   } finally {
     loading.value = false;
   }
@@ -290,9 +290,8 @@ const startSetup = async () => {
 
   try {
     const response = await api.post('/2fa/generate');
-    qrData.value = response.data;
+    qrData.value = response.data || {};
   } catch (error: any) {
-    console.error('Error generating 2FA secret:', error);
     verifyError.value = error.response?.data?.message || 'Gagal membuat QR code';
   } finally {
     generating.value = false;

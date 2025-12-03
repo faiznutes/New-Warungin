@@ -404,7 +404,6 @@ const loadUsers = async (page = 1) => {
       userLimit.value = null;
     }
   } catch (error: any) {
-    console.error('Error loading users:', error);
     users.value = [];
     await showError(error.response?.data?.message || 'Gagal memuat pengguna');
   } finally {
@@ -456,7 +455,6 @@ const handleSaveUser = async (userData: any) => {
     await new Promise(resolve => setTimeout(resolve, 100));
     await loadUsers(pagination.value.page);
   } catch (error: any) {
-    console.error('Error saving user:', error);
     // Close modal first even on error
     showCreateModal.value = false;
     showEditModal.value = false;

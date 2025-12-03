@@ -418,10 +418,9 @@ const loadTemplates = async () => {
       params.category = selectedCategory.value;
     }
     const response = await api.get('/email-templates', { params });
-    templates.value = response.data;
+    templates.value = response.data?.data || response.data || [];
   } catch (error: any) {
-    console.error('Error loading templates:', error);
-    await showError('Gagal memuat templates');
+    await showError(error.response?.data?.message || 'Gagal memuat templates');
   } finally {
     loading.value = false;
   }
@@ -480,8 +479,7 @@ const saveTemplate = async () => {
     closeModal();
     await loadTemplates();
   } catch (error: any) {
-    console.error('Error saving template:', error);
-    await showError('Gagal menyimpan template');
+    await showError(error.response?.data?.message || 'Gagal menyimpan template');
   } finally {
     saving.value = false;
   }
@@ -513,8 +511,7 @@ const deleteTemplate = async (template: EmailTemplate) => {
     await showSuccess('Template berhasil dihapus');
     await loadTemplates();
   } catch (error: any) {
-    console.error('Error deleting template:', error);
-    await showError('Gagal menghapus template');
+    await showError(error.response?.data?.message || 'Gagal menghapus template');
   }
 };
 

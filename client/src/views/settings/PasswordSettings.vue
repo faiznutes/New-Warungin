@@ -237,7 +237,6 @@ const updatePassword = async () => {
       confirmPassword: '',
     };
   } catch (error: any) {
-    console.error('Error updating password:', error);
     passwordError.value = error.response?.data?.message || 'Gagal mengubah password';
   } finally {
     updating.value = false;

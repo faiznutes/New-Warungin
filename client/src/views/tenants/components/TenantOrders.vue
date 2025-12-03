@@ -239,7 +239,7 @@ const loadOrders = async () => {
         },
       });
       
-      const pageData = response.data.data || response.data;
+      const pageData = response.data?.data || response.data || [];
       if (Array.isArray(pageData)) {
         allOrders = [...allOrders, ...pageData];
       } else if (Array.isArray(response.data)) {
@@ -247,7 +247,7 @@ const loadOrders = async () => {
       }
       
       // Check if there are more pages
-      const pagination = response.data.pagination;
+      const pagination = response.data?.pagination;
       if (pagination) {
         hasMore = page < pagination.totalPages;
         page++;
@@ -267,9 +267,9 @@ const loadOrders = async () => {
 const viewOrder = async (order: any) => {
   try {
     const response = await api.get(`/orders/${order.id}`);
-    const fullOrder = response.data;
+    const fullOrder = response.data || {};
     // Show order details in a simple alert for now
-    const items = fullOrder.items?.map((item: any) => 
+    const items = (fullOrder?.items || []).map((item: any) => 
       `${item.product?.name || item.productName} x${item.quantity}`
     ).join('\n') || 'Tidak ada item';
     

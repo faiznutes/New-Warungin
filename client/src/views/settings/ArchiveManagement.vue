@@ -505,18 +505,18 @@ const archiveAllConfig = ref({
 const loadStats = async () => {
   try {
     const response = await api.get('/archives/stats');
-    stats.value = response.data;
+    stats.value = response.data || {};
   } catch (error: any) {
-    showError('Gagal memuat statistik archive');
+    await showError(error.response?.data?.message || 'Gagal memuat statistik archive');
   }
 };
 
 const loadArchiveFiles = async () => {
   try {
     const response = await api.get('/archives/files');
-    archiveFiles.value = response.data.files || [];
+    archiveFiles.value = response.data?.files || response.data?.data || [];
   } catch (error: any) {
-    showError('Gagal memuat daftar file archive');
+    await showError(error.response?.data?.message || 'Gagal memuat daftar file archive');
   }
 };
 
@@ -530,7 +530,7 @@ const archiveOrders = async () => {
     showArchiveOrdersModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal meng-archive orders');
+    await showError(error.response?.data?.message || 'Gagal meng-archive orders');
   } finally {
     archiving.value = false;
   }
@@ -546,7 +546,7 @@ const archiveTransactions = async () => {
     showArchiveTransactionsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal meng-archive transactions');
+    await showError(error.response?.data?.message || 'Gagal meng-archive transactions');
   } finally {
     archiving.value = false;
   }
@@ -562,7 +562,7 @@ const archiveReports = async () => {
     showArchiveReportsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal meng-archive reports');
+    await showError(error.response?.data?.message || 'Gagal meng-archive reports');
   } finally {
     archiving.value = false;
   }
@@ -587,7 +587,7 @@ const archiveAll = async () => {
     showArchiveAllModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal meng-archive data');
+    await showError(error.response?.data?.message || 'Gagal meng-archive data');
   } finally {
     archiving.value = false;
   }
@@ -608,7 +608,7 @@ const restoreArchive = async (archiveFile: string) => {
     await showSuccess('Berhasil restore data dari archive');
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal restore archive');
+    await showError(error.response?.data?.message || 'Gagal restore archive');
   }
 };
 
