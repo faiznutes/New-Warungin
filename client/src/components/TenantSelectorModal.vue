@@ -6,13 +6,25 @@
   >
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-gray-900">Pilih Tenant</h2>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Pilih Tenant
+        </h2>
         <button
-          @click="handleCancel"
           class="text-gray-400 hover:text-gray-600 transition-colors"
+          @click="handleCancel"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -21,31 +33,48 @@
         Sebagai Super Admin, Anda perlu memilih tenant untuk melihat data mereka.
       </p>
 
-      <div v-if="loading" class="text-center py-8">
+      <div
+        v-if="loading"
+        class="text-center py-8"
+      >
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Memuat daftar tenant...</p>
+        <p class="mt-4 text-gray-600">
+          Memuat daftar tenant...
+        </p>
       </div>
 
-      <div v-else-if="tenants.length === 0" class="text-center py-8">
-        <p class="text-gray-600">Tidak ada tenant tersedia.</p>
+      <div
+        v-else-if="tenants.length === 0"
+        class="text-center py-8"
+      >
+        <p class="text-gray-600">
+          Tidak ada tenant tersedia.
+        </p>
       </div>
 
-      <div v-else class="space-y-2 max-h-96 overflow-y-auto">
+      <div
+        v-else
+        class="space-y-2 max-h-96 overflow-y-auto"
+      >
         <button
           v-for="tenant in tenants"
           :key="tenant.id"
-          @click="handleSelect(tenant.id)"
           class="w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
+          @click="handleSelect(tenant.id)"
         >
-          <div class="font-semibold text-gray-900">{{ tenant.name }}</div>
-          <div class="text-sm text-gray-500 mt-1">{{ tenant.email || tenant.slug }}</div>
+          <div class="font-semibold text-gray-900">
+            {{ tenant.name }}
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            {{ tenant.email || tenant.slug }}
+          </div>
         </button>
       </div>
 
       <div class="mt-6 flex justify-end space-x-3">
         <button
-          @click="handleCancel"
           class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
+          @click="handleCancel"
         >
           Batal
         </button>

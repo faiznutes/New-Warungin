@@ -2,22 +2,47 @@
   <div class="flex flex-col h-full p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Active Sessions</h1>
-      <p class="text-gray-600">Kelola sesi aktif Anda di berbagai perangkat</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Active Sessions
+      </h1>
+      <p class="text-gray-600">
+        Kelola sesi aktif Anda di berbagai perangkat
+      </p>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Sessions List -->
-    <div v-else class="space-y-4">
-      <div v-if="sessions.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
-        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    <div
+      v-else
+      class="space-y-4"
+    >
+      <div
+        v-if="sessions.length === 0"
+        class="bg-white rounded-lg shadow-md p-12 text-center"
+      >
+        <svg
+          class="w-16 h-16 text-gray-400 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
         </svg>
-        <p class="text-gray-600">Tidak ada sesi aktif</p>
+        <p class="text-gray-600">
+          Tidak ada sesi aktif
+        </p>
       </div>
 
       <div
@@ -34,13 +59,25 @@
                   session.isCurrent ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-600'
                 ]"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <div class="flex-1">
                 <div class="flex items-center space-x-2">
-                  <h3 class="text-lg font-semibold text-gray-900">{{ session.deviceInfo || 'Unknown Device' }}</h3>
+                  <h3 class="text-lg font-semibold text-gray-900">
+                    {{ session.deviceInfo || 'Unknown Device' }}
+                  </h3>
                   <span
                     v-if="session.isCurrent"
                     class="px-2 py-1 bg-primary-100 text-primary-800 rounded text-xs font-semibold"
@@ -48,20 +85,42 @@
                     Current Session
                   </span>
                 </div>
-                <p class="text-sm text-gray-600 mt-1">{{ session.ipAddress || 'Unknown IP' }}</p>
+                <p class="text-sm text-gray-600 mt-1">
+                  {{ session.ipAddress || 'Unknown IP' }}
+                </p>
               </div>
             </div>
 
             <div class="mt-4 space-y-2 text-sm text-gray-600">
               <div class="flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
                 <span>Last active: {{ formatDate(session.lastActivityAt) }}</span>
               </div>
               <div class="flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>Created: {{ formatDate(session.createdAt) }}</span>
               </div>
@@ -71,8 +130,8 @@
           <div class="flex space-x-2 ml-4">
             <button
               v-if="!session.isCurrent"
-              @click="revokeSession(session.id)"
               class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm"
+              @click="revokeSession(session.id)"
             >
               Revoke
             </button>
@@ -82,11 +141,13 @@
 
       <!-- Actions -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Actions
+        </h3>
         <div class="space-y-3">
           <button
-            @click="revokeAllSessions"
             class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
+            @click="revokeAllSessions"
           >
             Revoke All Other Sessions
           </button>

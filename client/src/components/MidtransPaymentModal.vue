@@ -7,13 +7,25 @@
     <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-900">Pembayaran {{ itemName }}</h3>
+          <h3 class="text-xl font-bold text-gray-900">
+            Pembayaran {{ itemName }}
+          </h3>
           <button
-            @click="close"
             class="text-gray-400 hover:text-gray-600 transition"
+            @click="close"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -26,21 +38,35 @@
         </div>
 
         <!-- Midtrans Snap Embed Container -->
-        <div v-if="snapToken" id="snap-container" class="mb-4 min-h-[500px]"></div>
-        <div v-else-if="loading" class="flex items-center justify-center py-12">
+        <div
+          v-if="snapToken"
+          id="snap-container"
+          class="mb-4 min-h-[500px]"
+        ></div>
+        <div
+          v-else-if="loading"
+          class="flex items-center justify-center py-12"
+        >
           <div class="flex flex-col items-center">
             <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <div class="text-gray-600 font-medium">Memuat halaman pembayaran...</div>
+            <div class="text-gray-600 font-medium">
+              Memuat halaman pembayaran...
+            </div>
           </div>
         </div>
-        <div v-else-if="error" class="p-4 bg-red-50 rounded-lg mb-4">
-          <p class="text-red-700">{{ error }}</p>
+        <div
+          v-else-if="error"
+          class="p-4 bg-red-50 rounded-lg mb-4"
+        >
+          <p class="text-red-700">
+            {{ error }}
+          </p>
         </div>
 
         <div class="flex space-x-3 mt-4">
           <button
-            @click="close"
             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium"
+            @click="close"
           >
             Batal
           </button>

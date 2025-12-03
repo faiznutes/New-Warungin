@@ -3,25 +3,49 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Manajemen Keuangan</h2>
-        <p class="text-gray-600">Arus kas, pengeluaran, pajak, perkiraan, dan rekonsiliasi bank</p>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Manajemen Keuangan
+        </h2>
+        <p class="text-gray-600">
+          Arus kas, pengeluaran, pajak, perkiraan, dan rekonsiliasi bank
+        </p>
       </div>
       <div class="flex space-x-3">
         <button
-          @click="showCashFlowModal = true"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+          @click="showCashFlowModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           <span>Catat Arus Kas</span>
         </button>
         <button
-          @click="showExpenseModal = true"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+          @click="showExpenseModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           <span>Catat Pengeluaran</span>
         </button>
@@ -32,37 +56,37 @@
     <div class="mb-6 border-b border-gray-200">
       <nav class="flex space-x-8">
         <button
-          @click="activeTab = 'cashflow'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'cashflow' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'cashflow'"
         >
           Arus Kas
         </button>
         <button
-          @click="activeTab = 'expenses'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'expenses' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'expenses'"
         >
           Pengeluaran
         </button>
         <button
-          @click="activeTab = 'tax'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'tax' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'tax'"
         >
           Pajak
         </button>
         <button
-          @click="activeTab = 'forecast'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'forecast' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'forecast'"
         >
           Perkiraan
         </button>
         <button
-          @click="activeTab = 'reconciliation'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'reconciliation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'reconciliation'"
         >
           Rekonsiliasi Bank
         </button>
@@ -70,20 +94,36 @@
     </div>
 
     <!-- Cash Flow Tab -->
-    <div v-if="activeTab === 'cashflow'" class="space-y-6">
+    <div
+      v-if="activeTab === 'cashflow'"
+      class="space-y-6"
+    >
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
-          <p class="text-sm text-gray-600 mb-1">Total Pendapatan</p>
-          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
+          <p class="text-sm text-gray-600 mb-1">
+            Total Pendapatan
+          </p>
+          <p class="text-3xl font-bold text-gray-900">
+            Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}
+          </p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
-          <p class="text-sm text-gray-600 mb-1">Total Pengeluaran</p>
-          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
+          <p class="text-sm text-gray-600 mb-1">
+            Total Pengeluaran
+          </p>
+          <p class="text-3xl font-bold text-gray-900">
+            Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}
+          </p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-600 mb-1">Arus Kas Bersih</p>
-          <p class="text-3xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'">
+          <p class="text-sm text-gray-600 mb-1">
+            Arus Kas Bersih
+          </p>
+          <p
+            class="text-3xl font-bold"
+            :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'"
+          >
             Rp {{ formatCurrency(cashFlowSummary.netCashFlow) }}
           </p>
         </div>
@@ -104,8 +144,8 @@
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
           <button
-            @click="loadCashFlowSummary"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            @click="loadCashFlowSummary"
           >
             Filter
           </button>
@@ -114,7 +154,9 @@
 
       <!-- Category Breakdown -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">By Category</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          By Category
+        </h3>
         <div class="space-y-2">
           <div
             v-for="(amount, category) in cashFlowSummary.byCategory"
@@ -129,10 +171,15 @@
     </div>
 
     <!-- Expenses Tab -->
-    <div v-if="activeTab === 'expenses'" class="space-y-6">
+    <div
+      v-if="activeTab === 'expenses'"
+      class="space-y-6"
+    >
       <!-- Expenses by Category -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Pengeluaran Berdasarkan Kategori</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Pengeluaran Berdasarkan Kategori
+        </h3>
         <div class="space-y-2">
           <div
             v-for="(amount, category) in expensesByCategory"
@@ -147,9 +194,14 @@
     </div>
 
     <!-- Tax Tab -->
-    <div v-if="activeTab === 'tax'" class="space-y-6">
+    <div
+      v-if="activeTab === 'tax'"
+      class="space-y-6"
+    >
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculate Tax</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Calculate Tax
+        </h3>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Period (YYYY-MM)</label>
@@ -161,35 +213,58 @@
           </div>
           <div class="flex items-end">
             <button
-              @click="calculateTax"
               class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              @click="calculateTax"
             >
               Calculate
             </button>
           </div>
         </div>
 
-        <div v-if="taxCalculation" class="border-t pt-4 space-y-3">
+        <div
+          v-if="taxCalculation"
+          class="border-t pt-4 space-y-3"
+        >
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-gray-600">Total Pendapatan</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalRevenue) }}</p>
+              <p class="text-sm text-gray-600">
+                Total Pendapatan
+              </p>
+              <p class="text-lg font-semibold text-gray-900">
+                Rp {{ formatCurrency(taxCalculation.totalRevenue) }}
+              </p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Total Pengeluaran</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalExpenses) }}</p>
+              <p class="text-sm text-gray-600">
+                Total Pengeluaran
+              </p>
+              <p class="text-lg font-semibold text-gray-900">
+                Rp {{ formatCurrency(taxCalculation.totalExpenses) }}
+              </p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Pendapatan Kena Pajak</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.taxableIncome) }}</p>
+              <p class="text-sm text-gray-600">
+                Pendapatan Kena Pajak
+              </p>
+              <p class="text-lg font-semibold text-gray-900">
+                Rp {{ formatCurrency(taxCalculation.taxableIncome) }}
+              </p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Tax Rate</p>
-              <p class="text-lg font-semibold text-gray-900">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
+              <p class="text-sm text-gray-600">
+                Tax Rate
+              </p>
+              <p class="text-lg font-semibold text-gray-900">
+                {{ (taxCalculation.taxRate * 100).toFixed(1) }}%
+              </p>
             </div>
             <div class="col-span-2">
-              <p class="text-sm text-gray-600">Jumlah Pajak</p>
-              <p class="text-2xl font-bold text-red-600">Rp {{ formatCurrency(taxCalculation.taxAmount) }}</p>
+              <p class="text-sm text-gray-600">
+                Jumlah Pajak
+              </p>
+              <p class="text-2xl font-bold text-red-600">
+                Rp {{ formatCurrency(taxCalculation.taxAmount) }}
+              </p>
             </div>
           </div>
         </div>
@@ -197,9 +272,14 @@
     </div>
 
     <!-- Forecast Tab -->
-    <div v-if="activeTab === 'forecast'" class="space-y-6">
+    <div
+      v-if="activeTab === 'forecast'"
+      class="space-y-6"
+    >
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Perkiraan Keuangan</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Perkiraan Keuangan
+        </h3>
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">Bulan untuk Diperkirakan</label>
           <input
@@ -211,34 +291,52 @@
           />
         </div>
         <button
-          @click="loadForecast"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
+          @click="loadForecast"
         >
           Buat Perkiraan
         </button>
 
-        <div v-if="forecast.length > 0" class="space-y-4">
+        <div
+          v-if="forecast.length > 0"
+          class="space-y-4"
+        >
           <div
             v-for="item in forecast"
             :key="item.month"
             class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded"
           >
             <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ item.month }}</h4>
+              <h4 class="font-semibold text-gray-900">
+                {{ item.month }}
+              </h4>
               <span class="text-xs text-gray-500">Confidence: {{ (item.confidence * 100).toFixed(0) }}%</span>
             </div>
             <div class="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <p class="text-gray-600">Pendapatan</p>
-                <p class="font-semibold text-green-600">Rp {{ formatCurrency(item.projectedRevenue) }}</p>
+                <p class="text-gray-600">
+                  Pendapatan
+                </p>
+                <p class="font-semibold text-green-600">
+                  Rp {{ formatCurrency(item.projectedRevenue) }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-600">Pengeluaran</p>
-                <p class="font-semibold text-red-600">Rp {{ formatCurrency(item.projectedExpenses) }}</p>
+                <p class="text-gray-600">
+                  Pengeluaran
+                </p>
+                <p class="font-semibold text-red-600">
+                  Rp {{ formatCurrency(item.projectedExpenses) }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-600">Laba</p>
-                <p class="font-semibold" :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'">
+                <p class="text-gray-600">
+                  Laba
+                </p>
+                <p
+                  class="font-semibold"
+                  :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'"
+                >
                   Rp {{ formatCurrency(item.projectedProfit) }}
                 </p>
               </div>
@@ -249,17 +347,25 @@
     </div>
 
     <!-- Bank Reconciliation Tab -->
-    <div v-if="activeTab === 'reconciliation'" class="space-y-6">
+    <div
+      v-if="activeTab === 'reconciliation'"
+      class="space-y-6"
+    >
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Rekonsiliasi Bank</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Rekonsiliasi Bank
+        </h3>
         <button
-          @click="showReconciliationModal = true"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
+          @click="showReconciliationModal = true"
         >
           Rekonsiliasi Baru
         </button>
 
-        <div v-if="reconciliations.length > 0" class="space-y-4">
+        <div
+          v-if="reconciliations.length > 0"
+          class="space-y-4"
+        >
           <div
             v-for="recon in reconciliations"
             :key="recon.id"
@@ -267,7 +373,9 @@
             :class="recon.reconciled ? 'border-green-500 bg-green-50' : 'border-yellow-500 bg-yellow-50'"
           >
             <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ recon.bankAccount }}</h4>
+              <h4 class="font-semibold text-gray-900">
+                {{ recon.bankAccount }}
+              </h4>
               <span
                 class="px-2 py-1 text-xs font-semibold rounded-full"
                 :class="recon.reconciled ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
@@ -277,16 +385,29 @@
             </div>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p class="text-gray-600">Statement Balance</p>
-                <p class="font-semibold">Rp {{ formatCurrency(recon.statementBalance) }}</p>
+                <p class="text-gray-600">
+                  Statement Balance
+                </p>
+                <p class="font-semibold">
+                  Rp {{ formatCurrency(recon.statementBalance) }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-600">Saldo Buku</p>
-                <p class="font-semibold">Rp {{ formatCurrency(recon.bookBalance) }}</p>
+                <p class="text-gray-600">
+                  Saldo Buku
+                </p>
+                <p class="font-semibold">
+                  Rp {{ formatCurrency(recon.bookBalance) }}
+                </p>
               </div>
               <div class="col-span-2">
-                <p class="text-gray-600">Difference</p>
-                <p class="font-semibold" :class="Math.abs(recon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'">
+                <p class="text-gray-600">
+                  Difference
+                </p>
+                <p
+                  class="font-semibold"
+                  :class="Math.abs(recon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'"
+                >
                   Rp {{ formatCurrency(recon.difference) }}
                 </p>
               </div>
@@ -305,15 +426,33 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Catat Arus Kas</h3>
-            <button @click="closeCashFlowModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <h3 class="text-2xl font-bold text-gray-900">
+              Catat Arus Kas
+            </h3>
+            <button
+              class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeCashFlowModal"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="saveCashFlow" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="saveCashFlow"
+          >
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
               <select
@@ -321,9 +460,15 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="">Pilih Type</option>
-                <option value="INCOME">Pendapatan</option>
-                <option value="EXPENSE">Pengeluaran</option>
+                <option value="">
+                  Pilih Type
+                </option>
+                <option value="INCOME">
+                  Pendapatan
+                </option>
+                <option value="EXPENSE">
+                  Pengeluaran
+                </option>
               </select>
             </div>
 
@@ -383,8 +528,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                @click="closeCashFlowModal"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="closeCashFlowModal"
               >
                 Batal
               </button>
@@ -410,15 +555,33 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Catat Pengeluaran</h3>
-            <button @click="closeExpenseModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <h3 class="text-2xl font-bold text-gray-900">
+              Catat Pengeluaran
+            </h3>
+            <button
+              class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeExpenseModal"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="saveExpense" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="saveExpense"
+          >
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
               <input
@@ -473,19 +636,22 @@
 
             <div class="flex items-center">
               <input
+                id="taxDeductible"
                 v-model="expenseForm.isTaxDeductible"
                 type="checkbox"
-                id="taxDeductible"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <label for="taxDeductible" class="ml-2 text-sm text-gray-700">Tax Deductible</label>
+              <label
+                for="taxDeductible"
+                class="ml-2 text-sm text-gray-700"
+              >Tax Deductible</label>
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                @click="closeExpenseModal"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="closeExpenseModal"
               >
                 Batal
               </button>
@@ -511,15 +677,33 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Rekonsiliasi Bank</h3>
-            <button @click="closeReconciliationModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <h3 class="text-2xl font-bold text-gray-900">
+              Rekonsiliasi Bank
+            </h3>
+            <button
+              class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeReconciliationModal"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="saveReconciliation" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="saveReconciliation"
+          >
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Akun Bank *</label>
@@ -589,15 +773,19 @@
                       v-model="tx.type"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     >
-                      <option value="DEPOSIT">Deposit</option>
-                      <option value="WITHDRAWAL">Withdrawal</option>
+                      <option value="DEPOSIT">
+                        Deposit
+                      </option>
+                      <option value="WITHDRAWAL">
+                        Withdrawal
+                      </option>
                     </select>
                   </div>
                   <div class="col-span-1">
                     <button
                       type="button"
-                      @click="removeTransaction(index)"
                       class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                      @click="removeTransaction(index)"
                     >
                       ×
                     </button>
@@ -605,8 +793,8 @@
                 </div>
                 <button
                   type="button"
-                  @click="addTransaction"
                   class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                  @click="addTransaction"
                 >
                   + Add Transaction
                 </button>
@@ -616,8 +804,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                @click="closeReconciliationModal"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="closeReconciliationModal"
               >
                 Batal
               </button>

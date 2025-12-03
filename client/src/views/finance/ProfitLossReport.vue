@@ -3,48 +3,82 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Laporan Laba Rugi</h2>
-        <p class="text-sm sm:text-base text-gray-600">Analisis keuangan bisnis Anda secara detail</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+          Laporan Laba Rugi
+        </h2>
+        <p class="text-sm sm:text-base text-gray-600">
+          Analisis keuangan bisnis Anda secara detail
+        </p>
       </div>
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">
         <input
-          type="date"
           v-model="startDate"
-          @change="loadProfitLoss"
+          type="date"
           class="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm"
+          @change="loadProfitLoss"
         />
         <span class="text-gray-600 font-medium">s/d</span>
         <input
-          type="date"
           v-model="endDate"
-          @change="loadProfitLoss"
+          type="date"
           class="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm"
+          @change="loadProfitLoss"
         />
         <button
-          @click="exportReport"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2"
+          @click="exportReport"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           Export
         </button>
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+    <div
+      v-if="loading"
+      class="flex flex-col items-center justify-center py-20"
+    >
       <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat laporan...</div>
+      <div class="text-gray-600 font-medium">
+        Memuat laporan...
+      </div>
     </div>
 
-    <div v-else-if="error" class="px-4 sm:px-6">
+    <div
+      v-else-if="error"
+      class="px-4 sm:px-6"
+    >
       <div class="bg-red-50 border border-red-200 rounded-lg p-4">
         <div class="flex items-start">
-          <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <svg
+            class="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
           <div class="flex-1">
-            <p class="text-red-800 font-medium">{{ error }}</p>
+            <p class="text-red-800 font-medium">
+              {{ error }}
+            </p>
             <router-link 
               v-if="error.includes('addon')" 
               to="/app/addons" 
@@ -57,32 +91,57 @@
       </div>
     </div>
 
-    <div v-else-if="profitLoss" class="px-4 sm:px-6 pb-6 space-y-6">
+    <div
+      v-else-if="profitLoss"
+      class="px-4 sm:px-6 pb-6 space-y-6"
+    >
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-green-100 mb-2">Revenue</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.revenue) }}</p>
+          <p class="text-sm font-semibold text-green-100 mb-2">
+            Revenue
+          </p>
+          <p class="text-3xl font-bold">
+            {{ formatCurrency(profitLoss.revenue) }}
+          </p>
         </div>
         <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-red-100 mb-2">COGS</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.cogs) }}</p>
+          <p class="text-sm font-semibold text-red-100 mb-2">
+            COGS
+          </p>
+          <p class="text-3xl font-bold">
+            {{ formatCurrency(profitLoss.cogs) }}
+          </p>
         </div>
         <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-blue-100 mb-2">Gross Profit</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.grossProfit) }}</p>
-          <p class="text-sm text-blue-100 mt-2">Margin: {{ profitLoss.grossProfitMargin.toFixed(1) }}%</p>
+          <p class="text-sm font-semibold text-blue-100 mb-2">
+            Gross Profit
+          </p>
+          <p class="text-3xl font-bold">
+            {{ formatCurrency(profitLoss.grossProfit) }}
+          </p>
+          <p class="text-sm text-blue-100 mt-2">
+            Margin: {{ profitLoss.grossProfitMargin.toFixed(1) }}%
+          </p>
         </div>
         <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-purple-100 mb-2">Net Profit</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.netProfit) }}</p>
-          <p class="text-sm text-purple-100 mt-2">Margin: {{ profitLoss.netProfitMargin.toFixed(1) }}%</p>
+          <p class="text-sm font-semibold text-purple-100 mb-2">
+            Net Profit
+          </p>
+          <p class="text-3xl font-bold">
+            {{ formatCurrency(profitLoss.netProfit) }}
+          </p>
+          <p class="text-sm text-purple-100 mt-2">
+            Margin: {{ profitLoss.netProfitMargin.toFixed(1) }}%
+          </p>
         </div>
       </div>
 
       <!-- Detailed Report -->
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Detail Laporan Laba Rugi</h3>
+        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+          Detail Laporan Laba Rugi
+        </h3>
         
         <div class="space-y-4">
           <!-- Revenue Section -->

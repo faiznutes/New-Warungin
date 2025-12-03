@@ -6,7 +6,10 @@
           Register Tenant
         </h2>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
+      <form
+        class="mt-8 space-y-6"
+        @submit.prevent="handleRegister"
+      >
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Tenant Name</label>

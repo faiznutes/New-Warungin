@@ -8,13 +8,25 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-4 sm:p-6">
           <div class="flex items-center justify-between mb-4 sm:mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Print Receipt</h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+              Print Receipt
+            </h3>
             <button
-              @click="$emit('close')"
               class="text-gray-400 hover:text-gray-600 transition p-2"
+              @click="$emit('close')"
             >
-              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -25,28 +37,48 @@
             <div class="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                @click="selectedPaperSize = '50mm'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="selectedPaperSize === '50mm' 
                   ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
+                @click="selectedPaperSize = '50mm'"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <span class="text-sm font-medium">50mm</span>
                 <span class="text-xs text-gray-500">Thermal Kecil</span>
               </button>
               <button
                 type="button"
-                @click="selectedPaperSize = '85mm'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="selectedPaperSize === '85mm' 
                   ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
+                @click="selectedPaperSize = '85mm'"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <span class="text-sm font-medium">85mm</span>
                 <span class="text-xs text-gray-500">Thermal Standar</span>
@@ -59,10 +91,14 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Template</label>
             <select
               v-model="selectedTemplate"
-              @change="loadTemplate(selectedTemplate)"
               class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              @change="loadTemplate(selectedTemplate)"
             >
-              <option v-for="template in templates" :key="template.id" :value="template.id">
+              <option
+                v-for="template in templates"
+                :key="template.id"
+                :value="template.id"
+              >
                 {{ template.name }}
               </option>
             </select>
@@ -75,65 +111,102 @@
             :class="selectedPaperSize === '50mm' ? 'receipt-50mm' : 'receipt-85mm'"
           >
             <!-- Receipt Content -->
-            <div v-if="receiptData && template" 
-                 class="receipt-content"
-                 :style="{ fontFamily: getTemplateFontFamily(template.templateType, template.styles), fontSize: getTemplateFontSize(template.templateType, template.styles) }">
+            <div
+              v-if="receiptData && template" 
+              class="receipt-content"
+              :style="{ fontFamily: getTemplateFontFamily(template.templateType, template.styles), fontSize: getTemplateFontSize(template.templateType, template.styles) }"
+            >
               <!-- Header -->
-              <div v-if="template?.header?.showName || template?.header?.showAddress" 
-                   :class="getTemplateHeaderStyle(template.templateType, template.styles)">
-                <h1 v-if="template?.header?.showName" 
-                    :class="getTemplateTitleStyle(template.templateType)">
+              <div
+                v-if="template?.header?.showName || template?.header?.showAddress" 
+                :class="getTemplateHeaderStyle(template.templateType, template.styles)"
+              >
+                <h1
+                  v-if="template?.header?.showName" 
+                  :class="getTemplateTitleStyle(template.templateType)"
+                >
                   {{ props.tenantName || tenantInfo?.name || 'Warungin' }}
                 </h1>
-                <p v-if="template?.header?.showAddress" 
-                   class="text-xs sm:text-sm text-gray-600">
+                <p
+                  v-if="template?.header?.showAddress" 
+                  class="text-xs sm:text-sm text-gray-600"
+                >
                   {{ props.tenantAddress || tenantInfo?.address || 'Jl. Contoh No. 123' }}
                 </p>
-                <p v-if="template?.header?.showPhone" 
-                   class="text-xs sm:text-sm text-gray-600 mt-1">
+                <p
+                  v-if="template?.header?.showPhone" 
+                  class="text-xs sm:text-sm text-gray-600 mt-1"
+                >
                   {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 085155043133' }}
                 </p>
               </div>
 
               <!-- Order Info -->
-              <div v-if="template?.fields?.showOrderNumber || template?.fields?.showDate || template?.fields?.showTime || (template?.fields?.showCustomer && receiptData.customerName)" 
-                   :class="getTemplateOrderInfoStyle(template.templateType) + ' space-y-1 sm:space-y-2'">
-                <div v-if="template?.fields?.showOrderNumber" class="flex justify-between text-xs sm:text-sm">
+              <div
+                v-if="template?.fields?.showOrderNumber || template?.fields?.showDate || template?.fields?.showTime || (template?.fields?.showCustomer && receiptData.customerName)" 
+                :class="getTemplateOrderInfoStyle(template.templateType) + ' space-y-1 sm:space-y-2'"
+              >
+                <div
+                  v-if="template?.fields?.showOrderNumber"
+                  class="flex justify-between text-xs sm:text-sm"
+                >
                   <span class="text-gray-600">No. Pesanan:</span>
                   <span class="font-semibold">{{ receiptData.orderNumber }}</span>
                 </div>
-                <div v-if="template?.fields?.showDate" class="flex justify-between text-xs sm:text-sm">
+                <div
+                  v-if="template?.fields?.showDate"
+                  class="flex justify-between text-xs sm:text-sm"
+                >
                   <span class="text-gray-600">Tanggal:</span>
                   <span>{{ formatDateTime(receiptData.date) }}</span>
                 </div>
-                <div v-if="template?.fields?.showTime" class="flex justify-between text-xs sm:text-sm">
+                <div
+                  v-if="template?.fields?.showTime"
+                  class="flex justify-between text-xs sm:text-sm"
+                >
                   <span class="text-gray-600">Waktu:</span>
                   <span>{{ formatTime(receiptData.date) }}</span>
                 </div>
-                <div v-if="template?.fields?.showCustomer && receiptData.customerName" class="flex justify-between text-xs sm:text-sm">
+                <div
+                  v-if="template?.fields?.showCustomer && receiptData.customerName"
+                  class="flex justify-between text-xs sm:text-sm"
+                >
                   <span class="text-gray-600">Pelanggan:</span>
                   <span>{{ receiptData.customerName }}</span>
                 </div>
               </div>
 
               <!-- Items -->
-              <div v-if="template?.fields?.showItems" 
-                   class="mb-3 sm:mb-4 py-3 sm:py-4"
-                   :class="getTemplateContentStyle(template.templateType)">
+              <div
+                v-if="template?.fields?.showItems" 
+                class="mb-3 sm:mb-4 py-3 sm:py-4"
+                :class="getTemplateContentStyle(template.templateType)"
+              >
                 <div class="space-y-2">
-                  <div v-for="item in receiptData.items" 
-                       :key="item.name" 
-                       :class="getTemplateItemStyle(template.templateType) + ' last:border-0'">
+                  <div
+                    v-for="item in receiptData.items" 
+                    :key="item.name" 
+                    :class="getTemplateItemStyle(template.templateType) + ' last:border-0'"
+                  >
                     <div class="flex justify-between items-start mb-1">
                       <div class="flex-1">
-                        <div class="font-semibold text-sm">{{ item.name }}</div>
-                        <div v-if="item.discount && item.discount > 0" class="text-xs text-red-600 mt-0.5">
+                        <div class="font-semibold text-sm">
+                          {{ item.name }}
+                        </div>
+                        <div
+                          v-if="item.discount && item.discount > 0"
+                          class="text-xs text-red-600 mt-0.5"
+                        >
                           Diskon: -{{ formatCurrency(item.discount) }}
                         </div>
                       </div>
                       <div class="text-right ml-2">
-                        <div class="text-sm font-semibold">{{ formatCurrency(item.subtotal) }}</div>
-                        <div class="text-xs text-gray-500">{{ item.quantity }} x {{ formatCurrency(item.price) }}</div>
+                        <div class="text-sm font-semibold">
+                          {{ formatCurrency(item.subtotal) }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                          {{ item.quantity }} x {{ formatCurrency(item.price) }}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -142,36 +215,61 @@
 
               <!-- Totals -->
               <div class="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-                <div v-if="template?.fields?.showSubtotal || (template?.fields?.showDiscount && receiptData.discount > 0) || template?.fields?.showTax" class="space-y-1">
-                  <div v-if="template?.fields?.showSubtotal" class="flex justify-between mb-1">
+                <div
+                  v-if="template?.fields?.showSubtotal || (template?.fields?.showDiscount && receiptData.discount > 0) || template?.fields?.showTax"
+                  class="space-y-1"
+                >
+                  <div
+                    v-if="template?.fields?.showSubtotal"
+                    class="flex justify-between mb-1"
+                  >
                     <span class="font-medium">Subtotal:</span>
                     <span class="font-semibold">{{ formatCurrency(receiptData.subtotal) }}</span>
                   </div>
-                  <div v-if="template?.fields?.showDiscount && receiptData.discount > 0" class="flex justify-between mb-1 text-red-600">
+                  <div
+                    v-if="template?.fields?.showDiscount && receiptData.discount > 0"
+                    class="flex justify-between mb-1 text-red-600"
+                  >
                     <span class="font-medium">Diskon Total:</span>
                     <span class="font-semibold">-{{ formatCurrency(receiptData.discount) }}</span>
                   </div>
-                  <div v-if="template?.fields?.showTax" class="flex justify-between mb-1">
+                  <div
+                    v-if="template?.fields?.showTax"
+                    class="flex justify-between mb-1"
+                  >
                     <span>Pajak:</span>
                     <span>{{ formatCurrency(0) }}</span>
                   </div>
                 </div>
-                <div v-if="template?.fields?.showTotal" 
-                     :class="getTemplateTotalStyle(template.templateType)">
+                <div
+                  v-if="template?.fields?.showTotal" 
+                  :class="getTemplateTotalStyle(template.templateType)"
+                >
                   <span>TOTAL:</span>
                   <span>{{ formatCurrency(receiptData.total) }}</span>
                 </div>
-                <div v-if="template?.fields?.showPaymentMethod || (template?.fields?.showChange && receiptData.change && receiptData.change > 0) || receiptData.servedBy" 
-                     :class="getTemplatePaymentStyle(template.templateType) + ' space-y-1'">
-                  <div v-if="template?.fields?.showPaymentMethod" class="flex justify-between text-xs sm:text-sm">
+                <div
+                  v-if="template?.fields?.showPaymentMethod || (template?.fields?.showChange && receiptData.change && receiptData.change > 0) || receiptData.servedBy" 
+                  :class="getTemplatePaymentStyle(template.templateType) + ' space-y-1'"
+                >
+                  <div
+                    v-if="template?.fields?.showPaymentMethod"
+                    class="flex justify-between text-xs sm:text-sm"
+                  >
                     <span class="font-medium">Pembayaran:</span>
                     <span class="font-semibold">{{ getPaymentMethodLabel(receiptData.paymentMethod) }}</span>
                   </div>
-                  <div v-if="template?.fields?.showChange && receiptData.change && receiptData.change > 0" class="flex justify-between text-xs sm:text-sm">
+                  <div
+                    v-if="template?.fields?.showChange && receiptData.change && receiptData.change > 0"
+                    class="flex justify-between text-xs sm:text-sm"
+                  >
                     <span class="font-medium">Kembalian:</span>
                     <span class="font-semibold text-green-600">{{ formatCurrency(receiptData.change) }}</span>
                   </div>
-                  <div v-if="receiptData.servedBy" class="flex justify-between text-xs sm:text-sm mt-2 pt-2">
+                  <div
+                    v-if="receiptData.servedBy"
+                    class="flex justify-between text-xs sm:text-sm mt-2 pt-2"
+                  >
                     <span class="font-medium">Dilayani oleh:</span>
                     <span class="font-semibold">{{ receiptData.servedBy }}</span>
                   </div>
@@ -179,16 +277,29 @@
               </div>
 
               <!-- Footer -->
-              <div v-if="template?.footer?.showThankYou || template?.footer?.showContact" 
-                   :class="getTemplateFooterStyle(template.templateType)">
-                <p v-if="template?.footer?.showThankYou" class="mb-1 sm:mb-2 font-semibold text-sm sm:text-base">Terima Kasih!</p>
-                <p v-if="template?.footer?.showContact" class="text-xs sm:text-sm text-gray-600">
+              <div
+                v-if="template?.footer?.showThankYou || template?.footer?.showContact" 
+                :class="getTemplateFooterStyle(template.templateType)"
+              >
+                <p
+                  v-if="template?.footer?.showThankYou"
+                  class="mb-1 sm:mb-2 font-semibold text-sm sm:text-base"
+                >
+                  Terima Kasih!
+                </p>
+                <p
+                  v-if="template?.footer?.showContact"
+                  class="text-xs sm:text-sm text-gray-600"
+                >
                   {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 085155043133' }}
                 </p>
               </div>
             </div>
 
-            <div v-else class="text-center py-8 sm:py-12 text-gray-500">
+            <div
+              v-else
+              class="text-center py-8 sm:py-12 text-gray-500"
+            >
               <p>Memuat data receipt...</p>
             </div>
           </div>
@@ -196,15 +307,15 @@
           <!-- Actions -->
           <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
             <button
-              @click="$emit('close')"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
+              @click="$emit('close')"
             >
               Tutup
             </button>
             <button
-              @click="handlePrint"
               :disabled="!receiptData || !template"
               class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              @click="handlePrint"
             >
               Print
             </button>

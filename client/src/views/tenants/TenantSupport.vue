@@ -4,8 +4,12 @@
     <div class="mb-6">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900">Tenant Support</h2>
-          <p class="text-gray-600">Kelola dan dukung tenant yang membutuhkan bantuan</p>
+          <h2 class="text-2xl font-bold text-gray-900">
+            Tenant Support
+          </h2>
+          <p class="text-gray-600">
+            Kelola dan dukung tenant yang membutuhkan bantuan
+          </p>
         </div>
       </div>
 
@@ -17,11 +21,13 @@
         <div class="relative">
           <select
             v-model="selectedTenantId"
-            @change="handleTenantChange"
             class="w-full px-4 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer"
             :class="{ 'border-red-300': !selectedTenantId && showError }"
+            @change="handleTenantChange"
           >
-            <option value="">-- Pilih Tenant --</option>
+            <option value="">
+              -- Pilih Tenant --
+            </option>
             <option 
               v-for="tenant in tenants" 
               :key="tenant.id" 
@@ -31,33 +37,68 @@
             </option>
           </select>
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <svg
+              class="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </div>
-        <p v-if="!selectedTenantId && showError" class="mt-2 text-sm text-red-600">
+        <p
+          v-if="!selectedTenantId && showError"
+          class="mt-2 text-sm text-red-600"
+        >
           Silakan pilih tenant terlebih dahulu
         </p>
-        <div v-if="selectedTenant" class="mt-3 flex items-center gap-2 text-sm text-gray-600">
-          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div
+          v-if="selectedTenant"
+          class="mt-3 flex items-center gap-2 text-sm text-gray-600"
+        >
+          <svg
+            class="w-5 h-5 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <span>Tenant: <strong class="text-gray-900">{{ selectedTenant.name }}</strong></span>
-          <span class="px-2 py-1 text-xs rounded-full" :class="selectedTenant.isActive === false ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'">
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            :class="selectedTenant.isActive === false ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'"
+          >
             {{ selectedTenant.isActive === false ? 'Tidak Aktif' : 'Aktif' }}
           </span>
         </div>
       </div>
       
       <!-- Store Selector (only show when tenant is selected) -->
-      <div v-if="selectedTenantId" class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mt-4">
+      <div
+        v-if="selectedTenantId"
+        class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mt-4"
+      >
         <StoreSelector @store-changed="handleStoreChange" />
       </div>
     </div>
 
     <!-- Tabs -->
-    <div v-if="selectedTenantId" class="flex-1 flex flex-col">
+    <div
+      v-if="selectedTenantId"
+      class="flex-1 flex flex-col"
+    >
       <!-- Tab Navigation -->
       <div class="bg-white rounded-lg shadow-sm mb-4">
         <div class="border-b border-gray-200">
@@ -65,13 +106,13 @@
             <button
               v-for="tab in tabs"
               :key="tab.id"
-              @click="activeTab = tab.id"
               :class="[
                 'px-4 sm:px-6 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               ]"
+              @click="activeTab = tab.id"
             >
               <div class="flex items-center gap-2">
                 <component :is="tab.icon" />
@@ -85,45 +126,80 @@
       <!-- Tab Content -->
       <div class="flex-1 overflow-auto">
         <!-- Dashboard Tab -->
-        <div v-if="activeTab === 'dashboard'" class="h-full">
+        <div
+          v-if="activeTab === 'dashboard'"
+          class="h-full"
+        >
           <TenantDashboard :tenant-id="selectedTenantId" />
         </div>
 
         <!-- Products Tab -->
-        <div v-if="activeTab === 'products'" class="h-full">
+        <div
+          v-if="activeTab === 'products'"
+          class="h-full"
+        >
           <TenantProducts :tenant-id="selectedTenantId" />
         </div>
 
         <!-- Orders Tab -->
-        <div v-if="activeTab === 'orders'" class="h-full">
+        <div
+          v-if="activeTab === 'orders'"
+          class="h-full"
+        >
           <TenantOrders :tenant-id="selectedTenantId" />
         </div>
 
         <!-- Reports Tab -->
-        <div v-if="activeTab === 'reports'" class="h-full">
+        <div
+          v-if="activeTab === 'reports'"
+          class="h-full"
+        >
           <TenantReports :tenant-id="selectedTenantId" />
         </div>
 
         <!-- POS Tab -->
-        <div v-if="activeTab === 'pos'" class="h-full">
+        <div
+          v-if="activeTab === 'pos'"
+          class="h-full"
+        >
           <TenantPOS :tenant-id="selectedTenantId" />
         </div>
 
         <!-- Kitchen Tab -->
-        <div v-if="activeTab === 'kitchen'" class="h-full">
+        <div
+          v-if="activeTab === 'kitchen'"
+          class="h-full"
+        >
           <TenantKitchen :tenant-id="selectedTenantId" />
         </div>
       </div>
     </div>
 
     <!-- Empty State -->
-    <div v-else class="flex-1 flex items-center justify-center bg-white rounded-lg shadow-sm">
+    <div
+      v-else
+      class="flex-1 flex items-center justify-center bg-white rounded-lg shadow-sm"
+    >
       <div class="text-center">
-        <svg class="w-20 h-20 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        <svg
+          class="w-20 h-20 text-gray-400 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+          />
         </svg>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant</h3>
-        <p class="text-gray-600">Silakan pilih tenant dari dropdown di atas untuk mulai mengelola</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          Pilih Tenant
+        </h3>
+        <p class="text-gray-600">
+          Silakan pilih tenant dari dropdown di atas untuk mulai mengelola
+        </p>
       </div>
     </div>
   </div>

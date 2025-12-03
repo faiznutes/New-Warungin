@@ -5,47 +5,92 @@
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Addon</h2>
+      <h2 class="text-2xl font-bold text-gray-900">
+        Addon
+      </h2>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    <div
+      v-if="needsTenantSelection"
+      class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300"
+    >
+      <svg
+        class="w-20 h-20 text-gray-400 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
       </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat dan mengelola addon</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        Pilih Tenant Terlebih Dahulu
+      </h3>
+      <p class="text-gray-600 text-center max-w-md">
+        Silakan pilih tenant terlebih dahulu untuk melihat dan mengelola addon
+      </p>
     </div>
 
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-else-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="flex flex-col items-center">
         <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat addon...</div>
+        <div class="text-gray-600 font-medium">
+          Memuat addon...
+        </div>
       </div>
     </div>
 
-    <div v-else class="flex flex-col space-y-6">
+    <div
+      v-else
+      class="flex flex-col space-y-6"
+    >
       <!-- Active Addons -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Aktif</h3>
-        <div v-if="activeAddons.length === 0" class="text-center py-8 text-gray-500">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+          Addon Aktif
+        </h3>
+        <div
+          v-if="activeAddons.length === 0"
+          class="text-center py-8 text-gray-500"
+        >
           Belum ada addon yang aktif
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
             class="border-2 border-primary-200 rounded-lg p-4 bg-primary-50"
           >
             <div class="flex items-start justify-between mb-3">
-              <h4 class="font-semibold text-gray-900">{{ addon.addonName }}</h4>
+              <h4 class="font-semibold text-gray-900">
+                {{ addon.addonName }}
+              </h4>
               <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">{{ getAddonDescription(addon) }}</p>
-            <div v-if="addon.limit" class="space-y-2 mb-3">
+            <p class="text-sm text-gray-600 mb-3">
+              {{ getAddonDescription(addon) }}
+            </p>
+            <div
+              v-if="addon.limit"
+              class="space-y-2 mb-3"
+            >
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Penggunaan:</span>
-                <span class="font-semibold" :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'">
+                <span
+                  class="font-semibold"
+                  :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'"
+                >
                   {{ addon.currentUsage }} / {{ addon.limit }}
                 </span>
               </div>
@@ -57,22 +102,28 @@
                 ></div>
               </div>
             </div>
-            <div v-if="addon.expiresAt" class="text-xs text-gray-600 mb-3">
+            <div
+              v-if="addon.expiresAt"
+              class="text-xs text-gray-600 mb-3"
+            >
               <p>Berakhir: {{ formatDate(addon.expiresAt) }}</p>
-              <p v-if="getDaysUntilExpiry(addon.expiresAt) > 0" class="text-orange-600 font-semibold">
+              <p
+                v-if="getDaysUntilExpiry(addon.expiresAt) > 0"
+                class="text-orange-600 font-semibold"
+              >
                 Tersisa {{ getDaysUntilExpiry(addon.expiresAt) }} hari
               </p>
             </div>
             <div class="flex gap-2">
               <button
-                @click="openExtendModal(addon)"
                 class="flex-1 px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition font-medium"
+                @click="openExtendModal(addon)"
               >
                 Perpanjang
               </button>
               <button
-                @click="unsubscribeAddon(addon.addonId)"
                 class="flex-1 px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+                @click="unsubscribeAddon(addon.addonId)"
               >
                 Nonaktifkan
               </button>
@@ -83,11 +134,19 @@
 
       <!-- Available Addons -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Tersedia</h3>
-        <div v-if="filteredAvailableAddons.length === 0" class="text-center py-8 text-gray-500">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">
+          Addon Tersedia
+        </h3>
+        <div
+          v-if="filteredAvailableAddons.length === 0"
+          class="text-center py-8 text-gray-500"
+        >
           Semua addon sudah aktif
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
@@ -95,12 +154,19 @@
             :class="addon.comingSoon ? 'border-gray-300 bg-gray-50 opacity-75' : 'border-gray-200 hover:border-primary-300'"
           >
             <div class="flex items-start justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
-              <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+              <h4 class="font-semibold text-gray-900">
+                {{ addon.name }}
+              </h4>
+              <span
+                v-if="addon.comingSoon"
+                class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded"
+              >
                 Segera Hadir
               </span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
+            <p class="text-sm text-gray-600 mb-3">
+              {{ addon.description }}
+            </p>
             
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -108,16 +174,19 @@
                 <span class="text-sm text-gray-500">/bulan</span>
               </div>
             </div>
-            <div v-if="addon.defaultLimit" class="text-sm text-gray-600 mb-3">
+            <div
+              v-if="addon.defaultLimit"
+              class="text-sm text-gray-600 mb-3"
+            >
               Batas: {{ addon.defaultLimit }}
             </div>
             <button
-              @click="subscribeAddon(addon)"
               :disabled="addon.comingSoon"
               class="w-full px-4 py-2 rounded-lg transition font-medium"
               :class="addon.comingSoon 
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                 : 'bg-primary-600 text-white hover:bg-primary-700'"
+              @click="subscribeAddon(addon)"
             >
               {{ addon.comingSoon ? 'Segera Hadir' : 'Berlangganan' }}
             </button>
@@ -133,12 +202,24 @@
       @click.self="showExtendModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Perpanjang Addon</h3>
-        <div v-if="selectedAddonForExtend" class="space-y-4">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Perpanjang Addon
+        </h3>
+        <div
+          v-if="selectedAddonForExtend"
+          class="space-y-4"
+        >
           <div class="bg-gray-50 rounded-lg p-4">
-            <h4 class="font-semibold text-gray-900 mb-1">{{ selectedAddonForExtend.addonName }}</h4>
-            <p class="text-sm text-gray-600">{{ getAddonDescription(selectedAddonForExtend) }}</p>
-            <div v-if="selectedAddonForExtend.expiresAt" class="mt-2 text-xs text-gray-500">
+            <h4 class="font-semibold text-gray-900 mb-1">
+              {{ selectedAddonForExtend.addonName }}
+            </h4>
+            <p class="text-sm text-gray-600">
+              {{ getAddonDescription(selectedAddonForExtend) }}
+            </p>
+            <div
+              v-if="selectedAddonForExtend.expiresAt"
+              class="mt-2 text-xs text-gray-500"
+            >
               Berakhir: {{ formatDate(selectedAddonForExtend.expiresAt) }}
             </div>
           </div>
@@ -149,24 +230,33 @@
               <button
                 v-for="duration in durationOptions"
                 :key="duration.value"
-                @click="extendDuration = duration.value"
                 class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
                 :class="extendDuration === duration.value
                   ? 'border-green-600 bg-green-50 text-green-700'
                   : 'border-gray-200 hover:border-green-300 text-gray-700'"
+                @click="extendDuration = duration.value"
               >
                 {{ duration.label }}
-                <span v-if="duration.discount" class="block text-xs text-green-600 mt-1">Diskon {{ duration.discount }}%</span>
+                <span
+                  v-if="duration.discount"
+                  class="block text-xs text-green-600 mt-1"
+                >Diskon {{ duration.discount }}%</span>
               </button>
             </div>
           </div>
 
-          <div v-if="extendDuration && selectedAddonForExtend" class="bg-gray-50 rounded-lg p-4">
+          <div
+            v-if="extendDuration && selectedAddonForExtend"
+            class="bg-gray-50 rounded-lg p-4"
+          >
             <div class="flex justify-between items-center mb-2">
               <span class="text-gray-700">Durasi:</span>
               <span class="font-semibold text-gray-900">{{ extendDuration }} hari</span>
             </div>
-            <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-2">
+            <div
+              v-if="getExtendDiscount() > 0"
+              class="flex justify-between items-center mb-2"
+            >
               <span class="text-gray-700">Diskon:</span>
               <span class="font-semibold text-green-600">{{ getExtendDiscount() }}%</span>
             </div>
@@ -178,15 +268,15 @@
 
           <div class="flex space-x-3">
             <button
-              @click="showExtendModal = false; selectedAddonForExtend = null; extendDuration = 0"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              @click="showExtendModal = false; selectedAddonForExtend = null; extendDuration = 0"
             >
               Batal
             </button>
             <button
-              @click="handleExtendAddon"
               :disabled="!extendDuration || processing"
               class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="handleExtendAddon"
             >
               {{ processing ? 'Memproses...' : 'Perpanjang Addon' }}
             </button>
@@ -194,9 +284,7 @@
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">

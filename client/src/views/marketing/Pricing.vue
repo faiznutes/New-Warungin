@@ -20,8 +20,12 @@
         <div class="flex flex-col bg-white rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-gray-100">
           <div class="flex flex-col p-5 sm:p-6 md:p-8">
             <div class="mb-4 sm:mb-6">
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Paket Basic</h2>
-              <p class="text-sm sm:text-base text-gray-600">Sempurna untuk warung baru mulai 🚀</p>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                Paket Basic
+              </h2>
+              <p class="text-sm sm:text-base text-gray-600">
+                Sempurna untuk warung baru mulai 🚀
+              </p>
             </div>
             <div class="mb-4 sm:mb-6">
               <div class="flex items-baseline flex-wrap">
@@ -29,60 +33,152 @@
                 <span class="text-lg sm:text-xl text-gray-600 ml-2">rb</span>
                 <span class="text-sm sm:text-base text-gray-500 ml-2">/bulan</span>
               </div>
-              <p class="text-xs sm:text-sm text-gray-500 mt-2">Bayar tahunan, hemat 20%</p>
+              <p class="text-xs sm:text-sm text-gray-500 mt-2">
+                Bayar tahunan, hemat 20%
+              </p>
             </div>
             <ul class="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">1 Outlet</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">4 Pengguna (1 Admin + 2 Kasir + 1 Kitchen)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">25 Produk</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Kelola Produk & Pesanan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Point of Sale (POS)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Kelola Pelanggan & Member</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Laporan Penjualan Dasar</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Basic Receipt Template</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-gray-700 text-xs sm:text-sm leading-relaxed">Store Settings & GDPR</span>
               </li>
@@ -91,7 +187,7 @@
               to="/contact"
               class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-center"
             >
-            Mulai Sekarang
+              Mulai Sekarang
             </router-link>
           </div>
         </div>
@@ -105,8 +201,12 @@
           </div>
           <div class="flex flex-col p-5 sm:p-6 md:p-8">
             <div class="mb-4 sm:mb-6">
-              <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Paket Pro</h2>
-              <p class="text-sm sm:text-base text-primary-100">Level up bisnis kamu! 💪</p>
+              <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">
+                Paket Pro
+              </h2>
+              <p class="text-sm sm:text-base text-primary-100">
+                Level up bisnis kamu! 💪
+              </p>
             </div>
             <div class="mb-4 sm:mb-6">
               <div class="flex items-baseline flex-wrap gap-2">
@@ -125,72 +225,184 @@
                   Hemat 30%
                 </span>
               </div>
-              <p class="text-xs sm:text-sm text-primary-100 mt-2">Bayar tahunan, hemat tambahan 20%</p>
+              <p class="text-xs sm:text-sm text-primary-100 mt-2">
+                Bayar tahunan, hemat tambahan 20%
+              </p>
             </div>
             <ul class="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">2 Outlet (Multi-outlet)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">10 Pengguna (1 Admin + 1 Supervisor + 6 Kasir + 2 Kitchen)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">100 Produk</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Semua Fitur Basic</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Inventori (Pemasok, Pesanan Pembelian, Transfer Stok, Peringatan Stok)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Penyesuaian Produk</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Hadiah & Diskon</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Pengguna</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Manajemen Langganan & Addon</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Template Struk Lanjutan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Webhook, Sesi, Pengaturan 2FA</span>
               </li>
@@ -213,61 +425,147 @@
           </div>
           <div class="flex flex-col p-5 sm:p-6 md:p-8">
             <div class="mb-4 sm:mb-6">
-              <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Paket Custom/Max</h2>
-              <p class="text-sm sm:text-base text-indigo-100">Semua fitur + semua addons! 🚀</p>
+              <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">
+                Paket Custom/Max
+              </h2>
+              <p class="text-sm sm:text-base text-indigo-100">
+                Semua fitur + semua addons! 🚀
+              </p>
             </div>
             <div class="mb-4 sm:mb-6">
               <div class="flex items-baseline">
                 <span class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Custom</span>
               </div>
-              <p class="text-xs sm:text-sm text-indigo-100 mt-2">Harga fleksibel sesuai kebutuhan. Hubungi admin untuk penawaran khusus.</p>
+              <p class="text-xs sm:text-sm text-indigo-100 mt-2">
+                Harga fleksibel sesuai kebutuhan. Hubungi admin untuk penawaran khusus.
+              </p>
             </div>
             <ul class="space-y-2 sm:space-y-3 mb-6 sm:mb-8 flex-1">
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Unlimited Outlet, Pengguna & Produk</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Semua Fitur Pro</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Semua 9 Addon Premium (Pemasaran & Pengiriman, Analitik Bisnis, Laporan Lanjutan, Manajemen Keuangan, Manajemen Inventori, Fitur AI/ML, Editor Struk Lanjutan, Multi-Outlet Lanjutan)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Pesanan Pengiriman & Kampanye Pemasaran</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Pemasaran Email (Template, Analitik, Penjadwal, Interaksi Pelanggan)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Analitik Lanjutan & Manajemen Keuangan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">AI/ML Features (Prediksi, Rekomendasi, Analisis Otomatis)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 mr-2 sm:mr-3 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="text-white text-xs sm:text-sm leading-relaxed">Dedicated Account Manager & Support 24/7</span>
               </li>
@@ -297,14 +595,28 @@
           <!-- Add Outlet -->
           <div class="bg-gradient-to-br from-white to-blue-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-blue-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Tambah Outlet</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Tambah Outlet
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Tambahkan outlet/cabang baru untuk bisnis multi-lokasi</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Tambahkan outlet/cabang baru untuk bisnis multi-lokasi
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(120000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -312,14 +624,34 @@
             </div>
             <ul class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Tambah kapan saja</span>
               </li>
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Sinkronisasi real-time</span>
               </li>
@@ -329,14 +661,28 @@
           <!-- Add Users -->
           <div class="bg-gradient-to-br from-white to-purple-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-purple-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Tambah Pengguna</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Tambah Pengguna
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Tambahkan user Kasir, Supervisor, atau Dapur</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Tambahkan user Kasir, Supervisor, atau Dapur
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(50000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -344,14 +690,34 @@
             </div>
             <ul class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Paket 5 user sekaligus</span>
               </li>
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Role-based access</span>
               </li>
@@ -361,14 +727,28 @@
           <!-- Add Products -->
           <div class="bg-gradient-to-br from-white to-green-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-green-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Tambah Produk</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Tambah Produk
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Tingkatkan limit produk untuk catalog lebih besar</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Tingkatkan limit produk untuk catalog lebih besar
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(30000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -376,14 +756,34 @@
             </div>
             <ul class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Paket 100 produk</span>
               </li>
               <li class="flex items-center">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Bisa ditambah berkala</span>
               </li>
@@ -398,14 +798,28 @@
               </span>
             </div>
             <div class="flex items-center justify-between mb-3 sm:mb-4 mt-2 sm:mt-0">
-              <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 flex-1 pr-2">Business Analytics & Insight</h3>
+              <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 flex-1 pr-2">
+                Business Analytics & Insight
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Paket lengkap analitik bisnis: Laporan Laba Rugi, Advanced Analytics, dan Quick Insight</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Paket lengkap analitik bisnis: Laporan Laba Rugi, Advanced Analytics, dan Quick Insight
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap gap-2">
               <div class="flex items-baseline">
                 <span class="text-3xl sm:text-4xl md:text-5xl font-bold text-purple-600">Rp {{ formatAddonPrice(250000) }}</span>
@@ -420,26 +834,66 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Laporan Laba Rugi: Revenue, COGS, Gross Profit, Operating Expenses, Net Profit</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Advanced Analytics: Prediksi penjualan, analisis tren, custom report builder</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Quick Insight: Ringkasan harian transaksi & produk terlaris dengan indikator naik/turun</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Halaman khusus laporan laba rugi dengan export PDF</span>
               </li>
@@ -449,14 +903,28 @@
           <!-- Advanced Reporting -->
           <div class="bg-gradient-to-br from-white to-cyan-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-cyan-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Laporan Lanjutan</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Laporan Lanjutan
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Ekspor laporan transaksi, stok, dan keuangan dalam format Excel, PDF, atau CSV</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Ekspor laporan transaksi, stok, dan keuangan dalam format Excel, PDF, atau CSV
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(75000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -464,20 +932,50 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Format Excel, PDF, atau CSV untuk semua jenis laporan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Rentang waktu custom sesuai kebutuhan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Tanda tangan digital untuk keperluan legal</span>
               </li>
@@ -487,14 +985,28 @@
           <!-- Delivery & Marketing -->
           <div class="bg-gradient-to-br from-white to-orange-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-orange-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Delivery & Marketing</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Delivery & Marketing
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Fitur lengkap untuk manajemen pengiriman dan kampanye pemasaran</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Fitur lengkap untuk manajemen pengiriman dan kampanye pemasaran
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(180000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -502,26 +1014,66 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Pesanan Pengiriman & Pelacakan</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Marketing Campaigns (Email, SMS, Push)</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Template Email, Analitik & Penjadwal</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Alat Interaksi Pelanggan</span>
               </li>
@@ -531,14 +1083,28 @@
           <!-- Financial Management -->
           <div class="bg-gradient-to-br from-white to-emerald-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-emerald-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Financial Management</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Financial Management
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Manajemen arus kas, pelacakan pengeluaran, perhitungan pajak, dan rekonsiliasi bank</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Manajemen arus kas, pelacakan pengeluaran, perhitungan pajak, dan rekonsiliasi bank
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(150000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -546,20 +1112,50 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Cash Flow Management</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Expense Tracking & Tax Calculation</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Bank Reconciliation</span>
               </li>
@@ -569,14 +1165,28 @@
           <!-- Inventory Management -->
           <div class="bg-gradient-to-br from-white to-teal-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-teal-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Inventory Management</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Inventory Management
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Manajemen pemasok, pesanan pembelian, transfer stok, dan peringatan stok</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Manajemen pemasok, pesanan pembelian, transfer stok, dan peringatan stok
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(100000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -584,14 +1194,34 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Pemasok & Pesanan Pembelian</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Transfer Stok & Peringatan Stok</span>
               </li>
@@ -601,14 +1231,28 @@
           <!-- AI/ML Features -->
           <div class="bg-gradient-to-br from-white to-violet-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-violet-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Fitur AI/ML</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Fitur AI/ML
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-violet-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Fitur prediksi penjualan, segmentasi pelanggan otomatis, dan rekomendasi produk berbasis AI/ML</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Fitur prediksi penjualan, segmentasi pelanggan otomatis, dan rekomendasi produk berbasis AI/ML
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(200000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -616,20 +1260,50 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Sales Prediction & Forecasting</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Customer Segmentation</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Product Recommendations</span>
               </li>
@@ -639,14 +1313,28 @@
           <!-- Advanced Receipt Editor -->
           <div class="bg-gradient-to-br from-white to-pink-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-pink-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Advanced Receipt Editor</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Advanced Receipt Editor
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Kustomisasi tampilan nota lebih lanjut: QR code, barcode, logo dinamis, dan template multi-bahasa</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Kustomisasi tampilan nota lebih lanjut: QR code, barcode, logo dinamis, dan template multi-bahasa
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(60000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -654,14 +1342,34 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">QR code, barcode, logo dinamis</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Template multi-bahasa</span>
               </li>
@@ -671,14 +1379,28 @@
           <!-- Multi-Outlet Advanced -->
           <div class="bg-gradient-to-br from-white to-blue-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-blue-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 class="text-base sm:text-lg font-bold text-gray-900">Multi-Outlet Advanced</h3>
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">
+                Multi-Outlet Advanced
+              </h3>
               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <svg
+                  class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">Manajemen multi-outlet dengan inventaris terpusat, harga spesifik outlet, dan laporan konsolidasi</p>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
+              Manajemen multi-outlet dengan inventaris terpusat, harga spesifik outlet, dan laporan konsolidasi
+            </p>
             <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
               <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(150000) }}</span>
               <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
@@ -686,20 +1408,50 @@
             </div>
             <ul class="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Centralized Inventory</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Outlet Specific Pricing</span>
               </li>
               <li class="flex items-start">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span class="leading-relaxed">Consolidated Reports</span>
               </li>
@@ -708,7 +1460,9 @@
         </div>
 
         <div class="mt-8 text-center">
-          <p class="text-gray-600 mb-4">💡 <strong>Tip:</strong> Kombinasi addon bisa dapat diskon hingga 20%!</p>
+          <p class="text-gray-600 mb-4">
+            💡 <strong>Tip:</strong> Kombinasi addon bisa dapat diskon hingga 20%!
+          </p>
           <router-link
             to="/contact"
             class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
@@ -725,25 +1479,33 @@
         </h2>
         <div class="space-y-4 sm:space-y-5 md:space-y-6">
           <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Apakah ada trial gratis?</h3>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+              Apakah ada trial gratis?
+            </h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Ya! Semua paket mendapatkan trial gratis 14 hari tanpa perlu kartu kredit. Coba semua fitur tanpa batasan.
             </p>
           </div>
           <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Bisakah saya upgrade paket nanti?</h3>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+              Bisakah saya upgrade paket nanti?
+            </h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Tentu! Anda bisa upgrade kapan saja. Selisih pembayaran akan dihitung secara proporsional.
             </p>
           </div>
           <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Metode pembayaran apa saja yang diterima?</h3>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+              Metode pembayaran apa saja yang diterima?
+            </h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Kami menerima transfer bank, kartu kredit/debit, dan e-wallet (OVO, GoPay, DANA, LinkAja).
             </p>
           </div>
           <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Apakah data saya aman?</h3>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+              Apakah data saya aman?
+            </h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Sangat aman! Data Anda dienkripsi dengan standar industri dan tersimpan di server lokal Indonesia. Backup otomatis setiap hari.
             </p>

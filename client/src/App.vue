@@ -1,7 +1,13 @@
 <template>
   <ErrorBoundary>
-    <div id="app-wrapper" class="w-full min-h-screen">
-      <main id="main-content" tabindex="-1">
+    <div
+      id="app-wrapper"
+      class="w-full min-h-screen"
+    >
+      <main
+        id="main-content"
+        tabindex="-1"
+      >
         <router-view />
       </main>
       

@@ -2,43 +2,78 @@
   <div class="flex flex-col h-full p-6">
     <!-- Header dengan Balance -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Point Gratis</h1>
-      <p class="text-gray-600">Tukarkan point dengan langganan atau addon</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Point Gratis
+      </h1>
+      <p class="text-gray-600">
+        Tukarkan point dengan langganan atau addon
+      </p>
     </div>
 
     <!-- Balance Card -->
     <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 mb-6 text-white shadow-lg">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-yellow-100 text-sm mb-1">Total Point Anda</p>
-          <p class="text-4xl font-bold">{{ balance.currentPoints || 0 }}</p>
+          <p class="text-yellow-100 text-sm mb-1">
+            Total Point Anda
+          </p>
+          <p class="text-4xl font-bold">
+            {{ balance.currentPoints || 0 }}
+          </p>
           <p class="text-yellow-100 text-sm mt-2">
             Total diperoleh: {{ balance.totalEarned || 0 }} • Digunakan: {{ balance.totalSpent || 0 }}
           </p>
-          <p v-if="balance.expirationDays" class="text-yellow-100 text-xs mt-1">
+          <p
+            v-if="balance.expirationDays"
+            class="text-yellow-100 text-xs mt-1"
+          >
             ⏰ Point berlaku selama {{ balance.expirationDays }} hari (6 bulan)
           </p>
         </div>
         <div class="text-right space-y-2">
           <div class="bg-white/20 rounded-lg px-4 py-2">
-            <p class="text-xs text-yellow-100">Sisa hari ini</p>
-            <p class="text-2xl font-bold">{{ dailyLimit.remaining || 0 }}/5</p>
+            <p class="text-xs text-yellow-100">
+              Sisa hari ini
+            </p>
+            <p class="text-2xl font-bold">
+              {{ dailyLimit.remaining || 0 }}/5
+            </p>
           </div>
-          <div v-if="balance.expiringSoon > 0" class="bg-red-500/80 rounded-lg px-4 py-2">
-            <p class="text-xs text-white">Akan kadaluarsa</p>
-            <p class="text-xl font-bold">{{ balance.expiringSoon }} pts</p>
-            <p class="text-xs text-white">(dalam 30 hari)</p>
+          <div
+            v-if="balance.expiringSoon > 0"
+            class="bg-red-500/80 rounded-lg px-4 py-2"
+          >
+            <p class="text-xs text-white">
+              Akan kadaluarsa
+            </p>
+            <p class="text-xl font-bold">
+              {{ balance.expiringSoon }} pts
+            </p>
+            <p class="text-xs text-white">
+              (dalam 30 hari)
+            </p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Expiration Warning -->
-    <div v-if="balance.expiringSoon > 0" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
+    <div
+      v-if="balance.expiringSoon > 0"
+      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded"
+    >
       <div class="flex">
         <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          <svg
+            class="h-5 w-5 text-yellow-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="ml-3">
@@ -54,35 +89,35 @@
     <div class="mb-6 border-b border-gray-200">
       <div class="flex space-x-4">
         <button
-          @click="activeTab = 'earn'"
           :class="[
             'pb-3 px-1 border-b-2 font-medium transition',
             activeTab === 'earn'
               ? 'border-primary-600 text-primary-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
           ]"
+          @click="activeTab = 'earn'"
         >
           Dapatkan Point
         </button>
         <button
-          @click="activeTab = 'redeem'"
           :class="[
             'pb-3 px-1 border-b-2 font-medium transition',
             activeTab === 'redeem'
               ? 'border-primary-600 text-primary-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
           ]"
+          @click="activeTab = 'redeem'"
         >
           Tukar Point
         </button>
         <button
-          @click="activeTab = 'history'"
           :class="[
             'pb-3 px-1 border-b-2 font-medium transition',
             activeTab === 'history'
               ? 'border-primary-600 text-primary-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'
           ]"
+          @click="activeTab = 'history'"
         >
           Riwayat
         </button>
@@ -90,12 +125,20 @@
     </div>
 
     <!-- Tab: Earn Points -->
-    <div v-if="activeTab === 'earn'" class="space-y-6">
+    <div
+      v-if="activeTab === 'earn'"
+      class="space-y-6"
+    >
       <!-- Ad View Section -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tonton Iklan untuk Mendapat Point</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Tonton Iklan untuk Mendapat Point
+        </h2>
         
-        <div v-if="dailyLimit.remaining > 0" class="space-y-4">
+        <div
+          v-if="dailyLimit.remaining > 0"
+          class="space-y-4"
+        >
           <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p class="text-sm text-blue-800 mb-2">
               <strong>Info:</strong> Anda bisa menonton maksimal 5 iklan per hari.
@@ -105,27 +148,60 @@
 
           <!-- Info: Iklan akan muncul di halaman reward-view -->
           <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-            <svg class="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            <svg
+              class="w-12 h-12 text-blue-400 mx-auto mb-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
             </svg>
-            <p class="text-blue-800 font-medium mb-1">Klik tombol "Claim Reward" untuk menonton iklan</p>
-            <p class="text-sm text-blue-600">Iklan IronSource akan muncul di halaman khusus</p>
+            <p class="text-blue-800 font-medium mb-1">
+              Klik tombol "Claim Reward" untuk menonton iklan
+            </p>
+            <p class="text-sm text-blue-600">
+              Iklan IronSource akan muncul di halaman khusus
+            </p>
           </div>
 
           <button
-            @click="claimReward"
             :disabled="loading || dailyLimit.remaining === 0"
             class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            @click="claimReward"
           >
-            <svg v-if="loading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 8 0 4.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              v-if="loading"
+              class="animate-spin h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 8 0 4.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             <span>{{ loading ? 'Memproses...' : `Claim Reward (${dailyLimit.remaining} tersisa)` }}</span>
           </button>
         </div>
 
-        <div v-else class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+        <div
+          v-else
+          class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center"
+        >
           <p class="text-yellow-800 font-semibold">
             ⏰ Batas harian sudah tercapai. Kembali besok untuk menonton iklan lagi!
           </p>
@@ -134,18 +210,34 @@
     </div>
 
     <!-- Tab: Redeem Points -->
-    <div v-if="activeTab === 'redeem'" class="space-y-6">
+    <div
+      v-if="activeTab === 'redeem'"
+      class="space-y-6"
+    >
       <!-- Subscription Redeem -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tukar Point untuk Langganan</h2>
-        <div v-if="loading" class="text-center py-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Tukar Point untuk Langganan
+        </h2>
+        <div
+          v-if="loading"
+          class="text-center py-8"
+        >
           <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat data...</p>
+          <p class="text-gray-600">
+            Memuat data...
+          </p>
         </div>
-        <div v-else-if="subscriptionPlans.length === 0" class="text-center py-8 text-gray-500">
+        <div
+          v-else-if="subscriptionPlans.length === 0"
+          class="text-center py-8 text-gray-500"
+        >
           <p>Tidak ada paket langganan tersedia saat ini.</p>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
           <div
             v-for="plan in subscriptionPlans"
             :key="plan.id"
@@ -155,14 +247,18 @@
               'border-gray-200 opacity-50': balance.currentPoints < plan.pointsRequired
             }"
           >
-            <h3 class="font-bold text-lg mb-2">{{ plan.name }}</h3>
-            <p class="text-gray-600 text-sm mb-4">{{ plan.description }}</p>
+            <h3 class="font-bold text-lg mb-2">
+              {{ plan.name }}
+            </h3>
+            <p class="text-gray-600 text-sm mb-4">
+              {{ plan.description }}
+            </p>
             <div class="flex items-center justify-between">
               <span class="text-2xl font-bold text-primary-600">{{ plan.pointsRequired }} pts</span>
               <button
-                @click="redeemSubscription(plan)"
                 :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
                 class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-semibold transition"
+                @click="redeemSubscription(plan)"
               >
                 {{ redeeming ? 'Memproses...' : 'Tukar' }}
               </button>
@@ -173,15 +269,28 @@
 
       <!-- Addon Redeem -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tukar Point untuk Addon</h2>
-        <div v-if="loading" class="text-center py-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Tukar Point untuk Addon
+        </h2>
+        <div
+          v-if="loading"
+          class="text-center py-8"
+        >
           <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat data...</p>
+          <p class="text-gray-600">
+            Memuat data...
+          </p>
         </div>
-        <div v-else-if="availableAddons.length === 0" class="text-center py-8 text-gray-500">
+        <div
+          v-else-if="availableAddons.length === 0"
+          class="text-center py-8 text-gray-500"
+        >
           <p>Tidak ada addon tersedia saat ini.</p>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-else
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
           <div
             v-for="addon in availableAddons"
             :key="addon.id"
@@ -191,14 +300,18 @@
               'border-gray-200 opacity-50': balance.currentPoints < addon.pointsRequired
             }"
           >
-            <h3 class="font-bold text-lg mb-2">{{ addon.name }}</h3>
-            <p class="text-gray-600 text-sm mb-4">{{ addon.description }}</p>
+            <h3 class="font-bold text-lg mb-2">
+              {{ addon.name }}
+            </h3>
+            <p class="text-gray-600 text-sm mb-4">
+              {{ addon.description }}
+            </p>
             <div class="flex items-center justify-between">
               <span class="text-xl font-bold text-primary-600">{{ addon.pointsRequired }} pts</span>
               <button
-                @click="redeemAddon(addon)"
                 :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
                 class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-semibold transition"
+                @click="redeemAddon(addon)"
               >
                 {{ redeeming ? 'Memproses...' : 'Tukar' }}
               </button>
@@ -211,30 +324,56 @@
     <!-- Tab: History -->
     <div v-if="activeTab === 'history'">
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Riwayat Transaksi Point</h2>
-        <div v-if="loading" class="text-center py-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Riwayat Transaksi Point
+        </h2>
+        <div
+          v-if="loading"
+          class="text-center py-8"
+        >
           <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat riwayat...</p>
+          <p class="text-gray-600">
+            Memuat riwayat...
+          </p>
         </div>
-        <div v-else-if="transactions.length === 0" class="text-center py-8 text-gray-500">
+        <div
+          v-else-if="transactions.length === 0"
+          class="text-center py-8 text-gray-500"
+        >
           Belum ada transaksi
         </div>
-        <div v-else class="space-y-3">
+        <div
+          v-else
+          class="space-y-3"
+        >
           <div
             v-for="transaction in transactions"
             :key="transaction.id"
             class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
           >
             <div class="flex-1">
-              <p class="font-semibold text-gray-900">{{ transaction.description }}</p>
-              <p class="text-sm text-gray-500">{{ formatDate(transaction.createdAt) }}</p>
-              <p v-if="transaction.type === 'EARNED' && transaction.metadata?.expirationDate" class="text-xs text-gray-400 mt-1">
+              <p class="font-semibold text-gray-900">
+                {{ transaction.description }}
+              </p>
+              <p class="text-sm text-gray-500">
+                {{ formatDate(transaction.createdAt) }}
+              </p>
+              <p
+                v-if="transaction.type === 'EARNED' && transaction.metadata?.expirationDate"
+                class="text-xs text-gray-400 mt-1"
+              >
                 ⏰ Kadaluarsa: {{ formatDate(transaction.metadata.expirationDate) }}
-                <span v-if="getDaysUntilExpiration(transaction.metadata.expirationDate) <= 30" class="text-yellow-600 font-semibold">
+                <span
+                  v-if="getDaysUntilExpiration(transaction.metadata.expirationDate) <= 30"
+                  class="text-yellow-600 font-semibold"
+                >
                   ({{ getDaysUntilExpiration(transaction.metadata.expirationDate) }} hari lagi)
                 </span>
               </p>
-              <p v-if="transaction.type === 'EXPIRED'" class="text-xs text-red-500 mt-1">
+              <p
+                v-if="transaction.type === 'EXPIRED'"
+                class="text-xs text-red-500 mt-1"
+              >
                 ⚠️ Point telah kadaluarsa
               </p>
             </div>

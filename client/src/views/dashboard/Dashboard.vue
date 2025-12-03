@@ -3,40 +3,74 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p class="text-sm sm:text-base text-gray-600">Ringkasan bisnis Anda dalam satu tempat</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+          Dashboard
+        </h2>
+        <p class="text-sm sm:text-base text-gray-600">
+          Ringkasan bisnis Anda dalam satu tempat
+        </p>
       </div>
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">
         <select
           v-model="dateRange"
-          @change="loadStats"
           class="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm hover:shadow-md transition"
+          @change="loadStats"
         >
-          <option value="today">Hari Ini</option>
-          <option value="week">Minggu Ini</option>
-          <option value="month">Bulan Ini</option>
-          <option value="year">Tahun Ini</option>
+          <option value="today">
+            Hari Ini
+          </option>
+          <option value="week">
+            Minggu Ini
+          </option>
+          <option value="month">
+            Bulan Ini
+          </option>
+          <option value="year">
+            Tahun Ini
+          </option>
         </select>
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+    <div
+      v-if="loading"
+      class="flex flex-col items-center justify-center py-20"
+    >
       <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat data...</div>
+      <div class="text-gray-600 font-medium">
+        Memuat data...
+      </div>
     </div>
 
     <!-- Kasir Dashboard -->
-    <div v-else-if="userRole === 'CASHIER'" class="flex flex-col gap-6 px-4 sm:px-6 pb-4 sm:pb-6">
+    <div
+      v-else-if="userRole === 'CASHIER'"
+      class="flex flex-col gap-6 px-4 sm:px-6 pb-4 sm:pb-6"
+    >
       <!-- Welcome Section -->
       <div class="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-xl shadow-xl p-6 sm:p-8 text-white">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex-1">
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, Kasir!</h2>
-            <p class="text-primary-100 text-base sm:text-lg">Mulai transaksi baru untuk melayani pelanggan</p>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+              Selamat Datang, Kasir!
+            </h2>
+            <p class="text-primary-100 text-base sm:text-lg">
+              Mulai transaksi baru untuk melayani pelanggan
+            </p>
           </div>
           <div class="hidden md:block flex-shrink-0">
-            <svg class="w-24 h-24 sm:w-32 sm:h-32 text-primary-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            <svg
+              class="w-24 h-24 sm:w-32 sm:h-32 text-primary-300 opacity-50"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+              />
             </svg>
           </div>
         </div>
@@ -48,53 +82,107 @@
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Transaksi Hari Ini</span>
             <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ cashierStats?.todayTransactions || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Total transaksi hari ini</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ cashierStats?.todayTransactions || 0 }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Total transaksi hari ini
+          </p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pendapatan Hari Ini</span>
             <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ formatCurrency(cashierStats?.todayRevenue || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Total pendapatan hari ini</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ formatCurrency(cashierStats?.todayRevenue || 0) }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Total pendapatan hari ini
+          </p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-blue-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Rata-rata per Transaksi</span>
             <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ formatCurrency(cashierStats?.averageTransaction || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Rata-rata nilai transaksi</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ formatCurrency(cashierStats?.averageTransaction || 0) }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Rata-rata nilai transaksi
+          </p>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200">
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Aksi Cepat</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">
+          Aksi Cepat
+        </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <router-link
             to="/app/pos"
             class="flex items-center p-5 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl hover:from-primary-100 hover:to-primary-200 transition-all duration-200 border-2 border-primary-200 hover:border-primary-400 hover:shadow-lg group"
           >
             <div class="w-14 h-14 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              <svg
+                class="w-7 h-7 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <div>
@@ -107,17 +195,34 @@
     </div>
 
     <!-- Kitchen Dashboard -->
-    <div v-else-if="userRole === 'KITCHEN'" class="flex flex-col gap-6 px-4 sm:px-6 pb-4 sm:pb-6">
+    <div
+      v-else-if="userRole === 'KITCHEN'"
+      class="flex flex-col gap-6 px-4 sm:px-6 pb-4 sm:pb-6"
+    >
       <!-- Welcome Section -->
       <div class="bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-xl shadow-xl p-6 sm:p-8 text-white">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex-1">
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, Kitchen!</h2>
-            <p class="text-red-100 text-base sm:text-lg">Kelola pesanan yang masuk dari kasir</p>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">
+              Selamat Datang, Kitchen!
+            </h2>
+            <p class="text-red-100 text-base sm:text-lg">
+              Kelola pesanan yang masuk dari kasir
+            </p>
           </div>
           <div class="hidden md:block flex-shrink-0">
-            <svg class="w-24 h-24 sm:w-32 sm:h-32 text-red-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            <svg
+              class="w-24 h-24 sm:w-32 sm:h-32 text-red-300 opacity-50"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
             </svg>
           </div>
         </div>
@@ -129,53 +234,112 @@
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pesanan Pending</span>
             <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.pendingOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Menunggu diproses</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ kitchenStats?.pendingOrders || 0 }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Menunggu diproses
+          </p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-orange-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-orange-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Sedang Dimasak</span>
             <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.cookingOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Sedang dalam proses</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ kitchenStats?.cookingOrders || 0 }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Sedang dalam proses
+          </p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pesanan Siap</span>
             <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.readyOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Siap untuk dikirim</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">
+            {{ kitchenStats?.readyOrders || 0 }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Siap untuk dikirim
+          </p>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200">
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Aksi Cepat</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">
+          Aksi Cepat
+        </h3>
         <router-link
           to="/app/orders/kitchen"
           class="flex items-center p-5 bg-gradient-to-br from-red-50 to-red-100 rounded-xl hover:from-red-100 hover:to-red-200 transition-all duration-200 border-2 border-red-200 hover:border-red-400 hover:shadow-lg group"
         >
           <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-md">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            <svg
+              class="w-7 h-7 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
             </svg>
           </div>
           <div>
@@ -187,7 +351,10 @@
     </div>
 
     <!-- Super Admin Dashboard (when no tenant selected) -->
-    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div
+      v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId"
+      class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8"
+    >
       <!-- Hero Section with Gradient -->
       <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -195,23 +362,45 @@
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
         <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div class="flex-1">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Selamat Datang, Super Admin! 👋</h2>
-            <p class="text-indigo-100 text-lg sm:text-xl mb-4">Kelola penjualan addon dan langganan dengan mudah</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">
+              Selamat Datang, Super Admin! 👋
+            </h2>
+            <p class="text-indigo-100 text-lg sm:text-xl mb-4">
+              Kelola penjualan addon dan langganan dengan mudah
+            </p>
             <div class="flex flex-wrap gap-3 mt-4">
               <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <p class="text-xs text-indigo-100">Total Pendapatan</p>
-                <p class="text-xl font-bold">{{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}</p>
+                <p class="text-xs text-indigo-100">
+                  Total Pendapatan
+                </p>
+                <p class="text-xl font-bold">
+                  {{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}
+                </p>
               </div>
               <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <p class="text-xs text-indigo-100">Active Subscriptions</p>
-                <p class="text-xl font-bold">{{ stats?.overview?.activeSubscriptions || 0 }}</p>
+                <p class="text-xs text-indigo-100">
+                  Active Subscriptions
+                </p>
+                <p class="text-xl font-bold">
+                  {{ stats?.overview?.activeSubscriptions || 0 }}
+                </p>
               </div>
             </div>
           </div>
           <div class="hidden lg:block flex-shrink-0">
             <div class="w-40 h-40 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-              <svg class="w-24 h-24 text-white opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                class="w-24 h-24 text-white opacity-80"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
             </div>
           </div>
@@ -225,13 +414,21 @@
             <label class="text-sm font-medium text-gray-700">Periode:</label>
             <select
               v-model="superAdminDateRange"
-              @change="loadSuperAdminStats"
               class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+              @change="loadSuperAdminStats"
             >
-              <option value="today">Hari Ini</option>
-              <option value="week">Minggu Ini</option>
-              <option value="month">Bulan Ini</option>
-              <option value="year">Tahun Ini</option>
+              <option value="today">
+                Hari Ini
+              </option>
+              <option value="week">
+                Minggu Ini
+              </option>
+              <option value="month">
+                Bulan Ini
+              </option>
+              <option value="year">
+                Tahun Ini
+              </option>
             </select>
           </div>
           <div class="text-sm text-gray-600">
@@ -249,13 +446,27 @@
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Total Pendapatan</span>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Subscriptions + Addons</p>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            {{ formatCurrency(stats?.overview?.totalRevenue || globalReportData?.summary?.totalGlobalRevenue || 0) }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            Subscriptions + Addons
+          </p>
         </router-link>
 
         <router-link
@@ -265,13 +476,27 @@
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pendapatan Subscription</span>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(globalReportData?.summary?.totalSubscriptionRevenue || stats?.overview?.totalSubscriptionRevenue || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">{{ stats?.overview?.activeSubscriptions || 0 }} langganan aktif</p>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            {{ formatCurrency(globalReportData?.summary?.totalSubscriptionRevenue || stats?.overview?.totalSubscriptionRevenue || 0) }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            {{ stats?.overview?.activeSubscriptions || 0 }} langganan aktif
+          </p>
         </router-link>
 
         <router-link
@@ -281,13 +506,27 @@
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pendapatan Addons</span>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ formatCurrency(globalReportData?.summary?.totalAddonRevenue || stats?.overview?.totalAddonRevenue || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">{{ stats?.overview?.totalAddons || 0 }} addon terjual</p>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            {{ formatCurrency(globalReportData?.summary?.totalAddonRevenue || stats?.overview?.totalAddonRevenue || 0) }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            {{ stats?.overview?.totalAddons || 0 }} addon terjual
+          </p>
         </router-link>
 
         <router-link
@@ -297,13 +536,27 @@
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Total Tenant</span>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{{ stats?.overview?.totalTenants || superAdminStats?.totalTenants || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">{{ stats?.overview?.activeTenants || superAdminStats?.activeTenants || 0 }} tenant aktif</p>
+          <p class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            {{ stats?.overview?.totalTenants || superAdminStats?.totalTenants || 0 }}
+          </p>
+          <p class="text-xs sm:text-sm text-gray-600">
+            {{ stats?.overview?.activeTenants || superAdminStats?.activeTenants || 0 }} tenant aktif
+          </p>
         </router-link>
       </div>
 
@@ -311,47 +564,97 @@
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg hover:shadow-xl transition-all p-6 border-2 border-blue-200 hover:border-blue-300">
           <div class="flex items-center justify-between mb-4">
-            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Total Tenant</p>
+            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Total Tenant
+            </p>
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900">{{ stats?.overview?.totalTenants || 0 }}</p>
-          <p class="text-xs text-gray-600 mt-1">Semua tenant terdaftar</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900">
+            {{ stats?.overview?.totalTenants || 0 }}
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            Semua tenant terdaftar
+          </p>
         </div>
 
         <div class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-lg hover:shadow-xl transition-all p-6 border-2 border-green-200 hover:border-green-300">
           <div class="flex items-center justify-between mb-4">
-            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Tenant Aktif</p>
+            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Tenant Aktif
+            </p>
             <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900">{{ stats?.overview?.activeTenants || 0 }}</p>
-          <p class="text-xs text-gray-600 mt-1">Dengan langganan aktif</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900">
+            {{ stats?.overview?.activeTenants || 0 }}
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            Dengan langganan aktif
+          </p>
         </div>
 
         <div class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg hover:shadow-xl transition-all p-6 border-2 border-purple-200 hover:border-purple-300">
           <div class="flex items-center justify-between mb-4">
-            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Total Pengguna</p>
+            <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              Total Pengguna
+            </p>
             <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900">{{ stats?.overview?.totalUsers || 0 }}</p>
-          <p class="text-xs text-gray-600 mt-1">Semua pengguna sistem</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900">
+            {{ stats?.overview?.totalUsers || 0 }}
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            Semua pengguna sistem
+          </p>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Aksi Cepat</h3>
+        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+          Aksi Cepat
+        </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <router-link
             to="/app/reports/global"
@@ -360,12 +663,26 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div class="relative z-10">
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
               </div>
-              <h4 class="font-bold text-lg mb-1">Laporan Global</h4>
-              <p class="text-blue-100 text-sm">Lihat laporan addon & langganan</p>
+              <h4 class="font-bold text-lg mb-1">
+                Laporan Global
+              </h4>
+              <p class="text-blue-100 text-sm">
+                Lihat laporan addon & langganan
+              </p>
             </div>
           </router-link>
 
@@ -376,12 +693,26 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div class="relative z-10">
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
-              <h4 class="font-bold text-lg mb-1">Laporan Subscription</h4>
-              <p class="text-purple-100 text-sm">Lihat laporan subscription</p>
+              <h4 class="font-bold text-lg mb-1">
+                Laporan Subscription
+              </h4>
+              <p class="text-purple-100 text-sm">
+                Lihat laporan subscription
+              </p>
             </div>
           </router-link>
 
@@ -392,12 +723,26 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div class="relative z-10">
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
               </div>
-              <h4 class="font-bold text-lg mb-1">Kelola Addon</h4>
-              <p class="text-green-100 text-sm">Lihat penjualan addon</p>
+              <h4 class="font-bold text-lg mb-1">
+                Kelola Addon
+              </h4>
+              <p class="text-green-100 text-sm">
+                Lihat penjualan addon
+              </p>
             </div>
           </router-link>
 
@@ -408,12 +753,26 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div class="relative z-10">
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
                 </svg>
               </div>
-              <h4 class="font-bold text-lg mb-1">Kelola Tenant</h4>
-              <p class="text-orange-100 text-sm">Lihat dan kelola semua tenant</p>
+              <h4 class="font-bold text-lg mb-1">
+                Kelola Tenant
+              </h4>
+              <p class="text-orange-100 text-sm">
+                Lihat dan kelola semua tenant
+              </p>
             </div>
           </router-link>
         </div>
@@ -424,21 +783,52 @@
         <!-- Top Subscription Plans -->
         <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 hover:shadow-xl transition-shadow">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Paket Subscription Terlaris</h3>
-            <router-link to="/app/reports/global" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+              Paket Subscription Terlaris
+            </h3>
+            <router-link
+              to="/app/reports/global"
+              class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+            >
               Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </router-link>
           </div>
-          <div v-if="!stats?.subscriptionBreakdown || stats.subscriptionBreakdown.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div
+            v-if="!stats?.subscriptionBreakdown || stats.subscriptionBreakdown.length === 0"
+            class="text-center py-12 text-gray-500"
+          >
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <p>Belum ada subscription</p>
           </div>
-          <div v-else class="space-y-3">
+          <div
+            v-else
+            class="space-y-3"
+          >
             <div
               v-for="(plan, index) in stats.subscriptionBreakdown.sort((a: any, b: any) => b.count - a.count).slice(0, 5)"
               :key="plan.plan"
@@ -449,12 +839,18 @@
                   <span class="text-white font-bold text-lg">{{ index + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-bold text-gray-900 text-base truncate">{{ getPlanName(plan.plan) }}</p>
-                  <p class="text-sm text-gray-600">{{ plan.count }} pembelian</p>
+                  <p class="font-bold text-gray-900 text-base truncate">
+                    {{ getPlanName(plan.plan) }}
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    {{ plan.count }} pembelian
+                  </p>
                 </div>
               </div>
               <div class="text-right ml-4">
-                <p class="font-bold text-primary-600 text-lg">{{ formatCurrency(getPlanPrice(plan.plan) * plan.count) }}</p>
+                <p class="font-bold text-primary-600 text-lg">
+                  {{ formatCurrency(getPlanPrice(plan.plan) * plan.count) }}
+                </p>
               </div>
             </div>
           </div>
@@ -463,28 +859,62 @@
         <!-- Subscription by Status -->
         <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 hover:shadow-xl transition-shadow">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Subscription Berdasarkan Status</h3>
-            <router-link to="/app/reports/global" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+              Subscription Berdasarkan Status
+            </h3>
+            <router-link
+              to="/app/reports/global"
+              class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+            >
               Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </router-link>
           </div>
-          <div v-if="!globalReportData?.subscriptions || globalReportData.subscriptions.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <div
+            v-if="!globalReportData?.subscriptions || globalReportData.subscriptions.length === 0"
+            class="text-center py-12 text-gray-500"
+          >
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
             <p>Belum ada data subscription</p>
           </div>
-          <div v-else class="space-y-4">
+          <div
+            v-else
+            class="space-y-4"
+          >
             <div
               v-for="statusGroup in getSubscriptionStatusGroups()"
               :key="statusGroup.status"
               class="group"
             >
               <div class="flex items-center justify-between mb-2">
-                <span class="px-4 py-2 text-sm font-semibold rounded-full" :class="getSubscriptionStatusClass(statusGroup.status)">
+                <span
+                  class="px-4 py-2 text-sm font-semibold rounded-full"
+                  :class="getSubscriptionStatusClass(statusGroup.status)"
+                >
                   {{ getSubscriptionStatusLabel(statusGroup.status) }}
                 </span>
                 <span class="text-lg font-bold text-gray-900">{{ statusGroup.count }}</span>
@@ -504,35 +934,72 @@
       <!-- Recent Addon Purchases -->
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 hover:shadow-xl transition-shadow">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Pembelian Addon Terbaru</h3>
-          <router-link to="/app/addons" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+            Pembelian Addon Terbaru
+          </h3>
+          <router-link
+            to="/app/addons"
+            class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+          >
             Lihat Semua
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </router-link>
         </div>
-        <div v-if="!stats?.recentAddons || stats.recentAddons.length === 0" class="text-center py-12 text-gray-500">
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        <div
+          v-if="!stats?.recentAddons || stats.recentAddons.length === 0"
+          class="text-center py-12 text-gray-500"
+        >
+          <svg
+            class="w-16 h-16 mx-auto mb-4 text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            />
           </svg>
           <p>Belum ada pembelian addon</p>
         </div>
-        <div v-else class="space-y-3">
+        <div
+          v-else
+          class="space-y-3"
+        >
           <div
             v-for="addon in stats.recentAddons.slice(0, 5)"
             :key="addon.id"
             class="group flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl hover:from-purple-50 hover:to-pink-50 transition-all border border-gray-100 hover:border-purple-200 hover:shadow-md"
           >
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-gray-900 text-base truncate">{{ addon.tenantName }}</p>
-              <p class="text-sm text-gray-600">{{ addon.addonName }} • {{ formatDateTime(addon.subscribedAt) }}</p>
+              <p class="font-bold text-gray-900 text-base truncate">
+                {{ addon.tenantName }}
+              </p>
+              <p class="text-sm text-gray-600">
+                {{ addon.addonName }} • {{ formatDateTime(addon.subscribedAt) }}
+              </p>
             </div>
             <div class="text-right ml-4 flex-shrink-0">
-              <span :class="[
-                'px-3 py-1 rounded-full text-xs font-semibold',
-                addon.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-              ]">
+              <span
+                :class="[
+                  'px-3 py-1 rounded-full text-xs font-semibold',
+                  addon.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                ]"
+              >
                 {{ addon.status }}
               </span>
             </div>
@@ -542,27 +1009,40 @@
     </div>
 
     <!-- Tenant Stats (when tenant is selected) -->
-    <div v-else-if="stats" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div
+      v-else-if="stats"
+      class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8"
+    >
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
-      <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+      <div
+        v-if="isAdminOrSupervisor && subscriptionLoading"
+        class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden"
+      >
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="relative z-10 flex items-center justify-center py-8">
           <div class="flex flex-col items-center gap-4">
             <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-primary-100 text-lg">Memuat informasi langganan...</p>
+            <p class="text-primary-100 text-lg">
+              Memuat informasi langganan...
+            </p>
           </div>
         </div>
       </div>
       
       <!-- Hero Section with Subscription -->
-      <div v-else-if="isAdminOrSupervisor && currentSubscription" class="relative bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+      <div
+        v-else-if="isAdminOrSupervisor && currentSubscription"
+        class="relative bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden"
+      >
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
         <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
         <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-4">
-              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard Bisnis Anda</h2>
+              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                Dashboard Bisnis Anda
+              </h2>
               <span
                 class="px-4 py-1.5 text-sm font-bold rounded-full backdrop-blur-sm"
                 :class="currentSubscription?.isExpired ? 'bg-red-500 bg-opacity-80 text-white' : 'bg-green-500 bg-opacity-80 text-white'"
@@ -571,16 +1051,23 @@
               </span>
             </div>
             <div class="mb-4">
-              <p class="text-emerald-100 text-lg sm:text-xl mb-2">Paket: <span class="font-bold text-white">{{ getPlanName(currentSubscription?.plan || 'BASIC') }}</span></p>
-              <p class="text-emerald-100 text-sm sm:text-base">Berakhir: {{ formatDate(currentSubscription?.subscription?.endDate) }}</p>
-              <p v-if="currentSubscription?.daysRemaining !== undefined" class="text-white font-bold text-lg mt-2">
+              <p class="text-emerald-100 text-lg sm:text-xl mb-2">
+                Paket: <span class="font-bold text-white">{{ getPlanName(currentSubscription?.plan || 'BASIC') }}</span>
+              </p>
+              <p class="text-emerald-100 text-sm sm:text-base">
+                Berakhir: {{ formatDate(currentSubscription?.subscription?.endDate) }}
+              </p>
+              <p
+                v-if="currentSubscription?.daysRemaining !== undefined"
+                class="text-white font-bold text-lg mt-2"
+              >
                 {{ currentSubscription.daysRemaining > 0 || (currentSubscription.hoursRemaining && currentSubscription.hoursRemaining > 0) 
                   ? `${formatRemainingTime(
-                      currentSubscription.daysRemaining || 0,
-                      currentSubscription.hoursRemaining,
-                      currentSubscription.minutesRemaining,
-                      currentSubscription.secondsRemaining
-                    )} tersisa` 
+                    currentSubscription.daysRemaining || 0,
+                    currentSubscription.hoursRemaining,
+                    currentSubscription.minutesRemaining,
+                    currentSubscription.secondsRemaining
+                  )} tersisa` 
                   : 'Langganan telah kedaluwarsa' }}
               </p>
             </div>
@@ -591,8 +1078,18 @@
               class="block px-6 py-3 bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white rounded-xl transition-all font-semibold text-center border-2 border-white border-opacity-30 hover:border-opacity-50 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               <div class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
                 </svg>
                 <span>Upgrade/Perpanjang</span>
               </div>
@@ -602,12 +1099,19 @@
       </div>
       
       <!-- Welcome Section (if no subscription and subscription is loaded) -->
-      <div v-else-if="showWelcomeSection" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+      <div
+        v-else-if="showWelcomeSection"
+        class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden"
+      >
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
         <div class="relative z-10">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Selamat Datang! 👋</h2>
-          <p class="text-primary-100 text-lg sm:text-xl">Kelola bisnis Anda dengan mudah dari satu tempat</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">
+            Selamat Datang! 👋
+          </h2>
+          <p class="text-primary-100 text-lg sm:text-xl">
+            Kelola bisnis Anda dengan mudah dari satu tempat
+          </p>
         </div>
       </div>
 
@@ -622,19 +1126,56 @@
             <div class="flex items-center justify-between mb-4">
               <span class="text-sm font-semibold text-green-100 uppercase tracking-wide">Total Pendapatan</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ formatCurrency(stats?.overview?.totalRevenue || 0) }}</p>
+            <p class="text-3xl sm:text-4xl font-bold mb-3">
+              {{ formatCurrency(stats?.overview?.totalRevenue || 0) }}
+            </p>
             <div class="flex items-center">
-              <span :class="stats?.overview?.revenueGrowth >= 0 ? 'text-green-100' : 'text-red-200'" class="flex items-center text-sm font-semibold">
-                <svg v-if="stats?.overview?.revenueGrowth >= 0" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              <span
+                :class="stats?.overview?.revenueGrowth >= 0 ? 'text-green-100' : 'text-red-200'"
+                class="flex items-center text-sm font-semibold"
+              >
+                <svg
+                  v-if="stats?.overview?.revenueGrowth >= 0"
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
                 </svg>
-                <svg v-else class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                <svg
+                  v-else
+                  class="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
                 </svg>
                 {{ stats?.overview?.revenueGrowth >= 0 ? '+' : '' }}{{ stats?.overview?.revenueGrowth?.toFixed(1) || 0 }}%
               </span>
@@ -652,12 +1193,24 @@
             <div class="flex items-center justify-between mb-4">
               <span class="text-sm font-semibold text-blue-100 uppercase tracking-wide">Total Pesanan</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalOrders || 0 }}</p>
+            <p class="text-3xl sm:text-4xl font-bold mb-3">
+              {{ stats?.overview?.totalOrders || 0 }}
+            </p>
             <p class="text-sm text-blue-100">
               <span class="font-bold text-white">{{ stats?.overview?.todayOrders || 0 }}</span> pesanan hari ini
             </p>
@@ -673,12 +1226,24 @@
             <div class="flex items-center justify-between mb-4">
               <span class="text-sm font-semibold text-purple-100 uppercase tracking-wide">Total Produk</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalProducts || 0 }}</p>
+            <p class="text-3xl sm:text-4xl font-bold mb-3">
+              {{ stats?.overview?.totalProducts || 0 }}
+            </p>
             <p class="text-sm text-purple-100">
               <span class="font-bold text-white">{{ stats?.alerts?.lowStockProducts || 0 }}</span> produk stok rendah
             </p>
@@ -694,12 +1259,24 @@
             <div class="flex items-center justify-between mb-4">
               <span class="text-sm font-semibold text-indigo-100 uppercase tracking-wide">Total Pelanggan</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <svg
+                  class="w-7 h-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
               </div>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalCustomers || 0 }}</p>
+            <p class="text-3xl sm:text-4xl font-bold mb-3">
+              {{ stats?.overview?.totalCustomers || 0 }}
+            </p>
             <p class="text-sm text-indigo-100">
               <span class="font-bold text-white">{{ stats?.overview?.totalMembers || 0 }}</span> member aktif
             </p>
@@ -708,19 +1285,34 @@
       </div>
 
       <!-- Quick Insight Widget (always visible for Super Admin, or if Business Analytics addon is active for Admin Tenant) -->
-      <QuickInsightWidget v-if="authStore.isSuperAdmin || hasBusinessAnalytics" class="mb-6" />
+      <QuickInsightWidget
+        v-if="authStore.isSuperAdmin || hasBusinessAnalytics"
+        class="mb-6"
+      />
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Aksi Cepat</h3>
+        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+          Aksi Cepat
+        </h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <router-link
             to="/app/pos"
             class="group flex flex-col items-center p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all border-2 border-green-200 hover:border-green-400 hover:shadow-lg"
           >
             <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
               </svg>
             </div>
             <span class="font-semibold text-gray-900 text-sm text-center">POS</span>
@@ -731,8 +1323,18 @@
             class="group flex flex-col items-center p-5 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl hover:from-blue-100 hover:to-cyan-100 transition-all border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg"
           >
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
               </svg>
             </div>
             <span class="font-semibold text-gray-900 text-sm text-center">Produk</span>
@@ -743,8 +1345,18 @@
             class="group flex flex-col items-center p-5 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl hover:from-purple-100 hover:to-pink-100 transition-all border-2 border-purple-200 hover:border-purple-400 hover:shadow-lg"
           >
             <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <span class="font-semibold text-gray-900 text-sm text-center">Pesanan</span>
@@ -755,8 +1367,18 @@
             class="group flex flex-col items-center p-5 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl hover:from-indigo-100 hover:to-violet-100 transition-all border-2 border-indigo-200 hover:border-indigo-400 hover:shadow-lg"
           >
             <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </div>
             <span class="font-semibold text-gray-900 text-sm text-center">Pelanggan</span>
@@ -767,8 +1389,18 @@
             class="group flex flex-col items-center p-5 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl hover:from-orange-100 hover:to-amber-100 transition-all border-2 border-orange-200 hover:border-orange-400 hover:shadow-lg"
           >
             <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
             <span class="font-semibold text-gray-900 text-sm text-center">Laporan</span>
@@ -782,21 +1414,52 @@
         <!-- Top Products -->
         <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Produk Terlaris</h3>
-            <router-link to="/app/products" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+              Produk Terlaris
+            </h3>
+            <router-link
+              to="/app/products"
+              class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+            >
               Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </router-link>
           </div>
-          <div v-if="stats?.charts?.topProducts?.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          <div
+            v-if="stats?.charts?.topProducts?.length === 0"
+            class="text-center py-12 text-gray-500"
+          >
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
             </svg>
             <p>Belum ada data produk</p>
           </div>
-          <div v-else class="space-y-3">
+          <div
+            v-else
+            class="space-y-3"
+          >
             <div
               v-for="(item, index) in stats?.charts?.topProducts?.slice(0, 5)"
               :key="item.product?.id"
@@ -807,12 +1470,18 @@
                   <span class="text-white font-bold text-lg">{{ index + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-bold text-gray-900 text-base truncate">{{ item.product?.name || 'Unknown' }}</p>
-                  <p class="text-sm text-gray-600">{{ item.totalQuantity }} terjual</p>
+                  <p class="font-bold text-gray-900 text-base truncate">
+                    {{ item.product?.name || 'Unknown' }}
+                  </p>
+                  <p class="text-sm text-gray-600">
+                    {{ item.totalQuantity }} terjual
+                  </p>
                 </div>
               </div>
               <div class="text-right ml-4">
-                <p class="font-bold text-primary-600 text-lg">{{ formatCurrency(Number(item.totalRevenue)) }}</p>
+                <p class="font-bold text-primary-600 text-lg">
+                  {{ formatCurrency(Number(item.totalRevenue)) }}
+                </p>
               </div>
             </div>
           </div>
@@ -821,28 +1490,62 @@
         <!-- Sales by Status -->
         <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Pesanan Berdasarkan Status</h3>
-            <router-link to="/app/orders" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
+              Pesanan Berdasarkan Status
+            </h3>
+            <router-link
+              to="/app/orders"
+              class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1"
+            >
               Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </router-link>
           </div>
-          <div v-if="stats?.charts?.salesByStatus?.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <div
+            v-if="stats?.charts?.salesByStatus?.length === 0"
+            class="text-center py-12 text-gray-500"
+          >
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
             <p>Belum ada data pesanan</p>
           </div>
-          <div v-else class="space-y-4">
+          <div
+            v-else
+            class="space-y-4"
+          >
             <div
               v-for="item in stats?.charts?.salesByStatus"
               :key="item.status"
               class="group"
             >
               <div class="flex items-center justify-between mb-2">
-                <span class="px-4 py-2 text-sm font-semibold rounded-full" :class="getStatusClass(item.status)">
+                <span
+                  class="px-4 py-2 text-sm font-semibold rounded-full"
+                  :class="getStatusClass(item.status)"
+                >
                   {{ getStatusLabel(item.status) }}
                 </span>
                 <span class="text-lg font-bold text-gray-900">{{ item.count }}</span>

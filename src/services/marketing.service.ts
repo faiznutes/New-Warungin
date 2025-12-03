@@ -317,7 +317,7 @@ class MarketingService {
             phone: m.phone,
           }))
         );
-      case 'ACTIVE':
+      case 'ACTIVE': {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const activeOrderCustomers = await prisma.order.findMany({
@@ -339,7 +339,8 @@ class MarketingService {
           },
           select: { id: true, email: true, name: true, phone: true },
         });
-      case 'INACTIVE':
+      }
+      case 'INACTIVE': {
         const ninetyDaysAgo = new Date();
         ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
         const recentOrderCustomers = await prisma.order.findMany({
@@ -361,6 +362,7 @@ class MarketingService {
           },
           select: { id: true, email: true, name: true, phone: true },
         });
+      }
       default:
         return [];
     }
@@ -473,7 +475,7 @@ class MarketingService {
         return await prisma.customer.count({ where: { tenantId } });
       case 'MEMBERS':
         return await prisma.member.count({ where: { tenantId, isActive: true } });
-      case 'ACTIVE':
+      case 'ACTIVE': {
         // Customers with orders in last 30 days
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -485,7 +487,8 @@ class MarketingService {
           distinct: ['customerId'],
         });
         return activeCustomers.length;
-      case 'INACTIVE':
+      }
+      case 'INACTIVE': {
         // Customers without orders in last 90 days
         const ninetyDaysAgo = new Date();
         ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
@@ -498,6 +501,7 @@ class MarketingService {
           distinct: ['customerId'],
         });
         return allCustomers - inactiveCustomers.length;
+      }
       default:
         return 0;
     }

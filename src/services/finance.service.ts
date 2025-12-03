@@ -317,8 +317,8 @@ class FinanceService {
   // Platform Profit Loss (for Super Admin - subscriptions & addons revenue)
   async getPlatformProfitLoss(startDate?: string, endDate?: string): Promise<ProfitLoss> {
     // Build date filter for subscriptions (createdAt) and addons (subscribedAt)
-    let subscriptionFilter: any = {};
-    let addonFilter: any = {};
+    const subscriptionFilter: any = {};
+    const addonFilter: any = {};
 
     if (startDate || endDate) {
       const filter: any = {};

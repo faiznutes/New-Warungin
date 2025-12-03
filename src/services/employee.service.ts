@@ -1,4 +1,4 @@
-import { PrismaClient, Employee } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import { sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
@@ -56,19 +56,19 @@ export class EmployeeService {
     };
   }
 
-  async getEmployeeById(id: string, tenantId: string): Promise<Employee | null> {
+  async getEmployeeById(id: string, tenantId: string) {
     return prisma.employee.findFirst({
       where: { id, tenantId },
     });
   }
 
-  async getEmployeeByEmail(email: string, tenantId: string): Promise<Employee | null> {
+  async getEmployeeByEmail(email: string, tenantId: string) {
     return prisma.employee.findFirst({
       where: { email, tenantId },
     });
   }
 
-  async createEmployee(data: CreateEmployeeInput, tenantId: string): Promise<Employee> {
+  async createEmployee(data: CreateEmployeeInput, tenantId: string) {
     // Check if email already exists for this tenant
     const existing = await prisma.employee.findFirst({
       where: { email: data.email, tenantId },
@@ -93,7 +93,7 @@ export class EmployeeService {
     return employee;
   }
 
-  async updateEmployee(id: string, data: UpdateEmployeeInput, tenantId: string): Promise<Employee> {
+  async updateEmployee(id: string, data: UpdateEmployeeInput, tenantId: string) {
     const employee = await this.getEmployeeById(id, tenantId);
     if (!employee) {
       throw new Error('Employee not found');

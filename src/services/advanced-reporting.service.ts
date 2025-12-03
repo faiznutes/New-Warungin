@@ -283,7 +283,7 @@ class AdvancedReportingService {
         }
         break;
 
-      case 'WEEKLY':
+      case 'WEEKLY': {
         const dayOfWeek = scheduleConfig?.dayOfWeek ?? 1; // Monday
         const daysUntilNext = (dayOfWeek - now.getDay() + 7) % 7 || 7;
         nextRun.setDate(now.getDate() + daysUntilNext);
@@ -294,8 +294,9 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
+      }
 
-      case 'MONTHLY':
+      case 'MONTHLY': {
         const dayOfMonth = scheduleConfig?.dayOfMonth ?? 1;
         nextRun.setMonth(now.getMonth() + 1);
         nextRun.setDate(dayOfMonth);
@@ -306,6 +307,7 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
+      }
 
       case 'CUSTOM':
         // For custom cron expressions, would need a cron parser

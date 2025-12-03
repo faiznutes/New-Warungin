@@ -8,13 +8,25 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-900">Crop Gambar</h3>
+            <h3 class="text-xl font-bold text-gray-900">
+              Crop Gambar
+            </h3>
             <button
-              @click="$emit('close')"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="$emit('close')"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -25,7 +37,7 @@
             </p>
             <div class="flex items-center justify-center mb-4">
               <div class="w-32 h-32 border-2 border-dashed border-primary-500 rounded-lg flex items-center justify-center bg-gray-50">
-                <span class="text-xs text-gray-500 text-center px-2">Output: 200x200<br/>(Auto Upscale)</span>
+                <span class="text-xs text-gray-500 text-center px-2">Output: 200x200<br />(Auto Upscale)</span>
               </div>
             </div>
             <p class="text-xs text-gray-500 text-center">
@@ -34,15 +46,18 @@
           </div>
 
           <div class="mb-6">
-            <div ref="imageContainer" class="flex justify-center max-h-96 overflow-auto relative">
+            <div
+              ref="imageContainer"
+              class="flex justify-center max-h-96 overflow-auto relative"
+            >
               <div class="relative inline-block">
                 <img
                   ref="imageElement"
                   :src="imageSrc"
                   alt="Crop preview"
                   class="max-w-full max-h-96 cursor-move"
-                  @load="initCropper"
                   draggable="false"
+                  @load="initCropper"
                 />
                 <div
                   ref="cropBox"
@@ -50,10 +65,22 @@
                   :style="cropBoxStyle"
                   @mousedown="startDrag"
                 >
-                  <div class="absolute -top-1 -left-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nwse-resize" @mousedown.stop="startResize('nw')"></div>
-                  <div class="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nesw-resize" @mousedown.stop="startResize('ne')"></div>
-                  <div class="absolute -bottom-1 -left-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nesw-resize" @mousedown.stop="startResize('sw')"></div>
-                  <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nwse-resize" @mousedown.stop="startResize('se')"></div>
+                  <div
+                    class="absolute -top-1 -left-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nwse-resize"
+                    @mousedown.stop="startResize('nw')"
+                  ></div>
+                  <div
+                    class="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nesw-resize"
+                    @mousedown.stop="startResize('ne')"
+                  ></div>
+                  <div
+                    class="absolute -bottom-1 -left-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nesw-resize"
+                    @mousedown.stop="startResize('sw')"
+                  ></div>
+                  <div
+                    class="absolute -bottom-1 -right-1 w-3 h-3 bg-primary-500 border-2 border-white rounded-full cursor-nwse-resize"
+                    @mousedown.stop="startResize('se')"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -62,16 +89,16 @@
           <div class="flex space-x-3">
             <button
               type="button"
-              @click="$emit('close')"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              @click="$emit('close')"
             >
               Batal
             </button>
             <button
               type="button"
-              @click="handleCrop"
               :disabled="cropping"
               class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="handleCrop"
             >
               {{ cropping ? 'Memproses...' : 'Crop & Simpan' }}
             </button>

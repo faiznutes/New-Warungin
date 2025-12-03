@@ -2,15 +2,29 @@
   <div class="flex flex-col h-full">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Tenant Management</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola semua tenant yang terdaftar</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+          Tenant Management
+        </h2>
+        <p class="text-sm sm:text-base text-gray-600">
+          Kelola semua tenant yang terdaftar
+        </p>
       </div>
       <button
-        @click="showCreateModal = true"
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+        @click="showCreateModal = true"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         <span>Tambah Tenant</span>
       </button>
@@ -22,16 +36,26 @@
       <div class="mb-4">
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              class="h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
           <input
             v-model="filters.search"
-            @focus="handleSearchFocus"
             type="text"
             placeholder="Cari tenant..."
             class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            @focus="handleSearchFocus"
           />
         </div>
       </div>
@@ -41,29 +65,29 @@
         <label class="block text-xs font-medium text-gray-700 mb-2">Status</label>
         <div class="flex flex-wrap gap-2">
           <button
-            @click="filters.isActive = ''"
             :class="filters.isActive === '' 
               ? 'bg-blue-600 text-white border-blue-600' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+            @click="filters.isActive = ''"
           >
             Semua
           </button>
           <button
-            @click="filters.isActive = 'true'"
             :class="filters.isActive === 'true' 
               ? 'bg-green-600 text-white border-green-600' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+            @click="filters.isActive = 'true'"
           >
             Aktif
           </button>
           <button
-            @click="filters.isActive = 'false'"
             :class="filters.isActive === 'false' 
               ? 'bg-red-600 text-white border-red-600' 
               : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+            @click="filters.isActive = 'false'"
           >
             Tidak Aktif
           </button>
@@ -72,42 +96,81 @@
     </div>
 
     <!-- Tenants Table -->
-    <div v-if="loading" class="flex items-center justify-center py-12 mx-4 sm:mx-6">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12 mx-4 sm:mx-6"
+    >
       <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="filteredTenants.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    <div
+      v-else-if="filteredTenants.length === 0"
+      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6"
+    >
+      <svg
+        class="w-16 h-16 text-gray-400 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
       </svg>
-      <p class="text-gray-500">Belum ada tenant</p>
+      <p class="text-gray-500">
+        Belum ada tenant
+      </p>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6">
+    <div
+      v-else
+      class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6"
+    >
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Daftar</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Nama
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Paket
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Tanggal Daftar
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Aksi
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="tenant in filteredTenants" :key="tenant.id" class="hover:bg-gray-50">
+            <tr
+              v-for="tenant in filteredTenants"
+              :key="tenant.id"
+              class="hover:bg-gray-50"
+            >
               <td class="px-6 py-4 whitespace-nowrap">
                 <button
-                  @click="viewTenantDetail(tenant.id)"
                   class="text-sm font-medium text-blue-600 hover:text-blue-900 hover:underline"
+                  @click="viewTenantDetail(tenant.id)"
                 >
                   {{ tenant.name }}
                 </button>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ tenant.email || '-' }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ tenant.email || '-' }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -128,19 +191,21 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ formatDate(tenant.createdAt) }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ formatDate(tenant.createdAt) }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end gap-2">
                   <button
-                    @click="editTenant(tenant)"
                     class="px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition"
+                    @click="editTenant(tenant)"
                   >
                     Edit
                   </button>
                   <button
-                    @click="deleteTenant(tenant.id)"
                     class="px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition"
+                    @click="deleteTenant(tenant.id)"
                   >
                     Hapus
                   </button>
@@ -162,7 +227,10 @@
         <h3 class="text-xl font-bold text-gray-900 mb-4">
           {{ editingTenant ? 'Edit Tenant' : 'Tambah Tenant' }}
         </h3>
-        <form @submit.prevent="saveTenant" class="space-y-4">
+        <form
+          class="space-y-4"
+          @submit.prevent="saveTenant"
+        >
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Tenant</label>
             <input
@@ -172,7 +240,12 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Contoh: Nasi Padang Barokah"
             />
-            <p v-if="!editingTenant" class="text-xs text-gray-500 mt-1">Email dan password akan di-generate otomatis</p>
+            <p
+              v-if="!editingTenant"
+              class="text-xs text-gray-500 mt-1"
+            >
+              Email dan password akan di-generate otomatis
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">No. Telepon</label>
@@ -198,19 +271,31 @@
               v-model="tenantForm.subscriptionPlan"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             >
-              <option value="BASIC">Starter (BASIC)</option>
-              <option value="PRO">Boost (PRO)</option>
-              <option value="CUSTOM">Max (CUSTOM)</option>
+              <option value="BASIC">
+                Starter (BASIC)
+              </option>
+              <option value="PRO">
+                Boost (PRO)
+              </option>
+              <option value="CUSTOM">
+                Max (CUSTOM)
+              </option>
             </select>
           </div>
-          <div v-if="editingTenant" class="flex items-center space-x-2">
+          <div
+            v-if="editingTenant"
+            class="flex items-center space-x-2"
+          >
             <input
+              id="isActive"
               v-model="tenantForm.isActive"
               type="checkbox"
-              id="isActive"
               class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
             />
-            <label for="isActive" class="text-sm text-gray-700">Aktif</label>
+            <label
+              for="isActive"
+              class="text-sm text-gray-700"
+            >Aktif</label>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
@@ -221,8 +306,8 @@
             </button>
             <button
               type="button"
-              @click="closeModal"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="closeModal"
             >
               Batal
             </button>

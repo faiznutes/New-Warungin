@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authGuard, AuthRequest } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import quickInsightService from '../services/quick-insight.service';
@@ -8,7 +8,7 @@ import { handleRouteError } from '../utils/route-error-handler';
 const router = Router();
 
 // Middleware to check Business Analytics addon (Super Admin bypass)
-const checkBusinessAnalyticsAddon = async (req: AuthRequest, res: Response, next: Function) => {
+const checkBusinessAnalyticsAddon = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userRole = req.user?.role || req.role;
     

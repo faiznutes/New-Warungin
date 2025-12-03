@@ -7,13 +7,25 @@
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-900">Pilih Metode Pembayaran</h3>
+          <h3 class="text-xl font-bold text-gray-900">
+            Pilih Metode Pembayaran
+          </h3>
           <button
-            @click="close"
             class="text-gray-400 hover:text-gray-600 transition"
+            @click="close"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -23,7 +35,10 @@
             <span class="text-gray-700">Total Pembayaran:</span>
             <span class="text-2xl font-bold text-orange-600">{{ formatCurrency(total) }}</span>
           </div>
-          <div v-if="discount > 0" class="flex justify-between items-center text-sm text-green-600">
+          <div
+            v-if="discount > 0"
+            class="flex justify-between items-center text-sm text-green-600"
+          >
             <span>Diskon:</span>
             <span class="font-semibold">-{{ formatCurrency(discount) }}</span>
           </div>
@@ -36,18 +51,30 @@
           </label>
           <select
             v-model="selectedPayment"
-            @change="onPaymentMethodChange"
             class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold bg-white"
+            @change="onPaymentMethodChange"
           >
-            <option value="" disabled>Pilih metode pembayaran</option>
-            <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
+            <option
+              value=""
+              disabled
+            >
+              Pilih metode pembayaran
+            </option>
+            <option
+              v-for="method in paymentMethods"
+              :key="method.value"
+              :value="method.value"
+            >
               {{ method.icon }} {{ method.label }}
             </option>
           </select>
         </div>
 
         <!-- Cash Payment Input -->
-        <div v-if="selectedPayment === 'CASH'" class="mb-6 space-y-4">
+        <div
+          v-if="selectedPayment === 'CASH'"
+          class="mb-6 space-y-4"
+        >
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Uang yang Dibayar
@@ -62,13 +89,19 @@
               @input="calculateChange"
             />
           </div>
-          <div v-if="change >= 0" class="p-4 bg-green-50 rounded-lg">
+          <div
+            v-if="change >= 0"
+            class="p-4 bg-green-50 rounded-lg"
+          >
             <div class="flex justify-between items-center">
               <span class="text-gray-700 font-medium">Kembalian:</span>
               <span class="text-2xl font-bold text-green-600">{{ formatCurrency(change) }}</span>
             </div>
           </div>
-          <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-lg">
+          <div
+            v-else-if="cashAmount > 0"
+            class="p-4 bg-red-50 rounded-lg"
+          >
             <div class="flex justify-between items-center">
               <span class="text-red-700 font-medium">Kurang:</span>
               <span class="text-xl font-bold text-red-600">{{ formatCurrency(Math.abs(change)) }}</span>
@@ -77,7 +110,10 @@
         </div>
 
         <!-- QRIS Payment Input -->
-        <div v-if="selectedPayment === 'QRIS'" class="mb-6 space-y-4">
+        <div
+          v-if="selectedPayment === 'QRIS'"
+          class="mb-6 space-y-4"
+        >
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               QR Code (Opsional)
@@ -97,7 +133,10 @@
         </div>
 
         <!-- Info untuk metode pembayaran lainnya -->
-        <div v-if="selectedPayment && selectedPayment !== 'CASH' && selectedPayment !== 'QRIS'" class="mb-6">
+        <div
+          v-if="selectedPayment && selectedPayment !== 'CASH' && selectedPayment !== 'QRIS'"
+          class="mb-6"
+        >
           <div class="p-4 bg-green-50 rounded-lg border border-green-200">
             <p class="text-sm text-green-800 font-medium">
               ✅ Metode pembayaran <strong>{{ getPaymentMethodLabel(selectedPayment) }}</strong> dipilih.
@@ -110,15 +149,15 @@
 
         <div class="flex space-x-3">
           <button
-            @click="close"
             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium"
+            @click="close"
           >
             Batal
           </button>
           <button
-            @click="confirmPayment"
             :disabled="!canConfirm || processing"
             class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            @click="confirmPayment"
           >
             {{ processing ? 'Memproses...' : 'Bayar' }}
           </button>

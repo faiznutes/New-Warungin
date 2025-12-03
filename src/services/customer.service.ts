@@ -1,4 +1,4 @@
-import { PrismaClient, Customer } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { CreateCustomerInput, UpdateCustomerInput, GetCustomersQuery } from '../validators/customer.validator';
 import prisma from '../config/database';
 import CacheService from '../utils/cache';
@@ -93,12 +93,12 @@ export class CustomerService {
     return result;
   }
 
-  async getCustomerById(id: string, tenantId: string, useCache: boolean = true): Promise<Customer | null> {
+  async getCustomerById(id: string, tenantId: string, useCache: boolean = true) {
     const cacheKey = `customer:${tenantId}:${id}`;
 
     // Try to get from cache first
     if (useCache) {
-      const cached = await CacheService.get<Customer | null>(cacheKey);
+      const cached = await CacheService.get(cacheKey);
       if (cached !== null) {
         return cached;
       }
@@ -134,7 +134,7 @@ export class CustomerService {
     return customer;
   }
 
-  async createCustomer(data: CreateCustomerInput, tenantId: string): Promise<Customer> {
+  async createCustomer(data: CreateCustomerInput, tenantId: string) {
     // Sanitize text fields
     const sanitizedData = {
       ...data,
@@ -168,7 +168,7 @@ export class CustomerService {
     }
   }
 
-  async updateCustomer(id: string, data: UpdateCustomerInput, tenantId: string): Promise<Customer> {
+  async updateCustomer(id: string, data: UpdateCustomerInput, tenantId: string) {
     const customer = await this.getCustomerById(id, tenantId);
     if (!customer) {
       throw new Error('Customer not found');

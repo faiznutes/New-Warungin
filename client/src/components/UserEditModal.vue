@@ -13,16 +13,29 @@
                 {{ props.user ? 'Edit Pengguna' : 'Tambah Pengguna' }}
               </h3>
               <button
-                @click="$emit('close')"
                 class="text-gray-400 hover:text-gray-600 transition"
+                @click="$emit('close')"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
+            <form
+              class="space-y-4"
+              @submit.prevent="handleSubmit"
+            >
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama *</label>
                 <input
@@ -53,10 +66,18 @@
                     required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option value="ADMIN_TENANT">Admin</option>
-                    <option value="SUPERVISOR">Supervisor</option>
-                    <option value="CASHIER">Kasir</option>
-                    <option value="KITCHEN">Dapur</option>
+                    <option value="ADMIN_TENANT">
+                      Admin
+                    </option>
+                    <option value="SUPERVISOR">
+                      Supervisor
+                    </option>
+                    <option value="CASHIER">
+                      Kasir
+                    </option>
+                    <option value="KITCHEN">
+                      Dapur
+                    </option>
                   </select>
                 </div>
 
@@ -66,8 +87,12 @@
                     v-model="form.isActive"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option :value="true">Aktif</option>
-                    <option :value="false">Tidak Aktif</option>
+                    <option :value="true">
+                      Aktif
+                    </option>
+                    <option :value="false">
+                      Tidak Aktif
+                    </option>
                   </select>
                 </div>
               </div>
@@ -82,42 +107,63 @@
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   :placeholder="props.user ? 'Kosongkan jika tidak ingin mengubah password' : 'Kosongkan untuk password otomatis'"
                 />
-                <div v-if="authStore.isSuperAdmin && props.user" class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div
+                  v-if="authStore.isSuperAdmin && props.user"
+                  class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                >
                   <p class="text-xs font-medium text-gray-700 mb-2">
                     Password aktif saat ini:
                   </p>
-                  <div v-if="currentPassword" class="flex items-center gap-2">
+                  <div
+                    v-if="currentPassword"
+                    class="flex items-center gap-2"
+                  >
                     <span class="font-mono text-sm font-semibold text-gray-900 bg-white px-3 py-2 rounded border border-gray-300 flex-1">{{ currentPassword }}</span>
                     <button
                       type="button"
-                      @click="copyPassword"
                       class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition"
+                      @click="copyPassword"
                     >
                       Salin
                     </button>
                   </div>
-                  <div v-else class="flex items-center gap-2">
+                  <div
+                    v-else
+                    class="flex items-center gap-2"
+                  >
                     <button
                       type="button"
-                      @click="loadPassword"
                       :disabled="loadingPassword"
                       class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Klik untuk melihat password aktif"
+                      @click="loadPassword"
                     >
                       {{ loadingPassword ? 'Memuat...' : 'Lihat Password' }}
                     </button>
-                    <p v-if="loadingPassword" class="text-xs text-gray-500">Memuat password...</p>
+                    <p
+                      v-if="loadingPassword"
+                      class="text-xs text-gray-500"
+                    >
+                      Memuat password...
+                    </p>
                   </div>
                 </div>
               </div>
 
               <!-- Permissions Section -->
-              <div v-if="(form.role === 'CASHIER' || form.role === 'SUPERVISOR' || form.role === 'KITCHEN') && form.permissions" class="border-t pt-4 mt-4">
-                <h4 class="text-lg font-semibold text-gray-900 mb-4">Hak Akses & Fitur</h4>
+              <div
+                v-if="(form.role === 'CASHIER' || form.role === 'SUPERVISOR' || form.role === 'KITCHEN') && form.permissions"
+                class="border-t pt-4 mt-4"
+              >
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                  Hak Akses & Fitur
+                </h4>
                 <div class="space-y-3">
                   <!-- Order Permissions -->
                   <div class="bg-gray-50 rounded-lg p-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Pesanan</h5>
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
+                      Manajemen Pesanan
+                    </h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -156,7 +202,9 @@
 
                   <!-- Report Permissions -->
                   <div class="bg-gray-50 rounded-lg p-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Laporan</h5>
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
+                      Laporan
+                    </h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -186,8 +234,13 @@
                   </div>
 
                   <!-- Product & Customer Permissions (for Supervisor and Cashier) -->
-                  <div v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'" class="bg-gray-50 rounded-lg p-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Data</h5>
+                  <div
+                    v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'"
+                    class="bg-gray-50 rounded-lg p-4"
+                  >
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
+                      Manajemen Data
+                    </h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -209,8 +262,13 @@
                   </div>
 
                   <!-- Store Access (for Supervisor) -->
-                  <div v-if="form.role === 'SUPERVISOR'" class="bg-gray-50 rounded-lg p-4 mt-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Akses Store</h5>
+                  <div
+                    v-if="form.role === 'SUPERVISOR'"
+                    class="bg-gray-50 rounded-lg p-4 mt-4"
+                  >
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
+                      Akses Store
+                    </h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -221,22 +279,38 @@
                         <span class="text-sm font-medium text-gray-700">Pilih Semua Store</span>
                       </label>
                       <div class="border-t pt-2 mt-2 max-h-48 overflow-y-auto">
-                        <div v-if="loadingStores" class="text-sm text-gray-500 py-2">Memuat store...</div>
-                        <div v-else-if="stores.length === 0" class="text-sm text-gray-500 py-2">Tidak ada store tersedia</div>
-                        <div v-else class="space-y-2">
+                        <div
+                          v-if="loadingStores"
+                          class="text-sm text-gray-500 py-2"
+                        >
+                          Memuat store...
+                        </div>
+                        <div
+                          v-else-if="stores.length === 0"
+                          class="text-sm text-gray-500 py-2"
+                        >
+                          Tidak ada store tersedia
+                        </div>
+                        <div
+                          v-else
+                          class="space-y-2"
+                        >
                           <label
                             v-for="store in stores"
                             :key="store.id"
                             class="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
                           >
                             <input
-                              :value="store.id"
                               v-model="permissions.allowedStoreIds"
+                              :value="store.id"
                               type="checkbox"
                               class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                             />
                             <span class="text-sm text-gray-700">{{ store.name }}</span>
-                            <span v-if="!store.isActive" class="text-xs text-red-600">(Tidak Aktif)</span>
+                            <span
+                              v-if="!store.isActive"
+                              class="text-xs text-red-600"
+                            >(Tidak Aktif)</span>
                           </label>
                         </div>
                       </div>
@@ -244,20 +318,32 @@
                   </div>
 
                   <!-- Store Assignment (for Cashier and Kitchen) -->
-                  <div v-if="isCashierOrKitchen" class="bg-gray-50 rounded-lg p-4 mt-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Penugasan Store</h5>
+                  <div
+                    v-if="isCashierOrKitchen"
+                    class="bg-gray-50 rounded-lg p-4 mt-4"
+                  >
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
+                      Penugasan Store
+                    </h5>
                     <div class="space-y-2">
                       <label class="block text-sm font-medium text-gray-700 mb-2">
                         Pilih Store <span class="text-red-500">*</span>
                       </label>
-                      <div v-if="loadingStores" class="text-sm text-gray-500 py-2">Memuat store...</div>
+                      <div
+                        v-if="loadingStores"
+                        class="text-sm text-gray-500 py-2"
+                      >
+                        Memuat store...
+                      </div>
                       <select
                         v-else
                         v-model="permissions.assignedStoreId"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
                       >
-                        <option value="">-- Pilih Store --</option>
+                        <option value="">
+                          -- Pilih Store --
+                        </option>
                         <option
                           v-for="store in stores"
                           :key="store.id"
@@ -278,8 +364,8 @@
               <div class="flex space-x-3 pt-4">
                 <button
                   type="button"
-                  @click="$emit('close')"
                   class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  @click="$emit('close')"
                 >
                   Batal
                 </button>
@@ -372,7 +458,8 @@ const form = ref<Partial<User & { password?: string; permissions?: UserPermissio
 const permissions = computed({
   get: () => {
     if (!form.value.permissions) {
-      form.value.permissions = {
+      // Initialize permissions if not set (one-time initialization)
+      return {
         canEditOrders: false,
         canDeleteOrders: false,
         canCancelOrders: false,

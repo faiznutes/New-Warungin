@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import paymentService from '../services/payment.service';
 import subscriptionService from '../services/subscription.service';
 import analyticsService from '../services/analytics.service';
@@ -13,7 +13,7 @@ import { handleRouteError } from '../utils/route-error-handler';
 const router = Router();
 
 // Internal API Key middleware (for n8n)
-const validateInternalApiKey = (req: Request, res: Response, next: Function) => {
+const validateInternalApiKey = (req: Request, res: Response, next: NextFunction) => {
   const apiKey = req.headers['x-internal-api-key'] as string;
   const expectedKey = process.env.INTERNAL_API_KEY || 'change-me-in-production';
   

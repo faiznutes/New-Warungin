@@ -3,19 +3,23 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Accounting & Finance</h2>
-        <p class="text-gray-600">Laporan keuangan lengkap: Laba Rugi, Neraca, Cash Flow</p>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Accounting & Finance
+        </h2>
+        <p class="text-gray-600">
+          Laporan keuangan lengkap: Laba Rugi, Neraca, Cash Flow
+        </p>
       </div>
       <div class="flex space-x-2">
         <button
-          @click="showPeriodModal = true"
           class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+          @click="showPeriodModal = true"
         >
           Pilih Periode
         </button>
         <button
-          @click="exportFinancialReport"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          @click="exportFinancialReport"
         >
           Export Laporan
         </button>
@@ -27,47 +31,104 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-gray-600">Total Revenue</span>
-          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            class="w-5 h-5 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(financialSummary.revenue) }}</div>
-        <div class="text-sm text-green-600 mt-1">+{{ financialSummary.revenueGrowth }}% vs bulan lalu</div>
+        <div class="text-2xl font-bold text-gray-900">
+          {{ formatCurrency(financialSummary.revenue) }}
+        </div>
+        <div class="text-sm text-green-600 mt-1">
+          +{{ financialSummary.revenueGrowth }}% vs bulan lalu
+        </div>
       </div>
 
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-gray-600">Total Expenses</span>
-          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg
+            class="w-5 h-5 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+            />
           </svg>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(financialSummary.expenses) }}</div>
-        <div class="text-sm text-gray-500 mt-1">Biaya operasional</div>
+        <div class="text-2xl font-bold text-gray-900">
+          {{ formatCurrency(financialSummary.expenses) }}
+        </div>
+        <div class="text-sm text-gray-500 mt-1">
+          Biaya operasional
+        </div>
       </div>
 
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-gray-600">Net Profit</span>
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <svg
+            class="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
           </svg>
         </div>
-        <div class="text-2xl font-bold" :class="financialSummary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
+        <div
+          class="text-2xl font-bold"
+          :class="financialSummary.profit >= 0 ? 'text-green-600' : 'text-red-600'"
+        >
           {{ formatCurrency(financialSummary.profit) }}
         </div>
-        <div class="text-sm text-gray-500 mt-1">Laba bersih</div>
+        <div class="text-sm text-gray-500 mt-1">
+          Laba bersih
+        </div>
       </div>
 
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-gray-600">Profit Margin</span>
-          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          <svg
+            class="w-5 h-5 text-purple-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+            />
           </svg>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ financialSummary.profitMargin }}%</div>
-        <div class="text-sm text-gray-500 mt-1">Margin keuntungan</div>
+        <div class="text-2xl font-bold text-gray-900">
+          {{ financialSummary.profitMargin }}%
+        </div>
+        <div class="text-sm text-gray-500 mt-1">
+          Margin keuntungan
+        </div>
       </div>
     </div>
 
@@ -82,33 +143,38 @@
           Laba Rugi
         </router-link>
         <button
-          @click="activeTab = 'profit-loss'"
           class="px-4 py-2 font-semibold border-b-2 transition hidden"
           :class="activeTab === 'profit-loss' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          @click="activeTab = 'profit-loss'"
         >
           Laba Rugi (Legacy)
         </button>
         <button
-          @click="activeTab = 'balance-sheet'"
           class="px-4 py-2 font-semibold border-b-2 transition"
           :class="activeTab === 'balance-sheet' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          @click="activeTab = 'balance-sheet'"
         >
           Neraca
         </button>
         <button
-          @click="activeTab = 'cash-flow'"
           class="px-4 py-2 font-semibold border-b-2 transition"
           :class="activeTab === 'cash-flow' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          @click="activeTab = 'cash-flow'"
         >
           Cash Flow
         </button>
       </div>
 
       <!-- Profit & Loss -->
-      <div v-if="activeTab === 'profit-loss'" class="space-y-4">
+      <div
+        v-if="activeTab === 'profit-loss'"
+        class="space-y-4"
+      >
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Pendapatan</h4>
+            <h4 class="font-semibold text-gray-900 mb-3">
+              Pendapatan
+            </h4>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Penjualan</span>
@@ -125,7 +191,9 @@
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Biaya</h4>
+            <h4 class="font-semibold text-gray-900 mb-3">
+              Biaya
+            </h4>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">HPP (COGS)</span>
@@ -151,10 +219,15 @@
       </div>
 
       <!-- Balance Sheet -->
-      <div v-if="activeTab === 'balance-sheet'" class="space-y-4">
+      <div
+        v-if="activeTab === 'balance-sheet'"
+        class="space-y-4"
+      >
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Aktiva</h4>
+            <h4 class="font-semibold text-gray-900 mb-3">
+              Aktiva
+            </h4>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Kas</span>
@@ -175,7 +248,9 @@
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Pasiva</h4>
+            <h4 class="font-semibold text-gray-900 mb-3">
+              Pasiva
+            </h4>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Hutang</span>
@@ -195,10 +270,15 @@
       </div>
 
       <!-- Cash Flow -->
-      <div v-if="activeTab === 'cash-flow'" class="space-y-4">
+      <div
+        v-if="activeTab === 'cash-flow'"
+        class="space-y-4"
+      >
         <div class="space-y-3">
           <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Operasi</h4>
+            <h4 class="font-semibold text-gray-900 mb-2">
+              Aktivitas Operasi
+            </h4>
             <div class="space-y-2 pl-4">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Penerimaan dari pelanggan</span>
@@ -217,7 +297,9 @@
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Investasi</h4>
+            <h4 class="font-semibold text-gray-900 mb-2">
+              Aktivitas Investasi
+            </h4>
             <div class="space-y-2 pl-4">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Pembelian aset</span>
@@ -226,7 +308,9 @@
             </div>
           </div>
           <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Pendanaan</h4>
+            <h4 class="font-semibold text-gray-900 mb-2">
+              Aktivitas Pendanaan
+            </h4>
             <div class="space-y-2 pl-4">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">Modal tambahan</span>
@@ -252,7 +336,9 @@
         @click.self="showPeriodModal = false"
       >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Pilih Periode Laporan</h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">
+            Pilih Periode Laporan
+          </h3>
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
@@ -272,14 +358,14 @@
             </div>
             <div class="flex space-x-3">
               <button
-                @click="showPeriodModal = false"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="showPeriodModal = false"
               >
                 Batal
               </button>
               <button
-                @click="loadFinancialData"
                 class="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+                @click="loadFinancialData"
               >
                 Load Data
               </button>

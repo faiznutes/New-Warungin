@@ -1,4 +1,7 @@
-import { PrismaClient, Order, OrderStatus, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
+
+// OrderStatus enum is available in Prisma namespace
+type OrderStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED';
 import { CreateOrderInput, GetOrdersQuery, UpdateOrderStatusInput } from '../validators/order.validator';
 import prisma from '../config/database';
 import productService from './product.service';
@@ -94,7 +97,7 @@ export class OrderService {
     };
   }
 
-  async getOrderById(id: string, tenantId: string): Promise<Order | null> {
+  async getOrderById(id: string, tenantId: string) {
     return prisma.order.findFirst({
       where: { id, tenantId },
       include: {
@@ -118,7 +121,7 @@ export class OrderService {
     });
   }
 
-  async createOrder(data: CreateOrderInput, userId: string, tenantId: string): Promise<Order> {
+  async createOrder(data: CreateOrderInput, userId: string, tenantId: string) {
     // Sanitize text fields
     const sanitizedData = {
       ...data,
@@ -368,7 +371,7 @@ export class OrderService {
     }
   }
 
-  async updateOrder(id: string, data: any, tenantId: string): Promise<Order> {
+  async updateOrder(id: string, data: any, tenantId: string) {
     const order = await this.getOrderById(id, tenantId);
     if (!order) {
       throw new Error('Order not found');
@@ -533,7 +536,7 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async updateOrderStatus(id: string, data: UpdateOrderStatusInput, tenantId: string): Promise<Order> {
+  async updateOrderStatus(id: string, data: UpdateOrderStatusInput, tenantId: string) {
     const order = await this.getOrderById(id, tenantId);
     if (!order) {
       throw new Error('Order not found');

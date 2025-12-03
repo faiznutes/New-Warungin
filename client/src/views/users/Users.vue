@@ -6,16 +6,30 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pengguna</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola pengguna dan akses</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          Pengguna
+        </h2>
+        <p class="text-sm sm:text-base text-gray-600">
+          Kelola pengguna dan akses
+        </p>
       </div>
       <div class="flex gap-2">
         <button
-          @click="showCreateModal = true"
           class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
+          @click="showCreateModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           <span>Tambah Pengguna</span>
         </button>
@@ -23,16 +37,31 @@
     </div>
 
     <!-- User Limit Progress Bar -->
-    <div v-if="userLimit" class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6 mx-4 sm:mx-6">
+    <div
+      v-if="userLimit"
+      class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6 mx-4 sm:mx-6"
+    >
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-blue-100 rounded-lg">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            <svg
+              class="w-6 h-6 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-gray-900">Limit Pengguna</h3>
+            <h3 class="text-sm font-semibold text-gray-900">
+              Limit Pengguna
+            </h3>
             <p class="text-xs text-gray-600">
               <span class="font-medium text-gray-900">{{ userLimit.currentUsage }}</span>
               <span v-if="!userLimit.isUnlimited"> / {{ userLimit.limit }}</span>
@@ -43,66 +72,138 @@
           </div>
         </div>
         <div class="text-right">
-          <div class="text-lg font-bold" :class="getLimitColorClass()">
+          <div
+            class="text-lg font-bold"
+            :class="getLimitColorClass()"
+          >
             <span v-if="!userLimit.isUnlimited">
               {{ userLimit.remaining }} tersisa
             </span>
-            <span v-else class="text-green-600">Unlimited</span>
+            <span
+              v-else
+              class="text-green-600"
+            >Unlimited</span>
           </div>
         </div>
       </div>
       
       <!-- Progress Bar -->
-      <div v-if="!userLimit.isUnlimited" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div
+        v-if="!userLimit.isUnlimited"
+        class="w-full bg-gray-200 rounded-full h-3 overflow-hidden"
+      >
         <div
           class="h-full rounded-full transition-all duration-300"
           :class="getProgressBarColorClass()"
           :style="{ width: `${getProgressPercentage()}%` }"
         ></div>
       </div>
-      <div v-else class="w-full bg-gray-200 rounded-full h-3">
-        <div class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+      <div
+        v-else
+        class="w-full bg-gray-200 rounded-full h-3"
+      >
+        <div
+          class="h-full bg-green-500 rounded-full"
+          style="width: 100%"
+        ></div>
       </div>
       
       <!-- Warning message if limit reached -->
-      <div v-if="!userLimit.isUnlimited && userLimit.remaining === 0" class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <div
+        v-if="!userLimit.isUnlimited && userLimit.remaining === 0"
+        class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"
+      >
         <div class="flex items-start gap-2">
-          <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <svg
+            class="w-5 h-5 text-yellow-600 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
           <div class="flex-1">
-            <p class="text-sm font-medium text-yellow-800">Limit pengguna telah tercapai</p>
-            <p class="text-xs text-yellow-700 mt-1">Beli addon "Tambah Pengguna" untuk menambah slot pengguna, atau upgrade ke plan yang lebih tinggi.</p>
+            <p class="text-sm font-medium text-yellow-800">
+              Limit pengguna telah tercapai
+            </p>
+            <p class="text-xs text-yellow-700 mt-1">
+              Beli addon "Tambah Pengguna" untuk menambah slot pengguna, atau upgrade ke plan yang lebih tinggi.
+            </p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    <div
+      v-if="needsTenantSelection"
+      class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300"
+    >
+      <svg
+        class="w-20 h-20 text-gray-400 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
       </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">{{ tenantMessage }}</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        Pilih Tenant Terlebih Dahulu
+      </h3>
+      <p class="text-gray-600 text-center max-w-md">
+        {{ tenantMessage }}
+      </p>
     </div>
 
     <!-- Users Table -->
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-else-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="flex flex-col items-center">
         <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat pengguna...</div>
+        <div class="text-gray-600 font-medium">
+          Memuat pengguna...
+        </div>
       </div>
     </div>
 
-    <div v-else-if="users.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    <div
+      v-else-if="users.length === 0"
+      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
+    >
+      <svg
+        class="w-16 h-16 text-gray-400 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+        />
       </svg>
-      <p class="text-gray-500">Belum ada pengguna</p>
+      <p class="text-gray-500">
+        Belum ada pengguna
+      </p>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div
+      v-else
+      class="bg-white rounded-lg shadow-sm overflow-hidden"
+    >
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -128,12 +229,20 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+            <tr
+              v-for="user in users"
+              :key="user.id"
+              class="hover:bg-gray-50"
+            >
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                <div class="text-sm font-medium text-gray-900">
+                  {{ user.name }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ user.email }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ user.email }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -159,15 +268,15 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button
-                    @click="editUser(user)"
                     class="px-3 py-1 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded"
+                    @click="editUser(user)"
                   >
                     Edit
                   </button>
                   <button
                     v-if="user.role !== 'ADMIN_TENANT'"
-                    @click="deleteUser(user.id)"
                     class="px-3 py-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
+                    @click="deleteUser(user.id)"
                   >
                     Hapus
                   </button>
@@ -180,11 +289,14 @@
     </div>
 
     <!-- Pagination -->
-    <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
+    <div
+      v-if="pagination.totalPages > 1"
+      class="flex items-center justify-center space-x-2 mt-6"
+    >
       <button
-        @click="loadUsers(pagination.page - 1)"
         :disabled="pagination.page === 1"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        @click="loadUsers(pagination.page - 1)"
       >
         Sebelumnya
       </button>
@@ -192,9 +304,9 @@
         Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
       </span>
       <button
-        @click="loadUsers(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        @click="loadUsers(pagination.page + 1)"
       >
         Selanjutnya
       </button>

@@ -3,15 +3,29 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Pesanan Pembelian</h2>
-        <p class="text-gray-600">Kelola pesanan pembelian untuk restok produk</p>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Pesanan Pembelian
+        </h2>
+        <p class="text-gray-600">
+          Kelola pesanan pembelian untuk restok produk
+        </p>
       </div>
       <button
-        @click="showCreateModal = true"
         class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+        @click="showCreateModal = true"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         <span>Buat Pesanan Pembelian</span>
       </button>
@@ -21,35 +35,59 @@
     <div class="mb-4 flex items-center space-x-4">
       <select
         v-model="statusFilter"
-        @change="loadPurchaseOrders"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        @change="loadPurchaseOrders"
       >
-        <option value="">Semua Status</option>
-        <option value="PENDING">Menunggu</option>
-        <option value="APPROVED">Disetujui</option>
-        <option value="ORDERED">Dipesan</option>
-        <option value="RECEIVED">Diterima</option>
-        <option value="CANCELLED">Dibatalkan</option>
+        <option value="">
+          Semua Status
+        </option>
+        <option value="PENDING">
+          Menunggu
+        </option>
+        <option value="APPROVED">
+          Disetujui
+        </option>
+        <option value="ORDERED">
+          Dipesan
+        </option>
+        <option value="RECEIVED">
+          Diterima
+        </option>
+        <option value="CANCELLED">
+          Dibatalkan
+        </option>
       </select>
       <select
         v-model="supplierFilter"
-        @change="loadPurchaseOrders"
         class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        @change="loadPurchaseOrders"
       >
-        <option value="">Semua Pemasok</option>
-        <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+        <option value="">
+          Semua Pemasok
+        </option>
+        <option
+          v-for="supplier in suppliers"
+          :key="supplier.id"
+          :value="supplier.id"
+        >
           {{ supplier.name }}
         </option>
       </select>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Purchase Orders List -->
-    <div v-else class="space-y-4">
+    <div
+      v-else
+      class="space-y-4"
+    >
       <div
         v-for="po in purchaseOrders"
         :key="po.id"
@@ -59,7 +97,9 @@
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center space-x-3 mb-2">
-              <h3 class="text-lg font-semibold text-gray-900">{{ po.orderNumber }}</h3>
+              <h3 class="text-lg font-semibold text-gray-900">
+                {{ po.orderNumber }}
+              </h3>
               <span
                 class="px-2 py-1 text-xs font-semibold rounded-full"
                 :class="getStatusClass(po.status)"
@@ -72,24 +112,42 @@
             </p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
               <div>
-                <p class="text-gray-500">Tanggal Pesanan</p>
-                <p class="font-semibold text-gray-900">{{ formatDate(po.orderDate) }}</p>
+                <p class="text-gray-500">
+                  Tanggal Pesanan
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ formatDate(po.orderDate) }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-500">Tanggal Diharapkan</p>
-                <p class="font-semibold text-gray-900">{{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}</p>
+                <p class="text-gray-500">
+                  Tanggal Diharapkan
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-500">Total Jumlah</p>
-                <p class="font-semibold text-gray-900">Rp {{ formatCurrency(po.totalAmount) }}</p>
+                <p class="text-gray-500">
+                  Total Jumlah
+                </p>
+                <p class="font-semibold text-gray-900">
+                  Rp {{ formatCurrency(po.totalAmount) }}
+                </p>
               </div>
               <div>
-                <p class="text-gray-500">Item</p>
-                <p class="font-semibold text-gray-900">{{ po.items.length }} item</p>
+                <p class="text-gray-500">
+                  Item
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ po.items.length }} item
+                </p>
               </div>
             </div>
             <div class="border-t pt-4">
-              <p class="text-sm font-semibold text-gray-700 mb-2">Item:</p>
+              <p class="text-sm font-semibold text-gray-700 mb-2">
+                Item:
+              </p>
               <div class="space-y-2">
                 <div
                   v-for="item in po.items"
@@ -108,28 +166,28 @@
           <div class="flex flex-col items-end space-y-2 ml-4">
             <button
               v-if="po.status === 'PENDING'"
-              @click="approvePurchaseOrder(po)"
               class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
+              @click="approvePurchaseOrder(po)"
             >
               Approve
             </button>
             <button
               v-if="po.status === 'ORDERED' || po.status === 'APPROVED'"
-              @click="receivePurchaseOrder(po)"
               class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
+              @click="receivePurchaseOrder(po)"
             >
               Receive
             </button>
             <button
               v-if="po.status !== 'RECEIVED' && po.status !== 'CANCELLED'"
-              @click="cancelPurchaseOrder(po)"
               class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
+              @click="cancelPurchaseOrder(po)"
             >
               Cancel
             </button>
             <button
-              @click="viewPurchaseOrder(po)"
               class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-50 rounded transition"
+              @click="viewPurchaseOrder(po)"
             >
               View
             </button>
@@ -147,18 +205,33 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Buat Purchase Order</h3>
+            <h3 class="text-2xl font-bold text-gray-900">
+              Buat Purchase Order
+            </h3>
             <button
-              @click="closeModal"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeModal"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="savePurchaseOrder" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="savePurchaseOrder"
+          >
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Supplier *</label>
@@ -167,12 +240,20 @@
                   required
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 >
-                  <option value="">Pilih Supplier</option>
-                  <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                  <option value="">
+                    Pilih Supplier
+                  </option>
+                  <option
+                    v-for="supplier in suppliers"
+                    :key="supplier.id"
+                    :value="supplier.id"
+                  >
                     {{ supplier.name }}
                   </option>
                 </select>
-                <p class="text-xs text-gray-500 mt-1">Pilih supplier yang akan mengirim produk</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Pilih supplier yang akan mengirim produk
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Diharapkan (Opsional)</label>
@@ -181,7 +262,9 @@
                   type="date"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
-                <p class="text-xs text-gray-500 mt-1">Tanggal kapan produk diharapkan tiba (opsional)</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Tanggal kapan produk diharapkan tiba (opsional)
+                </p>
               </div>
             </div>
 
@@ -193,19 +276,23 @@
                 placeholder="Contoh: Mohon kirim sebelum tanggal yang ditentukan, atau catatan khusus lainnya"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               ></textarea>
-              <p class="text-xs text-gray-500 mt-1">Tambahkan catatan atau instruksi khusus untuk supplier (opsional)</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Tambahkan catatan atau instruksi khusus untuk supplier (opsional)
+              </p>
             </div>
 
             <div>
               <div class="flex items-center justify-between mb-2">
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Item Produk *</label>
-                  <p class="text-xs text-gray-500">Tambahkan produk yang akan dibeli dari supplier</p>
+                  <p class="text-xs text-gray-500">
+                    Tambahkan produk yang akan dibeli dari supplier
+                  </p>
                 </div>
                 <button
                   type="button"
-                  @click="addItem"
                   class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                  @click="addItem"
                 >
                   + Tambah Item
                 </button>
@@ -223,12 +310,20 @@
                       required
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     >
-                      <option value="">Pilih Produk</option>
-                      <option v-for="product in products" :key="product.id" :value="product.id">
+                      <option value="">
+                        Pilih Produk
+                      </option>
+                      <option
+                        v-for="product in products"
+                        :key="product.id"
+                        :value="product.id"
+                      >
                         {{ product.name }} (Stok: {{ product.stock }})
                       </option>
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">Pilih produk yang akan dibeli</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      Pilih produk yang akan dibeli
+                    </p>
                   </div>
                   <div class="col-span-2">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Jumlah *</label>
@@ -241,7 +336,9 @@
                       placeholder="Contoh: 10"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     />
-                    <p class="text-xs text-gray-500 mt-1">Jumlah unit produk</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      Jumlah unit produk
+                    </p>
                   </div>
                   <div class="col-span-3">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Harga per Produk *</label>
@@ -254,13 +351,15 @@
                       placeholder="Contoh: 50000"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     />
-                    <p class="text-xs text-gray-500 mt-1">Harga satuan produk (Rp)</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      Harga satuan produk (Rp)
+                    </p>
                   </div>
                   <div class="col-span-2 flex items-center justify-end">
                     <button
                       type="button"
-                      @click="removeItem(index)"
                       class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                      @click="removeItem(index)"
                     >
                       Remove
                     </button>
@@ -274,8 +373,8 @@
               <div class="flex space-x-3">
                 <button
                   type="button"
-                  @click="closeModal"
                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  @click="closeModal"
                 >
                   Batal
                 </button>
@@ -302,13 +401,25 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Detail Purchase Order</h3>
+            <h3 class="text-2xl font-bold text-gray-900">
+              Detail Purchase Order
+            </h3>
             <button
-              @click="showDetailModal = false"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="showDetailModal = false"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -316,11 +427,17 @@
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <p class="text-sm text-gray-500">Order Number</p>
-                <p class="font-semibold text-gray-900">{{ viewingPO.orderNumber }}</p>
+                <p class="text-sm text-gray-500">
+                  Order Number
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ viewingPO.orderNumber }}
+                </p>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Status</p>
+                <p class="text-sm text-gray-500">
+                  Status
+                </p>
                 <span
                   class="px-2 py-1 text-xs font-semibold rounded-full"
                   :class="getStatusClass(viewingPO.status)"
@@ -329,25 +446,43 @@
                 </span>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Supplier</p>
-                <p class="font-semibold text-gray-900">{{ viewingPO.supplier.name }}</p>
+                <p class="text-sm text-gray-500">
+                  Supplier
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ viewingPO.supplier.name }}
+                </p>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Order Date</p>
-                <p class="font-semibold text-gray-900">{{ formatDate(viewingPO.orderDate) }}</p>
+                <p class="text-sm text-gray-500">
+                  Order Date
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ formatDate(viewingPO.orderDate) }}
+                </p>
               </div>
               <div v-if="viewingPO.expectedDate">
-                <p class="text-sm text-gray-500">Expected Date</p>
-                <p class="font-semibold text-gray-900">{{ formatDate(viewingPO.expectedDate) }}</p>
+                <p class="text-sm text-gray-500">
+                  Expected Date
+                </p>
+                <p class="font-semibold text-gray-900">
+                  {{ formatDate(viewingPO.expectedDate) }}
+                </p>
               </div>
               <div>
-                <p class="text-sm text-gray-500">Total Amount</p>
-                <p class="font-semibold text-gray-900">Rp {{ formatCurrency(viewingPO.totalAmount) }}</p>
+                <p class="text-sm text-gray-500">
+                  Total Amount
+                </p>
+                <p class="font-semibold text-gray-900">
+                  Rp {{ formatCurrency(viewingPO.totalAmount) }}
+                </p>
               </div>
             </div>
 
             <div class="border-t pt-4">
-              <p class="text-sm font-semibold text-gray-700 mb-2">Items:</p>
+              <p class="text-sm font-semibold text-gray-700 mb-2">
+                Items:
+              </p>
               <div class="space-y-2">
                 <div
                   v-for="item in viewingPO.items"

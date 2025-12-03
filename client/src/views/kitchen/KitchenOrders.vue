@@ -1,7 +1,10 @@
 <template>
   <div class="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white">
     <!-- Store Selector (only for Admin/Supervisor) -->
-    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <div
+      v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
+      class="px-4 sm:px-6 pt-4 sm:pt-6"
+    >
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
     
@@ -9,10 +12,17 @@
     <div class="mb-6 px-4 sm:px-6">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex flex-col gap-2">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Pesanan Masuk</h2>
-          <p class="text-sm sm:text-base text-gray-600">Kelola pesanan yang dikirim dari kasir</p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
+            Pesanan Masuk
+          </h2>
+          <p class="text-sm sm:text-base text-gray-600">
+            Kelola pesanan yang dikirim dari kasir
+          </p>
         </div>
-        <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white rounded-xl shadow-md border border-gray-200 p-3 sm:p-4">
+        <div
+          v-if="selectedOrders.length > 0"
+          class="flex flex-wrap items-center gap-3 bg-white rounded-xl shadow-md border border-gray-200 p-3 sm:p-4"
+        >
           <span class="text-sm font-medium bg-primary-100 text-primary-700 px-3 py-1.5 rounded-lg">
             {{ selectedOrders.length }} pesanan dipilih
           </span>
@@ -20,25 +30,47 @@
             v-model="bulkStatus"
             class="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium"
           >
-            <option value="">Pilih Status</option>
-            <option value="COOKING">Sedang Dimasak</option>
-            <option value="READY">Siap</option>
-            <option value="SERVED">Sudah Dikirim</option>
+            <option value="">
+              Pilih Status
+            </option>
+            <option value="COOKING">
+              Sedang Dimasak
+            </option>
+            <option value="READY">
+              Siap
+            </option>
+            <option value="SERVED">
+              Sudah Dikirim
+            </option>
           </select>
           <button
-            @click="bulkUpdateStatus"
             :disabled="!bulkStatus || bulkUpdating"
             class="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition shadow-md hover:shadow-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            @click="bulkUpdateStatus"
           >
-            <svg v-if="!bulkUpdating" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <svg
+              v-if="!bulkUpdating"
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
-            <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div
+              v-else
+              class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+            ></div>
             {{ bulkUpdating ? 'Memproses...' : 'Update Semua' }}
           </button>
           <button
-            @click="clearSelection"
             class="px-3 py-2 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition text-sm font-medium"
+            @click="clearSelection"
           >
             Batal
           </button>
@@ -46,22 +78,47 @@
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20 px-4 sm:px-6">
+    <div
+      v-if="loading"
+      class="flex flex-col items-center justify-center py-20 px-4 sm:px-6"
+    >
       <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat pesanan...</div>
-    </div>
-
-    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20 px-4 sm:px-6">
-      <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-        <svg class="w-24 h-24 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <p class="text-gray-600 text-lg font-medium">Tidak ada pesanan masuk</p>
-        <p class="text-gray-500 text-sm mt-2">Pesanan dari kasir akan muncul di sini</p>
+      <div class="text-gray-600 font-medium">
+        Memuat pesanan...
       </div>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6 pb-4 sm:pb-6">
+    <div
+      v-else-if="orders.length === 0"
+      class="flex flex-col items-center justify-center py-20 px-4 sm:px-6"
+    >
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
+        <svg
+          class="w-24 h-24 text-gray-400 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          />
+        </svg>
+        <p class="text-gray-600 text-lg font-medium">
+          Tidak ada pesanan masuk
+        </p>
+        <p class="text-gray-500 text-sm mt-2">
+          Pesanan dari kasir akan muncul di sini
+        </p>
+      </div>
+    </div>
+
+    <div
+      v-else
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6 pb-4 sm:pb-6"
+    >
       <div
         v-for="order in orders"
         :key="order.id"
@@ -76,14 +133,26 @@
             <input
               type="checkbox"
               :checked="selectedOrders.includes(order.id)"
-              @change="toggleOrderSelection(order.id)"
               class="mt-1.5 w-5 h-5 text-primary-600 border-2 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+              @change="toggleOrderSelection(order.id)"
             />
             <div class="flex-1">
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-1">Pesanan #{{ order.orderNumber }}</h3>
+              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-1">
+                Pesanan #{{ order.orderNumber }}
+              </h3>
               <p class="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 {{ formatDateTime(order.createdAt) }}
               </p>
@@ -99,18 +168,40 @@
 
         <div class="mb-4 p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200">
           <p class="text-xs font-medium text-gray-600 mb-1.5 flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
             </svg>
             Pelanggan
           </p>
-          <p class="text-sm font-semibold text-gray-900">{{ order.customerName || order.temporaryCustomerName || 'Pelanggan Umum' }}</p>
+          <p class="text-sm font-semibold text-gray-900">
+            {{ order.customerName || order.temporaryCustomerName || 'Pelanggan Umum' }}
+          </p>
         </div>
 
         <div class="mb-4">
           <p class="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
             </svg>
             Items
           </p>
@@ -136,32 +227,67 @@
         <div class="flex gap-2">
           <button
             v-if="order.kitchenStatus === 'PENDING'"
-            @click="updateStatus(order.id, 'COOKING')"
             class="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            @click="updateStatus(order.id, 'COOKING')"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Mulai Masak
           </button>
           <button
             v-if="order.kitchenStatus === 'COOKING'"
-            @click="updateStatus(order.id, 'READY')"
             class="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            @click="updateStatus(order.id, 'READY')"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             Selesai
           </button>
           <button
             v-if="order.kitchenStatus === 'READY'"
-            @click="updateStatus(order.id, 'SERVED')"
             class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            @click="updateStatus(order.id, 'SERVED')"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             Dikirim
           </button>

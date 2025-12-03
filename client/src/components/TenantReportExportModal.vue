@@ -9,13 +9,25 @@
         <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-gray-900">Export Laporan Tenant</h3>
+              <h3 class="text-xl font-bold text-gray-900">
+                Export Laporan Tenant
+              </h3>
               <button
-                @click="$emit('close')"
                 class="text-gray-400 hover:text-gray-600 transition"
+                @click="$emit('close')"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -30,9 +42,17 @@
                   v-model="exportForm.storeSelection"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
-                  <option value="current">Store Saat Ini</option>
-                  <option value="all">Semua Store</option>
-                  <option v-for="tenant in tenants" :key="tenant.id" :value="tenant.id">
+                  <option value="current">
+                    Store Saat Ini
+                  </option>
+                  <option value="all">
+                    Semua Store
+                  </option>
+                  <option
+                    v-for="tenant in tenants"
+                    :key="tenant.id"
+                    :value="tenant.id"
+                  >
                     {{ tenant.name }}
                   </option>
                 </select>
@@ -47,26 +67,44 @@
                   <div
                     v-for="template in templates"
                     :key="template.id"
-                    @click="exportForm.template = template.id"
                     class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md"
                     :class="exportForm.template === template.id 
                       ? 'border-primary-500 bg-primary-50' 
                       : 'border-gray-200 hover:border-gray-300'"
+                    @click="exportForm.template = template.id"
                   >
                     <div class="flex items-center justify-between mb-2">
-                      <h4 class="font-semibold text-gray-900">{{ template.name }}</h4>
+                      <h4 class="font-semibold text-gray-900">
+                        {{ template.name }}
+                      </h4>
                       <div
                         v-if="exportForm.template === template.id"
                         class="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center"
                       >
-                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        <svg
+                          class="w-3 h-3 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       </div>
                     </div>
-                    <p class="text-xs text-gray-600">{{ template.description }}</p>
+                    <p class="text-xs text-gray-600">
+                      {{ template.description }}
+                    </p>
                     <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
-                      <span v-for="tag in template.tags" :key="tag" class="px-2 py-0.5 bg-gray-100 rounded">
+                      <span
+                        v-for="tag in template.tags"
+                        :key="tag"
+                        class="px-2 py-0.5 bg-gray-100 rounded"
+                      >
                         {{ tag }}
                       </span>
                     </div>
@@ -97,15 +135,15 @@
               <!-- Actions -->
               <div class="flex space-x-3 pt-4 border-t border-gray-200">
                 <button
-                  @click="$emit('close')"
                   class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  @click="$emit('close')"
                 >
                   Batal
                 </button>
                 <button
-                  @click="handleExport"
                   :disabled="!exportForm.template || !exportForm.storeSelection || exporting"
                   class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleExport"
                 >
                   {{ exporting ? 'Mengekspor...' : 'Export PDF' }}
                 </button>

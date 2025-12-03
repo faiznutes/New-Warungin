@@ -307,7 +307,7 @@ function generateReportSection(reportData: any, reportType?: string): string {
       }
       break;
       
-    case 'customers':
+    case 'customers': {
       const allCustomers = [
         ...(reportData.customers || []),
         ...(reportData.members || []),
@@ -341,6 +341,7 @@ function generateReportSection(reportData: any, reportType?: string): string {
         `;
       }
       break;
+      }
       
     case 'inventory':
       if (reportData.inventory && reportData.inventory.length > 0) {

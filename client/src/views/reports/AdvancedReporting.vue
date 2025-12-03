@@ -3,25 +3,49 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Laporan Lanjutan</h2>
-        <p class="text-gray-600">Custom reports, scheduled reports, dan dashboard customization</p>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Laporan Lanjutan
+        </h2>
+        <p class="text-gray-600">
+          Custom reports, scheduled reports, dan dashboard customization
+        </p>
       </div>
       <div class="flex space-x-3">
         <button
-          @click="showTemplateModal = true"
           class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+          @click="showTemplateModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           <span>Buat Template</span>
         </button>
         <button
-          @click="showScheduleModal = true"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+          @click="showScheduleModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
           </svg>
           <span>Jadwalkan Report</span>
         </button>
@@ -32,23 +56,23 @@
     <div class="mb-6 border-b border-gray-200">
       <nav class="flex space-x-8">
         <button
-          @click="activeTab = 'templates'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'templates' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'templates'"
         >
           Template Laporan
         </button>
         <button
-          @click="activeTab = 'scheduled'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'scheduled' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'scheduled'"
         >
           Laporan Terjadwal
         </button>
         <button
-          @click="activeTab = 'dashboard'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'dashboard' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+          @click="activeTab = 'dashboard'"
         >
           Pengaturan Dashboard
         </button>
@@ -56,32 +80,47 @@
     </div>
 
     <!-- Templates Tab -->
-    <div v-if="activeTab === 'templates'" class="space-y-4">
-      <div v-if="templates.length === 0" class="text-center py-12 bg-white rounded-lg">
-        <p class="text-gray-500">Belum ada report template</p>
+    <div
+      v-if="activeTab === 'templates'"
+      class="space-y-4"
+    >
+      <div
+        v-if="templates.length === 0"
+        class="text-center py-12 bg-white rounded-lg"
+      >
+        <p class="text-gray-500">
+          Belum ada report template
+        </p>
       </div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        v-else
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         <div
           v-for="template in templates"
           :key="template.id"
           class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition"
         >
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ template.name }}</h3>
-          <p class="text-sm text-gray-600 mb-4">{{ template.description || 'Tidak ada deskripsi' }}</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            {{ template.name }}
+          </h3>
+          <p class="text-sm text-gray-600 mb-4">
+            {{ template.description || 'Tidak ada deskripsi' }}
+          </p>
           <div class="flex items-center justify-between">
             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
               {{ template.type }}
             </span>
             <div class="flex space-x-2">
               <button
-                @click="generateReport(template)"
                 class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
+                @click="generateReport(template)"
               >
                 Buat
               </button>
               <button
-                @click="editTemplate(template)"
                 class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
+                @click="editTemplate(template)"
               >
                 Edit
               </button>
@@ -92,11 +131,22 @@
     </div>
 
     <!-- Scheduled Reports Tab -->
-    <div v-if="activeTab === 'scheduled'" class="space-y-4">
-      <div v-if="scheduledReports.length === 0" class="text-center py-12 bg-white rounded-lg">
-        <p class="text-gray-500">Belum ada scheduled report</p>
+    <div
+      v-if="activeTab === 'scheduled'"
+      class="space-y-4"
+    >
+      <div
+        v-if="scheduledReports.length === 0"
+        class="text-center py-12 bg-white rounded-lg"
+      >
+        <p class="text-gray-500">
+          Belum ada scheduled report
+        </p>
       </div>
-      <div v-else class="space-y-4">
+      <div
+        v-else
+        class="space-y-4"
+      >
         <div
           v-for="report in scheduledReports"
           :key="report.id"
@@ -106,7 +156,9 @@
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center space-x-3 mb-2">
-                <h3 class="text-lg font-semibold text-gray-900">{{ report.templateName || 'Report' }}</h3>
+                <h3 class="text-lg font-semibold text-gray-900">
+                  {{ report.templateName || 'Report' }}
+                </h3>
                 <span
                   class="px-2 py-1 text-xs font-semibold rounded-full"
                   :class="getStatusClass(report.status)"
@@ -116,33 +168,49 @@
               </div>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <p class="text-gray-500">Schedule</p>
-                  <p class="font-semibold text-gray-900">{{ report.schedule }}</p>
+                  <p class="text-gray-500">
+                    Schedule
+                  </p>
+                  <p class="font-semibold text-gray-900">
+                    {{ report.schedule }}
+                  </p>
                 </div>
                 <div>
-                  <p class="text-gray-500">Format</p>
-                  <p class="font-semibold text-gray-900">{{ report.format }}</p>
+                  <p class="text-gray-500">
+                    Format
+                  </p>
+                  <p class="font-semibold text-gray-900">
+                    {{ report.format }}
+                  </p>
                 </div>
                 <div>
-                  <p class="text-gray-500">Next Run</p>
-                  <p class="font-semibold text-gray-900">{{ report.nextRunAt ? formatDate(report.nextRunAt) : '-' }}</p>
+                  <p class="text-gray-500">
+                    Next Run
+                  </p>
+                  <p class="font-semibold text-gray-900">
+                    {{ report.nextRunAt ? formatDate(report.nextRunAt) : '-' }}
+                  </p>
                 </div>
                 <div>
-                  <p class="text-gray-500">Recipients</p>
-                  <p class="font-semibold text-gray-900">{{ report.recipients?.length || 0 }} emails</p>
+                  <p class="text-gray-500">
+                    Recipients
+                  </p>
+                  <p class="font-semibold text-gray-900">
+                    {{ report.recipients?.length || 0 }} emails
+                  </p>
                 </div>
               </div>
             </div>
             <div class="flex flex-col space-y-2 ml-4">
               <button
-                @click="editSchedule(report)"
                 class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
+                @click="editSchedule(report)"
               >
                 Edit
               </button>
               <button
-                @click="deleteSchedule(report)"
                 class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
+                @click="deleteSchedule(report)"
               >
                 Delete
               </button>
@@ -153,10 +221,17 @@
     </div>
 
     <!-- Dashboard Settings Tab -->
-    <div v-if="activeTab === 'dashboard'" class="space-y-4">
+    <div
+      v-if="activeTab === 'dashboard'"
+      class="space-y-4"
+    >
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Customize Dashboard Layout</h3>
-        <p class="text-sm text-gray-600 mb-6">Drag and drop widgets to customize your dashboard</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Customize Dashboard Layout
+        </h3>
+        <p class="text-sm text-gray-600 mb-6">
+          Drag and drop widgets to customize your dashboard
+        </p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
@@ -168,14 +243,18 @@
           >
             <div class="flex items-center justify-between">
               <div>
-                <h4 class="font-semibold text-gray-900">{{ widget.name }}</h4>
-                <p class="text-xs text-gray-500">{{ widget.description }}</p>
+                <h4 class="font-semibold text-gray-900">
+                  {{ widget.name }}
+                </h4>
+                <p class="text-xs text-gray-500">
+                  {{ widget.description }}
+                </p>
               </div>
               <input
                 type="checkbox"
                 :checked="selectedWidgets.includes(widget.id)"
-                @change="toggleWidget(widget.id)"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                @change="toggleWidget(widget.id)"
               />
             </div>
           </div>
@@ -183,9 +262,9 @@
 
         <div class="mt-6 flex justify-end">
           <button
-            @click="saveDashboardSettings"
             :disabled="saving"
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+            @click="saveDashboardSettings"
           >
             {{ saving ? 'Menyimpan...' : 'Simpan Layout' }}
           </button>
@@ -206,16 +285,29 @@
               {{ editingTemplate ? 'Edit Template' : 'Buat Template Laporan' }}
             </h3>
             <button
-              @click="closeTemplateModal"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeTemplateModal"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="saveTemplate" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="saveTemplate"
+          >
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
               <input
@@ -242,12 +334,24 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="">Pilih Type</option>
-                <option value="SALES">Sales Report</option>
-                <option value="INVENTORY">Inventory Report</option>
-                <option value="FINANCIAL">Financial Report</option>
-                <option value="CUSTOMER">Customer Report</option>
-                <option value="CUSTOM">Custom Report</option>
+                <option value="">
+                  Pilih Type
+                </option>
+                <option value="SALES">
+                  Sales Report
+                </option>
+                <option value="INVENTORY">
+                  Inventory Report
+                </option>
+                <option value="FINANCIAL">
+                  Financial Report
+                </option>
+                <option value="CUSTOMER">
+                  Customer Report
+                </option>
+                <option value="CUSTOM">
+                  Custom Report
+                </option>
               </select>
             </div>
 
@@ -273,16 +377,16 @@
                   />
                   <button
                     type="button"
-                    @click="removeColumn(index)"
                     class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                    @click="removeColumn(index)"
                   >
                     Remove
                   </button>
                 </div>
                 <button
                   type="button"
-                  @click="addColumn"
                   class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                  @click="addColumn"
                 >
                   + Add Column
                 </button>
@@ -292,8 +396,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                @click="closeTemplateModal"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="closeTemplateModal"
               >
                 Batal
               </button>
@@ -319,18 +423,33 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Jadwalkan Report</h3>
+            <h3 class="text-2xl font-bold text-gray-900">
+              Jadwalkan Report
+            </h3>
             <button
-              @click="closeScheduleModal"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="closeScheduleModal"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <form @submit.prevent="saveSchedule" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="saveSchedule"
+          >
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Template *</label>
               <select
@@ -338,8 +457,14 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="">Pilih Template</option>
-                <option v-for="template in templates" :key="template.id" :value="template.id">
+                <option value="">
+                  Pilih Template
+                </option>
+                <option
+                  v-for="template in templates"
+                  :key="template.id"
+                  :value="template.id"
+                >
                   {{ template.name }}
                 </option>
               </select>
@@ -350,13 +475,21 @@
               <select
                 v-model="scheduleForm.schedule"
                 required
-                @change="updateScheduleConfig"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                @change="updateScheduleConfig"
               >
-                <option value="DAILY">Daily</option>
-                <option value="WEEKLY">Weekly</option>
-                <option value="MONTHLY">Monthly</option>
-                <option value="CUSTOM">Custom</option>
+                <option value="DAILY">
+                  Daily
+                </option>
+                <option value="WEEKLY">
+                  Weekly
+                </option>
+                <option value="MONTHLY">
+                  Monthly
+                </option>
+                <option value="CUSTOM">
+                  Custom
+                </option>
               </select>
             </div>
 
@@ -366,13 +499,27 @@
                 v-model="scheduleForm.scheduleConfig.dayOfWeek"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg"
               >
-                <option :value="1">Monday</option>
-                <option :value="2">Tuesday</option>
-                <option :value="3">Wednesday</option>
-                <option :value="4">Thursday</option>
-                <option :value="5">Friday</option>
-                <option :value="6">Saturday</option>
-                <option :value="0">Sunday</option>
+                <option :value="1">
+                  Monday
+                </option>
+                <option :value="2">
+                  Tuesday
+                </option>
+                <option :value="3">
+                  Wednesday
+                </option>
+                <option :value="4">
+                  Thursday
+                </option>
+                <option :value="5">
+                  Friday
+                </option>
+                <option :value="6">
+                  Saturday
+                </option>
+                <option :value="0">
+                  Sunday
+                </option>
               </select>
             </div>
 
@@ -403,10 +550,18 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="PDF">PDF</option>
-                <option value="EXCEL">Excel</option>
-                <option value="CSV">CSV</option>
-                <option value="HTML">HTML</option>
+                <option value="PDF">
+                  PDF
+                </option>
+                <option value="EXCEL">
+                  Excel
+                </option>
+                <option value="CSV">
+                  CSV
+                </option>
+                <option value="HTML">
+                  HTML
+                </option>
               </select>
             </div>
 
@@ -424,8 +579,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                @click="closeScheduleModal"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                @click="closeScheduleModal"
               >
                 Batal
               </button>

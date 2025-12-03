@@ -1,4 +1,4 @@
-import { PrismaClient, Member } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import CacheService from '../utils/cache';
@@ -60,7 +60,7 @@ export class MemberService {
     };
   }
 
-  async getMemberById(id: string, tenantId: string): Promise<Member | null> {
+  async getMemberById(id: string, tenantId: string) {
     return prisma.member.findFirst({
       where: { id, tenantId },
       include: {
@@ -77,13 +77,13 @@ export class MemberService {
     });
   }
 
-  async getMemberByCode(memberCode: string, tenantId: string): Promise<Member | null> {
+  async getMemberByCode(memberCode: string, tenantId: string) {
     return prisma.member.findFirst({
       where: { memberCode, tenantId },
     });
   }
 
-  async createMember(data: CreateMemberInput, tenantId: string): Promise<Member> {
+  async createMember(data: CreateMemberInput, tenantId: string) {
     // Generate member code
     const memberCode = `MEM${Date.now().toString().slice(-8)}${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
 
@@ -115,7 +115,7 @@ export class MemberService {
     return member;
   }
 
-  async updateMember(id: string, data: UpdateMemberInput, tenantId: string): Promise<Member> {
+  async updateMember(id: string, data: UpdateMemberInput, tenantId: string) {
     const member = await this.getMemberById(id, tenantId);
     if (!member) {
       throw new Error('Member not found');

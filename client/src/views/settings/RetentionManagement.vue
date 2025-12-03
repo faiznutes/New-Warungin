@@ -2,53 +2,89 @@
   <div class="flex flex-col h-full p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Data Retention Management</h1>
-      <p class="text-gray-600">Kelola kebijakan retensi data untuk menghapus data lama secara otomatis</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Data Retention Management
+      </h1>
+      <p class="text-gray-600">
+        Kelola kebijakan retensi data untuk menghapus data lama secara otomatis
+      </p>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Content -->
-    <div v-else class="space-y-6">
+    <div
+      v-else
+      class="space-y-6"
+    >
       <!-- Retention Statistics -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Statistik Data yang Akan Dihapus</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Statistik Data yang Akan Dihapus
+        </h2>
         <p class="text-sm text-gray-600 mb-4">
           Berdasarkan kebijakan retensi saat ini, berikut adalah jumlah data yang akan dihapus:
         </p>
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div class="bg-red-50 rounded-lg p-4">
-            <div class="text-sm text-red-600 font-medium">Orders</div>
-            <div class="text-2xl font-bold text-red-900">{{ stats.ordersToDelete || 0 }}</div>
+            <div class="text-sm text-red-600 font-medium">
+              Orders
+            </div>
+            <div class="text-2xl font-bold text-red-900">
+              {{ stats.ordersToDelete || 0 }}
+            </div>
           </div>
           <div class="bg-orange-50 rounded-lg p-4">
-            <div class="text-sm text-orange-600 font-medium">Transactions</div>
-            <div class="text-2xl font-bold text-orange-900">{{ stats.transactionsToDelete || 0 }}</div>
+            <div class="text-sm text-orange-600 font-medium">
+              Transactions
+            </div>
+            <div class="text-2xl font-bold text-orange-900">
+              {{ stats.transactionsToDelete || 0 }}
+            </div>
           </div>
           <div class="bg-yellow-50 rounded-lg p-4">
-            <div class="text-sm text-yellow-600 font-medium">Reports</div>
-            <div class="text-2xl font-bold text-yellow-900">{{ stats.reportsToDelete || 0 }}</div>
+            <div class="text-sm text-yellow-600 font-medium">
+              Reports
+            </div>
+            <div class="text-2xl font-bold text-yellow-900">
+              {{ stats.reportsToDelete || 0 }}
+            </div>
           </div>
           <div class="bg-purple-50 rounded-lg p-4">
-            <div class="text-sm text-purple-600 font-medium">Audit Logs</div>
-            <div class="text-2xl font-bold text-purple-900">{{ stats.auditLogsToDelete || 0 }}</div>
+            <div class="text-sm text-purple-600 font-medium">
+              Audit Logs
+            </div>
+            <div class="text-2xl font-bold text-purple-900">
+              {{ stats.auditLogsToDelete || 0 }}
+            </div>
           </div>
           <div class="bg-blue-50 rounded-lg p-4">
-            <div class="text-sm text-blue-600 font-medium">Contact Submissions</div>
-            <div class="text-2xl font-bold text-blue-900">{{ stats.contactSubmissionsToDelete || 0 }}</div>
+            <div class="text-sm text-blue-600 font-medium">
+              Contact Submissions
+            </div>
+            <div class="text-2xl font-bold text-blue-900">
+              {{ stats.contactSubmissionsToDelete || 0 }}
+            </div>
           </div>
           <div class="bg-indigo-50 rounded-lg p-4">
-            <div class="text-sm text-indigo-600 font-medium">Demo Requests</div>
-            <div class="text-2xl font-bold text-indigo-900">{{ stats.demoRequestsToDelete || 0 }}</div>
+            <div class="text-sm text-indigo-600 font-medium">
+              Demo Requests
+            </div>
+            <div class="text-2xl font-bold text-indigo-900">
+              {{ stats.demoRequestsToDelete || 0 }}
+            </div>
           </div>
         </div>
         <div class="mt-4">
           <button
-            @click="loadStats"
             class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
+            @click="loadStats"
           >
             Refresh Stats
           </button>
@@ -57,7 +93,9 @@
 
       <!-- Retention Policy Configuration -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Kebijakan Retensi (Hari)</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Kebijakan Retensi (Hari)
+        </h2>
         <p class="text-gray-600 mb-6">
           Konfigurasi jumlah hari data akan disimpan sebelum dihapus secara otomatis.
         </p>
@@ -146,7 +184,9 @@
 
       <!-- Apply Retention Actions -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Terapkan Kebijakan Retensi</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+          Terapkan Kebijakan Retensi
+        </h2>
         <p class="text-gray-600 mb-6">
           <strong class="text-red-600">Peringatan:</strong> Tindakan ini akan menghapus data secara permanen dan tidak dapat dibatalkan. Pastikan Anda sudah membuat backup data penting.
         </p>
@@ -156,12 +196,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Orders Lama</h3>
-                <p class="text-sm text-gray-600">Hapus orders yang sudah selesai atau dibatalkan berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Orders Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus orders yang sudah selesai atau dibatalkan berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyOrdersModal = true"
                 class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                @click="showApplyOrdersModal = true"
               >
                 Apply Retention
               </button>
@@ -172,12 +216,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Transactions Lama</h3>
-                <p class="text-sm text-gray-600">Hapus transactions yang sudah selesai atau gagal berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Transactions Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus transactions yang sudah selesai atau gagal berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyTransactionsModal = true"
                 class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+                @click="showApplyTransactionsModal = true"
               >
                 Apply Retention
               </button>
@@ -188,12 +236,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Reports Lama</h3>
-                <p class="text-sm text-gray-600">Hapus reports lama berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Reports Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus reports lama berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyReportsModal = true"
                 class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+                @click="showApplyReportsModal = true"
               >
                 Apply Retention
               </button>
@@ -204,12 +256,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Audit Logs Lama</h3>
-                <p class="text-sm text-gray-600">Hapus audit logs lama berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Audit Logs Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus audit logs lama berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyAuditLogsModal = true"
                 class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                @click="showApplyAuditLogsModal = true"
               >
                 Apply Retention
               </button>
@@ -220,12 +276,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Contact Submissions Lama</h3>
-                <p class="text-sm text-gray-600">Hapus contact submissions lama berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Contact Submissions Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus contact submissions lama berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyContactSubmissionsModal = true"
                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                @click="showApplyContactSubmissionsModal = true"
               >
                 Apply Retention
               </button>
@@ -236,12 +296,16 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">Hapus Demo Requests Lama</h3>
-                <p class="text-sm text-gray-600">Hapus demo requests lama berdasarkan kebijakan retensi</p>
+                <h3 class="font-semibold text-gray-900">
+                  Hapus Demo Requests Lama
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Hapus demo requests lama berdasarkan kebijakan retensi
+                </p>
               </div>
               <button
-                @click="showApplyDemoRequestsModal = true"
                 class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                @click="showApplyDemoRequestsModal = true"
               >
                 Apply Retention
               </button>
@@ -252,12 +316,16 @@
           <div class="border-2 border-red-200 bg-red-50 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-red-900">Terapkan Semua Kebijakan Retensi</h3>
-                <p class="text-sm text-red-700">Hapus semua data lama sekaligus berdasarkan kebijakan retensi yang dikonfigurasi</p>
+                <h3 class="font-semibold text-red-900">
+                  Terapkan Semua Kebijakan Retensi
+                </h3>
+                <p class="text-sm text-red-700">
+                  Hapus semua data lama sekaligus berdasarkan kebijakan retensi yang dikonfigurasi
+                </p>
               </div>
               <button
-                @click="showApplyAllModal = true"
                 class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                @click="showApplyAllModal = true"
               >
                 Apply All
               </button>
@@ -274,7 +342,9 @@
       @click.self="showApplyOrdersModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Orders Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Orders Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -296,15 +366,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyOrdersModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyOrdersModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyOrdersRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyOrdersRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -320,7 +390,9 @@
       @click.self="showApplyTransactionsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Transactions Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Transactions Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -342,15 +414,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyTransactionsModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyTransactionsModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyTransactionsRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyTransactionsRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -366,7 +438,9 @@
       @click.self="showApplyReportsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Reports Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Reports Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -388,15 +462,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyReportsModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyReportsModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyReportsRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyReportsRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -412,7 +486,9 @@
       @click.self="showApplyAuditLogsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Audit Logs Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Audit Logs Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -434,15 +510,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyAuditLogsModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyAuditLogsModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyAuditLogsRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyAuditLogsRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -458,7 +534,9 @@
       @click.self="showApplyContactSubmissionsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Contact Submissions Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Contact Submissions Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -480,15 +558,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyContactSubmissionsModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyContactSubmissionsModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyContactSubmissionsRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyContactSubmissionsRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -504,7 +582,9 @@
       @click.self="showApplyDemoRequestsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Demo Requests Lama</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Hapus Demo Requests Lama
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -526,15 +606,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyDemoRequestsModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyDemoRequestsModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyDemoRequestsRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyDemoRequestsRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus' }}
             </button>
@@ -550,7 +630,9 @@
       @click.self="showApplyAllModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Terapkan Semua Kebijakan Retensi</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">
+          Terapkan Semua Kebijakan Retensi
+        </h3>
         <div class="space-y-4">
           <div class="bg-red-50 border border-red-200 rounded-lg p-4">
             <p class="text-sm text-red-800">
@@ -570,15 +652,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              @click="showApplyAllModal = false"
               class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              @click="showApplyAllModal = false"
             >
               Cancel
             </button>
             <button
-              @click="applyAllRetention"
               :disabled="applying"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              @click="applyAllRetention"
             >
               {{ applying ? 'Menghapus...' : 'Hapus Semua' }}
             </button>

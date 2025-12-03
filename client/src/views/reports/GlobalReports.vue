@@ -2,16 +2,30 @@
   <div class="flex flex-col h-full">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Laporan Global</h2>
-        <p class="text-gray-600">Analisis keseluruhan semua tenant</p>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Laporan Global
+        </h2>
+        <p class="text-gray-600">
+          Analisis keseluruhan semua tenant
+        </p>
       </div>
       <div class="flex space-x-2">
         <button
-          @click="showExportModal = true"
           class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center space-x-2"
+          @click="showExportModal = true"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           <span>Export Laporan</span>
         </button>
@@ -25,14 +39,24 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
           <select
             v-model="periodFilter"
-            @change="applyPeriodFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            @change="applyPeriodFilter"
           >
-            <option value="custom">Custom</option>
-            <option value="daily">Harian (Hari Ini)</option>
-            <option value="weekly">Mingguan (Minggu Ini)</option>
-            <option value="monthly">Bulanan (Bulan Ini)</option>
-            <option value="yearly">Tahunan (Tahun Ini)</option>
+            <option value="custom">
+              Custom
+            </option>
+            <option value="daily">
+              Harian (Hari Ini)
+            </option>
+            <option value="weekly">
+              Mingguan (Minggu Ini)
+            </option>
+            <option value="monthly">
+              Bulanan (Bulan Ini)
+            </option>
+            <option value="yearly">
+              Tahunan (Tahun Ini)
+            </option>
           </select>
         </div>
         <div>
@@ -40,8 +64,8 @@
           <input
             v-model="dateRange.from"
             type="date"
-            @change="periodFilter = 'custom'"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            @change="periodFilter = 'custom'"
           />
         </div>
         <div>
@@ -49,14 +73,14 @@
           <input
             v-model="dateRange.to"
             type="date"
-            @change="periodFilter = 'custom'"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            @change="periodFilter = 'custom'"
           />
         </div>
         <div class="flex items-end">
           <button
-            @click="shouldLoadReport = true; loadReport()"
             class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            @click="shouldLoadReport = true; loadReport()"
           >
             {{ reportData ? 'Refresh' : 'Generate' }}
           </button>
@@ -65,54 +89,92 @@
     </div>
 
     <!-- Report Content -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12"
+    >
       <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="reportData" class="space-y-6">
+    <div
+      v-else-if="reportData"
+      class="space-y-6"
+    >
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Total Pendapatan</p>
-          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}</p>
-          <p class="text-xs text-gray-500 mt-1">Subscription + Addons</p>
+          <p class="text-sm text-gray-600 mb-2">
+            Total Pendapatan
+          </p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            Subscription + Addons
+          </p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Pendapatan Subscription</p>
-          <p class="text-3xl font-bold text-green-600">{{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}</p>
+          <p class="text-sm text-gray-600 mb-2">
+            Pendapatan Subscription
+          </p>
+          <p class="text-3xl font-bold text-green-600">
+            {{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}
+          </p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Pendapatan Addons</p>
-          <p class="text-3xl font-bold text-blue-600">{{ formatCurrency(reportData.summary?.totalAddonRevenue || 0) }}</p>
+          <p class="text-sm text-gray-600 mb-2">
+            Pendapatan Addons
+          </p>
+          <p class="text-3xl font-bold text-blue-600">
+            {{ formatCurrency(reportData.summary?.totalAddonRevenue || 0) }}
+          </p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Total Tenant Aktif</p>
-          <p class="text-3xl font-bold text-gray-900">{{ reportData.summary?.activeTenants || 0 }}</p>
+          <p class="text-sm text-gray-600 mb-2">
+            Total Tenant Aktif
+          </p>
+          <p class="text-3xl font-bold text-gray-900">
+            {{ reportData.summary?.activeTenants || 0 }}
+          </p>
         </div>
       </div>
 
       <!-- Subscription Data -->
       <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900">Penjualan Subscription</h3>
+          <h3 class="text-lg font-semibold text-gray-900">
+            Penjualan Subscription
+          </h3>
           <div class="flex items-center gap-3">
             <select
               v-model="subscriptionFilter"
-              @change="subscriptionPage = 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              @change="subscriptionPage = 1"
             >
-              <option value="all">Semua Status</option>
-              <option value="ACTIVE">Aktif</option>
-              <option value="EXPIRED">Expired</option>
+              <option value="all">
+                Semua Status
+              </option>
+              <option value="ACTIVE">
+                Aktif
+              </option>
+              <option value="EXPIRED">
+                Expired
+              </option>
             </select>
             <select
               v-model="subscriptionInfoFilter"
-              @change="subscriptionPage = 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              @change="subscriptionPage = 1"
             >
-              <option value="all">Semua Info</option>
-              <option value="superadmin">Ditambahkan Super Admin</option>
-              <option value="self">Dibeli Sendiri</option>
+              <option value="all">
+                Semua Info
+              </option>
+              <option value="superadmin">
+                Ditambahkan Super Admin
+              </option>
+              <option value="self">
+                Dibeli Sendiri
+              </option>
             </select>
           </div>
         </div>
@@ -124,75 +186,136 @@
                   <input
                     type="checkbox"
                     :checked="selectedSubscriptions.length === paginatedSubscriptions.length && paginatedSubscriptions.length > 0"
-                    @change="toggleSelectAllSubscriptions"
                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    @change="toggleSelectAllSubscriptions"
                   />
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Info</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tenant
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Paket
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jumlah
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Info
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="!reportData || !reportData.subscriptions || filteredSubscriptions.length === 0">
-                <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data subscription</td>
+                <td
+                  colspan="8"
+                  class="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  Tidak ada data subscription
+                </td>
               </tr>
-              <tr v-else v-for="sub in paginatedSubscriptions" :key="sub.id" class="hover:bg-gray-50">
+              <tr
+                v-for="sub in paginatedSubscriptions"
+                v-else
+                :key="sub.id"
+                class="hover:bg-gray-50"
+              >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <input
+                    v-model="selectedSubscriptions"
                     type="checkbox"
                     :value="sub.id"
-                    v-model="selectedSubscriptions"
                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ sub.tenantName }}</div>
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ sub.tenantName }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ sub.plan }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ sub.plan }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ formatCurrency(sub.amount) }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ formatCurrency(sub.amount) }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ new Date(sub.createdAt).toLocaleDateString('id-ID') }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ new Date(sub.createdAt).toLocaleDateString('id-ID') }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="sub.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                  <span
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="sub.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+                  >
                     {{ sub.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span v-if="sub.addedBySuperAdmin" class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span
+                    v-if="sub.addedBySuperAdmin"
+                    class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
+                  >
                     Ditambahkan oleh Super Admin
                   </span>
-                  <span v-else class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600">
+                  <span
+                    v-else
+                    class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600"
+                  >
                     Dibeli sendiri
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <button
-                      @click="editSubscription(sub)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                       title="Edit"
+                      @click="editSubscription(sub)"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
                     <button
-                      @click="printSubscription(sub)"
                       class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
                       title="Print"
+                      @click="printSubscription(sub)"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -202,42 +325,48 @@
           </table>
         </div>
         <!-- Bulk Actions for Subscriptions -->
-        <div v-if="selectedSubscriptions.length > 0" class="px-6 py-3 border-t border-gray-200 bg-blue-50 flex items-center justify-between">
+        <div
+          v-if="selectedSubscriptions.length > 0"
+          class="px-6 py-3 border-t border-gray-200 bg-blue-50 flex items-center justify-between"
+        >
           <div class="text-sm text-gray-700 font-medium">
             {{ selectedSubscriptions.length }} subscription dipilih
           </div>
           <div class="flex gap-2">
             <button
-              @click="bulkDeleteSubscriptions"
               class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              @click="bulkDeleteSubscriptions"
             >
               Hapus Terpilih
             </button>
             <button
-              @click="selectedSubscriptions = []"
               class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              @click="selectedSubscriptions = []"
             >
               Batal
             </button>
           </div>
         </div>
         <!-- Pagination for Subscriptions -->
-        <div v-if="filteredSubscriptions.length > 0" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div
+          v-if="filteredSubscriptions.length > 0"
+          class="px-6 py-4 border-t border-gray-200 flex items-center justify-between"
+        >
           <div class="text-sm text-gray-700">
             Menampilkan {{ (subscriptionPage - 1) * 7 + 1 }} - {{ Math.min(subscriptionPage * 7, filteredSubscriptions.length) }} dari {{ filteredSubscriptions.length }} subscription
           </div>
           <div class="flex gap-2">
             <button
-              @click="subscriptionPage = Math.max(1, subscriptionPage - 1)"
               :disabled="subscriptionPage === 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="subscriptionPage = Math.max(1, subscriptionPage - 1)"
             >
               Sebelumnya
             </button>
             <button
-              @click="subscriptionPage = Math.min(totalSubscriptionPages, subscriptionPage + 1)"
               :disabled="subscriptionPage === totalSubscriptionPages"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="subscriptionPage = Math.min(totalSubscriptionPages, subscriptionPage + 1)"
             >
               Selanjutnya
             </button>
@@ -248,25 +377,39 @@
       <!-- Addon Data -->
       <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900">Penjualan Addons</h3>
+          <h3 class="text-lg font-semibold text-gray-900">
+            Penjualan Addons
+          </h3>
           <div class="flex items-center gap-3">
             <select
               v-model="addonFilter"
-              @change="addonPage = 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              @change="addonPage = 1"
             >
-              <option value="all">Semua Status</option>
-              <option value="active">Aktif</option>
-              <option value="expired">Expired</option>
+              <option value="all">
+                Semua Status
+              </option>
+              <option value="active">
+                Aktif
+              </option>
+              <option value="expired">
+                Expired
+              </option>
             </select>
             <select
               v-model="addonInfoFilter"
-              @change="addonPage = 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              @change="addonPage = 1"
             >
-              <option value="all">Semua Info</option>
-              <option value="superadmin">Ditambahkan Super Admin</option>
-              <option value="self">Dibeli Sendiri</option>
+              <option value="all">
+                Semua Info
+              </option>
+              <option value="superadmin">
+                Ditambahkan Super Admin
+              </option>
+              <option value="self">
+                Dibeli Sendiri
+              </option>
             </select>
           </div>
         </div>
@@ -278,75 +421,136 @@
                   <input
                     type="checkbox"
                     :checked="selectedAddons.length === paginatedAddons.length && paginatedAddons.length > 0"
-                    @change="toggleSelectAllAddons"
                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    @change="toggleSelectAllAddons"
                   />
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Addon</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Info</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tenant
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nama Addon
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Jumlah
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tanggal
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Info
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="!reportData || !reportData.addons || filteredAddons.length === 0">
-                <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data addon</td>
+                <td
+                  colspan="8"
+                  class="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  Tidak ada data addon
+                </td>
               </tr>
-              <tr v-else v-for="addon in paginatedAddons" :key="addon.id" class="hover:bg-gray-50">
+              <tr
+                v-for="addon in paginatedAddons"
+                v-else
+                :key="addon.id"
+                class="hover:bg-gray-50"
+              >
                 <td class="px-6 py-4 whitespace-nowrap">
                   <input
+                    v-model="selectedAddons"
                     type="checkbox"
                     :value="addon.id"
-                    v-model="selectedAddons"
                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ addon.tenantName }}</div>
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ addon.tenantName }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ addon.addonName }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ addon.addonName }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ formatCurrency(addon.amount) }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ formatCurrency(addon.amount) }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ new Date(addon.subscribedAt).toLocaleDateString('id-ID') }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ new Date(addon.subscribedAt).toLocaleDateString('id-ID') }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="addon.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                  <span
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="addon.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+                  >
                     {{ addon.status === 'active' ? 'Aktif' : 'Expired' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span v-if="addon.addedBySuperAdmin" class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span
+                    v-if="addon.addedBySuperAdmin"
+                    class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
+                  >
                     Ditambahkan oleh Super Admin
                   </span>
-                  <span v-else class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600">
+                  <span
+                    v-else
+                    class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600"
+                  >
                     Dibeli sendiri
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <button
-                      @click="editAddon(addon)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                       title="Edit"
+                      @click="editAddon(addon)"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
                       </svg>
                     </button>
                     <button
-                      @click="printAddon(addon)"
                       class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
                       title="Print"
+                      @click="printAddon(addon)"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -356,42 +560,48 @@
           </table>
         </div>
         <!-- Bulk Actions for Addons -->
-        <div v-if="selectedAddons.length > 0" class="px-6 py-3 border-t border-gray-200 bg-blue-50 flex items-center justify-between">
+        <div
+          v-if="selectedAddons.length > 0"
+          class="px-6 py-3 border-t border-gray-200 bg-blue-50 flex items-center justify-between"
+        >
           <div class="text-sm text-gray-700 font-medium">
             {{ selectedAddons.length }} addon dipilih
           </div>
           <div class="flex gap-2">
             <button
-              @click="bulkDeleteAddons"
               class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              @click="bulkDeleteAddons"
             >
               Hapus Terpilih
             </button>
             <button
-              @click="selectedAddons = []"
               class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              @click="selectedAddons = []"
             >
               Batal
             </button>
           </div>
         </div>
         <!-- Pagination for Addons -->
-        <div v-if="filteredAddons.length > 0" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div
+          v-if="filteredAddons.length > 0"
+          class="px-6 py-4 border-t border-gray-200 flex items-center justify-between"
+        >
           <div class="text-sm text-gray-700">
             Menampilkan {{ (addonPage - 1) * 7 + 1 }} - {{ Math.min(addonPage * 7, filteredAddons.length) }} dari {{ filteredAddons.length }} addon
           </div>
           <div class="flex gap-2">
             <button
-              @click="addonPage = Math.max(1, addonPage - 1)"
               :disabled="addonPage === 1"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="addonPage = Math.max(1, addonPage - 1)"
             >
               Sebelumnya
             </button>
             <button
-              @click="addonPage = Math.min(totalAddonPages, addonPage + 1)"
               :disabled="addonPage === totalAddonPages"
               class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="addonPage = Math.min(totalAddonPages, addonPage + 1)"
             >
               Selanjutnya
             </button>
@@ -402,30 +612,53 @@
       <!-- Tenant Performance -->
       <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="p-6 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">Performa per Tenant (Orders)</h3>
+          <h3 class="text-lg font-semibold text-gray-900">
+            Performa per Tenant (Orders)
+          </h3>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pendapatan</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaksi</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Tenant
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Pendapatan
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Transaksi
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="!reportData.tenantReports || reportData.tenantReports.length === 0">
-                <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data tenant</td>
+                <td
+                  colspan="3"
+                  class="px-6 py-4 text-center text-sm text-gray-500"
+                >
+                  Tidak ada data tenant
+                </td>
               </tr>
-              <tr v-for="tenant in reportData.tenantReports" :key="tenant.tenantId" class="hover:bg-gray-50">
+              <tr
+                v-for="tenant in reportData.tenantReports"
+                :key="tenant.tenantId"
+                class="hover:bg-gray-50"
+              >
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ tenant.tenantName }}</div>
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ tenant.tenantName }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ formatCurrency(tenant.totalRevenue) }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ formatCurrency(tenant.totalRevenue) }}
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ tenant.totalOrders }}</div>
+                  <div class="text-sm text-gray-900">
+                    {{ tenant.totalOrders }}
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -453,30 +686,51 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-2xl font-bold text-gray-900">Detail Subscription</h3>
+            <h3 class="text-2xl font-bold text-gray-900">
+              Detail Subscription
+            </h3>
             <button
-              @click="showSubscriptionModal = false"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="showSubscriptionModal = false"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
           
-          <div v-if="selectedSubscription" class="space-y-4">
+          <div
+            v-if="selectedSubscription"
+            class="space-y-4"
+          >
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tenant</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.tenantName }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedSubscription.tenantName }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Paket</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.plan }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedSubscription.plan }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Jumlah</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedSubscription.amount) }}</p>
+                <p class="mt-1 text-sm text-gray-900 font-semibold">
+                  {{ formatCurrency(selectedSubscription.amount) }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Status</label>
@@ -491,11 +745,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.startDate ? new Date(selectedSubscription.startDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedSubscription.startDate ? new Date(selectedSubscription.startDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Berakhir</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.endDate ? new Date(selectedSubscription.endDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedSubscription.endDate ? new Date(selectedSubscription.endDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Durasi Pemakaian</label>
@@ -503,16 +761,23 @@
                   <span v-if="selectedSubscription.startDate && selectedSubscription.endDate">
                     {{ formatDuration(selectedSubscription.startDate, selectedSubscription.endDate) }}
                   </span>
-                  <span v-else class="text-gray-500">-</span>
+                  <span
+                    v-else
+                    class="text-gray-500"
+                  >-</span>
                 </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
-                <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">ID Subscription</label>
-                <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedSubscription.id }}</p>
+                <p class="mt-1 text-sm text-gray-500 font-mono">
+                  {{ selectedSubscription.id }}
+                </p>
               </div>
               <div class="col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ditambahkan oleh Super Admin?</label>
@@ -520,28 +785,32 @@
                   v-model="editingSubscription.addedBySuperAdmin"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option :value="true">Ya, Ditambahkan oleh Super Admin</option>
-                  <option :value="false">Tidak, Dibeli sendiri</option>
+                  <option :value="true">
+                    Ya, Ditambahkan oleh Super Admin
+                  </option>
+                  <option :value="false">
+                    Tidak, Dibeli sendiri
+                  </option>
                 </select>
               </div>
             </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
-                @click="showSubscriptionModal = false"
                 class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                @click="showSubscriptionModal = false"
               >
                 Batal
               </button>
               <button
-                @click="updateSubscription"
                 class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                @click="updateSubscription"
               >
                 Simpan Perubahan
               </button>
               <button
-                @click="deleteSubscription(selectedSubscription)"
                 class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+                @click="deleteSubscription(selectedSubscription)"
               >
                 Hapus Subscription
               </button>
@@ -560,30 +829,51 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-2xl font-bold text-gray-900">Detail Addon</h3>
+            <h3 class="text-2xl font-bold text-gray-900">
+              Detail Addon
+            </h3>
             <button
-              @click="showAddonModal = false"
               class="text-gray-400 hover:text-gray-600 transition"
+              @click="showAddonModal = false"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
           
-          <div v-if="selectedAddon" class="space-y-4">
+          <div
+            v-if="selectedAddon"
+            class="space-y-4"
+          >
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tenant</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.tenantName }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedAddon.tenantName }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Nama Addon</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.addonName }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedAddon.addonName }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Jumlah</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedAddon.amount || selectedAddon.price || 0) }}</p>
+                <p class="mt-1 text-sm text-gray-900 font-semibold">
+                  {{ formatCurrency(selectedAddon.amount || selectedAddon.price || 0) }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Status</label>
@@ -598,11 +888,15 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.subscribedAt ? new Date(selectedAddon.subscribedAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedAddon.subscribedAt ? new Date(selectedAddon.subscribedAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Berakhir</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedAddon.expiresAt ? new Date(selectedAddon.expiresAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Tidak ada batas waktu' }}</p>
+                <p class="mt-1 text-sm text-gray-900">
+                  {{ selectedAddon.expiresAt ? new Date(selectedAddon.expiresAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Tidak ada batas waktu' }}
+                </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Durasi Pemakaian</label>
@@ -610,13 +904,21 @@
                   <span v-if="selectedAddon.subscribedAt && selectedAddon.expiresAt">
                     {{ formatDuration(selectedAddon.subscribedAt, selectedAddon.expiresAt) }}
                   </span>
-                  <span v-else-if="selectedAddon.subscribedAt" class="text-gray-500">Berlangsung hingga sekarang</span>
-                  <span v-else class="text-gray-500">-</span>
+                  <span
+                    v-else-if="selectedAddon.subscribedAt"
+                    class="text-gray-500"
+                  >Berlangsung hingga sekarang</span>
+                  <span
+                    v-else
+                    class="text-gray-500"
+                  >-</span>
                 </p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">ID Addon</label>
-                <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedAddon.id }}</p>
+                <p class="mt-1 text-sm text-gray-500 font-mono">
+                  {{ selectedAddon.id }}
+                </p>
               </div>
               <div class="col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ditambahkan oleh Super Admin?</label>
@@ -624,28 +926,32 @@
                   v-model="editingAddon.addedBySuperAdmin"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option :value="true">Ya, Ditambahkan oleh Super Admin</option>
-                  <option :value="false">Tidak, Dibeli sendiri</option>
+                  <option :value="true">
+                    Ya, Ditambahkan oleh Super Admin
+                  </option>
+                  <option :value="false">
+                    Tidak, Dibeli sendiri
+                  </option>
                 </select>
               </div>
             </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
-                @click="showAddonModal = false"
                 class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                @click="showAddonModal = false"
               >
                 Batal
               </button>
               <button
-                @click="updateAddon"
                 class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                @click="updateAddon"
               >
                 Simpan Perubahan
               </button>
               <button
-                @click="deleteAddon(selectedAddon)"
                 class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+                @click="deleteAddon(selectedAddon)"
               >
                 Hapus Addon
               </button>
@@ -717,13 +1023,14 @@ const applyPeriodFilter = () => {
       startDate = new Date(today);
       break;
       
-    case 'weekly':
+    case 'weekly': {
       // Minggu ini (Senin - Minggu)
       const dayOfWeek = today.getDay();
       const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Jika hari Minggu, mundur 6 hari
       startDate = new Date(today);
       startDate.setDate(today.getDate() + diffToMonday);
       break;
+    }
       
     case 'monthly':
       // Bulan ini

@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authGuard, AuthRequest } from '../middlewares/auth';
 import subscriptionReceiptService from '../services/subscription-receipt.service';
 import { validate } from '../middlewares/validator';
@@ -19,7 +19,7 @@ const createTemplateSchema = z.object({
 });
 
 // All routes require Super Admin
-const requireSuperAdmin = (req: AuthRequest, res: Response, next: Function) => {
+const requireSuperAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
   const userRole = req.user?.role || req.role;
   if (userRole !== 'SUPER_ADMIN') {
     const error = new Error('Access denied. Super Admin only.');

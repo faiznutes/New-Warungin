@@ -11,16 +11,29 @@
             {{ editingCustomer ? 'Edit Pelanggan' : 'Tambah Pelanggan' }}
           </h3>
           <button
-            @click="$emit('close')"
             class="text-gray-400 hover:text-gray-600 transition"
+            @click="$emit('close')"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form
+          class="space-y-4"
+          @submit.prevent="handleSubmit"
+        >
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama *</label>
             <input
@@ -67,8 +80,8 @@
           <div class="flex space-x-3 pt-4">
             <button
               type="button"
-              @click="$emit('close')"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              @click="$emit('close')"
             >
               Batal
             </button>

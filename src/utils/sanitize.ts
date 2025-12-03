@@ -47,6 +47,7 @@ export function sanitizeString(str: string | null | undefined, maxLength: number
   if (!str) return '';
   
   // Remove null bytes and control characters
+  // eslint-disable-next-line no-control-regex
   let sanitized = str.replace(/\0/g, '').replace(/[\x00-\x1F\x7F]/g, '');
   
   // Limit length

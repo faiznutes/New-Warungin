@@ -1,15 +1,20 @@
 <template>
   <div class="flex flex-col h-full">
-
     <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Pengaturan Toko</h2>
-      <p class="text-gray-600">Kelola informasi dan pengaturan toko Anda</p>
+      <h2 class="text-2xl font-bold text-gray-900">
+        Pengaturan Toko
+      </h2>
+      <p class="text-gray-600">
+        Kelola informasi dan pengaturan toko Anda
+      </p>
     </div>
 
     <div class="space-y-6">
       <!-- Store Information -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Toko</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Informasi Toko
+        </h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Toko</label>
@@ -50,15 +55,29 @@
       <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <div>
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Template Struk</h3>
-            <p class="text-sm text-gray-600">Kelola template struk untuk berbagai ukuran kertas</p>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
+              Template Struk
+            </h3>
+            <p class="text-sm text-gray-600">
+              Kelola template struk untuk berbagai ukuran kertas
+            </p>
           </div>
           <button
-            @click="showTemplateManager = true"
             class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
+            @click="showTemplateManager = true"
           >
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            <svg
+              class="w-4 h-4 sm:w-5 sm:h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+              />
             </svg>
             <span>Kelola Template</span>
           </button>
@@ -73,8 +92,8 @@
       <!-- Save Button -->
       <div class="flex justify-end">
         <button
-          @click="saveSettings"
           class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          @click="saveSettings"
         >
           Simpan Pengaturan
         </button>

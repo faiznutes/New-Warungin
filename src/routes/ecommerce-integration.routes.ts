@@ -73,11 +73,12 @@ router.post(
             syncImages,
           });
           break;
-        default:
+        default: {
           const error = new Error('Unsupported platform');
           (error as any).statusCode = 400;
           handleRouteError(res, error, 'Unsupported platform', 'SYNC_PRODUCT_ECOMMERCE');
           return;
+        }
       }
 
       res.json(result);

@@ -1,5 +1,8 @@
 <template>
-  <component v-if="layoutComponent" :is="layoutComponent" />
+  <component
+    :is="layoutComponent"
+    v-if="layoutComponent"
+  />
 </template>
 
 <script setup lang="ts">

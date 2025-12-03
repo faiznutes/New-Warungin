@@ -47,7 +47,8 @@ export function checkPasswordStrength(password: string): PasswordStrength {
   }
 
   // Special character check
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  // eslint-disable-next-line no-useless-escape
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     feedback.push('Password harus mengandung karakter khusus');
   } else {
     score++;

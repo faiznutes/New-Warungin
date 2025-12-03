@@ -451,7 +451,7 @@ class AnalyticsService {
   async getPlatformTrends(period: 'daily' | 'weekly' | 'monthly' = 'monthly') {
     const now = new Date();
     let startDate: Date;
-    let endDate: Date = now;
+    const endDate: Date = now;
 
     if (period === 'daily') {
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30, 0, 0, 0);
