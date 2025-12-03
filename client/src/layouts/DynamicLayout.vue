@@ -1,8 +1,25 @@
 <template>
+  <div v-if="!layoutComponent && loading" class="flex items-center justify-center min-h-screen">
+    <div class="text-center">
+      <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-gray-600">Memuat...</p>
+    </div>
+  </div>
   <component
+    v-else-if="layoutComponent"
     :is="layoutComponent"
-    v-if="layoutComponent"
   />
+  <div v-else class="flex items-center justify-center min-h-screen">
+    <div class="text-center">
+      <p class="text-red-600 mb-2">Gagal memuat layout</p>
+      <button
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+        @click="retryLoadLayout"
+      >
+        Coba Lagi
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -13,14 +30,17 @@ const authStore = useAuthStore();
 
 // Use shallowRef to avoid deep reactivity issues with component references
 const layoutComponent = shallowRef<any>(null);
+const loading = shallowRef<boolean>(true);
 
 // Load layout component based on role
 const loadLayout = async (role: string | undefined) => {
   if (!role) {
     layoutComponent.value = null;
+    loading.value = false;
     return;
   }
 
+  loading.value = true;
   try {
     switch (role) {
       case 'SUPER_ADMIN':
@@ -41,9 +61,22 @@ const loadLayout = async (role: string | undefined) => {
         break;
     }
   } catch (error) {
-    console.error('Error loading layout:', error);
-    // Fallback to AppLayout
-    layoutComponent.value = (await import('./AppLayout.vue')).default;
+    // Silently handle error and fallback to AppLayout
+    try {
+      layoutComponent.value = (await import('./AppLayout.vue')).default;
+    } catch (fallbackError) {
+      // If AppLayout also fails, set to null (will show error message)
+      layoutComponent.value = null;
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Retry loading layout
+const retryLoadLayout = () => {
+  if (authStore.user?.role) {
+    loadLayout(authStore.user.role);
   }
 };
 

@@ -73,12 +73,11 @@ onMounted(async () => {
       // Verify token is still valid by fetching user data (async, but only if not on login)
       // This is done in background to avoid blocking
       authStore.fetchMe().catch((error) => {
-        console.error('Failed to restore session:', error);
         // If fetchMe fails, token might be invalid, clear everything
         authStore.clearAuth();
       });
     } catch (error) {
-      console.error('Failed to restore user from localStorage:', error);
+      // Failed to restore user from localStorage, clear auth
       authStore.clearAuth();
     }
   } else {
