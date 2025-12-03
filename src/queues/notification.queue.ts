@@ -2,15 +2,34 @@ import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
 import { emitToTenant } from '../socket/socket';
 
-const redisClient = getRedisClient();
+// Lazy initialization - only create queue if Redis is actually available
+let notificationQueueInstance: Queue | null = null;
 
-// Only create queue if Redis is actually available
-// Don't create queue if Redis client is null (will fail silently)
-export const notificationQueue = redisClient
-  ? new Queue('notification', {
+const getNotificationQueue = (): Queue | null => {
+  if (notificationQueueInstance) {
+    return notificationQueueInstance;
+  }
+  
+  const redisClient = getRedisClient();
+  
+  // Only create queue if Redis is actually available and not failed
+  if (!redisClient) {
+    return null;
+  }
+  
+  try {
+    notificationQueueInstance = new Queue('notification', {
       connection: redisClient,
-    })
-  : null;
+    });
+    return notificationQueueInstance;
+  } catch (error) {
+    // Queue creation failed - Redis not available
+    return null;
+  }
+};
+
+// Export lazy getter - initialize on first access
+export const notificationQueue = getNotificationQueue();
 
 export interface NotificationData {
   tenantId: string;

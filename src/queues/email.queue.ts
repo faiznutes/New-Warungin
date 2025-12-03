@@ -1,15 +1,34 @@
 import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
 
-const redisClient = getRedisClient();
+// Lazy initialization - only create queue if Redis is actually available
+let emailQueueInstance: Queue | null = null;
 
-// Only create queue if Redis is actually available
-// Don't create queue if Redis client is null (will fail silently)
-export const emailQueue = redisClient
-  ? new Queue('email', {
+const getEmailQueue = (): Queue | null => {
+  if (emailQueueInstance) {
+    return emailQueueInstance;
+  }
+  
+  const redisClient = getRedisClient();
+  
+  // Only create queue if Redis is actually available and not failed
+  if (!redisClient) {
+    return null;
+  }
+  
+  try {
+    emailQueueInstance = new Queue('email', {
       connection: redisClient,
-    })
-  : null;
+    });
+    return emailQueueInstance;
+  } catch (error) {
+    // Queue creation failed - Redis not available
+    return null;
+  }
+};
+
+// Export lazy getter - initialize on first access
+export const emailQueue = getEmailQueue();
 
 export const addEmailJob = async (
   to: string,

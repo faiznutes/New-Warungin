@@ -36,8 +36,8 @@ const initializeWorkers = (): void => {
     // If Redis is not available, workers will fail gracefully
     setTimeout(() => {
       try {
-        // Check if Redis is actually connected before creating workers
-        if (redisClient && redisClient.status === 'ready') {
+        // Check if Redis is actually connected and not failed before creating workers
+        if (redisClient && redisClient.status === 'ready' && redisClient.status !== 'end' && redisClient.status !== 'close') {
           // Email worker disabled - using n8n instead
           // emailWorker = new Worker('email', async (job) => {
           //   await processEmailJob(job);

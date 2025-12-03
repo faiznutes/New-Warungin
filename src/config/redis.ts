@@ -8,10 +8,17 @@ let redisFailed = false; // Track if Redis connection has failed
 export const getRedisClient = (): Redis | null => {
   // Redis is optional - return null if not configured
   // Check if Redis is explicitly disabled or not configured
+  const redisHost = env.REDIS_HOST?.trim() || '';
+  const hasRedisUrl = !!env.REDIS_URL;
+  
   // If REDIS_URL is not set and REDIS_HOST is empty, don't try to connect
-  if (!env.REDIS_URL && (!env.REDIS_HOST || env.REDIS_HOST.trim() === '')) {
+  if (!hasRedisUrl && !redisHost) {
     return null;
   }
+  
+  // If REDIS_HOST is 'redis' (default from docker-compose), check if Redis service is actually available
+  // In production, if Redis service is not running, we should not try to connect
+  // We'll let it try once, but if it fails, mark as failed immediately
 
   // If Redis connection has already failed, don't try again
   if (redisFailed) {
@@ -32,14 +39,20 @@ export const getRedisClient = (): Redis | null => {
         redisConfig as any,
         {
           retryStrategy: (times) => {
-            // Stop retrying after 3 attempts
-            if (times > 3) {
-              logger.info('ℹ️  Redis connection failed after 3 attempts - disabling Redis');
-              redisFailed = true;
-              redisClient = null;
+            // Stop retrying after 2 attempts (reduced from 3)
+            if (times > 2) {
+              if (!redisFailed) {
+                logger.info('ℹ️  Redis connection failed after 2 attempts - disabling Redis');
+                redisFailed = true;
+                // Disconnect and destroy client
+                if (redisClient) {
+                  redisClient.disconnect();
+                  redisClient = null;
+                }
+              }
               return null; // Stop retrying
             }
-            const delay = Math.min(times * 50, 2000);
+            const delay = Math.min(times * 100, 1000);
             return delay;
           },
           maxRetriesPerRequest: null, // Required for BullMQ
@@ -47,12 +60,19 @@ export const getRedisClient = (): Redis | null => {
           enableOfflineQueue: false, // Disable offline queue to fail fast
           connectTimeout: 2000, // 2 second timeout
           showFriendlyErrorStack: false, // Don't show full error stack
-          // Suppress connection errors to prevent unhandled rejection
           enableReadyCheck: false, // Disable ready check to prevent errors
           autoResubscribe: false, // Disable auto resubscribe
           autoResendUnfulfilledCommands: false, // Disable auto resend
+          // Suppress reconnect attempts
+          reconnectOnError: () => {
+            // Don't reconnect on error - fail fast
+            return false;
+          },
         }
       );
+
+      // Track if we've logged connection errors to avoid spam
+      let connectionErrorLogged = false;
 
       redisClient.on('error', (err) => {
         // Suppress all Redis connection errors to prevent unhandled rejection
@@ -65,42 +85,59 @@ export const getRedisClient = (): Redis | null => {
           errorMessage.includes('Connection is closed') ||
           errorMessage.includes('getaddrinfo');
         
-        if (!isConnectionError) {
-          logger.warn('Redis error (optional service):', errorMessage);
-        }
-        
-        // Mark as failed and set to null for any connection-related error
-        if (isConnectionError) {
+        // Only log connection errors once to avoid spam
+        if (isConnectionError && !connectionErrorLogged) {
           logger.info('ℹ️  Redis not available - scheduled jobs disabled (this is normal if Redis is not installed)');
+          connectionErrorLogged = true;
           redisFailed = true;
-          redisClient = null;
+          // Disconnect immediately to prevent further connection attempts
+          if (redisClient) {
+            try {
+              redisClient.disconnect();
+            } catch (e) {
+              // Ignore disconnect errors
+            }
+            redisClient = null;
+          }
+        } else if (!isConnectionError) {
+          logger.warn('Redis error (optional service):', errorMessage);
         }
       });
       
       // Handle connection close events to prevent unhandled rejection
       redisClient.on('close', () => {
-        logger.info('ℹ️  Redis connection closed - scheduled jobs disabled');
-        redisFailed = true;
-        redisClient = null;
+        if (!redisFailed) {
+          redisFailed = true;
+          redisClient = null;
+        }
       });
       
       // Handle end events
       redisClient.on('end', () => {
-        logger.info('ℹ️  Redis connection ended - scheduled jobs disabled');
-        redisFailed = true;
-        redisClient = null;
+        if (!redisFailed) {
+          redisFailed = true;
+          redisClient = null;
+        }
       });
 
       redisClient.on('connect', () => {
         logger.info('✅ Redis connected');
+        redisFailed = false; // Reset failed flag on successful connection
+        connectionErrorLogged = false;
       });
 
       redisClient.on('ready', () => {
         logger.info('✅ Redis ready');
+        redisFailed = false; // Reset failed flag on ready
       });
+
+      // Don't try to connect immediately - let it connect lazily when needed
+      // This prevents connection errors on startup if Redis is not available
+      // Connection will be attempted only when a command is executed
     } catch (error) {
       logger.info('ℹ️  Redis not available - scheduled jobs disabled');
       redisClient = null;
+      redisFailed = true;
       return null;
     }
   }
