@@ -258,7 +258,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
-import { formatDateTime } from '../../utils/formatters';
+import { formatDateTime, formatDate } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
 
 const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();

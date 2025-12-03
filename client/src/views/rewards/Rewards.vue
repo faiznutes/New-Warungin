@@ -397,7 +397,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import api from '../../api';
-import { formatDateTime } from '../../utils/formatters';
+import { formatDateTime, formatDate } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
 
 const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
