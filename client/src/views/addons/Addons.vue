@@ -343,37 +343,69 @@ const loadAddons = async () => {
     const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
     console.log('Loading addons for tenant:', currentTenantId);
     
+    // Verify tenantId is in localStorage before making API calls
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    console.log('[Addons] TenantId in localStorage:', storedTenantId);
+    console.log('[Addons] TenantId in authStore:', authStore.selectedTenantId);
+    
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
       api.get('/addons/available').catch((err) => {
-        console.error('Error loading available addons:', err);
+        console.error('❌ Error loading available addons:', err);
+        console.error('❌ Error response:', err.response);
         return { data: [] };
       }),
       api.get('/addons').catch((err) => {
-        console.error('Error loading active addons:', err);
+        console.error('❌ Error loading active addons:', err);
+        console.error('❌ Error response:', err.response);
+        console.error('❌ Error message:', err.message);
+        
+        // Check if it's a tenantId error
+        if (err.response?.status === 400 || err.response?.status === 500) {
+          const errorMsg = err.response?.data?.error || err.response?.data?.message;
+          if (errorMsg && errorMsg.includes('Tenant ID')) {
+            console.error('❌ Tenant ID error - check if tenantId is being sent in request');
+          }
+        }
+        
         return { data: [] };
       }),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
     
     // Parse response data correctly
-    // Backend returns array directly for /addons, not { data: [...] }
+    // Backend /addons/available returns array directly: res.json(AVAILABLE_ADDONS)
+    // Backend /addons returns array directly: res.json(addons)
+    // Axios wraps response in .data, so availableRes.data and activeRes.data are arrays
+    
     let availableData = availableRes.data;
     let activeData = activeRes.data;
     
+    // Debug: Log raw responses
+    console.log('Raw availableRes:', availableRes);
+    console.log('Raw activeRes:', activeRes);
+    
     // Handle case where response is array directly (axios wraps in .data)
-    // Or if response.data is the array
+    // Backend returns array, so availableRes.data and activeRes.data should be arrays
     if (Array.isArray(availableData)) {
-      // Already an array
+      // Already an array - correct format
     } else if (availableData && Array.isArray(availableData.data)) {
+      // Nested in data property (unlikely but handle it)
       availableData = availableData.data;
+    } else if (availableData && typeof availableData === 'object' && availableData !== null) {
+      // If it's an object but not array, try to extract array from common properties
+      availableData = availableData.data || availableData.addons || [];
     } else {
       availableData = [];
     }
     
     if (Array.isArray(activeData)) {
-      // Already an array
+      // Already an array - correct format
     } else if (activeData && Array.isArray(activeData.data)) {
+      // Nested in data property (unlikely but handle it)
       activeData = activeData.data;
+    } else if (activeData && typeof activeData === 'object' && activeData !== null) {
+      // If it's an object but not array, try to extract array from common properties
+      activeData = activeData.data || activeData.addons || [];
     } else {
       activeData = [];
     }
@@ -383,12 +415,18 @@ const loadAddons = async () => {
     currentSubscription.value = subscriptionRes.data;
     
     // Debug log
-    console.log('Available addons:', availableAddons.value.length, availableAddons.value);
-    console.log('Active addons:', activeAddons.value.length, activeAddons.value);
+    console.log('Parsed available addons:', availableAddons.value.length, availableAddons.value);
+    console.log('Parsed active addons:', activeAddons.value.length, activeAddons.value);
     
     if (activeAddons.value.length === 0) {
-      console.warn('No active addons found for tenant:', currentTenantId);
-      console.warn('Response was:', activeRes);
+      console.warn('⚠️ No active addons found for tenant:', currentTenantId);
+      console.warn('⚠️ Raw active response:', activeRes);
+      console.warn('⚠️ Parsed activeData:', activeData);
+      
+      // Check if there's an error in the response
+      if (activeRes.status !== 200) {
+        console.error('❌ Non-200 status:', activeRes.status);
+      }
     }
   } catch (error: any) {
     console.error('Error loading addons:', error);

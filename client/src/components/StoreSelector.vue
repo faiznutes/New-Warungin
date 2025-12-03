@@ -168,17 +168,34 @@ const loadStores = async () => {
     const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
     console.log('Loading stores for tenant:', currentTenantId);
     
+    // Verify tenantId before making request
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    console.log('[StoreSelector] TenantId in localStorage before request:', storedTenantId);
+    console.log('[StoreSelector] TenantId in authStore before request:', authStore.selectedTenantId);
+    
     const response = await api.get('/outlets');
     
+    // Log request URL and params if available
+    console.log('[StoreSelector] Outlets request completed, status:', response.status);
+    
     // Parse response - backend returns { data: [], limit: {} }
+    // Axios wraps in .data, so response.data = { data: [], limit: {} }
+    
+    // Debug: Log raw response
+    console.log('Raw outlets response:', response);
+    console.log('Response.data:', response.data);
+    
     let storeList = response.data?.data;
     
     // Handle different response formats
     if (Array.isArray(storeList)) {
-      // Correct format: { data: [...] }
+      // Correct format: { data: [...] } - already extracted
     } else if (Array.isArray(response.data)) {
-      // Direct array response
+      // Direct array response (unlikely for /outlets but handle it)
       storeList = response.data;
+    } else if (response.data && typeof response.data === 'object') {
+      // Try to extract from response.data if it's an object
+      storeList = response.data.data || response.data.outlets || [];
     } else {
       storeList = [];
     }
@@ -186,11 +203,18 @@ const loadStores = async () => {
     stores.value = Array.isArray(storeList) ? storeList : [];
     
     // Debug log
-    console.log('Stores loaded:', stores.value.length, stores.value);
-    console.log('Response:', response.data);
+    console.log('✅ Stores loaded:', stores.value.length, stores.value);
+    console.log('Response status:', response.status);
     
     if (stores.value.length === 0) {
-      console.warn('No stores found for tenant:', currentTenantId);
+      console.warn('⚠️ No stores found for tenant:', currentTenantId);
+      console.warn('⚠️ Raw response:', response.data);
+      console.warn('⚠️ Parsed storeList:', storeList);
+      
+      // Check if there's an error in the response
+      if (response.status !== 200) {
+        console.error('❌ Non-200 status:', response.status);
+      }
     }
     
     // If no store selected but stores exist, select first one if only one store
@@ -246,10 +270,16 @@ watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
     
     // Verify tenantId is still set
     const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
-    console.log('StoreSelector: Loading stores for tenant:', currentTenantId);
+    console.log('[StoreSelector] Loading stores for tenant:', currentTenantId);
+    console.log('[StoreSelector] Expected tenant:', newTenantId);
     
-    if (currentTenantId === newTenantId) {
+    if (currentTenantId === newTenantId && currentTenantId) {
       await loadStores();
+    } else {
+      console.warn('[StoreSelector] ⚠️ TenantId mismatch or missing:', { 
+        expected: newTenantId, 
+        actual: currentTenantId 
+      });
     }
   } else if (!newTenantId && authStore.isSuperAdmin) {
     // Clear stores if tenant is deselected
