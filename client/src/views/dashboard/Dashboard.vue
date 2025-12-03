@@ -2018,8 +2018,21 @@ const loadAddons = async () => {
 
 const loadSubscription = async () => {
   subscriptionLoading.value = true;
+  // Add timeout safety to prevent infinite loading
+  let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
+    if (subscriptionLoading.value) {
+      subscriptionLoading.value = false;
+      currentSubscription.value = null;
+    }
+    timeoutId = null;
+  }, 35000); // 35 seconds (slightly more than API timeout of 30s)
+  
   try {
     const response = await api.get('/subscriptions/current');
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     if (response.data) {
       currentSubscription.value = response.data || {};
       
@@ -2102,6 +2115,11 @@ const loadSubscription = async () => {
     // Silently handle error - subscription might not exist yet
     currentSubscription.value = null;
   } finally {
+    // Clear timeout in case it's still running
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     // Always ensure loading is set to false, even if there's an error
     subscriptionLoading.value = false;
   }
