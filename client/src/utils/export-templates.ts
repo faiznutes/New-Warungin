@@ -1275,7 +1275,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
       
-    case 'customers':
+    case 'customers': {
       const allCustomers = [
         ...(reportData.customers || []),
         ...(reportData.members || []),
@@ -1309,6 +1309,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
+      }
       
     case 'financial':
       if (reportData.byDate && reportData.byDate.length > 0) {
