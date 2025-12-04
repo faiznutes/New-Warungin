@@ -47,6 +47,9 @@ const loadLayout = async (role: string | undefined) => {
         layoutComponent.value = (await import('./SuperAdminLayout.vue')).default;
         break;
       case 'ADMIN_TENANT':
+        // ADMIN_TENANT uses AppLayout for full menu access
+        layoutComponent.value = (await import('./AppLayout.vue')).default;
+        break;
       case 'SUPERVISOR':
         layoutComponent.value = (await import('./TenantLayout.vue')).default;
         break;

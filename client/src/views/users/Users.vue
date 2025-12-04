@@ -356,26 +356,23 @@ const pagination = ref({
 });
 
 const loadUsers = async (page = 1) => {
+  // Only check tenant selection for SUPER_ADMIN
   if (needsTenantSelection.value) {
     users.value = [];
     return; // Don't load if tenant not selected
   }
   
-  // For admin tenant, ensure tenantId is available
-  if (userRole === 'ADMIN_TENANT' && !authStore.currentTenantId) {
-    users.value = [];
-    return;
-  }
+  // For ADMIN_TENANT, tenantId is already in JWT token, no need to check
+  // Only SUPER_ADMIN needs tenant selection
   
   loading.value = true;
   try {
-    // Ensure tenantId is set in localStorage for API interceptor
-    if (userRole === 'ADMIN_TENANT' && authStore.currentTenantId) {
-      localStorage.setItem('selectedTenantId', authStore.currentTenantId);
+    // For SUPER_ADMIN, ensure tenantId is set in localStorage for API interceptor
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
+      // Wait a bit to ensure localStorage is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
-    // Wait a bit to ensure localStorage is updated
-    await new Promise(resolve => setTimeout(resolve, 100));
     
     const response = await api.get('/users', {
       params: { page, limit: pagination.value.limit },
@@ -512,21 +509,18 @@ const getLimitColorClass = () => {
   return 'text-green-600';
 };
 
-// Watch for tenant changes and auto-refetch
-watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
-  if (newTenantId && newTenantId !== oldTenantId && !needsTenantSelection.value) {
-    if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
-      loadUsers();
-    }
+// Watch for tenant changes and auto-refetch (only for SUPER_ADMIN)
+watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
+  if (authStore.isSuperAdmin && newTenantId && newTenantId !== oldTenantId && !needsTenantSelection.value) {
+    loadUsers();
   }
 });
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
-    if (!needsTenantSelection.value) {
-      loadUsers();
-    }
+  // Load users for ADMIN_TENANT and SUPER_ADMIN (if tenant selected)
+  if (userRole === 'ADMIN_TENANT' || (userRole === 'SUPER_ADMIN' && !needsTenantSelection.value)) {
+    loadUsers();
   }
 });
 </script>

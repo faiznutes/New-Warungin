@@ -291,7 +291,7 @@
 
           <!-- Manajemen Section -->
           <div
-            v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
+            v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'SUPERVISOR'"
             class="pt-4 mt-4 border-t border-gray-200"
           >
             <button
@@ -743,6 +743,8 @@ const autoExpandMenu = () => {
     expandedMenus.value.laporan = true;
   } else if (currentPath.includes('/users')) {
     expandedMenus.value.manajemen = true;
+  } else if (currentPath.includes('/stores')) {
+    expandedMenus.value.pengaturan = true;
   } else if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
       currentPath.includes('/settings') || currentPath.includes('/rewards') ||
       currentPath.includes('/discounts') || currentPath.includes('/stores')) {
