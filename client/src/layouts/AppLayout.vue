@@ -166,7 +166,7 @@
 
           <!-- Laporan & Analitik Section -->
           <div
-            v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canViewReports) || (userRole === 'CASHIER' && canViewReports)) && userRole !== 'KITCHEN'"
+            v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canViewReports) || (userRole === 'CASHIER' && canViewReports))"
             class="pt-4 mt-4 border-t border-gray-200"
           >
             <button
@@ -440,7 +440,7 @@
               </router-link>
 
               <router-link
-                v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || userRole === 'SUPER_ADMIN'"
+                v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'SUPERVISOR'"
                 to="/app/rewards"
                 class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
@@ -609,14 +609,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { usePermissions } from '../composables/usePermissions';
 import api from '../api';
 import AdminInfoModal from '../components/AdminInfoModal.vue';
 
-const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
@@ -624,7 +623,6 @@ const authStore = useAuthStore();
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const selectedTenant = ref<string>('');
-const openSubmenus = ref<Record<string, boolean>>({});
 const activeAddons = ref<any[]>([]);
 const availableAddons = ref<any[]>([]);
 const showInfoModal = ref(false);
@@ -827,43 +825,6 @@ const handleTenantChange = () => {
   window.location.reload();
 };
 
-const toggleSubmenu = (menu: string) => {
-  openSubmenus.value[menu as keyof typeof openSubmenus.value] = !openSubmenus.value[menu as keyof typeof openSubmenus.value];
-};
-
-       const selectTenantAndNavigate = async (path: string, tenantId: string) => {
-         // Ensure user is still authenticated before navigating
-         if (!authStore.isAuthenticated) {
-           // Try to restore session
-           const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-           if (token) {
-             try {
-               await authStore.fetchMe();
-             } catch (error) {
-               // Session expired, redirect to login
-               router.push('/login');
-               return;
-             }
-           } else {
-             router.push('/login');
-             return;
-           }
-         }
-         
-         authStore.setSelectedTenant(tenantId);
-         closeSidebarOnMobile();
-         
-         // Use router.push instead of window.location.reload to maintain session
-         await router.push(path);
-         
-         // Force reload only if needed (to refresh data)
-         // But ensure we don't lose auth state
-         setTimeout(() => {
-           if (authStore.isAuthenticated) {
-             window.location.reload();
-           }
-         }, 100);
-       };
 
 const loadAddons = async () => {
   if (userRole.value !== 'ADMIN_TENANT' && userRole.value !== 'SUPER_ADMIN') {
