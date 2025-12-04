@@ -682,7 +682,8 @@ const autoExpandMenu = () => {
   
   // Open only the relevant menu section based on current route
   if (currentPath.includes('/dashboard') || currentPath.includes('/products') || 
-      currentPath.includes('/orders') || currentPath.includes('/customers')) {
+      currentPath.includes('/orders') || currentPath.includes('/customers') || 
+      currentPath.includes('/pos')) {
     expandedMenus.value.operasional = true;
   } else if (currentPath.includes('/reports') || currentPath.includes('/analytics') || 
       currentPath.includes('/finance') || currentPath.includes('/profit-loss')) {
@@ -690,7 +691,8 @@ const autoExpandMenu = () => {
   } else if (currentPath.includes('/users')) {
     expandedMenus.value.manajemen = true;
   } else if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
-      currentPath.includes('/settings') || currentPath.includes('/rewards')) {
+      currentPath.includes('/settings') || currentPath.includes('/rewards') ||
+      currentPath.includes('/discounts')) {
     expandedMenus.value.pengaturan = true;
   } else {
     // Default: if on dashboard route, open operasional menu
@@ -791,11 +793,16 @@ const pageTitle = computed(() => {
     '/app/products': 'Produk',
     '/app/orders': 'Pesanan & Transaksi',
     '/app/customers': 'Pelanggan',
+    '/app/pos': 'POS (Kasir)',
     '/app/reports': 'Laporan',
     '/app/subscription': 'Berlangganan',
     '/app/addons': 'Addon',
     '/app/users': 'Pengguna',
     '/app/settings/store': 'Atur Toko',
+    '/app/settings': 'Pengaturan',
+    '/app/rewards': 'Point Gratis',
+    '/app/reward-view': 'Detail Point Gratis',
+    '/app/discounts': 'Diskon',
     '/app/analytics': 'Analitik Lanjutan',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',

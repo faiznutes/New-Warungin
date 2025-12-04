@@ -300,7 +300,7 @@ const router = createRouter({
           path: 'settings/store',
           name: 'store-settings',
           component: () => import('../views/settings/StoreSettings.vue'),
-          meta: { roles: ['ADMIN_TENANT'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'settings/2fa',

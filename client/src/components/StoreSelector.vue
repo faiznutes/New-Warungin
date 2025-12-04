@@ -216,7 +216,17 @@ const loadStores = async () => {
       storeList = [];
     }
     
+    // Filter only active stores if needed, or show all stores
+    // For now, show all stores (both active and inactive)
     stores.value = Array.isArray(storeList) ? storeList : [];
+    
+    // Debug log to help troubleshoot
+    if (process.env.NODE_ENV === 'development') {
+      console.log('StoreSelector: Loaded stores', {
+        count: stores.value.length,
+        stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive }))
+      });
+    }
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {
@@ -225,6 +235,17 @@ const loadStores = async () => {
   } catch (error: any) {
     // Clear timeout on error
     clearTimeout(timeoutId);
+    
+    // Log error for debugging (always log, not just in development)
+    console.error('StoreSelector: Error loading stores', {
+      error: error?.message || error,
+      response: error?.response?.data,
+      status: error?.response?.status,
+      url: error?.config?.url
+    });
+    
+    // Try to extract error message for user feedback
+    const errorMessage = error?.response?.data?.error || error?.message || 'Gagal memuat daftar store';
     
     // Silently handle error - stores will be empty
     // Error details can be checked in browser dev tools if needed
