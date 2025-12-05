@@ -746,7 +746,7 @@ const generateReport = async (template: any) => {
     });
     // Handle report download/display
     if (response.data?.downloadUrl) {
-      window.open(response.data.downloadUrl, '_blank');
+      window.open(response.data?.downloadUrl, '_blank');
       await showSuccess('Report berhasil di-generate dan dibuka di tab baru');
     } else if (response.data?.reportData) {
       // Display report data in modal or new page

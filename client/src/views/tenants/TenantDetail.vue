@@ -1523,13 +1523,13 @@ const handleUpdatePoints = async () => {
       reason: editPointsForm.value.reason,
     });
     
-    if (response.data.success) {
-      await showSuccess(response.data.message);
+    if (response.data?.success) {
+      await showSuccess(response.data?.message || 'Point berhasil diupdate');
       showEditPointsModal.value = false;
       editPointsForm.value = { points: 0, reason: '' };
       await loadTenantPoints();
     } else {
-      await showError(response.data.message || 'Gagal mengupdate point');
+      await showError(response.data?.message || 'Gagal mengupdate point');
     }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal mengupdate point');
@@ -1593,8 +1593,8 @@ const bulkActivateUsers = async () => {
       isActive: true,
     });
     
-    if (response.data.updated > 0) {
-      await showSuccess(`${response.data?.updated || 0} pengguna berhasil diaktifkan`);
+    if (response.data?.updated && response.data.updated > 0) {
+      await showSuccess(`${response.data.updated} pengguna berhasil diaktifkan`);
     }
     if (response.data?.failed && response.data.failed > 0) {
       await showError(`${response.data.failed} pengguna gagal diaktifkan. ${(response.data.errors || []).join(', ')}`);
@@ -1624,8 +1624,8 @@ const bulkDeactivateUsers = async () => {
       isActive: false,
     });
     
-    if (response.data.updated > 0) {
-      await showSuccess(`${response.data?.updated || 0} pengguna berhasil dinonaktifkan`);
+    if (response.data?.updated && response.data.updated > 0) {
+      await showSuccess(`${response.data.updated} pengguna berhasil dinonaktifkan`);
     }
     if (response.data?.failed && response.data.failed > 0) {
       await showError(`${response.data.failed} pengguna gagal dinonaktifkan. ${(response.data.errors || []).join(', ')}`);
@@ -2026,11 +2026,11 @@ const subscribeAddon = async (addon: AvailableAddon) => {
       itemType: 'addon',
     });
 
-    if (response.data.success && response.data.paymentUrl) {
+    if (response.data?.success && response.data?.paymentUrl) {
       // Redirect to Midtrans payment page
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data.message || 'Gagal membuat pembayaran');
+      await showError(response.data?.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
@@ -2072,11 +2072,11 @@ const handleSubscribeAddon = async () => {
       itemType: 'addon',
     });
 
-    if (response.data.success && response.data.paymentUrl) {
+    if (response.data?.success && response.data?.paymentUrl) {
       // Redirect to Midtrans payment page
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data.message || 'Gagal membuat pembayaran');
+      await showError(response.data?.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
