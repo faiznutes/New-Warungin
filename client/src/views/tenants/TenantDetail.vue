@@ -1435,8 +1435,8 @@ const loadUsers = async () => {
     try {
       const usageResponse = await api.get('/addons/check-limit/ADD_USERS');
       userUsage.value = {
-        currentUsage: usageResponse.data.currentUsage || 0,
-        limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
+        currentUsage: usageResponse.data?.currentUsage || 0,
+        limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
       // Set default if error
@@ -1465,8 +1465,8 @@ const loadStores = async () => {
     try {
       const usageResponse = await api.get('/addons/check-limit/ADD_OUTLETS');
       outletUsage.value = {
-        currentUsage: usageResponse.data.currentUsage || 0,
-        limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
+        currentUsage: usageResponse.data?.currentUsage || 0,
+        limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
       // Set default if error
@@ -1488,12 +1488,12 @@ const loadTenantPoints = async () => {
   loadingPoints.value = true;
   try {
     const balanceRes = await api.get(`/rewards/tenant/${tenant.value.id}/balance`);
-    tenantPoints.value = balanceRes.data;
+    tenantPoints.value = balanceRes.data || { currentPoints: 0, totalEarned: 0, totalSpent: 0 };
     
     const transactionsRes = await api.get(`/rewards/tenant/${tenant.value.id}/transactions`, {
       params: { limit: 20 },
     });
-    pointTransactions.value = transactionsRes.data;
+    pointTransactions.value = transactionsRes.data?.data || transactionsRes.data || [];
   } catch (error: any) {
     // Don't show error, just set defaults
     tenantPoints.value = { currentPoints: 0, totalEarned: 0, totalSpent: 0 };
@@ -1731,13 +1731,13 @@ const loadTenantDetail = async () => {
 
   loading.value = true;
   try {
-    // Load tenant info
-    const tenantRes = await api.get(`/tenants/${tenantId}`);
+    // Load tenant info and subscription in parallel for faster loading
+    const [tenantRes, subRes] = await Promise.all([
+      api.get(`/tenants/${tenantId}`),
+      api.get('/subscriptions/current') // tenantId will be added automatically by API interceptor for SUPER_ADMIN
+    ]);
+    
     tenant.value = tenantRes.data;
-
-    // Load subscription
-    // tenantId will be added automatically by API interceptor for SUPER_ADMIN
-    const subRes = await api.get('/subscriptions/current');
     subscription.value = subRes.data;
     
     // IMPORTANT: Use isExpired from backend response directly
@@ -1754,7 +1754,7 @@ const loadTenantDetail = async () => {
 
     // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
     // Only calculate if backend didn't provide these values
-    if (subRes.data.daysRemaining === undefined) {
+    if (subRes.data?.daysRemaining === undefined) {
       // Calculate remaining time for countdown only if backend didn't provide
       // Use tenant.subscriptionEnd as fallback if subscription.subscription.endDate is not available
       const subscriptionEndDate = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
@@ -1823,15 +1823,15 @@ const loadTenantDetail = async () => {
       }
     }
 
-    // Load active addons
-    await loadActiveAddons();
-    // Load available addons
-    await loadAvailableAddons();
-    // Load users and stores for this tenant
-    await loadUsers();
-    await loadStores();
-    // Load tenant points (for super admin)
-    await loadTenantPoints();
+    // Load all additional data in parallel for faster loading
+    // These calls are independent and can run simultaneously
+    await Promise.all([
+      loadActiveAddons(),
+      loadAvailableAddons(),
+      loadUsers(),
+      loadStores(),
+      loadTenantPoints()
+    ]);
   } catch (error: any) {
     // If 401 Unauthorized, redirect to login
     if (error.response?.status === 401) {
@@ -1839,13 +1839,9 @@ const loadTenantDetail = async () => {
       router.push('/login');
       return;
     }
-    // Only show error if it's not a navigation error
-    if (error.response?.status !== 401) {
-      await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
-    }
-    if (error.response?.status !== 401) {
-      router.push('/app/tenants');
-    }
+    // Show error and redirect back to tenants list
+    await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
+    router.push('/app/tenants');
   } finally {
     loading.value = false;
   }
