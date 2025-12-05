@@ -392,7 +392,7 @@ const loadSuppliers = async () => {
     suppliers.value = response.data?.data || response.data || [];
     pagination.value = response.data?.pagination || {
       page: 1,
-      limit: pagination.value.limit,
+      limit: pagination.value?.limit || 20,
       total: 0,
       totalPages: 0
     };

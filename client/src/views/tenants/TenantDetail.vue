@@ -1594,10 +1594,10 @@ const bulkActivateUsers = async () => {
     });
     
     if (response.data.updated > 0) {
-      await showSuccess(`${response.data.updated} pengguna berhasil diaktifkan`);
+      await showSuccess(`${response.data?.updated || 0} pengguna berhasil diaktifkan`);
     }
-    if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pengguna gagal diaktifkan. ${response.data.errors.join(', ')}`);
+    if (response.data?.failed && response.data.failed > 0) {
+      await showError(`${response.data.failed} pengguna gagal diaktifkan. ${(response.data.errors || []).join(', ')}`);
     }
     
     selectedUsers.value = [];
@@ -1625,10 +1625,10 @@ const bulkDeactivateUsers = async () => {
     });
     
     if (response.data.updated > 0) {
-      await showSuccess(`${response.data.updated} pengguna berhasil dinonaktifkan`);
+      await showSuccess(`${response.data?.updated || 0} pengguna berhasil dinonaktifkan`);
     }
-    if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pengguna gagal dinonaktifkan. ${response.data.errors.join(', ')}`);
+    if (response.data?.failed && response.data.failed > 0) {
+      await showError(`${response.data.failed} pengguna gagal dinonaktifkan. ${(response.data.errors || []).join(', ')}`);
     }
     
     selectedUsers.value = [];

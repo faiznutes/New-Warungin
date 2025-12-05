@@ -392,10 +392,10 @@ const loadUsers = async (page = 1) => {
     // Get user limit info from response
     if (response.data?.limit) {
       userLimit.value = {
-        limit: response.data.limit.max || 0,
-        currentUsage: response.data.limit.current || 0,
-        remaining: response.data.limit.remaining || 0,
-        isUnlimited: response.data.limit.isUnlimited || false,
+        limit: response.data.limit?.max || 0,
+        currentUsage: response.data.limit?.current || 0,
+        remaining: response.data.limit?.remaining || 0,
+        isUnlimited: response.data.limit?.isUnlimited || false,
       };
     } else {
       userLimit.value = null;

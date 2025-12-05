@@ -657,6 +657,14 @@ const loadProducts = async (page = 1) => {
     // Get product limit info from response
     if (response.data?.limit) {
       productLimit.value = response.data.limit;
+    } else if (response.data?.limit === null || response.data?.limit === undefined) {
+      // Set default if limit is not provided
+      productLimit.value = {
+        max: -1,
+        current: 0,
+        remaining: -1,
+        isUnlimited: true,
+      };
     }
   } catch (error: any) {
     // Clear timeout on error

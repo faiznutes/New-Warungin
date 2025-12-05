@@ -668,7 +668,7 @@ const loadScheduledReports = async () => {
 const loadDashboardSettings = async () => {
   try {
     const response = await api.get('/advanced-reporting/dashboard-settings');
-    if (response.data.widgets) {
+    if (response.data?.widgets && Array.isArray(response.data.widgets)) {
       selectedWidgets.value = response.data.widgets.map((w: any) => w.id);
     }
   } catch (error: any) {

@@ -1090,11 +1090,11 @@ const bulkRefund = async () => {
     const orderIds = selectedOrders.value.map(o => o.id);
     const response = await api.post('/orders/bulk-refund', { orderIds });
     
-    if (response.data.refunded > 0) {
+    if (response.data?.refunded && response.data.refunded > 0) {
       await showSuccess(`${response.data.refunded} pesanan berhasil direfund`);
     }
-    if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal direfund. ${response.data.errors.join(', ')}`);
+    if (response.data?.failed && response.data.failed > 0) {
+      await showError(`${response.data.failed} pesanan gagal direfund. ${(response.data.errors || []).join(', ')}`);
     }
     
     selectedOrders.value = [];

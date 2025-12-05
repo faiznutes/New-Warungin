@@ -2051,7 +2051,7 @@ const loadSubscription = async () => {
       
       // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
       // Only calculate if backend didn't provide these values
-      if (response.data.daysRemaining === undefined && response.data.subscription?.endDate) {
+      if (response.data?.daysRemaining === undefined && response.data?.subscription?.endDate) {
         // Calculate days remaining only if backend didn't provide
         const endDate = new Date(response.data.subscription.endDate);
         const now = new Date();
