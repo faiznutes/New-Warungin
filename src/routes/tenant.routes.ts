@@ -131,8 +131,16 @@ router.get(
         dataCount: result.data?.length || 0
       });
       
-      // Return just the data array for easier frontend consumption
-      res.json(result.data || []);
+      // Return consistent format with data and pagination
+      res.json({
+        data: result.data || [],
+        pagination: result.pagination || {
+          page: 1,
+          limit: 100,
+          total: 0,
+          totalPages: 0,
+        }
+      });
     } catch (error: unknown) {
       logRouteError(error, 'GET_TENANTS', req);
       if (!res.headersSent) {
