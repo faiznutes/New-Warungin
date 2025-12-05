@@ -177,6 +177,9 @@ const selectedStoreId = ref<string | null>(
 );
 const retryCount = ref(0); // Track retry count to prevent infinite retry
 const MAX_RETRIES = 1; // Only retry once
+const isLoadingStores = ref(false); // Guard to prevent concurrent loads
+const lastLoadTime = ref<number>(0); // Track last load time to prevent too frequent calls
+const MIN_LOAD_INTERVAL = 2000; // Minimum 2 seconds between loads
 
 const shouldShow = computed(() => {
   // Show for all roles except SUPER_ADMIN (unless tenant selected)
@@ -199,6 +202,7 @@ const loadStores = async () => {
   if (!shouldShow.value) {
     stores.value = [];
     loading.value = false;
+    isLoadingStores.value = false;
     return;
   }
   
@@ -206,6 +210,17 @@ const loadStores = async () => {
   if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
     stores.value = [];
     loading.value = false;
+    isLoadingStores.value = false;
+    return;
+  }
+  
+  // Prevent concurrent loads and too frequent calls
+  const now = Date.now();
+  if (isLoadingStores.value || (now - lastLoadTime.value < MIN_LOAD_INTERVAL)) {
+    console.debug('StoreSelector: Skipping loadStores - already loading or too soon', {
+      isLoadingStores: isLoadingStores.value,
+      timeSinceLastLoad: now - lastLoadTime.value,
+    });
     return;
   }
   
@@ -215,8 +230,10 @@ const loadStores = async () => {
     localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
   }
   
-  // Set loading state
+  // Set loading state and guard
   loading.value = true;
+  isLoadingStores.value = true;
+  lastLoadTime.value = now;
   
   // Clear any previous error message
   errorMessage.value = null;
@@ -448,6 +465,7 @@ const loadStores = async () => {
       timeoutId = null;
     }
     loading.value = false;
+    isLoadingStores.value = false;
   }
 };
 
@@ -515,40 +533,68 @@ onMounted(async () => {
     }
   }
   
-  // Watch for shouldShow changes after mount
+  // Watch for shouldShow changes after mount (with debounce to prevent multiple calls)
+  let shouldShowWatchTimeout: NodeJS.Timeout | null = null;
   watch(() => shouldShow.value, async (show) => {
-    if (show && props.autoLoad && !loading.value) {
-      // Load immediately when shouldShow becomes true
-      await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
-      if (shouldShow.value && !loading.value) {
-        await loadStores();
-      }
+    // Clear any pending watch trigger
+    if (shouldShowWatchTimeout) {
+      clearTimeout(shouldShowWatchTimeout);
+      shouldShowWatchTimeout = null;
+    }
+    
+    if (show && props.autoLoad && !loading.value && !isLoadingStores.value) {
+      // Debounce: wait 500ms before loading to prevent multiple rapid triggers
+      shouldShowWatchTimeout = setTimeout(async () => {
+        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
+          await loadStores();
+        }
+        shouldShowWatchTimeout = null;
+      }, 500);
     } else if (!show) {
       // Clear stores and reset loading when shouldShow becomes false
       stores.value = [];
       loading.value = false;
+      isLoadingStores.value = false;
     }
   });
   
-  // Also watch for authStore.user changes (for ADMIN_TENANT login)
+  // Also watch for authStore.user changes (for ADMIN_TENANT login) - with debounce
+  let roleWatchTimeout: NodeJS.Timeout | null = null;
   watch(() => authStore.user?.role, async (newRole, oldRole) => {
-    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value && !loading.value) {
-      // User role changed, reload stores
-      await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
-      if (shouldShow.value && !loading.value) {
-        await loadStores();
-      }
+    // Clear any pending watch trigger
+    if (roleWatchTimeout) {
+      clearTimeout(roleWatchTimeout);
+      roleWatchTimeout = null;
+    }
+    
+    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value && !loading.value && !isLoadingStores.value) {
+      // Debounce: wait 500ms before loading
+      roleWatchTimeout = setTimeout(async () => {
+        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
+          await loadStores();
+        }
+        roleWatchTimeout = null;
+      }, 500);
     }
   });
   
-  // Watch for authStore.isAuthenticated to reload when user logs in
+  // Watch for authStore.isAuthenticated to reload when user logs in - with debounce
+  let authWatchTimeout: NodeJS.Timeout | null = null;
   watch(() => authStore.isAuthenticated, async (isAuth, wasAuth) => {
-    if (isAuth && !wasAuth && props.autoLoad && shouldShow.value && !loading.value) {
-      // User just logged in, load stores
-      await new Promise(resolve => setTimeout(resolve, 300)); // Wait a bit longer after login
-      if (shouldShow.value && !loading.value) {
-        await loadStores();
-      }
+    // Clear any pending watch trigger
+    if (authWatchTimeout) {
+      clearTimeout(authWatchTimeout);
+      authWatchTimeout = null;
+    }
+    
+    if (isAuth && !wasAuth && props.autoLoad && shouldShow.value && !loading.value && !isLoadingStores.value) {
+      // Debounce: wait 800ms after login to ensure auth state is stable
+      authWatchTimeout = setTimeout(async () => {
+        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
+          await loadStores();
+        }
+        authWatchTimeout = null;
+      }, 800);
     }
   });
 });
