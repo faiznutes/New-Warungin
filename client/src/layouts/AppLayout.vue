@@ -64,14 +64,9 @@
             >
               <router-link
                 to="/app/dashboard"
-                :class="[
-                  'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group',
-                  userRole === 'ADMIN_TENANT'
-                    ? 'text-green-100 hover:bg-green-600 hover:text-white'
-                    : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
-                ]"
-                :active-class="userRole === 'ADMIN_TENANT' ? 'bg-green-600 text-white font-semibold shadow-lg' : 'bg-primary-50 text-primary-600 font-semibold'"
-                :exact-active-class="userRole === 'ADMIN_TENANT' ? 'bg-green-600 text-white font-semibold shadow-lg' : 'bg-primary-50 text-primary-600 font-semibold'"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
+                :exact-active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg

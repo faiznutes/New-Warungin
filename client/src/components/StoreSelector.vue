@@ -148,10 +148,12 @@ const selectedStoreId = ref<string | null>(
 );
 
 const shouldShow = computed(() => {
-  // Show if user is not super admin, or if super admin has selected a tenant
+  // Show for all roles except SUPER_ADMIN (unless tenant selected)
+  // ADMIN_TENANT, SUPERVISOR, CASHIER, KITCHEN should always show
   if (authStore.isSuperAdmin) {
     return !!authStore.selectedTenantId;
   }
+  // For ADMIN_TENANT and other roles, always show
   return true;
 });
 
@@ -186,18 +188,25 @@ const loadStores = async () => {
   loading.value = true;
   
   // Add timeout to prevent infinite loading
-  const timeoutId = setTimeout(() => {
+  let timeoutId: NodeJS.Timeout | null = null;
+  timeoutId = setTimeout(() => {
     if (loading.value) {
+      console.warn('StoreSelector: Timeout loading stores after 15 seconds');
       loading.value = false;
       stores.value = [];
     }
   }, 15000); // 15 seconds timeout
   
   try {
+    // For ADMIN_TENANT, ensure tenantId is available in request
+    // The API interceptor should handle this, but we can also ensure it here
     const response = await api.get('/outlets');
     
     // Clear timeout on success
-    clearTimeout(timeoutId);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     
     // Parse response - backend returns { data: [], limit: {} }
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
@@ -211,7 +220,7 @@ const loadStores = async () => {
       storeList = response.data;
     } else if (response?.data && typeof response.data === 'object') {
       // Try to extract from response.data if it's an object
-      storeList = response.data.data || response.data.outlets || [];
+      storeList = response.data.data || response.data.outlets || response.data.stores || [];
     } else {
       storeList = [];
     }
@@ -221,12 +230,13 @@ const loadStores = async () => {
     stores.value = Array.isArray(storeList) ? storeList : [];
     
     // Debug log to help troubleshoot
-    if (process.env.NODE_ENV === 'development') {
-      console.log('StoreSelector: Loaded stores', {
-        count: stores.value.length,
-        stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive }))
-      });
-    }
+    console.log('StoreSelector: Loaded stores', {
+      count: stores.value.length,
+      userRole: authStore.user?.role,
+      isSuperAdmin: authStore.isSuperAdmin,
+      selectedTenantId: authStore.selectedTenantId,
+      stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive }))
+    });
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {
@@ -234,14 +244,20 @@ const loadStores = async () => {
     }
   } catch (error: any) {
     // Clear timeout on error
-    clearTimeout(timeoutId);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     
     // Log error for debugging (always log, not just in development)
     console.error('StoreSelector: Error loading stores', {
       error: error?.message || error,
       response: error?.response?.data,
       status: error?.response?.status,
-      url: error?.config?.url
+      url: error?.config?.url,
+      userRole: authStore.user?.role,
+      isSuperAdmin: authStore.isSuperAdmin,
+      selectedTenantId: authStore.selectedTenantId
     });
     
     // Try to extract error message for user feedback
@@ -307,6 +323,8 @@ onMounted(async () => {
     // Load immediately - no delays needed
     // Admin tenant already has tenantId in JWT token
     // Super admin will wait for tenant selection automatically via shouldShow computed
+    // Add small delay to ensure authStore is fully initialized
+    await new Promise(resolve => setTimeout(resolve, 100));
     await loadStores();
   }
   
@@ -314,11 +332,21 @@ onMounted(async () => {
   watch(() => shouldShow.value, async (show) => {
     if (show && props.autoLoad) {
       // Load immediately when shouldShow becomes true
+      await new Promise(resolve => setTimeout(resolve, 100));
       await loadStores();
     } else if (!show) {
       // Clear stores and reset loading when shouldShow becomes false
       stores.value = [];
       loading.value = false;
+    }
+  });
+  
+  // Also watch for authStore.user changes (for ADMIN_TENANT login)
+  watch(() => authStore.user?.role, async (newRole, oldRole) => {
+    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value) {
+      // User role changed, reload stores
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await loadStores();
     }
   });
 });
