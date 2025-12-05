@@ -19,10 +19,25 @@ export interface UpdateOutletInput {
 
 export class OutletService {
   async getOutlets(tenantId: string) {
+    // Log for debugging
+    logger.debug('OutletService.getOutlets called', {
+      tenantId,
+      timestamp: new Date().toISOString(),
+    });
+    
     const outlets = await prisma.outlet.findMany({
       where: { tenantId },
       orderBy: { createdAt: 'desc' },
     });
+    
+    // Log result for debugging
+    logger.debug('OutletService.getOutlets result', {
+      tenantId,
+      count: outlets.length,
+      outletIds: outlets.map(o => o.id),
+      outletNames: outlets.map(o => o.name),
+    });
+    
     return outlets;
   }
 

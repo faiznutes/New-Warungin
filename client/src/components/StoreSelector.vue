@@ -223,22 +223,61 @@ const loadStores = async () => {
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
     let storeList = response?.data?.data;
     
+    // Log raw response for debugging
+    console.log('StoreSelector: Raw API response', {
+      responseData: response?.data,
+      responseDataType: typeof response?.data,
+      isArray: Array.isArray(response?.data),
+      hasData: !!response?.data?.data,
+      dataIsArray: Array.isArray(response?.data?.data),
+      dataLength: Array.isArray(response?.data?.data) ? response?.data?.data.length : 'not array',
+    });
+    
     // Handle different response formats
     if (Array.isArray(storeList)) {
       // Correct format: { data: [...] } - already extracted
+      console.log('StoreSelector: Using response.data.data (correct format)', {
+        count: storeList.length,
+      });
     } else if (Array.isArray(response?.data)) {
       // Direct array response (unlikely for /outlets but handle it)
+      console.log('StoreSelector: Using response.data directly (array format)', {
+        count: response.data.length,
+      });
       storeList = response.data;
     } else if (response?.data && typeof response.data === 'object') {
       // Try to extract from response.data if it's an object
+      console.log('StoreSelector: Trying to extract from response.data object', {
+        hasData: !!response.data.data,
+        hasOutlets: !!response.data.outlets,
+        hasStores: !!response.data.stores,
+      });
       storeList = response.data.data || response.data.outlets || response.data.stores || [];
     } else {
+      console.warn('StoreSelector: No valid store list found in response', {
+        responseData: response?.data,
+      });
+      storeList = [];
+    }
+    
+    // Ensure storeList is an array
+    if (!Array.isArray(storeList)) {
+      console.error('StoreSelector: storeList is not an array', {
+        storeList,
+        type: typeof storeList,
+      });
       storeList = [];
     }
     
     // Filter only active stores if needed, or show all stores
     // For now, show all stores (both active and inactive)
-    stores.value = Array.isArray(storeList) ? storeList : [];
+    stores.value = storeList;
+    
+    // Log final stores
+    console.log('StoreSelector: Final stores array', {
+      count: stores.value.length,
+      stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive })),
+    });
     
     // Debug log to help troubleshoot
     console.log('StoreSelector: Loaded stores successfully', {

@@ -69,13 +69,20 @@ router.get(
       
       const outlets = await outletService.getOutlets(tenantId);
       
+      // Log response for debugging
+      logger.debug('GET /outlets response', {
+        tenantId,
+        outletsCount: outlets.length,
+        outlets: outlets.map((o: any) => ({ id: o.id, name: o.name, isActive: o.isActive })),
+      });
+      
       // Get outlet limit info
       const { getTenantPlanFeatures } = await import('../services/plan-features.service');
       const features = await getTenantPlanFeatures(tenantId);
       const outletLimit = features.limits.outlets;
       const activeOutletsCount = outlets.filter((o: any) => o.isActive).length;
       
-      res.json({ 
+      const response = { 
         data: outlets,
         limit: {
           max: outletLimit,
@@ -83,7 +90,16 @@ router.get(
           remaining: outletLimit === -1 ? -1 : Math.max(0, outletLimit - activeOutletsCount),
           isUnlimited: outletLimit === -1,
         }
+      };
+      
+      // Log final response
+      logger.debug('GET /outlets final response', {
+        tenantId,
+        responseDataCount: response.data.length,
+        responseLimit: response.limit,
       });
+      
+      res.json(response);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
     }
