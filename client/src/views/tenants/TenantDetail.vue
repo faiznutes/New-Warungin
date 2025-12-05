@@ -1732,20 +1732,32 @@ const loadTenantDetail = async () => {
   loading.value = true;
   try {
     // Load tenant info and subscription in parallel for faster loading
-    const [tenantRes, subRes] = await Promise.all([
+    const [tenantResult, subResult] = await Promise.allSettled([
       api.get(`/tenants/${tenantId}`),
       api.get('/subscriptions/current') // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     ]);
     
-    tenant.value = tenantRes.data;
-    subscription.value = subRes.data;
+    // Handle tenant result
+    if (tenantResult.status === 'fulfilled') {
+      tenant.value = tenantResult.value.data;
+    } else {
+      throw new Error(tenantResult.reason?.response?.data?.message || 'Gagal memuat data tenant');
+    }
+    
+    // Handle subscription result
+    if (subResult.status === 'fulfilled') {
+      subscription.value = subResult.value.data;
+    } else {
+      // Subscription error is not critical, set to null
+      subscription.value = null;
+    }
     
     // IMPORTANT: Use isExpired from backend response directly
     // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
     // Backend already calculated isExpired correctly after revert
-    if (subRes.data && subRes.data.isExpired !== undefined && subscription.value) {
+    if (subResult.status === 'fulfilled' && subResult.value.data && subResult.value.data.isExpired !== undefined && subscription.value) {
       // Use isExpired from backend
-      subscription.value.isExpired = subRes.data.isExpired;
+      subscription.value.isExpired = subResult.value.data.isExpired;
     }
     
     // Set initial plan form value
@@ -1754,7 +1766,7 @@ const loadTenantDetail = async () => {
 
     // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
     // Only calculate if backend didn't provide these values
-    if (subRes.data?.daysRemaining === undefined) {
+    if (subResult.status === 'fulfilled' && subResult.value.data?.daysRemaining === undefined) {
       // Calculate remaining time for countdown only if backend didn't provide
       // Use tenant.subscriptionEnd as fallback if subscription.subscription.endDate is not available
       const subscriptionEndDate = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
@@ -1825,13 +1837,17 @@ const loadTenantDetail = async () => {
 
     // Load all additional data in parallel for faster loading
     // These calls are independent and can run simultaneously
-    await Promise.all([
+    // Use Promise.allSettled to prevent one failure from stopping all others
+    const results = await Promise.allSettled([
       loadActiveAddons(),
       loadAvailableAddons(),
       loadUsers(),
       loadStores(),
       loadTenantPoints()
     ]);
+    
+    // Individual functions handle their own errors, so we don't need to log here
+    // Promise.allSettled ensures all functions complete even if some fail
   } catch (error: any) {
     // If 401 Unauthorized, redirect to login
     if (error.response?.status === 401) {
