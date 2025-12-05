@@ -441,6 +441,15 @@ export class SubscriptionService {
 
       return { tenant: updatedTenant, subscription };
     }).then(async (result) => {
+      // Invalidate subscription cache after extension
+      try {
+        const CacheService = (await import('../utils/cache')).default;
+        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
+        logger.debug('Invalidated subscription cache after extension', { tenantId });
+      } catch (error: any) {
+        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
+      }
+      
       // Award points from subscription purchase (10rb = 5 point)
       // Use Math.floor to ensure integer amount
       const amountInt = Math.floor(amount);
@@ -698,6 +707,16 @@ export class SubscriptionService {
         temporaryUpgrade,
         previousPlan,
       };
+    }).then(async (result) => {
+      // Invalidate subscription cache after upgrade
+      try {
+        const CacheService = (await import('../utils/cache')).default;
+        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
+        logger.debug('Invalidated subscription cache after upgrade', { tenantId });
+      } catch (error: any) {
+        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
+      }
+      return result;
     });
   }
 
@@ -893,6 +912,15 @@ export class SubscriptionService {
       // Apply plan features (auto-disable users/outlets that exceed limit)
       const { applyPlanFeatures } = await import('./plan-features.service');
       await applyPlanFeatures(tenantId, revertPlan);
+
+      // Invalidate subscription cache after revert
+      try {
+        const CacheService = (await import('../utils/cache')).default;
+        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
+        logger.debug('Invalidated subscription cache after revert', { tenantId });
+      } catch (error: any) {
+        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
+      }
 
       // Update SubscriptionHistory to mark as reverted
       if (temporarySubscription) {

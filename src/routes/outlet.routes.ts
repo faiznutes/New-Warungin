@@ -52,6 +52,7 @@ router.get(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
+    const startTime = Date.now();
     try {
       // Get tenantId with better error handling
       const authReq = req as AuthRequest;
@@ -67,13 +68,16 @@ router.get(
         reqTenantId: authReq.tenantId,
       });
       
+      const queryStartTime = Date.now();
       const outlets = await outletService.getOutlets(tenantId);
+      const queryDuration = Date.now() - queryStartTime;
       
       // Log response for debugging
       logger.debug('GET /outlets response', {
         tenantId,
         outletsCount: outlets.length,
         outlets: outlets.map((o: any) => ({ id: o.id, name: o.name, isActive: o.isActive })),
+        queryDuration: `${queryDuration}ms`,
       });
       
       // Get outlet limit info
@@ -92,15 +96,33 @@ router.get(
         }
       };
       
-      // Log final response
+      // Log final response with timing
+      const totalDuration = Date.now() - startTime;
       logger.debug('GET /outlets final response', {
         tenantId,
         responseDataCount: response.data.length,
         responseLimit: response.limit,
+        totalDuration: `${totalDuration}ms`,
+        queryDuration: `${queryDuration}ms`,
       });
+      
+      // Log warning if request takes too long
+      if (totalDuration > 5000) {
+        logger.warn('GET /outlets took longer than expected', {
+          tenantId,
+          totalDuration: `${totalDuration}ms`,
+          queryDuration: `${queryDuration}ms`,
+        });
+      }
       
       res.json(response);
     } catch (error: unknown) {
+      const totalDuration = Date.now() - startTime;
+      logger.error('GET /outlets error', {
+        tenantId: (req as AuthRequest).tenantId,
+        error: error instanceof Error ? error.message : String(error),
+        duration: `${totalDuration}ms`,
+      });
       handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
     }
   }

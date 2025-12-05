@@ -196,6 +196,16 @@ const PLAN_BASE_LIMITS: Record<string, {
  * Update features, tenantsLimit, dan semua limit terkait
  */
 export async function applyPlanFeatures(tenantId: string, planName: string) {
+  // Invalidate plan features cache when plan changes
+  try {
+    const CacheService = (await import('../utils/cache')).default;
+    await CacheService.delete(`plan-features:${tenantId}`);
+  } catch (error: any) {
+    // Log but don't fail
+    const logger = (await import('../utils/logger')).default;
+    logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
+  }
+  
   let plan = (planName || 'BASIC').toUpperCase();
   // Backward compatibility: ENTERPRISE -> CUSTOM
   if (plan === 'ENTERPRISE') plan = 'CUSTOM';
@@ -357,8 +367,20 @@ export async function applyPlanFeatures(tenantId: string, planName: string) {
 /**
  * Get tenant plan features and limits
  * Combines base plan limits with active addons
+ * Uses caching to improve performance (TTL: 120 seconds)
  */
-export async function getTenantPlanFeatures(tenantId: string): Promise<any> {
+export async function getTenantPlanFeatures(tenantId: string, useCache: boolean = true): Promise<any> {
+  const CacheService = (await import('../utils/cache')).default;
+  const cacheKey = `plan-features:${tenantId}`;
+  
+  // Try to get from cache first
+  if (useCache) {
+    const cached = await CacheService.get<any>(cacheKey);
+    if (cached !== null) {
+      return cached;
+    }
+  }
+  
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: {
@@ -467,7 +489,7 @@ export async function getTenantPlanFeatures(tenantId: string): Promise<any> {
     }
   }
 
-  return {
+  const result = {
     plan: planKey,
     limits: {
       products: totalProducts,
@@ -486,6 +508,13 @@ export async function getTenantPlanFeatures(tenantId: string): Promise<any> {
       limit: a.limit,
     })),
   };
+  
+  // Cache the result (120 seconds TTL - longer than subscription cache because plan changes less frequently)
+  if (useCache) {
+    await CacheService.set(cacheKey, result, 120);
+  }
+  
+  return result;
 }
 
 /**

@@ -17,7 +17,11 @@ export const subscriptionGuard = async (
   try {
     // Skip check for SUPER_ADMIN and ADMIN_TENANT
     // ADMIN_TENANT needs access to manage subscription even when expired
+    // IMPORTANT: Early return immediately without any database queries to prevent timeout
     if (req.role === 'SUPER_ADMIN' || req.role === 'ADMIN_TENANT') {
+      // Call next() immediately without await to prevent blocking
+      next();
+      
       // Still update subscription status in background (but not user status for ADMIN_TENANT)
       // ADMIN_TENANT can manage user status manually, so we don't auto-activate/deactivate
       const tenantId = req.tenantId;
@@ -133,7 +137,7 @@ export const subscriptionGuard = async (
         });
       }
       
-      next();
+      // Already called next() above, just return
       return;
     }
 

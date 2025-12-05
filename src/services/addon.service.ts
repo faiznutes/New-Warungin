@@ -438,6 +438,15 @@ export class AddonService {
       }
     }
     
+    // Invalidate plan features cache after addon subscription
+    try {
+      const CacheService = (await import('../utils/cache')).default;
+      await CacheService.delete(`plan-features:${tenantId}`);
+      logger.debug('Invalidated plan features cache after addon subscription', { tenantId });
+    } catch (error: any) {
+      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
+    }
+    
     return addon;
   }
 
@@ -484,13 +493,24 @@ export class AddonService {
       originalDuration: duration, // Update to the new duration being added
     };
 
-    return prisma.tenantAddon.update({
+    const result = await prisma.tenantAddon.update({
       where: { id: addon.id },
       data: {
         expiresAt: newExpiry,
         config: updatedConfig,
       },
     });
+    
+    // Invalidate plan features cache after addon extension
+    try {
+      const CacheService = (await import('../utils/cache')).default;
+      await CacheService.delete(`plan-features:${tenantId}`);
+      logger.debug('Invalidated plan features cache after addon extension', { tenantId });
+    } catch (error: any) {
+      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
+    }
+    
+    return result;
   }
 
   /**
@@ -539,12 +559,23 @@ export class AddonService {
     }
 
     // Addon expiry can exceed subscription expiry (flat duration)
-    return prisma.tenantAddon.update({
+    const result = await prisma.tenantAddon.update({
       where: { id: addon.id },
       data: {
         expiresAt: newExpiry,
       },
     });
+    
+    // Invalidate plan features cache after addon extension
+    try {
+      const CacheService = (await import('../utils/cache')).default;
+      await CacheService.delete(`plan-features:${tenantId}`);
+      logger.debug('Invalidated plan features cache after addon extension', { tenantId });
+    } catch (error: any) {
+      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
+    }
+    
+    return result;
   }
 
   async unsubscribeAddon(tenantId: string, addonId: string) {
@@ -561,10 +592,21 @@ export class AddonService {
       throw new Error('Addon not found');
     }
 
-    return prisma.tenantAddon.update({
+    const result = await prisma.tenantAddon.update({
       where: { id: addon.id },
       data: { status: 'inactive' },
     });
+    
+    // Invalidate plan features cache after addon unsubscription
+    try {
+      const CacheService = (await import('../utils/cache')).default;
+      await CacheService.delete(`plan-features:${tenantId}`);
+      logger.debug('Invalidated plan features cache after addon unsubscription', { tenantId });
+    } catch (error: any) {
+      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
+    }
+    
+    return result;
   }
 
   async checkLimit(tenantId: string, addonType: string): Promise<{ allowed: boolean; currentUsage: number; limit?: number }> {

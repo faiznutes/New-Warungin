@@ -98,7 +98,7 @@
     </div>
     <!-- No stores message -->
     <div
-      v-if="!loading && stores.length === 0 && shouldShow"
+      v-if="!loading && stores.length === 0 && shouldShow && !errorMessage"
       class="mt-2 flex items-center gap-2 text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200"
     >
       <svg
@@ -115,6 +115,34 @@
         />
       </svg>
       <span>Belum ada store/outlet. Silakan buat store terlebih dahulu.</span>
+    </div>
+    <!-- Error message -->
+    <div
+      v-if="errorMessage"
+      class="mt-2 flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200"
+    >
+      <svg
+        class="w-4 h-4 flex-shrink-0"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{{ errorMessage }}</span>
+      <button
+        v-if="errorMessage && !loading"
+        type="button"
+        class="ml-auto text-xs text-red-700 hover:text-red-900 underline"
+        @click="loadStores"
+      >
+        Coba Lagi
+      </button>
     </div>
   </div>
 </template>
@@ -143,6 +171,7 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const stores = ref<any[]>([]);
 const loading = ref(false);
+const errorMessage = ref<string | null>(null);
 const selectedStoreId = ref<string | null>(
   localStorage.getItem('selectedStoreId')
 );
@@ -189,6 +218,9 @@ const loadStores = async () => {
   // Set loading state
   loading.value = true;
   
+  // Clear any previous error message
+  errorMessage.value = null;
+  
   // Add timeout to prevent infinite loading (reduced to 10 seconds)
   let timeoutId: NodeJS.Timeout | null = null;
   timeoutId = setTimeout(() => {
@@ -197,7 +229,7 @@ const loadStores = async () => {
       loading.value = false;
       stores.value = [];
       retryCount.value = 0; // Reset retry count on timeout
-      // Don't show error message - just stop loading
+      errorMessage.value = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
     }
   }, 10000); // 10 seconds timeout (reduced from 15s)
   
@@ -232,6 +264,9 @@ const loadStores = async () => {
     
     // Reset retry count on success
     retryCount.value = 0;
+    
+    // Clear error message on success
+    errorMessage.value = null;
     
     // Parse response - backend returns { data: [], limit: {} }
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
@@ -332,13 +367,39 @@ const loadStores = async () => {
     });
     
     // Try to extract error message for user feedback
-    const errorMessage = error?.response?.data?.error || error?.response?.data?.message || error?.message || 'Gagal memuat daftar store';
+    let userErrorMessage: string | null = null;
+    
+    // Handle different error types
+    if (error?.code === 'ECONNABORTED' || error?.message?.includes('timeout')) {
+      userErrorMessage = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
+    } else if (error?.response?.status === 403) {
+      const errorData = error?.response?.data;
+      if (errorData?.code === 'SUBSCRIPTION_EXPIRED') {
+        userErrorMessage = 'Langganan telah kedaluwarsa. Silakan perpanjang langganan untuk melanjutkan.';
+      } else if (errorData?.code === 'TENANT_ID_MISSING') {
+        userErrorMessage = 'Tenant ID tidak ditemukan. Silakan login kembali.';
+      } else {
+        userErrorMessage = errorData?.message || errorData?.error || 'Akses ditolak. Silakan hubungi administrator.';
+      }
+    } else if (error?.response?.status === 401) {
+      userErrorMessage = 'Sesi Anda telah berakhir. Silakan login kembali.';
+    } else if (error?.response?.status === 404) {
+      userErrorMessage = 'Tenant tidak ditemukan. Silakan hubungi administrator.';
+    } else if (error?.response?.status >= 500) {
+      userErrorMessage = 'Terjadi kesalahan di server. Silakan coba lagi nanti.';
+    } else if (error?.code === 'ERR_NETWORK' || !error?.response) {
+      userErrorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+    } else {
+      userErrorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat daftar store.';
+    }
+    
+    errorMessage.value = userErrorMessage;
     
     // Show error message in console for debugging
     if (error?.response?.status === 400 || error?.response?.status === 403) {
       console.error('StoreSelector: Tenant ID or permission error', {
         status: error?.response?.status,
-        message: errorMessage,
+        message: userErrorMessage,
         data: error?.response?.data,
       });
     }
@@ -355,7 +416,9 @@ const loadStores = async () => {
     // 3. We're not already in a retry (timeoutId is null means we're not in timeout)
     if (isNetworkError && retryCount.value < MAX_RETRIES && !timeoutId) {
       retryCount.value += 1;
-      console.warn(`StoreSelector: Network error detected (502/503/504), will retry once (attempt ${retryCount.value}/${MAX_RETRIES}) after 3 seconds`);
+      // Exponential backoff: 2^retryCount seconds (2s, 4s, etc.)
+      const backoffDelay = Math.min(2000 * Math.pow(2, retryCount.value - 1), 10000); // Max 10 seconds
+      console.warn(`StoreSelector: Network error detected (502/503/504), will retry once (attempt ${retryCount.value}/${MAX_RETRIES}) after ${backoffDelay}ms`);
       setTimeout(async () => {
         // Only retry if still should show and not already loading
         if (shouldShow.value && !loading.value && retryCount.value <= MAX_RETRIES) {
@@ -365,7 +428,7 @@ const loadStores = async () => {
           // Reset retry count if conditions not met
           retryCount.value = 0;
         }
-      }, 3000); // Increased to 3 seconds to give backend more time
+      }, backoffDelay);
     } else if (isNetworkError && retryCount.value >= MAX_RETRIES) {
       console.error('StoreSelector: Max retries reached, stopping retry attempts');
       retryCount.value = 0; // Reset for next manual load

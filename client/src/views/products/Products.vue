@@ -606,15 +606,17 @@ const loadProducts = async (page = 1) => {
   
   loading.value = true;
   
-  // Add timeout to prevent infinite loading
+  // Add timeout to prevent infinite loading (reduced to 10 seconds for consistency)
   let timeoutId: NodeJS.Timeout | null = null;
   timeoutId = setTimeout(() => {
     if (loading.value) {
-      console.error('Products: Timeout loading products after 15 seconds');
+      console.error('Products: Timeout loading products after 10 seconds');
       loading.value = false;
       products.value = [];
+      const errorMessage = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
+      showError(errorMessage);
     }
-  }, 15000); // 15 seconds timeout
+  }, 10000); // 10 seconds timeout (reduced from 15s for consistency with StoreSelector)
   
   try {
     const params: any = {
@@ -635,7 +637,7 @@ const loadProducts = async (page = 1) => {
     
     const response = await api.get('/products', { 
       params,
-      timeout: 15000, // 15 seconds timeout
+      timeout: 10000, // 10 seconds timeout (reduced from 15s for consistency)
       validateStatus: (status) => {
         return status >= 200 && status < 500;
       },
