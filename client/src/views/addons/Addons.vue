@@ -418,7 +418,7 @@ const hasLimit = (addon: any) => {
 
 // Filter available addons: hide addons without limit that are already active
 const filteredAvailableAddons = computed(() => {
-  return availableAddons.value.filter(addon => {
+  return (availableAddons.value || []).filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
     if (hasLimit(addon)) {
       return true;

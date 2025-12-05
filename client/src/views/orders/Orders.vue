@@ -965,7 +965,7 @@ const editOrder = async (order: Order) => {
     };
     showEditModal.value = true;
   } catch (error: any) {
-    await showError('Gagal memuat data pesanan untuk edit');
+    await showError(error?.response?.data?.message || 'Gagal memuat data pesanan untuk edit');
   }
 };
 
@@ -1060,7 +1060,7 @@ const bulkDelete = async () => {
   if (!confirmed) return;
 
   try {
-    const orderIds = selectedOrders.value.map(o => o.id);
+    const orderIds = (selectedOrders.value || []).map(o => o.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
     if (response.data?.deleted > 0) {
@@ -1087,7 +1087,7 @@ const bulkRefund = async () => {
   if (!confirmed) return;
 
   try {
-    const orderIds = selectedOrders.value.map(o => o.id);
+    const orderIds = (selectedOrders.value || []).map(o => o.id);
     const response = await api.post('/orders/bulk-refund', { orderIds });
     
     if (response.data?.refunded && response.data.refunded > 0) {
@@ -1111,7 +1111,7 @@ const deletableOrdersCount = computed(() => {
 
 // Hapus semua order yang bisa dihapus
 const deleteAllOrders = async () => {
-  const deletableOrders = orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
+  const deletableOrders = (orders.value || []).filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
   
   if (deletableOrders.length === 0) {
     await showError('Tidak ada pesanan yang bisa dihapus. Hanya pesanan dengan status Dibatalkan atau Direfund yang bisa dihapus.');

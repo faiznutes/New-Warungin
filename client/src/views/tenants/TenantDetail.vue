@@ -1350,7 +1350,7 @@ const hasLimit = (addon: any) => {
 
 // Filter available addons: hide addons without limit that are already active
 const filteredAvailableAddons = computed(() => {
-  return availableAddons.value.filter(addon => {
+  return (availableAddons.value || []).filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
     if (hasLimit(addon)) {
       return true;
@@ -1494,7 +1494,7 @@ const loadStores = async () => {
     } catch (error: any) {
       // Set default if error - don't show error for usage limit
       outletUsage.value = {
-        currentUsage: tenantStores.value.filter((s: any) => s.isActive !== false).length,
+        currentUsage: (tenantStores.value || []).filter((s: any) => s.isActive !== false).length,
         limit: -1,
       };
     }
@@ -1613,7 +1613,7 @@ const toggleSelectAllUsers = () => {
 };
 
 const bulkActivateUsers = async () => {
-  const inactiveUsers = selectedUsers.value.filter(u => !u.isActive);
+  const inactiveUsers = (selectedUsers.value || []).filter(u => !u.isActive);
   if (inactiveUsers.length === 0) return;
   
   const confirmed = await showConfirm(
@@ -1644,7 +1644,7 @@ const bulkActivateUsers = async () => {
 };
 
 const bulkDeactivateUsers = async () => {
-  const activeUsers = selectedUsers.value.filter(u => u.isActive);
+  const activeUsers = (selectedUsers.value || []).filter(u => u.isActive);
   if (activeUsers.length === 0) return;
   
   const confirmed = await showConfirm(

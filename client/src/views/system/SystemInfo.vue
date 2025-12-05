@@ -672,39 +672,39 @@ const loadAddons = async () => {
 
 // Group addons by category
 const resourceAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'RESOURCE');
+  return (availableAddons.value || []).filter(a => a.category === 'RESOURCE');
 });
 
 const marketingAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'MARKETING');
+  return (availableAddons.value || []).filter(a => a.category === 'MARKETING');
 });
 
 const analyticsAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'ANALYTICS');
+  return (availableAddons.value || []).filter(a => a.category === 'ANALYTICS');
 });
 
 const reportingAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'REPORTING');
+  return (availableAddons.value || []).filter(a => a.category === 'REPORTING');
 });
 
 const financeAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'FINANCE');
+  return (availableAddons.value || []).filter(a => a.category === 'FINANCE');
 });
 
 const inventoryAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'INVENTORY');
+  return (availableAddons.value || []).filter(a => a.category === 'INVENTORY');
 });
 
 const aiMlAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'AI_ML');
+  return (availableAddons.value || []).filter(a => a.category === 'AI_ML');
 });
 
 const receiptAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'RECEIPT');
+  return (availableAddons.value || []).filter(a => a.category === 'RECEIPT');
 });
 
 const outletAddons = computed(() => {
-  return availableAddons.value.filter(a => a.category === 'OUTLET');
+  return (availableAddons.value || []).filter(a => a.category === 'OUTLET');
 });
 
 const formatPrice = (price: number) => {
