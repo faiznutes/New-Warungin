@@ -258,8 +258,9 @@ export const authGuard = async (
       name: user.name,
     };
     
-    // Log for debugging (only in development or if tenantId is missing)
-    if (process.env.NODE_ENV === 'development' || !tenantId) {
+    // Log for debugging (consistent with logger behavior: log when not in production)
+    // Logger uses NODE_ENV !== 'production' for debug level, so we should match that
+    if (process.env.NODE_ENV !== 'production' || !tenantId) {
       logger.debug('Auth middleware - tenantId set', {
         role: decoded.role,
         tenantId,
