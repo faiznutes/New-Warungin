@@ -200,6 +200,17 @@ const loadStores = async () => {
   try {
     // For ADMIN_TENANT, ensure tenantId is available in request
     // The API interceptor should handle this, but we can also ensure it here
+    // For ADMIN_TENANT, tenantId is in JWT token, so no need to add it manually
+    
+    // Log before request for debugging
+    console.log('StoreSelector: Loading stores', {
+      userRole: authStore.user?.role,
+      isSuperAdmin: authStore.isSuperAdmin,
+      selectedTenantId: authStore.selectedTenantId,
+      currentTenantId: authStore.currentTenantId,
+      shouldShow: shouldShow.value,
+    });
+    
     const response = await api.get('/outlets');
     
     // Clear timeout on success
@@ -230,11 +241,13 @@ const loadStores = async () => {
     stores.value = Array.isArray(storeList) ? storeList : [];
     
     // Debug log to help troubleshoot
-    console.log('StoreSelector: Loaded stores', {
+    console.log('StoreSelector: Loaded stores successfully', {
       count: stores.value.length,
       userRole: authStore.user?.role,
       isSuperAdmin: authStore.isSuperAdmin,
       selectedTenantId: authStore.selectedTenantId,
+      currentTenantId: authStore.currentTenantId,
+      responseData: response?.data,
       stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive }))
     });
     
@@ -254,14 +267,28 @@ const loadStores = async () => {
       error: error?.message || error,
       response: error?.response?.data,
       status: error?.response?.status,
+      statusText: error?.response?.statusText,
       url: error?.config?.url,
+      method: error?.config?.method,
       userRole: authStore.user?.role,
       isSuperAdmin: authStore.isSuperAdmin,
-      selectedTenantId: authStore.selectedTenantId
+      selectedTenantId: authStore.selectedTenantId,
+      currentTenantId: authStore.currentTenantId,
+      token: authStore.user ? 'exists' : 'missing',
+      fullError: error,
     });
     
     // Try to extract error message for user feedback
-    const errorMessage = error?.response?.data?.error || error?.message || 'Gagal memuat daftar store';
+    const errorMessage = error?.response?.data?.error || error?.response?.data?.message || error?.message || 'Gagal memuat daftar store';
+    
+    // Show error message in console for debugging
+    if (error?.response?.status === 400 || error?.response?.status === 403) {
+      console.error('StoreSelector: Tenant ID or permission error', {
+        status: error?.response?.status,
+        message: errorMessage,
+        data: error?.response?.data,
+      });
+    }
     
     // Silently handle error - stores will be empty
     // Error details can be checked in browser dev tools if needed
