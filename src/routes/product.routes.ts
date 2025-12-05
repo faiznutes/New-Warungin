@@ -12,6 +12,7 @@ import { logAction } from '../middlewares/audit-logger';
 import { validateImageUpload } from '../middlewares/file-upload-validator';
 import { handleRouteError } from '../utils/route-error-handler';
 import prisma from '../config/database';
+import logger from '../utils/logger';
 
 const router = Router();
 
