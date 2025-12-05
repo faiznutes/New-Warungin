@@ -187,15 +187,16 @@ const loadStores = async () => {
   // Set loading state
   loading.value = true;
   
-  // Add timeout to prevent infinite loading
+  // Add timeout to prevent infinite loading (reduced to 10 seconds)
   let timeoutId: NodeJS.Timeout | null = null;
   timeoutId = setTimeout(() => {
     if (loading.value) {
-      console.warn('StoreSelector: Timeout loading stores after 15 seconds');
+      console.error('StoreSelector: Timeout loading stores after 10 seconds - API may be slow or failing');
       loading.value = false;
       stores.value = [];
+      // Don't show error message - just stop loading
     }
-  }, 15000); // 15 seconds timeout
+  }, 10000); // 10 seconds timeout (reduced from 15s)
   
   try {
     // For ADMIN_TENANT, ensure tenantId is available in request
@@ -329,11 +330,33 @@ const loadStores = async () => {
       });
     }
     
+    // For network errors or 502/503/504, try to retry once after 2 seconds
+    const isNetworkError = !error?.response || 
+                          error?.response?.status >= 500 || 
+                          error?.code === 'ECONNABORTED' ||
+                          error?.code === 'ERR_NETWORK';
+    
+    if (isNetworkError && !timeoutId) {
+      console.warn('StoreSelector: Network error detected, will retry once after 2 seconds');
+      setTimeout(async () => {
+        // Only retry if still should show and not already loading
+        if (shouldShow.value && !loading.value) {
+          console.log('StoreSelector: Retrying loadStores after network error');
+          await loadStores();
+        }
+      }, 2000);
+    }
+    
     // Silently handle error - stores will be empty
     // Error details can be checked in browser dev tools if needed
     stores.value = [];
   } finally {
-    // Always ensure loading is set to false
+    // Always ensure loading is set to false (critical!)
+    // This must be in finally block to ensure it always runs
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     loading.value = false;
   }
 };
@@ -390,16 +413,22 @@ onMounted(async () => {
     // Admin tenant already has tenantId in JWT token
     // Super admin will wait for tenant selection automatically via shouldShow computed
     // Add small delay to ensure authStore is fully initialized
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await loadStores();
+    await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
+    
+    // Only load if still should show and not already loading
+    if (shouldShow.value && !loading.value) {
+      await loadStores();
+    }
   }
   
   // Watch for shouldShow changes after mount
   watch(() => shouldShow.value, async (show) => {
-    if (show && props.autoLoad) {
+    if (show && props.autoLoad && !loading.value) {
       // Load immediately when shouldShow becomes true
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await loadStores();
+      await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
+      if (shouldShow.value && !loading.value) {
+        await loadStores();
+      }
     } else if (!show) {
       // Clear stores and reset loading when shouldShow becomes false
       stores.value = [];
@@ -409,10 +438,23 @@ onMounted(async () => {
   
   // Also watch for authStore.user changes (for ADMIN_TENANT login)
   watch(() => authStore.user?.role, async (newRole, oldRole) => {
-    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value) {
+    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value && !loading.value) {
       // User role changed, reload stores
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await loadStores();
+      await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
+      if (shouldShow.value && !loading.value) {
+        await loadStores();
+      }
+    }
+  });
+  
+  // Watch for authStore.isAuthenticated to reload when user logs in
+  watch(() => authStore.isAuthenticated, async (isAuth, wasAuth) => {
+    if (isAuth && !wasAuth && props.autoLoad && shouldShow.value && !loading.value) {
+      // User just logged in, load stores
+      await new Promise(resolve => setTimeout(resolve, 300)); // Wait a bit longer after login
+      if (shouldShow.value && !loading.value) {
+        await loadStores();
+      }
     }
   });
 });
