@@ -83,10 +83,20 @@ router.get(
       
       const result = await productService.getProducts(tenantId, req.query as any);
       
-      // Get product limit info
+      // Get product limit info (with caching - already optimized in service)
+      const planFeaturesStartTime = Date.now();
       const { getTenantPlanFeatures } = await import('../services/plan-features.service');
-      const features = await getTenantPlanFeatures(tenantId);
+      const features = await getTenantPlanFeatures(tenantId, true); // Use cache
+      const planFeaturesDuration = Date.now() - planFeaturesStartTime;
       const productLimit = features.limits.products;
+      
+      // Log if plan features query is slow
+      if (planFeaturesDuration > 1000) {
+        logger.warn('GET /products: getTenantPlanFeatures took longer than expected', {
+          tenantId,
+          duration: `${planFeaturesDuration}ms`,
+        });
+      }
       
       // Get total active products count (always get from database for accuracy)
       const totalActiveProducts = await prisma.product.count({

@@ -98,9 +98,9 @@ router.get(
       const limit = parseInt(req.query.limit as string) || 10;
       const result = await userService.getUsers(tenantId, page, limit);
       
-      // Get user limit info
+      // Get user limit info (with caching - already optimized in service)
       const { getTenantPlanFeatures } = await import('../services/plan-features.service');
-      const features = await getTenantPlanFeatures(tenantId);
+      const features = await getTenantPlanFeatures(tenantId, true); // Use cache
       const userLimit = features.limits.users;
       
       // Get total active users count

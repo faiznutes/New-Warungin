@@ -19,6 +19,16 @@ export const subscriptionGuard = async (
     // ADMIN_TENANT needs access to manage subscription even when expired
     // IMPORTANT: Early return immediately without any database queries to prevent timeout
     if (req.role === 'SUPER_ADMIN' || req.role === 'ADMIN_TENANT') {
+      // Log for debugging (only in development or when explicitly enabled)
+      if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SUBSCRIPTION_GUARD_LOG === 'true') {
+        logger.debug('subscriptionGuard: Skipping check for ADMIN_TENANT/SUPER_ADMIN', {
+          role: req.role,
+          tenantId: req.tenantId,
+          path: req.path,
+          method: req.method,
+        });
+      }
+      
       // Call next() immediately without await to prevent blocking
       next();
       

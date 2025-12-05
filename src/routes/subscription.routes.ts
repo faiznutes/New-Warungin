@@ -39,7 +39,7 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const { getTenantPlanFeatures } = await import('../services/plan-features.service');
-      const result = await getTenantPlanFeatures(tenantId);
+      const result = await getTenantPlanFeatures(tenantId, true); // Use cache
       
       // Map to frontend format
       const planFeatures = result.planFeatures || (result as any).features;

@@ -80,10 +80,20 @@ router.get(
         queryDuration: `${queryDuration}ms`,
       });
       
-      // Get outlet limit info
+      // Get outlet limit info (with caching - already optimized in service)
+      const planFeaturesStartTime = Date.now();
       const { getTenantPlanFeatures } = await import('../services/plan-features.service');
-      const features = await getTenantPlanFeatures(tenantId);
+      const features = await getTenantPlanFeatures(tenantId, true); // Use cache
+      const planFeaturesDuration = Date.now() - planFeaturesStartTime;
       const outletLimit = features.limits.outlets;
+      
+      // Log if plan features query is slow
+      if (planFeaturesDuration > 1000) {
+        logger.warn('GET /outlets: getTenantPlanFeatures took longer than expected', {
+          tenantId,
+          duration: `${planFeaturesDuration}ms`,
+        });
+      }
       const activeOutletsCount = outlets.filter((o: any) => o.isActive).length;
       
       const response = { 
@@ -98,20 +108,24 @@ router.get(
       
       // Log final response with timing
       const totalDuration = Date.now() - startTime;
-      logger.debug('GET /outlets final response', {
+      logger.info('GET /outlets final response', {
         tenantId,
+        role: authReq.role,
         responseDataCount: response.data.length,
         responseLimit: response.limit,
         totalDuration: `${totalDuration}ms`,
         queryDuration: `${queryDuration}ms`,
+        planFeaturesDuration: `${planFeaturesDuration}ms`,
       });
       
       // Log warning if request takes too long
-      if (totalDuration > 5000) {
+      if (totalDuration > 3000) {
         logger.warn('GET /outlets took longer than expected', {
           tenantId,
+          role: authReq.role,
           totalDuration: `${totalDuration}ms`,
           queryDuration: `${queryDuration}ms`,
+          planFeaturesDuration: `${planFeaturesDuration}ms`,
         });
       }
       
