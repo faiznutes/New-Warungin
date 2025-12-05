@@ -38,11 +38,6 @@ export const getNotificationQueueInstance = (): Queue | null => {
 // Use getNotificationQueueInstance() instead
 export const notificationQueue: Queue | null = null;
 
-// Export getter function instead
-export const getNotificationQueueInstance = (): Queue | null => {
-  return getNotificationQueue();
-};
-
 export interface NotificationData {
   tenantId: string;
   userId?: string;

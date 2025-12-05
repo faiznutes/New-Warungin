@@ -67,8 +67,6 @@ export const getRedisClient = (): Redis | null => {
             // Don't reconnect on error - fail fast
             return false;
           },
-          // Suppress all connection errors
-          showFriendlyErrorStack: false,
         }
       );
 
