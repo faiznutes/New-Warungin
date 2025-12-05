@@ -176,7 +176,7 @@ const sessions = ref<any[]>([]);
 const loadSessions = async () => {
   try {
       const response = await api.get('/sessions');
-      const sessionsData = response.data.sessions || [];
+      const sessionsData = response.data?.sessions || [];
       
       // Mark current session (if we have sessionId from JWT or localStorage)
       const currentSessionId = localStorage.getItem('sessionId') || sessionStorage.getItem('sessionId');

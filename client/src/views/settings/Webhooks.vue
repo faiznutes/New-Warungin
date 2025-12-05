@@ -298,7 +298,7 @@ const webhookForm = ref({
 const loadWebhooks = async () => {
   try {
     const response = await api.get('/webhooks?includeInactive=true');
-    webhooks.value = response.data.webhooks || [];
+    webhooks.value = response.data?.webhooks || [];
   } catch (error: any) {
     await showError('Gagal memuat webhooks');
   } finally {

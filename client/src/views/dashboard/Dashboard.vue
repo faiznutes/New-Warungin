@@ -2046,7 +2046,7 @@ const loadSubscription = async () => {
       // Backend already calculated isExpired correctly after revert
       if (response.data?.isExpired !== undefined) {
         // Use isExpired from backend
-        currentSubscription.value.isExpired = response.data.isExpired;
+        currentSubscription.value.isExpired = response.data?.isExpired || false;
       }
       
       // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available

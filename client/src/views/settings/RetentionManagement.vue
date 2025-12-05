@@ -754,7 +754,7 @@ const applyOrdersRetention = async () => {
     const response = await api.post('/retention/orders', {
       days: applyOrdersDays.value || retentionPolicy.value.orders || 365,
     });
-    await showSuccess(`Berhasil menghapus ${response.data.deletedCount} orders`);
+    await showSuccess(`Berhasil menghapus ${response.data?.deletedCount || 0} orders`);
     showApplyOrdersModal.value = false;
     await loadStats();
   } catch (error: any) {
@@ -782,7 +782,7 @@ const applyTransactionsRetention = async () => {
     const response = await api.post('/retention/transactions', {
       days: applyTransactionsDays.value || retentionPolicy.value.transactions || 365,
     });
-    await showSuccess(`Berhasil menghapus ${response.data.deletedCount} transactions`);
+    await showSuccess(`Berhasil menghapus ${response.data?.deletedCount || 0} transactions`);
     showApplyTransactionsModal.value = false;
     await loadStats();
   } catch (error: any) {
@@ -810,7 +810,7 @@ const applyReportsRetention = async () => {
     const response = await api.post('/retention/reports', {
       days: applyReportsDays.value || retentionPolicy.value.reports || 180,
     });
-    await showSuccess(`Berhasil menghapus ${response.data.deletedCount} reports`);
+    await showSuccess(`Berhasil menghapus ${response.data?.deletedCount || 0} reports`);
     showApplyReportsModal.value = false;
     await loadStats();
   } catch (error: any) {
