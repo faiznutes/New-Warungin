@@ -1429,7 +1429,14 @@ const loadUsers = async () => {
         limit: 100, // Get all users for this tenant
       },
     });
-    tenantUsers.value = response.data?.data || response.data || [];
+    
+    // Handle response - check if response is valid (even if empty)
+    if (response && response.data !== undefined) {
+      tenantUsers.value = response.data?.data || response.data || [];
+    } else {
+      // Invalid response structure
+      tenantUsers.value = [];
+    }
     
     // Load user usage limit
     try {
@@ -1439,14 +1446,27 @@ const loadUsers = async () => {
         limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      // Set default if error
+      // Set default if error - don't show error for usage limit
       userUsage.value = {
         currentUsage: tenantUsers.value.length,
         limit: -1,
       };
     }
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
+    // Only show error if it's a real HTTP error (4xx or 5xx)
+    // Don't show error for network issues or empty data
+    if (error.response?.status && error.response.status >= 400 && error.response.status !== 404) {
+      // Only show error for server errors (5xx) or client errors other than 404
+      // 404 might mean no users exist, which is fine
+      if (error.response.status >= 500) {
+        await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
+      }
+      // For 4xx errors (except 404), set empty array silently
+      tenantUsers.value = [];
+    } else {
+      // Network error or 404 - set empty array silently (no users is valid)
+      tenantUsers.value = [];
+    }
   } finally {
     loadingUsers.value = false;
   }
