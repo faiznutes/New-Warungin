@@ -1063,11 +1063,11 @@ const bulkDelete = async () => {
     const orderIds = selectedOrders.value.map(o => o.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
-    if (response.data.deleted > 0) {
-      await showSuccess(`${response.data.deleted} pesanan berhasil dihapus`);
+    if (response.data?.deleted > 0) {
+      await showSuccess(`${response.data?.deleted} pesanan berhasil dihapus`);
     }
-    if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal dihapus. ${response.data.errors.join(', ')}`);
+    if (response.data?.failed > 0) {
+      await showError(`${response.data?.failed} pesanan gagal dihapus. ${(response.data.errors || []).join(', ')}`);
     }
     
     selectedOrders.value = [];
@@ -1093,8 +1093,8 @@ const bulkRefund = async () => {
     if (response.data?.refunded && response.data.refunded > 0) {
       await showSuccess(`${response.data.refunded} pesanan berhasil direfund`);
     }
-    if (response.data?.failed && response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal direfund. ${(response.data.errors || []).join(', ')}`);
+    if (response.data?.failed && response.data?.failed > 0) {
+      await showError(`${response.data?.failed} pesanan gagal direfund. ${((response.data.errors || []) || []).join(', ')}`);
     }
     
     selectedOrders.value = [];
@@ -1128,11 +1128,11 @@ const deleteAllOrders = async () => {
     const orderIds = deletableOrders.map(o => o.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
-    if (response.data.deleted > 0) {
-      await showSuccess(`${response.data.deleted} pesanan berhasil dihapus`);
+    if (response.data?.deleted > 0) {
+      await showSuccess(`${response.data?.deleted} pesanan berhasil dihapus`);
     }
-    if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal dihapus. ${response.data.errors.join(', ')}`);
+    if (response.data?.failed > 0) {
+      await showError(`${response.data?.failed} pesanan gagal dihapus. ${(response.data.errors || []).join(', ')}`);
     }
     
     selectedOrders.value = [];
