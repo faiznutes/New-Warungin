@@ -93,8 +93,11 @@ router.get(
         where: { tenantId, isActive: true },
       });
       
+      // Type assertion for result (productService.getProducts returns { data, pagination })
+      const typedResult = result as { data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } };
+      
       const response = { 
-        ...result,
+        ...typedResult,
         limit: {
           max: productLimit,
           current: totalActiveProducts,
@@ -106,8 +109,8 @@ router.get(
       // Log response for debugging
       logger.debug('GET /products response', {
         tenantId,
-        productsCount: result.data?.length || 0,
-        total: result.pagination?.total || 0,
+        productsCount: Array.isArray(typedResult.data) ? typedResult.data.length : 0,
+        total: typedResult.pagination?.total || 0,
         limit: response.limit,
       });
       
