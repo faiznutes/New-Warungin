@@ -1459,7 +1459,14 @@ const loadStores = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/outlets');
-    tenantStores.value = response.data?.data || response.data || [];
+    
+    // Handle response - check if response is valid (even if empty)
+    if (response && response.data !== undefined) {
+      tenantStores.value = response.data?.data || response.data || [];
+    } else {
+      // Invalid response structure
+      tenantStores.value = [];
+    }
     
     // Load outlet usage limit
     try {
@@ -1469,14 +1476,21 @@ const loadStores = async () => {
         limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      // Set default if error
+      // Set default if error - don't show error for usage limit
       outletUsage.value = {
         currentUsage: tenantStores.value.filter((s: any) => s.isActive !== false).length,
         limit: -1,
       };
     }
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat daftar store');
+    // Only show error if it's a real error (not just empty data)
+    // Check if error is 4xx or 5xx status code
+    if (error.response?.status && error.response.status >= 400) {
+      await showError(error.response?.data?.message || 'Gagal memuat daftar store');
+    } else {
+      // Network error or other non-HTTP error - set empty array silently
+      tenantStores.value = [];
+    }
   } finally {
     loadingStores.value = false;
   }
