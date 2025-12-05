@@ -1,21 +1,33 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex w-full">
+  <div :class="[
+    'min-h-screen flex w-full',
+    userRole === 'ADMIN_TENANT' ? 'bg-gradient-to-br from-green-50 to-emerald-50' : 'bg-gray-50'
+  ]">
     <!-- Sidebar -->
     <aside
-      class="w-64 bg-white shadow-xl fixed h-full z-50 transition-transform duration-300 ease-in-out"
-      :class="{ 
-        '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
-        'translate-x-0': sidebarOpen || windowWidth >= 1024
-      }"
+      :class="[
+        'w-64 shadow-xl fixed h-full z-50 transition-transform duration-300 ease-in-out',
+        userRole === 'ADMIN_TENANT' 
+          ? 'bg-gradient-to-b from-green-700 to-green-600' 
+          : 'bg-white',
+        { 
+          '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
+          'translate-x-0': sidebarOpen || windowWidth >= 1024
+        }
+      ]"
     >
       <div class="flex flex-col h-full">
         <!-- Logo -->
-        <div class="p-6 border-b border-gray-200 flex-shrink-0">
+        <div :class="[
+          'p-6 border-b flex-shrink-0',
+          userRole === 'ADMIN_TENANT' ? 'border-green-600' : 'border-gray-200'
+        ]">
           <router-link
             to="/app/dashboard"
             class="flex items-center hover:opacity-90 transition-opacity group"
           >
-            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span>
+            <span v-if="userRole === 'ADMIN_TENANT'" class="text-xl font-bold text-white">Warungin</span>
+            <span v-else class="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span>
           </router-link>
         </div>
 
@@ -24,7 +36,10 @@
           <!-- Operasional Section -->
           <div class="mb-2">
             <button
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
+              :class="[
+                'w-full flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors',
+                sectionHeaderClass
+              ]"
               @click="toggleMenu('operasional')"
             >
               <span>Operasional</span>
@@ -49,9 +64,14 @@
             >
               <router-link
                 to="/app/dashboard"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
-                exact-active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="[
+                  'flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group',
+                  userRole === 'ADMIN_TENANT'
+                    ? 'text-green-100 hover:bg-green-600 hover:text-white'
+                    : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                ]"
+                :active-class="userRole === 'ADMIN_TENANT' ? 'bg-green-600 text-white font-semibold shadow-lg' : 'bg-primary-50 text-primary-600 font-semibold'"
+                :exact-active-class="userRole === 'ADMIN_TENANT' ? 'bg-green-600 text-white font-semibold shadow-lg' : 'bg-primary-50 text-primary-600 font-semibold'"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -73,8 +93,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageProducts) || (userRole === 'CASHIER' && canManageProducts)"
                 to="/app/products"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -96,8 +116,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canEditOrders) || userRole === 'CASHIER'"
                 to="/app/orders"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -119,8 +139,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'CASHIER'"
                 to="/app/pos"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -142,8 +162,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageCustomers) || (userRole === 'CASHIER' && canManageCustomers)"
                 to="/app/customers"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -170,7 +190,7 @@
             class="pt-4 mt-4 border-t border-gray-200"
           >
             <button
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
+              :class="['w-full flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors', sectionHeaderClass]"
               @click="toggleMenu('laporan')"
             >
               <span>Laporan & Analitik</span>
@@ -195,8 +215,8 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -222,8 +242,8 @@
               >
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  :class="['flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 group text-sm', menuItemClass]"
+                  :active-class="menuActiveClass"
                   @click="closeSidebarOnMobile"
                 >
                   <svg
@@ -244,8 +264,8 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  :class="['flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 group text-sm', menuItemClass]"
+                  :active-class="menuActiveClass"
                   @click="closeSidebarOnMobile"
                 >
                   <svg
@@ -266,8 +286,8 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  :class="['flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 group text-sm', menuItemClass]"
+                  :active-class="menuActiveClass"
                   @click="closeSidebarOnMobile"
                 >
                   <svg
@@ -295,7 +315,7 @@
             class="pt-4 mt-4 border-t border-gray-200"
           >
             <button
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
+              :class="['w-full flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors', sectionHeaderClass]"
               @click="toggleMenu('manajemen')"
             >
               <span>Manajemen</span>
@@ -320,8 +340,8 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -348,7 +368,7 @@
             class="pt-4 mt-4 border-t border-gray-200"
           >
             <button
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
+              :class="['w-full flex items-center justify-between px-4 py-2 text-xs font-semibold transition-colors', sectionHeaderClass]"
               @click="toggleMenu('pengaturan')"
             >
               <span>Pengaturan</span>
@@ -374,8 +394,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
                 to="/app/stores"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -397,8 +417,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
                 to="/app/settings/store"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -426,8 +446,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
                 to="/app/subscription"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -449,8 +469,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' && hasAvailableAddons"
                 to="/app/addons"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -472,8 +492,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'"
                 to="/app/discounts"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -495,8 +515,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'SUPERVISOR'"
                 to="/app/rewards"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                :class="['flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group', menuItemClass]"
+                :active-class="menuActiveClass"
                 @click="closeSidebarOnMobile"
               >
                 <svg
@@ -684,6 +704,28 @@ const hasUnreadInfo = ref(false);
 // Initialize computed after refs
 const userRole = computed(() => {
   return authStore.user?.role || '';
+});
+
+// Helper computed properties for menu styling based on role
+const menuItemClass = computed(() => {
+  if (userRole.value === 'ADMIN_TENANT') {
+    return 'text-green-100 hover:bg-green-600 hover:text-white';
+  }
+  return 'text-gray-700 hover:bg-primary-50 hover:text-primary-600';
+});
+
+const menuActiveClass = computed(() => {
+  if (userRole.value === 'ADMIN_TENANT') {
+    return 'bg-green-600 text-white font-semibold shadow-lg';
+  }
+  return 'bg-primary-50 text-primary-600 font-semibold';
+});
+
+const sectionHeaderClass = computed(() => {
+  if (userRole.value === 'ADMIN_TENANT') {
+    return 'text-green-300 uppercase tracking-wider hover:text-green-200';
+  }
+  return 'text-gray-500 uppercase tracking-wider hover:text-gray-700';
 });
 
 // Initialize permissions after computed (to avoid circular dependency)

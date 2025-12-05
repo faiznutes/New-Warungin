@@ -370,8 +370,8 @@ const loadUsers = async (page = 1) => {
     // For SUPER_ADMIN, ensure tenantId is set in localStorage for API interceptor
     if (authStore.isSuperAdmin && authStore.selectedTenantId) {
       localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
-      // Wait a bit to ensure localStorage is updated
-      await new Promise(resolve => setTimeout(resolve, 100));
+    // Wait a bit to ensure localStorage is updated
+    await new Promise(resolve => setTimeout(resolve, 100));
     }
     
     const response = await api.get('/users', {
@@ -512,7 +512,7 @@ const getLimitColorClass = () => {
 // Watch for tenant changes and auto-refetch (only for SUPER_ADMIN)
 watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
   if (authStore.isSuperAdmin && newTenantId && newTenantId !== oldTenantId && !needsTenantSelection.value) {
-    loadUsers();
+      loadUsers();
   }
 });
 
@@ -520,7 +520,7 @@ onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Load users for ADMIN_TENANT and SUPER_ADMIN (if tenant selected)
   if (userRole === 'ADMIN_TENANT' || (userRole === 'SUPER_ADMIN' && !needsTenantSelection.value)) {
-    loadUsers();
+      loadUsers();
   }
 });
 </script>
