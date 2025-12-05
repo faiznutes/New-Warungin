@@ -146,6 +146,8 @@ const loading = ref(false);
 const selectedStoreId = ref<string | null>(
   localStorage.getItem('selectedStoreId')
 );
+const retryCount = ref(0); // Track retry count to prevent infinite retry
+const MAX_RETRIES = 1; // Only retry once
 
 const shouldShow = computed(() => {
   // Show for all roles except SUPER_ADMIN (unless tenant selected)
@@ -194,6 +196,7 @@ const loadStores = async () => {
       console.error('StoreSelector: Timeout loading stores after 10 seconds - API may be slow or failing');
       loading.value = false;
       stores.value = [];
+      retryCount.value = 0; // Reset retry count on timeout
       // Don't show error message - just stop loading
     }
   }, 10000); // 10 seconds timeout (reduced from 15s)
@@ -226,6 +229,9 @@ const loadStores = async () => {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
+    
+    // Reset retry count on success
+    retryCount.value = 0;
     
     // Parse response - backend returns { data: [], limit: {} }
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
@@ -337,21 +343,35 @@ const loadStores = async () => {
       });
     }
     
-    // For network errors or 502/503/504, try to retry once after 2 seconds
+    // For network errors or 502/503/504, try to retry ONCE (not infinite)
     const isNetworkError = !error?.response || 
                           error?.response?.status >= 500 || 
                           error?.code === 'ECONNABORTED' ||
                           error?.code === 'ERR_NETWORK';
     
-    if (isNetworkError && !timeoutId) {
-      console.warn('StoreSelector: Network error detected, will retry once after 2 seconds');
+    // Only retry if:
+    // 1. It's a network error (502, 503, 504, etc.)
+    // 2. We haven't exceeded max retries
+    // 3. We're not already in a retry (timeoutId is null means we're not in timeout)
+    if (isNetworkError && retryCount.value < MAX_RETRIES && !timeoutId) {
+      retryCount.value += 1;
+      console.warn(`StoreSelector: Network error detected (502/503/504), will retry once (attempt ${retryCount.value}/${MAX_RETRIES}) after 3 seconds`);
       setTimeout(async () => {
         // Only retry if still should show and not already loading
-        if (shouldShow.value && !loading.value) {
+        if (shouldShow.value && !loading.value && retryCount.value <= MAX_RETRIES) {
           console.log('StoreSelector: Retrying loadStores after network error');
           await loadStores();
+        } else {
+          // Reset retry count if conditions not met
+          retryCount.value = 0;
         }
-      }, 2000);
+      }, 3000); // Increased to 3 seconds to give backend more time
+    } else if (isNetworkError && retryCount.value >= MAX_RETRIES) {
+      console.error('StoreSelector: Max retries reached, stopping retry attempts');
+      retryCount.value = 0; // Reset for next manual load
+    } else {
+      // Reset retry count for non-network errors
+      retryCount.value = 0;
     }
     
     // Silently handle error - stores will be empty
@@ -396,6 +416,9 @@ watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
     // Clear store selection when tenant changes
     clearSelection();
     
+    // Reset retry count when tenant changes
+    retryCount.value = 0;
+    
     // Ensure tenantId is in localStorage
     localStorage.setItem('selectedTenantId', newTenantId);
     
@@ -405,6 +428,7 @@ watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
     // Clear stores if tenant is deselected
     stores.value = [];
     clearSelection();
+    retryCount.value = 0;
   }
 });
 
