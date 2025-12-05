@@ -255,7 +255,6 @@
               type="text"
               placeholder="Cari produk..."
               class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-              @focus="handleSearchFocus"
             />
           </div>
         </div>
@@ -458,10 +457,10 @@
                   Titipan
                 </span>
                 <span
-                  v-if="productLimit && productLimit.currentUsage >= productLimit.limit"
+                  v-if="productLimit && !productLimit.isUnlimited && productLimit.current >= productLimit.max"
                   class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded"
                 >
-                  Limit: {{ productLimit.currentUsage }}/{{ productLimit.limit }}
+                  Limit: {{ productLimit.current }}/{{ productLimit.max }}
                 </span>
               </div>
             </div>
@@ -607,7 +606,7 @@ const loadProducts = async (page = 1) => {
   loading.value = true;
   
   // Add timeout to prevent infinite loading (reduced to 10 seconds for consistency)
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: number | null = null;
   timeoutId = setTimeout(() => {
     if (loading.value) {
       loading.value = false;
@@ -1047,11 +1046,7 @@ const getStockStatusLabel = (stock: number, minStock: number): string => {
   }
 };
 
-const calculateMargin = (price: number, cost: number): string => {
-  if (!cost || cost <= 0 || !price || price <= 0) return '0.00';
-  const margin = ((price - cost) / price) * 100;
-  return margin.toFixed(2);
-};
+// calculateMargin function removed - not used
 
 const formatMargin = (price: number, cost: number): string => {
   if (!cost || cost <= 0 || !price || price <= 0) {
