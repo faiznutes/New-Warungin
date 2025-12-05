@@ -62,6 +62,18 @@ export const requireTenantId = (req: Request | AuthRequest): string => {
   const tenantId = getTenantId(req);
   
   if (!tenantId) {
+    // Log detailed error for debugging
+    logger.error('Tenant ID is required but not found', {
+      role,
+      hasUser: !!user,
+      userTenantId: user?.tenantId,
+      reqTenantId: authReq.tenantId,
+      userId: user?.id,
+      decodedTenantId: authReq.tenantId, // This should be set by auth middleware
+      url: (req as any).url,
+      method: (req as any).method,
+    });
+    
     // For SUPER_ADMIN, provide more helpful message
     if (role === 'SUPER_ADMIN') {
       throw new Error('Tenant ID is required. Please select a tenant first.');

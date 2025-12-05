@@ -6,6 +6,8 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { AuthRequest } from '../middlewares/auth';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -51,7 +53,20 @@ router.get(
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
+      // Get tenantId with better error handling
+      const authReq = req as AuthRequest;
       const tenantId = requireTenantId(req);
+      
+      // Log for debugging
+      logger.debug('Getting outlets', {
+        tenantId,
+        role: authReq.role,
+        userId: authReq.userId,
+        hasUser: !!authReq.user,
+        userTenantId: authReq.user?.tenantId,
+        reqTenantId: authReq.tenantId,
+      });
+      
       const outlets = await outletService.getOutlets(tenantId);
       
       // Get outlet limit info
