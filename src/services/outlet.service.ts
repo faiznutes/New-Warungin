@@ -25,18 +25,38 @@ export class OutletService {
       timestamp: new Date().toISOString(),
     });
     
+    // Query all outlets for tenant (including inactive ones)
+    // Don't filter by isActive - show all stores
     const outlets = await prisma.outlet.findMany({
-      where: { tenantId },
+      where: { 
+        tenantId,
+        // Don't filter by isActive - show all stores
+        // isActive: true, // Removed - show all stores
+      },
       orderBy: { createdAt: 'desc' },
     });
     
     // Log result for debugging
-    logger.debug('OutletService.getOutlets result', {
+    logger.info('OutletService.getOutlets result', {
       tenantId,
       count: outlets.length,
       outletIds: outlets.map(o => o.id),
       outletNames: outlets.map(o => o.name),
+      outlets: outlets.map(o => ({ 
+        id: o.id, 
+        name: o.name, 
+        isActive: o.isActive,
+        tenantId: o.tenantId 
+      })),
     });
+    
+    // If no outlets found, log warning
+    if (outlets.length === 0) {
+      logger.warn('OutletService.getOutlets: No outlets found for tenant', {
+        tenantId,
+        timestamp: new Date().toISOString(),
+      });
+    }
     
     return outlets;
   }
