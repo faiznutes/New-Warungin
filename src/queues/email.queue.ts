@@ -27,20 +27,28 @@ const getEmailQueue = (): Queue | null => {
   }
 };
 
-// Export lazy getter - initialize on first access
-export const emailQueue = getEmailQueue();
+// Export getter function - initialize on first access (not at module load)
+// This prevents connection attempt during module initialization
+export const getEmailQueueInstance = (): Queue | null => {
+  return getEmailQueue();
+};
+
+// For backward compatibility, export as null initially
+// Use getEmailQueueInstance() instead
+export const emailQueue: Queue | null = null;
 
 export const addEmailJob = async (
   to: string,
   subject: string,
   html: string
 ): Promise<void> => {
-  if (!emailQueue) {
+  const queue = getEmailQueueInstance();
+  if (!queue) {
     // Email queue not available (Redis not configured) - fail silently
     // This is expected in development environments without Redis
     return;
   }
-  await emailQueue.add('send-email', {
+  await queue.add('send-email', {
     to,
     subject,
     html,

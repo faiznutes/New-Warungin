@@ -28,8 +28,20 @@ const getNotificationQueue = (): Queue | null => {
   }
 };
 
-// Export lazy getter - initialize on first access
-export const notificationQueue = getNotificationQueue();
+// Export getter function - initialize on first access (not at module load)
+// This prevents connection attempt during module initialization
+export const getNotificationQueueInstance = (): Queue | null => {
+  return getNotificationQueue();
+};
+
+// For backward compatibility, export as null initially
+// Use getNotificationQueueInstance() instead
+export const notificationQueue: Queue | null = null;
+
+// Export getter function instead
+export const getNotificationQueueInstance = (): Queue | null => {
+  return getNotificationQueue();
+};
 
 export interface NotificationData {
   tenantId: string;
@@ -42,7 +54,8 @@ export interface NotificationData {
 export const addNotificationJob = async (
   data: NotificationData
 ): Promise<void> => {
-  if (!notificationQueue) {
+  const queue = getNotificationQueueInstance();
+  if (!queue) {
     // Fallback: send directly via Socket.IO
     emitToTenant(data.tenantId, 'notification', {
       type: data.type,
@@ -52,7 +65,7 @@ export const addNotificationJob = async (
     });
     return;
   }
-  await notificationQueue.add('send-notification', {
+  await queue.add('send-notification', {
     ...data,
     timestamp: new Date().toISOString(),
   });

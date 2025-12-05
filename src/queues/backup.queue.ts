@@ -17,8 +17,13 @@ const getBackupQueue = (): Queue | null => {
   }
   
   try {
+    // Create queue with lazy connection to prevent immediate connection attempt
     backupQueueInstance = new Queue('backup', {
       connection: redisClient,
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: false,
+      },
     });
     return backupQueueInstance;
   } catch (error) {
@@ -27,18 +32,26 @@ const getBackupQueue = (): Queue | null => {
   }
 };
 
-// Export lazy getter - initialize on first access
-export const backupQueue = getBackupQueue();
+// Export getter function - initialize on first access (not at module load)
+// This prevents connection attempt during module initialization
+export const getBackupQueueInstance = (): Queue | null => {
+  return getBackupQueue();
+};
+
+// For backward compatibility, export as null initially
+// Use getBackupQueueInstance() instead
+export const backupQueue: Queue | null = null;
 
 export const addBackupJob = async (
   tenantId: string | undefined,
   type: 'full' | 'incremental' = 'incremental'
 ): Promise<void> => {
-  if (!backupQueue) {
+  const queue = getBackupQueueInstance();
+  if (!queue) {
     console.warn('Backup queue not available (Redis not configured)');
     return;
   }
-  await backupQueue.add('database-backup', {
+  await queue.add('database-backup', {
     tenantId,
     type,
   });

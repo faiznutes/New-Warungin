@@ -3,8 +3,8 @@ import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 // Email system disabled - using n8n instead
 // import { emailQueue } from '../queues/email.queue';
-import { backupQueue } from '../queues/backup.queue';
-import { notificationQueue } from '../queues/notification.queue';
+import { getBackupQueueInstance } from '../queues/backup.queue';
+import { getNotificationQueueInstance } from '../queues/notification.queue';
 import { getSubscriptionQueue } from '../queues/subscription.queue';
 // import { processEmailJob } from '../jobs/email.job';
 import { processBackupJob } from '../jobs/backup.job';
@@ -47,23 +47,35 @@ const initializeWorkers = (): void => {
 
           // Backup worker - can be disabled if using n8n
           // Keeping for now as fallback, but n8n should handle this
-          backupWorker = new Worker('backup', async (job) => {
-            await processBackupJob(job);
-          }, {
-            connection: redisClient!,
-          });
+          try {
+            backupWorker = new Worker('backup', async (job) => {
+              await processBackupJob(job);
+            }, {
+              connection: redisClient!,
+            });
+          } catch (error: any) {
+            logger.warn('⚠️  Failed to create backup worker:', error?.message || error);
+          }
 
-          notificationWorker = new Worker('notification', async (job) => {
-            await processNotificationJob(job);
-          }, {
-            connection: redisClient!,
-          });
+          try {
+            notificationWorker = new Worker('notification', async (job) => {
+              await processNotificationJob(job);
+            }, {
+              connection: redisClient!,
+            });
+          } catch (error: any) {
+            logger.warn('⚠️  Failed to create notification worker:', error?.message || error);
+          }
 
-          subscriptionWorker = new Worker('subscription', async (job) => {
-            await processSubscriptionRevertJob(job);
-          }, {
-            connection: redisClient!,
-          });
+          try {
+            subscriptionWorker = new Worker('subscription', async (job) => {
+              await processSubscriptionRevertJob(job);
+            }, {
+              connection: redisClient!,
+            });
+          } catch (error: any) {
+            logger.warn('⚠️  Failed to create subscription worker:', error?.message || error);
+          }
 
           logger.info('✅ BullMQ workers created');
         } else {
@@ -98,8 +110,9 @@ export const scheduleJobs = async (): Promise<void> => {
 
   try {
     // Daily backup job (runs at 2 AM)
-    if (backupQueue) {
-      await backupQueue.add(
+    const backupQueueInstance = getBackupQueueInstance();
+    if (backupQueueInstance) {
+      await backupQueueInstance.add(
         'daily-backup',
         {
           type: 'incremental',
@@ -195,6 +208,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Email queue disabled - using n8n instead
-// export { emailQueue, backupQueue, notificationQueue };
-export { backupQueue, notificationQueue };
+// Export getter functions for lazy initialization
+export { getBackupQueueInstance as backupQueue, getNotificationQueueInstance as notificationQueue };
 

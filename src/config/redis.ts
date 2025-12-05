@@ -4,6 +4,7 @@ import logger from '../utils/logger';
 
 let redisClient: Redis | null = null;
 let redisFailed = false; // Track if Redis connection has failed
+let connectionErrorLogged = false; // Track if we've logged connection errors to avoid spam
 
 export const getRedisClient = (): Redis | null => {
   // Redis is optional - return null if not configured
@@ -16,10 +17,6 @@ export const getRedisClient = (): Redis | null => {
     return null;
   }
   
-  // If REDIS_HOST is 'redis' (default from docker-compose), check if Redis service is actually available
-  // In production, if Redis service is not running, we should not try to connect
-  // We'll let it try once, but if it fails, mark as failed immediately
-
   // If Redis connection has already failed, don't try again
   if (redisFailed) {
     return null;
@@ -39,41 +36,43 @@ export const getRedisClient = (): Redis | null => {
         redisConfig as any,
         {
           retryStrategy: (times) => {
-            // Stop retrying after 2 attempts (reduced from 3)
-            if (times > 2) {
+            // Stop retrying after 1 attempt to fail fast
+            if (times > 1) {
               if (!redisFailed) {
-                logger.info('ℹ️  Redis connection failed after 2 attempts - disabling Redis');
                 redisFailed = true;
                 // Disconnect and destroy client
                 if (redisClient) {
-                  redisClient.disconnect();
+                  try {
+                    redisClient.disconnect();
+                  } catch (e) {
+                    // Ignore disconnect errors
+                  }
                   redisClient = null;
                 }
               }
               return null; // Stop retrying
             }
-            const delay = Math.min(times * 100, 1000);
-            return delay;
+            return null; // Don't retry - fail immediately
           },
-          maxRetriesPerRequest: null, // Required for BullMQ
+          maxRetriesPerRequest: 0, // No retries per request
           lazyConnect: true, // Don't connect immediately
           enableOfflineQueue: false, // Disable offline queue to fail fast
-          connectTimeout: 2000, // 2 second timeout
+          connectTimeout: 1000, // 1 second timeout (reduced from 2s)
           showFriendlyErrorStack: false, // Don't show full error stack
           enableReadyCheck: false, // Disable ready check to prevent errors
           autoResubscribe: false, // Disable auto resubscribe
           autoResendUnfulfilledCommands: false, // Disable auto resend
-          // Suppress reconnect attempts
+          // Suppress reconnect attempts completely
           reconnectOnError: () => {
             // Don't reconnect on error - fail fast
             return false;
           },
+          // Suppress all connection errors
+          showFriendlyErrorStack: false,
         }
       );
 
-      // Track if we've logged connection errors to avoid spam
-      let connectionErrorLogged = false;
-
+      // Set up error handlers BEFORE any connection attempt
       redisClient.on('error', (err) => {
         // Suppress all Redis connection errors to prevent unhandled rejection
         // Redis is optional, so these errors are expected if Redis is not running
@@ -83,11 +82,11 @@ export const getRedisClient = (): Redis | null => {
           errorMessage.includes('connect') ||
           errorMessage.includes('ENOTFOUND') ||
           errorMessage.includes('Connection is closed') ||
-          errorMessage.includes('getaddrinfo');
+          errorMessage.includes('getaddrinfo') ||
+          errorMessage.includes('EAI_AGAIN');
         
         // Only log connection errors once to avoid spam
         if (isConnectionError && !connectionErrorLogged) {
-          logger.info('ℹ️  Redis not available - scheduled jobs disabled (this is normal if Redis is not installed)');
           connectionErrorLogged = true;
           redisFailed = true;
           // Disconnect immediately to prevent further connection attempts
@@ -99,9 +98,8 @@ export const getRedisClient = (): Redis | null => {
             }
             redisClient = null;
           }
-        } else if (!isConnectionError) {
-          logger.warn('Redis error (optional service):', errorMessage);
         }
+        // Don't log error - it's expected if Redis is not available
       });
       
       // Handle connection close events to prevent unhandled rejection
@@ -129,13 +127,13 @@ export const getRedisClient = (): Redis | null => {
       redisClient.on('ready', () => {
         logger.info('✅ Redis ready');
         redisFailed = false; // Reset failed flag on ready
+        connectionErrorLogged = false;
       });
 
       // Don't try to connect immediately - let it connect lazily when needed
       // This prevents connection errors on startup if Redis is not available
       // Connection will be attempted only when a command is executed
     } catch (error) {
-      logger.info('ℹ️  Redis not available - scheduled jobs disabled');
       redisClient = null;
       redisFailed = true;
       return null;
