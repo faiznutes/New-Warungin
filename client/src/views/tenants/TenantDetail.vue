@@ -1453,20 +1453,16 @@ const loadUsers = async () => {
       };
     }
   } catch (error: any) {
-    // Only show error if it's a real HTTP error (4xx or 5xx)
-    // Don't show error for network issues or empty data
-    if (error.response?.status && error.response.status >= 400 && error.response.status !== 404) {
-      // Only show error for server errors (5xx) or client errors other than 404
-      // 404 might mean no users exist, which is fine
-      if (error.response.status >= 500) {
-        await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
-      }
-      // For 4xx errors (except 404), set empty array silently
-      tenantUsers.value = [];
-    } else {
-      // Network error or 404 - set empty array silently (no users is valid)
-      tenantUsers.value = [];
+    // Only show error if it's a real server error (5xx)
+    // Don't show error for client errors (4xx), network issues, or empty data
+    // 4xx errors (like 403, 404) are expected in some cases and shouldn't show error
+    if (error.response?.status && error.response.status >= 500) {
+      // Only show error for server errors (5xx)
+      await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
     }
+    // For all other errors (4xx, network, etc), set empty array silently
+    // No users is a valid state, don't show error
+    tenantUsers.value = [];
   } finally {
     loadingUsers.value = false;
   }
