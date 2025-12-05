@@ -94,10 +94,24 @@ router.get(
       });
       
       // Type assertion for result (productService.getProducts returns { data, pagination })
-      const typedResult = result as { data: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } };
+      const typedResult = result as { 
+        data: any[]; 
+        pagination: { 
+          page: number; 
+          limit: number; 
+          total: number; 
+          totalPages: number;
+        };
+      };
       
       const response = { 
-        ...typedResult,
+        data: typedResult.data || [],
+        pagination: typedResult.pagination || {
+          page: 1,
+          limit: 20,
+          total: 0,
+          totalPages: 0,
+        },
         limit: {
           max: productLimit,
           current: totalActiveProducts,
