@@ -217,10 +217,6 @@ const loadStores = async () => {
   // Prevent concurrent loads and too frequent calls
   const now = Date.now();
   if (isLoadingStores.value || (now - lastLoadTime.value < MIN_LOAD_INTERVAL)) {
-    console.debug('StoreSelector: Skipping loadStores - already loading or too soon', {
-      isLoadingStores: isLoadingStores.value,
-      timeSinceLastLoad: now - lastLoadTime.value,
-    });
     return;
   }
   
@@ -242,7 +238,6 @@ const loadStores = async () => {
   let timeoutId: NodeJS.Timeout | null = null;
   timeoutId = setTimeout(() => {
     if (loading.value) {
-      console.error('StoreSelector: Timeout loading stores after 10 seconds - API may be slow or failing');
       loading.value = false;
       stores.value = [];
       retryCount.value = 0; // Reset retry count on timeout
@@ -251,19 +246,6 @@ const loadStores = async () => {
   }, 10000); // 10 seconds timeout (reduced from 15s)
   
   try {
-    // For ADMIN_TENANT, ensure tenantId is available in request
-    // The API interceptor should handle this, but we can also ensure it here
-    // For ADMIN_TENANT, tenantId is in JWT token, so no need to add it manually
-    
-    // Log before request for debugging
-    console.log('StoreSelector: Loading stores', {
-      userRole: authStore.user?.role,
-      isSuperAdmin: authStore.isSuperAdmin,
-      selectedTenantId: authStore.selectedTenantId,
-      currentTenantId: authStore.currentTenantId,
-      shouldShow: shouldShow.value,
-    });
-    
     // Make API call with explicit timeout and error handling
     const response = await api.get('/outlets', {
       timeout: 10000, // 10 seconds timeout
@@ -289,72 +271,27 @@ const loadStores = async () => {
     // Axios wraps in .data, so response.data = { data: [], limit: {} }
     let storeList = response?.data?.data;
     
-    // Log raw response for debugging
-    console.log('StoreSelector: Raw API response', {
-      responseData: response?.data,
-      responseDataType: typeof response?.data,
-      isArray: Array.isArray(response?.data),
-      hasData: !!response?.data?.data,
-      dataIsArray: Array.isArray(response?.data?.data),
-      dataLength: Array.isArray(response?.data?.data) ? response?.data?.data.length : 'not array',
-    });
-    
     // Handle different response formats
     if (Array.isArray(storeList)) {
       // Correct format: { data: [...] } - already extracted
-      console.log('StoreSelector: Using response.data.data (correct format)', {
-        count: storeList.length,
-      });
     } else if (Array.isArray(response?.data)) {
       // Direct array response (unlikely for /outlets but handle it)
-      console.log('StoreSelector: Using response.data directly (array format)', {
-        count: response.data.length,
-      });
       storeList = response.data;
     } else if (response?.data && typeof response.data === 'object') {
       // Try to extract from response.data if it's an object
-      console.log('StoreSelector: Trying to extract from response.data object', {
-        hasData: !!response.data.data,
-        hasOutlets: !!response.data.outlets,
-        hasStores: !!response.data.stores,
-      });
-      storeList = response.data.data || response.data.outlets || response.data.stores || [];
+      storeList = response.data?.data || response.data?.outlets || response.data?.stores || [];
     } else {
-      console.warn('StoreSelector: No valid store list found in response', {
-        responseData: response?.data,
-      });
       storeList = [];
     }
     
     // Ensure storeList is an array
     if (!Array.isArray(storeList)) {
-      console.error('StoreSelector: storeList is not an array', {
-        storeList,
-        type: typeof storeList,
-      });
       storeList = [];
     }
     
     // Filter only active stores if needed, or show all stores
     // For now, show all stores (both active and inactive)
     stores.value = storeList;
-    
-    // Log final stores
-    console.log('StoreSelector: Final stores array', {
-      count: stores.value.length,
-      stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive })),
-    });
-    
-    // Debug log to help troubleshoot
-    console.log('StoreSelector: Loaded stores successfully', {
-      count: stores.value.length,
-      userRole: authStore.user?.role,
-      isSuperAdmin: authStore.isSuperAdmin,
-      selectedTenantId: authStore.selectedTenantId,
-      currentTenantId: authStore.currentTenantId,
-      responseData: response?.data,
-      stores: stores.value.map(s => ({ id: s.id, name: s.name, isActive: s.isActive }))
-    });
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {
@@ -366,22 +303,6 @@ const loadStores = async () => {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
-    
-    // Log error for debugging (always log, not just in development)
-    console.error('StoreSelector: Error loading stores', {
-      error: error?.message || error,
-      response: error?.response?.data,
-      status: error?.response?.status,
-      statusText: error?.response?.statusText,
-      url: error?.config?.url,
-      method: error?.config?.method,
-      userRole: authStore.user?.role,
-      isSuperAdmin: authStore.isSuperAdmin,
-      selectedTenantId: authStore.selectedTenantId,
-      currentTenantId: authStore.currentTenantId,
-      token: authStore.user ? 'exists' : 'missing',
-      fullError: error,
-    });
     
     // Try to extract error message for user feedback
     let userErrorMessage: string | null = null;
@@ -412,15 +333,6 @@ const loadStores = async () => {
     
     errorMessage.value = userErrorMessage;
     
-    // Show error message in console for debugging
-    if (error?.response?.status === 400 || error?.response?.status === 403) {
-      console.error('StoreSelector: Tenant ID or permission error', {
-        status: error?.response?.status,
-        message: userErrorMessage,
-        data: error?.response?.data,
-      });
-    }
-    
     // For network errors or 502/503/504, try to retry ONCE (not infinite)
     const isNetworkError = !error?.response || 
                           error?.response?.status >= 500 || 
@@ -435,11 +347,9 @@ const loadStores = async () => {
       retryCount.value += 1;
       // Exponential backoff: 2^retryCount seconds (2s, 4s, etc.)
       const backoffDelay = Math.min(2000 * Math.pow(2, retryCount.value - 1), 10000); // Max 10 seconds
-      console.warn(`StoreSelector: Network error detected (502/503/504), will retry once (attempt ${retryCount.value}/${MAX_RETRIES}) after ${backoffDelay}ms`);
       setTimeout(async () => {
         // Only retry if still should show and not already loading
         if (shouldShow.value && !loading.value && retryCount.value <= MAX_RETRIES) {
-          console.log('StoreSelector: Retrying loadStores after network error');
           await loadStores();
         } else {
           // Reset retry count if conditions not met
@@ -447,7 +357,6 @@ const loadStores = async () => {
         }
       }, backoffDelay);
     } else if (isNetworkError && retryCount.value >= MAX_RETRIES) {
-      console.error('StoreSelector: Max retries reached, stopping retry attempts');
       retryCount.value = 0; // Reset for next manual load
     } else {
       // Reset retry count for non-network errors

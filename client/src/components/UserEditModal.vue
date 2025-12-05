@@ -535,7 +535,7 @@ const loadStores = async (force = false) => {
     loadingStores.value = true;
     try {
       const response = await api.get('/outlets');
-      stores.value = (response.data.data || []).map((store: any) => ({
+      stores.value = (response.data?.data || response.data || []).map((store: any) => ({
         id: store.id,
         name: store.name,
         isActive: store.isActive !== false,

@@ -352,7 +352,7 @@ const loadAdjustments = async () => {
   loading.value = true;
   try {
     const response = await api.get('/products/adjustments');
-    adjustments.value = response.data.data || [];
+    adjustments.value = response.data?.data || response.data || [];
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat data penyesuaian');
   } finally {
@@ -363,7 +363,7 @@ const loadAdjustments = async () => {
 const loadProducts = async () => {
   try {
     const response = await api.get('/products', { params: { limit: 1000 } });
-    products.value = response.data.data || [];
+    products.value = response.data?.data || response.data || [];
   } catch (error: any) {
     // Silently fail - products will be empty
   }
