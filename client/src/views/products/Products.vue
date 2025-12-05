@@ -610,7 +610,6 @@ const loadProducts = async (page = 1) => {
   let timeoutId: NodeJS.Timeout | null = null;
   timeoutId = setTimeout(() => {
     if (loading.value) {
-      console.error('Products: Timeout loading products after 10 seconds');
       loading.value = false;
       products.value = [];
       const errorMessage = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
@@ -627,14 +626,6 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
     
-    // Log before request for debugging
-    console.log('Products: Loading products', {
-      page,
-      params,
-      needsTenantSelection: needsTenantSelection.value,
-      userRole: authStore.user?.role,
-    });
-    
     const response = await api.get('/products', { 
       params,
       timeout: 10000, // 10 seconds timeout (reduced from 15s for consistency)
@@ -648,15 +639,6 @@ const loadProducts = async (page = 1) => {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
-    
-    // Log response for debugging
-    console.log('Products: API response', {
-      hasData: !!response.data?.data,
-      dataIsArray: Array.isArray(response.data?.data),
-      dataLength: Array.isArray(response.data?.data) ? response.data.data.length : 'not array',
-      hasPagination: !!response.data?.pagination,
-      hasLimit: !!response.data?.limit,
-    });
     products.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
     pagination.value = response.data?.pagination || {
       page: page || 1,
@@ -682,18 +664,6 @@ const loadProducts = async (page = 1) => {
       clearTimeout(timeoutId);
       timeoutId = null;
     }
-    
-    // Log error for debugging
-    console.error('Products: Error loading products', {
-      error: error?.message || error,
-      response: error?.response?.data,
-      status: error?.response?.status,
-      statusText: error?.response?.statusText,
-      url: error?.config?.url,
-      method: error?.config?.method,
-      userRole: authStore.user?.role,
-      needsTenantSelection: needsTenantSelection.value,
-    });
     
     if (error.response?.status !== 429) { // Don't show error for rate limiting
       const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat produk';
