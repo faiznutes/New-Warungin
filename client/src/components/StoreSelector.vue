@@ -212,7 +212,14 @@ const loadStores = async () => {
       shouldShow: shouldShow.value,
     });
     
-    const response = await api.get('/outlets');
+    // Make API call with explicit timeout and error handling
+    const response = await api.get('/outlets', {
+      timeout: 10000, // 10 seconds timeout
+      validateStatus: (status) => {
+        // Accept 200-299 and 400-499 (don't throw for 4xx, handle in catch)
+        return status >= 200 && status < 500;
+      },
+    });
     
     // Clear timeout on success
     if (timeoutId) {
