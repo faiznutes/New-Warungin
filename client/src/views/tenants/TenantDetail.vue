@@ -1483,12 +1483,18 @@ const loadStores = async () => {
       };
     }
   } catch (error: any) {
-    // Only show error if it's a real error (not just empty data)
-    // Check if error is 4xx or 5xx status code
-    if (error.response?.status && error.response.status >= 400) {
-      await showError(error.response?.data?.message || 'Gagal memuat daftar store');
+    // Only show error if it's a real HTTP error (4xx or 5xx)
+    // Don't show error for network issues or empty data
+    if (error.response?.status && error.response.status >= 400 && error.response.status !== 404) {
+      // Only show error for server errors (5xx) or client errors other than 404
+      // 404 might mean no outlets exist, which is fine
+      if (error.response.status >= 500) {
+        await showError(error.response?.data?.message || 'Gagal memuat daftar store');
+      }
+      // For 4xx errors (except 404), set empty array silently
+      tenantStores.value = [];
     } else {
-      // Network error or other non-HTTP error - set empty array silently
+      // Network error or 404 - set empty array silently (no outlets is valid)
       tenantStores.value = [];
     }
   } finally {
@@ -1862,6 +1868,16 @@ const loadTenantDetail = async () => {
     
     // Individual functions handle their own errors, so we don't need to log here
     // Promise.allSettled ensures all functions complete even if some fail
+    
+    // Check if any critical function failed (tenant or subscription)
+    // These are the only ones that should cause the page to fail
+    if (tenantResult.status === 'rejected') {
+      // Tenant loading failed - this is critical
+      throw tenantResult.reason;
+    }
+    
+    // Subscription failure is not critical - we can still show the page
+    // Other failures (addons, users, stores, points) are also not critical
   } catch (error: any) {
     // If 401 Unauthorized, redirect to login
     if (error.response?.status === 401) {
@@ -1869,9 +1885,15 @@ const loadTenantDetail = async () => {
       router.push('/login');
       return;
     }
-    // Show error and redirect back to tenants list
-    await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
-    router.push('/app/tenants');
+    // Only show error and redirect if it's a critical error (tenant not found, etc)
+    if (error.response?.status === 404 || error.response?.status === 403) {
+      await showError(error.response?.data?.message || 'Tenant tidak ditemukan atau tidak memiliki akses');
+      router.push('/app/tenants');
+    } else if (error.response?.status && error.response.status >= 500) {
+      // Server error - show error but don't redirect
+      await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
+    }
+    // For other errors, just log but don't show error (non-critical)
   } finally {
     loading.value = false;
   }
