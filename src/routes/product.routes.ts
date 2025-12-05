@@ -71,6 +71,15 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
+      
+      // Log for debugging
+      logger.debug('GET /products called', {
+        tenantId,
+        query: req.query,
+        role: (req as any).role,
+        userId: (req as any).userId,
+      });
+      
       const result = await productService.getProducts(tenantId, req.query as any);
       
       // Get product limit info
@@ -83,7 +92,7 @@ router.get(
         where: { tenantId, isActive: true },
       });
       
-      res.json({ 
+      const response = { 
         ...result,
         limit: {
           max: productLimit,
@@ -91,7 +100,17 @@ router.get(
           remaining: productLimit === -1 ? -1 : Math.max(0, productLimit - totalActiveProducts),
           isUnlimited: productLimit === -1,
         }
+      };
+      
+      // Log response for debugging
+      logger.debug('GET /products response', {
+        tenantId,
+        productsCount: result.data?.length || 0,
+        total: result.pagination?.total || 0,
+        limit: response.limit,
       });
+      
+      res.json(response);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }

@@ -34,6 +34,13 @@ export class ProductService {
       ...(isActive !== undefined && { isActive }),
     };
 
+    // Log for debugging
+    logger.debug('ProductService.getProducts called', {
+      tenantId,
+      query: { page, limit, search, category, isActive, sortBy, sortOrder },
+      where,
+    });
+    
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -43,6 +50,15 @@ export class ProductService {
       }),
       prisma.product.count({ where }),
     ]);
+    
+    // Log result for debugging
+    logger.info('ProductService.getProducts result', {
+      tenantId,
+      productsCount: products.length,
+      total,
+      page,
+      limit,
+    });
 
     const result = {
       data: products,

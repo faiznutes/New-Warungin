@@ -600,10 +600,22 @@ const marginDisplayFormat = ref<'percentage' | 'amount'>(
 const loadProducts = async (page = 1) => {
   // Check if tenant selection is needed
   if (needsTenantSelection.value) {
+    loading.value = false; // Ensure loading is false if tenant not selected
     return; // Don't load if tenant not selected
   }
   
   loading.value = true;
+  
+  // Add timeout to prevent infinite loading
+  let timeoutId: NodeJS.Timeout | null = null;
+  timeoutId = setTimeout(() => {
+    if (loading.value) {
+      console.error('Products: Timeout loading products after 15 seconds');
+      loading.value = false;
+      products.value = [];
+    }
+  }, 15000); // 15 seconds timeout
+  
   try {
     const params: any = {
       page,
@@ -612,7 +624,37 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.category && { category: filters.value.category }),
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
-    const response = await api.get('/products', { params });
+    
+    // Log before request for debugging
+    console.log('Products: Loading products', {
+      page,
+      params,
+      needsTenantSelection: needsTenantSelection.value,
+      userRole: authStore.user?.role,
+    });
+    
+    const response = await api.get('/products', { 
+      params,
+      timeout: 15000, // 15 seconds timeout
+      validateStatus: (status) => {
+        return status >= 200 && status < 500;
+      },
+    });
+    
+    // Clear timeout on success
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    
+    // Log response for debugging
+    console.log('Products: API response', {
+      hasData: !!response.data?.data,
+      dataIsArray: Array.isArray(response.data?.data),
+      dataLength: Array.isArray(response.data?.data) ? response.data.data.length : 'not array',
+      hasPagination: !!response.data?.pagination,
+      hasLimit: !!response.data?.limit,
+    });
     products.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
     pagination.value = response.data?.pagination || {
       page: page || 1,
@@ -633,6 +675,24 @@ const loadProducts = async (page = 1) => {
       productLimit.value = response.data.limit;
     }
   } catch (error: any) {
+    // Clear timeout on error
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    
+    // Log error for debugging
+    console.error('Products: Error loading products', {
+      error: error?.message || error,
+      response: error?.response?.data,
+      status: error?.response?.status,
+      statusText: error?.response?.statusText,
+      url: error?.config?.url,
+      method: error?.config?.method,
+      userRole: authStore.user?.role,
+      needsTenantSelection: needsTenantSelection.value,
+    });
+    
     if (error.response?.status !== 429) { // Don't show error for rate limiting
       const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat produk';
       await showError(errorMessage);
@@ -645,6 +705,11 @@ const loadProducts = async (page = 1) => {
       totalPages: 0
     };
   } finally {
+    // Always ensure loading is set to false
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     loading.value = false;
   }
 };
