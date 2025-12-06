@@ -481,12 +481,6 @@ router.post(
       
       const { policy } = req.body;
       
-      // Only SUPER_ADMIN can apply retention (2 years back)
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can apply retention policies' });
-        return;
-      }
-      
       // Ensure max 2 years (730 days) for all retention operations
       const defaultPolicy = {
         orders: 730,
