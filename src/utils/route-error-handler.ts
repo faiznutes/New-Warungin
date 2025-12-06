@@ -6,6 +6,7 @@
 import { Response } from 'express';
 import logger from './logger';
 import { Prisma } from '@prisma/client';
+import { sanitizeForLogging, sanitizeError } from './log-sanitizer';
 
 interface ErrorWithCode extends Error {
   code?: string;
@@ -26,23 +27,26 @@ export function handleRouteError(
   // Type guard untuk error object
   const err = error as ErrorWithCode;
 
+  // Sanitize error before logging
+  const sanitizedError = sanitizeError(err);
+  
   // Log error dengan context
   if (context) {
-    logger.error(`Route error [${context}]:`, {
-      message: err.message,
-      code: err.code,
-      statusCode: err.statusCode,
-      stack: err.stack,
-      name: err.name,
-    });
+    logger.error(`Route error [${context}]:`, sanitizeForLogging({
+      message: sanitizedError.message,
+      code: sanitizedError.code,
+      statusCode: sanitizedError.statusCode,
+      stack: sanitizedError.stack,
+      name: sanitizedError.name,
+    }));
   } else {
-    logger.error('Route error:', {
-      message: err.message,
-      code: err.code,
-      statusCode: err.statusCode,
-      stack: err.stack,
-      name: err.name,
-    });
+    logger.error('Route error:', sanitizeForLogging({
+      message: sanitizedError.message,
+      code: sanitizedError.code,
+      statusCode: sanitizedError.statusCode,
+      stack: sanitizedError.stack,
+      name: sanitizedError.name,
+    }));
   }
 
   // Check if response already sent

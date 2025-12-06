@@ -54,9 +54,20 @@ try {
 } catch (error) {
   if (error instanceof z.ZodError) {
     // Logger is available here (imported at top)
-    logger.error('Invalid environment variables:');
-    error.errors.forEach((err) => {
-      logger.error(`  - ${err.path.join('.')}: ${err.message}`);
+    // Sanitize env errors to prevent leaking sensitive data
+    import('./utils/log-sanitizer').then(({ sanitizeForLogging }) => {
+      logger.error('Invalid environment variables:', sanitizeForLogging({
+        errors: error.errors.map((err) => ({
+          path: err.path.join('.'),
+          message: err.message,
+        })),
+      }));
+    }).catch(() => {
+      // Fallback if sanitizer fails
+      logger.error('Invalid environment variables:');
+      error.errors.forEach((err) => {
+        logger.error(`  - ${err.path.join('.')}: ${err.message}`);
+      });
     });
     process.exit(1);
   }

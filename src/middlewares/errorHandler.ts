@@ -23,24 +23,26 @@ function logErrorWithContext(
   req: Request,
   context: string = 'UNHANDLED_ERROR'
 ) {
-  const errorDetails = {
+  // Sanitize error and request data before logging
+  const sanitizedError = sanitizeError(err);
+  const errorDetails = sanitizeForLogging({
     context,
-    message: err.message,
-    name: err.name,
-    stack: err.stack,
+    message: sanitizedError.message,
+    name: sanitizedError.name,
+    stack: sanitizedError.stack,
     path: req.path,
     method: req.method,
-    query: req.query,
-    body: req.body && Object.keys(req.body).length > 0 ? '[REDACTED]' : undefined,
-    headers: {
+    query: sanitizeForLogging(req.query),
+    body: req.body && Object.keys(req.body).length > 0 ? sanitizeForLogging(req.body) : undefined,
+    headers: sanitizeForLogging({
       'content-type': req.headers['content-type'],
       'user-agent': req.headers['user-agent'],
       origin: req.headers.origin,
-    },
-    code: (err as any).code,
+    }),
+    code: sanitizedError.code,
     statusCode: (err as any).statusCode,
-    meta: (err as any).meta,
-  };
+    meta: sanitizeForLogging((err as any).meta),
+  });
 
   logger.error(`Error [${context}]:`, errorDetails);
 }

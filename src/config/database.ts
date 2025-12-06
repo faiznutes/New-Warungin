@@ -124,13 +124,15 @@ prisma.$on('query' as never, (e: any) => {
     });
   } else if (isSlow) {
     // In production, only log slow queries
-    logger.warn('Slow database query detected', {
+    // Sanitize query params to prevent leaking sensitive data
+    const { sanitizeForLogging } = await import('../utils/log-sanitizer');
+    logger.warn('Slow database query detected', sanitizeForLogging({
       query: e.query.substring(0, 200), // Truncate long queries
       params: e.params,
       duration: `${duration}ms`,
       threshold: `${SLOW_QUERY_THRESHOLD}ms`,
       target: e.target,
-    });
+    }));
   }
 });
 
