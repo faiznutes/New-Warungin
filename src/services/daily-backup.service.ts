@@ -69,6 +69,19 @@ export class DailyBackupService {
         throw new Error(`Tenant ${tenantId} not found`);
       }
 
+      // Check if email backup is enabled (from tenant settings or features)
+      const tenantFeatures = tenant.features as any;
+      const emailBackupEnabled = tenantFeatures?.email_backup_enabled !== false; // Default true
+      
+      if (!emailBackupEnabled) {
+        logger.info(`⏭️  Email backup disabled for tenant ${tenantId}, skipping...`);
+        return {
+          success: true,
+          backupLogId: undefined,
+          filePath: undefined,
+        };
+      }
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);

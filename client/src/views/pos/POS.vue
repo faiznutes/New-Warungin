@@ -286,6 +286,70 @@
       :receipt-data="lastOrderReceipt"
       @close="showReceiptModal = false"
     />
+
+    <!-- Low Stock Reminder Modal -->
+    <div
+      v-if="showLowStockModal && criticalStockProducts.length > 0"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      @click.self="showLowStockModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-red-600">⚠️ Peringatan Stok Habis/Menipis</h3>
+          <button
+            @click="dismissLowStockModal"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="mb-4">
+          <p class="text-gray-700 mb-4">
+            Ada {{ criticalStockProducts.length }} produk yang perlu perhatian segera:
+          </p>
+          <div class="max-h-64 overflow-y-auto space-y-2">
+            <div
+              v-for="product in criticalStockProducts"
+              :key="product.id"
+              class="p-3 rounded-lg border"
+              :class="product.stock === 0 ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-gray-900">{{ product.name }}</p>
+                  <p class="text-sm text-gray-600">
+                    Stok: <span :class="product.stock === 0 ? 'text-red-600 font-bold' : 'text-yellow-600 font-semibold'">{{ product.stock }}</span>
+                    | Minimal: {{ product.minStock }}
+                  </p>
+                </div>
+                <button
+                  @click="goToRestock(product.id)"
+                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm"
+                >
+                  Tambah Stok
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex space-x-3">
+          <button
+            @click="dismissLowStockModal"
+            class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+          >
+            Abaikan Hari Ini
+          </button>
+          <button
+            @click="goToStockAlerts"
+            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+          >
+            Lihat Semua
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -326,6 +390,8 @@ const members = ref<any[]>([]);
 const sendToKitchen = ref(false);
 const showPaymentModal = ref(false);
 const showReceiptModal = ref(false);
+const showLowStockModal = ref(false);
+const criticalStockProducts = ref<any[]>([]);
 const selectedPaymentMethod = ref<string>('CASH');
 const lastOrderReceipt = ref<any>(null);
 const lastOrderId = ref<string | undefined>(undefined);
