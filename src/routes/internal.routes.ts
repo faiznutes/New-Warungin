@@ -390,5 +390,91 @@ router.get(
   }
 );
 
+/**
+ * @swagger
+ * /api/internal/api-key/rotate:
+ *   post:
+ *     summary: Rotate internal API key (Super Admin only)
+ *     tags: [Internal]
+ *     security:
+ *       - internalApiKey: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newKey
+ *             properties:
+ *               newKey:
+ *                 type: string
+ *                 description: New API key to set
+ */
+router.post(
+  '/api-key/rotate',
+  validateInternalApiKey,
+  async (req: Request, res: Response) => {
+    try {
+      const { newKey } = req.body;
+      
+      if (!newKey || typeof newKey !== 'string' || newKey.length < 16) {
+        return res.status(400).json({
+          success: false,
+          message: 'New API key must be at least 16 characters long',
+        });
+      }
+      
+      const { rotateApiKey } = await import('../utils/api-key-rotation');
+      await rotateApiKey(newKey);
+      
+      // Update environment variable (for current process)
+      process.env.INTERNAL_API_KEY = newKey;
+      
+      res.json({
+        success: true,
+        message: 'API key rotated successfully. Previous key will remain valid for 30 days.',
+      });
+    } catch (error: any) {
+      logger.error('API key rotation error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to rotate API key',
+      });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/internal/api-key/history:
+ *   get:
+ *     summary: Get API key rotation history
+ *     tags: [Internal]
+ *     security:
+ *       - internalApiKey: []
+ */
+router.get(
+  '/api-key/history',
+  validateInternalApiKey,
+  async (req: Request, res: Response) => {
+    try {
+      const { getRotationHistory } = await import('../utils/api-key-rotation');
+      const history = await getRotationHistory(10);
+      
+      res.json({
+        success: true,
+        history,
+      });
+    } catch (error: any) {
+      logger.error('Failed to get API key history:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to get rotation history',
+      });
+    }
+  }
+);
+
 export default router;
 
