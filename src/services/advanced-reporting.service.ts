@@ -408,12 +408,15 @@ class AdvancedReportingService {
           // Send via email
           for (const recipient of scheduledReport.recipients) {
             try {
+              // Convert exportedReport to string if it's a Buffer
+              const emailContent = typeof exportedReport === 'string' 
+                ? exportedReport 
+                : `<p>Please find your scheduled report attached.</p>`;
+              
               await sendEmail(
                 recipient,
                 'Scheduled Report',
-                'Please find your scheduled report attached.',
-                exportedReport,
-                undefined // attachments parameter
+                emailContent
               );
             } catch (emailError) {
               logger.error(`Failed to send report to ${recipient}:`, emailError);

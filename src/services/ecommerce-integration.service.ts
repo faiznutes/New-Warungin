@@ -288,7 +288,16 @@ class EcommerceIntegrationService {
       const orderData = this.convertEcommerceOrderToInternal(ecommerceOrder, config.platform);
       
       // Create order in system
-      const order = await orderService.createOrder(tenantId, orderData);
+      // Note: createOrder requires userId, get admin user for tenant
+      const { default: prisma } = await import('../config/database');
+      const adminUser = await prisma.user.findFirst({
+        where: { tenantId, role: 'ADMIN_TENANT' },
+        select: { id: true },
+      });
+      if (!adminUser) {
+        throw new Error('No admin user found for tenant');
+      }
+      const order = await orderService.createOrder(orderData, adminUser.id, tenantId);
 
       return {
         success: true,

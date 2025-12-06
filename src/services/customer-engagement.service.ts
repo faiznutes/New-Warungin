@@ -218,9 +218,13 @@ class CustomerEngagementService {
       select: { email: true },
     });
 
+    // Member doesn't have customerId relation, search by email/phone instead
     const member = await prisma.member.findFirst({
-      where: { customerId, tenantId },
-      include: { customer: { select: { email: true } } },
+      where: { 
+        tenantId,
+        // Try to match by customer email if available
+        ...(customer?.email ? { email: customer.email } : {}),
+      },
     });
 
     const emails: string[] = [];

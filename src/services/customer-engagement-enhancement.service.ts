@@ -242,8 +242,17 @@ class CustomerEngagementEnhancementService {
       });
 
       return {
-        ...feedback,
         id: saved.id,
+        tenantId: saved.tenantId,
+        customerId: saved.customerId,
+        orderId: saved.orderId,
+        rating: saved.rating,
+        comment: saved.comment,
+        category: saved.category,
+        isPublic: saved.isPublic,
+        status: saved.status,
+        respondedAt: saved.respondedAt,
+        response: saved.response,
         createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
       };
@@ -378,7 +387,7 @@ class CustomerEngagementEnhancementService {
 
       // Push notification campaign
       try {
-        const pushResult = await marketingService.sendPushCampaign(tenantId, {
+        const pushResult = await marketingService.sendCampaign(tenantId, 'promo-campaign', {
           name: promo.name,
           title: promo.name,
           message,
