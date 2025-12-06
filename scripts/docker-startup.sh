@@ -151,5 +151,24 @@ else
 fi
 
 echo "🎉 Startup completed, starting server..."
-exec npm start
+
+# Verify dist folder exists
+if [ ! -f "dist/src/app.js" ]; then
+    echo "❌ Error: dist/src/app.js not found!"
+    echo "   Building TypeScript..."
+    npm run build || {
+        echo "❌ Build failed!"
+        exit 1
+    }
+fi
+
+# Start server with error handling
+exec npm start || {
+    echo "❌ Server failed to start!"
+    echo "   Checking for errors..."
+    node dist/src/app.js 2>&1 || {
+        echo "❌ Direct node execution also failed"
+        exit 1
+    }
+}
 

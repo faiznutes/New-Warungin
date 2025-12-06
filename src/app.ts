@@ -171,7 +171,11 @@ app.use(notFoundHandler);
 // Error handler
 app.use(errorHandler);
 
-const PORT = env.PORT;
+const PORT = env.PORT || 3000;
+if (!PORT || PORT <= 0) {
+  console.error('❌ Invalid PORT:', PORT);
+  process.exit(1);
+}
 
 // Initialize Socket.IO
 console.log('🔌 Initializing Socket.IO...');
@@ -187,15 +191,34 @@ try {
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // Don't exit the process, just log the error
+  // Log stack trace for debugging
+  if (reason instanceof Error) {
+    logger.error('Unhandled Rejection Error Stack:', reason.stack);
+  }
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception:', error);
+  logger.error('Uncaught Exception Stack:', error.stack);
   // Don't exit the process, just log the error
+  // Process should continue running to avoid 502 errors
 });
 
 console.log(`🚀 Starting HTTP server on port ${PORT}...`);
+
+// Error handling for server listen
+httpServer.on('error', (error: any) => {
+  logger.error('HTTP Server Error:', error);
+  if (error.code === 'EADDRINUSE') {
+    logger.error(`Port ${PORT} is already in use`);
+    process.exit(1);
+  } else {
+    logger.error('Server error:', error);
+    // Don't exit - let it retry or handle gracefully
+  }
+});
+
 httpServer.listen(PORT, () => {
   // Use console.log to ensure message appears in Docker logs
   console.log(`🚀 Server running on port ${PORT}`);
@@ -206,6 +229,18 @@ httpServer.listen(PORT, () => {
   logger.info(`📝 Environment: ${env.NODE_ENV}`);
   logger.info(`🌐 Backend URL: ${env.BACKEND_URL}`);
   logger.info(`🔌 Socket.IO initialized`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully...');
+  httpServer.close(() => {
+    console.log('HTTP server closed');
+    prisma.$disconnect().then(() => {
+      console.log('Database disconnected');
+      process.exit(0);
+    });
+  });
 });
 
 export default app;

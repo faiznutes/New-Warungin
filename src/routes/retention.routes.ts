@@ -350,8 +350,6 @@ router.post(
   validate({ body: applyRetentionSchema }),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { days = 90 } = req.body;
-      
       // Only SUPER_ADMIN can apply retention (2 years back)
       if (req.role !== 'SUPER_ADMIN') {
         res.status(403).json({ message: 'Only super admin can apply retention policies' });
@@ -406,8 +404,6 @@ router.post(
   validate({ body: applyRetentionSchema }),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { days = 90 } = req.body;
-      
       // Only SUPER_ADMIN can apply retention (2 years back)
       if (req.role !== 'SUPER_ADMIN') {
         res.status(403).json({ message: 'Only super admin can apply retention policies' });

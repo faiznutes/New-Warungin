@@ -104,12 +104,12 @@
               >
                 Detail
               </button>
-              <button
+            <button
                 v-if="!addon.comingSoon"
-                @click="subscribeAddon(addon)"
+              @click="subscribeAddon(addon)"
                 class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
-              >
-                Berlangganan
+            >
+              Berlangganan
               </button>
               <button
                 v-else

@@ -37,8 +37,14 @@ const databaseUrl = cleanDatabaseUrl(process.env.DATABASE_URL);
 
 // Configure connection pool for 500 concurrent users
 // Each user may have multiple concurrent requests, so we need adequate connections
+// Note: Prisma manages connection pooling automatically via connection string
+// These variables are informational only for documentation
 const connectionPoolSize = 200; // Base pool size for 500 users (40% of users)
 const maxConnections = 500; // Maximum connections (1:1 with users for peak load)
+
+// Important: Prisma doesn't use these variables directly
+// Connection pooling is handled by PostgreSQL or connection pooler (pgbouncer)
+// For direct connections, PostgreSQL max_connections setting controls the limit
 
 // Check if using pgbouncer (Supabase pooler)
 const isPgbouncer = databaseUrl.includes('pooler.supabase.com') || databaseUrl.includes('pgbouncer=true');
