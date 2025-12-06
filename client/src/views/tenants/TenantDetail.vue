@@ -1418,7 +1418,11 @@ const loadAvailableAddons = async () => {
 };
 
 const loadUsers = async () => {
-  if (!tenant.value?.id) return;
+  if (!tenant.value?.id) {
+    tenantUsers.value = [];
+    loadingUsers.value = false;
+    return;
+  }
   
   loadingUsers.value = true;
   try {
@@ -1428,17 +1432,20 @@ const loadUsers = async () => {
         page: 1,
         limit: 100, // Get all users for this tenant
       },
+    }).catch(() => {
+      // If API call fails, return null to trigger fallback
+      return null;
     });
     
     // Handle response - check if response is valid (even if empty)
     if (response && response.data !== undefined) {
       tenantUsers.value = response.data?.data || response.data || [];
     } else {
-      // Invalid response structure
+      // Invalid response structure or API call failed
       tenantUsers.value = [];
     }
     
-    // Load user usage limit
+    // Load user usage limit (non-blocking, don't fail if this errors)
     try {
       const usageResponse = await api.get('/addons/check-limit/ADD_USERS');
       userUsage.value = {
@@ -1458,6 +1465,10 @@ const loadUsers = async () => {
     // This prevents error popup that blocks user from seeing tenant details
     // Users can still see tenant info, subscription, addons, stores, etc even if users list fails
     tenantUsers.value = [];
+    userUsage.value = {
+      currentUsage: 0,
+      limit: -1,
+    };
   } finally {
     loadingUsers.value = false;
   }
