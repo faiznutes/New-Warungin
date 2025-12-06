@@ -15,8 +15,6 @@ import apiRoutes from './routes';
 import { initializeSocket } from './socket/socket';
 import { swaggerSpec } from './config/swagger';
 import prisma from './config/database';
-// Initialize scheduler (optional - requires Redis)
-import './scheduler';
 
 console.log('📦 Loading Express app...');
 const app: Express = express();
@@ -163,13 +161,25 @@ app.get('/api', (req, res) => {
   });
 });
 
-// API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// API Documentation (wrap in try-catch to prevent crash)
+try {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log('✅ Swagger UI configured');
+} catch (error: any) {
+  console.error('⚠️  Swagger UI setup failed (non-critical):', error?.message || error);
+  // Continue without Swagger UI - it's optional
+}
 
-// API routes
+// API routes (wrap in try-catch to prevent crash)
 console.log('🛣️  Setting up API routes...');
-app.use('/api', apiRoutes);
-console.log('✅ API routes configured');
+try {
+  app.use('/api', apiRoutes);
+  console.log('✅ API routes configured');
+} catch (error: any) {
+  console.error('❌ Failed to setup API routes:', error?.message || error);
+  // This is critical - exit if routes can't be loaded
+  process.exit(1);
+}
 
 // 404 handler
 app.use(notFoundHandler);
@@ -183,15 +193,26 @@ if (!PORT || PORT <= 0) {
   process.exit(1);
 }
 
-// Initialize Socket.IO
+// Initialize Socket.IO (optional service)
 console.log('🔌 Initializing Socket.IO...');
 try {
   initializeSocket(httpServer);
   console.log('✅ Socket.IO initialized successfully');
-} catch (error) {
-  console.error('❌ Socket.IO initialization failed:', error);
+} catch (error: any) {
+  console.error('❌ Socket.IO initialization failed (non-critical):', error?.message || error);
   // Continue anyway - Socket.IO is optional
 }
+
+// Initialize scheduler (optional - requires Redis)
+// Load asynchronously to prevent blocking app start
+setImmediate(() => {
+  import('./scheduler').catch((error: any) => {
+    // Scheduler is optional, continue if import fails
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️  Scheduler import failed (optional service):', error?.message || error);
+    }
+  });
+});
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {

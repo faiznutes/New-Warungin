@@ -154,9 +154,13 @@ async function testConnection() {
 }
 
 // Test connection immediately (non-blocking)
-testConnection().catch((error) => {
+// Wrap in try-catch to prevent unhandled promise rejection
+testConnection().catch((error: any) => {
   // Using console.error here because logger might not be initialized yet
-  console.error('Failed to test database connection:', error);
+  // Don't crash if connection test fails - app will handle it in health check
+  if (process.env.NODE_ENV === 'development') {
+    console.error('⚠️  Failed to test database connection (non-blocking):', error?.message || error);
+  }
 });
 
 // Graceful shutdown
