@@ -3,6 +3,8 @@
  * Application metrics for monitoring
  */
 
+import logger from './logger';
+
 let client: any;
 let register: any;
 

@@ -246,9 +246,12 @@ export const login = async (input: LoginInput) => {
 
   const token = generateToken(tokenPayload);
   
-  // Generate refresh token and set token family for rotation tracking
-  const { generateRefreshToken, setTokenFamily } = await import('../utils/refresh-token');
-  const refreshToken = generateRefreshToken(tokenPayload);
+  // Generate refresh token using jwt utility
+  const { generateRefreshToken: generateRefreshTokenUtil } = await import('../utils/jwt');
+  const refreshToken = generateRefreshTokenUtil(tokenPayload);
+  
+  // Set token family for rotation tracking
+  const { setTokenFamily } = await import('../utils/refresh-token');
   const familyId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
   await setTokenFamily(user.id, familyId);
 

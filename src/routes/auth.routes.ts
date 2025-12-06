@@ -107,7 +107,17 @@ router.post('/login', authLimiter, async (req, res, next) => {
     }
 
     const validated = loginSchema.parse(req.body);
-    const result = await login(validated);
+    // Ensure email and password are present (Zod already validates, but TypeScript needs this)
+    if (!validated.email || !validated.password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
+      });
+    }
+    const result = await login({
+      email: validated.email,
+      password: validated.password,
+    });
     
     // Log successful login
     if (result.user) {

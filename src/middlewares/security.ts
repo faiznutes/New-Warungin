@@ -21,16 +21,10 @@ export const setupSecurity = (app: Express): void => {
       crossOriginEmbedderPolicy: false,
       crossOriginResourcePolicy: { policy: 'cross-origin' },
       // Strict-Transport-Security (HSTS)
-      strictTransportSecurity: {
+      hsts: {
         maxAge: 31536000, // 1 year
         includeSubDomains: true,
         preload: env.NODE_ENV === 'production', // Only enable preload in production
-      },
-      // Additional security headers
-      hsts: {
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: env.NODE_ENV === 'production',
       },
     })
   );

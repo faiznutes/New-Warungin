@@ -13,8 +13,8 @@ export const responseTimeAudit = (
     const startTime = Date.now();
 
     // Override res.end to capture response time
-    const originalEnd = res.end;
-    res.end = function (chunk?: any, encoding?: any) {
+    const originalEnd = res.end.bind(res);
+    res.end = function (chunk?: any, encoding?: any, cb?: () => void) {
       const duration = Date.now() - startTime;
       const isSlow = duration > slowThreshold;
 
@@ -33,8 +33,14 @@ export const responseTimeAudit = (
       // Add response time header
       res.setHeader('X-Response-Time', `${duration}ms`);
 
-      // Call original end
-      originalEnd.call(this, chunk, encoding);
+      // Call original end with proper signature
+      if (typeof chunk === 'function') {
+        return originalEnd(chunk);
+      } else if (typeof encoding === 'function') {
+        return originalEnd(chunk, encoding);
+      } else {
+        return originalEnd(chunk, encoding);
+      }
     };
 
     next();

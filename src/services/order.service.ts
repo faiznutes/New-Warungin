@@ -861,4 +861,5 @@ export class OrderService {
   }
 }
 
-export default new Orde
+export default new OrderService();
+
