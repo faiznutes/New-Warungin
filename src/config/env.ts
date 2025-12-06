@@ -55,20 +55,22 @@ try {
   if (error instanceof z.ZodError) {
     // Logger is available here (imported at top)
     // Sanitize env errors to prevent leaking sensitive data
-    import('./utils/log-sanitizer').then(({ sanitizeForLogging }) => {
+    // Use require for synchronous import in error handler
+    try {
+      const { sanitizeForLogging } = require('./utils/log-sanitizer');
       logger.error('Invalid environment variables:', sanitizeForLogging({
         errors: error.errors.map((err) => ({
           path: err.path.join('.'),
           message: err.message,
         })),
       }));
-    }).catch(() => {
-      // Fallback if sanitizer fails
+    } catch {
+      // Fallback if sanitizer fails - only log error paths, not values
       logger.error('Invalid environment variables:');
       error.errors.forEach((err) => {
         logger.error(`  - ${err.path.join('.')}: ${err.message}`);
       });
-    });
+    }
     process.exit(1);
   }
   throw error;
