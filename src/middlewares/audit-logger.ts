@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import auditLogService, { extractRequestInfo } from '../services/audit-log.service';
 import { AuthRequest } from './auth';
-import logger from '../utils/logger';
 
 /**
  * Audit logging middleware
@@ -26,8 +25,8 @@ export const auditLogger = (
           const tenantId = req.tenantId || null;
           const userId = req.userId || null;
           // Get user info from request if available, otherwise null
-          const userEmail = req.user?.email || null;
-          const userName = req.user?.name || null;
+          const userEmail = (req as any).user?.email || null;
+          const userName = (req as any).user?.name || null;
           const resourceId = getResourceId ? getResourceId(req) : null;
           const details = getDetails ? getDetails(req, res) : null;
           const requestInfo = extractRequestInfo(req);
@@ -65,7 +64,7 @@ export const auditLogger = (
           });
         } catch (error: any) {
           // Don't log audit errors - silent fail
-          // Error is already caught, just continue
+          console.error('Audit logging error:', error.message);
         }
       });
 
@@ -97,8 +96,8 @@ export const logAction = async (
     const tenantId = req.tenantId || null;
     const userId = req.userId || null;
     // Get user info from request if available, otherwise null
-    const userEmail = req.user?.email || null;
-    const userName = req.user?.name || null;
+    const userEmail = (req as any).user?.email || null;
+    const userName = (req as any).user?.name || null;
     const requestInfo = extractRequestInfo(req);
 
     await auditLogService.createLog({
@@ -117,7 +116,7 @@ export const logAction = async (
     });
   } catch (error: any) {
     // Silent fail - don't break application
-    // Error is already caught, just continue
+    console.error('Failed to log action:', error.message);
   }
 };
 

@@ -4,8 +4,6 @@ import passwordService from '../services/password.service';
 import { updatePasswordSchema } from '../validators/password.validator';
 import { validate } from '../middlewares/validator';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
-import { authLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
 
@@ -18,16 +16,12 @@ const router = Router();
  */
 router.post(
   '/check-strength',
-  authLimiter, // Rate limit password strength checks
   async (req: Request, res: Response) => {
     try {
       const { password } = req.body;
 
       if (!password || typeof password !== 'string') {
-        const error = new Error('Password is required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Password is required', 'CHECK_PASSWORD_STRENGTH');
-        return;
+        return res.status(400).json({ message: 'Password is required' });
       }
 
       const strength = passwordService.checkStrength(password);
@@ -37,8 +31,9 @@ router.post(
         feedback: strength.feedback,
         meetsRequirements: strength.meetsRequirements,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to check password strength', 'CHECK_PASSWORD_STRENGTH');
+    } catch (error: any) {
+      logger.error('Error checking password strength', { error: error.message });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -64,9 +59,9 @@ router.post(
       await passwordService.updatePassword(userId, oldPassword, newPassword);
 
       res.json({ message: 'Password berhasil diubah' });
-    } catch (error: unknown) {
-      logger.error('Error updating password', { error: (error as Error).message, userId: req.userId });
-      handleRouteError(res, error, 'Failed to update password', 'UPDATE_PASSWORD');
+    } catch (error: any) {
+      logger.error('Error updating password', { error: error.message, userId: req.userId });
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -89,8 +84,9 @@ router.get(
       const mustChange = await passwordService.mustChangePassword(userId);
 
       res.json({ mustChange });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to check must change password', 'CHECK_MUST_CHANGE_PASSWORD');
+    } catch (error: any) {
+      logger.error('Error checking must change password', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );

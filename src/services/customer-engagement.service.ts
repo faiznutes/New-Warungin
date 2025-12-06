@@ -215,16 +215,17 @@ class CustomerEngagementService {
   private async getCustomerEmails(tenantId: string, customerId: string): Promise<string[]> {
     const customer = await prisma.customer.findFirst({
       where: { id: customerId, tenantId },
-      select: { email: true, phone: true },
+      select: { email: true },
     });
 
-    const member = customer?.phone ? await prisma.member.findFirst({
-      where: { phone: customer.phone, tenantId },
-    }) : null;
+    const member = await prisma.member.findFirst({
+      where: { customerId, tenantId },
+      include: { customer: { select: { email: true } } },
+    });
 
     const emails: string[] = [];
     if (customer?.email) emails.push(customer.email);
-    if (member?.email) emails.push(member.email);
+    if (member?.customer?.email) emails.push(member.customer.email);
 
     return [...new Set(emails)]; // Remove duplicates
   }

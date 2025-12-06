@@ -3,29 +3,15 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">
-          Template Email
-        </h2>
-        <p class="text-gray-600">
-          Kelola template email untuk campaign
-        </p>
+        <h2 class="text-2xl font-bold text-gray-900">Email Templates</h2>
+        <p class="text-gray-600">Kelola template email untuk campaign</p>
       </div>
       <button
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
         @click="showCreateModal = true"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span>Tambah Template</span>
       </button>
@@ -35,60 +21,31 @@
     <div class="mb-4 flex items-center space-x-4">
       <select
         v-model="selectedCategory"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         @change="loadTemplates"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">
-          Semua Kategori
-        </option>
-        <option value="PROMOTION">
-          Promosi
-        </option>
-        <option value="NOTIFICATION">
-          Notifikasi
-        </option>
-        <option value="TRANSACTIONAL">
-          Transaksional
-        </option>
+        <option value="">Semua Kategori</option>
+        <option value="PROMOTION">Promotion</option>
+        <option value="NOTIFICATION">Notification</option>
+        <option value="TRANSACTIONAL">Transactional</option>
       </select>
     </div>
 
     <!-- Loading -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
-    <div
-      v-else-if="templates.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
+    <div v-else-if="templates.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada template
-      </p>
+      <p class="text-gray-500">Belum ada template</p>
     </div>
 
     <!-- Templates Grid -->
-    <div
-      v-else
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-    >
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="template in templates"
         :key="template.id"
@@ -97,12 +54,8 @@
       >
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">
-              {{ template.name }}
-            </h3>
-            <p class="text-sm text-gray-600 mb-2">
-              {{ template.subject }}
-            </p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ template.name }}</h3>
+            <p class="text-sm text-gray-600 mb-2">{{ template.subject }}</p>
             <span
               class="inline-block px-2 py-1 text-xs font-semibold rounded-full"
               :class="getCategoryClass(template.category)"
@@ -115,21 +68,19 @@
               v-if="template.isActive"
               class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800"
             >
-              Aktif
+              Active
             </span>
             <span
               v-else
               class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800"
             >
-              Tidak Aktif
+              Inactive
             </span>
           </div>
         </div>
 
         <div class="mb-4">
-          <p class="text-xs text-gray-500 mb-2">
-            Variabel:
-          </p>
+          <p class="text-xs text-gray-500 mb-2">Variables:</p>
           <div class="flex flex-wrap gap-1">
             <span
               v-for="variable in template.variables || []"
@@ -138,11 +89,8 @@
             >
               {{ variable }}
             </span>
-            <span
-              v-if="!template.variables || template.variables.length === 0"
-              class="text-xs text-gray-400"
-            >
-              Tidak ada variabel
+            <span v-if="!template.variables || template.variables.length === 0" class="text-xs text-gray-400">
+              No variables
             </span>
           </div>
         </div>
@@ -153,20 +101,20 @@
           </span>
           <div class="flex items-center space-x-2">
             <button
-              class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
               @click="previewTemplate(template)"
+              class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
             >
               Preview
             </button>
             <button
-              class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
               @click="editTemplate(template)"
+              class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
             >
               Edit
             </button>
             <button
-              class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
               @click="deleteTemplate(template)"
+              class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
             >
               Delete
             </button>
@@ -188,29 +136,16 @@
               {{ editingTemplate ? 'Edit Template' : 'Tambah Template' }}
             </h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition"
               @click="closeModal"
+              class="text-gray-400 hover:text-gray-600 transition"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveTemplate"
-          >
+          <form @submit.prevent="saveTemplate" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Nama Template</label>
               <input
@@ -229,7 +164,7 @@
                 type="text"
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="Subjek email"
+                placeholder="Email subject"
               />
             </div>
 
@@ -240,20 +175,14 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="PROMOTION">
-                  Promosi
-                </option>
-                <option value="NOTIFICATION">
-                  Notifikasi
-                </option>
-                <option value="TRANSACTIONAL">
-                  Transaksional
-                </option>
+                <option value="PROMOTION">Promotion</option>
+                <option value="NOTIFICATION">Notification</option>
+                <option value="TRANSACTIONAL">Transactional</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Konten HTML</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">HTML Content</label>
               <textarea
                 v-model="templateForm.htmlContent"
                 required
@@ -262,22 +191,22 @@
                 placeholder="HTML content dengan variables seperti {{name}}, {{email}}, dll"
               ></textarea>
               <p class="text-xs text-gray-500 mt-1">
-                Gunakan variables seperti: {{ name }}, {{ email }}, {{ orderNumber }}, dll
+                Gunakan variables seperti: {{name}}, {{email}}, {{orderNumber}}, dll
               </p>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Konten Teks (Opsional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Text Content (Optional)</label>
               <textarea
                 v-model="templateForm.textContent"
                 rows="5"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
-                placeholder="Versi teks biasa"
+                placeholder="Plain text version"
               ></textarea>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Variabel (dipisahkan koma)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Variables (comma-separated)</label>
               <input
                 v-model="templateForm.variablesString"
                 type="text"
@@ -291,22 +220,19 @@
 
             <div class="flex items-center">
               <input
-                id="isActive"
                 v-model="templateForm.isActive"
                 type="checkbox"
+                id="isActive"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <label
-                for="isActive"
-                class="ml-2 text-sm text-gray-700"
-              >Aktif</label>
+              <label for="isActive" class="ml-2 text-sm text-gray-700">Active</label>
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -332,36 +258,20 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              Preview Template
-            </h3>
+            <h3 class="text-2xl font-bold text-gray-900">Preview Template</h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition"
               @click="previewingTemplate = null"
+              class="text-gray-400 hover:text-gray-600 transition"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <div class="mb-4">
-            <h4 class="text-lg font-semibold mb-2">
-              {{ previewingTemplate.name }}
-            </h4>
-            <p class="text-sm text-gray-600 mb-4">
-              Subject: {{ previewingTemplate.subject }}
-            </p>
+            <h4 class="text-lg font-semibold mb-2">{{ previewingTemplate.name }}</h4>
+            <p class="text-sm text-gray-600 mb-4">Subject: {{ previewingTemplate.subject }}</p>
           </div>
 
           <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
@@ -418,9 +328,10 @@ const loadTemplates = async () => {
       params.category = selectedCategory.value;
     }
     const response = await api.get('/email-templates', { params });
-    templates.value = response.data?.data || response.data || [];
+    templates.value = response.data;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat templates');
+    console.error('Error loading templates:', error);
+    await showError('Gagal memuat templates');
   } finally {
     loading.value = false;
   }
@@ -479,7 +390,8 @@ const saveTemplate = async () => {
     closeModal();
     await loadTemplates();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menyimpan template');
+    console.error('Error saving template:', error);
+    await showError('Gagal menyimpan template');
   } finally {
     saving.value = false;
   }
@@ -511,7 +423,8 @@ const deleteTemplate = async (template: EmailTemplate) => {
     await showSuccess('Template berhasil dihapus');
     await loadTemplates();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus template');
+    console.error('Error deleting template:', error);
+    await showError('Gagal menghapus template');
   }
 };
 

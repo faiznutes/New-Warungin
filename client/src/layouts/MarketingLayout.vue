@@ -5,10 +5,7 @@
       <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
           <!-- Logo -->
-          <router-link
-            to="/"
-            class="flex items-center hover:opacity-90 transition-opacity group"
-          >
+          <router-link to="/" class="flex items-center hover:opacity-90 transition-opacity group">
             <span class="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span>
           </router-link>
 
@@ -76,16 +73,11 @@
 
           <!-- Hamburger Menu Button - Show below 1200px (lg breakpoint) -->
           <button
+            @click="mobileMenuOpen = !mobileMenuOpen"
             class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
             aria-label="Toggle menu"
-            @click="mobileMenuOpen = !mobileMenuOpen"
           >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -104,49 +96,49 @@
           <div class="flex flex-col space-y-3">
             <router-link
               to="/"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Beranda
             </router-link>
             <router-link
               to="/demo"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Demo
             </router-link>
             <router-link
               to="/contact"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Kontak
             </router-link>
             <router-link
               to="/pricing"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Harga
             </router-link>
             <router-link
               to="/help"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Bantuan
             </router-link>
             <router-link
               to="/terms"
+              @click="mobileMenuOpen = false"
               class="px-4 py-2 text-gray-700 hover:text-primary-600 transition"
               active-class="text-primary-600 font-semibold"
-              @click="mobileMenuOpen = false"
             >
               Syarat & Ketentuan
             </router-link>
@@ -154,15 +146,15 @@
             <div class="pt-4 border-t border-gray-200 space-y-3">
               <router-link
                 to="/login"
-                class="block w-full px-4 py-2 text-center text-gray-700 hover:text-primary-600 transition font-medium border border-gray-300 rounded-lg hover:border-primary-600"
                 @click="mobileMenuOpen = false"
+                class="block w-full px-4 py-2 text-center text-gray-700 hover:text-primary-600 transition font-medium border border-gray-300 rounded-lg hover:border-primary-600"
               >
                 Masuk
               </router-link>
               <router-link
                 to="/pricing"
-                class="block w-full px-4 py-2 text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
                 @click="mobileMenuOpen = false"
+                class="block w-full px-4 py-2 text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
               >
                 Lihat Harga
               </router-link>
@@ -185,10 +177,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Company Info -->
           <div>
-            <router-link
-              to="/"
-              class="flex items-center mb-4 hover:opacity-90 transition-opacity group inline-flex"
-            >
+            <router-link to="/" class="flex items-center mb-4 hover:opacity-90 transition-opacity group inline-flex">
               <span class="text-xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-purple-600 bg-clip-text text-transparent">Warungin</span>
             </router-link>
             <p class="text-gray-400 text-sm">
@@ -198,31 +187,20 @@
 
           <!-- Links -->
           <div>
-            <h3 class="font-semibold mb-4">
-              Produk
-            </h3>
+            <h3 class="font-semibold mb-4">Produk</h3>
             <ul class="space-y-2 text-sm text-gray-400">
               <li>
-                <router-link
-                  to="/demo"
-                  class="hover:text-white transition"
-                >
+                <router-link to="/demo" class="hover:text-white transition">
                   Request Demo
                 </router-link>
               </li>
               <li>
-                <router-link
-                  to="/"
-                  class="hover:text-white transition"
-                >
+                <router-link to="/" class="hover:text-white transition">
                   Fitur
                 </router-link>
               </li>
               <li>
-                <router-link
-                  to="/pricing"
-                  class="hover:text-white transition"
-                >
+                <router-link to="/pricing" class="hover:text-white transition">
                   Harga & Paket
                 </router-link>
               </li>
@@ -231,74 +209,39 @@
 
           <!-- Support -->
           <div>
-            <h3 class="font-semibold mb-4">
-              Dukungan
-            </h3>
+            <h3 class="font-semibold mb-4">Dukungan</h3>
             <ul class="space-y-2 text-sm text-gray-400">
               <li>
-                <router-link
-                  to="/contact"
-                  class="hover:text-white transition"
-                >
+                <router-link to="/contact" class="hover:text-white transition">
                   Hubungi Kami
                 </router-link>
               </li>
               <li>
-                <router-link
-                  to="/terms"
-                  class="hover:text-white transition"
-                >
+                <router-link to="/terms" class="hover:text-white transition">
                   Syarat & Ketentuan
                 </router-link>
               </li>
               <li>
-                <router-link
-                  to="/help"
-                  class="hover:text-white transition"
-                >
-                  Pusat Bantuan
-                </router-link>
+                <router-link to="/help" class="hover:text-white transition">Pusat Bantuan</router-link>
               </li>
             </ul>
           </div>
 
           <!-- Contact -->
           <div>
-            <h3 class="font-semibold mb-4">
-              Kontak
-            </h3>
+            <h3 class="font-semibold mb-4">Kontak</h3>
             <ul class="space-y-2 text-sm text-gray-400">
               <li class="flex items-center space-x-2">
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span>faiznute07@gmail.com</span>
+                <span>support@warungin.com</span>
               </li>
               <li class="flex items-center space-x-2">
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>085155043133</span>
+                <span>+62 812-3456-7890</span>
               </li>
             </ul>
           </div>

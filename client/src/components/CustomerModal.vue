@@ -11,29 +11,16 @@
             {{ editingCustomer ? 'Edit Pelanggan' : 'Tambah Pelanggan' }}
           </h3>
           <button
-            class="text-gray-400 hover:text-gray-600 transition"
             @click="$emit('close')"
+            class="text-gray-400 hover:text-gray-600 transition"
           >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <form
-          class="space-y-4"
-          @submit.prevent="handleSubmit"
-        >
+        <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama *</label>
             <input
@@ -62,7 +49,7 @@
                 v-model="form.phone"
                 type="tel"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="085155043133"
+                placeholder="081234567890"
               />
             </div>
           </div>
@@ -80,8 +67,8 @@
           <div class="flex space-x-3 pt-4">
             <button
               type="button"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="$emit('close')"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
@@ -100,10 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, nextTick } from 'vue';
-import { useNotification } from '../composables/useNotification';
-
-const { error: showError } = useNotification();
+import { ref, watch, computed } from 'vue';
 
 interface Customer {
   id?: string;
@@ -137,8 +121,23 @@ const form = ref<Partial<Customer>>({
 const saving = ref(false);
 const editingCustomer = computed(() => !!props.customer);
 
-// Watch for customer prop changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
+watch(() => props.customer, (newCustomer) => {
+  if (newCustomer) {
+    form.value = {
+      name: newCustomer.name || '',
+      email: newCustomer.email || '',
+      phone: newCustomer.phone || '',
+      address: newCustomer.address || '',
+    };
+  } else {
+    form.value = {
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+    };
+  }
+}, { immediate: true });
 
 watch(() => props.show, (newShow) => {
   if (!newShow) {
@@ -152,70 +151,11 @@ watch(() => props.show, (newShow) => {
 });
 
 const handleSubmit = () => {
-  // Client-side validation
-  if (!form.value.name || form.value.name.trim() === '') {
-    showError('Nama pelanggan wajib diisi');
-    return;
-  }
-  
-  if (form.value.email && form.value.email.trim() !== '') {
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.value.email)) {
-      showError('Format email tidak valid');
-      return;
-    }
-  }
-  
-  if (form.value.phone && form.value.phone.trim() !== '') {
-    // Basic phone validation (numbers only, min 10 digits)
-    const phoneRegex = /^[0-9]{10,15}$/;
-    const cleanPhone = form.value.phone.replace(/\D/g, '');
-    if (cleanPhone.length < 10 || cleanPhone.length > 15) {
-      showError('Nomor telepon harus 10-15 digit');
-      return;
-    }
-  }
-  
   saving.value = true;
   emit('save', { ...form.value });
   setTimeout(() => {
     saving.value = false;
   }, 500);
 };
-
-// Set up watch for customer prop after mount
-onMounted(async () => {
-  await nextTick();
-  
-  // Watch for customer prop changes
-  watch(() => props.customer, (newCustomer) => {
-    if (newCustomer) {
-      form.value = {
-        name: newCustomer.name || '',
-        email: newCustomer.email || '',
-        phone: newCustomer.phone || '',
-        address: newCustomer.address || '',
-      };
-    } else {
-      form.value = {
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-      };
-    }
-  });
-  
-  // Initial setup if customer is already provided
-  if (props.customer) {
-    form.value = {
-      name: props.customer.name || '',
-      email: props.customer.email || '',
-      phone: props.customer.phone || '',
-      address: props.customer.address || '',
-    };
-  }
-});
 </script>
 

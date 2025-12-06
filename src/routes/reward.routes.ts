@@ -3,8 +3,6 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
-import logger from '../utils/logger';
 
 const router = Router();
 
@@ -18,12 +16,12 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       const balance = await rewardPointService.getBalance(tenantId, userId);
       res.json(balance);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get reward balance', 'GET_REWARD_BALANCE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -38,12 +36,12 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       const limit = await rewardPointService.checkDailyLimit(tenantId, userId);
       res.json(limit);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to check daily limit', 'GET_DAILY_LIMIT');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -58,13 +56,10 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       if (!userId) {
-        const error = new Error('User ID required');
-        (error as any).statusCode = 401;
-        handleRouteError(res, error, 'User ID required', 'WATCH_AD');
-        return;
+        return res.status(401).json({ message: 'User ID required' });
       }
 
       const { adMetadata } = req.body;
@@ -76,8 +71,8 @@ router.post(
       );
 
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to record ad view', 'WATCH_AD');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -92,7 +87,7 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
       const limit = parseInt(req.query.limit as string) || 50;
 
       const transactions = await rewardPointService.getTransactions(
@@ -102,8 +97,8 @@ router.get(
       );
 
       res.json(transactions);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get transactions', 'GET_TRANSACTIONS');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -118,25 +113,21 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       if (!userId) {
-        const error = new Error('User ID required');
-        (error as any).statusCode = 401;
-        handleRouteError(res, error, 'User ID required', 'REDEEM_SUBSCRIPTION');
-        return;
+        return res.status(401).json({ message: 'User ID required' });
       }
 
       const { planId, pointsRequired } = req.body;
 
       if (!planId || !pointsRequired) {
-        const error = new Error('planId and pointsRequired are required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'planId and pointsRequired are required', 'REDEEM_SUBSCRIPTION');
-        return;
+        return res.status(400).json({
+          message: 'planId and pointsRequired are required',
+        });
       }
 
-      logger.info('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
+      console.log('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
 
       const result = await rewardPointService.redeemForSubscription(
         tenantId,
@@ -150,8 +141,9 @@ router.post(
         message: 'Point berhasil ditukar untuk langganan',
         balance: result,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to redeem subscription', 'REDEEM_SUBSCRIPTION');
+    } catch (error: any) {
+      console.error('[Redeem Subscription] Error:', error);
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -166,25 +158,21 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       if (!userId) {
-        const error = new Error('User ID required');
-        (error as any).statusCode = 401;
-        handleRouteError(res, error, 'User ID required', 'REDEEM_ADDON');
-        return;
+        return res.status(401).json({ message: 'User ID required' });
       }
 
       const { addonId, addonName, pointsRequired } = req.body;
 
       if (!addonId || !addonName || !pointsRequired) {
-        const error = new Error('addonId, addonName, and pointsRequired are required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'addonId, addonName, and pointsRequired are required', 'REDEEM_ADDON');
-        return;
+        return res.status(400).json({
+          message: 'addonId, addonName, and pointsRequired are required',
+        });
       }
 
-      logger.info('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
+      console.log('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
 
       const result = await rewardPointService.redeemForAddon(
         tenantId,
@@ -199,8 +187,9 @@ router.post(
         message: 'Point berhasil ditukar untuk addon',
         balance: result,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to redeem addon', 'REDEEM_ADDON');
+    } catch (error: any) {
+      console.error('[Redeem Addon] Error:', error);
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -215,22 +204,23 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      logger.debug('[Rewards Config] Request from tenantId:', tenantId);
+      console.log('[Rewards Config] Request from tenantId:', tenantId);
       
       const config = rewardPointService.getPointConfig();
       const redemptions = rewardPointService.getAvailableRedemptions();
 
-      logger.debug('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
-      logger.debug('[Rewards Config] Addons:', redemptions.addons.length);
-      logger.debug('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
-      logger.debug('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
+      console.log('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
+      console.log('[Rewards Config] Addons:', redemptions.addons.length);
+      console.log('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
+      console.log('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
 
       res.json({
         config,
         redemptions,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get rewards config', 'REWARDS_CONFIG');
+    } catch (error: any) {
+      console.error('[Rewards Config] Error:', error);
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -245,7 +235,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId;
+      const userId = (req as any).user?.id;
 
       const expiredPoints = await rewardPointService.checkAndExpirePoints(tenantId, userId);
 
@@ -256,8 +246,8 @@ router.post(
           ? `${expiredPoints} point telah kadaluarsa`
           : 'Tidak ada point yang kadaluarsa',
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to check expiration', 'CHECK_EXPIRATION');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -271,19 +261,16 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
-      if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only Super Admin can access this endpoint');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_BALANCE');
-        return;
+      const user = (req as any).user;
+      if (user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
       }
 
       const tenantId = req.params.tenantId;
       const balance = await rewardPointService.getTenantBalance(tenantId);
       res.json(balance);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get tenant balance', 'GET_TENANT_BALANCE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -297,20 +284,17 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
-      if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only Super Admin can access this endpoint');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'GET_TENANT_TRANSACTIONS');
-        return;
+      const user = (req as any).user;
+      if (user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
       }
 
       const tenantId = req.params.tenantId;
       const limit = parseInt(req.query.limit as string) || 50;
       const transactions = await rewardPointService.getTenantTransactions(tenantId, limit);
       res.json(transactions);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get tenant transactions', 'GET_TENANT_TRANSACTIONS');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -324,28 +308,22 @@ router.post(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
-      if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only Super Admin can access this endpoint');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only Super Admin can access this endpoint', 'UPDATE_TENANT_POINTS');
-        return;
+      const user = (req as any).user;
+      if (user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only Super Admin can access this endpoint' });
       }
 
       const tenantId = req.params.tenantId;
       const { points, reason } = req.body;
 
       if (typeof points !== 'number') {
-        const error = new Error('Points must be a number');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Points must be a number', 'UPDATE_TENANT_POINTS');
-        return;
+        return res.status(400).json({ message: 'Points must be a number' });
       }
 
       const result = await rewardPointService.updateTenantPoints(tenantId, points, reason || '');
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update tenant points', 'UPDATE_TENANT_POINTS');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -359,7 +337,7 @@ router.post(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const user = req.user;
+      const user = (req as any).user;
       const tenantId = requireTenantId(req);
       const targetUserId = req.params.userId;
       const { points, reason } = req.body;
@@ -374,29 +352,20 @@ router.post(
         });
 
         if (!targetUser || targetUser.tenantId !== tenantId) {
-          const error = new Error('User not found or does not belong to your tenant');
-          (error as any).statusCode = 403;
-          handleRouteError(res, error, 'User not found or does not belong to your tenant', 'UPDATE_USER_POINTS');
-          return;
+          return res.status(403).json({ message: 'User not found or does not belong to your tenant' });
         }
       } else if (user?.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only Admin Tenant or Super Admin can access this endpoint');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only Admin Tenant or Super Admin can access this endpoint', 'UPDATE_USER_POINTS');
-        return;
+        return res.status(403).json({ message: 'Only Admin Tenant or Super Admin can access this endpoint' });
       }
 
       if (typeof points !== 'number') {
-        const error = new Error('Points must be a number');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Points must be a number', 'UPDATE_USER_POINTS');
-        return;
+        return res.status(400).json({ message: 'Points must be a number' });
       }
 
       const result = await rewardPointService.updateUserPoints(tenantId, targetUserId, points, reason || '');
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update user points', 'UPDATE_USER_POINTS');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );

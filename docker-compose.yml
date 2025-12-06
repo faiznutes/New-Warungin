@@ -52,10 +52,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-      start_period: 120s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -85,11 +85,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4.0'  # Increased for 500 concurrent users
-          memory: 4G  # Increased for 500 concurrent users
+          cpus: '4.0'
+          memory: 4G
         reservations:
-          cpus: '1.0'  # Increased base reservation
-          memory: 1G  # Increased base reservation
+          cpus: '1.0'
+          memory: 1G
 
   # Frontend Service
   frontend:
@@ -104,14 +104,6 @@ services:
       - backend
     networks:
       - warungin-network
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'  # Added limits for frontend
-          memory: 1G  # Added limits for frontend
-        reservations:
-          cpus: '0.5'  # Base reservation
-          memory: 256M  # Base reservation
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
@@ -135,17 +127,17 @@ services:
       frontend:
         condition: service_started
       backend:
-        condition: service_healthy
+        condition: service_started
     networks:
       - warungin-network
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 512M
+          cpus: '2.0'
+          memory: 1G
         reservations:
-          cpus: '0.25'
-          memory: 128M
+          cpus: '0.5'
+          memory: 256M
     healthcheck:
       test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:80 || curl -f http://localhost:80 || exit 0"]
       interval: 10s
@@ -162,32 +154,21 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: warungin-cloudflared
-    restart: on-failure:5
-    # Add loglevel for better debugging to prevent Error 1033
-    # Use token from environment variable
-    # Note: --loglevel must be before 'run' (TUNNEL COMMAND OPTIONS, not SUBCOMMAND OPTIONS)
-    command: tunnel --no-autoupdate --loglevel info run
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
     networks:
       - warungin-network
     depends_on:
       nginx:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
-      # Check if metrics endpoint is accessible (more reliable than tunnel info)
-      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:20241/metrics || exit 0"]
+      test: ["CMD", "cloudflared", "tunnel", "info"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-    # Add restart delay to prevent restart loop
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 5
-        window: 120s
     profiles:
       - cloudflare
     # Note: 
@@ -197,7 +178,7 @@ services:
     # Aktifkan dengan: docker compose --profile cloudflare up -d cloudflared
     # Domain: pos.faiznute.site
     # Troubleshooting: Lihat CLOUDFLARE_TROUBLESHOOTING.md
-    # Fix Error 1033: Changed depends_on to service_healthy dan improved restart policy
+    # Note: Changed depends_on to service_started instead of service_healthy untuk avoid dependency issues
 
 networks:
   warungin-network:

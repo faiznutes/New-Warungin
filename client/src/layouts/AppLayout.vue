@@ -633,7 +633,7 @@ const toggleSubmenu = (menu: string) => {
              window.location.reload();
            }
          }, 100);
-       };
+};
 
 onMounted(async () => {
   windowWidth.value = window.innerWidth;

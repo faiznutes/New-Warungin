@@ -65,12 +65,8 @@ router.post(
             syncType,
           });
           break;
-        default: {
-          const error = new Error('Unsupported provider');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Unsupported provider', 'SYNC_TRANSACTION_ACCOUNTING');
-          return;
-        }
+        default:
+          return res.status(400).json({ error: 'Unsupported provider' });
       }
 
       res.json(result);

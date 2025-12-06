@@ -4,10 +4,10 @@
  */
 
 import prisma from '../config/database';
+import { Prisma } from '@prisma/client';
 import logger from '../utils/logger';
 import productService from './product.service';
 import supplierService from './supplier.service';
-import { sanitizeText } from '../utils/sanitize';
 
 interface CreatePurchaseOrderInput {
   supplierId: string;
@@ -146,9 +146,8 @@ class PurchaseOrderService {
       await supplierService.getSupplierById(data.supplierId, tenantId);
 
       // Calculate total amount
-      const { Prisma } = await import('@prisma/client');
       const totalAmount = new Prisma.Decimal(
-        data.items.reduce((sum, item) => sum + (item.quantity * Number(item.unitPrice)), 0)
+        data.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
       );
 
       return await prisma.$transaction(async (tx) => {
@@ -163,7 +162,7 @@ class PurchaseOrderService {
             orderNumber,
             expectedDate: data.expectedDate,
             totalAmount,
-            notes: data.notes ? sanitizeText(data.notes) : undefined,
+            notes: data.notes,
             createdBy: userId,
             status: 'PENDING',
             items: {
@@ -172,7 +171,7 @@ class PurchaseOrderService {
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
                 totalPrice: item.quantity * item.unitPrice,
-                notes: item.notes ? sanitizeText(item.notes) : undefined,
+                notes: item.notes,
               })),
             },
           },
@@ -207,11 +206,10 @@ class PurchaseOrderService {
       }
 
       // Calculate new total if items updated
-      let totalAmount = purchaseOrder.totalAmount;
+      let totalAmount: any = purchaseOrder.totalAmount;
       if (data.items) {
-        const { Prisma } = await import('@prisma/client');
         totalAmount = new Prisma.Decimal(
-          data.items.reduce((sum, item) => sum + (item.quantity * Number(item.unitPrice)), 0)
+          data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.unitPrice), 0)
         );
       }
 
@@ -222,7 +220,7 @@ class PurchaseOrderService {
           data: {
             status: data.status || purchaseOrder.status,
             expectedDate: data.expectedDate || purchaseOrder.expectedDate,
-            notes: data.notes !== undefined ? (data.notes ? sanitizeText(data.notes) : null) : purchaseOrder.notes,
+            notes: data.notes || purchaseOrder.notes,
             totalAmount,
             ...(data.status === 'APPROVED' && { approvedBy: userId }),
           },
@@ -244,7 +242,7 @@ class PurchaseOrderService {
               unitPrice: item.unitPrice,
               totalPrice: item.quantity * item.unitPrice,
               receivedQuantity: item.receivedQuantity || 0,
-              notes: item.notes ? sanitizeText(item.notes) : undefined,
+              notes: item.notes,
             })),
           });
         }

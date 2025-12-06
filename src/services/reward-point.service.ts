@@ -11,11 +11,11 @@ const POINT_CONFIG = {
   POINT_PER_RUPIAH,
   
   // Subscription redemption (calculated from price: price / 200)
-  // BASIC: 200000rp = 1000pts, PRO: 350000rp = 1750pts, CUSTOM: 500000rp = 2500pts
+  // BASIC: 200000rp = 1000pts, PRO: 350000rp = 1750pts, ENTERPRISE: 500000rp = 2500pts
   SUBSCRIPTION: {
     '1month_starter': 1000,      // BASIC: 200000rp / 200 = 1000 pts
     '1month_boost': 1750,        // PRO: 350000rp / 200 = 1750 pts
-    '1month_max': 2500,          // CUSTOM: 500000rp / 200 = 2500 pts
+    '1month_max': 2500,          // ENTERPRISE: 500000rp / 200 = 2500 pts
   },
   
   // Addon redemption (calculated from price: price / 200)
@@ -24,12 +24,6 @@ const POINT_CONFIG = {
     'add_users': 250,            // 50000rp / 200 = 250 pts
     'add_products': 150,         // 30000rp / 200 = 150 pts
     'business_analytics': 1250,  // 250000rp / 200 = 1250 pts
-    'delivery_marketing': 1000,  // 200000rp / 200 = 1000 pts
-    'advanced_reporting': 750,   // 150000rp / 200 = 750 pts
-    'financial_management': 1000, // 200000rp / 200 = 1000 pts
-    'inventory_management': 750, // 150000rp / 200 = 750 pts
-    'ai_ml_features': 1500,      // 300000rp / 200 = 1500 pts
-    'multi_outlet_advanced': 500, // 100000rp / 200 = 500 pts
     'export_reports': 375,       // 75000rp / 200 = 375 pts
     'receipt_editor': 250,       // 50000rp / 200 = 250 pts
   },
@@ -486,10 +480,10 @@ export class RewardPointService {
     }
 
     // Map planId to actual plan
-    const planMapping: Record<string, 'BASIC' | 'PRO' | 'CUSTOM'> = {
+    const planMapping: Record<string, 'BASIC' | 'PRO' | 'ENTERPRISE'> = {
       '1month_starter': 'BASIC',
       '1month_boost': 'PRO',
-      '1month_max': 'CUSTOM',
+      '1month_max': 'ENTERPRISE',
     };
 
     const plan = planMapping[planId];
@@ -612,31 +606,6 @@ export class RewardPointService {
         addonType: 'BUSINESS_ANALYTICS',
         addonName: 'Business Analytics & Insight',
       },
-      'delivery_marketing': {
-        addonId: 'delivery_marketing',
-        addonType: 'DELIVERY_MARKETING',
-        addonName: 'Delivery & Marketing',
-      },
-      'advanced_reporting': {
-        addonId: 'advanced_reporting',
-        addonType: 'ADVANCED_REPORTING',
-        addonName: 'Advanced Reporting',
-      },
-      'financial_management': {
-        addonId: 'financial_management',
-        addonType: 'FINANCIAL_MANAGEMENT',
-        addonName: 'Financial Management',
-      },
-      'inventory_management': {
-        addonId: 'inventory_management',
-        addonType: 'INVENTORY_MANAGEMENT',
-        addonName: 'Inventory Management',
-      },
-      'ai_ml_features': {
-        addonId: 'ai_ml_features',
-        addonType: 'AI_ML_FEATURES',
-        addonName: 'AI/ML Features',
-      },
       'export_reports': {
         addonId: 'export_reports',
         addonType: 'EXPORT_REPORTS',
@@ -645,12 +614,7 @@ export class RewardPointService {
       'receipt_editor': {
         addonId: 'receipt_editor',
         addonType: 'RECEIPT_EDITOR',
-        addonName: 'Advanced Receipt Editor',
-      },
-      'multi_outlet_advanced': {
-        addonId: 'multi_outlet_advanced',
-        addonType: 'MULTI_OUTLET_ADVANCED',
-        addonName: 'Multi-Outlet Advanced',
+        addonName: 'Simple Nota Editor',
       },
     };
 
@@ -718,7 +682,7 @@ export class RewardPointService {
     const subscriptionNames: Record<string, string> = {
       '1month_starter': 'Starter (BASIC)',
       '1month_boost': 'Boost (PRO)',
-      '1month_max': 'Max (CUSTOM)',
+      '1month_max': 'Max (ENTERPRISE)',
     };
 
     const addonNames: Record<string, string> = {
@@ -726,14 +690,8 @@ export class RewardPointService {
       'add_users': 'Tambah Pengguna',
       'add_products': 'Tambah Produk',
       'business_analytics': 'Business Analytics & Insight',
-      'delivery_marketing': 'Delivery & Marketing',
-      'advanced_reporting': 'Advanced Reporting',
-      'financial_management': 'Financial Management',
-      'inventory_management': 'Inventory Management',
-      'ai_ml_features': 'AI/ML Features',
       'export_reports': 'Export Laporan',
-      'receipt_editor': 'Advanced Receipt Editor',
-      'multi_outlet_advanced': 'Multi-Outlet Advanced',
+      'receipt_editor': 'Simple Nota Editor',
     };
 
     return {

@@ -21,15 +21,6 @@ import './scheduler';
 console.log('📦 Loading Express app...');
 const app: Express = express();
 const httpServer = createServer(app);
-
-// Configure HTTP server for better Cloudflare Tunnel compatibility
-// Keep-alive settings to prevent connection termination (Error 1033)
-httpServer.keepAliveTimeout = 65000; // 65 seconds (slightly more than default 60s)
-httpServer.headersTimeout = 66000; // 66 seconds (must be > keepAliveTimeout)
-// Max connections per socket - increased for 500 concurrent users
-// 500 users * 2 concurrent requests = 1000 connections minimum
-httpServer.maxConnections = 2000;  // Increased for 500 concurrent users
-
 console.log('✅ Express app and HTTP server created');
 
 // Trust proxy - Required when running behind reverse proxy (nginx, cloudflare, etc.)
@@ -194,39 +185,14 @@ try {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-  const errorMessage = reason?.message || String(reason);
-  const errorCode = reason?.code || '';
-  
-  // Ignore Redis connection errors (Redis is optional)
-  if (
-    errorMessage.includes('Connection is closed') ||
-    errorMessage.includes('ENOTFOUND') ||
-    errorMessage.includes('getaddrinfo') ||
-    errorMessage.includes('ECONNREFUSED') ||
-    errorMessage.includes('Redis') ||
-    errorCode === 'ENOTFOUND'
-  ) {
-    // Silently ignore Redis errors - they're expected if Redis is not running
-    return;
-  }
-  
-  logger.error('Unhandled Rejection at:', {
-    reason: errorMessage,
-    stack: reason?.stack,
-    code: errorCode,
-    promise: promise?.toString(),
-  });
-  // Don't exit the process, just log the error to prevent 502
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit the process, just log the error
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
-  logger.error('Uncaught Exception:', {
-    message: error.message,
-    stack: error.stack,
-    name: error.name,
-  });
-  // Don't exit the process, just log the error to prevent 502
+  logger.error('Uncaught Exception:', error);
+  // Don't exit the process, just log the error
 });
 
 console.log(`🚀 Starting HTTP server on port ${PORT}...`);

@@ -1,13 +1,9 @@
-import { PrismaClient, Prisma } from '@prisma/client';
-
-// OrderStatus enum is available in Prisma namespace
-type OrderStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'REFUNDED';
+import { PrismaClient, Order, OrderStatus, Prisma } from '@prisma/client';
 import { CreateOrderInput, GetOrdersQuery, UpdateOrderStatusInput } from '../validators/order.validator';
 import prisma from '../config/database';
 import productService from './product.service';
+import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import { sanitizeText, sanitizeString } from '../utils/sanitize';
-import CacheService from '../utils/cache';
 
 export class OrderService {
   async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string) {
@@ -97,7 +93,7 @@ export class OrderService {
     };
   }
 
-  async getOrderById(id: string, tenantId: string) {
+  async getOrderById(id: string, tenantId: string): Promise<Order | null> {
     return prisma.order.findFirst({
       where: { id, tenantId },
       include: {
@@ -121,16 +117,9 @@ export class OrderService {
     });
   }
 
-  async createOrder(data: CreateOrderInput, userId: string, tenantId: string) {
-    // Sanitize text fields
-    const sanitizedData = {
-      ...data,
-      temporaryCustomerName: data.temporaryCustomerName ? sanitizeString(data.temporaryCustomerName, 255) : undefined,
-      notes: data.notes ? sanitizeText(data.notes) : undefined,
-    };
-    
+  async createOrder(data: CreateOrderInput, userId: string, tenantId: string): Promise<Order> {
     // Calculate subtotal from items (before any discounts)
-    const subtotal = sanitizedData.items.reduce((sum, item) => {
+    const subtotal = data.items.reduce((sum, item) => {
       return sum + (item.price * item.quantity);
     }, 0);
 
@@ -150,7 +139,7 @@ export class OrderService {
       autoDiscount = autoDiscountResult.discountAmount;
     } catch (error: any) {
       // If discount service fails (e.g., table doesn't exist yet), continue without auto discount
-      logger.warn('Failed to apply automatic discounts', { error: error.message, tenantId });
+      console.warn('Failed to apply automatic discounts:', error.message);
       autoDiscount = 0;
     }
 
@@ -262,7 +251,7 @@ export class OrderService {
         throw new Error('Failed to generate unique order number after multiple attempts');
       }
       // Verify and update product stock
-      for (const item of sanitizedData.items) {
+      for (const item of data.items) {
         const product = await productService.getProductById(item.productId, tenantId);
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
@@ -274,7 +263,7 @@ export class OrderService {
 
       // Prepare order items with cost and profit calculation
       const orderItemsData = await Promise.all(
-        sanitizedData.items.map(async (item) => {
+        data.items.map(async (item) => {
           // Get product to retrieve cost
           const product = await productService.getProductById(item.productId, tenantId);
           if (!product) {
@@ -304,17 +293,17 @@ export class OrderService {
           tenantId,
           userId,
           orderNumber,
-          customerId: sanitizedData.customerId,
-          memberId: sanitizedData.memberId,
-          temporaryCustomerName: sanitizedData.temporaryCustomerName,
-          outletId: sanitizedData.outletId,
+          customerId: data.customerId,
+          memberId: data.memberId,
+          temporaryCustomerName: data.temporaryCustomerName,
+          outletId: data.outletId,
           subtotal: subtotal.toString(),
           discount: totalDiscount.toString(),
           total: total.toString(),
           status: 'PENDING',
-          sendToKitchen: sanitizedData.sendToKitchen || false,
-          kitchenStatus: sanitizedData.sendToKitchen ? 'PENDING' : null,
-          notes: sanitizedData.notes,
+          sendToKitchen: data.sendToKitchen || false,
+          kitchenStatus: data.sendToKitchen ? 'PENDING' : null,
+          notes: data.notes,
           items: {
             create: orderItemsData,
           },
@@ -359,10 +348,20 @@ export class OrderService {
    */
   private async invalidateAnalyticsCache(tenantId: string): Promise<void> {
     try {
-      // Delete all analytics cache keys for this tenant
-      await CacheService.deletePattern(`analytics:*:${tenantId}`);
-      await CacheService.deletePattern(`analytics:${tenantId}:*`);
-      logger.info('Invalidated analytics cache after order operation', { tenantId });
+      const redis = getRedisClient();
+      if (redis) {
+        // Delete all analytics cache keys for this tenant
+        const keys = await redis.keys(`analytics:*:${tenantId}`);
+        const keys2 = await redis.keys(`analytics:${tenantId}:*`);
+        const allKeys = [...keys, ...keys2];
+        if (allKeys.length > 0) {
+          await redis.del(...allKeys);
+          logger.info('Invalidated analytics cache after order operation', {
+            tenantId,
+            cacheKeysDeleted: allKeys.length
+          });
+        }
+      }
     } catch (error: any) {
       logger.warn('Failed to invalidate analytics cache', {
         error: error.message,
@@ -371,7 +370,7 @@ export class OrderService {
     }
   }
 
-  async updateOrder(id: string, data: any, tenantId: string) {
+  async updateOrder(id: string, data: any, tenantId: string): Promise<Order> {
     const order = await this.getOrderById(id, tenantId);
     if (!order) {
       throw new Error('Order not found');
@@ -469,9 +468,8 @@ export class OrderService {
           updateData.sendToKitchen = data.sendToKitchen;
           updateData.kitchenStatus = data.sendToKitchen ? 'PENDING' : null;
         }
-        if (data.kitchenStatus !== undefined) updateData.kitchenStatus = data.kitchenStatus;
-        if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName ? sanitizeString(data.temporaryCustomerName, 255) : null;
-        if (data.notes !== undefined) updateData.notes = data.notes ? sanitizeText(data.notes) : null;
+        if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName;
+        if (data.notes !== undefined) updateData.notes = data.notes;
 
         // Emit stock updates via socket
         const { emitToTenant } = await import('../socket/socket');
@@ -511,7 +509,6 @@ export class OrderService {
       updateData.sendToKitchen = data.sendToKitchen;
       updateData.kitchenStatus = data.sendToKitchen ? 'PENDING' : null;
     }
-    if (data.kitchenStatus !== undefined) updateData.kitchenStatus = data.kitchenStatus;
     if (data.temporaryCustomerName !== undefined) updateData.temporaryCustomerName = data.temporaryCustomerName;
     if (data.notes !== undefined) updateData.notes = data.notes;
 
@@ -536,7 +533,7 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async updateOrderStatus(id: string, data: UpdateOrderStatusInput, tenantId: string) {
+  async updateOrderStatus(id: string, data: UpdateOrderStatusInput, tenantId: string): Promise<Order> {
     const order = await this.getOrderById(id, tenantId);
     if (!order) {
       throw new Error('Order not found');
@@ -605,7 +602,7 @@ export class OrderService {
       });
     } catch (error: any) {
       // If transaction doesn't exist or already deleted, continue
-      logger.warn('Transaction deletion warning (may not exist)', { error: error.message, orderId });
+      console.warn('Transaction deletion warning (may not exist):', error.message);
     }
 
     // Delete order items first
@@ -655,7 +652,7 @@ export class OrderService {
           });
         } catch (error: any) {
           // If transaction doesn't exist or already deleted, continue
-          logger.warn('Transaction deletion warning for order (may not exist)', { error: error.message, orderId });
+          console.warn(`Transaction deletion warning for order ${orderId} (may not exist):`, error.message);
         }
 
         // Delete order items first

@@ -3,14 +3,14 @@
  * Provides consistent error handling for all routes to prevent 502/503 errors
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Response } from 'express';
 import logger from './logger';
 import { Prisma } from '@prisma/client';
 
 interface ErrorWithCode extends Error {
   code?: string;
   statusCode?: number;
-  meta?: Record<string, unknown>;
+  meta?: any;
 }
 
 /**
@@ -182,9 +182,9 @@ export function handleRouteError(
  * Automatically catches errors and handles them properly
  */
 export function asyncHandler(
-  fn: (req: Request, res: Response, next?: NextFunction) => Promise<unknown>
+  fn: (req: any, res: Response, next?: any) => Promise<any>
 ) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: any, res: Response, next: any) => {
     Promise.resolve(fn(req, res, next)).catch((error) => {
       handleRouteError(res, error, 'An error occurred', `${req.method} ${req.path}`);
     });

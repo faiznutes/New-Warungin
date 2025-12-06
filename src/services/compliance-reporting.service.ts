@@ -125,10 +125,16 @@ class ComplianceReportingService {
         }
 
         if (request.anonymizeTransactions) {
-          // Anonymize transactions - Note: userId is required in schema, so we skip this
-          // In production, you might want to create a separate anonymized_transactions table
-          // or use a different approach for anonymization
-          const result = { count: 0 };
+          // Anonymize transactions
+          const result = await prisma.transaction.updateMany({
+            where: {
+              tenantId: request.tenantId,
+              userId: request.userId,
+            },
+            data: {
+              userId: null, // Remove user reference
+            },
+          });
           anonymized += result.count;
         }
 
@@ -140,14 +146,12 @@ class ComplianceReportingService {
             action: 'DATA_DELETION',
             resource: 'USER',
             resourceId: request.userId,
-            details: {
-              metadata: {
-                reason: request.reason,
-                deletePersonalData: request.deletePersonalData,
-                anonymizeTransactions: request.anonymizeTransactions,
-              },
-              severity: 'HIGH',
-            } as any,
+            metadata: JSON.stringify({
+              reason: request.reason,
+              deletePersonalData: request.deletePersonalData,
+              anonymizeTransactions: request.anonymizeTransactions,
+            }),
+            severity: 'HIGH',
           },
         });
       }

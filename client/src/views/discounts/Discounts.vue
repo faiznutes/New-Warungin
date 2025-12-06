@@ -6,30 +6,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          Diskon
-        </h2>
-        <p class="text-sm sm:text-base text-gray-600">
-          Kelola diskon dan promo
-        </p>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Diskon</h2>
+        <p class="text-sm sm:text-base text-gray-600">Kelola diskon dan promo</p>
       </div>
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
         @click="showCreateModal = true"
+        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
       >
-        <svg
-          class="w-4 h-4 sm:w-5 sm:h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span class="hidden sm:inline">Tambah Diskon</span>
         <span class="sm:hidden">Tambah</span>
@@ -40,67 +26,34 @@
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg
-            class="h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
         <input
           v-model="filters.search"
+          @focus="handleSearchFocus"
+          @input="handleSearchInput"
           type="text"
           placeholder="Cari diskon..."
           class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-          @focus="handleSearchFocus"
-          @input="handleSearchInput"
         />
       </div>
     </div>
 
     <!-- Discounts Table -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
-      <div class="text-gray-500">
-        Memuat...
-      </div>
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <div class="text-gray-500">Memuat...</div>
     </div>
 
-    <div
-      v-else-if="discounts.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
+    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada diskon
-      </p>
+      <p class="text-gray-500">Belum ada diskon</p>
     </div>
 
-    <div
-      v-else
-      class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6"
-    >
+    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -126,20 +79,12 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="discount in filteredDiscounts"
-              :key="discount.id"
-              class="hover:bg-gray-50"
-            >
+            <tr v-for="discount in filteredDiscounts" :key="discount.id" class="hover:bg-gray-50">
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ discount.name }}
-                </div>
+                <div class="text-sm font-medium text-gray-900">{{ discount.name }}</div>
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ getDiscountTypeLabel(discount.discountType) }}
-                </div>
+                <div class="text-sm text-gray-900">{{ getDiscountTypeLabel(discount.discountType) }}</div>
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
@@ -154,12 +99,7 @@
                     {{ discount.startDate ? formatDate(discount.startDate) : '-' }} - 
                     {{ discount.endDate ? formatDate(discount.endDate) : 'Tidak terbatas' }}
                   </div>
-                  <div
-                    v-else
-                    class="text-gray-400"
-                  >
-                    Tidak terbatas
-                  </div>
+                  <div v-else class="text-gray-400">Tidak terbatas</div>
                 </div>
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -173,14 +113,14 @@
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button
-                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
                     @click="editDiscount(discount)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
                   >
                     Edit
                   </button>
                   <button
-                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
                     @click="deleteDiscount(discount.id)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
                   >
                     Hapus
                   </button>
@@ -204,29 +144,16 @@
             {{ editingDiscount ? 'Edit Diskon' : 'Tambah Diskon' }}
           </h3>
           <button
-            class="text-gray-400 hover:text-gray-600 transition p-2"
             @click="closeModal"
+            class="text-gray-400 hover:text-gray-600 transition p-2"
           >
-            <svg
-              class="w-5 h-5 sm:w-6 sm:h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <form
-          class="p-4 sm:p-6"
-          @submit.prevent="saveDiscount"
-        >
+        <form @submit.prevent="saveDiscount" class="p-4 sm:p-6">
           <div class="space-y-4">
             <!-- Name -->
             <div>
@@ -248,15 +175,9 @@
                 required
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="AMOUNT_BASED">
-                  Berdasarkan Total Pembelian
-                </option>
-                <option value="BUNDLE">
-                  Bundle (Beli Bersama)
-                </option>
-                <option value="PRODUCT_BASED">
-                  Berdasarkan Produk Tertentu
-                </option>
+                <option value="AMOUNT_BASED">Berdasarkan Total Pembelian</option>
+                <option value="BUNDLE">Bundle (Beli Bersama)</option>
+                <option value="PRODUCT_BASED">Berdasarkan Produk Tertentu</option>
               </select>
             </div>
 
@@ -268,12 +189,8 @@
                 required
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="PERCENTAGE">
-                  Persentase (%)
-                </option>
-                <option value="FIXED">
-                  Nominal (Rp)
-                </option>
+                <option value="PERCENTAGE">Persentase (%)</option>
+                <option value="FIXED">Nominal (Rp)</option>
               </select>
             </div>
 
@@ -345,27 +262,20 @@
                 required
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-                <option value="ALL">
-                  Semua Orang
-                </option>
-                <option value="MEMBER_ONLY">
-                  Hanya Member
-                </option>
+                <option value="ALL">Semua Orang</option>
+                <option value="MEMBER_ONLY">Hanya Member</option>
               </select>
             </div>
 
             <!-- Is Active -->
             <div class="flex items-center space-x-2">
               <input
-                id="isActive"
                 v-model="discountForm.isActive"
                 type="checkbox"
+                id="isActive"
                 class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
               />
-              <label
-                for="isActive"
-                class="text-sm text-gray-700"
-              >Aktif</label>
+              <label for="isActive" class="text-sm text-gray-700">Aktif</label>
             </div>
           </div>
 
@@ -378,8 +288,8 @@
             </button>
             <button
               type="button"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               @click="closeModal"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
               Batal
             </button>
@@ -456,8 +366,9 @@ const loadDiscounts = async () => {
   loading.value = true;
   try {
     const response = await api.get('/discounts');
-    discounts.value = response.data?.data || response.data || [];
+    discounts.value = response.data.data || [];
   } catch (error: any) {
+    console.error('Error loading discounts:', error);
     await showError(error.response?.data?.message || 'Gagal memuat diskon');
   } finally {
     loading.value = false;
@@ -485,31 +396,6 @@ const editDiscount = (discount: any) => {
 };
 
 const saveDiscount = async () => {
-  // Client-side validation
-  if (!discountForm.value.name || discountForm.value.name.trim() === '') {
-    await showError('Nama diskon wajib diisi');
-    return;
-  }
-  
-  if (!discountForm.value.discountValue || discountForm.value.discountValue <= 0) {
-    await showError('Nilai diskon harus lebih dari 0');
-    return;
-  }
-  
-  if (discountForm.value.discountValueType === 'PERCENTAGE' && discountForm.value.discountValue > 100) {
-    await showError('Diskon persentase tidak boleh lebih dari 100%');
-    return;
-  }
-  
-  if (discountForm.value.startDate && discountForm.value.endDate) {
-    const startDate = new Date(discountForm.value.startDate);
-    const endDate = new Date(discountForm.value.endDate);
-    if (endDate < startDate) {
-      await showError('Tanggal akhir tidak boleh sebelum tanggal mulai');
-      return;
-    }
-  }
-  
   try {
     const data = {
       ...discountForm.value,
@@ -528,6 +414,7 @@ const saveDiscount = async () => {
     closeModal();
     await loadDiscounts();
   } catch (error: any) {
+    console.error('Error saving discount:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan diskon');
   }
 };
@@ -541,6 +428,7 @@ const deleteDiscount = async (id: string) => {
     await showSuccess('Diskon berhasil dihapus');
     await loadDiscounts();
   } catch (error: any) {
+    console.error('Error deleting discount:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus diskon');
   }
 };

@@ -17,7 +17,7 @@ export interface RetentionPolicy {
 
 export class RetentionService {
   private defaultPolicy: RetentionPolicy = {
-    orders: 730, // 2 years
+    orders: 730, // 2 years (for SUPER_ADMIN)
     transactions: 730, // 2 years
     reports: 730, // 2 years
     auditLogs: 730, // 2 years
@@ -122,7 +122,7 @@ export class RetentionService {
   /**
    * Apply retention policy for contact submissions
    */
-  async applyContactSubmissionsRetention(days: number = 730): Promise<number> {
+  async applyContactSubmissionsRetention(days: number = 90): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 

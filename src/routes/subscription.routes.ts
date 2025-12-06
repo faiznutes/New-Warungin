@@ -1,16 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import subscriptionService from '../services/subscription.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
 const extendSubscriptionSchema = z.object({
-  plan: z.enum(['BASIC', 'PRO', 'CUSTOM']).optional(),
+  plan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']).optional(),
   duration: z.number().int().positive(),
 });
 
@@ -22,64 +21,12 @@ router.get(
       const tenantId = requireTenantId(req);
       const result = await subscriptionService.getCurrentSubscription(tenantId);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load subscription', 'SUBSCRIPTION_CURRENT');
-    }
-  }
-);
-
-/**
- * GET /api/subscription/plan-features
- * Get plan features and active addons for tenant
- */
-router.get(
-  '/plan-features',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { getTenantPlanFeatures } = await import('../services/plan-features.service');
-      const result = await getTenantPlanFeatures(tenantId, true); // Use cache
-      
-      // Map to frontend format
-      const planFeatures = result.planFeatures || (result as any).features;
-      const features = planFeatures?.features || {};
-      
-      res.json({
-        plan: result.plan,
-        features: {
-          products: features.products ?? (result.plan !== 'BASIC'),
-          inventory: features.inventory ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          orders: features.orders ?? true,
-          pos: features.pos ?? true,
-          delivery: features.delivery ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'DELIVERY_MARKETING')),
-          customers: features.customers ?? true,
-          members: features.members ?? true,
-          reports: features.reports ?? true,
-          advancedReporting: features.advancedReporting ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'ADVANCED_REPORTING')),
-          advancedAnalytics: features.advancedAnalytics ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'BUSINESS_ANALYTICS')),
-          financialManagement: features.financialManagement ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'FINANCIAL_MANAGEMENT')),
-          profitLoss: features.profitLoss ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'BUSINESS_ANALYTICS' || a.type === 'FINANCIAL_MANAGEMENT')),
-          marketing: features.marketing ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'DELIVERY_MARKETING')),
-          emailMarketing: features.emailMarketing ?? (result.plan === 'CUSTOM' || result.activeAddons.some((a: any) => a.type === 'DELIVERY_MARKETING')),
-          stores: features.stores ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          rewards: features.rewards ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          discounts: features.discounts ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          receiptTemplates: features.receiptTemplates ?? true,
-          userManagement: features.userManagement ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          subscription: features.subscription ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          addons: features.addons ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          settings: features.settings ?? true,
-          webhooks: features.webhooks ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          sessions: features.sessions ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-          passwordSettings: features.passwordSettings ?? true,
-          gdpr: features.gdpr ?? true,
-          twoFactor: features.twoFactor ?? (result.plan === 'PRO' || result.plan === 'CUSTOM'),
-        },
-        activeAddons: result.activeAddons,
+    } catch (error: any) {
+      console.error('Error in /subscriptions/current:', error);
+      res.status(500).json({ 
+        message: error.message || 'Failed to load subscription',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load plan features', 'PLAN_FEATURES');
     }
   }
 );
@@ -88,17 +35,14 @@ router.post(
   '/extend',
   authGuard,
   validate({ body: extendSubscriptionSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
       
       // Only ADMIN_TENANT and SUPER_ADMIN can extend subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can extend subscription');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can extend subscription', 'EXTEND_SUBSCRIPTION');
-        return;
+        return res.status(403).json({ message: 'Only tenant admin or super admin can extend subscription' });
       }
 
       // If plan is provided, use extendSubscription
@@ -107,29 +51,24 @@ router.post(
         const result = await subscriptionService.extendSubscription(tenantId, {
           plan: req.body.plan,
           duration: req.body.duration,
-          addedBySuperAdmin: userRole === 'SUPER_ADMIN', // Set true if created by super admin
         });
         res.json(result);
       } else {
         // Super Admin can extend with custom duration without changing plan
         if (userRole !== 'SUPER_ADMIN') {
-          const error = new Error('Plan is required for tenant admin');
-          (error as any).statusCode = 403;
-          handleRouteError(res, error, 'Plan is required for tenant admin', 'EXTEND_SUBSCRIPTION');
-          return;
+          return res.status(403).json({ message: 'Plan is required for tenant admin' });
         }
-        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration, true); // true = added by super admin
+        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration);
         res.json(result);
       }
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to extend subscription', 'EXTEND_SUBSCRIPTION');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
 
 const upgradeSubscriptionSchema = z.object({
-  newPlan: z.enum(['BASIC', 'PRO', 'CUSTOM']),
+  newPlan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']),
   upgradeType: z.enum(['temporary', 'until_end', 'custom']),
   customDuration: z.number().int().positive().optional(),
 });
@@ -142,17 +81,14 @@ router.post(
   '/upgrade',
   authGuard,
   validate({ body: upgradeSubscriptionSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
       
       // Only ADMIN_TENANT and SUPER_ADMIN can upgrade subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can upgrade subscription');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can upgrade subscription', 'UPGRADE_SUBSCRIPTION');
-        return;
+        return res.status(403).json({ message: 'Only tenant admin or super admin can upgrade subscription' });
       }
 
       const result = await subscriptionService.upgradeSubscription(tenantId, {
@@ -161,9 +97,8 @@ router.post(
         customDuration: req.body.customDuration,
       });
       res.json(result);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to upgrade subscription', 'UPGRADE_SUBSCRIPTION');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -172,24 +107,20 @@ router.post(
   '/reduce',
   authGuard,
   validate({ body: reduceSubscriptionSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
       
       // Only SUPER_ADMIN can reduce subscription
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can reduce subscription');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only super admin can reduce subscription', 'REDUCE_SUBSCRIPTION');
-        return;
+        return res.status(403).json({ message: 'Only super admin can reduce subscription' });
       }
 
       const result = await subscriptionService.reduceSubscriptionCustom(tenantId, req.body.duration);
       res.json(result);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to reduce subscription', 'REDUCE_SUBSCRIPTION');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -223,9 +154,8 @@ router.get(
           totalPages: Math.ceil(total / limit),
         },
       });
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to load subscription history', 'SUBSCRIPTION_HISTORY');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -244,10 +174,7 @@ router.post(
       
       // Only SUPER_ADMIN can trigger manual revert
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can trigger revert');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only super admin can trigger revert', 'REVERT_SUBSCRIPTION');
-        return;
+        return res.status(403).json({ message: 'Only super admin can trigger revert' });
       }
 
       const result = await subscriptionService.revertTemporaryUpgrades();
@@ -256,9 +183,8 @@ router.post(
         message: `Reverted ${result.reverted} temporary upgrades, ${result.failed} failed`,
         ...result,
       });
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to revert temporary upgrades', 'REVERT_TEMPORARY');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -276,10 +202,7 @@ router.delete(
       
       // Only SUPER_ADMIN can delete subscription
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can delete subscription');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only super admin can delete subscription', 'DELETE_SUBSCRIPTION');
-        return;
+        return res.status(403).json({ message: 'Only super admin can delete subscription' });
       }
 
       const subscriptionId = req.params.id;
@@ -300,10 +223,7 @@ router.delete(
       });
 
       if (!subscription) {
-        const error = new Error('Subscription not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Subscription not found', 'DELETE_SUBSCRIPTION');
-        return;
+        return res.status(404).json({ message: 'Subscription not found' });
       }
 
       const tenantId = subscription.tenantId;
@@ -363,9 +283,9 @@ router.delete(
       }
 
       res.json({ message: 'Subscription deleted successfully' });
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to delete subscription', 'DELETE_SUBSCRIPTION');
+    } catch (error: any) {
+      console.error('Error deleting subscription:', error);
+      res.status(500).json({ message: error.message || 'Failed to delete subscription' });
     }
   }
 );
@@ -383,19 +303,13 @@ router.post(
       
       // Only SUPER_ADMIN can bulk delete subscriptions
       if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can bulk delete subscriptions');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only super admin can bulk delete subscriptions', 'BULK_DELETE_SUBSCRIPTIONS');
-        return;
+        return res.status(403).json({ message: 'Only super admin can bulk delete subscriptions' });
       }
 
       const { ids } = req.body;
       
       if (!Array.isArray(ids) || ids.length === 0) {
-        const error = new Error('IDs array is required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'IDs array is required', 'BULK_DELETE_SUBSCRIPTIONS');
-        return;
+        return res.status(400).json({ message: 'IDs array is required' });
       }
 
       // Get subscriptions to be deleted to check their tenantIds
@@ -469,59 +383,9 @@ router.post(
         message: `${result.count} subscription(s) deleted successfully`,
         deletedCount: result.count,
       });
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to bulk delete subscriptions', 'BULK_DELETE_SUBSCRIPTIONS');
-    }
-  }
-);
-
-/**
- * PATCH /api/subscriptions/:id
- * Update subscription (Super Admin only)
- */
-router.patch(
-  '/:id',
-  authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userRole = req.user?.role || req.role || '';
-      
-      // Only SUPER_ADMIN can update subscription
-      if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only super admin can update subscription');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only super admin can update subscription', 'UPDATE_SUBSCRIPTION');
-        return;
-      }
-
-      const subscriptionId = req.params.id;
-      const { addedBySuperAdmin } = req.body;
-      
-      // Check if subscription exists
-      const subscription = await prisma.subscription.findUnique({
-        where: { id: subscriptionId },
-      });
-
-      if (!subscription) {
-        const error = new Error('Subscription not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Subscription not found', 'UPDATE_SUBSCRIPTION');
-        return;
-      }
-
-      // Update subscription
-      const updated = await prisma.subscription.update({
-        where: { id: subscriptionId },
-        data: {
-          addedBySuperAdmin: addedBySuperAdmin !== undefined ? addedBySuperAdmin : subscription.addedBySuperAdmin,
-        },
-      });
-
-      res.json(updated);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to update subscription', 'UPDATE_SUBSCRIPTION');
+    } catch (error: any) {
+      console.error('Error bulk deleting subscriptions:', error);
+      res.status(500).json({ message: error.message || 'Failed to bulk delete subscriptions' });
     }
   }
 );

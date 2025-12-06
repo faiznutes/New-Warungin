@@ -3,79 +3,41 @@
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">
-          Receipt Templates
-        </h1>
-        <p class="text-gray-600">
-          Kelola template struk untuk berbagai ukuran kertas
-        </p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Receipt Templates</h1>
+        <p class="text-gray-600">Kelola template struk untuk berbagai ukuran kertas</p>
       </div>
       <button
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
         @click="showCreateModal = true"
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         Tambah Template
       </button>
     </div>
 
     <!-- Loading State -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Templates List -->
-    <div
-      v-else
-      class="space-y-6"
-    >
-      <div
-        v-if="templates.length === 0"
-        class="bg-white rounded-lg shadow-md p-12 text-center"
-      >
-        <svg
-          class="w-16 h-16 text-gray-400 mx-auto mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
+    <div v-else class="space-y-6">
+      <div v-if="templates.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <p class="text-gray-600 mb-4">
-          Belum ada template yang dibuat
-        </p>
+        <p class="text-gray-600 mb-4">Belum ada template yang dibuat</p>
         <button
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
           @click="showCreateModal = true"
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
         >
           Buat Template Pertama
         </button>
       </div>
 
-      <div
-        v-else
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="template in templates"
           :key="template.id"
@@ -84,12 +46,8 @@
         >
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                {{ template.name }}
-              </h3>
-              <p class="text-sm text-gray-500 mb-2">
-                {{ template.templateType }}
-              </p>
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ template.name }}</h3>
+              <p class="text-sm text-gray-500 mb-2">{{ template.templateType }}</p>
               <div class="flex flex-wrap gap-2">
                 <span
                   class="inline-block px-2 py-1 text-xs rounded"
@@ -109,55 +67,35 @@
 
           <div class="flex items-center space-x-2 mt-4">
             <button
-              class="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
               @click="previewTemplate(template)"
+              class="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
             >
               Preview
             </button>
             <button
-              class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
               @click="editTemplate(template)"
+              class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
             >
               Edit
             </button>
             <button
               v-if="!template.isDefault"
+              @click="setAsDefault(template.id)"
               class="px-3 py-2 text-sm bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition"
               title="Set as Default"
-              @click="setAsDefault(template.id)"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M5 13l4 4L19 7"
-                />
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
             </button>
             <button
               v-if="!template.isDefault"
+              @click="deleteTemplate(template.id)"
               class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
               title="Delete"
-              @click="deleteTemplate(template.id)"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
           </div>
@@ -177,10 +115,7 @@
             {{ editingTemplate ? 'Edit Template' : 'Buat Template Baru' }}
           </h3>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveTemplate"
-          >
+          <form @submit.prevent="saveTemplate" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama Template *</label>
@@ -200,21 +135,11 @@
                   required
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="DEFAULT">
-                    Default
-                  </option>
-                  <option value="MODERN">
-                    Modern
-                  </option>
-                  <option value="MINIMAL">
-                    Minimal
-                  </option>
-                  <option value="DETAILED">
-                    Detailed
-                  </option>
-                  <option value="COMPACT">
-                    Compact
-                  </option>
+                  <option value="DEFAULT">Default</option>
+                  <option value="MODERN">Modern</option>
+                  <option value="MINIMAL">Minimal</option>
+                  <option value="DETAILED">Detailed</option>
+                  <option value="COMPACT">Compact</option>
                 </select>
               </div>
 
@@ -225,45 +150,37 @@
                   required
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="A4">
-                    A4
-                  </option>
-                  <option value="THERMAL_58">
-                    Thermal 58mm
-                  </option>
-                  <option value="THERMAL_80">
-                    Thermal 80mm
-                  </option>
+                  <option value="A4">A4</option>
+                  <option value="THERMAL_58">Thermal 58mm</option>
+                  <option value="THERMAL_80">Thermal 80mm</option>
                 </select>
               </div>
             </div>
 
             <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">
-                Header Settings
-              </h4>
+              <h4 class="font-semibold text-gray-900 mb-3">Header Settings</h4>
               <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.header.showName"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.header.showName"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Nama Toko</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.header.showAddress"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.header.showAddress"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Alamat</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.header.showPhone"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.header.showPhone"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tampilkan Telepon</span>
                 </label>
@@ -271,87 +188,85 @@
             </div>
 
             <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">
-                Fields Settings
-              </h4>
+              <h4 class="font-semibold text-gray-900 mb-3">Fields Settings</h4>
               <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showOrderNumber"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showOrderNumber"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Nomor Order</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showDate"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showDate"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Tanggal</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showTime"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showTime"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Waktu</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showCustomer"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showCustomer"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Customer</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showItems"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showItems"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Items</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showSubtotal"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showSubtotal"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Subtotal</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showDiscount"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showDiscount"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Discount</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showTotal"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showTotal"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Total</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showPaymentMethod"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showPaymentMethod"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Payment Method</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.fields.showChange"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.fields.showChange"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Change</span>
                 </label>
@@ -359,23 +274,21 @@
             </div>
 
             <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">
-                Footer Settings
-              </h4>
+              <h4 class="font-semibold text-gray-900 mb-3">Footer Settings</h4>
               <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.footer.showThankYou"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.footer.showThankYou"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Thank You Message</span>
                 </label>
                 <label class="flex items-center space-x-2">
                   <input
-                    v-model="templateForm.footer.showContact"
                     type="checkbox"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="templateForm.footer.showContact"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">Contact Info</span>
                 </label>
@@ -385,8 +298,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
                 @click="closeModal"
+                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               >
                 Batal
               </button>
@@ -412,36 +325,20 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">
-              Preview Template: {{ previewingTemplate.name }}
-            </h3>
+            <h3 class="text-xl font-bold text-gray-900">Preview Template: {{ previewingTemplate.name }}</h3>
             <button
-              class="text-gray-400 hover:text-gray-600"
               @click="previewingTemplate = null"
+              class="text-gray-400 hover:text-gray-600"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           <div class="bg-gray-50 rounded-lg p-6">
             <div class="bg-white rounded p-4 max-w-md mx-auto border-2 border-dashed border-gray-300">
-              <p class="text-center text-gray-500 text-sm">
-                Preview akan ditampilkan di sini
-              </p>
-              <p class="text-center text-gray-400 text-xs mt-2">
-                Template: {{ previewingTemplate.templateType }} - {{ previewingTemplate.paperSize }}
-              </p>
+              <p class="text-center text-gray-500 text-sm">Preview akan ditampilkan di sini</p>
+              <p class="text-center text-gray-400 text-xs mt-2">Template: {{ previewingTemplate.templateType }} - {{ previewingTemplate.paperSize }}</p>
             </div>
           </div>
         </div>
@@ -495,9 +392,10 @@ const loadTemplates = async () => {
   loading.value = true;
   try {
     const response = await api.get('/receipts/templates');
-    templates.value = response.data?.data || response.data || [];
+    templates.value = response.data;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat template');
+    console.error('Error loading templates:', error);
+    await showError('Gagal memuat template');
   } finally {
     loading.value = false;
   }
@@ -516,6 +414,7 @@ const saveTemplate = async () => {
     closeModal();
     await loadTemplates();
   } catch (error: any) {
+    console.error('Error saving template:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan template');
   } finally {
     saving.value = false;
@@ -563,7 +462,8 @@ const setAsDefault = async (id: string) => {
     await loadTemplates();
     await showSuccess('Template berhasil dijadikan default');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal mengatur template default');
+    console.error('Error setting default:', error);
+    await showError('Gagal mengatur template default');
   }
 };
 
@@ -582,6 +482,7 @@ const deleteTemplate = async (id: string) => {
     await loadTemplates();
     await showSuccess('Template berhasil dihapus');
   } catch (error: any) {
+    console.error('Error deleting template:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus template');
   }
 };

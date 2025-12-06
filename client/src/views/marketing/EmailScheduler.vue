@@ -3,29 +3,15 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">
-          Penjadwal Email
-        </h2>
-        <p class="text-gray-600">
-          Jadwalkan pengiriman email campaign
-        </p>
+        <h2 class="text-2xl font-bold text-gray-900">Email Scheduler</h2>
+        <p class="text-gray-600">Jadwalkan pengiriman email campaign</p>
       </div>
       <button
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
         @click="showScheduleModal = true"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span>Jadwalkan Email</span>
       </button>
@@ -35,63 +21,32 @@
     <div class="mb-4 flex items-center space-x-4">
       <select
         v-model="statusFilter"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         @change="loadSchedules"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">
-          Semua Status
-        </option>
-        <option value="PENDING">
-          Menunggu
-        </option>
-        <option value="SENT">
-          Terkirim
-        </option>
-        <option value="CANCELLED">
-          Dibatalkan
-        </option>
-        <option value="FAILED">
-          Gagal
-        </option>
+        <option value="">Semua Status</option>
+        <option value="PENDING">Pending</option>
+        <option value="SENT">Sent</option>
+        <option value="CANCELLED">Cancelled</option>
+        <option value="FAILED">Failed</option>
       </select>
     </div>
 
     <!-- Loading -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
-    <div
-      v-else-if="schedules.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
+    <div v-else-if="schedules.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada email terjadwal
-      </p>
+      <p class="text-gray-500">Belum ada scheduled emails</p>
     </div>
 
     <!-- Schedules List -->
-    <div
-      v-else
-      class="space-y-4"
-    >
+    <div v-else class="space-y-4">
       <div
         v-for="schedule in schedules"
         :key="schedule.id"
@@ -101,9 +56,7 @@
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center space-x-3 mb-2">
-              <h3 class="text-lg font-semibold text-gray-900">
-                {{ schedule.subject }}
-              </h3>
+              <h3 class="text-lg font-semibold text-gray-900">{{ schedule.subject }}</h3>
               <span
                 class="px-2 py-1 text-xs font-semibold rounded-full"
                 :class="getStatusClass(schedule.status)"
@@ -111,56 +64,38 @@
                 {{ schedule.status }}
               </span>
             </div>
-            <p class="text-sm text-gray-600 mb-4">
-              {{ schedule.content.substring(0, 100) }}...
-            </p>
+            <p class="text-sm text-gray-600 mb-4">{{ schedule.content.substring(0, 100) }}...</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p class="text-gray-500">
-                  Terjadwal Pada
-                </p>
-                <p class="font-semibold text-gray-900">
-                  {{ formatDateTime(schedule.scheduledAt) }}
-                </p>
+                <p class="text-gray-500">Scheduled At</p>
+                <p class="font-semibold text-gray-900">{{ formatDateTime(schedule.scheduledAt) }}</p>
               </div>
               <div>
-                <p class="text-gray-500">
-                  Target
-                </p>
-                <p class="font-semibold text-gray-900">
-                  {{ schedule.target }}
-                </p>
+                <p class="text-gray-500">Target</p>
+                <p class="font-semibold text-gray-900">{{ schedule.target }}</p>
               </div>
               <div>
-                <p class="text-gray-500">
-                  ID Kampanye
-                </p>
-                <p class="font-semibold text-gray-900 text-xs">
-                  {{ schedule.campaignId }}
-                </p>
+                <p class="text-gray-500">Campaign ID</p>
+                <p class="font-semibold text-gray-900 text-xs">{{ schedule.campaignId }}</p>
               </div>
               <div>
-                <p class="text-gray-500">
-                  Template
-                </p>
-                <p class="font-semibold text-gray-900 text-xs">
-                  {{ schedule.templateId || 'Tidak ada template' }}
-                </p>
+                <p class="text-gray-500">Template</p>
+                <p class="font-semibold text-gray-900 text-xs">{{ schedule.templateId || 'No template' }}</p>
               </div>
             </div>
           </div>
           <div class="flex items-center space-x-2 ml-4">
             <button
               v-if="schedule.status === 'PENDING'"
-              class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
               @click="cancelSchedule(schedule)"
+              class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
             >
-              Batal
+              Cancel
             </button>
             <button
               v-if="schedule.status === 'PENDING'"
-              class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
               @click="editSchedule(schedule)"
+              class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
             >
               Edit
             </button>
@@ -179,40 +114,27 @@
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">
-              {{ editingSchedule ? 'Edit Jadwal' : 'Jadwalkan Email' }}
+              {{ editingSchedule ? 'Edit Schedule' : 'Jadwalkan Email' }}
             </h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition"
               @click="closeModal"
+              class="text-gray-400 hover:text-gray-600 transition"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveSchedule"
-          >
+          <form @submit.prevent="saveSchedule" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">ID Kampanye</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Campaign ID</label>
               <input
                 v-model="scheduleForm.campaignId"
                 type="text"
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="ID Kampanye"
+                placeholder="Campaign ID"
               />
             </div>
 
@@ -239,24 +161,16 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Target Audiens</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
               <select
                 v-model="scheduleForm.target"
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="ALL">
-                  All Customers
-                </option>
-                <option value="MEMBERS">
-                  Members Only
-                </option>
-                <option value="ACTIVE">
-                  Active Customers
-                </option>
-                <option value="INACTIVE">
-                  Inactive Customers
-                </option>
+                <option value="ALL">All Customers</option>
+                <option value="MEMBERS">Members Only</option>
+                <option value="ACTIVE">Active Customers</option>
+                <option value="INACTIVE">Inactive Customers</option>
               </select>
             </div>
 
@@ -271,20 +185,20 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">ID Template (Opsional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Template ID (Optional)</label>
               <input
                 v-model="scheduleForm.templateId"
                 type="text"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="ID Template"
+                placeholder="Template ID"
               />
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -346,8 +260,9 @@ const loadSchedules = async () => {
       params.status = statusFilter.value;
     }
     const response = await api.get('/email-scheduler', { params });
-    schedules.value = response.data?.data || response.data || [];
+    schedules.value = response.data;
   } catch (error: any) {
+    console.error('Error loading schedules:', error);
     await showError('Gagal memuat schedules');
   } finally {
     loading.value = false;
@@ -377,6 +292,7 @@ const saveSchedule = async () => {
     closeModal();
     await loadSchedules();
   } catch (error: any) {
+    console.error('Error saving schedule:', error);
     await showError('Gagal menyimpan schedule');
   } finally {
     saving.value = false;
@@ -398,7 +314,7 @@ const editSchedule = (schedule: ScheduledEmail) => {
 
 const cancelSchedule = async (schedule: ScheduledEmail) => {
   const confirmed = await showConfirm(
-    'Batal Jadwal',
+    'Cancel Schedule',
     `Apakah Anda yakin ingin membatalkan schedule ini?`
   );
   if (!confirmed) return;
@@ -408,6 +324,7 @@ const cancelSchedule = async (schedule: ScheduledEmail) => {
     await showSuccess('Schedule berhasil dibatalkan');
     await loadSchedules();
   } catch (error: any) {
+    console.error('Error cancelling schedule:', error);
     await showError('Gagal membatalkan schedule');
   }
 };
@@ -432,8 +349,9 @@ const getStatusBorderClass = (status: string): string => {
   return classes[status] || 'border-gray-500';
 };
 
-// Use formatters utility instead of local function
-import { formatDateTime } from '../../utils/formatters';
+const formatDateTime = (dateString: string): string => {
+  return new Date(dateString).toLocaleString('id-ID');
+};
 
 const closeModal = () => {
   showScheduleModal.value = false;

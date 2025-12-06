@@ -2,41 +2,15 @@ import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
 import { emitToTenant } from '../socket/socket';
 
-// Lazy initialization - only create queue if Redis is actually available
-let notificationQueueInstance: Queue | null = null;
+const redisClient = getRedisClient();
 
-const getNotificationQueue = (): Queue | null => {
-  if (notificationQueueInstance) {
-    return notificationQueueInstance;
-  }
-  
-  const redisClient = getRedisClient();
-  
-  // Only create queue if Redis is actually available and not failed
-  if (!redisClient) {
-    return null;
-  }
-  
-  try {
-    notificationQueueInstance = new Queue('notification', {
+// Only create queue if Redis is actually available
+// Don't create queue if Redis client is null (will fail silently)
+export const notificationQueue = redisClient
+  ? new Queue('notification', {
       connection: redisClient,
-    });
-    return notificationQueueInstance;
-  } catch (error) {
-    // Queue creation failed - Redis not available
-    return null;
-  }
-};
-
-// Export getter function - initialize on first access (not at module load)
-// This prevents connection attempt during module initialization
-export const getNotificationQueueInstance = (): Queue | null => {
-  return getNotificationQueue();
-};
-
-// For backward compatibility, export as null initially
-// Use getNotificationQueueInstance() instead
-export const notificationQueue: Queue | null = null;
+    })
+  : null;
 
 export interface NotificationData {
   tenantId: string;
@@ -49,8 +23,7 @@ export interface NotificationData {
 export const addNotificationJob = async (
   data: NotificationData
 ): Promise<void> => {
-  const queue = getNotificationQueueInstance();
-  if (!queue) {
+  if (!notificationQueue) {
     // Fallback: send directly via Socket.IO
     emitToTenant(data.tenantId, 'notification', {
       type: data.type,
@@ -60,7 +33,7 @@ export const addNotificationJob = async (
     });
     return;
   }
-  await queue.add('send-notification', {
+  await notificationQueue.add('send-notification', {
     ...data,
     timestamp: new Date().toISOString(),
   });

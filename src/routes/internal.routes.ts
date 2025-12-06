@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import paymentService from '../services/payment.service';
 import subscriptionService from '../services/subscription.service';
 import analyticsService from '../services/analytics.service';
@@ -8,20 +8,19 @@ import logger from '../utils/logger';
 import { getRedisClient } from '../config/redis';
 import * as path from 'path';
 import * as fs from 'fs';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
 // Internal API Key middleware (for n8n)
-const validateInternalApiKey = (req: Request, res: Response, next: NextFunction) => {
+const validateInternalApiKey = (req: Request, res: Response, next: Function) => {
   const apiKey = req.headers['x-internal-api-key'] as string;
   const expectedKey = process.env.INTERNAL_API_KEY || 'change-me-in-production';
   
   if (!apiKey || apiKey !== expectedKey) {
-    const error = new Error('Invalid or missing internal API key');
-    (error as any).statusCode = 401;
-    handleRouteError(res, error, 'Invalid or missing internal API key', 'VALIDATE_INTERNAL_API_KEY');
-    return;
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Invalid or missing internal API key' 
+    });
   }
   
   next();
@@ -45,8 +44,12 @@ router.post(
       // Just process the payment
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process webhook', 'INTERNAL_WEBHOOK');
+    } catch (error: any) {
+      logger.error('Internal webhook processing error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to process webhook' 
+      });
     }
   }
 );
@@ -99,10 +102,10 @@ router.post(
       const latestBackup = files[0];
       
       if (!latestBackup) {
-        const error = new Error('Backup file not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Backup file not found', 'GET_BACKUP');
-        return;
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Backup file not found' 
+        });
       }
       
       // Read backup file content
@@ -119,8 +122,12 @@ router.post(
           content: backupContent, // For n8n to send via Gmail API
         }
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process backup', 'INTERNAL_BACKUP');
+    } catch (error: any) {
+      logger.error('Internal backup error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to process backup' 
+      });
     }
   }
 );
@@ -146,8 +153,12 @@ router.post(
         message: 'Subscription revert completed',
         data: result
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to revert subscriptions', 'INTERNAL_SUBSCRIPTION_REVERT');
+    } catch (error: any) {
+      logger.error('Internal subscription revert error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to revert subscriptions' 
+      });
     }
   }
 );
@@ -169,18 +180,18 @@ router.post(
       const { tenantId } = req.body;
       
       if (!tenantId) {
-        const error = new Error('tenantId is required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'tenantId is required', 'GET_ANALYTICS');
-        return;
+        return res.status(400).json({ 
+          success: false, 
+          message: 'tenantId is required' 
+        });
       }
       
       const redis = getRedisClient();
       if (!redis) {
-        const error = new Error('Redis not available for caching');
-        (error as any).statusCode = 503;
-        handleRouteError(res, error, 'Redis not available for caching', 'INTERNAL_ANALYTICS_PRECOMPUTE');
-        return;
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Redis not available for caching' 
+        });
       }
       
       // Pre-compute predictions
@@ -218,8 +229,12 @@ router.post(
           topProducts: topProducts.length,
         }
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to pre-compute analytics', 'INTERNAL_ANALYTICS_PRECOMPUTE');
+    } catch (error: any) {
+      logger.error('Internal analytics precompute error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to pre-compute analytics' 
+      });
     }
   }
 );
@@ -305,8 +320,12 @@ router.post(
           errors,
         }
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to pre-compute analytics for all tenants', 'INTERNAL_ANALYTICS_PRECOMPUTE_ALL');
+    } catch (error: any) {
+      logger.error('Internal analytics precompute-all error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to pre-compute analytics for all tenants' 
+      });
     }
   }
 );
@@ -347,8 +366,12 @@ router.get(
         success: true, 
         data: tenants 
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get active tenants', 'INTERNAL_GET_ACTIVE_TENANTS');
+    } catch (error: any) {
+      logger.error('Internal get active tenants error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to get active tenants' 
+      });
     }
   }
 );

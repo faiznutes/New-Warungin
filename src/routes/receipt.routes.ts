@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { checkReceiptEditorAddon } from '../middlewares/addon-guard';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -28,8 +27,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const templates = await receiptService.getReceiptTemplates(tenantId);
       res.json(templates);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -42,8 +41,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const template = await receiptService.getDefaultTemplate(tenantId);
       res.json(template);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -61,14 +60,11 @@ router.get(
         },
       });
       if (!template) {
-        const error = new Error('Template not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Template not found', 'GET_RECEIPT_TEMPLATE');
-        return;
+        return res.status(404).json({ message: 'Template not found' });
       }
       res.json(template);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process receipt request', 'RECEIPT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -83,8 +79,8 @@ router.post(
       const tenantId = requireTenantId(req);
       const template = await receiptService.createTemplate(tenantId, req.body);
       res.status(201).json(template);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create receipt template', 'CREATE_RECEIPT_TEMPLATE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -98,8 +94,8 @@ router.put(
       const tenantId = requireTenantId(req);
       const template = await receiptService.updateTemplate(req.params.id, tenantId, req.body);
       res.json(template);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update receipt template', 'UPDATE_RECEIPT_TEMPLATE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -113,8 +109,8 @@ router.post(
       const tenantId = requireTenantId(req);
       const template = await receiptService.setDefaultTemplate(req.params.id, tenantId);
       res.json(template);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to set default receipt template', 'SET_DEFAULT_RECEIPT_TEMPLATE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -128,8 +124,8 @@ router.delete(
       const tenantId = requireTenantId(req);
       await receiptService.deleteTemplate(req.params.id, tenantId);
       res.json({ message: 'Template deleted successfully' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to delete receipt template', 'DELETE_RECEIPT_TEMPLATE');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -143,8 +139,8 @@ router.get(
       const templateId = req.query.templateId as string | undefined;
       const receipt = await receiptService.generateReceipt(req.params.orderId, tenantId, templateId);
       res.json(receipt);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to generate receipt', 'GENERATE_RECEIPT');
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   }
 );

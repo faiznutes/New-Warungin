@@ -7,8 +7,6 @@ import { logAction } from '../middlewares/audit-logger';
 import prisma from '../config/database';
 import { AuthRequest } from '../middlewares/auth';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
-import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -125,8 +123,73 @@ router.post('/login', authLimiter, async (req, res, next) => {
     
     res.json(result);
   } catch (error: unknown) {
+    const err = error as Error & { 
+      code?: string; 
+      statusCode?: number; 
+      issues?: Array<{ path: (string | number)[]; message: string }>;
+      message?: string;
+      name?: string;
+    };
+    
     logRouteError(error, 'LOGIN', req);
-    handleRouteError(res, error, 'Login failed', 'LOGIN');
+    
+    // Handle Prisma prepared statement errors (pgbouncer issue)
+    if (err.message?.includes('prepared statement') || err.code === '42P05') {
+      logger.warn('Prisma prepared statement error detected - this is a pgbouncer issue');
+      res.status(503).json({
+        error: 'Database connection issue. Please try again in a moment.',
+        message: 'The database connection pool is busy. Please retry the request.',
+      });
+      return;
+    }
+    
+    // Handle database connection errors
+    if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect ECONNREFUSED')) {
+      logger.error('Database connection error:', err.message);
+      res.status(503).json({
+        error: 'Database connection failed. Please try again in a moment.',
+        message: 'Unable to connect to database. Please retry the request.',
+      });
+      return;
+    }
+    
+    // Handle Prisma query errors
+    if (err.code?.startsWith('P')) {
+      logger.error('Prisma error:', { code: err.code, message: err.message });
+      res.status(500).json({
+        error: 'Database error occurred. Please try again.',
+        message: 'An error occurred while processing your request.',
+      });
+      return;
+    }
+    
+    // Handle Zod validation errors
+    if (err.name === 'ZodError' && err.issues) {
+      res.status(400).json({
+        error: 'Validation failed',
+        details: err.issues.map((issue) => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
+      return;
+    }
+    
+    // Handle AppError (from auth service)
+    if (err.statusCode) {
+      res.status(err.statusCode).json({
+        error: err.message,
+        message: err.message,
+      });
+      return;
+    }
+    
+    // Handle any other errors - ensure response is sent
+    logger.error('Unhandled login error:', err);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'An unexpected error occurred. Please try again.',
+    });
   }
 });
 
@@ -135,10 +198,11 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
   try {
     // Validate userId exists
     if (!req.userId) {
-      const error = new Error('User ID not found in request');
-      (error as any).statusCode = 401;
-      logRouteError(error, 'ME_USER_ID_MISSING', req);
-      handleRouteError(res, error, 'Authentication required. Please login again.', 'ME_USER_ID_MISSING');
+      logRouteError(new Error('User ID not found in request'), 'ME_USER_ID_MISSING', req);
+      res.status(401).json({ 
+        error: 'Unauthorized: User ID not found',
+        message: 'Authentication required. Please login again.',
+      });
       return;
     }
 
@@ -165,17 +229,37 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
         },
       });
     } catch (dbError: unknown) {
+      const err = dbError as Error & { code?: string; message?: string };
       logRouteError(dbError, 'ME_DATABASE_QUERY', req);
       
-      // Handle all database errors using handleRouteError
-      handleRouteError(res, dbError, 'Unable to connect to database. Please try again.', 'ME_DATABASE_QUERY');
-      return;
+      // Handle database connection errors
+      if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
+        res.status(503).json({ 
+          error: 'Database connection failed',
+          message: 'Unable to connect to database. Please try again.',
+        });
+        return;
+      }
+      
+      // Handle Prisma query errors
+      if (err.code?.startsWith('P')) {
+        res.status(500).json({
+          error: 'Database error occurred',
+          message: 'An error occurred while fetching user data.',
+        });
+        return;
+      }
+      
+      // Re-throw other errors to be handled by outer catch
+      throw dbError;
     }
 
     if (!user) {
-      const error = new AppError('User not found in database', 404, 'USER_NOT_FOUND');
-      logRouteError(error, 'ME_USER_NOT_FOUND', req);
-      handleRouteError(res, error, 'User account not found. Please contact support.', 'ME_USER_NOT_FOUND');
+      logRouteError(new Error('User not found in database'), 'ME_USER_NOT_FOUND', req);
+      res.status(404).json({ 
+        error: 'User not found',
+        message: 'User account not found. Please contact support.',
+      });
       return;
     }
 
@@ -193,14 +277,14 @@ router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
       },
     });
   } catch (error: unknown) {
+    const err = error as Error & { code?: string; message?: string };
     logRouteError(error, 'ME_UNEXPECTED_ERROR', req);
     
     // Ensure response hasn't been sent
     if (!res.headersSent) {
-      // Use handleRouteError for consistent error handling
-      handleRouteError(res, error, 'Failed to get current user', 'ME_UNEXPECTED_ERROR');
+      // Pass error to Express error handler
+      next(error);
     } else {
-      const err = error as Error;
       logger.warn('Error in /auth/me but response already sent:', {
         error: err.message,
         path: req.url,

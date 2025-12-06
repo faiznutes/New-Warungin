@@ -8,7 +8,6 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import gdprService from '../services/gdpr.service';
 import logger from '../utils/logger';
 import { requireTenantId } from '../utils/tenant';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -36,8 +35,9 @@ router.get(
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="warungin-data-export-${Date.now()}.json"`);
       res.send(exportFile);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to export user data', 'GDPR_EXPORT_USER');
+    } catch (error: any) {
+      logger.error('Error exporting user data', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -63,10 +63,9 @@ router.post(
       // Require confirmation
       const { confirm } = req.body;
       if (!confirm || confirm !== 'DELETE_MY_DATA') {
-        const error = new Error('Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.', 'GDPR_DELETE_USER');
-        return;
+        return res.status(400).json({
+          message: 'Confirmation required. Send { "confirm": "DELETE_MY_DATA" } to proceed.',
+        });
       }
 
       await gdprService.deleteUserData(userId, tenantId);
@@ -74,8 +73,9 @@ router.post(
       res.json({
         message: 'Data Anda telah dihapus sesuai permintaan GDPR. Akun Anda telah dinonaktifkan.',
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to delete user data', 'GDPR_DELETE_USER');
+    } catch (error: any) {
+      logger.error('Error deleting user data', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -100,10 +100,7 @@ router.get(
 
       // Only ADMIN_TENANT and SUPER_ADMIN can export tenant data
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin can export tenant data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin can export tenant data', 'GDPR_EXPORT_TENANT');
-        return;
+        return res.status(403).json({ message: 'Only tenant admin can export tenant data' });
       }
 
       const data = await gdprService.exportTenantData(tenantId);
@@ -112,8 +109,9 @@ router.get(
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="warungin-tenant-export-${tenantId}-${Date.now()}.json"`);
       res.send(exportFile);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to export tenant data', 'GDPR_EXPORT_TENANT');
+    } catch (error: any) {
+      logger.error('Error exporting tenant data', { error: error.message, tenantId: req.tenantId });
+      res.status(500).json({ message: error.message });
     }
   }
 );

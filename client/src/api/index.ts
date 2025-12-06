@@ -67,7 +67,7 @@ api.interceptors.request.use(
     const isAuthMeRoute = config.url?.includes('/auth/me');
     
     // Get the URL path (remove baseURL if present)
-    const urlPath = config.url?.replace(/^https?:\/\/[^/]+/, '') || config.url || '';
+    const urlPath = config.url?.replace(/^https?:\/\/[^\/]+/, '') || config.url || '';
     
     // Skip routes that don't need tenantId
     const isPdfRoute = urlPath.includes('/pdf/generate');
@@ -112,7 +112,7 @@ api.interceptors.request.use(
     // Add outletId query param if selectedStoreId exists (for all users, not just super admin)
     // Skip for /outlets routes (list/create outlets), /auth routes, and /pdf routes
     if (selectedStoreId && !isAuthRoute && !isPdfRoute) {
-      const isOutletsRoute = /^\/outlets(\?|$)/.test(urlPath) || /^\/outlets\/[^/]+$/.test(urlPath);
+      const isOutletsRoute = /^\/outlets(\?|$)/.test(urlPath) || /^\/outlets\/[^\/]+$/.test(urlPath);
       const urlHasOutletId = urlPath.includes('outletId=');
       const paramsHasOutletId = config.params && 'outletId' in config.params;
       

@@ -5,7 +5,6 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import { auditLogger } from '../middlewares/audit-logger';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -34,8 +33,8 @@ router.get(
       
       const result = await employeeService.getEmployees(tenantId, page, limit, search, isActive);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process employee request', 'EMPLOYEE');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -49,8 +48,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const stats = await employeeService.getEmployeeStats(tenantId);
       res.json(stats);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process employee request', 'EMPLOYEE');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -64,14 +63,11 @@ router.get(
       const tenantId = requireTenantId(req);
       const employee = await employeeService.getEmployeeById(req.params.id, tenantId);
       if (!employee) {
-        const error = new Error('Employee not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Employee not found', 'GET_EMPLOYEE');
-        return;
+        return res.status(404).json({ message: 'Employee not found' });
       }
       res.json(employee);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process employee request', 'EMPLOYEE');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -87,8 +83,11 @@ router.post(
       const tenantId = requireTenantId(req);
       const employee = await employeeService.createEmployee(req.body, tenantId);
       res.status(201).json(employee);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create employee', 'CREATE_EMPLOYEE');
+    } catch (error: any) {
+      if (error.message.includes('already exists')) {
+        return res.status(409).json({ message: error.message });
+      }
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -104,8 +103,14 @@ router.put(
       const tenantId = requireTenantId(req);
       const employee = await employeeService.updateEmployee(req.params.id, req.body, tenantId);
       res.json(employee);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update employee', 'UPDATE_EMPLOYEE');
+    } catch (error: any) {
+      if (error.message === 'Employee not found') {
+        return res.status(404).json({ message: error.message });
+      }
+      if (error.message.includes('already exists')) {
+        return res.status(409).json({ message: error.message });
+      }
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -120,8 +125,11 @@ router.delete(
       const tenantId = requireTenantId(req);
       await employeeService.deleteEmployee(req.params.id, tenantId);
       res.status(204).send();
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to delete employee', 'DELETE_EMPLOYEE');
+    } catch (error: any) {
+      if (error.message === 'Employee not found') {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: error.message });
     }
   }
 );

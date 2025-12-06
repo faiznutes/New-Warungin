@@ -6,8 +6,6 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
-import { AppError } from '../utils/app-error';
 
 const router = Router();
 
@@ -34,13 +32,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      const user = req.user;
-      
-      if (!user) {
-        const error = new AppError('User not found', 401);
-        handleRouteError(res, error, 'User not found', 'GENERATE_2FA');
-        return;
-      }
+      const user = (req as any).user;
       
       // Get tenant ID - for SUPER_ADMIN, try query param or user's tenantId
       // For other roles, use user's tenantId
@@ -52,7 +44,7 @@ router.post(
         tenantId = (req.query.tenantId as string) || user.tenantId || null;
       } else {
         // For other roles, use tenantId from user
-        tenantId = user.tenantId || req.tenantId || null;
+        tenantId = user.tenantId || (req as any).tenantId || null;
       }
 
       // Get tenant name for service name (optional - if tenantId exists)
@@ -81,8 +73,9 @@ router.post(
         backupCodes: result.backupCodes,
         message: 'Simpan backup codes di tempat yang aman!',
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to generate 2FA secret', 'GENERATE_2FA_SECRET');
+    } catch (error: any) {
+      logger.error('Error generating 2FA secret', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -122,7 +115,7 @@ router.post(
         userId: req.userId,
         tokenLength: req.body?.token?.length
       });
-      handleRouteError(res, error, 'Failed to enable 2FA', 'ENABLE_2FA');
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -148,9 +141,9 @@ router.post(
       await twoFactorService.disable2FA(userId, password);
 
       res.json({ message: '2FA berhasil dinonaktifkan' });
-    } catch (error: unknown) {
-      logger.error('Error disabling 2FA', { error: (error as Error).message, userId: req.userId });
-      handleRouteError(res, error, 'Failed to disable 2FA', 'DISABLE_2FA');
+    } catch (error: any) {
+      logger.error('Error disabling 2FA', { error: error.message, userId: req.userId });
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -176,14 +169,13 @@ router.post(
       const isValid = await twoFactorService.verifyToken(userId, token);
 
       if (!isValid) {
-        const error = new AppError('Token 2FA tidak valid', 401, 'INVALID_2FA_TOKEN');
-        handleRouteError(res, error, 'Token 2FA tidak valid', 'VERIFY_2FA');
-        return;
+        return res.status(401).json({ message: 'Token 2FA tidak valid' });
       }
 
       res.json({ message: 'Token 2FA valid' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to verify 2FA token', 'VERIFY_2FA_TOKEN');
+    } catch (error: any) {
+      logger.error('Error verifying 2FA token', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -211,8 +203,9 @@ router.get(
         enabled: isEnabled,
         remainingBackupCodes,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get 2FA status', 'GET_2FA_STATUS');
+    } catch (error: any) {
+      logger.error('Error getting 2FA status', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );

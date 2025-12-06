@@ -267,7 +267,7 @@ export class SubscriptionReceiptService {
     const planNames: Record<string, string> = {
       'BASIC': 'Paket Basic',
       'PRO': 'Paket Pro',
-      'CUSTOM': 'Paket Custom/Max',
+      'ENTERPRISE': 'Paket Enterprise',
     };
 
     return {

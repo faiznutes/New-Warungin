@@ -22,7 +22,7 @@ model Tenant {
   isActive          Boolean   @default(true)
   subscriptionStart DateTime?
   subscriptionEnd   DateTime?
-  subscriptionPlan  String? // BASIC, PRO, CUSTOM
+  subscriptionPlan  String? // BASIC, PRO, ENTERPRISE
   previousPlan      String? // untuk revert
   temporaryUpgrade  Boolean   @default(false)
   features          Json? // cache aktif fitur saat ini
@@ -104,9 +104,6 @@ model User {
 
   @@unique([tenantId, email])
   @@index([tenantId])
-  @@index([tenantId, isActive])
-  @@index([tenantId, role])
-  @@index([tenantId, createdAt])
   @@map("users")
 }
 
@@ -255,11 +252,10 @@ model PaymentMapping {
   orderId   String   @unique // Midtrans order_id (short format)
   tenantId  String
   itemId    String
-  itemType  String // 'addon', 'subscription', or 'addon-extend'
+  itemType  String // 'addon' or 'subscription'
   itemName  String?
   amount    Decimal  @db.Decimal(10, 2)
   status    String   @default("PENDING") // PENDING, SETTLED, CANCELLED
-  config    Json? // Additional data like addonId, duration for addon-extend
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -427,18 +423,17 @@ model Report {
 
 // Tenant Addon Model
 model TenantAddon {
-  id                String    @id @default(uuid())
-  tenantId          String
-  addonId           String
-  addonName         String
-  addonType         String // ADD_USERS, ADD_PRODUCTS, ADD_OUTLETS, E_COMMERCE, etc.
-  status            String    @default("active")
-  limit             Int? // Limit for this addon (e.g., 100 products, 5 users)
-  currentUsage      Int       @default(0) // Current usage count
-  subscribedAt      DateTime  @default(now())
-  expiresAt         DateTime?
-  config            Json?
-  addedBySuperAdmin Boolean   @default(false) // true if added by super admin, false if purchased by tenant
+  id           String    @id @default(uuid())
+  tenantId     String
+  addonId      String
+  addonName    String
+  addonType    String // ADD_USERS, ADD_PRODUCTS, ADD_OUTLETS, E_COMMERCE, etc.
+  status       String    @default("active")
+  limit        Int? // Limit for this addon (e.g., 100 products, 5 users)
+  currentUsage Int       @default(0) // Current usage count
+  subscribedAt DateTime  @default(now())
+  expiresAt    DateTime?
+  config       Json?
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -453,14 +448,13 @@ model TenantAddon {
 model Subscription {
   id               String   @id @default(uuid())
   tenantId         String
-  plan             String // BASIC, PRO, CUSTOM
+  plan             String // BASIC, PRO, ENTERPRISE
   startDate        DateTime
   endDate          DateTime
   status           String // ACTIVE, EXPIRED, CANCELLED
   amount           Decimal  @db.Decimal(10, 2)
   temporaryUpgrade Boolean  @default(false) // true jika upgrade sementara 1 bulan
   previousPlan     String? // Plan sebelumnya (untuk revert)
-  addedBySuperAdmin Boolean @default(false) // true if added by super admin, false if purchased by tenant
   createdAt        DateTime @default(now())
 
   // Relations
@@ -478,7 +472,7 @@ model SubscriptionHistory {
   id             String   @id @default(uuid())
   subscriptionId String?
   tenantId       String
-  planType       String // BASIC, PRO, CUSTOM
+  planType       String // BASIC, PRO, ENTERPRISE
   startDate      DateTime
   endDate        DateTime
   price          Decimal  @db.Decimal(10, 2)
@@ -606,19 +600,15 @@ model DailyAdView {
 
 // Contact Submission Model
 model ContactSubmission {
-  id          String   @id @default(uuid())
-  name        String
-  email       String
-  phone       String?
-  subject     String
-  message     String
-  isProcessed Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
 
   @@index([email])
   @@index([createdAt])
-  @@index([isProcessed])
   @@map("contact_submissions")
 }
 

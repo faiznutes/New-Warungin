@@ -7,25 +7,13 @@
     <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
-            Kelola Template Struk Langganan
-          </h3>
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Kelola Template Struk Langganan</h3>
           <button
-            class="text-gray-400 hover:text-gray-600 transition p-2"
             @click="$emit('close')"
+            class="text-gray-400 hover:text-gray-600 transition p-2"
           >
-            <svg
-              class="w-5 h-5 sm:w-6 sm:h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -33,25 +21,13 @@
         <!-- Template List -->
         <div class="mb-6">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-            <h4 class="text-lg font-semibold text-gray-900">
-              Template Tersedia
-            </h4>
+            <h4 class="text-lg font-semibold text-gray-900">Template Tersedia</h4>
             <button
-              class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
               @click="showCreateModal = true"
+              class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
             >
-              <svg
-                class="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
               <span>Tambah Template</span>
             </button>
@@ -67,12 +43,8 @@
             >
               <div class="flex items-start justify-between mb-2">
                 <div class="flex-1">
-                  <h5 class="font-semibold text-gray-900 mb-1">
-                    {{ template.name }}
-                  </h5>
-                  <p class="text-xs text-gray-500 mb-2">
-                    {{ template.templateType }}
-                  </p>
+                  <h5 class="font-semibold text-gray-900 mb-1">{{ template.name }}</h5>
+                  <p class="text-xs text-gray-500 mb-2">{{ template.templateType }}</p>
                   <span
                     class="inline-block px-2 py-1 text-xs rounded"
                     :class="template.paperSize === 'A4' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'"
@@ -89,22 +61,22 @@
               </div>
               <div class="flex items-center space-x-2 mt-3">
                 <button
-                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
                   @click.stop="editTemplate(template)"
+                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
                 >
                   Edit
                 </button>
                 <button
                   v-if="!template.isDefault"
-                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition"
                   @click.stop="setAsDefault(template.id)"
+                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition"
                 >
                   Set Default
                 </button>
                 <button
                   v-if="!template.isDefault"
-                  class="px-2 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
                   @click.stop="deleteTemplate(template.id)"
+                  class="px-2 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
                 >
                   Hapus
                 </button>
@@ -114,13 +86,8 @@
         </div>
 
         <!-- Template Preview -->
-        <div
-          v-if="selectedTemplate"
-          class="border-t pt-6"
-        >
-          <h4 class="text-lg font-semibold text-gray-900 mb-4">
-            Preview Template
-          </h4>
+        <div v-if="selectedTemplate" class="border-t pt-6">
+          <h4 class="text-lg font-semibold text-gray-900 mb-4">Preview Template</h4>
           <div class="bg-gray-50 rounded-lg p-4 sm:p-6">
             <div
               ref="previewContent"
@@ -132,12 +99,8 @@
                 <h1 :class="getTemplateTitleStyle(selectedTemplate.templateType)">
                   Warungin
                 </h1>
-                <p class="text-xs sm:text-sm text-gray-600">
-                  Platform Subscription Receipt
-                </p>
-                <p class="text-xs sm:text-sm text-gray-600 mt-1">
-                  Telp: 085155043133
-                </p>
+                <p class="text-xs sm:text-sm text-gray-600">Platform Subscription Receipt</p>
+                <p class="text-xs sm:text-sm text-gray-600 mt-1">Telp: 081234567890</p>
               </div>
               <div class="space-y-2 mb-4">
                 <div class="flex justify-between text-sm">
@@ -160,9 +123,7 @@
                 <span>Rp 500.000</span>
               </div>
               <div :class="getTemplateFooterStyle(selectedTemplate.templateType)">
-                <p class="font-semibold">
-                  Terima Kasih!
-                </p>
+                <p class="font-semibold">Terima Kasih!</p>
               </div>
             </div>
           </div>
@@ -184,29 +145,16 @@
                 {{ editingTemplate ? 'Edit Template' : 'Tambah Template Baru' }}
               </h3>
               <button
-                class="text-gray-400 hover:text-gray-600 transition"
                 @click="closeTemplateModal"
+                class="text-gray-400 hover:text-gray-600 transition"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <form
-              class="space-y-4"
-              @submit.prevent="saveTemplate"
-            >
+            <form @submit.prevent="saveTemplate" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama Template</label>
                 <input
@@ -225,21 +173,11 @@
                   required
                   class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="DEFAULT">
-                    Struk Standar
-                  </option>
-                  <option value="MODERN">
-                    Struk Modern
-                  </option>
-                  <option value="MINIMAL">
-                    Struk Minimalis
-                  </option>
-                  <option value="DETAILED">
-                    Struk Detail
-                  </option>
-                  <option value="COMPACT">
-                    Struk Kompak
-                  </option>
+                  <option value="DEFAULT">Struk Standar</option>
+                  <option value="MODERN">Struk Modern</option>
+                  <option value="MINIMAL">Struk Minimalis</option>
+                  <option value="DETAILED">Struk Detail</option>
+                  <option value="COMPACT">Struk Kompak</option>
                 </select>
               </div>
 
@@ -250,23 +188,15 @@
                   required
                   class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="A4">
-                    A4 (Kertas Biasa)
-                  </option>
-                  <option value="THERMAL_58">
-                    Thermal 58mm
-                  </option>
-                  <option value="THERMAL_80">
-                    Thermal 80mm
-                  </option>
+                  <option value="A4">A4 (Kertas Biasa)</option>
+                  <option value="THERMAL_58">Thermal 58mm</option>
+                  <option value="THERMAL_80">Thermal 80mm</option>
                 </select>
               </div>
 
               <!-- Header Settings -->
               <div class="border-t pt-4">
-                <h4 class="font-semibold text-gray-900 mb-3">
-                  Pengaturan Header
-                </h4>
+                <h4 class="font-semibold text-gray-900 mb-3">Pengaturan Header</h4>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input
@@ -297,9 +227,7 @@
 
               <!-- Fields Settings -->
               <div class="border-t pt-4">
-                <h4 class="font-semibold text-gray-900 mb-3">
-                  Field yang Ditampilkan
-                </h4>
+                <h4 class="font-semibold text-gray-900 mb-3">Field yang Ditampilkan</h4>
                 <div class="grid grid-cols-2 gap-2">
                   <label class="flex items-center space-x-2">
                     <input
@@ -378,9 +306,7 @@
 
               <!-- Footer Settings -->
               <div class="border-t pt-4">
-                <h4 class="font-semibold text-gray-900 mb-3">
-                  Pengaturan Footer
-                </h4>
+                <h4 class="font-semibold text-gray-900 mb-3">Pengaturan Footer</h4>
                 <div class="space-y-2">
                   <label class="flex items-center space-x-2">
                     <input
@@ -404,8 +330,8 @@
               <div class="flex space-x-3 pt-4 border-t">
                 <button
                   type="button"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
                   @click="closeTemplateModal"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
                 >
                   Batal
                 </button>

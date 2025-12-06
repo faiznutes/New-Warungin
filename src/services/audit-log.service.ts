@@ -1,6 +1,5 @@
 import prisma from '../config/database';
 import { Request } from 'express';
-import logger from '../utils/logger';
 
 export interface AuditLogData {
   tenantId?: string | null;
@@ -41,7 +40,7 @@ export class AuditLogService {
       });
     } catch (error: any) {
       // Don't throw error - audit logging should not break the application
-      logger.error('Failed to create audit log', { error: error.message, action: data.action, resource: data.resource });
+      console.error('Failed to create audit log:', error.message);
     }
   }
 

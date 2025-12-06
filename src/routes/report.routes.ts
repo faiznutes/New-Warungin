@@ -1,11 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
-import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -32,58 +30,33 @@ const router = Router();
 router.get(
   '/global',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response, next) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const user = (req as any).user;
       
       // Only Super Admin can access global reports
-      if (!userRole || userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Access denied. Super Admin only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Super Admin only.', 'GLOBAL_REPORT');
-        return;
+      if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
       }
 
       const { startDate, endDate } = req.query;
+      let start = startDate ? new Date(startDate as string) : undefined;
+      let end = endDate ? new Date(endDate as string) : undefined;
       
-      // Validate date format if provided
-      let start: Date | undefined;
-      let end: Date | undefined;
-      
-      if (startDate) {
-        start = new Date(startDate as string);
-        if (isNaN(start.getTime())) {
-          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        start.setHours(0, 0, 0, 0);
-      }
-      
-      if (endDate) {
-        end = new Date(endDate as string);
-        if (isNaN(end.getTime())) {
-          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
+      // If end date is provided, set time to end of day to include all subscriptions created on that day
+      if (end) {
         end.setHours(23, 59, 59, 999);
       }
       
-      // Validate date range
-      if (start && end && start > end) {
-        const error = new Error('startDate must be before or equal to endDate.');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
-        return;
+      // If start date is provided, set time to start of day
+      if (start) {
+        start.setHours(0, 0, 0, 0);
       }
 
       const report = await reportService.getGlobalReport(start, end);
-      return res.json(report);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load global report', 'GLOBAL_REPORT');
+      res.json(report);
+    } catch (error: any) {
+      next(error);
     }
   }
 );
@@ -118,9 +91,8 @@ router.get(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
-    let tenantId: string | undefined;
     try {
-      tenantId = requireTenantId(req);
+      const tenantId = requireTenantId(req);
       const { startDate, endDate, reportType, period, format } = req.query;
 
       // Check if export format is requested (requires EXPORT_REPORTS addon)
@@ -128,51 +100,18 @@ router.get(
         // Check addon for export
         const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
         const hasExportAddon = addons.some(
-          (addon: any) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'active'
+          (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'active'
         );
         
         if (!hasExportAddon) {
-          const error = new Error('Export Laporan addon is required to export reports');
-          (error as any).statusCode = 403;
-          handleRouteError(res, error, 'Export Laporan addon is required to export reports', 'EXPORT_REPORT');
-          return;
+          return res.status(403).json({ 
+            message: 'Export Laporan addon is required to export reports' 
+          });
         }
       }
 
-      // Validate date format if provided
-      let start: Date | undefined;
-      let end: Date | undefined;
-      
-      if (startDate) {
-        start = new Date(startDate as string);
-        if (isNaN(start.getTime())) {
-          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        start.setHours(0, 0, 0, 0);
-      }
-      
-      if (endDate) {
-        end = new Date(endDate as string);
-        if (isNaN(end.getTime())) {
-          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        end.setHours(23, 59, 59, 999);
-      }
-      
-      // Validate date range
-      if (start && end && start > end) {
-        const error = new Error('startDate must be before or equal to endDate.');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
-        return;
-      }
-      
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
       const type = (reportType as string) || 'sales';
       const periodType = (period as string) || 'all';
 
@@ -221,10 +160,10 @@ router.get(
           report = await reportService.getTenantReport(tenantId, start, end, type);
       }
 
-      return res.json(report);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to load tenant report', 'TENANT_REPORT');
+      res.json(report);
+    } catch (error: any) {
+      console.error('Error loading tenant report:', error);
+      res.status(500).json({ message: error.message || 'Failed to load tenant report' });
     }
   }
 );
@@ -243,91 +182,19 @@ router.get(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
-    let tenantId: string | undefined;
     try {
-      tenantId = requireTenantId(req);
-      const { startDate, endDate, type, period } = req.query;
+      const tenantId = requireTenantId(req);
+      const { startDate, endDate, type } = req.query;
 
-      // Validate date format if provided
-      let start: Date | undefined;
-      let end: Date | undefined;
-      
-      if (startDate) {
-        start = new Date(startDate as string);
-        if (isNaN(start.getTime())) {
-          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        start.setHours(0, 0, 0, 0);
-      }
-      
-      if (endDate) {
-        end = new Date(endDate as string);
-        if (isNaN(end.getTime())) {
-          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        end.setHours(23, 59, 59, 999);
-      }
-      
-      // Validate date range
-      if (start && end && start > end) {
-        const error = new Error('startDate must be before or equal to endDate.');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
-        return;
-      }
-      
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
       const reportType = (type as string) || 'sales';
-      const periodType = (period as string) || 'all';
 
-      // Use new report service methods for consistency
-      let report: any;
-      switch (reportType) {
-        case 'sales':
-          report = await reportService.generateSalesReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-          });
-          break;
-        case 'products':
-          report = await reportService.generateProductReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-          });
-          break;
-        case 'customers':
-          report = await reportService.generateCustomerReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-          });
-          break;
-        case 'inventory':
-          report = await reportService.generateInventoryReport(tenantId, {});
-          break;
-        case 'financial':
-          report = await reportService.generateFinancialReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-          });
-          break;
-        default:
-          // Fallback to old method for backward compatibility
-          report = await reportService.getTenantReport(tenantId, start, end, reportType);
-      }
-
-      return res.json(report);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to load report', 'REPORT');
+      const report = await reportService.getTenantReport(tenantId, start, end, reportType);
+      res.json(report);
+    } catch (error: any) {
+      console.error('Error loading report:', error);
+      res.status(500).json({ message: error.message || 'Failed to load report' });
     }
   }
 );
@@ -344,66 +211,31 @@ router.get(
 router.get(
   '/global/export/pdf',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const user = (req as any).user;
       
       // Only Super Admin can access global reports
-      if (userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Access denied. Super Admin only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Super Admin only.', 'EXPORT_GLOBAL_REPORT');
-        return;
+      if (user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
       }
 
       const { startDate, endDate } = req.query;
-      
-      // Validate date format if provided
-      let start: Date | undefined;
-      let end: Date | undefined;
-      
-      if (startDate) {
-        start = new Date(startDate as string);
-        if (isNaN(start.getTime())) {
-          const error = new Error('Invalid startDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid startDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        start.setHours(0, 0, 0, 0);
-      }
-      
-      if (endDate) {
-        end = new Date(endDate as string);
-        if (isNaN(end.getTime())) {
-          const error = new Error('Invalid endDate format. Use YYYY-MM-DD.');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Invalid endDate format. Use YYYY-MM-DD.', 'GLOBAL_REPORT');
-          return;
-        }
-        end.setHours(23, 59, 59, 999);
-      }
-      
-      // Validate date range
-      if (start && end && start > end) {
-        const error = new Error('startDate must be before or equal to endDate.');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'startDate must be before or equal to endDate.', 'GLOBAL_REPORT');
-        return;
-      }
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
 
       const report = await reportService.getGlobalReport(start, end);
       
-      // Generate HTML for PDF (this method is safe and won't throw)
+      // Generate HTML for PDF
       const html = reportService.generateGlobalReportPDF(report, start, end);
       
       // Set headers for PDF download
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
-      return res.send(html);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to export PDF', 'EXPORT_PDF');
+      res.send(html);
+    } catch (error: any) {
+      console.error('Error exporting global report PDF:', error);
+      res.status(500).json({ message: error.message || 'Failed to export PDF' });
     }
   }
 );

@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Customer } from '@prisma/client';
 import { CreateCustomerInput, UpdateCustomerInput, GetCustomersQuery } from '../validators/customer.validator';
 import prisma from '../config/database';
 import CacheService from '../utils/cache';
 import logger from '../utils/logger';
-import { sanitizeText, sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 export class CustomerService {
   async getCustomers(tenantId: string, query: GetCustomersQuery, useCache: boolean = true) {
@@ -93,12 +92,12 @@ export class CustomerService {
     return result;
   }
 
-  async getCustomerById(id: string, tenantId: string, useCache: boolean = true) {
+  async getCustomerById(id: string, tenantId: string, useCache: boolean = true): Promise<Customer | null> {
     const cacheKey = `customer:${tenantId}:${id}`;
 
     // Try to get from cache first
     if (useCache) {
-      const cached = await CacheService.get(cacheKey);
+      const cached = await CacheService.get<Customer | null>(cacheKey);
       if (cached !== null) {
         return cached;
       }
@@ -134,21 +133,11 @@ export class CustomerService {
     return customer;
   }
 
-  async createCustomer(data: CreateCustomerInput, tenantId: string) {
-    // Sanitize text fields
-    const sanitizedData = {
-      ...data,
-      name: sanitizeString(data.name, 255),
-      email: data.email ? sanitizeEmail(data.email) : undefined,
-      phone: data.phone ? sanitizePhone(data.phone) : undefined,
-      address: data.address ? sanitizeText(data.address) : undefined,
-      notes: data.notes ? sanitizeText(data.notes) : undefined,
-    };
-    
+  async createCustomer(data: CreateCustomerInput, tenantId: string): Promise<Customer> {
     try {
       const customer = await prisma.customer.create({
         data: {
-          ...sanitizedData,
+          ...data,
           tenantId,
         },
       });
@@ -159,7 +148,7 @@ export class CustomerService {
       return customer;
     } catch (error: any) {
       // Log the error for debugging
-      logger.error('Prisma error in createCustomer', { error: error.message, code: error.code, tenantId });
+      console.error('Prisma error in createCustomer:', error);
       // Re-throw with more context
       if (error.code === 'P1001' || error.code === 'P1002' || error.message?.includes('connect')) {
         throw new Error('Database connection failed. Please try again.');
@@ -168,25 +157,15 @@ export class CustomerService {
     }
   }
 
-  async updateCustomer(id: string, data: UpdateCustomerInput, tenantId: string) {
+  async updateCustomer(id: string, data: UpdateCustomerInput, tenantId: string): Promise<Customer> {
     const customer = await this.getCustomerById(id, tenantId);
     if (!customer) {
       throw new Error('Customer not found');
     }
 
-    // Sanitize input data
-    const sanitizedData: UpdateCustomerInput = {
-      ...data,
-      name: data.name ? sanitizeString(data.name, 255) : undefined,
-      email: data.email ? sanitizeEmail(data.email) : undefined,
-      phone: data.phone ? sanitizePhone(data.phone) : undefined,
-      address: data.address ? sanitizeText(data.address) : undefined,
-      notes: data.notes ? sanitizeText(data.notes) : undefined,
-    };
-
     const updatedCustomer = await prisma.customer.update({
       where: { id },
-      data: sanitizedData,
+      data,
     });
 
     // Invalidate analytics cache after customer update

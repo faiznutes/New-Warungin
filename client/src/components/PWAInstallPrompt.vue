@@ -6,59 +6,37 @@
     <div class="flex items-start space-x-4">
       <div class="flex-shrink-0">
         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-          <svg
-            class="w-6 h-6 text-primary-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-            />
+          <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
         </div>
       </div>
       <div class="flex-1">
-        <h3 class="text-lg font-semibold text-gray-900 mb-1">
-          Install Warungin
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Install Warungin</h3>
         <p class="text-sm text-gray-600 mb-4">
           Install aplikasi untuk akses lebih cepat dan fitur offline
         </p>
         <div class="flex space-x-2">
           <button
-            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-sm"
             @click="handleInstall"
+            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-sm"
           >
             Install
           </button>
           <button
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold text-sm"
             @click="dismiss"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold text-sm"
           >
             Nanti
           </button>
         </div>
       </div>
       <button
-        class="flex-shrink-0 text-gray-400 hover:text-gray-600"
         @click="dismiss"
+        class="flex-shrink-0 text-gray-400 hover:text-gray-600"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>

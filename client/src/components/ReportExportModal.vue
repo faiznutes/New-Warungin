@@ -7,103 +7,58 @@
     <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">
-            Export Laporan
-          </h3>
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Export Laporan</h3>
           <button
-            class="text-gray-400 hover:text-gray-600 transition p-2"
             @click="$emit('close')"
+            class="text-gray-400 hover:text-gray-600 transition p-2"
           >
-            <svg
-              class="w-5 h-5 sm:w-6 sm:h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <form
-          class="space-y-4 sm:space-y-6"
-          @submit.prevent="handleExport"
-        >
+        <form @submit.prevent="handleExport" class="space-y-4 sm:space-y-6">
           <!-- Export Type Selection -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Export</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
                 type="button"
+                @click="exportForm.exportType = 'report'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="exportForm.exportType === 'report' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.exportType = 'report'"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <span class="text-sm">Laporan</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.exportType = 'analytics'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="exportForm.exportType === 'analytics' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.exportType = 'analytics'"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span class="text-sm">Analytics</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.exportType = 'both'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="exportForm.exportType === 'both' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.exportType = 'both'"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <span class="text-sm">Keduanya</span>
               </button>
@@ -118,21 +73,11 @@
               required
               class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             >
-              <option value="sales">
-                Laporan Penjualan
-              </option>
-              <option value="product">
-                Laporan Produk
-              </option>
-              <option value="customers">
-                Laporan Pelanggan
-              </option>
-              <option value="inventory">
-                Laporan Inventori
-              </option>
-              <option value="financial">
-                Laporan Keuangan
-              </option>
+              <option value="sales">Laporan Penjualan</option>
+              <option value="product">Laporan Produk</option>
+              <option value="customers">Laporan Pelanggan</option>
+              <option value="inventory">Laporan Inventori</option>
+              <option value="financial">Laporan Keuangan</option>
             </select>
           </div>
 
@@ -142,41 +87,41 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
               <button
                 type="button"
+                @click="exportForm.period = 'daily'"
                 class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
                 :class="exportForm.period === 'daily' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.period = 'daily'"
               >
                 Harian
               </button>
               <button
                 type="button"
+                @click="exportForm.period = 'weekly'"
                 class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
                 :class="exportForm.period === 'weekly' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.period = 'weekly'"
               >
                 Mingguan
               </button>
               <button
                 type="button"
+                @click="exportForm.period = 'monthly'"
                 class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
                 :class="exportForm.period === 'monthly' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.period = 'monthly'"
               >
                 Bulanan
               </button>
               <button
                 type="button"
+                @click="exportForm.period = 'all'"
                 class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
                 :class="exportForm.period === 'all' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
-                @click="exportForm.period = 'all'"
               >
                 Semua
               </button>
@@ -184,10 +129,7 @@
           </div>
 
           <!-- Date Range (if not 'all') -->
-          <div
-            v-if="exportForm.period !== 'all'"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-          >
+          <div v-if="exportForm.period !== 'all'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
               <input
@@ -214,55 +156,55 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               <button
                 type="button"
+                @click="exportForm.template = 'minimalist'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'minimalist' 
                   ? 'border-gray-800 bg-gray-900 text-white font-semibold' 
                   : 'border-gray-300 hover:border-gray-400 bg-white'"
-                @click="exportForm.template = 'minimalist'"
               >
                 <span class="font-medium">Minimalis</span>
                 <span class="text-xs opacity-75">Sederhana</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.template = 'modern'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'modern' 
                   ? 'border-blue-600 bg-blue-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-blue-300 bg-white'"
-                @click="exportForm.template = 'modern'"
               >
                 <span class="font-medium">Modern</span>
                 <span class="text-xs opacity-75">Kontemporer</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.template = 'classic'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'classic' 
                   ? 'border-amber-800 bg-amber-800 text-white font-semibold' 
                   : 'border-gray-300 hover:border-amber-400 bg-white'"
-                @click="exportForm.template = 'classic'"
               >
                 <span class="font-medium">Klasik</span>
                 <span class="text-xs opacity-75">Tradisional</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.template = 'colorful'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'colorful' 
                   ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-pink-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-purple-300 bg-white'"
-                @click="exportForm.template = 'colorful'"
               >
                 <span class="font-medium">Berwarna</span>
                 <span class="text-xs opacity-75">Vibrant</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.template = 'elegant'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'elegant' 
                   ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold' 
                   : 'border-gray-300 hover:border-emerald-300 bg-white'"
-                @click="exportForm.template = 'elegant'"
               >
                 <span class="font-medium">Elegan</span>
                 <span class="text-xs opacity-75">Premium</span>
@@ -276,53 +218,30 @@
             <div class="grid grid-cols-2 gap-3">
               <button
                 type="button"
+                @click="exportForm.format = 'CSV'"
                 :disabled="exportForm.exportType === 'analytics'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 :class="exportForm.format === 'CSV' 
                   ? 'border-green-500 bg-green-50 text-green-700 font-semibold' 
                   : 'border-gray-300 hover:border-green-300'"
-                @click="exportForm.format = 'CSV'"
               >
-                <svg
-                  class="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <span class="text-sm">CSV</span>
                 <span class="text-xs text-gray-500">Excel Compatible</span>
-                <span
-                  v-if="exportForm.exportType === 'analytics'"
-                  class="text-xs text-red-500"
-                >Tidak tersedia</span>
+                <span v-if="exportForm.exportType === 'analytics'" class="text-xs text-red-500">Tidak tersedia</span>
               </button>
               <button
                 type="button"
+                @click="exportForm.format = 'PDF'"
                 class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
                 :class="exportForm.format === 'PDF' 
                   ? 'border-red-500 bg-red-50 text-red-700 font-semibold' 
                   : 'border-gray-300 hover:border-red-300'"
-                @click="exportForm.format = 'PDF'"
               >
-                <svg
-                  class="w-8 h-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
                 <span class="text-sm">PDF</span>
                 <span class="text-xs text-gray-500">Print Ready</span>
@@ -332,9 +251,7 @@
 
           <!-- Summary -->
           <div class="bg-gray-50 rounded-lg p-4">
-            <h4 class="font-semibold text-gray-900 mb-2">
-              Ringkasan Export
-            </h4>
+            <h4 class="font-semibold text-gray-900 mb-2">Ringkasan Export</h4>
             <div class="space-y-1 text-sm text-gray-600">
               <div class="flex justify-between">
                 <span>Tipe:</span>
@@ -348,10 +265,7 @@
                 <span>Format:</span>
                 <span class="font-medium">{{ exportForm.format }}</span>
               </div>
-              <div
-                v-if="exportForm.format === 'PDF'"
-                class="flex justify-between"
-              >
+              <div v-if="exportForm.format === 'PDF'" class="flex justify-between">
                 <span>Template:</span>
                 <span class="font-medium">{{ getTemplateLabel(exportForm.template) }}</span>
               </div>
@@ -362,8 +276,8 @@
           <div class="flex space-x-3 pt-4 border-t">
             <button
               type="button"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
               @click="$emit('close')"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
             >
               Batal
             </button>

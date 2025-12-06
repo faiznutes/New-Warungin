@@ -37,12 +37,7 @@ class DataEncryptionService {
 
       let encrypted = cipher.update(data, 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      
-      // For GCM mode, get auth tag
-      let tag = Buffer.alloc(0);
-      if ('getAuthTag' in cipher && typeof (cipher as any).getAuthTag === 'function') {
-        tag = (cipher as any).getAuthTag();
-      }
+      const tag = cipher.getAuthTag();
 
       // Combine IV, tag, and encrypted data
       return `${iv.toString('hex')}:${tag.toString('hex')}:${encrypted}`;
@@ -69,9 +64,7 @@ class DataEncryptionService {
       const encrypted = parts[2];
 
       const decipher = crypto.createDecipheriv(this.algorithm, key, iv);
-      if (tag.length > 0 && 'setAuthTag' in decipher && typeof (decipher as any).setAuthTag === 'function') {
-        (decipher as any).setAuthTag(tag);
-      }
+      decipher.setAuthTag(tag);
 
       let decrypted = decipher.update(encrypted, 'hex', 'utf8');
       decrypted += decipher.final('utf8');

@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import marketingService from '../services/marketing.service';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -30,7 +29,6 @@ const createPromoSchema = z.object({
 router.get(
   '/campaigns',
   authGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -102,7 +100,6 @@ router.post(
 router.post(
   '/campaigns/:campaignId/send',
   authGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -130,10 +127,7 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       if (req.body.type !== 'EMAIL') {
-        const error = new Error('This endpoint is only for EMAIL campaigns');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'This endpoint is only for EMAIL campaigns', 'SEND_EMAIL_CAMPAIGN');
-        return;
+        return res.status(400).json({ message: 'This endpoint is only for EMAIL campaigns' });
       }
       
       const result = await marketingService.sendEmailCampaign(tenantId, {
@@ -163,10 +157,7 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       if (req.body.type !== 'SMS' && req.body.type !== 'WHATSAPP') {
-        const error = new Error('This endpoint is only for SMS/WhatsApp campaigns');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'This endpoint is only for SMS/WhatsApp campaigns', 'SEND_SMS_CAMPAIGN');
-        return;
+        return res.status(400).json({ message: 'This endpoint is only for SMS/WhatsApp campaigns' });
       }
       
       const result = await marketingService.sendSMSCampaign(tenantId, {
@@ -267,7 +258,6 @@ router.post(
 router.get(
   '/analytics',
   authGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -313,7 +303,6 @@ router.get(
 router.get(
   '/campaigns/:campaignId/roi',
   authGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

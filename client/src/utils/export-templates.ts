@@ -1275,7 +1275,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
       }
       break;
       
-    case 'customers': {
+    case 'customers':
       const allCustomers = [
         ...(reportData.customers || []),
         ...(reportData.members || []),
@@ -1309,7 +1309,6 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      }
       
     case 'financial':
       if (reportData.byDate && reportData.byDate.length > 0) {
@@ -1498,7 +1497,7 @@ function formatLabel(key: string): string {
     activeTenants: 'Tenant Aktif',
     totalSubscriptionRevenue: 'Pendapatan Subscription',
     totalAddonRevenue: 'Pendapatan Addons',
-    totalGlobalRevenue: 'Total Pendapatan',
+    totalGlobalRevenue: 'Total Pendapatan Global',
     averagePerTenant: 'Rata-rata per Tenant',
     totalTransactions: 'Total Transaksi',
   };

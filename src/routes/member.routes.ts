@@ -122,10 +122,7 @@ router.get(
       const tenantId = requireTenantId(req);
       const member = await memberService.getMemberByCode(req.params.code, tenantId);
       if (!member) {
-        const error = new Error('Member not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Member not found', 'GET_MEMBER_BY_CODE');
-        return;
+        return res.status(404).json({ message: 'Member not found' });
       }
       res.json(member);
     } catch (error: unknown) {
@@ -169,10 +166,7 @@ router.get(
       const tenantId = requireTenantId(req);
       const member = await memberService.getMemberById(req.params.id, tenantId);
       if (!member) {
-        const error = new Error('Member not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Member not found', 'GET_MEMBER');
-        return;
+        return res.status(404).json({ message: 'Member not found' });
       }
       res.json(member);
     } catch (error: unknown) {
@@ -208,7 +202,7 @@ router.get(
  *                 example: john@example.com
  *               phone:
  *                 type: string
- *                 example: "0851-5504-3133"
+ *                 example: "081234567890"
  *               address:
  *                 type: string
  *                 example: "123 Main St"

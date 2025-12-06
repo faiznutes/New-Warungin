@@ -34,15 +34,15 @@
           <div class="px-6 pb-6 flex gap-3">
             <button
               v-if="type === 'confirm'"
-              class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
               @click="handleCancel"
+              class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
             >
               {{ cancelText }}
             </button>
             <button
+              @click="handleConfirm"
               class="flex-1 px-4 py-2.5 rounded-lg font-medium transition"
               :class="confirmButtonClass"
-              @click="handleConfirm"
             >
               {{ confirmText }}
             </button>

@@ -76,7 +76,7 @@ class StockAlertService {
       try {
         await marketingService.sendEmailCampaign(tenantId, {
           name: subject,
-          target: 'ALL',
+          target: tenant.email,
           subject,
           content,
         });

@@ -20,11 +20,8 @@ export interface TopProductDetail {
 
 export class DashboardService {
   async getDashboardStats(tenantId: string, startDate?: Date, endDate?: Date, useCache: boolean = true) {
-    // Create cache key based on tenantId and date range
-    const dateKey = startDate && endDate 
-      ? `${startDate.toISOString()}_${endDate.toISOString()}`
-      : 'default';
-    const cacheKey = `dashboard:${tenantId}:${dateKey}`;
+    // Create cache key based on tenant, dates
+    const cacheKey = `dashboard:${tenantId}:${startDate?.toISOString() || 'all'}:${endDate?.toISOString() || 'all'}`;
 
     // Try to get from cache first
     if (useCache) {
@@ -213,6 +210,31 @@ export class DashboardService {
       // Continue with empty array if top products query fails
       topProductsWithDetails = [];
     }
+
+    return {
+      overview: {
+        totalOrders,
+        totalRevenue: currentRevenue,
+        totalProducts,
+        totalCustomers,
+        totalMembers,
+        todayOrders,
+        todayRevenue: Number(todayRevenue._sum.total || 0),
+        revenueGrowth: Math.round(revenueGrowth * 100) / 100,
+      },
+      alerts: {
+        lowStockProducts: lowStockProducts.length,
+        lowStockProductsList: lowStockProducts,
+      },
+      charts: {
+        salesByStatus: salesByStatus.map((item) => ({
+          status: item.status,
+          count: item._count.id,
+        })),
+        topProducts: topProductsWithDetails,
+      },
+      recentOrders,
+    };
 
     // Cache the result (5 minutes TTL for dashboard stats)
     const result = {

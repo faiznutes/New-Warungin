@@ -156,11 +156,11 @@ class DeliveryService {
       customerAddress: order.customer?.address || order.notes || '',
       customerCity: '', // Extract from address or get from customer
       customerPostalCode: '', // Extract from address or get from customer
-      weight: order.items.reduce((sum, item) => sum + 0.1 * item.quantity, 0), // Default weight 0.1kg per item
+      weight: order.items.reduce((sum, item) => sum + (item.product?.weight || 0.1) * item.quantity, 0),
       items: order.items.map(item => ({
         name: item.product?.name || 'Product',
         quantity: item.quantity,
-        value: Number(item.price) * item.quantity,
+        value: item.price * item.quantity,
       })),
     };
 

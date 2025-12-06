@@ -82,7 +82,7 @@ class AccountingIntegrationService {
             name: item.product.name,
             quantity: item.quantity,
             price: parseFloat(item.product.price.toString()),
-            total: parseFloat(item.subtotal.toString()),
+            total: parseFloat(item.total.toString()),
           })) || [],
         };
 
@@ -317,7 +317,6 @@ class AccountingIntegrationService {
       logger.error('Error syncing financial summary:', error);
       return {
         success: false,
-        synced: 0,
         error: error.message || 'Failed to sync financial summary',
       };
     }

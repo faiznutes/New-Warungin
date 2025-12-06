@@ -3,57 +3,32 @@
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">
-          Webhooks
-        </h1>
-        <p class="text-gray-600">
-          Kelola webhook untuk integrasi dengan sistem eksternal
-        </p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Webhooks</h1>
+        <p class="text-gray-600">Kelola webhook untuk integrasi dengan sistem eksternal</p>
       </div>
       <button
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
         @click="showCreateModal = true"
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
       >
         + Buat Webhook
       </button>
     </div>
 
     <!-- Loading State -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Webhooks List -->
-    <div
-      v-else
-      class="space-y-4"
-    >
-      <div
-        v-if="webhooks.length === 0"
-        class="bg-white rounded-lg shadow-md p-12 text-center"
-      >
-        <svg
-          class="w-16 h-16 text-gray-400 mx-auto mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-          />
+    <div v-else class="space-y-4">
+      <div v-if="webhooks.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
         </svg>
-        <p class="text-gray-600 mb-4">
-          Belum ada webhook yang dibuat
-        </p>
+        <p class="text-gray-600 mb-4">Belum ada webhook yang dibuat</p>
         <button
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
           @click="showCreateModal = true"
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
         >
           Buat Webhook Pertama
         </button>
@@ -67,9 +42,7 @@
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center space-x-3 mb-2">
-              <h3 class="text-lg font-semibold text-gray-900">
-                {{ webhook.url }}
-              </h3>
+              <h3 class="text-lg font-semibold text-gray-900">{{ webhook.url }}</h3>
               <span
                 :class="[
                   'px-2 py-1 rounded text-xs font-semibold',
@@ -105,10 +78,7 @@
                 </div>
               </div>
 
-              <div
-                v-if="webhook.lastDeliveryAt"
-                class="text-xs text-gray-500 mt-2"
-              >
+              <div v-if="webhook.lastDeliveryAt" class="text-xs text-gray-500 mt-2">
                 Last delivery: {{ formatDate(webhook.lastDeliveryAt) }}
               </div>
             </div>
@@ -122,20 +92,20 @@
               Tester
             </router-link>
             <button
-              class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
               @click="testWebhook(webhook.id)"
+              class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
             >
               Test
             </button>
             <button
-              class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"
               @click="editWebhook(webhook)"
+              class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"
             >
               Edit
             </button>
             <button
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm"
               @click="deleteWebhook(webhook.id)"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm"
             >
               Hapus
             </button>
@@ -156,10 +126,7 @@
             {{ editingWebhook ? 'Edit Webhook' : 'Buat Webhook Baru' }}
           </h3>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveWebhook"
-          >
+          <form @submit.prevent="saveWebhook" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">URL *</label>
               <input
@@ -180,18 +147,15 @@
                   class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer"
                 >
                   <input
-                    v-model="webhookForm.events"
                     type="checkbox"
                     :value="event"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model="webhookForm.events"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span class="text-sm text-gray-700">{{ event }}</span>
                 </label>
               </div>
-              <p
-                v-if="webhookForm.events.length === 0"
-                class="text-sm text-red-600 mt-1"
-              >
+              <p v-if="webhookForm.events.length === 0" class="text-sm text-red-600 mt-1">
                 Minimal pilih 1 event
               </p>
             </div>
@@ -224,9 +188,9 @@
             <div>
               <label class="flex items-center space-x-2">
                 <input
-                  v-model="webhookForm.isActive"
                   type="checkbox"
-                  class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  v-model="webhookForm.isActive"
+                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <span class="text-sm text-gray-700">Aktif</span>
               </label>
@@ -235,8 +199,8 @@
             <div class="flex space-x-3 pt-4">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
                 @click="closeModal"
+                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               >
                 Batal
               </button>
@@ -258,10 +222,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
-import { formatDateTime, formatDate } from '../../utils/formatters';
-import { useNotification } from '../../composables/useNotification';
-
-const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 
 const loading = ref(true);
 const webhooks = ref<any[]>([]);
@@ -298,9 +258,9 @@ const webhookForm = ref({
 const loadWebhooks = async () => {
   try {
     const response = await api.get('/webhooks?includeInactive=true');
-    webhooks.value = response.data?.webhooks || [];
+    webhooks.value = response.data.webhooks || [];
   } catch (error: any) {
-    await showError('Gagal memuat webhooks');
+    console.error('Error loading webhooks:', error);
   } finally {
     loading.value = false;
   }
@@ -323,7 +283,8 @@ const saveWebhook = async () => {
     await loadWebhooks();
     closeModal();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menyimpan webhook');
+    console.error('Error saving webhook:', error);
+    alert(error.response?.data?.message || 'Gagal menyimpan webhook');
   } finally {
     saving.value = false;
   }
@@ -342,8 +303,7 @@ const editWebhook = (webhook: any) => {
 };
 
 const deleteWebhook = async (id: string) => {
-  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus webhook ini?');
-  if (!confirmed) {
+  if (!confirm('Apakah Anda yakin ingin menghapus webhook ini?')) {
     return;
   }
 
@@ -351,16 +311,18 @@ const deleteWebhook = async (id: string) => {
     await api.delete(`/webhooks/${id}`);
     await loadWebhooks();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus webhook');
+    console.error('Error deleting webhook:', error);
+    alert(error.response?.data?.message || 'Gagal menghapus webhook');
   }
 };
 
 const testWebhook = async (id: string) => {
   try {
     await api.post(`/webhooks/${id}/test`);
-    await showSuccess('Test webhook berhasil dikirim!');
+    alert('Test webhook berhasil dikirim!');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal mengirim test webhook');
+    console.error('Error testing webhook:', error);
+    alert(error.response?.data?.message || 'Gagal mengirim test webhook');
   }
 };
 
@@ -376,8 +338,16 @@ const closeModal = () => {
   };
 };
 
-// formatDateTime is already imported from formatters utility above
-const formatDate = formatDateTime;
+const formatDate = (date: string) => {
+  const d = new Date(date);
+  return d.toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
 
 onMounted(() => {
   loadWebhooks();

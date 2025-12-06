@@ -11,7 +11,6 @@ import { requireTenantId } from '../utils/tenant';
 import emailTemplateService from '../services/email-template.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -59,7 +58,6 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -99,7 +97,6 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -232,14 +229,11 @@ router.put(
       const tenantId = requireTenantId(req);
       const template = await emailTemplateService.updateTemplate(req.params.id, tenantId, req.body);
       res.json(template);
-    } catch (error: unknown) {
-      if ((error as Error).message === 'Email template not found') {
-        const err = new Error((error as Error).message);
-        (err as any).statusCode = 404;
-        handleRouteError(res, err, (error as Error).message, 'UPDATE_EMAIL_TEMPLATE');
-        return;
+    } catch (error: any) {
+      if (error.message === 'Email template not found') {
+        return res.status(404).json({ message: error.message });
       }
-      handleRouteError(res, error, 'Failed to update email template', 'UPDATE_EMAIL_TEMPLATE');
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -271,7 +265,6 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

@@ -1,9 +1,7 @@
 import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../validators/product.validator';
 import prisma from '../config/database';
-import logger from '../utils/logger';
-import { sanitizeText, sanitizeString } from '../utils/sanitize';
-import CacheService from '../utils/cache';
+import { getRedisClient } from '../config/redis';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -15,9 +13,17 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const cached = await CacheService.get(cacheKey);
-      if (cached) {
-        return cached;
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          const cached = await redis.get(cacheKey);
+          if (cached) {
+            return JSON.parse(cached);
+          }
+        } catch (error) {
+          // If cache read fails, continue with database query
+          console.warn('Failed to read products from cache:', error);
+        }
       }
     }
 
@@ -34,13 +40,6 @@ export class ProductService {
       ...(isActive !== undefined && { isActive }),
     };
 
-    // Log for debugging
-    logger.debug('ProductService.getProducts called', {
-      tenantId,
-      query: { page, limit, search, category, isActive, sortBy, sortOrder },
-      where,
-    });
-    
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -50,15 +49,6 @@ export class ProductService {
       }),
       prisma.product.count({ where }),
     ]);
-    
-    // Log result for debugging
-    logger.info('ProductService.getProducts result', {
-      tenantId,
-      productsCount: products.length,
-      total,
-      page,
-      limit,
-    });
 
     const result = {
       data: products,
@@ -72,7 +62,15 @@ export class ProductService {
 
     // Cache the result (5 minutes TTL for products list)
     if (useCache) {
-      await CacheService.set(cacheKey, result, 300);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          await redis.setex(cacheKey, 300, JSON.stringify(result));
+        } catch (error) {
+          // If cache write fails, continue without caching
+          console.warn('Failed to cache products:', error);
+        }
+      }
     }
 
     return result;
@@ -83,9 +81,17 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const cached = await CacheService.get(cacheKey);
-      if (cached) {
-        return cached as Product | null;
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          const cached = await redis.get(cacheKey);
+          if (cached) {
+            return JSON.parse(cached);
+          }
+        } catch (error) {
+          // If cache read fails, continue with database query
+          console.warn('Failed to read product from cache:', error);
+        }
       }
     }
 
@@ -95,23 +101,21 @@ export class ProductService {
 
     // Cache the result (10 minutes TTL for individual product)
     if (product && useCache) {
-      await CacheService.set(cacheKey, product, 600);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          await redis.setex(cacheKey, 600, JSON.stringify(product));
+        } catch (error) {
+          // If cache write fails, continue without caching
+          console.warn('Failed to cache product:', error);
+        }
+      }
     }
 
     return product;
   }
 
   async createProduct(data: CreateProductInput, tenantId: string): Promise<Product> {
-    // Sanitize text fields
-    const sanitizedData = {
-      ...data,
-      name: sanitizeString(data.name, 255),
-      description: data.description ? sanitizeText(data.description) : undefined,
-      category: data.category ? sanitizeString(data.category, 100) : undefined,
-      sku: data.sku ? sanitizeString(data.sku, 100) : undefined,
-      barcode: data.barcode ? sanitizeString(data.barcode, 100) : undefined,
-    };
-    
     // Check limit using plan-features service (includes base plan + addons)
     const planFeaturesService = (await import('./plan-features.service')).default;
     const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'products');
@@ -137,27 +141,26 @@ export class ProductService {
    * Invalidate product cache for a tenant
    */
   private async invalidateProductCache(tenantId: string): Promise<void> {
-    try {
-      // Delete all product-related cache keys for this tenant
-      await CacheService.deletePattern(`products:${tenantId}:*`);
-      await CacheService.deletePattern(`product:${tenantId}:*`);
-    } catch (error) {
-      // If cache invalidation fails, log but don't throw
-      logger.warn('Failed to invalidate product cache', { error: error instanceof Error ? error.message : String(error), tenantId });
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        // Delete all product-related cache keys for this tenant
+        const keys = await redis.keys(`products:${tenantId}:*`);
+        const productKeys = await redis.keys(`product:${tenantId}:*`);
+        if (keys.length > 0) {
+          await redis.del(...keys);
+        }
+        if (productKeys.length > 0) {
+          await redis.del(...productKeys);
+        }
+      } catch (error) {
+        // If cache invalidation fails, log but don't throw
+        console.warn('Failed to invalidate product cache:', error);
+      }
     }
   }
 
   async updateProduct(id: string, data: UpdateProductInput, tenantId: string): Promise<Product> {
-    // Sanitize text fields
-    const sanitizedData: any = {
-      ...data,
-      ...(data.name && { name: sanitizeString(data.name, 255) }),
-      ...(data.description !== undefined && { description: data.description ? sanitizeText(data.description) : (data.description === null ? null : undefined) }),
-      ...(data.category !== undefined && { category: data.category ? sanitizeString(data.category, 100) : (data.category === null ? null : undefined) }),
-      ...(data.sku !== undefined && { sku: data.sku ? sanitizeString(data.sku, 100) : (data.sku === null ? null : undefined) }),
-      ...(data.barcode !== undefined && { barcode: data.barcode ? sanitizeString(data.barcode, 100) : (data.barcode === null ? null : undefined) }),
-    };
-    
     // Verify product belongs to tenant
     const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
     if (!product) {
@@ -166,7 +169,7 @@ export class ProductService {
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: sanitizedData,
+      data,
     });
 
     // Invalidate cache
@@ -220,9 +223,12 @@ export class ProductService {
     
     // Also invalidate analytics cache that depends on products
     try {
-      await CacheService.delete(`analytics:top-products:${tenantId}`);
+      const redis = getRedisClient();
+      if (redis) {
+        await redis.del(`analytics:top-products:${tenantId}`);
+      }
     } catch (error) {
-      logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error), tenantId });
+      console.warn('Failed to invalidate analytics cache:', error);
     }
 
     // Emit socket event if requested (usually from order service, not from direct product update)
@@ -235,7 +241,7 @@ export class ProductService {
         });
       } catch (error) {
         // Ignore socket errors
-        logger.warn('Failed to emit stock update socket event', { error: error instanceof Error ? error.message : String(error), tenantId, productId: id });
+        console.warn('Failed to emit stock update socket event:', error);
       }
     }
 

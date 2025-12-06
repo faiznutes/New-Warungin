@@ -125,14 +125,9 @@ if (SHOW_ALL_ERRORS) {
   console.log('📝 Check browser console, network tab, and backend logs for detailed error information');
 }
 
-// Initialize offline storage (enhanced version)
-import { offlineStorageEnhanced } from './utils/offline-storage-enhanced';
-offlineStorageEnhanced.init().catch((error) => {
-  console.error('Failed to initialize enhanced offline storage:', error);
-  // Fallback to basic offline storage
-  offlineStorage.init().catch((err) => {
-    console.error('Failed to initialize basic offline storage:', err);
-  });
+// Initialize offline storage
+offlineStorage.init().catch((error) => {
+  console.error('Failed to initialize offline storage:', error);
 });
 
 app.mount('#app');

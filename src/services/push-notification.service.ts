@@ -77,10 +77,9 @@ class PushNotificationService {
 
     try {
       // Dynamic import Firebase Admin SDK
-      // Optional dependency, may not be installed
       let admin: any;
       try {
-        // @ts-expect-error - Optional dependency
+        // @ts-expect-error - Optional dependency, imported dynamically
         admin = await import('firebase-admin');
       } catch (importError) {
         throw new Error('firebase-admin package is not installed. Install it with: npm install firebase-admin');
@@ -180,16 +179,16 @@ class PushNotificationService {
 
       const data = await response.json() as any;
 
-      if (data.id) {
+      if (data?.id) {
         return {
           success: true,
-          messageId: data.id as string,
+          messageId: data.id,
           status: 'sent',
         };
       } else {
         return {
           success: false,
-          error: (data.errors?.[0] as string) || 'OneSignal push failed',
+          error: data?.errors?.[0] || 'OneSignal push failed',
         };
       }
     } catch (error: any) {

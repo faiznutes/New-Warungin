@@ -2,73 +2,43 @@
   <div class="flex flex-col h-full p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">
-        Archive Management
-      </h1>
-      <p class="text-gray-600">
-        Kelola arsip data lama untuk mengoptimalkan performa database
-      </p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Archive Management</h1>
+      <p class="text-gray-600">Kelola arsip data lama untuk mengoptimalkan performa database</p>
     </div>
 
     <!-- Loading State -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Content -->
-    <div
-      v-else
-      class="space-y-6"
-    >
+    <div v-else class="space-y-6">
       <!-- Archive Statistics -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">
-          Statistik Archive
-        </h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Statistik Archive</h2>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="bg-blue-50 rounded-lg p-4">
-            <div class="text-sm text-blue-600 font-medium">
-              Orders Archived
-            </div>
-            <div class="text-2xl font-bold text-blue-900">
-              {{ stats.ordersCount || 0 }}
-            </div>
+            <div class="text-sm text-blue-600 font-medium">Orders Archived</div>
+            <div class="text-2xl font-bold text-blue-900">{{ stats.ordersCount || 0 }}</div>
           </div>
           <div class="bg-green-50 rounded-lg p-4">
-            <div class="text-sm text-green-600 font-medium">
-              Transactions Archived
-            </div>
-            <div class="text-2xl font-bold text-green-900">
-              {{ stats.transactionsCount || 0 }}
-            </div>
+            <div class="text-sm text-green-600 font-medium">Transactions Archived</div>
+            <div class="text-2xl font-bold text-green-900">{{ stats.transactionsCount || 0 }}</div>
           </div>
           <div class="bg-purple-50 rounded-lg p-4">
-            <div class="text-sm text-purple-600 font-medium">
-              Reports Archived
-            </div>
-            <div class="text-2xl font-bold text-purple-900">
-              {{ stats.reportsCount || 0 }}
-            </div>
+            <div class="text-sm text-purple-600 font-medium">Reports Archived</div>
+            <div class="text-2xl font-bold text-purple-900">{{ stats.reportsCount || 0 }}</div>
           </div>
           <div class="bg-gray-50 rounded-lg p-4">
-            <div class="text-sm text-gray-600 font-medium">
-              Total Size
-            </div>
-            <div class="text-2xl font-bold text-gray-900">
-              {{ formatFileSize(stats.totalSize || 0) }}
-            </div>
+            <div class="text-sm text-gray-600 font-medium">Total Size</div>
+            <div class="text-2xl font-bold text-gray-900">{{ formatFileSize(stats.totalSize || 0) }}</div>
           </div>
         </div>
       </div>
 
       <!-- Archive Actions -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">
-          Archive Data
-        </h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Archive Data</h2>
         <p class="text-gray-600 mb-6">
           Archive data lama untuk mengurangi ukuran database dan meningkatkan performa. Data yang di-archive akan disimpan dalam file JSON dan dihapus dari database.
         </p>
@@ -78,16 +48,12 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">
-                  Archive Orders
-                </h3>
-                <p class="text-sm text-gray-600">
-                  Archive orders yang sudah selesai atau dibatalkan
-                </p>
+                <h3 class="font-semibold text-gray-900">Archive Orders</h3>
+                <p class="text-sm text-gray-600">Archive orders yang sudah selesai atau dibatalkan</p>
               </div>
               <button
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 @click="showArchiveOrdersModal = true"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
               >
                 Archive Orders
               </button>
@@ -98,16 +64,12 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">
-                  Archive Transactions
-                </h3>
-                <p class="text-sm text-gray-600">
-                  Archive transactions yang sudah selesai atau gagal
-                </p>
+                <h3 class="font-semibold text-gray-900">Archive Transactions</h3>
+                <p class="text-sm text-gray-600">Archive transactions yang sudah selesai atau gagal</p>
               </div>
               <button
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 @click="showArchiveTransactionsModal = true"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               >
                 Archive Transactions
               </button>
@@ -118,16 +80,12 @@
           <div class="border border-gray-200 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-gray-900">
-                  Archive Reports
-                </h3>
-                <p class="text-sm text-gray-600">
-                  Archive reports lama
-                </p>
+                <h3 class="font-semibold text-gray-900">Archive Reports</h3>
+                <p class="text-sm text-gray-600">Archive reports lama</p>
               </div>
               <button
-                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
                 @click="showArchiveReportsModal = true"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
               >
                 Archive Reports
               </button>
@@ -138,16 +96,12 @@
           <div class="border-2 border-orange-200 bg-orange-50 rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
               <div>
-                <h3 class="font-semibold text-orange-900">
-                  Archive All Data
-                </h3>
-                <p class="text-sm text-orange-700">
-                  Archive semua data lama sekaligus (Orders, Transactions, Reports)
-                </p>
+                <h3 class="font-semibold text-orange-900">Archive All Data</h3>
+                <p class="text-sm text-orange-700">Archive semua data lama sekaligus (Orders, Transactions, Reports)</p>
               </div>
               <button
-                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
                 @click="showArchiveAllModal = true"
+                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
               >
                 Archive All
               </button>
@@ -159,70 +113,36 @@
       <!-- Archive Files List -->
       <div class="bg-white rounded-lg shadow-md p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">
-            Archive Files
-          </h2>
+          <h2 class="text-xl font-bold text-gray-900">Archive Files</h2>
           <button
-            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
             @click="loadArchiveFiles"
+            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
           >
             Refresh
           </button>
         </div>
 
-        <div
-          v-if="archiveFiles.length === 0"
-          class="text-center py-12 text-gray-500"
-        >
-          <svg
-            class="w-16 h-16 mx-auto mb-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
+        <div v-if="archiveFiles.length === 0" class="text-center py-12 text-gray-500">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <p>Belum ada file archive</p>
         </div>
 
-        <div
-          v-else
-          class="overflow-x-auto"
-        >
+        <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  File Name
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Size
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="file in archiveFiles"
-                :key="file.path"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ file.name }}
-                </td>
+              <tr v-for="file in archiveFiles" :key="file.path" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ file.name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
                     :class="[
@@ -235,16 +155,12 @@
                     {{ file.type }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatFileSize(file.size) }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatDate(file.createdAt) }}
-                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatFileSize(file.size) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ formatDate(file.createdAt) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <button
-                    class="text-blue-600 hover:text-blue-800 font-medium"
                     @click="restoreArchive(file.path)"
+                    class="text-blue-600 hover:text-blue-800 font-medium"
                   >
                     Restore
                   </button>
@@ -263,9 +179,7 @@
       @click.self="showArchiveOrdersModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Archive Orders
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Archive Orders</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -279,21 +193,19 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="365"
             />
-            <p class="text-xs text-gray-500 mt-1">
-              Default: 365 days (1 year)
-            </p>
+            <p class="text-xs text-gray-500 mt-1">Default: 365 days (1 year)</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               @click="showArchiveOrdersModal = false"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
             </button>
             <button
+              @click="archiveOrders"
               :disabled="archiving"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              @click="archiveOrders"
             >
               {{ archiving ? 'Archiving...' : 'Archive' }}
             </button>
@@ -309,9 +221,7 @@
       @click.self="showArchiveTransactionsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Archive Transactions
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Archive Transactions</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -325,21 +235,19 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="365"
             />
-            <p class="text-xs text-gray-500 mt-1">
-              Default: 365 days (1 year)
-            </p>
+            <p class="text-xs text-gray-500 mt-1">Default: 365 days (1 year)</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               @click="showArchiveTransactionsModal = false"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
             </button>
             <button
+              @click="archiveTransactions"
               :disabled="archiving"
               class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              @click="archiveTransactions"
             >
               {{ archiving ? 'Archiving...' : 'Archive' }}
             </button>
@@ -355,9 +263,7 @@
       @click.self="showArchiveReportsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Archive Reports
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Archive Reports</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -371,21 +277,19 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="180"
             />
-            <p class="text-xs text-gray-500 mt-1">
-              Default: 180 days (6 months)
-            </p>
+            <p class="text-xs text-gray-500 mt-1">Default: 180 days (6 months)</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               @click="showArchiveReportsModal = false"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
             </button>
             <button
+              @click="archiveReports"
               :disabled="archiving"
               class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              @click="archiveReports"
             >
               {{ archiving ? 'Archiving...' : 'Archive' }}
             </button>
@@ -401,9 +305,7 @@
       @click.self="showArchiveAllModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Archive All Data
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Archive All Data</h3>
         <div class="space-y-4">
           <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
             <p class="text-sm text-orange-800">
@@ -451,15 +353,15 @@
           </div>
           <div class="flex space-x-3 pt-4">
             <button
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               @click="showArchiveAllModal = false"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             >
               Cancel
             </button>
             <button
+              @click="archiveAll"
               :disabled="archiving"
               class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              @click="archiveAll"
             >
               {{ archiving ? 'Archiving...' : 'Archive All' }}
             </button>
@@ -505,18 +407,19 @@ const archiveAllConfig = ref({
 const loadStats = async () => {
   try {
     const response = await api.get('/archives/stats');
-    stats.value = response.data || {};
+    stats.value = response.data;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat statistik archive');
+    console.error('Error loading archive stats:', error);
   }
 };
 
 const loadArchiveFiles = async () => {
   try {
     const response = await api.get('/archives/files');
-    archiveFiles.value = response.data?.files || response.data?.data || [];
+    archiveFiles.value = response.data.files || [];
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat daftar file archive');
+    console.error('Error loading archive files:', error);
+    showError('Gagal memuat daftar file archive');
   }
 };
 
@@ -526,11 +429,11 @@ const archiveOrders = async () => {
     const response = await api.post('/archives/orders', {
       olderThanDays: archiveOrdersDays.value || 365,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} orders`);
+    showSuccess(`Berhasil meng-archive ${response.data.count} orders`);
     showArchiveOrdersModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal meng-archive orders');
+    showError(error.response?.data?.message || 'Gagal meng-archive orders');
   } finally {
     archiving.value = false;
   }
@@ -542,11 +445,11 @@ const archiveTransactions = async () => {
     const response = await api.post('/archives/transactions', {
       olderThanDays: archiveTransactionsDays.value || 365,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} transactions`);
+    showSuccess(`Berhasil meng-archive ${response.data.count} transactions`);
     showArchiveTransactionsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal meng-archive transactions');
+    showError(error.response?.data?.message || 'Gagal meng-archive transactions');
   } finally {
     archiving.value = false;
   }
@@ -558,11 +461,11 @@ const archiveReports = async () => {
     const response = await api.post('/archives/reports', {
       olderThanDays: archiveReportsDays.value || 180,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} reports`);
+    showSuccess(`Berhasil meng-archive ${response.data.count} reports`);
     showArchiveReportsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal meng-archive reports');
+    showError(error.response?.data?.message || 'Gagal meng-archive reports');
   } finally {
     archiving.value = false;
   }
@@ -581,13 +484,13 @@ const archiveAll = async () => {
   archiving.value = true;
   try {
     const response = await api.post('/archives/all', archiveAllConfig.value);
-    await showSuccess(
-      `Berhasil meng-archive: ${response.data?.orders || 0} orders, ${response.data?.transactions || 0} transactions, ${response.data?.reports || 0} reports`
+    showSuccess(
+      `Berhasil meng-archive: ${response.data.orders} orders, ${response.data.transactions} transactions, ${response.data.reports} reports`
     );
     showArchiveAllModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal meng-archive data');
+    showError(error.response?.data?.message || 'Gagal meng-archive data');
   } finally {
     archiving.value = false;
   }
@@ -605,14 +508,13 @@ const restoreArchive = async (archiveFile: string) => {
 
   try {
     await api.post('/archives/restore', { archiveFile });
-    await showSuccess('Berhasil restore data dari archive');
+    showSuccess('Berhasil restore data dari archive');
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal restore archive');
+    showError(error.response?.data?.message || 'Gagal restore archive');
   }
 };
 
-// Use formatters utility (already imported at top)
 const formatDate = (date: string | Date) => {
   if (!date) return '-';
   return formatDateTime(date);

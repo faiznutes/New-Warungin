@@ -178,10 +178,7 @@ router.post(
       });
 
       if (!webhook) {
-        const error = new Error('Webhook not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Webhook not found', 'DELETE_WEBHOOK');
-        return;
+        return res.status(404).json({ message: 'Webhook not found' });
       }
 
       // Use custom payload if provided, otherwise use default test payload

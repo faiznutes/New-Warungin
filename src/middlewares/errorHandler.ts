@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+import { Prisma } from '@prisma/client';
 import logger from '../utils/logger';
 
 export class AppError extends Error {
@@ -18,16 +19,15 @@ export class AppError extends Error {
  * Enhanced error logging with request context
  */
 function logErrorWithContext(
-  err: Error | unknown,
+  err: Error,
   req: Request,
   context: string = 'UNHANDLED_ERROR'
 ) {
-  const error = err instanceof Error ? err : new Error(String(err));
   const errorDetails = {
     context,
-    message: error.message,
-    name: error.name,
-    stack: error.stack,
+    message: err.message,
+    name: err.name,
+    stack: err.stack,
     path: req.path,
     method: req.method,
     query: req.query,
@@ -37,35 +37,28 @@ function logErrorWithContext(
       'user-agent': req.headers['user-agent'],
       origin: req.headers.origin,
     },
-    code: (error as any).code,
-    statusCode: (error as any).statusCode,
-    meta: (error as any).meta,
+    code: (err as any).code,
+    statusCode: (err as any).statusCode,
+    meta: (err as any).meta,
   };
 
   logger.error(`Error [${context}]:`, errorDetails);
 }
 
 export const errorHandler = (
-  err: Error | AppError | ZodError | unknown,
+  err: Error | AppError | ZodError | Prisma.PrismaClientKnownRequestError,
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  // Convert unknown error to Error
-  let error: Error | AppError | ZodError;
-  if (!(err instanceof Error) && !(err instanceof ZodError) && !(err instanceof AppError)) {
-    error = new Error(String(err));
-  } else {
-    error = err as Error | AppError | ZodError;
-  }
   // Zod validation errors
-  if (error instanceof ZodError) {
-    logErrorWithContext(error, req, 'VALIDATION_ERROR');
+  if (err instanceof ZodError) {
+    logErrorWithContext(err, req, 'VALIDATION_ERROR');
     
     if (!res.headersSent) {
       res.status(400).json({
         error: 'Validation error',
-        details: error.errors.map((e) => ({
+        details: err.errors.map((e) => ({
           path: e.path.join('.'),
           message: e.message,
         })),
@@ -75,32 +68,31 @@ export const errorHandler = (
   }
 
   // Custom AppError
-  if (error instanceof AppError) {
-    logErrorWithContext(error, req, 'APP_ERROR');
+  if (err instanceof AppError) {
+    logErrorWithContext(err, req, 'APP_ERROR');
     
     if (!res.headersSent) {
-      res.status(error.statusCode).json({
-        error: error.message,
+      res.status(err.statusCode).json({
+        error: err.message,
       });
     }
     return;
   }
 
-  // Prisma errors - check for Prisma error by code property
-  if (error && typeof error === 'object' && 'code' in error && typeof (error as any).code === 'string' && (error as any).code.startsWith('P')) {
-    logErrorWithContext(error, req, 'PRISMA_ERROR');
+  // Prisma errors
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    logErrorWithContext(err, req, 'PRISMA_ERROR');
     
     if (!res.headersSent) {
       // Handle specific Prisma error codes
-      const prismaError = error as any;
-      switch (prismaError.code) {
+      switch (err.code) {
         case 'P1001':
         case 'P1002':
           // Connection errors
           res.status(503).json({
             error: 'Database connection failed',
             message: 'Unable to connect to database. Please try again.',
-            code: prismaError.code,
+            code: err.code,
           });
           break;
         case 'P2002':
@@ -108,7 +100,7 @@ export const errorHandler = (
           res.status(409).json({
             error: 'Duplicate entry',
             message: 'A record with this information already exists.',
-            code: prismaError.code,
+            code: err.code,
           });
           break;
         case 'P2025':
@@ -116,7 +108,7 @@ export const errorHandler = (
           res.status(404).json({
             error: 'Record not found',
             message: 'The requested record could not be found.',
-            code: prismaError.code,
+            code: err.code,
           });
           break;
         default:
@@ -125,48 +117,48 @@ export const errorHandler = (
             error: 'Database error',
             message: process.env.NODE_ENV === 'production'
               ? 'A database error occurred. Please try again.'
-              : prismaError.message || error.message,
-            code: prismaError.code,
+              : err.message,
+            code: err.code,
           });
       }
     }
     return;
   }
 
-  // Prisma validation errors - check by error message pattern
-  if (error.message && error.message.includes('Invalid `prisma')) {
-    logErrorWithContext(error, req, 'PRISMA_VALIDATION_ERROR');
+  // Prisma validation errors
+  if (err instanceof Prisma.PrismaClientValidationError) {
+    logErrorWithContext(err, req, 'PRISMA_VALIDATION_ERROR');
     
     if (!res.headersSent) {
       res.status(400).json({
         error: 'Invalid data',
         message: process.env.NODE_ENV === 'production'
           ? 'The provided data is invalid.'
-          : error.message,
+          : err.message,
       });
     }
     return;
   }
 
   // Unknown errors - comprehensive logging
-  logErrorWithContext(error, req, 'UNKNOWN_ERROR');
+  logErrorWithContext(err, req, 'UNKNOWN_ERROR');
   
   // Ensure response hasn't been sent
   if (!res.headersSent) {
-    const statusCode = (error as any).statusCode || 500;
+    const statusCode = (err as any).statusCode || 500;
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     res.status(statusCode).json({
       error: statusCode === 500 && !isDevelopment
         ? 'Internal server error'
-        : error.message || 'An unexpected error occurred',
+        : err.message || 'An unexpected error occurred',
       message: statusCode === 500 && !isDevelopment
         ? 'An unexpected error occurred. Please try again.'
-        : error.message || 'An unexpected error occurred',
+        : err.message || 'An unexpected error occurred',
       ...(isDevelopment && {
-        stack: error.stack,
-        name: error.name,
-        code: (error as any).code,
+        stack: err.stack,
+        name: err.name,
+        code: (err as any).code,
       }),
     });
   } else {
@@ -174,8 +166,8 @@ export const errorHandler = (
     logger.warn('Error handler called but response already sent:', {
       path: req.path,
       method: req.method,
-      error: error.message,
-      stack: error.stack,
+      error: err.message,
+      stack: err.stack,
     });
   }
 };

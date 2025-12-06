@@ -58,8 +58,7 @@ export function useTenantData<T = any>(
     }
   };
 
-  // Watch untuk perubahan tenantId (defer immediate to avoid initialization issues)
-  // Don't use immediate - handle initial fetch in onMounted instead
+  // Watch untuk perubahan tenantId
   watch(
     () => authStore.currentTenantId,
     (newTenantId, oldTenantId) => {
@@ -67,28 +66,25 @@ export function useTenantData<T = any>(
       if (newTenantId !== oldTenantId) {
         refetch();
       }
-    }
+    },
+    { immediate }
   );
 
   // Watch untuk perubahan selectedTenantId (untuk Super Admin)
-  // Set up watch in onMounted to avoid initialization issues
-  let watchSelectedTenantId: (() => void) | null = null;
-
-  // Initial fetch and watch setup
-  onMounted(() => {
-    // Set up watch for selectedTenantId after mount (if Super Admin)
-    if (authStore.isSuperAdmin) {
-      watchSelectedTenantId = watch(
-        () => authStore.selectedTenantId,
-        (newTenantId, oldTenantId) => {
-          if (newTenantId !== oldTenantId) {
-            refetch();
-          }
+  if (authStore.isSuperAdmin) {
+    watch(
+      () => authStore.selectedTenantId,
+      (newTenantId, oldTenantId) => {
+        if (newTenantId !== oldTenantId) {
+          refetch();
         }
-      );
-    }
-    
-    // Initial fetch
+      },
+      { immediate }
+    );
+  }
+
+  // Initial fetch
+  onMounted(() => {
     if (immediate) {
       refetch();
     }

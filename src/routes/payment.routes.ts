@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import paymentService from '../services/payment.service';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -47,12 +46,14 @@ router.post(
       if (result.success) {
         res.json(result);
       } else {
-        const error = new Error(result.message || 'Payment creation failed');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, result.message || 'Payment creation failed', 'CREATE_PAYMENT');
+        res.status(400).json(result);
       }
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create payment', 'CREATE_PAYMENT');
+    } catch (error: any) {
+      console.error('Payment creation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to create payment' 
+      });
     }
   }
 );
@@ -73,8 +74,12 @@ router.get(
     try {
       const result = await paymentService.checkPaymentStatus(req.params.orderId);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to check payment status', 'CHECK_PAYMENT_STATUS');
+    } catch (error: any) {
+      console.error('Payment status check error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to check payment status' 
+      });
     }
   }
 );
@@ -92,8 +97,12 @@ router.post(
     try {
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to handle webhook', 'WEBHOOK');
+    } catch (error: any) {
+      console.error('Webhook handling error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to handle webhook' 
+      });
     }
   }
 );
@@ -113,8 +122,12 @@ router.post(
       // Just process the payment directly
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process webhook', 'N8N_WEBHOOK');
+    } catch (error: any) {
+      console.error('n8n webhook processing error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to process webhook' 
+      });
     }
   }
 );
@@ -135,8 +148,12 @@ router.post(
     try {
       const result = await paymentService.cancelPayment(req.params.orderId);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to cancel payment', 'CANCEL_PAYMENT');
+    } catch (error: any) {
+      console.error('Payment cancellation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to cancel payment' 
+      });
     }
   }
 );
@@ -145,9 +162,7 @@ const createAddonPaymentSchema = z.object({
   itemName: z.string().min(1),
   amount: z.number().positive(),
   itemId: z.string().min(1),
-  itemType: z.enum(['addon', 'subscription', 'addon-extend']),
-  addonId: z.string().optional(), // For addon-extend
-  duration: z.number().int().positive().optional(), // For addon-extend
+  itemType: z.enum(['addon', 'subscription']),
 });
 
 /**
@@ -163,10 +178,10 @@ router.post(
   '/addon',
   authGuard,
   validate({ body: createAddonPaymentSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const user = req.user;
+      const user = (req as any).user;
       
       // Get tenant info with subscription plan
       const tenant = await prisma.tenant.findUnique({
@@ -180,10 +195,10 @@ router.post(
       });
 
       if (!tenant) {
-        const error = new Error('Tenant not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Tenant not found', 'GET_PAYMENT_METHODS');
-        return;
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Tenant not found' 
+        });
       }
 
       const result = await paymentService.createAddonPayment({
@@ -195,19 +210,19 @@ router.post(
         amount: req.body.amount,
         itemId: req.body.itemId,
         itemType: req.body.itemType,
-        addonId: req.body.addonId,
-        duration: req.body.duration,
       });
 
       if (result.success) {
         res.json(result);
       } else {
-        const error = new Error(result.message || 'Addon payment creation failed');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, result.message || 'Addon payment creation failed', 'CREATE_ADDON_PAYMENT');
+        res.status(400).json(result);
       }
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create addon payment', 'CREATE_ADDON_PAYMENT');
+    } catch (error: any) {
+      console.error('Addon payment creation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to create payment' 
+      });
     }
   }
 );

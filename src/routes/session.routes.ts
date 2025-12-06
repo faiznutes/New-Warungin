@@ -3,7 +3,6 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import sessionService from '../services/session.service';
 import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -25,8 +24,9 @@ router.get(
       const sessions = await sessionService.getUserSessions(userId);
 
       res.json({ sessions });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get user sessions', 'GET_USER_SESSIONS');
+    } catch (error: any) {
+      logger.error('Error getting user sessions', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -51,17 +51,15 @@ router.delete(
       // Verify session belongs to user
       const session = await sessionService.getSession(sessionId);
       if (!session || session.userId !== userId) {
-        const error = new Error('Session not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Session not found', 'REVOKE_SESSION');
-        return;
+        return res.status(404).json({ message: 'Session not found' });
       }
 
       await sessionService.revokeSession(sessionId);
 
       res.json({ message: 'Session berhasil di-revoke' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to revoke session', 'REVOKE_SESSION');
+    } catch (error: any) {
+      logger.error('Error revoking session', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -81,9 +79,7 @@ router.post(
   async (req: AuthRequest, res: Response) => {
     try {
       const userId = req.userId!;
-      // Get sessionId from request headers or token
-      const authHeader = req.headers.authorization;
-      const currentSessionId = authHeader?.replace('Bearer ', '').split('.')[0] || undefined;
+      const currentSessionId = (req as any).sessionId; // Should be set by middleware
 
       const revokedCount = await sessionService.revokeAllUserSessions(userId, currentSessionId);
 
@@ -91,8 +87,9 @@ router.post(
         message: `${revokedCount} session berhasil di-revoke`,
         revokedCount,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to revoke all sessions', 'REVOKE_ALL_SESSIONS');
+    } catch (error: any) {
+      logger.error('Error revoking all sessions', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -115,8 +112,9 @@ router.get(
       const count = await sessionService.getSessionCount(userId);
 
       res.json({ count });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get session count', 'GET_SESSION_COUNT');
+    } catch (error: any) {
+      logger.error('Error getting session count', { error: error.message, userId: req.userId });
+      res.status(500).json({ message: error.message });
     }
   }
 );

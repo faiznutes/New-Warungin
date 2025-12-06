@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import discountService from '../services/discount.service';
 import { validate } from '../middlewares/validator';
@@ -8,7 +8,6 @@ import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -47,8 +46,8 @@ router.get(
       const tenantId = requireTenantId(req);
       const discounts = await discountService.getDiscounts(tenantId);
       res.json({ data: discounts });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -77,15 +76,12 @@ router.get(
       });
 
       if (!discount) {
-        const error = new Error('Discount not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Discount not found', 'GET_DISCOUNT');
-        return;
+        return res.status(404).json({ message: 'Discount not found' });
       }
 
       res.json(discount);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -104,17 +100,14 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createDiscountSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can create discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Forbidden: Only admin can create discounts');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Forbidden: Only admin can create discounts', 'CREATE_DISCOUNT');
-        return;
+        return res.status(403).json({ message: 'Forbidden: Only admin can create discounts' });
       }
 
       const discountData = {
@@ -134,8 +127,8 @@ router.post(
       await invalidateAnalyticsCache(tenantId);
 
       res.status(201).json(discount);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -154,17 +147,14 @@ router.put(
   authGuard,
   subscriptionGuard,
   validate({ body: updateDiscountSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can update discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Forbidden: Only admin can update discounts');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Forbidden: Only admin can update discounts', 'UPDATE_DISCOUNT');
-        return;
+        return res.status(403).json({ message: 'Forbidden: Only admin can update discounts' });
       }
 
       const existingDiscount = await prisma.discount.findFirst({
@@ -175,10 +165,7 @@ router.put(
       });
 
       if (!existingDiscount) {
-        const error = new Error('Discount not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Discount not found', 'UPDATE_DISCOUNT');
-        return;
+        return res.status(404).json({ message: 'Discount not found' });
       }
 
       const updateData: any = { ...req.body };
@@ -198,8 +185,8 @@ router.put(
       await invalidateAnalyticsCache(tenantId);
 
       res.json(discount);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );
@@ -217,17 +204,14 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can delete discounts
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Forbidden: Only admin can delete discounts');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Forbidden: Only admin can delete discounts', 'DELETE_DISCOUNT');
-        return;
+        return res.status(403).json({ message: 'Forbidden: Only admin can delete discounts' });
       }
 
       const existingDiscount = await prisma.discount.findFirst({
@@ -238,10 +222,7 @@ router.delete(
       });
 
       if (!existingDiscount) {
-        const error = new Error('Discount not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Discount not found', 'DELETE_DISCOUNT');
-        return;
+        return res.status(404).json({ message: 'Discount not found' });
       }
 
       await prisma.discount.delete({
@@ -252,8 +233,8 @@ router.delete(
       await invalidateAnalyticsCache(tenantId);
 
       res.json({ message: 'Discount deleted successfully' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process discount request', 'DISCOUNT');
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 );

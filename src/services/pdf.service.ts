@@ -1,6 +1,5 @@
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
-import logger from '../utils/logger';
 
 interface ReportData {
   title?: string;
@@ -72,7 +71,7 @@ function createSummaryCards(summary: any, colors: { bg: string; text: string; bo
     if (totalGlobalRevenue > 0 || summary.totalSubscriptionRevenue || summary.totalAddonRevenue) {
       cards.push({
         stack: [
-          { text: 'Total Pendapatan', style: 'summaryLabel', color: colors.text },
+          { text: 'Total Pendapatan Global', style: 'summaryLabel', color: colors.text },
           { text: formatCurrencyValue(totalGlobalRevenue), style: 'summaryValue', color: colors.text }
         ],
         fillColor: colors.bg,
@@ -1366,9 +1365,9 @@ export function generatePDF(template: string, data: ReportData): Promise<Buffer>
       
       // Debug: Log template being used
       if (!templateFunctions[template]) {
-        logger.warn('Template not found, using default (modern)', { template });
+        console.warn(`Template "${template}" not found, using default (modern)`);
       } else {
-        logger.debug('Using template', { template });
+        console.log(`Using template: ${template}`);
       }
       
       const docDefinition = templateFunction(data);

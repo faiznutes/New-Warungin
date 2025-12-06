@@ -295,6 +295,21 @@ export async function getTenantPlanFeatures(tenantId: string) {
           features.push('Simple Nota Editor');
         }
         break;
+      case 'DELIVERY_MARKETING':
+        if (!features.includes('Delivery & Marketing')) {
+          features.push('Delivery & Marketing');
+        }
+        break;
+      case 'E_COMMERCE':
+        if (!features.includes('E-commerce Integration')) {
+          features.push('E-commerce Integration');
+        }
+        break;
+      case 'PAYMENT_ACCOUNTING':
+        if (!features.includes('Payment & Accounting Integration')) {
+          features.push('Payment & Accounting Integration');
+        }
+        break;
     }
   }
 

@@ -2,13 +2,13 @@ import bcrypt from 'bcryptjs';
 import prisma from '../config/database';
 import { AppError } from '../middlewares/errorHandler';
 import logger from '../utils/logger';
-import CacheService from '../utils/cache';
+import { getRedisClient } from '../config/redis';
 
 export interface CreateTenantInput {
   name: string;
   phone?: string;
   address?: string;
-  subscriptionPlan?: string; // BASIC, PRO, CUSTOM
+  subscriptionPlan?: string; // BASIC, PRO, ENTERPRISE
 }
 
 // Generate email from tenant name
@@ -77,7 +77,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     let email = generateEmailFromName(name);
 
     // Check if tenant email exists
-    const existingTenant = await prisma.tenant.findUnique({
+    let existingTenant = await prisma.tenant.findUnique({
       where: { email },
     });
 
@@ -131,7 +131,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     // Generate users based on plan
     // BASIC: 1 ADMIN_TENANT, 2 CASHIER, 1 KITCHEN (total 4 users)
     // PRO: 1 ADMIN_TENANT, 1 SUPERVISOR, 6 CASHIER, 2 KITCHEN (total 10 users)
-    // CUSTOM: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
+    // ENTERPRISE: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
     const usersToCreate: Array<{
       tenantId: string;
       email: string;
@@ -244,8 +244,8 @@ export const createTenant = async (input: CreateTenantInput) => {
           role: 'KITCHEN' as const,
         }
       );
-    } else if (subscriptionPlan === 'CUSTOM') {
-      // CUSTOM: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users (default set, user can add more)
+    } else if (subscriptionPlan === 'ENTERPRISE') {
+      // ENTERPRISE: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users (default set, user can add more)
       usersToCreate.push(
         {
           tenantId: tenant.id,
@@ -254,7 +254,7 @@ export const createTenant = async (input: CreateTenantInput) => {
           name: `${name} Supervisor`,
           role: 'SUPERVISOR' as const,
         },
-        // Create 10 cashiers for CUSTOM plan
+        // Create 10 cashiers for ENTERPRISE plan
         {
           tenantId: tenant.id,
           email: `${emailPrefix}K1@warungin.com`,
@@ -325,7 +325,7 @@ export const createTenant = async (input: CreateTenantInput) => {
           name: `${name} Kasir 10`,
           role: 'CASHIER' as const,
         },
-        // Create 3 kitchen users for CUSTOM plan
+        // Create 3 kitchen users for ENTERPRISE plan
         {
           tenantId: tenant.id,
           email: `${emailPrefix}D1@warungin.com`,
@@ -376,14 +376,13 @@ export const createTenant = async (input: CreateTenantInput) => {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      CUSTOM: 500000,
+      ENTERPRISE: 500000,
     };
     const planPrice = planPrices[subscriptionPlan] || 0;
 
     // Create subscription record with plan price
     // Convert amount to string for Prisma Decimal compatibility
     // This subscription will be recorded as a purchase in global reports
-    // When created by super admin (via createTenant), set addedBySuperAdmin = true
     const subscription = await tx.subscription.create({
       data: {
         tenantId: tenant.id,
@@ -392,7 +391,6 @@ export const createTenant = async (input: CreateTenantInput) => {
         endDate: subscriptionEnd,
         status: 'ACTIVE',
         amount: planPrice.toString(), // Set amount sesuai harga paket untuk laporan global
-        addedBySuperAdmin: true, // Always true when created via createTenant (super admin only)
       },
     });
     
@@ -410,7 +408,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     });
     
     // Log subscription creation for debugging
-    logger.info(`Subscription created for tenant ${tenant.name}`, {
+    console.log(`✅ Subscription created for tenant ${tenant.name}:`, {
       subscriptionId: subscription.id,
       plan: subscriptionPlan,
       amount: planPrice,
@@ -455,14 +453,21 @@ export const createTenant = async (input: CreateTenantInput) => {
 
   // Invalidate cache for tenants list and individual tenant
   try {
-    // Delete individual tenant cache
-    await CacheService.delete(`tenant:${result.tenant.id}`);
-    
-    // Delete all tenants list cache (tenants:*)
-    await CacheService.deletePattern('tenants:*');
-    logger.info('Invalidated tenants list cache after creating tenant', {
-      tenantId: result.tenant.id,
-    });
+    const redis = getRedisClient();
+    if (redis) {
+      // Delete individual tenant cache
+      await redis.del(`tenant:${result.tenant.id}`);
+      
+      // Delete all tenants list cache (tenants:*)
+      const keys = await redis.keys('tenants:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        logger.info('Invalidated tenants list cache after creating tenant', {
+          tenantId: result.tenant.id,
+          cacheKeysDeleted: keys.length
+        });
+      }
+    }
   } catch (cacheError: any) {
     // Log but don't fail tenant creation if cache invalidation fails
     logger.warn('Failed to invalidate cache after creating tenant', {
@@ -478,14 +483,14 @@ export const createTenant = async (input: CreateTenantInput) => {
     try {
       const { applyPlanFeatures } = await import('./plan-features.service');
       await applyPlanFeatures(result.tenant.id, subscriptionPlan);
-      logger.info(`Plan features applied successfully for tenant ${result.tenant.id}`);
+      console.log(`✅ Plan features applied successfully for tenant ${result.tenant.id}`);
     } catch (error: any) {
       // Log error but don't fail tenant creation
       // This error happens after the response is sent, so it won't affect the client
-      logger.error(`Error applying plan features (non-blocking) for tenant ${result.tenant.id}`, {
-        error: error.message || error,
-        stack: error.stack,
-      });
+      console.error(`⚠️ Error applying plan features (non-blocking) for tenant ${result.tenant.id}:`, error.message || error);
+      if (error.stack) {
+        console.error('Error stack:', error.stack);
+      }
     }
   });
 
@@ -515,7 +520,7 @@ export const createTenant = async (input: CreateTenantInput) => {
       throw error;
     }
     // Wrap other errors
-    logger.error('Error creating tenant', { error });
+    console.error('Error creating tenant:', error);
     throw new AppError(error.message || 'Gagal membuat tenant', 500);
   }
 };
@@ -536,17 +541,17 @@ export const getTenants = async (page: number = 1, limit: number = 10, includeCo
 
   // Try to get from cache first
   if (useCache && !includeCounts) {
-    const cached = await CacheService.get(cacheKey);
-    if (cached) {
-      return cached as {
-        data: any[];
-        pagination: {
-          page: number;
-          limit: number;
-          total: number;
-          totalPages: number;
-        };
-      };
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          return JSON.parse(cached);
+        }
+      } catch (error) {
+        // If cache read fails, continue with database query
+        logger.warn('Failed to read tenants from cache:', error);
+      }
     }
   }
 
@@ -601,7 +606,15 @@ export const getTenants = async (page: number = 1, limit: number = 10, includeCo
 
     // Cache the result (10 minutes TTL for tenants list, only if not including counts)
     if (useCache && !includeCounts) {
-      await CacheService.set(cacheKey, result, 600);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          await redis.setex(cacheKey, 600, JSON.stringify(result));
+        } catch (error) {
+          // If cache write fails, continue without caching
+          logger.warn('Failed to cache tenants:', error);
+        }
+      }
     }
 
     return result;
@@ -628,9 +641,17 @@ export const getTenantById = async (id: string, useCache: boolean = true) => {
 
   // Try to get from cache first
   if (useCache) {
-    const cached = await CacheService.get(cacheKey);
-    if (cached) {
-      return cached;
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          return JSON.parse(cached);
+        }
+      } catch (error) {
+        // If cache read fails, continue with database query
+        logger.warn('Failed to read tenant from cache:', error);
+      }
     }
   }
 
@@ -649,7 +670,15 @@ export const getTenantById = async (id: string, useCache: boolean = true) => {
 
   // Cache the result (15 minutes TTL for individual tenant)
   if (tenant && useCache) {
-    await CacheService.set(cacheKey, tenant, 900);
+    const redis = getRedisClient();
+    if (redis) {
+      try {
+        await redis.setex(cacheKey, 900, JSON.stringify(tenant));
+      } catch (error) {
+        // If cache write fails, continue without caching
+        logger.warn('Failed to cache tenant:', error);
+      }
+    }
   }
 
   return tenant;
@@ -758,9 +787,9 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
           data: userUpdateData,
         });
 
-        logger.info(`Updated admin password for tenant ${id}, user ${adminUser.id}`);
+        console.log(`✅ Updated admin password for tenant ${id}, user ${adminUser.id}`);
       } else {
-        logger.warn(`Admin user not found for tenant ${id} when updating password`);
+        console.warn(`⚠️  Admin user not found for tenant ${id} when updating password`);
       }
     }
 
@@ -768,13 +797,19 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
   });
 
   // Invalidate cache
-  try {
-    // Invalidate tenant cache
-    await CacheService.delete(`tenant:${id}`);
-    // Invalidate tenants list cache (all pages)
-    await CacheService.deletePattern('tenants:*');
-  } catch (error) {
-    logger.warn('Failed to invalidate tenant cache:', error);
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      // Invalidate tenant cache
+      await redis.del(`tenant:${id}`);
+      // Invalidate tenants list cache (all pages)
+      const keys = await redis.keys('tenants:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    } catch (error) {
+      logger.warn('Failed to invalidate tenant cache:', error);
+    }
   }
 
   return updatedTenant;
@@ -894,13 +929,19 @@ export const deleteTenant = async (id: string) => {
   });
 
   // Invalidate cache
-  try {
-    // Invalidate tenant cache
-    await CacheService.delete(`tenant:${id}`);
-    // Invalidate tenants list cache (all pages)
-    await CacheService.deletePattern('tenants:*');
-  } catch (error) {
-    logger.warn('Failed to invalidate tenant cache:', error);
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      // Invalidate tenant cache
+      await redis.del(`tenant:${id}`);
+      // Invalidate tenants list cache (all pages)
+      const keys = await redis.keys('tenants:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    } catch (error) {
+      logger.warn('Failed to invalidate tenant cache:', error);
+    }
   }
 
   return { message: 'Tenant deleted successfully' };

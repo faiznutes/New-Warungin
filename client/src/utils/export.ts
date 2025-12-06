@@ -70,7 +70,7 @@ export async function exportToPDF(data: any[], filename: string, title: string, 
   const csvHeaders = headers || Object.keys(data[0]);
   
   // Create HTML table with better styling
-  const html = `
+  let html = `
     <!DOCTYPE html>
     <html>
     <head>

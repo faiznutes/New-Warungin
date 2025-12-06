@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
-import logger from '../utils/logger';
 
 export interface SubscribeAddonInput {
   addonId: string;
@@ -8,129 +7,191 @@ export interface SubscribeAddonInput {
   addonType: string;
   limit?: number;
   duration?: number; // days
-  addedBySuperAdmin?: boolean; // true if added by super admin
 }
 
 export const AVAILABLE_ADDONS = [
-  // Group 1: Resource Addons (Limit-based)
+  // ========== ADDON DENGAN LIMIT ==========
   {
     id: 'add_outlets',
     name: 'Tambah Outlet',
     type: 'ADD_OUTLETS',
-    category: 'RESOURCE',
     description: 'Tambahkan outlet/cabang tambahan untuk operasi multi-lokasi',
     defaultLimit: 1,
-    price: 120000, // per month
+    price: 120000,
+    category: 'limit',
+    details: [
+      'Tambahkan 1 outlet/cabang baru',
+      'Kelola multi-lokasi dari satu dashboard',
+      'Sinkronisasi stok antar outlet',
+      'Laporan per outlet dan konsolidasi',
+      'Transfer stok antar outlet',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
   {
     id: 'add_users',
     name: 'Tambah Pengguna',
     type: 'ADD_USERS',
-    category: 'RESOURCE',
     description: 'Tambahkan user, kasir, atau supervisor tambahan dengan role preset (Admin, Kasir, Supervisor) dan log aktivitas',
     defaultLimit: 5,
-    price: 50000, // per month (per 5 users)
+    price: 50000,
+    category: 'limit',
+    details: [
+      'Tambahkan 5 pengguna baru',
+      'Role: Admin, Supervisor, Kasir, Kitchen',
+      'Log aktivitas dan audit trail',
+      'Permission management per user',
+      'Multi-user support untuk operasi 24/7',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
   {
     id: 'add_products',
     name: 'Tambah Produk',
     type: 'ADD_PRODUCTS',
-    category: 'RESOURCE',
     description: 'Tambahkan limit produk dengan fitur bulk import CSV/Excel dan dukungan varian produk (warna, ukuran, rasa)',
     defaultLimit: 100,
-    price: 30000, // per month (per 100 produk)
+    price: 30000,
+    category: 'limit',
+    details: [
+      'Tambahkan 100 produk baru',
+      'Bulk import CSV/Excel',
+      'Dukungan varian produk (warna, ukuran, rasa)',
+      'Kategori dan tag produk',
+      'Import gambar produk massal',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
-  
-  // Group 2: Delivery & Marketing
-  {
-    id: 'delivery_marketing',
-    name: 'Delivery & Marketing',
-    type: 'DELIVERY_MARKETING',
-    category: 'MARKETING',
-    description: 'Fitur delivery orders dan marketing campaigns lengkap dengan email templates, email analytics, email scheduler, dan customer engagement',
-    defaultLimit: null,
-    price: 180000, // per month
-    comingSoon: true, // Requires external API
-  },
-  
-  // Group 3: Business Analytics
+  // ========== ADDON FEATURE (Non-API) ==========
   {
     id: 'business_analytics',
     name: 'Business Analytics & Insight',
     type: 'BUSINESS_ANALYTICS',
-    category: 'ANALYTICS',
     description: 'Laporan Laba Rugi dengan Revenue, COGS, Gross Profit, Operating Expenses, dan Net Profit. Prediksi penjualan, analisis tren, dan custom report builder. Ringkasan harian transaksi dan produk terlaris.',
     defaultLimit: null,
-    price: 250000, // per month
+    price: 250000,
+    category: 'feature',
+    details: [
+      'Laporan Laba Rugi lengkap (Revenue, COGS, Gross Profit, Operating Expenses, Net Profit)',
+      'Prediksi penjualan berdasarkan data historis',
+      'Analisis tren penjualan harian, mingguan, bulanan',
+      'Custom report builder dengan filter advanced',
+      'Ringkasan harian transaksi dan produk terlaris',
+      'Quick Insight dashboard dengan rekomendasi bisnis',
+      'Advanced Analytics dengan grafik interaktif',
+      'Financial Management dengan tracking keuangan',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
-  
-  // Group 4: Advanced Reporting
   {
-    id: 'advanced_reporting',
-    name: 'Advanced Reporting',
-    type: 'ADVANCED_REPORTING',
-    category: 'REPORTING',
-    description: 'Laporan lanjutan dengan export Excel, PDF, CSV. Custom report builder, scheduled reports, dan tanda tangan digital untuk keperluan legal.',
+    id: 'export_reports',
+    name: 'Export Laporan',
+    type: 'EXPORT_REPORTS',
+    description: 'Ekspor laporan transaksi, stok, dan keuangan dalam format Excel, PDF, atau CSV. Rentang waktu custom sesuai kebutuhan. Tanda tangan digital untuk keperluan legal.',
     defaultLimit: null,
-    price: 75000, // per month
+    price: 75000,
+    category: 'feature',
+    details: [
+      'Export laporan ke Excel (.xlsx)',
+      'Export laporan ke PDF dengan template profesional',
+      'Export laporan ke CSV untuk analisis',
+      'Rentang waktu custom (tanggal mulai-akhir)',
+      'Tanda tangan digital untuk keperluan legal',
+      'Multiple format export sekaligus',
+      'Scheduled export otomatis via email',
+      'Template laporan yang dapat dikustomisasi',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
-  
-  // Group 5: Financial Management
-  {
-    id: 'financial_management',
-    name: 'Financial Management',
-    type: 'FINANCIAL_MANAGEMENT',
-    category: 'FINANCE',
-    description: 'Manajemen keuangan lengkap: accounting, profit & loss report, cash flow, expenses, tax calculations, financial forecasts, dan bank reconciliations',
-    defaultLimit: null,
-    price: 150000, // per month
-    comingSoon: true, // Requires external API (bank reconciliation)
-  },
-  
-  // Group 6: Inventory Management
-  {
-    id: 'inventory_management',
-    name: 'Inventory Management',
-    type: 'INVENTORY_MANAGEMENT',
-    category: 'INVENTORY',
-    description: 'Manajemen inventory lengkap: suppliers, purchase orders, stock transfers, stock alerts, stock valuations, dan product adjustments',
-    defaultLimit: null,
-    price: 100000, // per month
-    comingSoon: true, // Requires external API (supplier integration)
-  },
-  
-  // Group 7: AI/ML Features
-  {
-    id: 'ai_ml_features',
-    name: 'AI/ML Features',
-    type: 'AI_ML_FEATURES',
-    category: 'AI_ML',
-    description: 'Fitur AI dan Machine Learning: prediksi penjualan, rekomendasi produk, analisis tren otomatis, dan insights berbasis AI',
-    defaultLimit: null,
-    price: 200000, // per month
-    comingSoon: true, // Requires external AI/ML API
-  },
-  
-  // Group 8: Receipt & Export
   {
     id: 'receipt_editor',
-    name: 'Advanced Receipt Editor',
+    name: 'Simple Nota Editor',
     type: 'RECEIPT_EDITOR',
-    category: 'RECEIPT',
     description: 'Kustomisasi tampilan nota: nama toko, pesan promo, logo. Preview real-time sebelum cetak untuk memastikan hasil. Edit header, footer, dan layout struk sesuai brand.',
     defaultLimit: null,
-    price: 60000, // per month
+    price: 50000,
+    category: 'feature',
+    details: [
+      'Kustomisasi header nota (nama toko, alamat, telepon)',
+      'Upload logo toko di nota',
+      'Pesan promo/ucapan di footer nota',
+      'Preview real-time sebelum cetak',
+      'Edit layout struk sesuai brand',
+      'Multiple template nota',
+      'Print ke thermal printer atau PDF',
+      'Template designer dengan drag & drop',
+    ],
+    requiresApi: false,
+    comingSoon: false,
   },
-  
-  // Group 9: Multi-Outlet (Advanced)
   {
-    id: 'multi_outlet_advanced',
-    name: 'Multi-Outlet Advanced',
-    type: 'MULTI_OUTLET_ADVANCED',
-    category: 'OUTLET',
-    description: 'Fitur multi-outlet lanjutan: manajemen stok antar outlet, transfer otomatis, laporan per outlet, dan sinkronisasi real-time',
+    id: 'delivery_marketing',
+    name: 'Delivery & Marketing',
+    type: 'DELIVERY_MARKETING',
+    description: 'Manajemen pesanan delivery, kampanye marketing email, SMS marketing, customer engagement tools, dan email automation untuk meningkatkan penjualan dan retensi pelanggan.',
     defaultLimit: null,
-    price: 150000, // per month
+    price: 150000,
+    category: 'feature',
+    details: [
+      'Manajemen pesanan delivery dengan tracking',
+      'Kampanye marketing email dengan template',
+      'SMS marketing untuk promosi',
+      'Email automation (welcome, birthday, reminder)',
+      'Customer engagement tools',
+      'Email analytics (open rate, click rate)',
+      'Email scheduler untuk kampanye terjadwal',
+      'Segmentasi pelanggan untuk targeted campaign',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
+  // ========== ADDON API (Coming Soon - Di Akhir) ==========
+  {
+    id: 'ecommerce_integration',
+    name: 'Integrasi E-commerce',
+    type: 'E_COMMERCE',
+    description: 'Integrasi dengan platform e-commerce (Shopee, Tokopedia, Bukalapak) untuk sinkronisasi produk, stok, dan pesanan secara otomatis.',
+    defaultLimit: null,
+    price: 200000,
+    category: 'integration',
+    details: [
+      'Sinkronisasi produk ke Shopee, Tokopedia, Bukalapak',
+      'Auto-update stok real-time',
+      'Import pesanan dari e-commerce',
+      'Multi-platform support (Shopee, Tokopedia, Bukalapak)',
+      'Bulk sync produk dengan sekali klik',
+      'Auto-update harga dan stok',
+      'Notifikasi pesanan baru dari e-commerce',
+      'Laporan penjualan per platform',
+    ],
+    requiresApi: true,
+    comingSoon: true,
+  },
+  {
+    id: 'payment_accounting_integration',
+    name: 'Integrasi Payment & Accounting',
+    type: 'PAYMENT_ACCOUNTING',
+    description: 'Integrasi payment gateway (OVO, DANA, LinkAja) dan software akuntansi (Jurnal.id, Accurate, MYOB) untuk otomasi pembayaran dan pembukuan.',
+    defaultLimit: null,
+    price: 250000,
+    category: 'integration',
+    details: [
+      'Payment Gateway: OVO, DANA, LinkAja integration',
+      'Accounting Software: Jurnal.id, Accurate Online, MYOB',
+      'Auto-sync transaksi ke software akuntansi',
+      'Sinkronisasi chart of accounts',
+      'Auto-generate invoice dan payment record',
+      'Reconciliation otomatis',
+      'Multi-payment method support',
+      'Financial report export ke accounting software',
+    ],
+    requiresApi: true,
+    comingSoon: true,
   },
 ];
 
@@ -139,7 +200,7 @@ export class AddonService {
     return AVAILABLE_ADDONS;
   }
 
-  async getTenantAddons(tenantId: string): Promise<any[]> {
+  async getTenantAddons(tenantId: string) {
     const now = new Date();
     const addons = await prisma.tenantAddon.findMany({
       where: {
@@ -154,60 +215,42 @@ export class AddonService {
       orderBy: { subscribedAt: 'desc' },
     });
 
-    // Get total limits from plan features (base plan + all addons)
-    const planFeaturesService = (await import('./plan-features.service')).default;
-    const planFeatures: any = await planFeaturesService.getTenantPlanFeatures(tenantId);
-
     // Get current usage for each addon
-    const addonsWithUsage: any[] = await Promise.all(
+    const addonsWithUsage = await Promise.all(
       addons.map(async (addon) => {
         let currentUsage = 0;
-        let totalLimit: number | null = null;
         
         switch (addon.addonType) {
           case 'ADD_USERS':
             currentUsage = await prisma.user.count({
               where: { tenantId, isActive: true },
             });
-            totalLimit = planFeatures.limits.users === -1 ? null : planFeatures.limits.users;
             break;
           case 'ADD_PRODUCTS':
             currentUsage = await prisma.product.count({
               where: { tenantId, isActive: true },
             });
-            totalLimit = planFeatures.limits.products === -1 ? null : planFeatures.limits.products;
             break;
           case 'ADD_OUTLETS':
             currentUsage = await prisma.outlet.count({
               where: { tenantId, isActive: true },
             });
-            totalLimit = planFeatures.limits.outlets === -1 ? null : planFeatures.limits.outlets;
             break;
           case 'BUSINESS_ANALYTICS':
-          case 'ADVANCED_REPORTING':
-          case 'FINANCIAL_MANAGEMENT':
-          case 'INVENTORY_MANAGEMENT':
-          case 'AI_ML_FEATURES':
-          case 'DELIVERY_MARKETING':
-          case 'RECEIPT_EDITOR':
-          case 'MULTI_OUTLET_ADVANCED':
           case 'EXPORT_REPORTS':
+          case 'RECEIPT_EDITOR':
+          case 'DELIVERY_MARKETING':
+          case 'E_COMMERCE':
+          case 'PAYMENT_ACCOUNTING':
             // These addons don't have usage limits
             currentUsage = 0;
-            totalLimit = null;
             break;
         }
 
-        // Use total limit (base plan + all addons) instead of individual addon limit
-        const displayLimit: number | null = totalLimit !== null ? totalLimit : addon.limit;
-        
         return {
           ...addon,
           currentUsage,
-          limit: displayLimit, // Use total limit for display
-          totalLimit: displayLimit, // Total limit (base plan + all addons)
-          addonLimit: addon.limit, // Individual addon limit (for reference)
-          isLimitReached: displayLimit !== null ? currentUsage >= displayLimit : false,
+          isLimitReached: addon.limit ? currentUsage >= addon.limit : false,
         };
       })
     );
@@ -216,6 +259,11 @@ export class AddonService {
   }
 
   async subscribeAddon(tenantId: string, data: SubscribeAddonInput) {
+    // Check if addon is coming soon
+    const addonInfo = AVAILABLE_ADDONS.find(a => a.id === data.addonId);
+    if (addonInfo?.comingSoon) {
+      throw new Error('Addon ini belum tersedia. Coming soon!');
+    }
     // Get tenant subscription info
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
@@ -240,12 +288,6 @@ export class AddonService {
 
     // Check if addon has limit (can be purchased multiple times)
     const addonInfo = AVAILABLE_ADDONS.find(a => a.id === data.addonId);
-    
-    // Check if addon is coming soon
-    if (addonInfo?.comingSoon) {
-      throw new Error('Addon ini belum tersedia. Fitur ini sedang dalam pengembangan.');
-    }
-    
     const hasLimit = addonInfo?.defaultLimit !== null && addonInfo?.defaultLimit !== undefined;
 
     // For addons without limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
@@ -261,10 +303,7 @@ export class AddonService {
         throw new Error('Addon already subscribed');
       }
     }
-    
     // For addons with limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS), allow multiple purchases
-    // Each purchase creates a NEW record (don't update existing) so limits can be summed correctly
-    // Only update if the existing addon is expired or inactive
 
     const now = new Date();
     // Calculate addon expiry: flat duration from now (can exceed subscription end)
@@ -283,133 +322,68 @@ export class AddonService {
       originalDuration: data.duration || null, // Store original duration in days
     };
 
-    // Determine limit: use provided limit, or defaultLimit from addon info
-    let addonLimit = data.limit;
-    if (addonLimit === null || addonLimit === undefined) {
-      if (addonInfo?.defaultLimit !== null && addonInfo?.defaultLimit !== undefined) {
-        addonLimit = addonInfo.defaultLimit;
-      } else if (data.addonType === 'ADD_OUTLETS') {
-        addonLimit = 1; // Default 1 outlet per addon
-      } else if (data.addonType === 'ADD_USERS') {
-        addonLimit = 5; // Default 5 users per addon
-      } else if (data.addonType === 'ADD_PRODUCTS') {
-        addonLimit = 100; // Default 100 products per addon
-      }
-    }
-
-    // For limit-based addons (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS), update existing and add limit
-    // For non-limit addons, only update if expired or inactive
     if (existing) {
-      if (hasLimit) {
-        // For limit-based addons, update existing and ADD to existing limit
-        const updateData: any = {
-          status: 'active',
-          expiresAt,
-          config: addonConfig,
-          // Add to existing limit (allow multiple purchases to accumulate)
-          limit: (existing.limit || 0) + (addonLimit || 0),
-        };
+      // Update existing addon
+      // If subscribedAt is not set, set it to now for global report tracking
+      const updateData: any = {
+        status: 'active',
+        expiresAt,
+        limit: data.limit,
+        config: addonConfig,
+      };
+      
+      // Only update subscribedAt if it's not already set
+      if (!existing.subscribedAt) {
+        updateData.subscribedAt = now;
+      }
+      
+      const updatedAddon = await prisma.tenantAddon.update({
+        where: { id: existing.id },
+        data: updateData,
+      });
+      
+      // Award points from addon purchase (10rb = 5 point) if extending/renewing
+      // Calculate amount based on addon price and duration
+      if (addonInfo && addonInfo.price && data.duration) {
+        const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
         
-        // Only update subscribedAt if it's not already set
-        if (!existing.subscribedAt) {
-          updateData.subscribedAt = now;
-        }
-        
-        // Set addedBySuperAdmin if provided
-        if (data.addedBySuperAdmin !== undefined) {
-          updateData.addedBySuperAdmin = data.addedBySuperAdmin;
-        }
-        
-        const updatedAddon = await prisma.tenantAddon.update({
-          where: { id: existing.id },
-          data: updateData,
-        });
-        
-        // Award points from addon purchase (10rb = 5 point) if extending/renewing
-        if (addonInfo && addonInfo.price && data.duration) {
-          const amount = Math.floor((addonInfo.price * data.duration) / 30);
-          if (amount > 0) {
-            try {
-              const rewardPointService = (await import('./reward-point.service')).default;
-              await rewardPointService.awardPointsFromAddon(
-                tenantId,
-                amount,
-                data.addonName,
-                data.addonType
-              );
-            } catch (error: any) {
-              logger.error('Error awarding points from addon', { error: error.message, addonId: data.addonId, tenantId });
-            }
+        if (amount > 0) {
+          try {
+            const rewardPointService = (await import('./reward-point.service')).default;
+            await rewardPointService.awardPointsFromAddon(
+              tenantId,
+              amount,
+              data.addonName,
+              data.addonType
+            );
+          } catch (error: any) {
+            // Log error but don't fail the addon subscription
+            console.error('Error awarding points from addon:', error);
           }
-        }
-        
-        return updatedAddon;
-      } else {
-        // For non-limit addons, update existing if expired
-        const isExpired = existing.expiresAt && new Date(existing.expiresAt) <= now;
-        
-        if (isExpired || existing.status !== 'active') {
-          const updateData: any = {
-            status: 'active',
-            expiresAt,
-            config: addonConfig,
-          };
-          
-          if (!existing.subscribedAt) {
-            updateData.subscribedAt = now;
-          }
-          
-          if (data.addedBySuperAdmin !== undefined) {
-            updateData.addedBySuperAdmin = data.addedBySuperAdmin;
-          }
-          
-          const updatedAddon = await prisma.tenantAddon.update({
-            where: { id: existing.id },
-            data: updateData,
-          });
-          
-          // Award points
-          if (addonInfo && addonInfo.price && data.duration) {
-            const amount = Math.floor((addonInfo.price * data.duration) / 30);
-            if (amount > 0) {
-              try {
-                const rewardPointService = (await import('./reward-point.service')).default;
-                await rewardPointService.awardPointsFromAddon(
-                  tenantId,
-                  amount,
-                  data.addonName,
-                  data.addonType
-                );
-              } catch (error: any) {
-                logger.error('Error awarding points from addon', { error, tenantId, addonId: data.addonId });
-              }
-            }
-          }
-          
-          return updatedAddon;
         }
       }
+      
+      return updatedAddon;
     }
 
-    // Create new addon subscription (only if no existing or existing is non-limit and active)
+    // Create new addon subscription
+    // Set subscribedAt to now for global report tracking
     const addon = await prisma.tenantAddon.create({
       data: {
         tenantId,
         addonId: data.addonId,
         addonName: data.addonName,
         addonType: data.addonType,
-        limit: addonLimit, // Use calculated limit (with default if not provided)
+        limit: data.limit,
         status: 'active',
-        subscribedAt: now,
+        subscribedAt: now, // Set subscribedAt untuk laporan global
         expiresAt,
         config: addonConfig,
-        addedBySuperAdmin: data.addedBySuperAdmin || false,
       },
     });
     
     // Log addon creation for debugging
-    logger.info('Addon subscribed for tenant', {
-      tenantId,
+    console.log(`✅ Addon subscribed for tenant ${tenantId}:`, {
       addonId: addon.id,
       addonName: data.addonName,
       subscribedAt: now.toISOString(),
@@ -433,18 +407,9 @@ export class AddonService {
           );
         } catch (error: any) {
           // Log error but don't fail the addon subscription
-          logger.error('Error awarding points from addon', { error, tenantId, addonId: addon.id });
+          console.error('Error awarding points from addon:', error);
         }
       }
-    }
-    
-    // Invalidate plan features cache after addon subscription
-    try {
-      const CacheService = (await import('../utils/cache')).default;
-      await CacheService.delete(`plan-features:${tenantId}`);
-      logger.debug('Invalidated plan features cache after addon subscription', { tenantId });
-    } catch (error: any) {
-      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
     }
     
     return addon;
@@ -493,24 +458,13 @@ export class AddonService {
       originalDuration: duration, // Update to the new duration being added
     };
 
-    const result = await prisma.tenantAddon.update({
+    return prisma.tenantAddon.update({
       where: { id: addon.id },
       data: {
         expiresAt: newExpiry,
         config: updatedConfig,
       },
     });
-    
-    // Invalidate plan features cache after addon extension
-    try {
-      const CacheService = (await import('../utils/cache')).default;
-      await CacheService.delete(`plan-features:${tenantId}`);
-      logger.debug('Invalidated plan features cache after addon extension', { tenantId });
-    } catch (error: any) {
-      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
-    }
-    
-    return result;
   }
 
   /**
@@ -559,23 +513,12 @@ export class AddonService {
     }
 
     // Addon expiry can exceed subscription expiry (flat duration)
-    const result = await prisma.tenantAddon.update({
+    return prisma.tenantAddon.update({
       where: { id: addon.id },
       data: {
         expiresAt: newExpiry,
       },
     });
-    
-    // Invalidate plan features cache after addon extension
-    try {
-      const CacheService = (await import('../utils/cache')).default;
-      await CacheService.delete(`plan-features:${tenantId}`);
-      logger.debug('Invalidated plan features cache after addon extension', { tenantId });
-    } catch (error: any) {
-      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
-    }
-    
-    return result;
   }
 
   async unsubscribeAddon(tenantId: string, addonId: string) {
@@ -592,21 +535,10 @@ export class AddonService {
       throw new Error('Addon not found');
     }
 
-    const result = await prisma.tenantAddon.update({
+    return prisma.tenantAddon.update({
       where: { id: addon.id },
       data: { status: 'inactive' },
     });
-    
-    // Invalidate plan features cache after addon unsubscription
-    try {
-      const CacheService = (await import('../utils/cache')).default;
-      await CacheService.delete(`plan-features:${tenantId}`);
-      logger.debug('Invalidated plan features cache after addon unsubscription', { tenantId });
-    } catch (error: any) {
-      logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
-    }
-    
-    return result;
   }
 
   async checkLimit(tenantId: string, addonType: string): Promise<{ allowed: boolean; currentUsage: number; limit?: number }> {
@@ -623,14 +555,11 @@ export class AddonService {
         limitType = 'outlets';
         break;
       case 'BUSINESS_ANALYTICS':
-      case 'ADVANCED_REPORTING':
-      case 'FINANCIAL_MANAGEMENT':
-      case 'INVENTORY_MANAGEMENT':
-      case 'AI_ML_FEATURES':
-      case 'DELIVERY_MARKETING':
-      case 'RECEIPT_EDITOR':
-      case 'MULTI_OUTLET_ADVANCED':
       case 'EXPORT_REPORTS':
+      case 'RECEIPT_EDITOR':
+      case 'DELIVERY_MARKETING':
+      case 'E_COMMERCE':
+      case 'PAYMENT_ACCOUNTING':
         // These addons don't have usage limits
         return { allowed: true, currentUsage: 0 };
     }

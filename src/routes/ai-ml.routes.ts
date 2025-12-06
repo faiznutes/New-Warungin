@@ -9,7 +9,6 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { requireTenantId } from '../utils/tenant';
 import aiMlService from '../services/ai-ml.service';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkAIMLFeaturesAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -26,7 +25,6 @@ router.get(
   '/forecast-sales',
   authGuard,
   subscriptionGuard,
-  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -52,7 +50,6 @@ router.get(
   '/recommendations',
   authGuard,
   subscriptionGuard,
-  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -80,7 +77,6 @@ router.get(
   '/customer-segments',
   authGuard,
   subscriptionGuard,
-  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -105,16 +101,12 @@ router.post(
   '/optimize-price',
   authGuard,
   subscriptionGuard,
-  checkAIMLFeaturesAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const { productId } = req.body;
       if (!productId) {
-        const error = new Error('productId is required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'productId is required', 'OPTIMIZE_PRICE');
-        return;
+        return res.status(400).json({ error: 'productId is required' });
       }
       const optimization = await aiMlService.optimizePrice(tenantId, productId);
       res.json(optimization);

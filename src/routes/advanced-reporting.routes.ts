@@ -11,7 +11,6 @@ import advancedReportingService from '../services/advanced-reporting.service';
 import { handleRouteError } from '../utils/route-error-handler';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
-import { checkAdvancedReportingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -28,7 +27,6 @@ router.get(
   '/templates',
   authGuard,
   subscriptionGuard,
-  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -131,7 +129,6 @@ router.get(
   '/scheduled',
   authGuard,
   subscriptionGuard,
-  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -194,7 +191,6 @@ router.get(
   '/dashboard-settings',
   authGuard,
   subscriptionGuard,
-  checkAdvancedReportingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -229,100 +225,6 @@ router.put(
       res.json({ success: true });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to save dashboard settings', 'SAVE_DASHBOARD_SETTINGS');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/advanced-reporting/export:
- *   post:
- *     summary: Export report directly in PDF/Excel/CSV format
- *     tags: [Advanced Reporting]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/export',
-  authGuard,
-  subscriptionGuard,
-  checkAdvancedReportingAddon,
-  validate({
-    body: z.object({
-      templateId: z.string(),
-      format: z.enum(['PDF', 'EXCEL', 'CSV']),
-      dateRange: z.object({
-        startDate: z.string().datetime(),
-        endDate: z.string().datetime(),
-      }).optional(),
-    }),
-  }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { templateId, format, dateRange } = req.body;
-      
-      const report = await advancedReportingService.generateCustomReport(
-        tenantId,
-        templateId,
-        dateRange ? {
-          startDate: new Date(dateRange.startDate),
-          endDate: new Date(dateRange.endDate),
-        } : undefined
-      );
-
-      // Export based on format
-      const exportedData = await advancedReportingService.exportReport(report, format);
-      
-      // Set headers for file download
-      const contentTypeMap: Record<'PDF' | 'EXCEL' | 'CSV', string> = {
-        PDF: 'application/pdf',
-        EXCEL: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        CSV: 'text/csv',
-      };
-      const contentType = contentTypeMap[format as 'PDF' | 'EXCEL' | 'CSV'] || 'application/octet-stream';
-      
-      const filename = `report-${Date.now()}.${format.toLowerCase()}`;
-      
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.send(exportedData);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to export report', 'EXPORT_REPORT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/advanced-reporting/digital-signature:
- *   post:
- *     summary: Add digital signature to report
- *     tags: [Advanced Reporting]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/digital-signature',
-  authGuard,
-  subscriptionGuard,
-  checkAdvancedReportingAddon,
-  validate({
-    body: z.object({
-      reportId: z.string(),
-      signature: z.string(), // Base64 encoded signature image
-      signerName: z.string(),
-      signerTitle: z.string().optional(),
-      position: z.enum(['HEADER', 'FOOTER']).default('FOOTER'),
-    }),
-  }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const signedReport = await advancedReportingService.addDigitalSignature(tenantId, req.body);
-      res.json(signedReport);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to add digital signature', 'ADD_DIGITAL_SIGNATURE');
     }
   }
 );

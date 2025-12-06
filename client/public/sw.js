@@ -128,37 +128,15 @@ self.addEventListener('fetch', (event) => {
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
   console.log('[Service Worker] Background sync:', event.tag);
-  if (event.tag === 'sync-actions' || event.tag === 'sync-orders') {
-    event.waitUntil(syncOfflineActions());
+  if (event.tag === 'sync-orders') {
+    event.waitUntil(syncOrders());
   }
 });
 
-// Sync offline actions when back online
-async function syncOfflineActions() {
-  console.log('[Service Worker] Syncing offline actions...');
-  
-  try {
-    // Get all clients (tabs)
-    const clients = await self.clients.matchAll({ includeUncontrolled: true });
-    
-    // Notify all clients to sync
-    clients.forEach((client) => {
-      client.postMessage({
-        type: 'SYNC_OFFLINE_ACTIONS',
-      });
-    });
-  } catch (error) {
-    console.error('[Service Worker] Error syncing offline actions:', error);
-  }
-}
-
-// Periodic background sync (if supported)
-if (self.registration && 'periodicSync' in self.registration) {
-  self.addEventListener('periodicsync', (event) => {
-    if (event.tag === 'sync-actions') {
-      event.waitUntil(syncOfflineActions());
-    }
-  });
+// Sync orders when back online
+async function syncOrders() {
+  // This will be implemented with IndexedDB
+  console.log('[Service Worker] Syncing orders...');
 }
 
 // Push notifications (for future use)

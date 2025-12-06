@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import transactionService from '../services/transaction.service';
 import { requireTenantId } from '../utils/tenant';
@@ -79,10 +79,10 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createTransactionSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId || '';
+      const userId = (req as any).user.id;
       
       const transaction = await transactionService.createTransaction(
         req.body,
@@ -190,10 +190,7 @@ router.get(
       const transaction = await transactionService.getTransactionById(req.params.id, tenantId);
       
       if (!transaction) {
-        const error = new Error('Transaction not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Transaction not found', 'GET_TRANSACTION');
-        return;
+        return res.status(404).json({ message: 'Transaction not found' });
       }
       
       res.json(transaction);

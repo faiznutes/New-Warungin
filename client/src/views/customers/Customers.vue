@@ -6,30 +6,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          Pelanggan
-        </h2>
-        <p class="text-sm sm:text-base text-gray-600">
-          Kelola data pelanggan
-        </p>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pelanggan</h2>
+        <p class="text-sm sm:text-base text-gray-600">Kelola data pelanggan</p>
       </div>
       <button
         v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
         @click="showCreateModal = true"
+        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
       >
-        <svg
-          class="w-4 h-4 sm:w-5 sm:h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span class="hidden sm:inline">Tambah Pelanggan</span>
         <span class="sm:hidden">Tambah</span>
@@ -40,67 +26,34 @@
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg
-            class="h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
         <input
           v-model="filters.search"
+          @focus="handleSearchFocus"
+          @input="handleSearchInput"
           type="text"
           placeholder="Cari pelanggan..."
           class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-          @focus="handleSearchFocus"
-          @input="handleSearchInput"
         />
       </div>
     </div>
 
     <!-- Customers Grid -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
-      <div class="text-gray-500">
-        Memuat...
-      </div>
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <div class="text-gray-500">Memuat...</div>
     </div>
 
-    <div
-      v-else-if="customers.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-        />
+    <div v-else-if="customers.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada pelanggan
-      </p>
+      <p class="text-gray-500">Belum ada pelanggan</p>
     </div>
 
-    <div
-      v-else
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-2 sm:px-0"
-    >
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-2 sm:px-0">
       <div
         v-for="customer in customers"
         :key="customer.id"
@@ -114,21 +67,9 @@
               </span>
             </div>
             <div>
-              <h3 class="font-semibold text-gray-900">
-                {{ customer.name }}
-              </h3>
-              <p
-                v-if="customer.email"
-                class="text-sm text-gray-500"
-              >
-                {{ customer.email }}
-              </p>
-              <p
-                v-if="customer.phone"
-                class="text-sm text-gray-500"
-              >
-                {{ customer.phone }}
-              </p>
+              <h3 class="font-semibold text-gray-900">{{ customer.name }}</h3>
+              <p v-if="customer.email" class="text-sm text-gray-500">{{ customer.email }}</p>
+              <p v-if="customer.phone" class="text-sm text-gray-500">{{ customer.phone }}</p>
             </div>
           </div>
         </div>
@@ -145,21 +86,21 @@
         <div class="flex items-center space-x-2 pt-3 sm:pt-4 border-t border-gray-200">
           <button
             v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-            class="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
             @click="editCustomer(customer)"
+            class="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
           >
             Edit
           </button>
           <button
-            class="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition"
             @click="viewCustomer(customer)"
+            class="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition"
           >
             Detail
           </button>
           <button
             v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-            class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
             @click="deleteCustomer(customer.id)"
+            class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
           >
             Hapus
           </button>
@@ -168,14 +109,11 @@
     </div>
 
     <!-- Pagination -->
-    <div
-      v-if="pagination.totalPages > 1"
-      class="flex items-center justify-center space-x-2 mt-6"
-    >
+    <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
       <button
+        @click="loadCustomers(pagination.page - 1)"
         :disabled="pagination.page === 1"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        @click="loadCustomers(pagination.page - 1)"
       >
         Sebelumnya
       </button>
@@ -183,9 +121,9 @@
         Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
       </span>
       <button
+        @click="loadCustomers(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        @click="loadCustomers(pagination.page + 1)"
       >
         Selanjutnya
       </button>
@@ -285,25 +223,13 @@ const loadCustomers = async (page = 1) => {
         ...(filters.value.search && { search: filters.value.search }),
       };
       const response = await api.get('/customers', { params });
-      customers.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
-      pagination.value = response.data?.pagination || {
-        page: page || 1,
-        limit: pagination.value?.limit || 20,
-        total: 0,
-        totalPages: 0
-      };
+      customers.value = response.data.data;
+      pagination.value = response.data.pagination;
     } catch (error: any) {
+      console.error('Error loading customers:', error);
       if (error.response?.status !== 429) { // Don't show error for rate limiting
-        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat pelanggan';
-        await showError(errorMessage);
+        await showError(error.response?.data?.message || 'Gagal memuat pelanggan');
       }
-      customers.value = [];
-      pagination.value = {
-        page: page || 1,
-        limit: pagination.value?.limit || 20,
-        total: 0,
-        totalPages: 0
-      };
     } finally {
       loading.value = false;
     }
@@ -334,6 +260,7 @@ const handleSaveCustomer = async (customerData: Partial<Customer>) => {
     closeModal();
     await loadCustomers(pagination.value.page);
   } catch (error: any) {
+    console.error('Error saving customer:', error);
     await showError(error.response?.data?.message || 'Gagal menyimpan pelanggan');
   }
 };

@@ -1,26 +1,18 @@
 <template>
-  <div
-    v-if="shouldShow"
-    class="mb-4 sm:mb-6"
-  >
+  <div v-if="shouldShow" class="mb-4 sm:mb-6">
     <div class="flex items-center gap-3 flex-wrap">
-      <label
-        for="store-select"
-        class="text-sm font-medium text-gray-700 whitespace-nowrap"
-      >
+      <label for="store-select" class="text-sm font-medium text-gray-700 whitespace-nowrap">
         Pilih Store:
       </label>
       <div class="flex-1 max-w-xs relative">
         <select
           id="store-select"
           :value="selectedStoreId || ''"
+          @change="handleStoreChange"
           :disabled="loading"
           class="w-full px-4 py-2.5 text-sm border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900 shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          @change="handleStoreChange"
         >
-          <option value="">
-            Semua Store
-          </option>
+          <option value="">Semua Store</option>
           <option 
             v-for="store in stores" 
             :key="store.id" 
@@ -37,118 +29,39 @@
             stroke="currentColor" 
             viewBox="0 0 24 24"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
         <!-- Loading indicator -->
-        <div
-          v-if="loading"
-          class="absolute inset-y-0 right-0 flex items-center pr-10"
-        >
+        <div v-if="loading" class="absolute inset-y-0 right-0 flex items-center pr-10">
           <div class="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
       <!-- Clear button (only show when store is selected) -->
       <button
         v-if="selectedStoreId && !loading"
+        @click="clearSelection"
         type="button"
         class="px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 border border-gray-300 hover:border-red-300"
         title="Tampilkan semua store"
-        @click="clearSelection"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
     <!-- Selected store info -->
-    <div
-      v-if="selectedStoreId && selectedStoreName"
-      class="mt-2 flex items-center gap-2 text-xs text-gray-600"
-    >
-      <svg
-        class="w-4 h-4 text-green-600"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
+    <div v-if="selectedStoreId && selectedStoreName" class="mt-2 flex items-center gap-2 text-xs text-gray-600">
+      <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       <span>Menampilkan data: <strong class="text-gray-900">{{ selectedStoreName }}</strong></span>
-    </div>
-    <!-- No stores message -->
-    <div
-      v-if="!loading && stores.length === 0 && shouldShow && !errorMessage"
-      class="mt-2 flex items-center gap-2 text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200"
-    >
-      <svg
-        class="w-4 h-4 flex-shrink-0"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-        />
-      </svg>
-      <span>Belum ada store/outlet. Silakan buat store terlebih dahulu.</span>
-    </div>
-    <!-- Error message -->
-    <div
-      v-if="errorMessage"
-      class="mt-2 flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200"
-    >
-      <svg
-        class="w-4 h-4 flex-shrink-0"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <span>{{ errorMessage }}</span>
-      <button
-        v-if="errorMessage && !loading"
-        type="button"
-        class="ml-auto text-xs text-red-700 hover:text-red-900 underline"
-        @click="loadStores"
-      >
-        Coba Lagi
-      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../api';
 
@@ -171,23 +84,15 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const stores = ref<any[]>([]);
 const loading = ref(false);
-const errorMessage = ref<string | null>(null);
 const selectedStoreId = ref<string | null>(
   localStorage.getItem('selectedStoreId')
 );
-const retryCount = ref(0); // Track retry count to prevent infinite retry
-const MAX_RETRIES = 1; // Only retry once
-const isLoadingStores = ref(false); // Guard to prevent concurrent loads
-const lastLoadTime = ref<number>(0); // Track last load time to prevent too frequent calls
-const MIN_LOAD_INTERVAL = 2000; // Minimum 2 seconds between loads
 
 const shouldShow = computed(() => {
-  // Show for all roles except SUPER_ADMIN (unless tenant selected)
-  // ADMIN_TENANT, SUPERVISOR, CASHIER, KITCHEN should always show
+  // Show if user is not super admin, or if super admin has selected a tenant
   if (authStore.isSuperAdmin) {
     return !!authStore.selectedTenantId;
   }
-  // For ADMIN_TENANT and other roles, always show
   return true;
 });
 
@@ -198,183 +103,22 @@ const selectedStoreName = computed(() => {
 });
 
 const loadStores = async () => {
-  // Early return if should not show
-  if (!shouldShow.value) {
-    stores.value = [];
-    loading.value = false;
-    isLoadingStores.value = false;
-    return;
-  }
+  if (!shouldShow.value) return;
   
-  // For super admin, ensure tenant is selected first
-  if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
-    stores.value = [];
-    loading.value = false;
-    isLoadingStores.value = false;
-    return;
-  }
-  
-  // Prevent concurrent loads and too frequent calls
-  const now = Date.now();
-  if (isLoadingStores.value || (now - lastLoadTime.value < MIN_LOAD_INTERVAL)) {
-    return;
-  }
-  
-  // For admin tenant, they already have tenantId in JWT token, no need to wait
-  // Only set localStorage for super admin
-  if (authStore.isSuperAdmin && authStore.selectedTenantId) {
-    localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
-  }
-  
-  // Set loading state and guard
   loading.value = true;
-  isLoadingStores.value = true;
-  lastLoadTime.value = now;
-  
-  // Clear any previous error message
-  errorMessage.value = null;
-  
-  // Add timeout to prevent infinite loading (reduced to 10 seconds)
-  let timeoutId: NodeJS.Timeout | null = null;
-  timeoutId = setTimeout(() => {
-    if (loading.value) {
-      loading.value = false;
-      stores.value = [];
-      retryCount.value = 0; // Reset retry count on timeout
-      errorMessage.value = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
-    }
-  }, 10000); // 10 seconds timeout (reduced from 15s)
-  
   try {
-    // Make API call with explicit timeout and error handling
-    const response = await api.get('/outlets', {
-      timeout: 10000, // 10 seconds timeout
-      validateStatus: (status) => {
-        // Accept 200-299 and 400-499 (don't throw for 4xx, handle in catch)
-        return status >= 200 && status < 500;
-      },
-    });
-    
-    // Clear timeout on success
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    
-    // Reset retry count on success
-    retryCount.value = 0;
-    
-    // Clear error message on success
-    errorMessage.value = null;
-    
-    // Parse response - backend returns { data: [], limit: {} }
-    // Axios wraps in .data, so response.data = { data: [], limit: {} }
-    let storeList = response?.data?.data;
-    
-    // Handle different response formats
-    if (Array.isArray(storeList)) {
-      // Correct format: { data: [...] } - already extracted
-    } else if (Array.isArray(response?.data)) {
-      // Direct array response (unlikely for /outlets but handle it)
-      storeList = response.data;
-    } else if (response?.data && typeof response.data === 'object') {
-      // Try to extract from response.data if it's an object
-      storeList = response.data?.data || response.data?.outlets || response.data?.stores || [];
-    } else {
-      storeList = [];
-    }
-    
-    // Ensure storeList is an array
-    if (!Array.isArray(storeList)) {
-      storeList = [];
-    }
-    
-    // Filter only active stores if needed, or show all stores
-    // For now, show all stores (both active and inactive)
-    stores.value = storeList;
+    const response = await api.get('/outlets');
+    stores.value = response.data.data || [];
     
     // If no store selected but stores exist, select first one if only one store
     if (!selectedStoreId.value && stores.value.length === 1) {
       handleStoreChange({ target: { value: stores.value[0].id } } as any);
     }
   } catch (error: any) {
-    // Clear timeout on error
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-    
-    // Try to extract error message for user feedback
-    let userErrorMessage: string | null = null;
-    
-    // Handle different error types
-    if (error?.code === 'ECONNABORTED' || error?.message?.includes('timeout')) {
-      userErrorMessage = 'Waktu tunggu habis. Server mungkin sedang sibuk. Silakan coba lagi.';
-    } else if (error?.response?.status === 403) {
-      const errorData = error?.response?.data;
-      if (errorData?.code === 'SUBSCRIPTION_EXPIRED') {
-        userErrorMessage = 'Langganan telah kedaluwarsa. Silakan perpanjang langganan untuk melanjutkan.';
-      } else if (errorData?.code === 'TENANT_ID_MISSING') {
-        userErrorMessage = 'Tenant ID tidak ditemukan. Silakan login kembali.';
-      } else {
-        userErrorMessage = errorData?.message || errorData?.error || 'Akses ditolak. Silakan hubungi administrator.';
-      }
-    } else if (error?.response?.status === 401) {
-      userErrorMessage = 'Sesi Anda telah berakhir. Silakan login kembali.';
-    } else if (error?.response?.status === 404) {
-      userErrorMessage = 'Tenant tidak ditemukan. Silakan hubungi administrator.';
-    } else if (error?.response?.status >= 500) {
-      userErrorMessage = 'Terjadi kesalahan di server. Silakan coba lagi nanti.';
-    } else if (error?.code === 'ERR_NETWORK' || !error?.response) {
-      userErrorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
-    } else {
-      userErrorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat daftar store.';
-    }
-    
-    errorMessage.value = userErrorMessage;
-    
-    // For network errors or 502/503/504, try to retry ONCE (not infinite)
-    const isNetworkError = !error?.response || 
-                          error?.response?.status >= 500 || 
-                          error?.code === 'ECONNABORTED' ||
-                          error?.code === 'ERR_NETWORK';
-    
-    // Only retry if:
-    // 1. It's a network error (502, 503, 504, etc.)
-    // 2. We haven't exceeded max retries
-    // 3. We're not already in a retry (timeoutId is null means we're not in timeout)
-    if (isNetworkError && retryCount.value < MAX_RETRIES && !timeoutId) {
-      retryCount.value += 1;
-      // Exponential backoff: 2^retryCount seconds (2s, 4s, etc.)
-      const backoffDelay = Math.min(2000 * Math.pow(2, retryCount.value - 1), 10000); // Max 10 seconds
-      setTimeout(async () => {
-        // Only retry if still should show and not already loading
-        if (shouldShow.value && !loading.value && retryCount.value <= MAX_RETRIES) {
-          await loadStores();
-        } else {
-          // Reset retry count if conditions not met
-          retryCount.value = 0;
-        }
-      }, backoffDelay);
-    } else if (isNetworkError && retryCount.value >= MAX_RETRIES) {
-      retryCount.value = 0; // Reset for next manual load
-    } else {
-      // Reset retry count for non-network errors
-      retryCount.value = 0;
-    }
-    
-    // Silently handle error - stores will be empty
-    // Error details can be checked in browser dev tools if needed
+    console.error('Error loading stores:', error);
     stores.value = [];
   } finally {
-    // Always ensure loading is set to false (critical!)
-    // This must be in finally block to ensure it always runs
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
     loading.value = false;
-    isLoadingStores.value = false;
   }
 };
 
@@ -401,111 +145,24 @@ const clearSelection = () => {
   emit('store-changed', null);
 };
 
-watch(() => authStore.selectedTenantId, async (newTenantId, oldTenantId) => {
-  if (newTenantId && authStore.isSuperAdmin && newTenantId !== oldTenantId) {
+watch(() => authStore.selectedTenantId, (newTenantId) => {
+  if (newTenantId && authStore.isSuperAdmin) {
     // Clear store selection when tenant changes
     clearSelection();
-    
-    // Reset retry count when tenant changes
-    retryCount.value = 0;
-    
-    // Ensure tenantId is in localStorage
-    localStorage.setItem('selectedTenantId', newTenantId);
-    
-    // Load stores immediately (no delay needed)
-    await loadStores();
-  } else if (!newTenantId && authStore.isSuperAdmin) {
-    // Clear stores if tenant is deselected
-    stores.value = [];
-    clearSelection();
-    retryCount.value = 0;
+    loadStores();
   }
 });
 
-// Watch for shouldShow changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
-
-onMounted(async () => {
-  await nextTick();
-  
-  // Initial load if needed
-  if (props.autoLoad && shouldShow.value) {
-    // Load immediately - no delays needed
-    // Admin tenant already has tenantId in JWT token
-    // Super admin will wait for tenant selection automatically via shouldShow computed
-    // Add small delay to ensure authStore is fully initialized
-    await new Promise(resolve => setTimeout(resolve, 200)); // Increased to 200ms
-    
-    // Only load if still should show and not already loading
-    if (shouldShow.value && !loading.value) {
-      await loadStores();
-    }
+watch(() => shouldShow.value, (show) => {
+  if (show && props.autoLoad) {
+    loadStores();
   }
-  
-  // Watch for shouldShow changes after mount (with debounce to prevent multiple calls)
-  let shouldShowWatchTimeout: NodeJS.Timeout | null = null;
-  watch(() => shouldShow.value, async (show) => {
-    // Clear any pending watch trigger
-    if (shouldShowWatchTimeout) {
-      clearTimeout(shouldShowWatchTimeout);
-      shouldShowWatchTimeout = null;
-    }
-    
-    if (show && props.autoLoad && !loading.value && !isLoadingStores.value) {
-      // Debounce: wait 500ms before loading to prevent multiple rapid triggers
-      shouldShowWatchTimeout = setTimeout(async () => {
-        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
-          await loadStores();
-        }
-        shouldShowWatchTimeout = null;
-      }, 500);
-    } else if (!show) {
-      // Clear stores and reset loading when shouldShow becomes false
-      stores.value = [];
-      loading.value = false;
-      isLoadingStores.value = false;
-    }
-  });
-  
-  // Also watch for authStore.user changes (for ADMIN_TENANT login) - with debounce
-  let roleWatchTimeout: NodeJS.Timeout | null = null;
-  watch(() => authStore.user?.role, async (newRole, oldRole) => {
-    // Clear any pending watch trigger
-    if (roleWatchTimeout) {
-      clearTimeout(roleWatchTimeout);
-      roleWatchTimeout = null;
-    }
-    
-    if (newRole && newRole !== oldRole && props.autoLoad && shouldShow.value && !loading.value && !isLoadingStores.value) {
-      // Debounce: wait 500ms before loading
-      roleWatchTimeout = setTimeout(async () => {
-        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
-          await loadStores();
-        }
-        roleWatchTimeout = null;
-      }, 500);
-    }
-  });
-  
-  // Watch for authStore.isAuthenticated to reload when user logs in - with debounce
-  let authWatchTimeout: NodeJS.Timeout | null = null;
-  watch(() => authStore.isAuthenticated, async (isAuth, wasAuth) => {
-    // Clear any pending watch trigger
-    if (authWatchTimeout) {
-      clearTimeout(authWatchTimeout);
-      authWatchTimeout = null;
-    }
-    
-    if (isAuth && !wasAuth && props.autoLoad && shouldShow.value && !loading.value && !isLoadingStores.value) {
-      // Debounce: wait 800ms after login to ensure auth state is stable
-      authWatchTimeout = setTimeout(async () => {
-        if (shouldShow.value && !loading.value && !isLoadingStores.value) {
-          await loadStores();
-        }
-        authWatchTimeout = null;
-      }, 800);
-    }
-  });
+}, { immediate: true });
+
+onMounted(() => {
+  if (props.autoLoad && shouldShow.value) {
+    loadStores();
+  }
 });
 </script>
 

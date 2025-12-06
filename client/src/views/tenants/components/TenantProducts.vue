@@ -1,25 +1,13 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        Produk Tenant
-      </h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Produk Tenant</h3>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg
-                class="h-5 w-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <input
@@ -31,60 +19,29 @@
           </div>
         </div>
         <button
-          class="px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
           @click="showCreateModal = true"
+          class="px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
           <span>Tambah Produk</span>
         </button>
       </div>
     </div>
 
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div
-      v-else-if="filteredProducts.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-        />
+    <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada produk
-      </p>
+      <p class="text-gray-500">Belum ada produk</p>
     </div>
 
-    <div
-      v-else
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-    >
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <div
         v-for="product in filteredProducts"
         :key="product.id"
@@ -97,39 +54,17 @@
             :alt="product.name"
             class="w-full h-48 object-cover"
           />
-          <span
-            v-else-if="product.emoji"
-            class="text-6xl sm:text-7xl"
-          >{{ product.emoji }}</span>
-          <div
-            v-else
-            class="w-full h-48 bg-gray-200 flex items-center justify-center"
-          >
-            <svg
-              class="w-16 h-16 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+          <span v-else-if="product.emoji" class="text-6xl sm:text-7xl">{{ product.emoji }}</span>
+          <div v-else class="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
         </div>
         <div class="p-4">
-          <h4 class="font-semibold text-gray-900 mb-1">
-            {{ product.name }}
-          </h4>
-          <p class="text-sm text-gray-600 mb-2">
-            {{ product.category }}
-          </p>
-          <p class="text-lg font-bold text-primary-600 mb-2">
-            {{ formatCurrency(product.price) }}
-          </p>
+          <h4 class="font-semibold text-gray-900 mb-1">{{ product.name }}</h4>
+          <p class="text-sm text-gray-600 mb-2">{{ product.category }}</p>
+          <p class="text-lg font-bold text-primary-600 mb-2">{{ formatCurrency(product.price) }}</p>
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-600">Stok: {{ product.stock }}</span>
             <span
@@ -141,14 +76,14 @@
           </div>
           <div class="mt-3 flex gap-2">
             <button
-              class="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
               @click="editProduct(product)"
+              class="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
             >
               Edit
             </button>
             <button
-              class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
               @click="deleteProduct(product.id)"
+              class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
             >
               Hapus
             </button>
@@ -169,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
@@ -203,27 +138,17 @@ const filteredProducts = computed(() => {
 });
 
 const loadProducts = async () => {
-  if (!props.tenantId) {
-    products.value = [];
-    loading.value = false;
-    return;
-  }
+  if (!props.tenantId) return;
   
   loading.value = true;
   try {
-    // Ensure tenantId is set in localStorage for API interceptor
-    localStorage.setItem('selectedTenantId', props.tenantId);
-    
-    // No delay needed - localStorage is synchronous
-    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
     let allProducts: any[] = [];
     let page = 1;
     let hasMore = true;
-    const maxPages = 10; // Safety limit to prevent infinite loops
     
-    while (hasMore && page <= maxPages) {
+    while (hasMore) {
       const response = await api.get('/products', {
         params: { 
           page,
@@ -231,36 +156,27 @@ const loadProducts = async () => {
         },
       });
       
-      // Handle different response formats
-      const pageData = response?.data?.data || response?.data || [];
-      if (Array.isArray(pageData) && pageData.length > 0) {
+      const pageData = response.data.data || response.data;
+      if (Array.isArray(pageData)) {
         allProducts = [...allProducts, ...pageData];
-      } else if (Array.isArray(response?.data) && response.data.length > 0) {
+      } else if (Array.isArray(response.data)) {
         allProducts = [...allProducts, ...response.data];
-      } else {
-        // No more data or empty response
-        hasMore = false;
-        break;
       }
       
       // Check if there are more pages
-      const pagination = response?.data?.pagination;
-      if (pagination && typeof pagination === 'object') {
-        const totalPages = pagination.totalPages || 0;
-        hasMore = page < totalPages;
+      const pagination = response.data.pagination;
+      if (pagination) {
+        hasMore = page < pagination.totalPages;
         page++;
       } else {
-        // If no pagination info, assume no more pages if current page has less than limit items
-        hasMore = pageData.length >= 100;
-        page++;
+        hasMore = false;
       }
     }
     
-    products.value = Array.isArray(allProducts) ? allProducts : [];
+    products.value = allProducts;
   } catch (err: any) {
-    const errorMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message || 'Gagal memuat produk';
-    await error(errorMessage, 'Terjadi Kesalahan');
-    products.value = [];
+    console.error('Error loading products:', err);
+    error('Gagal memuat produk', 'Terjadi Kesalahan');
   } finally {
     loading.value = false;
   }
@@ -285,7 +201,8 @@ const deleteProduct = async (id: string) => {
     await loadProducts();
     success('Produk berhasil dihapus', 'Berhasil');
   } catch (err: any) {
-    await error(err.response?.data?.message || 'Gagal menghapus produk', 'Terjadi Kesalahan');
+    console.error('Error deleting product:', err);
+    error(err.response?.data?.message || 'Gagal menghapus produk', 'Terjadi Kesalahan');
   }
 };
 
@@ -306,33 +223,21 @@ const handleSaveProduct = async (productData: any) => {
     await loadProducts();
     closeModal();
   } catch (err: any) {
-    await error(err.response?.data?.message || 'Gagal menyimpan produk', 'Terjadi Kesalahan');
+    console.error('Error saving product:', err);
+    error(err.response?.data?.message || 'Gagal menyimpan produk', 'Terjadi Kesalahan');
   }
 };
 
-// Watch for tenantId changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
-
-onMounted(async () => {
-  await nextTick();
-  
-  // Initial load if tenantId is provided
-  if (props.tenantId) {
-    localStorage.setItem('selectedTenantId', props.tenantId);
-    // Load immediately - localStorage is synchronous
-    loadProducts();
-  }
-  
-  // Watch for tenantId changes after mount
-  watch(() => props.tenantId, (newTenantId, oldTenantId) => {
-    // Only reload if tenantId actually changed
-    if (newTenantId && newTenantId !== oldTenantId) {
-      // Ensure tenantId is set in localStorage for API interceptor
-      localStorage.setItem('selectedTenantId', newTenantId);
-      // Load immediately - localStorage is synchronous
+watch(() => props.tenantId, (newTenantId, oldTenantId) => {
+  // Only reload if tenantId actually changed
+  if (newTenantId && newTenantId !== oldTenantId) {
+    // Ensure tenantId is set in localStorage for API interceptor
+    localStorage.setItem('selectedTenantId', newTenantId);
+    // Small delay to ensure localStorage is updated
+    setTimeout(() => {
       loadProducts();
-    }
-  });
-});
+    }, 100);
+  }
+}, { immediate: true });
 </script>
 

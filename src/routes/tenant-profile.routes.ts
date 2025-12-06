@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -29,16 +28,14 @@ const updateProfileSchema = z.object({
 router.get(
   '/profile',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const user = (req as any).user;
+      const userRole = user?.role;
       
       // Only ADMIN_TENANT and SUPERVISOR can access their own tenant profile
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
-        const error = new Error('Access denied. Tenant admin only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Tenant admin only.', 'GET_TENANT_PROFILE');
-        return;
+        return res.status(403).json({ message: 'Access denied. Tenant admin only.' });
       }
 
       const tenantId = requireTenantId(req);
@@ -57,10 +54,7 @@ router.get(
       });
 
       if (!tenant) {
-        const error = new Error('Tenant not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Tenant not found', 'GET_TENANT_PROFILE');
-        return;
+        return res.status(404).json({ message: 'Tenant not found' });
       }
 
       // Get default receipt template for header/footer
@@ -92,8 +86,9 @@ router.get(
         receiptHeader,
         receiptFooter,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load tenant profile', 'GET_TENANT_PROFILE');
+    } catch (error: any) {
+      console.error('Error loading tenant profile:', error);
+      res.status(500).json({ message: error.message || 'Failed to load tenant profile' });
     }
   }
 );
@@ -111,16 +106,14 @@ router.put(
   '/profile',
   authGuard,
   validate({ body: updateProfileSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const user = (req as any).user;
+      const userRole = user?.role;
       
       // Only ADMIN_TENANT can update their tenant profile
       if (userRole !== 'ADMIN_TENANT') {
-        const error = new Error('Access denied. Tenant admin only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Tenant admin only.', 'UPDATE_TENANT_PROFILE');
-        return;
+        return res.status(403).json({ message: 'Access denied. Tenant admin only.' });
       }
 
       const tenantId = requireTenantId(req);
@@ -131,10 +124,7 @@ router.put(
       });
 
       if (!tenant) {
-        const error = new Error('Tenant not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Tenant not found', 'UPDATE_TENANT_PROFILE');
-        return;
+        return res.status(404).json({ message: 'Tenant not found' });
       }
 
       // Prepare update data
@@ -146,10 +136,7 @@ router.put(
           where: { email: req.body.email },
         });
         if (existingTenant) {
-          const error = new Error('Email already exists');
-          (error as any).statusCode = 400;
-          handleRouteError(res, error, 'Email already exists', 'UPDATE_TENANT_PROFILE');
-          return;
+          return res.status(400).json({ message: 'Email already exists' });
         }
         updateData.email = req.body.email;
         updateData.slug = req.body.email.toLowerCase().replace(/[^a-z0-9]/g, '-');
@@ -241,8 +228,9 @@ router.put(
         receiptHeader,
         receiptFooter,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update tenant profile', 'UPDATE_TENANT_PROFILE');
+    } catch (error: any) {
+      console.error('Error updating tenant profile:', error);
+      res.status(500).json({ message: error.message || 'Failed to update tenant profile' });
     }
   }
 );

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
@@ -56,9 +56,9 @@ router.get(
   '/predictions',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const userRole = (req as any).user?.role;
       
       // For Super Admin, return platform revenue predictions (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
@@ -117,9 +117,9 @@ router.get(
   '/top-products',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const userRole = (req as any).user?.role;
       
       // For Super Admin, return top addons (platform revenue)
       if (userRole === 'SUPER_ADMIN') {
@@ -180,9 +180,9 @@ router.get(
   '/trends',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const userRole = (req as any).user?.role;
       
       // For Super Admin, return platform revenue trends (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {

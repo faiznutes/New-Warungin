@@ -13,21 +13,21 @@ import { handleRouteError } from '../utils/route-error-handler';
 const router = Router();
 
 const archiveOrdersSchema = z.object({
-  olderThanDays: z.number().int().positive().optional().default(365),
+  olderThanDays: z.number().int().positive().optional().default(730), // 2 years default for SUPER_ADMIN
 });
 
 const archiveTransactionsSchema = z.object({
-  olderThanDays: z.number().int().positive().optional().default(365),
+  olderThanDays: z.number().int().positive().optional().default(730), // 2 years default for SUPER_ADMIN
 });
 
 const archiveReportsSchema = z.object({
-  olderThanDays: z.number().int().positive().optional().default(180),
+  olderThanDays: z.number().int().positive().optional().default(730), // 2 years default for SUPER_ADMIN
 });
 
 const archiveAllSchema = z.object({
-  ordersOlderThanDays: z.number().int().positive().optional().default(365),
-  transactionsOlderThanDays: z.number().int().positive().optional().default(365),
-  reportsOlderThanDays: z.number().int().positive().optional().default(180),
+  ordersOlderThanDays: z.number().int().positive().optional().default(730), // 2 years
+  transactionsOlderThanDays: z.number().int().positive().optional().default(730), // 2 years
+  reportsOlderThanDays: z.number().int().positive().optional().default(730), // 2 years
 });
 
 const restoreArchiveSchema = z.object({
@@ -237,18 +237,19 @@ router.post(
   auditLogger('ARCHIVE', 'orders'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const { olderThanDays } = req.body;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can archive
-      if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can archive data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
-        return;
+      // Only SUPER_ADMIN can archive (2 years back)
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can archive data' });
       }
-
-      const count = await archiveService.archiveOldOrders(tenantId, olderThanDays);
+      
+      // For SUPER_ADMIN, allow archiving data up to 2 years (730 days)
+      const { olderThanDays } = req.body;
+      const maxDays = 730; // 2 years
+      const archiveDays = olderThanDays && olderThanDays <= maxDays ? olderThanDays : maxDays;
+      
+      // SUPER_ADMIN can archive all tenants or specific tenant
+      const tenantId = req.body.tenantId || requireTenantId(req);
+      const count = await archiveService.archiveOldOrders(tenantId, archiveDays);
       res.json({
         message: `Archived ${count} orders`,
         count,
@@ -293,18 +294,17 @@ router.post(
   auditLogger('ARCHIVE', 'transactions'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const { olderThanDays } = req.body;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can archive
-      if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can archive data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
-        return;
+      // Only SUPER_ADMIN can archive (2 years back)
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can archive data' });
       }
-
-      const count = await archiveService.archiveOldTransactions(tenantId, olderThanDays);
+      
+      const { olderThanDays } = req.body;
+      const maxDays = 730; // 2 years
+      const archiveDays = olderThanDays && olderThanDays <= maxDays ? olderThanDays : maxDays;
+      
+      const tenantId = req.body.tenantId || requireTenantId(req);
+      const count = await archiveService.archiveOldTransactions(tenantId, archiveDays);
       res.json({
         message: `Archived ${count} transactions`,
         count,
@@ -349,18 +349,17 @@ router.post(
   auditLogger('ARCHIVE', 'reports'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const { olderThanDays } = req.body;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can archive
-      if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can archive data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
-        return;
+      // Only SUPER_ADMIN can archive (2 years back)
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can archive data' });
       }
-
-      const count = await archiveService.archiveOldReports(tenantId, olderThanDays);
+      
+      const { olderThanDays } = req.body;
+      const maxDays = 730; // 2 years
+      const archiveDays = olderThanDays && olderThanDays <= maxDays ? olderThanDays : maxDays;
+      
+      const tenantId = req.body.tenantId || requireTenantId(req);
+      const count = await archiveService.archiveOldReports(tenantId, archiveDays);
       res.json({
         message: `Archived ${count} reports`,
         count,
@@ -426,17 +425,20 @@ router.post(
   auditLogger('ARCHIVE', 'all'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can archive
-      if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can archive data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can archive data', 'ARCHIVE_DATA');
-        return;
+      // Only SUPER_ADMIN can archive (2 years back)
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can archive data' });
       }
-
-      const result = await archiveService.archiveAllOldData(tenantId, req.body);
+      
+      // Ensure max 2 years (730 days) for all archive operations
+      const config = {
+        ordersOlderThanDays: Math.min(req.body.ordersOlderThanDays || 730, 730),
+        transactionsOlderThanDays: Math.min(req.body.transactionsOlderThanDays || 730, 730),
+        reportsOlderThanDays: Math.min(req.body.reportsOlderThanDays || 730, 730),
+      };
+      
+      const tenantId = req.body.tenantId || requireTenantId(req);
+      const result = await archiveService.archiveAllOldData(tenantId, config);
       res.json({
         message: 'Archived all old data',
         ...result,
@@ -497,18 +499,12 @@ router.post(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can restore
       if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        const error = new Error('Only tenant admin or super admin can restore data');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only tenant admin or super admin can restore data', 'RESTORE_ARCHIVE');
-        return;
+        return res.status(403).json({ message: 'Only tenant admin or super admin can restore data' });
       }
 
       // Verify archive file belongs to tenant
       if (!archiveFile.includes(tenantId)) {
-        const error = new Error('Archive file does not belong to this tenant');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Archive file does not belong to this tenant', 'RESTORE_ARCHIVE');
-        return;
+        return res.status(403).json({ message: 'Archive file does not belong to this tenant' });
       }
 
       await archiveService.restoreArchivedData(tenantId, archiveFile);

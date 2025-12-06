@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import orderService from '../services/order.service';
 import { createOrderSchema, updateOrderStatusSchema, getOrdersQuerySchema, updateOrderSchema } from '../validators/order.validator';
@@ -56,10 +56,10 @@ router.get(
   authGuard,
   subscriptionGuard,
   validate({ query: getOrdersQuerySchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
       const result = await orderService.getOrders(tenantId, req.query as any, userRole);
       res.json(result);
     } catch (error: unknown) {
@@ -153,6 +153,49 @@ router.get(
 
 /**
  * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get order by ID
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.get(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const order = await orderService.getOrderById(req.params.id, tenantId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+      res.json(order);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/orders:
  *   post:
  *     summary: Create new order
@@ -201,199 +244,14 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: createOrderSchema }),
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userId = req.user?.id || req.userId || '';
+      const userId = (req as any).user.id;
       const order = await orderService.createOrder(req.body, userId, tenantId);
       res.status(201).json(order);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create order', 'CREATE_ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/{id}/status:
- *   put:
- *     summary: Update order status
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.put(
-  '/:id/status',
-  authGuard,
-  validate({ body: updateOrderStatusSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.updateOrderStatus(req.params.id, req.body, tenantId);
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/{id}/kitchen-status:
- *   put:
- *     summary: Update kitchen status for an order
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.put(
-  '/:id/kitchen-status',
-  authGuard,
-  subscriptionGuard,
-  validate({ body: z.object({ status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED']) }) }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        const error = new Error('Order not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Order not found', 'UPDATE_KITCHEN_STATUS');
-        return;
-      }
-
-      // Only update if order is sent to kitchen
-      if (!order.sendToKitchen) {
-        const error = new Error('Order is not sent to kitchen');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Order is not sent to kitchen', 'UPDATE_KITCHEN_STATUS');
-        return;
-      }
-
-      const updatedOrder = await orderService.updateOrder(req.params.id, {
-        kitchenStatus: req.body.status,
-      }, tenantId);
-      res.json(updatedOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/bulk-delete:
- *   post:
- *     summary: Bulk delete orders
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/bulk-delete',
-  authGuard,
-  subscriptionGuard,
-  validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only admin can delete orders');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only admin can delete orders', 'DELETE_ORDER');
-        return;
-      }
-
-      const { orderIds } = req.body;
-      const result = await orderService.bulkDeleteOrders(tenantId, orderIds);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/bulk-refund:
- *   post:
- *     summary: Bulk refund orders
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/bulk-refund',
-  authGuard,
-  subscriptionGuard,
-  validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can refund orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only admin can refund orders');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only admin can refund orders', 'REFUND_ORDER');
-        return;
-      }
-
-      const { orderIds } = req.body;
-      const result = await orderService.bulkRefundOrders(tenantId, orderIds);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/orders/{id}:
- *   get:
- *     summary: Get order by ID
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Order ID
- *     responses:
- *       200:
- *         description: Order details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Order'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.get(
-  '/:id',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        const error = new Error('Order not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Order not found', 'GET_ORDER');
-        return;
-      }
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
     }
   }
 );
@@ -447,15 +305,139 @@ router.put(
       const tenantId = requireTenantId(req);
       const order = await orderService.getOrderById(req.params.id, tenantId);
       if (!order) {
-        const error = new Error('Order not found');
-        (error as any).statusCode = 404;
-        handleRouteError(res, error, 'Order not found', 'GET_ORDER');
-        return;
+        return res.status(404).json({ message: 'Order not found' });
       }
 
       // Pass all validated data to updateOrder service
       const updatedOrder = await orderService.updateOrder(req.params.id, req.body, tenantId);
       res.json(updatedOrder);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}/status:
+ *   put:
+ *     summary: Update order status
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put(
+  '/:id/status',
+  authGuard,
+  validate({ body: updateOrderStatusSchema }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const order = await orderService.updateOrderStatus(req.params.id, req.body, tenantId);
+      res.json(order);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/{id}/kitchen-status:
+ *   put:
+ *     summary: Update kitchen status for an order
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put(
+  '/:id/kitchen-status',
+  authGuard,
+  subscriptionGuard,
+  validate({ body: z.object({ status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED']) }) }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const order = await orderService.getOrderById(req.params.id, tenantId);
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Only update if order is sent to kitchen
+      if (!order.sendToKitchen) {
+        return res.status(400).json({ message: 'Order is not sent to kitchen' });
+      }
+
+      const updatedOrder = await orderService.updateOrder(req.params.id, {
+        kitchenStatus: req.body.status,
+      }, tenantId);
+      res.json(updatedOrder);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/bulk-delete:
+ *   post:
+ *     summary: Bulk delete orders
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/bulk-delete',
+  authGuard,
+  subscriptionGuard,
+  validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userRole = (req as any).user.role;
+      
+      // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only admin can delete orders' });
+      }
+
+      const { orderIds } = req.body;
+      const result = await orderService.bulkDeleteOrders(tenantId, orderIds);
+      res.json(result);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/orders/bulk-refund:
+ *   post:
+ *     summary: Bulk refund orders
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  '/bulk-refund',
+  authGuard,
+  subscriptionGuard,
+  validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userRole = (req as any).user.role;
+      
+      // Only ADMIN_TENANT and SUPER_ADMIN can refund orders
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only admin can refund orders' });
+      }
+
+      const { orderIds } = req.body;
+      const result = await orderService.bulkRefundOrders(tenantId, orderIds);
+      res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'ORDER');
     }
@@ -475,17 +457,14 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const userRole = req.user?.role || req.role || '';
+      const userRole = (req as any).user.role;
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        const error = new Error('Only admin can delete orders');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Only admin can delete orders', 'DELETE_ORDER');
-        return;
+        return res.status(403).json({ message: 'Only admin can delete orders' });
       }
 
       await orderService.deleteOrder(req.params.id, tenantId);

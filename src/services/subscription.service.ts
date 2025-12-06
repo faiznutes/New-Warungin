@@ -2,16 +2,14 @@ import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 import { calculateUpgradeCost, addMonths, getDiscountForDuration } from '../utils/subscription-calculator';
 import { applyPlanFeatures } from './plan-features.service';
-import logger from '../utils/logger';
 
 export interface CreateSubscriptionInput {
-  plan: 'BASIC' | 'PRO' | 'CUSTOM';
+  plan: 'BASIC' | 'PRO' | 'ENTERPRISE';
   duration: number; // days
-  addedBySuperAdmin?: boolean; // true if added by super admin
 }
 
 export interface UpgradeSubscriptionInput {
-  newPlan: 'BASIC' | 'PRO' | 'CUSTOM';
+  newPlan: 'BASIC' | 'PRO' | 'ENTERPRISE';
   upgradeType: 'temporary' | 'until_end' | 'custom'; // temporary = 1 bulan, until_end = sampai masa aktif, custom = 3/6/12 bulan
   customDuration?: number; // days, only for custom type
 }
@@ -59,7 +57,7 @@ export class SubscriptionService {
       
       // IMPORTANT: If subscription is temporary and expired, skip it
       if (subscription && (subscription as any).temporaryUpgrade === true && subscription.endDate && subscription.endDate <= now) {
-        logger.debug('Found expired temporary subscription, skipping it', { tenantId });
+        console.log(`⚠️  Found expired temporary subscription, skipping it for tenant ${tenantId}`);
         subscription = null; // Skip expired temporary subscription
       }
       
@@ -135,12 +133,12 @@ export class SubscriptionService {
           const tempSubscriptionEnd = tempSubscription.endDate;
           if (tempSubscriptionEnd <= now) {
             shouldRevertTemporaryUpgrade = true;
-            logger.info('Temporary upgrade expired', { tenantId, subscriptionEnd: tempSubscriptionEnd.toISOString(), now: now.toISOString() });
+            console.log(`🔄 Temporary upgrade expired for tenant ${tenantId}. Subscription end: ${tempSubscriptionEnd.toISOString()}, Now: ${now.toISOString()}`);
           }
         } else if (tempSubscription && !tempSubscription.endDate) {
           // If temporary subscription exists but has no endDate, it should be reverted
           shouldRevertTemporaryUpgrade = true;
-          logger.info('Temporary upgrade found without endDate, triggering revert', { tenantId });
+          console.log(`🔄 Temporary upgrade found without endDate for tenant ${tenantId}, triggering revert`);
         }
       }
 
@@ -150,7 +148,7 @@ export class SubscriptionService {
       if (shouldRevertTemporaryUpgrade && tenant.temporaryUpgrade === true && tenant.previousPlan) {
         try {
           // Trigger revert immediately when temporary upgrade expires
-          logger.info('Triggering immediate revert for expired temporary upgrade', { tenantId });
+          console.log(`🔄 Triggering immediate revert for expired temporary upgrade for tenant ${tenantId}`);
           await this.revertTemporaryUpgradeForTenant(tenantId);
           
           // Reload tenant data after revert (with subscriptions to get updated subscription data)
@@ -242,15 +240,15 @@ export class SubscriptionService {
               daysRemaining = 0;
             }
             
-            logger.debug('After revert', { tenantId, plan: currentPlan, subscriptionEnd: subscriptionEnd?.toISOString(), isExpired, daysRemaining });
+            console.log(`✅ After revert: plan=${currentPlan}, subscriptionEnd=${subscriptionEnd?.toISOString()}, isExpired=${isExpired}, daysRemaining=${daysRemaining}`);
           }
         } catch (error: any) {
-          logger.error('Failed to revert temporary upgrade in getCurrentSubscription', { tenantId, error: error.message });
+          console.error(`Failed to revert temporary upgrade in getCurrentSubscription for tenant ${tenantId}:`, error);
           // Continue with original logic if revert fails
         }
       } else if ((isExpired || shouldRevertTemporaryUpgrade) && currentPlan !== 'BASIC') {
         // Mark as expired in response, but don't revert here (already handled above or will be handled by middleware/cron)
-        logger.warn('Subscription expired, revert will be handled by middleware/cron job', { tenantId, plan: currentPlan });
+        console.log(`⚠️  Subscription expired for tenant ${tenantId} (plan: ${currentPlan}). Revert will be handled by middleware/cron job.`);
         // Only mark as expired if subscriptionEnd is truly expired
         if (subscriptionEnd && subscriptionEnd <= now) {
           isExpired = true;
@@ -282,7 +280,7 @@ export class SubscriptionService {
             const { updateUserStatusBasedOnSubscription } = await import('./user-status.service');
             await updateUserStatusBasedOnSubscription(tenantId);
           } catch (error: any) {
-            logger.error('Failed to deactivate users for expired BASIC subscription', { tenantId, error: error.message });
+            console.error(`Failed to deactivate users for expired BASIC subscription for tenant ${tenantId}:`, error);
           }
         } else if (subscriptionEnd) {
           // SubscriptionEnd is in the future, so it's not expired
@@ -363,7 +361,7 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      CUSTOM: 500000,
+      ENTERPRISE: 500000,
     };
     const monthlyPrice = planPrices[data.plan] || 0;
     
@@ -400,7 +398,6 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
-          addedBySuperAdmin: data.addedBySuperAdmin || false, // Set based on who created it
         },
       });
 
@@ -441,15 +438,6 @@ export class SubscriptionService {
 
       return { tenant: updatedTenant, subscription };
     }).then(async (result) => {
-      // Invalidate subscription cache after extension
-      try {
-        const CacheService = (await import('../utils/cache')).default;
-        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
-        logger.debug('Invalidated subscription cache after extension', { tenantId });
-      } catch (error: any) {
-        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
-      }
-      
       // Award points from subscription purchase (10rb = 5 point)
       // Use Math.floor to ensure integer amount
       const amountInt = Math.floor(amount);
@@ -464,7 +452,7 @@ export class SubscriptionService {
           );
         } catch (error: any) {
           // Log error but don't fail the subscription extension
-          logger.error('Error awarding points from subscription', { error: error.message, tenantId });
+          console.error('Error awarding points from subscription:', error);
         }
       }
       return result;
@@ -484,7 +472,7 @@ export class SubscriptionService {
     }
 
     const now = new Date();
-    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'CUSTOM';
+    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'ENTERPRISE';
     const subscriptionEnd = tenant.subscriptionEnd;
     
     if (!subscriptionEnd || subscriptionEnd <= now) {
@@ -514,7 +502,7 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      CUSTOM: 500000,
+      ENTERPRISE: 500000,
     };
 
     const currentPlanPrice = planPrices[currentPlan] || 0;
@@ -606,7 +594,7 @@ export class SubscriptionService {
         } as any,
       });
 
-      logger.info('Tenant subscription updated in database', {
+      console.log('Tenant subscription updated in database:', {
         tenantId,
         oldPlan: currentPlan,
         newPlan: data.newPlan,
@@ -626,7 +614,6 @@ export class SubscriptionService {
           endDate: upgradeEndDate,
           status: 'ACTIVE',
           amount: finalAmount.toString(),
-          addedBySuperAdmin: false, // Upgrades are always purchased by tenant
           ...(temporaryUpgrade && { temporaryUpgrade: true }),
           ...(previousPlan && { previousPlan }),
         } as any,
@@ -662,7 +649,7 @@ export class SubscriptionService {
               reverted: false,
             },
           });
-          logger.debug('Created history record for original subscription', { tenantId, plan: currentPlan, endDate: originalSubscriptionEnd.toISOString() });
+          console.log(`Created history record for original subscription (${currentPlan}) ending at ${originalSubscriptionEnd.toISOString()}`);
         }
 
         // Create history for temporary upgrade
@@ -681,8 +668,7 @@ export class SubscriptionService {
         });
       }
 
-      logger.info('Subscription record created', {
-        tenantId,
+      console.log('Subscription record created:', {
         subscriptionId: subscription.id,
         plan: subscription.plan,
         temporaryUpgrade: (subscription as any).temporaryUpgrade,
@@ -707,16 +693,6 @@ export class SubscriptionService {
         temporaryUpgrade,
         previousPlan,
       };
-    }).then(async (result) => {
-      // Invalidate subscription cache after upgrade
-      try {
-        const CacheService = (await import('../utils/cache')).default;
-        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
-        logger.debug('Invalidated subscription cache after upgrade', { tenantId });
-      } catch (error: any) {
-        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
-      }
-      return result;
     });
   }
 
@@ -742,7 +718,7 @@ export class SubscriptionService {
 
     if (!tenant || !tenant.temporaryUpgrade || !tenant.previousPlan) {
       // Not a temporary upgrade or already reverted, skip
-      logger.debug('Skipping revert: not a temporary upgrade or already reverted', { tenantId });
+      console.log(`⏭️  Skipping revert for tenant ${tenantId}: not a temporary upgrade or already reverted`);
       return;
     }
 
@@ -750,7 +726,7 @@ export class SubscriptionService {
     // This prevents multiple reverts on the same tenant
     // Note: This check is redundant since we already check above, but kept for safety
     if (!tenant.temporaryUpgrade) {
-      logger.debug('Skipping revert: already reverted', { tenantId });
+      console.log(`⏭️  Skipping revert for tenant ${tenantId}: already reverted (temporaryUpgrade=false)`);
       return;
     }
 
@@ -787,7 +763,7 @@ export class SubscriptionService {
       // Priority 1: Use history record created when temporary upgrade was made
       if (beforeTemporaryHistory) {
         originalSubscriptionEnd = beforeTemporaryHistory.endDate;
-        logger.debug('Found originalSubscriptionEnd from history', { tenantId, endDate: originalSubscriptionEnd.toISOString() });
+        console.log(`📋 Found originalSubscriptionEnd from history: ${originalSubscriptionEnd.toISOString()}`);
       } else if (temporarySubscription) {
         // Priority 2: Try to find subscription before upgrade
         const subscriptionBeforeUpgrade = await prisma.subscription.findFirst({
@@ -804,11 +780,11 @@ export class SubscriptionService {
         
         if (subscriptionBeforeUpgrade) {
           originalSubscriptionEnd = subscriptionBeforeUpgrade.endDate;
-          logger.debug('Found originalSubscriptionEnd from subscription before upgrade', { tenantId, endDate: originalSubscriptionEnd.toISOString() });
+          console.log(`📋 Found originalSubscriptionEnd from subscription before upgrade: ${originalSubscriptionEnd.toISOString()}`);
         } else {
           // Priority 3: Try to estimate from tenant.subscriptionStart and calculate backwards
           // This is a fallback if we can't find history or previous subscription
-          logger.warn('Could not find originalSubscriptionEnd, might cause incorrect remaining time calculation', { tenantId });
+          console.warn(`⚠️  Could not find originalSubscriptionEnd for tenant ${tenantId}. This might cause incorrect remaining time calculation.`);
         }
       }
 
@@ -823,57 +799,48 @@ export class SubscriptionService {
         const upgradeEndDate = temporarySubscription.endDate || now;
         const upgradeDurationMs = upgradeEndDate.getTime() - tempUpgradeStartDate.getTime();
         
-        logger.debug('Calculating remaining time', {
-          tenantId,
-          originalSubscriptionEnd: originalSubscriptionEnd.toISOString(),
-          tempUpgradeStartDate: tempUpgradeStartDate.toISOString(),
-          upgradeEndDate: upgradeEndDate.toISOString(),
-          upgradeDurationDays: Math.floor(upgradeDurationMs / (1000 * 60 * 60 * 24)),
-        });
+        console.log(`📊 Calculating remaining time for tenant ${tenantId}:`);
+        console.log(`  - originalSubscriptionEnd: ${originalSubscriptionEnd.toISOString()}`);
+        console.log(`  - tempUpgradeStartDate: ${tempUpgradeStartDate.toISOString()}`);
+        console.log(`  - upgradeEndDate: ${upgradeEndDate.toISOString()}`);
+        console.log(`  - upgradeDurationMs: ${upgradeDurationMs}ms (${Math.floor(upgradeDurationMs / (1000 * 60 * 60 * 24))} days)`);
         
         // Calculate remaining time from original subscription at the time of upgrade
         // remainingTimeFromOriginal = sisa waktu dari original subscription saat upgrade dimulai
         const remainingTimeFromOriginal = originalSubscriptionEnd.getTime() - tempUpgradeStartDate.getTime();
-        const remainingTimeDays = Math.floor(remainingTimeFromOriginal / (1000 * 60 * 60 * 24));
+        
+        console.log(`  - remainingTimeFromOriginal: ${remainingTimeFromOriginal}ms (${Math.floor(remainingTimeFromOriginal / (1000 * 60 * 60 * 24))} days)`);
         
         // New remaining time = remaining time from original - duration of temporary upgrade
         // Ini adalah logika: sisa basic - durasi boost = sisa basic baru
         const newRemainingTime = Math.max(0, remainingTimeFromOriginal - upgradeDurationMs);
-        const newRemainingTimeDays = Math.floor(newRemainingTime / (1000 * 60 * 60 * 24));
+        
+        console.log(`  - newRemainingTime: ${newRemainingTime}ms (${Math.floor(newRemainingTime / (1000 * 60 * 60 * 24))} days)`);
         
         // Set new subscription end = now + new remaining time
         newSubscriptionEnd = new Date(now.getTime() + newRemainingTime);
         
-        logger.debug('Remaining time calculation result', {
-          tenantId,
-          remainingTimeFromOriginalDays: remainingTimeDays,
-          newRemainingTimeDays,
-          newSubscriptionEnd: newSubscriptionEnd.toISOString(),
-        });
+        console.log(`  - newSubscriptionEnd: ${newSubscriptionEnd.toISOString()}`);
         
         // IMPORTANT: Ensure newSubscriptionEnd is in the future (not expired)
         // If newRemainingTime > 0, newSubscriptionEnd should be in the future
         // Only set to now if newRemainingTime is 0 or negative
         if (newRemainingTime <= 0) {
           // No remaining time, set to now (expired)
-          logger.warn('No remaining time, setting to now (expired)', { tenantId });
+          console.log(`  ⚠️  No remaining time, setting to now (expired)`);
           newSubscriptionEnd = now;
         } else {
           // Still have remaining time, ensure it's in the future
           if (newSubscriptionEnd <= now) {
             // This shouldn't happen if calculation is correct, but add safety check
-            logger.warn('newSubscriptionEnd is in the past, recalculating', { tenantId });
+            console.log(`  ⚠️  newSubscriptionEnd is in the past, recalculating...`);
             newSubscriptionEnd = new Date(now.getTime() + newRemainingTime);
           }
-          logger.debug('newSubscriptionEnd is in the future', { tenantId, newSubscriptionEnd: newSubscriptionEnd.toISOString() });
+          console.log(`  ✅ newSubscriptionEnd is in the future: ${newSubscriptionEnd.toISOString()}`);
         }
       } else {
         // Fallback: if we can't find originalSubscriptionEnd, use current time
-        logger.warn('Cannot calculate remaining time, using current time as fallback', {
-          tenantId,
-          hasOriginalSubscriptionEnd: !!originalSubscriptionEnd,
-          hasTemporarySubscription: !!temporarySubscription,
-        });
+        console.warn(`⚠️  Cannot calculate remaining time for tenant ${tenantId}: originalSubscriptionEnd=${originalSubscriptionEnd ? 'found' : 'not found'}, temporarySubscription=${temporarySubscription ? 'found' : 'not found'}`);
         newSubscriptionEnd = now;
       }
 
@@ -884,7 +851,7 @@ export class SubscriptionService {
         await prisma.subscription.delete({
           where: { id: temporarySubscription.id },
         });
-        logger.debug('Deleted temporary subscription', { tenantId, subscriptionId: temporarySubscription.id });
+        console.log(`🗑️  Deleted temporary subscription ${temporarySubscription.id} for tenant ${tenantId}`);
       }
 
       // Revert tenant to previousPlan with calculated remaining time
@@ -900,27 +867,13 @@ export class SubscriptionService {
 
       // Verify the update was successful
       if (updatedTenant.subscriptionPlan !== revertPlan || updatedTenant.temporaryUpgrade !== false) {
-        logger.error('Failed to revert tenant', {
-          tenantId,
-          subscriptionPlan: updatedTenant.subscriptionPlan,
-          temporaryUpgrade: updatedTenant.temporaryUpgrade,
-          expectedPlan: revertPlan,
-        });
+        console.error(`❌ Failed to revert tenant ${tenantId}: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
         throw new Error(`Failed to revert tenant: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
       }
 
       // Apply plan features (auto-disable users/outlets that exceed limit)
       const { applyPlanFeatures } = await import('./plan-features.service');
       await applyPlanFeatures(tenantId, revertPlan);
-
-      // Invalidate subscription cache after revert
-      try {
-        const CacheService = (await import('../utils/cache')).default;
-        await CacheService.delete(`subscription:remaining-time:${tenantId}`);
-        logger.debug('Invalidated subscription cache after revert', { tenantId });
-      } catch (error: any) {
-        logger.warn('Failed to invalidate subscription cache', { error: error.message, tenantId });
-      }
 
       // Update SubscriptionHistory to mark as reverted
       if (temporarySubscription) {
@@ -942,34 +895,28 @@ export class SubscriptionService {
         }
       }
 
-      const daysRemaining = Math.ceil((newSubscriptionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      logger.info('Reverted temporary upgrade', {
-        tenantId,
-        oldPlan: tenant.subscriptionPlan,
-        newPlan: revertPlan,
-        daysRemaining,
-      });
+      console.log(`✅ Reverted temporary upgrade for tenant ${tenantId}: ${tenant.subscriptionPlan} -> ${revertPlan} with ${Math.ceil((newSubscriptionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))} days remaining`);
     } catch (error: any) {
-      logger.error('Failed to revert temporary upgrade', { tenantId, error: error.message });
+      console.error(`Failed to revert temporary upgrade for tenant ${tenantId}:`, error);
       throw error;
     }
   }
 
   /**
    * Revert temporary upgrades that have expired
-   * Also revert expired PRO/CUSTOM subscriptions to BASIC
+   * Also revert expired PRO/ENTERPRISE subscriptions to BASIC
    * This should be called by a cron job daily
    */
   async revertTemporaryUpgrades() {
     const now = new Date();
-    logger.info('Starting revert temporary upgrades job', { startedAt: now.toISOString() });
+    console.log('🔄 Starting revert temporary upgrades job at', now.toISOString());
     
     // Find all tenants with expired subscriptions (check tenant.subscriptionEnd)
-    // This will catch all expired PRO/CUSTOM tenants regardless of subscription records
+    // This will catch all expired PRO/ENTERPRISE tenants regardless of subscription records
     const expiredTenants = await prisma.tenant.findMany({
       where: {
         subscriptionEnd: { lte: now },
-        subscriptionPlan: { in: ['PRO', 'CUSTOM'] },
+        subscriptionPlan: { in: ['PRO', 'ENTERPRISE'] },
       },
       include: {
         subscriptions: {
@@ -986,7 +933,7 @@ export class SubscriptionService {
       },
     });
 
-    logger.debug('Found expired tenants with PRO/CUSTOM plan', { count: expiredTenants.length });
+    console.log(`Found ${expiredTenants.length} expired tenants with PRO/ENTERPRISE plan`);
 
     // Also find expired subscriptions directly (both ACTIVE and EXPIRED to catch all)
     // Also check tenant.temporaryUpgrade to catch cases where subscription might not have the flag
@@ -1018,15 +965,15 @@ export class SubscriptionService {
       }
     );
 
-    logger.debug('Found temporary upgrades to revert', { count: temporaryUpgrades.length });
+    console.log(`Found ${temporaryUpgrades.length} temporary upgrades to revert`);
 
-    // Filter for expired PRO/CUSTOM subscriptions (non-temporary)
+    // Filter for expired PRO/ENTERPRISE subscriptions (non-temporary)
     // Check both from expiredSubscriptions and expiredTenants
     const expiredProMaxSubscriptions = [
       ...expiredSubscriptions.filter(
         (sub: any) => 
           !sub.temporaryUpgrade && 
-          (sub.plan === 'PRO' || sub.plan === 'CUSTOM') &&
+          (sub.plan === 'PRO' || sub.plan === 'ENTERPRISE') &&
           sub.tenant.subscriptionPlan !== 'BASIC'
       ),
       ...expiredTenants
@@ -1037,7 +984,7 @@ export class SubscriptionService {
           tenant: tenant,
         }))
         .filter((sub: any) => 
-          (sub.plan === 'PRO' || sub.plan === 'CUSTOM') &&
+          (sub.plan === 'PRO' || sub.plan === 'ENTERPRISE') &&
           sub.plan !== 'BASIC'
         ),
     ];
@@ -1050,7 +997,7 @@ export class SubscriptionService {
       }
     );
 
-    logger.debug('Found unique expired PRO/CUSTOM subscriptions to revert', { count: uniqueExpiredProMax.length });
+    console.log(`Found ${uniqueExpiredProMax.length} unique expired PRO/ENTERPRISE subscriptions to revert`);
 
     const results = [];
 
@@ -1098,7 +1045,7 @@ export class SubscriptionService {
           // We can't directly get it, but we can estimate based on upgrade duration
           // If upgrade was temporary, the originalSubscriptionEnd should be after upgrade.endDate
           // But we don't have that info, so we'll use a fallback
-          logger.warn('Could not find originalSubscriptionEnd, using fallback calculation', { tenantId: upgrade.tenantId });
+          console.warn(`Could not find originalSubscriptionEnd for tenant ${upgrade.tenantId}. Using fallback calculation.`);
         }
 
         // Calculate remaining time: originalSubscriptionEnd - duration of temporary upgrade
@@ -1163,8 +1110,7 @@ export class SubscriptionService {
         const newRemainingTimeForLog = newSubscriptionEnd.getTime() - now.getTime();
         const newRemainingDaysForLog = newRemainingTimeForLog / (1000 * 60 * 60 * 24);
 
-        logger.info('Reverting temporary upgrade for tenant', {
-          tenantId: upgrade.tenantId,
+        console.log(`Reverting temporary upgrade for tenant ${upgrade.tenantId}:`, {
           upgradeStartDate: upgradeStartDateForLog,
           upgradeEndDate: upgrade.endDate,
           originalSubscriptionEnd: originalSubscriptionEnd?.toISOString(),
@@ -1201,12 +1147,7 @@ export class SubscriptionService {
 
         // Verify the update was successful
         if (updatedTenant.subscriptionPlan !== revertPlan || updatedTenant.temporaryUpgrade !== false) {
-          logger.error('Failed to revert tenant', {
-            tenantId: upgrade.tenantId,
-            subscriptionPlan: updatedTenant.subscriptionPlan,
-            temporaryUpgrade: updatedTenant.temporaryUpgrade,
-            expectedPlan: revertPlan,
-          });
+          console.error(`❌ Failed to revert tenant ${upgrade.tenantId}: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
           throw new Error(`Failed to revert tenant: subscriptionPlan=${updatedTenant.subscriptionPlan}, temporaryUpgrade=${updatedTenant.temporaryUpgrade}`);
         }
 
@@ -1239,17 +1180,9 @@ export class SubscriptionService {
           type: 'temporary_upgrade',
         });
 
-        logger.info('Reverted temporary upgrade for tenant', {
-          tenantId: upgrade.tenantId,
-          oldPlan: upgrade.plan,
-          newPlan: revertPlan,
-        });
+        console.log(`✅ Reverted temporary upgrade for tenant ${upgrade.tenantId}: ${upgrade.plan} -> ${revertPlan}`);
       } catch (error: any) {
-        logger.error('Failed to revert temporary upgrade', {
-          upgradeId: upgrade.id,
-          tenantId: upgrade.tenantId,
-          error: error.message,
-        });
+        console.error(`Failed to revert temporary upgrade ${upgrade.id}:`, error);
         results.push({
           subscriptionId: upgrade.id,
           tenantId: upgrade.tenantId,
@@ -1259,7 +1192,7 @@ export class SubscriptionService {
       }
     }
 
-    // Process expired PRO/CUSTOM subscriptions (revert to BASIC)
+    // Process expired PRO/ENTERPRISE subscriptions (revert to BASIC)
     for (const subscription of uniqueExpiredProMax) {
       try {
         const tenantId = subscription.tenantId || subscription.tenant?.id;
@@ -1267,7 +1200,7 @@ export class SubscriptionService {
         const subscriptionId = subscription.id;
 
         if (!tenantId || !plan) {
-          logger.warn('Skipping subscription: missing tenantId or plan', { subscriptionId });
+          console.warn(`Skipping subscription ${subscriptionId}: missing tenantId or plan`);
           continue;
         }
 
@@ -1282,7 +1215,7 @@ export class SubscriptionService {
             });
           } catch (error: any) {
             // Subscription might not exist, continue anyway
-            logger.warn('Could not update subscription', { subscriptionId, error: error.message });
+            console.warn(`Could not update subscription ${subscriptionId}:`, error.message);
           }
         }
 
@@ -1339,19 +1272,9 @@ export class SubscriptionService {
           subscriptionEnd: verifyTenant?.subscriptionEnd,
         });
 
-        logger.info('Reverted expired subscription', {
-          tenantId,
-          oldPlan: plan,
-          newPlan: 'BASIC',
-          subscriptionEnd: verifyTenant?.subscriptionEnd?.toISOString(),
-        });
+        console.log(`✅ Reverted expired ${plan} subscription for tenant ${tenantId}: ${plan} -> BASIC (subscriptionEnd: ${verifyTenant?.subscriptionEnd?.toISOString()})`);
       } catch (error: any) {
-        const errorTenantId = subscription.tenantId || subscription.tenant?.id || null;
-        logger.error('Failed to revert expired subscription', {
-          subscriptionId: subscription.id,
-          tenantId: errorTenantId,
-          error: error.message,
-        });
+        console.error(`Failed to revert expired subscription ${subscription.id}:`, error);
         results.push({
           subscriptionId: subscription.id || null,
           tenantId: subscription.tenantId || subscription.tenant?.id || null,
@@ -1367,11 +1290,7 @@ export class SubscriptionService {
       results,
     };
 
-    logger.info('Revert job completed', {
-      reverted: summary.reverted,
-      failed: summary.failed,
-      total: summary.reverted + summary.failed,
-    });
+    console.log(`✅ Revert job completed: ${summary.reverted} reverted, ${summary.failed} failed`);
 
     return summary;
   }
@@ -1476,7 +1395,7 @@ export class SubscriptionService {
    * Extend subscription with custom duration (for Super Admin)
    * This allows extending without changing plan
    */
-  async extendSubscriptionCustom(tenantId: string, duration: number, addedBySuperAdmin: boolean = false) {
+  async extendSubscriptionCustom(tenantId: string, duration: number) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
     });
@@ -1507,9 +1426,9 @@ export class SubscriptionService {
     const planPrices: Record<string, number> = {
       BASIC: 200000,
       PRO: 350000,
-      CUSTOM: 500000,
+      ENTERPRISE: 500000,
     };
-    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'CUSTOM';
+    const currentPlan = tenant.subscriptionPlan as 'BASIC' | 'PRO' | 'ENTERPRISE';
     const monthlyPrice = planPrices[currentPlan] || 0;
     
     // Discount based on duration
@@ -1552,7 +1471,6 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
-          addedBySuperAdmin: addedBySuperAdmin, // Set based on who created it
           // Preserve temporaryUpgrade flags if it's a temporary upgrade
           ...(shouldPreserveTemporaryUpgrade ? {
             temporaryUpgrade: true,

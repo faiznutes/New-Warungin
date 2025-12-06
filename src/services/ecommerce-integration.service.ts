@@ -288,8 +288,7 @@ class EcommerceIntegrationService {
       const orderData = this.convertEcommerceOrderToInternal(ecommerceOrder, config.platform);
       
       // Create order in system
-      // Note: userId is required but not available from ecommerce order, using system user
-      const order = await orderService.createOrder(orderData, 'system', tenantId);
+      const order = await orderService.createOrder(tenantId, orderData);
 
       return {
         success: true,

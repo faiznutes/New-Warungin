@@ -83,13 +83,11 @@ class AdvancedAuditService {
           action: event.action,
           resource: event.resource,
           resourceId: event.resourceId,
-          details: {
-            changes: event.changes || null,
-            metadata: event.metadata || null,
-            severity: event.severity || 'INFO',
-          } as any,
+          changes: event.changes ? JSON.stringify(event.changes) : null,
           ipAddress: event.ipAddress,
           userAgent: event.userAgent,
+          metadata: event.metadata ? JSON.stringify(event.metadata) : null,
+          severity: event.severity,
         },
       });
 
@@ -260,8 +258,8 @@ class AdvancedAuditService {
       return {
         data: logs.map(log => ({
           ...log,
-          changes: (log.details as any)?.changes || null,
-          metadata: (log.details as any)?.metadata || null,
+          changes: log.changes ? JSON.parse(log.changes) : null,
+          metadata: log.metadata ? JSON.parse(log.metadata) : null,
         })),
         pagination: {
           page,
@@ -289,16 +287,17 @@ class AdvancedAuditService {
         };
       }
 
-      const [totalEvents, byAction, allLogs, byUser] = await Promise.all([
+      const [totalEvents, byAction, bySeverity, byUser] = await Promise.all([
         prisma.auditLog.count({ where }),
         prisma.auditLog.groupBy({
           by: ['action'],
           where,
           _count: { action: true },
         }),
-        prisma.auditLog.findMany({
+        prisma.auditLog.groupBy({
+          by: ['severity'],
           where,
-          select: { details: true },
+          _count: { severity: true },
         }),
         prisma.auditLog.groupBy({
           by: ['userId'],
@@ -307,20 +306,16 @@ class AdvancedAuditService {
         }),
       ]);
 
-      // Calculate severity from details field
-      const bySeverity: Record<string, number> = {};
-      allLogs.forEach(log => {
-        const severity = (log.details as any)?.severity || 'INFO';
-        bySeverity[severity] = (bySeverity[severity] || 0) + 1;
-      });
-
       return {
         totalEvents,
         byAction: byAction.reduce((acc, item) => {
           acc[item.action] = item._count.action;
           return acc;
         }, {} as Record<string, number>),
-        bySeverity,
+        bySeverity: bySeverity.reduce((acc, item) => {
+          acc[item.severity] = item._count.severity;
+          return acc;
+        }, {} as Record<string, number>),
         byUser: byUser.reduce((acc, item) => {
           acc[item.userId || 'SYSTEM'] = item._count.userId;
           return acc;
@@ -347,7 +342,7 @@ class AdvancedAuditService {
           log.action,
           log.resource,
           log.resourceId || '',
-          (log.details as any)?.severity || 'INFO',
+          log.severity,
           log.ipAddress || '',
         ]);
 

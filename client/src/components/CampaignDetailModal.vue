@@ -9,48 +9,27 @@
         <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-gray-900">
-                Detail Campaign
-              </h3>
+              <h3 class="text-xl font-bold text-gray-900">Detail Campaign</h3>
               <button
-                class="text-gray-400 hover:text-gray-600 transition"
                 @click="$emit('close')"
+                class="text-gray-400 hover:text-gray-600 transition"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div
-              v-if="campaign"
-              class="space-y-6"
-            >
+            <div v-if="campaign" class="space-y-6">
               <!-- Campaign Info -->
               <div class="bg-gray-50 rounded-lg p-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-gray-600 mb-1">
-                      Nama Campaign
-                    </p>
-                    <p class="text-lg font-semibold text-gray-900">
-                      {{ campaign.name }}
-                    </p>
+                    <p class="text-sm text-gray-600 mb-1">Nama Campaign</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ campaign.name }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-600 mb-1">
-                      Status
-                    </p>
+                    <p class="text-sm text-gray-600 mb-1">Status</p>
                     <span
                       class="px-3 py-1 text-sm font-semibold rounded-full"
                       :class="getStatusClass(campaign.status)"
@@ -63,74 +42,42 @@
 
               <!-- Campaign Details -->
               <div class="border-t border-gray-200 pt-4">
-                <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                  Informasi Campaign
-                </h5>
+                <h5 class="text-sm font-semibold text-gray-700 mb-3">Informasi Campaign</h5>
                 <div class="space-y-3">
                   <div>
-                    <p class="text-sm text-gray-600">
-                      Tipe
-                    </p>
-                    <p class="text-base font-medium text-gray-900">
-                      {{ campaign.type || '-' }}
-                    </p>
+                    <p class="text-sm text-gray-600">Tipe</p>
+                    <p class="text-base font-medium text-gray-900">{{ campaign.type || '-' }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-600">
-                      Target Audience
-                    </p>
-                    <p class="text-base font-medium text-gray-900">
-                      {{ campaign.targetAudience || '-' }}
-                    </p>
+                    <p class="text-sm text-gray-600">Target Audience</p>
+                    <p class="text-base font-medium text-gray-900">{{ campaign.targetAudience || '-' }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-600">
-                      Tanggal Mulai
-                    </p>
-                    <p class="text-base font-medium text-gray-900">
-                      {{ formatDate(campaign.startDate) }}
-                    </p>
+                    <p class="text-sm text-gray-600">Tanggal Mulai</p>
+                    <p class="text-base font-medium text-gray-900">{{ formatDate(campaign.startDate) }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-600">
-                      Tanggal Berakhir
-                    </p>
-                    <p class="text-base font-medium text-gray-900">
-                      {{ formatDate(campaign.endDate) }}
-                    </p>
+                    <p class="text-sm text-gray-600">Tanggal Berakhir</p>
+                    <p class="text-base font-medium text-gray-900">{{ formatDate(campaign.endDate) }}</p>
                   </div>
                 </div>
               </div>
 
               <!-- Campaign Stats -->
               <div class="border-t border-gray-200 pt-4">
-                <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                  Statistik
-                </h5>
+                <h5 class="text-sm font-semibold text-gray-700 mb-3">Statistik</h5>
                 <div class="grid grid-cols-3 gap-4">
                   <div class="text-center">
-                    <p class="text-2xl font-bold text-primary-600">
-                      {{ campaign.opens || 0 }}
-                    </p>
-                    <p class="text-sm text-gray-600">
-                      Opens
-                    </p>
+                    <p class="text-2xl font-bold text-primary-600">{{ campaign.opens || 0 }}</p>
+                    <p class="text-sm text-gray-600">Opens</p>
                   </div>
                   <div class="text-center">
-                    <p class="text-2xl font-bold text-green-600">
-                      {{ campaign.clicks || 0 }}
-                    </p>
-                    <p class="text-sm text-gray-600">
-                      Clicks
-                    </p>
+                    <p class="text-2xl font-bold text-green-600">{{ campaign.clicks || 0 }}</p>
+                    <p class="text-sm text-gray-600">Clicks</p>
                   </div>
                   <div class="text-center">
-                    <p class="text-2xl font-bold text-blue-600">
-                      {{ campaign.conversions || 0 }}
-                    </p>
-                    <p class="text-sm text-gray-600">
-                      Conversions
-                    </p>
+                    <p class="text-2xl font-bold text-blue-600">{{ campaign.conversions || 0 }}</p>
+                    <p class="text-sm text-gray-600">Conversions</p>
                   </div>
                 </div>
               </div>
@@ -139,14 +86,14 @@
               <div class="flex space-x-3 pt-4 border-t border-gray-200">
                 <button
                   v-if="campaign.status === 'DRAFT'"
-                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   @click="$emit('send', campaign.id)"
+                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   Kirim Campaign
                 </button>
                 <button
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                   @click="$emit('close')"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 >
                   Tutup
                 </button>

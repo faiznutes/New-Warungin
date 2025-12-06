@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Member } from '@prisma/client';
 import prisma from '../config/database';
+import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import CacheService from '../utils/cache';
-import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeText } from '../utils/sanitize';
 
 export interface CreateMemberInput {
   name: string;
@@ -60,7 +59,7 @@ export class MemberService {
     };
   }
 
-  async getMemberById(id: string, tenantId: string) {
+  async getMemberById(id: string, tenantId: string): Promise<Member | null> {
     return prisma.member.findFirst({
       where: { id, tenantId },
       include: {
@@ -77,13 +76,13 @@ export class MemberService {
     });
   }
 
-  async getMemberByCode(memberCode: string, tenantId: string) {
+  async getMemberByCode(memberCode: string, tenantId: string): Promise<Member | null> {
     return prisma.member.findFirst({
       where: { memberCode, tenantId },
     });
   }
 
-  async createMember(data: CreateMemberInput, tenantId: string) {
+  async createMember(data: CreateMemberInput, tenantId: string): Promise<Member> {
     // Generate member code
     const memberCode = `MEM${Date.now().toString().slice(-8)}${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
 
@@ -98,12 +97,7 @@ export class MemberService {
 
     const member = await prisma.member.create({
       data: {
-        name: sanitizeString(data.name, 255),
-        email: data.email ? sanitizeEmail(data.email) : undefined,
-        phone: sanitizePhone(data.phone),
-        address: data.address ? sanitizeText(data.address) : undefined,
-        discountType: data.discountType,
-        discountValue: data.discountValue,
+        ...data,
         tenantId,
         memberCode,
       },
@@ -115,24 +109,15 @@ export class MemberService {
     return member;
   }
 
-  async updateMember(id: string, data: UpdateMemberInput, tenantId: string) {
+  async updateMember(id: string, data: UpdateMemberInput, tenantId: string): Promise<Member> {
     const member = await this.getMemberById(id, tenantId);
     if (!member) {
       throw new Error('Member not found');
     }
 
-    const updateData: any = {};
-    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
-    if (data.email !== undefined) updateData.email = data.email ? sanitizeEmail(data.email) : null;
-    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
-    if (data.address !== undefined) updateData.address = data.address ? sanitizeText(data.address) : null;
-    if (data.discountType !== undefined) updateData.discountType = data.discountType;
-    if (data.discountValue !== undefined) updateData.discountValue = data.discountValue;
-    if (data.isActive !== undefined) updateData.isActive = data.isActive;
-
     const updatedMember = await prisma.member.update({
       where: { id },
-      data: updateData,
+      data,
     });
 
     // Invalidate analytics cache after member update
@@ -160,10 +145,20 @@ export class MemberService {
    */
   private async invalidateAnalyticsCache(tenantId: string): Promise<void> {
     try {
-      // Delete all analytics cache keys for this tenant
-      await CacheService.deletePattern(`analytics:*:${tenantId}`);
-      await CacheService.deletePattern(`analytics:${tenantId}:*`);
-      logger.info('Invalidated analytics cache after member operation', { tenantId });
+      const redis = getRedisClient();
+      if (redis) {
+        // Delete all analytics cache keys for this tenant
+        const keys = await redis.keys(`analytics:*:${tenantId}`);
+        const keys2 = await redis.keys(`analytics:${tenantId}:*`);
+        const allKeys = [...keys, ...keys2];
+        if (allKeys.length > 0) {
+          await redis.del(...allKeys);
+          logger.info('Invalidated analytics cache after member operation', {
+            tenantId,
+            cacheKeysDeleted: allKeys.length
+          });
+        }
+      }
     } catch (error: any) {
       logger.warn('Failed to invalidate analytics cache', {
         error: error.message,

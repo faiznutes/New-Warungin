@@ -3,51 +3,27 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">
-          Manajemen Keuangan
-        </h2>
-        <p class="text-gray-600">
-          Arus kas, pengeluaran, pajak, perkiraan, dan rekonsiliasi bank
-        </p>
+        <h2 class="text-2xl font-bold text-gray-900">Financial Management</h2>
+        <p class="text-gray-600">Cash flow, expenses, tax, forecasting, dan bank reconciliation</p>
       </div>
       <div class="flex space-x-3">
         <button
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
           @click="showCashFlowModal = true"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Catat Arus Kas</span>
+          <span>Record Cash Flow</span>
         </button>
         <button
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
           @click="showExpenseModal = true"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Catat Pengeluaran</span>
+          <span>Record Expense</span>
         </button>
       </div>
     </div>
@@ -56,74 +32,58 @@
     <div class="mb-6 border-b border-gray-200">
       <nav class="flex space-x-8">
         <button
+          @click="activeTab = 'cashflow'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'cashflow' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-          @click="activeTab = 'cashflow'"
         >
-          Arus Kas
+          Cash Flow
         </button>
         <button
+          @click="activeTab = 'expenses'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'expenses' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-          @click="activeTab = 'expenses'"
         >
-          Pengeluaran
+          Expenses
         </button>
         <button
+          @click="activeTab = 'tax'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'tax' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-          @click="activeTab = 'tax'"
         >
-          Pajak
+          Tax
         </button>
         <button
+          @click="activeTab = 'forecast'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'forecast' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-          @click="activeTab = 'forecast'"
         >
-          Perkiraan
+          Forecast
         </button>
         <button
+          @click="activeTab = 'reconciliation'"
           class="py-4 px-1 border-b-2 font-medium text-sm"
           :class="activeTab === 'reconciliation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-          @click="activeTab = 'reconciliation'"
         >
-          Rekonsiliasi Bank
+          Bank Reconciliation
         </button>
       </nav>
     </div>
 
     <!-- Cash Flow Tab -->
-    <div
-      v-if="activeTab === 'cashflow'"
-      class="space-y-6"
-    >
+    <div v-if="activeTab === 'cashflow'" class="space-y-6">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
-          <p class="text-sm text-gray-600 mb-1">
-            Total Pendapatan
-          </p>
-          <p class="text-3xl font-bold text-gray-900">
-            Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}
-          </p>
+          <p class="text-sm text-gray-600 mb-1">Total Income</p>
+          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
-          <p class="text-sm text-gray-600 mb-1">
-            Total Pengeluaran
-          </p>
-          <p class="text-3xl font-bold text-gray-900">
-            Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}
-          </p>
+          <p class="text-sm text-gray-600 mb-1">Total Expenses</p>
+          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-600 mb-1">
-            Arus Kas Bersih
-          </p>
-          <p
-            class="text-3xl font-bold"
-            :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'"
-          >
+          <p class="text-sm text-gray-600 mb-1">Net Cash Flow</p>
+          <p class="text-3xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'">
             Rp {{ formatCurrency(cashFlowSummary.netCashFlow) }}
           </p>
         </div>
@@ -144,8 +104,8 @@
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
           />
           <button
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             @click="loadCashFlowSummary"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
           >
             Filter
           </button>
@@ -154,9 +114,7 @@
 
       <!-- Category Breakdown -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          By Category
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">By Category</h3>
         <div class="space-y-2">
           <div
             v-for="(amount, category) in cashFlowSummary.byCategory"
@@ -171,15 +129,10 @@
     </div>
 
     <!-- Expenses Tab -->
-    <div
-      v-if="activeTab === 'expenses'"
-      class="space-y-6"
-    >
+    <div v-if="activeTab === 'expenses'" class="space-y-6">
       <!-- Expenses by Category -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Pengeluaran Berdasarkan Kategori
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Expenses by Category</h3>
         <div class="space-y-2">
           <div
             v-for="(amount, category) in expensesByCategory"
@@ -194,14 +147,9 @@
     </div>
 
     <!-- Tax Tab -->
-    <div
-      v-if="activeTab === 'tax'"
-      class="space-y-6"
-    >
+    <div v-if="activeTab === 'tax'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Calculate Tax
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculate Tax</h3>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Period (YYYY-MM)</label>
@@ -213,58 +161,35 @@
           </div>
           <div class="flex items-end">
             <button
-              class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               @click="calculateTax"
+              class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               Calculate
             </button>
           </div>
         </div>
 
-        <div
-          v-if="taxCalculation"
-          class="border-t pt-4 space-y-3"
-        >
+        <div v-if="taxCalculation" class="border-t pt-4 space-y-3">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-gray-600">
-                Total Pendapatan
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                Rp {{ formatCurrency(taxCalculation.totalRevenue) }}
-              </p>
+              <p class="text-sm text-gray-600">Total Revenue</p>
+              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalRevenue) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">
-                Total Pengeluaran
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                Rp {{ formatCurrency(taxCalculation.totalExpenses) }}
-              </p>
+              <p class="text-sm text-gray-600">Total Expenses</p>
+              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalExpenses) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">
-                Pendapatan Kena Pajak
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                Rp {{ formatCurrency(taxCalculation.taxableIncome) }}
-              </p>
+              <p class="text-sm text-gray-600">Taxable Income</p>
+              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.taxableIncome) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600">
-                Tax Rate
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                {{ (taxCalculation.taxRate * 100).toFixed(1) }}%
-              </p>
+              <p class="text-sm text-gray-600">Tax Rate</p>
+              <p class="text-lg font-semibold text-gray-900">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
             </div>
             <div class="col-span-2">
-              <p class="text-sm text-gray-600">
-                Jumlah Pajak
-              </p>
-              <p class="text-2xl font-bold text-red-600">
-                Rp {{ formatCurrency(taxCalculation.taxAmount) }}
-              </p>
+              <p class="text-sm text-gray-600">Tax Amount</p>
+              <p class="text-2xl font-bold text-red-600">Rp {{ formatCurrency(taxCalculation.taxAmount) }}</p>
             </div>
           </div>
         </div>
@@ -272,16 +197,11 @@
     </div>
 
     <!-- Forecast Tab -->
-    <div
-      v-if="activeTab === 'forecast'"
-      class="space-y-6"
-    >
+    <div v-if="activeTab === 'forecast'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Perkiraan Keuangan
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Forecast</h3>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Bulan untuk Diperkirakan</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Months to Forecast</label>
           <input
             v-model.number="forecastMonths"
             type="number"
@@ -291,52 +211,34 @@
           />
         </div>
         <button
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
           @click="loadForecast"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
         >
-          Buat Perkiraan
+          Generate Forecast
         </button>
 
-        <div
-          v-if="forecast.length > 0"
-          class="space-y-4"
-        >
+        <div v-if="forecast.length > 0" class="space-y-4">
           <div
             v-for="item in forecast"
             :key="item.month"
             class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded"
           >
             <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">
-                {{ item.month }}
-              </h4>
+              <h4 class="font-semibold text-gray-900">{{ item.month }}</h4>
               <span class="text-xs text-gray-500">Confidence: {{ (item.confidence * 100).toFixed(0) }}%</span>
             </div>
             <div class="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <p class="text-gray-600">
-                  Pendapatan
-                </p>
-                <p class="font-semibold text-green-600">
-                  Rp {{ formatCurrency(item.projectedRevenue) }}
-                </p>
+                <p class="text-gray-600">Revenue</p>
+                <p class="font-semibold text-green-600">Rp {{ formatCurrency(item.projectedRevenue) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">
-                  Pengeluaran
-                </p>
-                <p class="font-semibold text-red-600">
-                  Rp {{ formatCurrency(item.projectedExpenses) }}
-                </p>
+                <p class="text-gray-600">Expenses</p>
+                <p class="font-semibold text-red-600">Rp {{ formatCurrency(item.projectedExpenses) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">
-                  Laba
-                </p>
-                <p
-                  class="font-semibold"
-                  :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'"
-                >
+                <p class="text-gray-600">Profit</p>
+                <p class="font-semibold" :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'">
                   Rp {{ formatCurrency(item.projectedProfit) }}
                 </p>
               </div>
@@ -347,25 +249,17 @@
     </div>
 
     <!-- Bank Reconciliation Tab -->
-    <div
-      v-if="activeTab === 'reconciliation'"
-      class="space-y-6"
-    >
+    <div v-if="activeTab === 'reconciliation'" class="space-y-6">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Rekonsiliasi Bank
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Bank Reconciliation</h3>
         <button
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
           @click="showReconciliationModal = true"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
         >
-          Rekonsiliasi Baru
+          New Reconciliation
         </button>
 
-        <div
-          v-if="reconciliations.length > 0"
-          class="space-y-4"
-        >
+        <div v-if="reconciliations.length > 0" class="space-y-4">
           <div
             v-for="recon in reconciliations"
             :key="recon.id"
@@ -373,9 +267,7 @@
             :class="recon.reconciled ? 'border-green-500 bg-green-50' : 'border-yellow-500 bg-yellow-50'"
           >
             <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">
-                {{ recon.bankAccount }}
-              </h4>
+              <h4 class="font-semibold text-gray-900">{{ recon.bankAccount }}</h4>
               <span
                 class="px-2 py-1 text-xs font-semibold rounded-full"
                 :class="recon.reconciled ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
@@ -385,29 +277,16 @@
             </div>
             <div class="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p class="text-gray-600">
-                  Statement Balance
-                </p>
-                <p class="font-semibold">
-                  Rp {{ formatCurrency(recon.statementBalance) }}
-                </p>
+                <p class="text-gray-600">Statement Balance</p>
+                <p class="font-semibold">Rp {{ formatCurrency(recon.statementBalance) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">
-                  Saldo Buku
-                </p>
-                <p class="font-semibold">
-                  Rp {{ formatCurrency(recon.bookBalance) }}
-                </p>
+                <p class="text-gray-600">Book Balance</p>
+                <p class="font-semibold">Rp {{ formatCurrency(recon.bookBalance) }}</p>
               </div>
               <div class="col-span-2">
-                <p class="text-gray-600">
-                  Difference
-                </p>
-                <p
-                  class="font-semibold"
-                  :class="Math.abs(recon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'"
-                >
+                <p class="text-gray-600">Difference</p>
+                <p class="font-semibold" :class="Math.abs(recon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'">
                   Rp {{ formatCurrency(recon.difference) }}
                 </p>
               </div>
@@ -426,33 +305,15 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              Catat Arus Kas
-            </h3>
-            <button
-              class="text-gray-400 hover:text-gray-600 transition"
-              @click="closeCashFlowModal"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <h3 class="text-2xl font-bold text-gray-900">Record Cash Flow</h3>
+            <button @click="closeCashFlowModal" class="text-gray-400 hover:text-gray-600 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveCashFlow"
-          >
+          <form @submit.prevent="saveCashFlow" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
               <select
@@ -460,15 +321,9 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
-                <option value="">
-                  Pilih Type
-                </option>
-                <option value="INCOME">
-                  Pendapatan
-                </option>
-                <option value="EXPENSE">
-                  Pengeluaran
-                </option>
+                <option value="">Pilih Type</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
               </select>
             </div>
 
@@ -528,8 +383,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeCashFlowModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -555,33 +410,15 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              Catat Pengeluaran
-            </h3>
-            <button
-              class="text-gray-400 hover:text-gray-600 transition"
-              @click="closeExpenseModal"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <h3 class="text-2xl font-bold text-gray-900">Record Expense</h3>
+            <button @click="closeExpenseModal" class="text-gray-400 hover:text-gray-600 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveExpense"
-          >
+          <form @submit.prevent="saveExpense" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
               <input
@@ -636,22 +473,19 @@
 
             <div class="flex items-center">
               <input
-                id="taxDeductible"
                 v-model="expenseForm.isTaxDeductible"
                 type="checkbox"
+                id="taxDeductible"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <label
-                for="taxDeductible"
-                class="ml-2 text-sm text-gray-700"
-              >Tax Deductible</label>
+              <label for="taxDeductible" class="ml-2 text-sm text-gray-700">Tax Deductible</label>
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeExpenseModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -677,36 +511,18 @@
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              Rekonsiliasi Bank
-            </h3>
-            <button
-              class="text-gray-400 hover:text-gray-600 transition"
-              @click="closeReconciliationModal"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+            <h3 class="text-2xl font-bold text-gray-900">Bank Reconciliation</h3>
+            <button @click="closeReconciliationModal" class="text-gray-400 hover:text-gray-600 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveReconciliation"
-          >
+          <form @submit.prevent="saveReconciliation" class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Akun Bank *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Bank Account *</label>
                 <input
                   v-model="reconciliationForm.bankAccount"
                   type="text"
@@ -773,19 +589,15 @@
                       v-model="tx.type"
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     >
-                      <option value="DEPOSIT">
-                        Deposit
-                      </option>
-                      <option value="WITHDRAWAL">
-                        Withdrawal
-                      </option>
+                      <option value="DEPOSIT">Deposit</option>
+                      <option value="WITHDRAWAL">Withdrawal</option>
                     </select>
                   </div>
                   <div class="col-span-1">
                     <button
                       type="button"
-                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
                       @click="removeTransaction(index)"
+                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
                     >
                       ×
                     </button>
@@ -793,8 +605,8 @@
                 </div>
                 <button
                   type="button"
-                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
                   @click="addTransaction"
+                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
                 >
                   + Add Transaction
                 </button>
@@ -804,8 +616,8 @@
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeReconciliationModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -828,7 +640,6 @@
 import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
-import { formatCurrency } from '../../utils/formatters';
 
 const { success: showSuccess, error: showError } = useNotification();
 
@@ -893,9 +704,9 @@ const loadCashFlowSummary = async () => {
     if (dateRange.value.startDate) params.startDate = dateRange.value.startDate;
     if (dateRange.value.endDate) params.endDate = dateRange.value.endDate;
     const response = await api.get('/financial-management/cash-flow/summary', { params });
-    cashFlowSummary.value = response.data || {};
+    cashFlowSummary.value = response.data;
   } catch (error: any) {
-    // Error already handled by showError
+    console.error('Error loading cash flow summary:', error);
     await showError('Gagal memuat cash flow summary');
   }
 };
@@ -906,9 +717,9 @@ const loadExpensesByCategory = async () => {
     if (dateRange.value.startDate) params.startDate = dateRange.value.startDate;
     if (dateRange.value.endDate) params.endDate = dateRange.value.endDate;
     const response = await api.get('/financial-management/expenses/by-category', { params });
-    expensesByCategory.value = response.data || {};
+    expensesByCategory.value = response.data;
   } catch (error: any) {
-    // Error already handled by showError
+    console.error('Error loading expenses:', error);
   }
 };
 
@@ -917,10 +728,10 @@ const calculateTax = async () => {
     const response = await api.post('/financial-management/tax/calculate', {
       period: taxPeriod.value,
     });
-    taxCalculation.value = response.data || {};
+    taxCalculation.value = response.data;
     await showSuccess('Tax calculation berhasil');
   } catch (error: any) {
-    // Error already handled by showError
+    console.error('Error calculating tax:', error);
     await showError('Gagal menghitung tax');
   }
 };
@@ -930,30 +741,14 @@ const loadForecast = async () => {
     const response = await api.get('/financial-management/forecast', {
       params: { months: forecastMonths.value },
     });
-    forecast.value = response.data || {};
+    forecast.value = response.data;
   } catch (error: any) {
-    // Error already handled by showError
+    console.error('Error loading forecast:', error);
     await showError('Gagal memuat forecast');
   }
 };
 
 const saveCashFlow = async () => {
-  // Client-side validation
-  if (!cashFlowForm.value.type) {
-    await showError('Tipe cash flow wajib dipilih');
-    return;
-  }
-  
-  if (!cashFlowForm.value.amount || cashFlowForm.value.amount <= 0) {
-    await showError('Jumlah cash flow harus lebih dari 0');
-    return;
-  }
-  
-  if (!cashFlowForm.value.date) {
-    await showError('Tanggal cash flow wajib diisi');
-    return;
-  }
-  
   saving.value = true;
   try {
     await api.post('/financial-management/cash-flow', {
@@ -964,6 +759,7 @@ const saveCashFlow = async () => {
     closeCashFlowModal();
     await loadCashFlowSummary();
   } catch (error: any) {
+    console.error('Error saving cash flow:', error);
     await showError('Gagal menyimpan cash flow');
   } finally {
     saving.value = false;
@@ -971,27 +767,6 @@ const saveCashFlow = async () => {
 };
 
 const saveExpense = async () => {
-  // Client-side validation
-  if (!expenseForm.value.category || expenseForm.value.category.trim() === '') {
-    await showError('Kategori expense wajib diisi');
-    return;
-  }
-  
-  if (!expenseForm.value.amount || expenseForm.value.amount <= 0) {
-    await showError('Jumlah expense harus lebih dari 0');
-    return;
-  }
-  
-  if (!expenseForm.value.description || expenseForm.value.description.trim() === '') {
-    await showError('Deskripsi expense wajib diisi');
-    return;
-  }
-  
-  if (!expenseForm.value.date) {
-    await showError('Tanggal expense wajib diisi');
-    return;
-  }
-  
   saving.value = true;
   try {
     await api.post('/financial-management/expenses', {
@@ -1002,6 +777,7 @@ const saveExpense = async () => {
     closeExpenseModal();
     await loadExpensesByCategory();
   } catch (error: any) {
+    console.error('Error saving expense:', error);
     await showError('Gagal menyimpan expense');
   } finally {
     saving.value = false;
@@ -1009,22 +785,6 @@ const saveExpense = async () => {
 };
 
 const saveReconciliation = async () => {
-  // Client-side validation
-  if (!reconciliationForm.value.bankAccount || reconciliationForm.value.bankAccount.trim() === '') {
-    await showError('Akun bank wajib diisi');
-    return;
-  }
-  
-  if (!reconciliationForm.value.statementDate) {
-    await showError('Tanggal statement wajib diisi');
-    return;
-  }
-  
-  if (reconciliationForm.value.statementBalance === undefined || reconciliationForm.value.statementBalance === null) {
-    await showError('Saldo statement wajib diisi');
-    return;
-  }
-  
   saving.value = true;
   try {
     const data = {
@@ -1036,10 +796,11 @@ const saveReconciliation = async () => {
       })),
     };
     const response = await api.post('/financial-management/bank-reconciliation', data);
-    reconciliations.value.push(response.data || {});
+    reconciliations.value.push(response.data);
     await showSuccess('Bank reconciliation berhasil dibuat');
     closeReconciliationModal();
   } catch (error: any) {
+    console.error('Error saving reconciliation:', error);
     await showError('Gagal menyimpan reconciliation');
   } finally {
     saving.value = false;
@@ -1100,7 +861,9 @@ const closeReconciliationModal = () => {
   };
 };
 
-// formatCurrency is already imported from formatters utility above
+const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('id-ID').format(value);
+};
 
 onMounted(() => {
   loadCashFlowSummary();

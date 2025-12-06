@@ -2,7 +2,6 @@ import bcrypt from 'bcryptjs';
 import prisma from '../config/database';
 import { generateToken, TokenPayload } from '../utils/jwt';
 import { AppError } from '../middlewares/errorHandler';
-import logger from '../utils/logger';
 
 export interface LoginInput {
   email: string;
@@ -17,7 +16,7 @@ export const login = async (input: LoginInput) => {
   const password = input.password; // Already trimmed
   
   // Log for debugging
-  logger.debug('Login attempt', {
+  console.log('Login attempt:', {
     email,
     passwordLength: password.length,
   });
@@ -26,7 +25,7 @@ export const login = async (input: LoginInput) => {
   // Note: email can be duplicate across tenants, so prioritize SUPER_ADMIN
   // Email is already normalized to lowercase above
   // Use findMany with take: 1 to avoid prepared statement issues with pgbouncer
-  const users = await prisma.user.findMany({
+  let users = await prisma.user.findMany({
     where: { 
       email: email, // Already normalized to lowercase
       role: 'SUPER_ADMIN', // Try to find Super Admin first
@@ -38,7 +37,7 @@ export const login = async (input: LoginInput) => {
   });
 
   let user = users[0] || null;
-  logger.debug('Super Admin search result', { found: !!user, name: user?.name, role: user?.role });
+  console.log('Super Admin search result:', user ? `${user.name} (${user.role})` : 'Not found');
 
   // If no Super Admin found, find any user with this email (case-insensitive)
   if (!user) {
@@ -52,11 +51,11 @@ export const login = async (input: LoginInput) => {
       take: 1,
     });
     user = allUsers[0] || null;
-    logger.debug('Any user search result', { found: !!user, name: user?.name, role: user?.role });
+    console.log('Any user search result:', user ? `${user.name} (${user.role})` : 'Not found');
     
     // If user found but email case doesn't match, update to lowercase
     if (user && user.email !== email) {
-      logger.info('Normalizing email case', { oldEmail: user.email, newEmail: email });
+      console.log(`Normalizing email case: ${user.email} → ${email}`);
       await prisma.user.update({
         where: { id: user.id },
         data: { email: email },
@@ -67,17 +66,17 @@ export const login = async (input: LoginInput) => {
 
   // Check if user exists first
   if (!user) {
-    logger.warn('User not found for email', { email });
+    console.log('User not found for email:', email);
     throw new AppError('Akun tidak ditemukan. Silakan hubungi admin.', 401);
   }
   
   // Check if user is active
   if (!user.isActive) {
-    logger.warn('User is inactive', { email: user.email });
+    console.log('User is inactive:', user.email);
     throw new AppError('Akun tidak aktif. Silakan hubungi admin.', 401);
   }
 
-  logger.debug('User found', {
+  console.log('User found:', {
     name: user.name,
     role: user.role,
     email: user.email,
@@ -87,47 +86,48 @@ export const login = async (input: LoginInput) => {
 
   // Super Admin doesn't need active tenant validation
   if (user.role !== 'SUPER_ADMIN') {
-    logger.debug('Checking tenant for non-Super Admin user', {
-      tenantExists: !!user.tenant,
-      tenantActive: user.tenant?.isActive,
-    });
+    console.log('Checking tenant for non-Super Admin user...');
+    console.log('Tenant exists:', !!user.tenant);
+    console.log('Tenant active:', user.tenant?.isActive);
     
     if (!user.tenant) {
-      logger.error('Tenant not found for user', { email: user.email });
+      console.error('Tenant not found for user:', user.email);
       throw new AppError('Tenant not found', 403);
     }
     
     if (!user.tenant.isActive) {
-      logger.error('Tenant is inactive for user', { email: user.email });
+      console.error('Tenant is inactive for user:', user.email);
       throw new AppError('Tenant is inactive', 403);
     }
     
-    logger.debug('Tenant validation passed');
+    console.log('Tenant validation passed');
   } else {
     // Super Admin still needs a tenant (for schema requirement), but it can be inactive
     if (!user.tenant) {
-      logger.error('Tenant not found for Super Admin');
+      console.error('Tenant not found for Super Admin');
       throw new AppError('Tenant not found', 403);
     }
-    logger.debug('Super Admin - skipping tenant active check');
+    console.log('Super Admin - skipping tenant active check');
   }
 
   // Verify password
-  logger.debug('Verifying password');
+  console.log('Verifying password...');
   const isValidPassword = await bcrypt.compare(password, user.password);
-  logger.debug('Password comparison result', { isValid: isValidPassword });
+  console.log('Password comparison result:', isValidPassword);
   
   if (!isValidPassword) {
     // Log for debugging
-    logger.warn('Password comparison failed', {
+    console.error('Password comparison failed:', {
       email: user.email,
       role: user.role,
       passwordLength: password.length,
+      hashLength: user.password.length,
+      hashStart: user.password.substring(0, 20),
     });
     throw new AppError('Password salah', 401);
   }
   
-  logger.debug('Password verified successfully');
+  console.log('Password verified successfully');
 
   // Check store assignment for CASHIER, KITCHEN, and SUPERVISOR roles
   // These roles require an active store to login
@@ -167,7 +167,7 @@ export const login = async (input: LoginInput) => {
         );
       }
       
-      logger.debug('Store validation passed for CASHIER/KITCHEN', {
+      console.log('Store validation passed for CASHIER/KITCHEN:', {
         storeId: assignedStoreId,
         storeName: assignedStore.name,
         isActive: assignedStore.isActive,
@@ -208,7 +208,7 @@ export const login = async (input: LoginInput) => {
         );
       }
       
-      logger.debug('Store validation passed for SUPERVISOR', {
+      console.log('Store validation passed for SUPERVISOR:', {
         allowedStoreIds,
         activeStores: activeStores.map(s => ({ id: s.id, name: s.name })),
       });
@@ -225,7 +225,7 @@ export const login = async (input: LoginInput) => {
   const tenantId = user.tenantId || user.tenant?.id;
   
   if (!tenantId && user.role !== 'SUPER_ADMIN') {
-    logger.error('Tenant ID missing for non-Super Admin user', {
+    console.error('Tenant ID missing for non-Super Admin user:', {
       userId: user.id,
       role: user.role,
       email: user.email,
@@ -258,7 +258,7 @@ export const login = async (input: LoginInput) => {
     },
   };
   
-  logger.info('Login successful', {
+  console.log('Login successful:', {
     email: user.email,
     role: user.role,
     tenantName: user.tenant?.name,

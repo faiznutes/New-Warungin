@@ -11,30 +11,16 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          Laporan
-        </h2>
-        <p class="text-sm sm:text-base text-gray-600">
-          Analisis penjualan dan performa toko
-        </p>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Laporan</h2>
+        <p class="text-sm sm:text-base text-gray-600">Analisis penjualan dan performa toko</p>
       </div>
       <button
         v-if="canExportReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
-        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
         @click="showExportModal = true"
+        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
       >
-        <svg
-          class="w-4 h-4 sm:w-5 sm:h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
+        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         <span>Export Laporan</span>
       </button>
@@ -47,88 +33,66 @@
           <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Tipe Laporan</label>
           <select
             v-model="reportType"
-            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             @change="handleReportTypeChange"
+            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
-            <option value="sales">
-              Laporan Penjualan
-            </option>
-            <option value="financial">
-              Laporan Keuangan
-            </option>
+            <option value="sales">Laporan Penjualan</option>
+            <option value="financial">Laporan Keuangan</option>
           </select>
         </div>
         <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
           <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Jenis Laporan</label>
           <select
             v-model="reportViewType"
-            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             @change="handleReportViewTypeChange"
+            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
-            <option value="revenue">
-              Hanya Harga Jual
-            </option>
-            <option value="profit">
-              Dikurangi Harga Pokok (Untung)
-            </option>
+            <option value="full">Full (Harga Jual + Harga Pokok)</option>
+            <option value="revenue">Hanya Harga Jual</option>
+            <option value="profit">Dikurangi Harga Pokok (Untung)</option>
           </select>
         </div>
         <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
           <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Format Margin</label>
           <select
             v-model="marginDisplayFormat"
-            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             @change="saveMarginFormat"
+            class="w-full px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
-            <option value="percentage">
-              Persen (%)
-            </option>
-            <option value="amount">
-              Jumlah Uang
-            </option>
+            <option value="percentage">Persen (%)</option>
+            <option value="amount">Jumlah Uang</option>
           </select>
         </div>
         <div class="inline-block">
           <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Periode</label>
           <select
             v-model="period"
-            class="period-select pr-[15px] pl-2 sm:pl-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white"
             @change="setPeriod(period)"
+            class="period-select pr-[15px] pl-2 sm:pl-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white"
           >
-            <option value="daily">
-              Harian
-            </option>
-            <option value="weekly">
-              Mingguan
-            </option>
-            <option value="monthly">
-              Bulanan
-            </option>
-            <option value="all">
-              Semua
-            </option>
+            <option value="daily">Harian</option>
+            <option value="weekly">Mingguan</option>
+            <option value="monthly">Bulanan</option>
+            <option value="all">Semua</option>
           </select>
         </div>
-        <div
-          v-if="period !== 'all'"
-          class="w-auto sm:w-full sm:col-span-2 lg:col-span-1"
-        >
+        <div v-if="period !== 'all'" class="w-auto sm:w-full sm:col-span-2 lg:col-span-1">
           <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Rentang Tanggal</label>
           <div class="flex flex-col sm:flex-row gap-2 w-auto sm:w-full">
             <div class="w-auto sm:flex-1 min-w-[140px]">
               <input
                 v-model="dateRange.from"
                 type="date"
-                class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 @change="handleDateRangeChange"
+                class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div class="w-auto sm:flex-1 min-w-[140px]">
               <input
                 v-model="dateRange.to"
                 type="date"
-                class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
                 @change="handleDateRangeChange"
+                class="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -137,17 +101,12 @@
     </div>
 
     <!-- Analytics Section -->
-    <div
-      v-if="analyticsData && !loading"
-      class="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 mx-4 sm:mx-6"
-    >
+    <div v-if="analyticsData && !loading" class="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 mx-4 sm:mx-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
-          Analytics
-        </h3>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Analytics</h3>
         <button
-          class="text-sm text-primary-600 hover:text-primary-700 transition"
           @click="loadAnalytics"
+          class="text-sm text-primary-600 hover:text-primary-700 transition"
         >
           Refresh
         </button>
@@ -155,17 +114,13 @@
       
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-          <p class="text-xs sm:text-sm text-blue-700 mb-1">
-            Prediksi Bulan Depan
-          </p>
+          <p class="text-xs sm:text-sm text-blue-700 mb-1">Prediksi Bulan Depan</p>
           <p class="text-xl sm:text-2xl font-bold text-blue-900">
             {{ formatCurrency(analyticsData.predictions?.nextMonth || 0) }}
           </p>
         </div>
         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-          <p class="text-xs sm:text-sm text-green-700 mb-1">
-            Trend Penjualan
-          </p>
+          <p class="text-xs sm:text-sm text-green-700 mb-1">Trend Penjualan</p>
           <p 
             class="text-xl sm:text-2xl font-bold"
             :class="(analyticsData.predictions?.trend || 0) >= 0 ? 'text-green-900' : 'text-red-900'"
@@ -174,22 +129,15 @@
           </p>
         </div>
         <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-          <p class="text-xs sm:text-sm text-purple-700 mb-1">
-            Akurasi Prediksi
-          </p>
+          <p class="text-xs sm:text-sm text-purple-700 mb-1">Akurasi Prediksi</p>
           <p class="text-xl sm:text-2xl font-bold text-purple-900">
             {{ analyticsData.predictions?.accuracy || 0 }}%
           </p>
         </div>
       </div>
       
-      <div
-        v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0"
-        class="mt-4"
-      >
-        <h4 class="text-sm font-semibold text-gray-700 mb-2">
-          Produk Terlaris
-        </h4>
+      <div v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0" class="mt-4">
+        <h4 class="text-sm font-semibold text-gray-700 mb-2">Produk Terlaris</h4>
         <div class="space-y-2">
           <div
             v-for="(product, index) in analyticsData.topProducts.slice(0, 5)"
@@ -207,22 +155,14 @@
     </div>
 
     <!-- Report Content -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center">
         <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">
-          Memuat laporan...
-        </div>
+        <div class="text-gray-600 font-medium">Memuat laporan...</div>
       </div>
     </div>
 
-    <div
-      v-else-if="reportData || !loading"
-      class="space-y-4 sm:space-y-6"
-    >
+    <div v-else-if="reportData" class="space-y-4 sm:space-y-6">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mx-4 sm:mx-6">
         <div
@@ -231,14 +171,10 @@
           class="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200 hover:shadow-xl transition-shadow"
         >
           <div class="flex items-center justify-between mb-2">
-            <p class="text-xs sm:text-sm font-medium text-gray-600">
-              {{ stat.label }}
-            </p>
+            <p class="text-xs sm:text-sm font-medium text-gray-600">{{ stat.label }}</p>
             <span class="text-2xl">{{ stat.icon || '📊' }}</span>
           </div>
-          <p :class="['text-2xl sm:text-3xl font-bold', stat.color || 'text-gray-900']">
-            {{ stat.value }}
-          </p>
+          <p :class="['text-2xl sm:text-3xl font-bold', stat.color || 'text-gray-900']">{{ stat.value }}</p>
         </div>
       </div>
 
@@ -247,19 +183,21 @@
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
-                Detail Laporan
-              </h3>
+              <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Laporan</h3>
               <p class="text-xs sm:text-sm text-gray-600 mt-1">
                 Periode: {{ getPeriodLabel(period) }} 
-                <span v-if="period === 'monthly' && reportData?.byDate && reportData.byDate.length > 0">
-                  ({{ reportData.byDate[0]?.dateLabel || formatDate(dateRange.from) + ' - ' + formatDate(dateRange.to) }})
-                </span>
-                <span v-else-if="period !== 'all'">
+                <span v-if="period !== 'all'">
                   ({{ formatDate(dateRange.from) }} - {{ formatDate(dateRange.to) }})
                 </span>
               </p>
             </div>
+            <button
+              v-if="reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')"
+              @click="showProductDetails = !showProductDetails"
+              class="px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+            >
+              {{ showProductDetails ? 'Sembunyikan' : 'Tampilkan' }} Detail Produk
+            </button>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -276,185 +214,70 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <template
-                v-for="(row, index) in paginatedReportRows"
-                :key="index"
-              >
+              <template v-for="(row, index) in reportRows" :key="index">
                 <tr class="hover:bg-gray-50">
                   <td
                     v-for="(cell, cellIndex) in row"
                     :key="cellIndex"
                     class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900"
                   >
-                    <template v-if="reportType === 'sales' && cellIndex === row.length - 1 && typeof cell === 'number' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR')">
-                      <button
-                        class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition"
-                        title="Lihat Detail"
-                        @click="viewDateDetail(cell)"
-                      >
-                        <svg
-                          class="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                    {{ cell }}
+                  </td>
+                </tr>
+                <!-- Product Details Row (only for sales report and admin tenant) -->
+                <tr
+                  v-if="showProductDetails && reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') && productDetails[index]"
+                  class="bg-gray-50"
+                >
+                  <td :colspan="reportHeaders.length" class="px-4 sm:px-6 py-3">
+                    <div class="space-y-2">
+                      <h4 class="text-xs font-semibold text-gray-700 mb-2">Detail Produk:</h4>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div
+                          v-for="product in productDetails[index]"
+                          :key="product.id"
+                          class="bg-white p-3 rounded border border-gray-200 hover:border-primary-300 cursor-pointer"
+                          @click="showProductDetailModal(product)"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        </svg>
-                      </button>
-                    </template>
-                    <template v-else>
-                      {{ cell }}
-                    </template>
+                          <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs font-medium text-gray-900">{{ product.name }}</span>
+                            <span class="text-xs text-gray-500">x{{ product.quantity }}</span>
+                          </div>
+                          <div class="space-y-1 text-xs">
+                            <div class="flex justify-between">
+                              <span class="text-gray-600">Harga Jual:</span>
+                              <span class="font-medium text-gray-900">{{ formatCurrency(product.sellingPrice) }}</span>
+                            </div>
+                            <div
+                              v-if="product.cost && product.cost > 0"
+                              class="flex justify-between"
+                            >
+                              <span class="text-gray-600">Harga Pokok:</span>
+                              <span class="font-medium text-red-600">{{ formatCurrency(product.cost) }}</span>
+                            </div>
+                            <div
+                              v-if="product.cost && product.cost > 0"
+                              class="flex justify-between"
+                            >
+                              <span class="text-gray-600">Untung:</span>
+                              <span class="font-medium text-green-600">{{ formatCurrency(product.profit) }}</span>
+                            </div>
+                            <div
+                              v-if="product.cost && product.cost > 0"
+                              class="flex justify-between pt-1 border-t border-gray-200"
+                            >
+                              <span class="text-gray-600">Margin:</span>
+                              <span class="font-medium text-green-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               </template>
             </tbody>
           </table>
-        </div>
-        <!-- Pagination for daily period -->
-        <div
-          v-if="period === 'daily' && totalDailyPages > 1"
-          class="px-4 sm:px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3"
-        >
-          <div class="text-sm text-gray-600">
-            Halaman {{ dailyPage }} dari {{ totalDailyPages }}
-          </div>
-          <div class="flex gap-2">
-            <button
-              :disabled="dailyPage === 1"
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              @click="dailyPage = Math.max(1, dailyPage - 1)"
-            >
-              Sebelumnya
-            </button>
-            <button
-              :disabled="dailyPage === totalDailyPages"
-              class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              @click="dailyPage = Math.min(totalDailyPages, dailyPage + 1)"
-            >
-              Selanjutnya
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Date Detail Modal (Grouped Products) -->
-      <div
-        v-if="viewingDateDetail"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-        @click.self="viewingDateDetail = null"
-      >
-        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-          <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">
-                Detail Laporan
-              </h3>
-              <p class="text-sm text-gray-600 mt-1">
-                {{ viewingDateDetail?.dateLabel || formatDate(viewingDateDetail?.date) }}
-              </p>
-            </div>
-            <button
-              class="text-gray-400 hover:text-gray-600 transition"
-              @click="viewingDateDetail = null"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div class="flex-1 overflow-y-auto p-6">
-            <div
-              v-if="groupedProducts.length === 0"
-              class="text-center text-gray-500 py-8"
-            >
-              Tidak ada data produk
-            </div>
-            <div
-              v-else
-              class="space-y-4"
-            >
-              <div
-                v-for="group in groupedProducts"
-                :key="group.key"
-                class="bg-gray-50 rounded-lg p-4 border border-gray-200"
-              >
-                <div class="flex justify-between items-start mb-3">
-                  <div>
-                    <h4 class="text-base font-semibold text-gray-900">
-                      {{ group.name }}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1">
-                      Terjual {{ group.totalQuantity }} unit dalam {{ group.orderCount }} nota
-                      <span
-                        v-if="group.hasDiscount"
-                        class="ml-2 text-orange-600 font-medium"
-                      >(Dengan Diskon)</span>
-                    </p>
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span class="text-gray-600">Harga Jual:</span>
-                    <p class="font-semibold text-gray-900">
-                      {{ formatCurrency(group.totalSellingPrice) }}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                      {{ formatCurrency(group.unitPrice) }} / unit
-                    </p>
-                  </div>
-                  <div>
-                    <span class="text-gray-600">Harga Pokok:</span>
-                    <p class="font-semibold text-red-600">
-                      {{ formatCurrency(group.totalCost) }}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                      {{ formatCurrency(group.unitCost) }} / unit
-                    </p>
-                  </div>
-                  <div>
-                    <span class="text-gray-600">Untung:</span>
-                    <p
-                      class="font-semibold"
-                      :class="group.totalProfit >= 0 ? 'text-green-600' : 'text-red-600'"
-                    >
-                      {{ formatCurrency(group.totalProfit) }}
-                    </p>
-                  </div>
-                  <div>
-                    <span class="text-gray-600">Margin:</span>
-                    <p
-                      class="font-semibold"
-                      :class="parseFloat(group.margin) >= 0 ? 'text-green-600' : 'text-red-600'"
-                    >
-                      {{ group.margin }}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -466,85 +289,47 @@
       >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">
-              {{ selectedProductDetail.name }}
-            </h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ selectedProductDetail.name }}</h3>
             <button
-              class="text-gray-400 hover:text-gray-600"
               @click="selectedProductDetail = null"
+              class="text-gray-400 hover:text-gray-600"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           <div class="space-y-4">
             <div>
-              <p class="text-sm text-gray-600 mb-1">
-                Jumlah Terjual
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                {{ selectedProductDetail.quantity }} unit
-              </p>
+              <p class="text-sm text-gray-600 mb-1">Jumlah Terjual</p>
+              <p class="text-lg font-semibold text-gray-900">{{ selectedProductDetail.quantity }} unit</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600 mb-1">
-                Harga Jual per Unit
-              </p>
-              <p class="text-lg font-semibold text-primary-600">
-                {{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}
-              </p>
+              <p class="text-sm text-gray-600 mb-1">Harga Jual per Unit</p>
+              <p class="text-lg font-semibold text-primary-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
             </div>
             <div>
-              <p class="text-sm text-gray-600 mb-1">
-                Total Harga Jual
-              </p>
-              <p class="text-lg font-semibold text-gray-900">
-                {{ formatCurrency(selectedProductDetail.sellingPrice) }}
-              </p>
+              <p class="text-sm text-gray-600 mb-1">Total Harga Jual</p>
+              <p class="text-lg font-semibold text-gray-900">{{ formatCurrency(selectedProductDetail.sellingPrice) }}</p>
             </div>
             <div
               v-if="selectedProductDetail.cost && selectedProductDetail.cost > 0"
               class="border-t pt-4 space-y-3"
             >
               <div>
-                <p class="text-sm text-gray-600 mb-1">
-                  Harga Pokok per Unit
-                </p>
-                <p class="text-lg font-semibold text-red-600">
-                  {{ formatCurrency(selectedProductDetail.cost / selectedProductDetail.quantity) }}
-                </p>
+                <p class="text-sm text-gray-600 mb-1">Harga Pokok per Unit</p>
+                <p class="text-lg font-semibold text-red-600">{{ formatCurrency(selectedProductDetail.cost / selectedProductDetail.quantity) }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 mb-1">
-                  Total Harga Pokok
-                </p>
-                <p class="text-lg font-semibold text-red-600">
-                  {{ formatCurrency(selectedProductDetail.cost) }}
-                </p>
+                <p class="text-sm text-gray-600 mb-1">Total Harga Pokok</p>
+                <p class="text-lg font-semibold text-red-600">{{ formatCurrency(selectedProductDetail.cost) }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 mb-1">
-                  Total Untung
-                </p>
-                <p class="text-xl font-bold text-green-600">
-                  {{ formatCurrency(selectedProductDetail.profit) }}
-                </p>
+                <p class="text-sm text-gray-600 mb-1">Total Untung</p>
+                <p class="text-xl font-bold text-green-600">{{ formatCurrency(selectedProductDetail.profit) }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 mb-1">
-                  Margin
-                </p>
+                <p class="text-sm text-gray-600 mb-1">Margin</p>
                 <p class="text-xl font-bold text-green-600">
                   {{ formatProductMargin(
                     selectedProductDetail.sellingPrice,
@@ -558,59 +343,25 @@
               v-else
               class="border-t pt-4"
             >
-              <p class="text-sm text-gray-500 italic">
-                Tidak ada data harga pokok untuk produk ini
-              </p>
+              <p class="text-sm text-gray-500 italic">Tidak ada data harga pokok untuk produk ini</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div
-      v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
+    <div v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
-      <p class="text-gray-500">
-        Memuat laporan...
-      </p>
+      <p class="text-gray-500">Memuat laporan...</p>
     </div>
-    <div
-      v-else
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-        />
+    <div v-else class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
-      <p class="text-gray-500 font-semibold">
-        Akses Ditolak
-      </p>
-      <p class="text-gray-400 text-sm mt-2">
-        Anda tidak memiliki izin untuk melihat laporan
-      </p>
+      <p class="text-gray-500 font-semibold">Akses Ditolak</p>
+      <p class="text-gray-400 text-sm mt-2">Anda tidak memiliki izin untuk melihat laporan</p>
     </div>
 
     <!-- Export Modal -->
@@ -647,37 +398,26 @@ const analyticsData = ref<any>(null);
 const reportType = ref('sales');
 const period = ref('all');
 const showExportModal = ref(false);
-const reportViewType = ref('revenue'); // 'revenue', 'profit'
+const reportViewType = ref('full'); // 'full', 'revenue', 'profit'
 const showProductDetails = ref(false);
 const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
-const viewingDateDetail = ref<any>(null);
-const groupedProducts = ref<any[]>([]);
-// Pagination for daily period
-const dailyPage = ref(1);
-const dailyItemsPerPage = 10;
 
 // Margin display format (percentage or amount)
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
   (localStorage.getItem('marginDisplayFormat') as 'percentage' | 'amount') || 'percentage'
 );
 
-// Set default date range: bulan ini (tanggal 1 sampai akhir bulan)
+// Set default date range: 2 weeks back and 2 weeks forward
 const now = new Date();
-const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of month
-
-// Format to YYYY-MM-DD for date input (HTML5 date input format)
-const formatDateForInput = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+const twoWeeksBack = new Date(now);
+twoWeeksBack.setDate(now.getDate() - 14); // 2 weeks back
+const twoWeeksForward = new Date(now);
+twoWeeksForward.setDate(now.getDate() + 14); // 2 weeks forward
 
 const dateRange = ref({
-  from: formatDateForInput(startOfMonth),
-  to: formatDateForInput(endOfMonth),
+  from: twoWeeksBack.toISOString().split('T')[0],
+  to: twoWeeksForward.toISOString().split('T')[0],
 });
 
 const setPeriod = (p: string) => {
@@ -701,8 +441,6 @@ const handleReportViewTypeChange = () => {
 };
 
 const handlePeriodChange = () => {
-  // Reset pagination when period changes
-  dailyPage.value = 1;
   if (loadReportTimeout) clearTimeout(loadReportTimeout);
   loadReportTimeout = setTimeout(() => {
     loadReport();
@@ -720,40 +458,20 @@ const summaryStats = computed(() => {
   if (!reportData.value) return [];
   
   switch (reportType.value) {
-    case 'sales': {
-      // Calculate total revenue based on reportViewType
-      let totalRevenue = reportData.value.summary?.totalRevenue || 0;
-      let totalCostOfGoods = 0;
-      
-      // Calculate total cost of goods from byDate
-      if (reportData.value?.byDate && Array.isArray(reportData.value.byDate)) {
-        totalCostOfGoods = reportData.value.byDate.reduce((sum: number, item: any) => {
-          return sum + (item?.costOfGoods || 0);
-        }, 0);
-      }
-      
-        // Apply filter
-        if (reportViewType.value === 'profit') {
-          // Harga jual dikurangi harga pokok (untung)
-          totalRevenue = totalRevenue - totalCostOfGoods;
-        }
-        // revenue: tetap harga jual saja
-      
+    case 'sales':
       return [
-        { label: 'Total Pendapatan', value: formatCurrency(totalRevenue), icon: '💰', color: 'text-green-600' },
+        { label: 'Total Pendapatan', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-green-600' },
         { label: 'Total Pesanan', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
-        { label: 'Rata-rata per Pesanan', value: formatCurrency(totalRevenue / (reportData.value.summary?.totalOrders || 1)), icon: '📊', color: 'text-purple-600' },
+        { label: 'Rata-rata per Pesanan', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
         { label: 'Total Item Terjual', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
       ];
-    }
-    case 'financial': {
+    case 'financial':
       return [
         { label: 'Pendapatan', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-green-600' },
         { label: 'Biaya Pokok', value: formatCurrency(reportData.value.costOfGoods || 0), icon: '💸', color: 'text-red-600' },
         { label: 'Laba Kotor', value: formatCurrency(reportData.value.grossProfit || 0), icon: '📈', color: 'text-blue-600' },
         { label: 'Margin Laba', value: `${reportData.value.profitMargin?.toFixed(2) || 0}%`, icon: '📊', color: 'text-purple-600' },
       ];
-    }
     default:
       return [];
   }
@@ -762,7 +480,7 @@ const summaryStats = computed(() => {
 const reportHeaders = computed(() => {
   switch (reportType.value) {
     case 'sales':
-      return ['Tanggal', 'Total Pendapatan', 'Jumlah Transaksi', 'Rata-rata per Transaksi', 'Aksi'];
+      return ['Tanggal', 'Total Pendapatan', 'Jumlah Transaksi', 'Rata-rata per Transaksi'];
     case 'financial':
       return ['Tanggal', 'Pendapatan', 'Biaya Pokok', 'Laba Kotor', 'Margin Laba'];
     default:
@@ -770,54 +488,21 @@ const reportHeaders = computed(() => {
   }
 });
 
-// Paginated report rows for daily period
-const paginatedReportRows = computed(() => {
-  if (!reportData.value || !reportData.value.byDate) return [];
-  
-  const allRows = reportRows.value;
-  
-  // Only paginate for daily period
-  if (period.value === 'daily') {
-    const start = (dailyPage.value - 1) * dailyItemsPerPage;
-    const end = start + dailyItemsPerPage;
-    return allRows.slice(start, end);
-  }
-  
-  return allRows;
-});
-
-const totalDailyPages = computed(() => {
-  if (period.value !== 'daily' || !reportData.value?.byDate) return 1;
-  return Math.ceil((reportData.value.byDate.length || 0) / dailyItemsPerPage);
-});
-
 const reportRows = computed(() => {
   if (!reportData.value) return [];
   
   switch (reportType.value) {
-    case 'sales': {
+    case 'sales':
       const salesRows = reportData.value.byDate?.map((item: any, index: number) => {
         // Calculate revenue based on reportViewType
         let revenue = item.revenue || 0;
         let costOfGoods = 0;
         
-        // Calculate cost of goods from orders if available (more accurate)
-        if (item?.orders && Array.isArray(item.orders)) {
-          costOfGoods = item.orders.reduce((sum: number, order: any) => {
-            if (order?.items && Array.isArray(order.items)) {
-              return sum + order.items.reduce((itemSum: number, orderItem: any) => {
-                const cost = Number(orderItem?.cost || orderItem?.product?.cost || 0);
-                const quantity = Number(orderItem?.quantity || 0);
-                return itemSum + (cost * quantity);
-              }, 0);
-            }
-            return sum;
-          }, 0);
-        } else if (item?.costOfGoods) {
+        // Calculate cost of goods from products if available
+        if (item.products && Array.isArray(item.products)) {
+          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p.cost || 0), 0);
+        } else if (item.costOfGoods) {
           costOfGoods = item.costOfGoods;
-        } else if (item?.products && Array.isArray(item.products)) {
-          // Fallback to products if orders not available
-          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p?.cost || 0), 0);
         }
         
         // Apply filter
@@ -827,6 +512,9 @@ const reportRows = computed(() => {
         } else if (reportViewType.value === 'profit') {
           // Harga jual dikurangi harga pokok (untung)
           revenue = (item.revenue || 0) - costOfGoods;
+        } else {
+          // Full: tetap revenue asli
+          revenue = item.revenue || 0;
         }
         
         // Store product details for this row (sudah diproses di loadReport)
@@ -834,20 +522,15 @@ const reportRows = computed(() => {
           productDetails.value[index] = item.products;
         }
         
-        // Use dateLabel from backend if available, otherwise format date
-        const displayDate = item.dateLabel || formatDate(item.date);
-        
         return [
-          displayDate,
+          formatDate(item.date),
           formatCurrency(revenue),
           item.count || 0,
           formatCurrency(revenue / (item.count || 1)),
-          index, // Store index for detail view
         ];
       }) || [];
       return salesRows;
-      }
-    case 'financial': {
+    case 'financial':
       // If byDate exists, use it; otherwise show summary
       if (reportData.value.byDate && reportData.value.byDate.length > 0) {
         return reportData.value.byDate.map((item: any) => {
@@ -869,7 +552,6 @@ const reportRows = computed(() => {
             formatCurrency(costOfGoods),
             formatCurrency(grossProfit),
             `${(item.profitMargin || reportData.value.profitMargin || 0).toFixed(2)}%`,
-            null, // No action column for financial report
           ];
         });
       } else {
@@ -893,7 +575,6 @@ const reportRows = computed(() => {
           formatCurrency(grossProfit),
           `${(reportData.value.profitMargin || 0).toFixed(2)}%`,
         ]];
-      }
       }
     default:
       return [];
@@ -919,77 +600,6 @@ const showProductDetailModal = (product: any) => {
   selectedProductDetail.value = product;
 };
 
-const viewDateDetail = (dateIndex: number) => {
-  if (!reportData.value?.byDate || !reportData.value.byDate[dateIndex]) {
-    return;
-  }
-  
-  const dateItem = reportData.value.byDate[dateIndex];
-  viewingDateDetail.value = dateItem;
-  
-  // Group products by productId and discount status
-  const productGroups: Record<string, any> = {};
-  
-  if (dateItem?.orders && Array.isArray(dateItem.orders)) {
-    dateItem.orders.forEach((order: any) => {
-      const hasDiscount = order?.discount && Number(order.discount) > 0;
-      
-      if (order?.items && Array.isArray(order.items)) {
-        order.items.forEach((orderItem: any) => {
-          const productId = orderItem?.productId || orderItem?.product?.id;
-          const productName = orderItem?.product?.name || 'Unknown';
-          const price = Number(orderItem?.price || 0);
-          const quantity = Number(orderItem?.quantity || 0);
-          const cost = Number(orderItem?.cost || orderItem?.product?.cost || 0);
-          
-          // Create unique key: productId + discount status
-          const groupKey = `${productId}-${hasDiscount ? 'discount' : 'nodiscount'}`;
-          
-          if (!productGroups[groupKey]) {
-            productGroups[groupKey] = {
-              key: groupKey,
-              productId,
-              name: productName,
-              hasDiscount,
-              totalQuantity: 0,
-              totalSellingPrice: 0,
-              totalCost: 0,
-              orderCount: 0,
-              orderIds: new Set(),
-            };
-          }
-          
-          const group = productGroups[groupKey];
-          group.totalQuantity += quantity;
-          group.totalSellingPrice += price * quantity;
-          group.totalCost += cost * quantity;
-          if (order?.id && !group.orderIds.has(order.id)) {
-            group.orderIds.add(order.id);
-            group.orderCount++;
-          }
-        });
-      }
-    });
-  }
-  
-  // Convert to array and calculate derived values
-  groupedProducts.value = Object.values(productGroups).map((group: any) => {
-    const unitPrice = group.totalQuantity > 0 ? group.totalSellingPrice / group.totalQuantity : 0;
-    const unitCost = group.totalQuantity > 0 ? group.totalCost / group.totalQuantity : 0;
-    const totalProfit = group.totalSellingPrice - group.totalCost;
-    const margin = group.totalSellingPrice > 0 ? ((totalProfit / group.totalSellingPrice) * 100).toFixed(2) : '0.00';
-    
-    return {
-      ...group,
-      unitPrice,
-      unitCost,
-      totalProfit,
-      margin,
-      orderIds: undefined, // Remove Set from output
-    };
-  });
-};
-
 const loadReport = async () => {
   loading.value = true;
   productDetails.value = {}; // Reset product details
@@ -1005,28 +615,8 @@ const loadReport = async () => {
       params.endDate = dateRange.value.to;
     }
 
-    const reportResponse = await api.get('/reports/tenant', { params }).catch((error: any) => {
-      return { data: null };
-    });
-    
+    const reportResponse = await api.get('/reports/tenant', { params }).catch(() => ({ data: null }));
     reportData.value = reportResponse.data;
-    
-    // Ensure reportData has proper structure even if empty
-    
-    // Ensure reportData has proper structure even if empty
-    if (!reportData.value) {
-      reportData.value = {
-        summary: {
-          totalRevenue: 0,
-          totalOrders: 0,
-          totalItems: 0,
-          averageOrderValue: 0,
-        },
-        byDate: [],
-        orders: [],
-        transactions: [],
-      };
-    }
     
     // Process product details if available - pisah 1 per 1 (tidak digabung)
     if (reportData.value?.byDate && Array.isArray(reportData.value.byDate)) {
@@ -1069,23 +659,9 @@ const loadReport = async () => {
     
     // Don't load analytics here to prevent rate limiting - it's called separately
   } catch (error: any) {
-    if (error.response?.status !== 401 && error.response?.status !== 403 && error.response?.status !== 429) {
-      const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat laporan';
-      await showError(errorMessage);
-    }
-    // Set default empty structure on error
-    if (!reportData.value) {
-      reportData.value = {
-        summary: {
-          totalRevenue: 0,
-          totalOrders: 0,
-          totalItems: 0,
-          averageOrderValue: 0,
-        },
-        byDate: [],
-        orders: [],
-        transactions: [],
-      };
+    console.error('Error loading report:', error);
+    if (error.response?.status !== 401 && error.response?.status !== 403) {
+      await showError('Gagal memuat laporan');
     }
   } finally {
     loading.value = false;
@@ -1104,6 +680,7 @@ const loadAnalytics = async () => {
       topProducts: topProductsRes.data || [],
     };
   } catch (error: any) {
+    console.error('Error loading analytics:', error);
     // Don't show error, just set to null
     analyticsData.value = null;
   }

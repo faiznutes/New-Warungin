@@ -164,7 +164,7 @@ class AdvancedReportingService {
         data = orders;
         summary = {
           totalOrders: orders.length,
-          totalRevenue: orders.reduce((sum, o) => sum + Number(o.total), 0),
+          totalRevenue: orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
         };
       } else if (template.type === 'INVENTORY') {
         const products = await prisma.product.findMany({ where: { tenantId } });
@@ -256,7 +256,7 @@ class AdvancedReportingService {
         recipients: saved.recipients,
         format: saved.format as any,
         isActive: saved.isActive,
-        nextRunAt: saved.nextRunAt || undefined,
+        nextRunAt: saved.nextRunAt,
         lastRunAt: saved.lastRunAt || undefined,
       };
     } catch (error: any) {
@@ -283,7 +283,7 @@ class AdvancedReportingService {
         }
         break;
 
-      case 'WEEKLY': {
+      case 'WEEKLY':
         const dayOfWeek = scheduleConfig?.dayOfWeek ?? 1; // Monday
         const daysUntilNext = (dayOfWeek - now.getDay() + 7) % 7 || 7;
         nextRun.setDate(now.getDate() + daysUntilNext);
@@ -294,9 +294,8 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
-      }
 
-      case 'MONTHLY': {
+      case 'MONTHLY':
         const dayOfMonth = scheduleConfig?.dayOfMonth ?? 1;
         nextRun.setMonth(now.getMonth() + 1);
         nextRun.setDate(dayOfMonth);
@@ -307,7 +306,6 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
-      }
 
       case 'CUSTOM':
         // For custom cron expressions, would need a cron parser
@@ -405,7 +403,7 @@ class AdvancedReportingService {
           );
 
           // Export report in requested format
-          const exportedReport = await this.exportReport(reportData, scheduledReport.format as 'PDF' | 'EXCEL' | 'CSV' | 'HTML');
+          const exportedReport = await this.exportReport(reportData, scheduledReport.format);
 
           // Send via email
           for (const recipient of scheduledReport.recipients) {
@@ -413,7 +411,8 @@ class AdvancedReportingService {
               await sendEmail(
                 recipient,
                 'Scheduled Report',
-                'Please find your scheduled report attached. Format: ' + scheduledReport.format
+                'Please find your scheduled report attached.',
+                exportedReport
               );
             } catch (emailError) {
               logger.error(`Failed to send report to ${recipient}:`, emailError);
@@ -514,7 +513,7 @@ class AdvancedReportingService {
             tenantId,
             userId: userId || null,
           },
-        } as any,
+        },
       });
 
       if (settings) {
@@ -550,7 +549,7 @@ class AdvancedReportingService {
             tenantId,
             userId: userId || null,
           },
-        } as any,
+        },
         create: {
           tenantId,
           userId: userId || null,
@@ -566,47 +565,6 @@ class AdvancedReportingService {
       logger.info('Dashboard settings saved:', settings);
     } catch (error: any) {
       logger.error('Error saving dashboard settings:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Add digital signature to report
-   */
-  async addDigitalSignature(
-    tenantId: string,
-    data: {
-      reportId: string;
-      signature: string; // Base64 encoded signature image
-      signerName: string;
-      signerTitle?: string;
-      position?: 'HEADER' | 'FOOTER';
-    }
-  ): Promise<any> {
-    try {
-      // In a real implementation, this would:
-      // 1. Retrieve the report
-      // 2. Add the signature image to the report
-      // 3. Save the signed report
-      // 4. Return the signed report data
-
-      logger.info('Adding digital signature to report', {
-        tenantId,
-        reportId: data.reportId,
-        signerName: data.signerName,
-      });
-
-      // For now, return a mock response
-      return {
-        id: data.reportId,
-        signedAt: new Date(),
-        signerName: data.signerName,
-        signerTitle: data.signerTitle,
-        position: data.position || 'FOOTER',
-        hasSignature: true,
-      };
-    } catch (error: any) {
-      logger.error('Error adding digital signature:', error);
       throw error;
     }
   }

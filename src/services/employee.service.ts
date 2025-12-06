@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Employee } from '@prisma/client';
 import prisma from '../config/database';
+import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import { sanitizeString, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 export interface CreateEmployeeInput {
   name: string;
@@ -56,19 +56,19 @@ export class EmployeeService {
     };
   }
 
-  async getEmployeeById(id: string, tenantId: string) {
+  async getEmployeeById(id: string, tenantId: string): Promise<Employee | null> {
     return prisma.employee.findFirst({
       where: { id, tenantId },
     });
   }
 
-  async getEmployeeByEmail(email: string, tenantId: string) {
+  async getEmployeeByEmail(email: string, tenantId: string): Promise<Employee | null> {
     return prisma.employee.findFirst({
       where: { email, tenantId },
     });
   }
 
-  async createEmployee(data: CreateEmployeeInput, tenantId: string) {
+  async createEmployee(data: CreateEmployeeInput, tenantId: string): Promise<Employee> {
     // Check if email already exists for this tenant
     const existing = await prisma.employee.findFirst({
       where: { email: data.email, tenantId },
@@ -80,10 +80,7 @@ export class EmployeeService {
 
     const employee = await prisma.employee.create({
       data: {
-        name: sanitizeString(data.name, 255),
-        email: sanitizeEmail(data.email),
-        phone: data.phone ? sanitizePhone(data.phone) : undefined,
-        position: sanitizeString(data.position, 255),
+        ...data,
         tenantId,
       },
     });
@@ -93,7 +90,7 @@ export class EmployeeService {
     return employee;
   }
 
-  async updateEmployee(id: string, data: UpdateEmployeeInput, tenantId: string) {
+  async updateEmployee(id: string, data: UpdateEmployeeInput, tenantId: string): Promise<Employee> {
     const employee = await this.getEmployeeById(id, tenantId);
     if (!employee) {
       throw new Error('Employee not found');
@@ -107,16 +104,9 @@ export class EmployeeService {
       }
     }
 
-    const updateData: any = {};
-    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
-    if (data.email !== undefined) updateData.email = sanitizeEmail(data.email);
-    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
-    if (data.position !== undefined) updateData.position = sanitizeString(data.position, 255);
-    if (data.isActive !== undefined) updateData.isActive = data.isActive;
-
     const updatedEmployee = await prisma.employee.update({
       where: { id },
-      data: updateData,
+      data,
     });
 
     logger.info(`Employee updated: ${updatedEmployee.id} for tenant: ${tenantId}`);

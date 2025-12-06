@@ -1,25 +1,13 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        Pesanan Tenant
-      </h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Pesanan Tenant</h3>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg
-                class="h-5 w-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <input
@@ -34,102 +22,49 @@
           v-model="filters.status"
           class="px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white"
         >
-          <option value="">
-            Semua Status
-          </option>
-          <option value="PENDING">
-            Pending
-          </option>
-          <option value="PROCESSING">
-            Processing
-          </option>
-          <option value="COMPLETED">
-            Completed
-          </option>
-          <option value="CANCELLED">
-            Cancelled
-          </option>
+          <option value="">Semua Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
         </select>
       </div>
     </div>
 
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div
-      v-else-if="filteredOrders.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-        />
+    <div v-else-if="filteredOrders.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada pesanan
-      </p>
+      <p class="text-gray-500">Belum ada pesanan</p>
     </div>
 
-    <div
-      v-else
-      class="bg-white rounded-lg shadow-sm overflow-hidden"
-    >
+    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nomor Pesanan
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pelanggan
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tanggal
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor Pesanan</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelanggan</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="order in filteredOrders"
-              :key="order.id"
-              class="hover:bg-gray-50"
-            >
+            <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ order.orderNumber }}
-                </div>
+                <div class="text-sm font-medium text-gray-900">{{ order.orderNumber }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ order.customerName || 'Pelanggan Umum' }}
-                </div>
+                <div class="text-sm text-gray-900">{{ order.customerName || 'Pelanggan Umum' }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ formatCurrency(order.total) }}
-                </div>
+                <div class="text-sm font-medium text-gray-900">{{ formatCurrency(order.total) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -145,29 +80,29 @@
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end gap-2">
                   <button
-                    class="text-primary-600 hover:text-primary-900"
                     @click="viewOrder(order)"
+                    class="text-primary-600 hover:text-primary-900"
                   >
                     Detail
                   </button>
                   <button
                     v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
-                    class="text-blue-600 hover:text-blue-900"
                     @click="editOrder(order)"
+                    class="text-blue-600 hover:text-blue-900"
                   >
                     Edit
                   </button>
                   <button
                     v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
-                    class="text-yellow-600 hover:text-yellow-900"
                     @click="updateOrderStatus(order.id, 'CANCELLED')"
+                    class="text-yellow-600 hover:text-yellow-900"
                   >
                     Batalkan
                   </button>
                   <button
                     v-if="order.status === 'COMPLETED' || order.status === 'CANCELLED'"
-                    class="text-red-600 hover:text-red-900"
                     @click="deleteOrder(order.id)"
+                    class="text-red-600 hover:text-red-900"
                   >
                     Hapus
                   </button>
@@ -239,7 +174,7 @@ const loadOrders = async () => {
         },
       });
       
-      const pageData = response.data?.data || response.data || [];
+      const pageData = response.data.data || response.data;
       if (Array.isArray(pageData)) {
         allOrders = [...allOrders, ...pageData];
       } else if (Array.isArray(response.data)) {
@@ -247,7 +182,7 @@ const loadOrders = async () => {
       }
       
       // Check if there are more pages
-      const pagination = response.data?.pagination;
+      const pagination = response.data.pagination;
       if (pagination) {
         hasMore = page < pagination.totalPages;
         page++;
@@ -258,6 +193,7 @@ const loadOrders = async () => {
     
     orders.value = allOrders;
   } catch (err: any) {
+    console.error('Error loading orders:', err);
     error('Gagal memuat pesanan', 'Terjadi Kesalahan');
   } finally {
     loading.value = false;
@@ -267,9 +203,9 @@ const loadOrders = async () => {
 const viewOrder = async (order: any) => {
   try {
     const response = await api.get(`/orders/${order.id}`);
-    const fullOrder = response.data || {};
+    const fullOrder = response.data;
     // Show order details in a simple alert for now
-    const items = (fullOrder?.items || []).map((item: any) => 
+    const items = fullOrder.items?.map((item: any) => 
       `${item.product?.name || item.productName} x${item.quantity}`
     ).join('\n') || 'Tidak ada item';
     
@@ -282,6 +218,7 @@ const viewOrder = async (order: any) => {
     // Show order details in info notification
     await showInfo(message);
   } catch (err: any) {
+    console.error('Error loading order details:', err);
     await showError('Gagal memuat detail pesanan');
   }
 };
@@ -299,6 +236,7 @@ const updateOrder = async (orderId: string, data: any) => {
     showEditModal.value = false;
     editingOrder.value = null;
   } catch (err: any) {
+    console.error('Error updating order:', err);
     error(err.response?.data?.message || 'Gagal mengupdate pesanan', 'Terjadi Kesalahan');
   }
 };
@@ -319,6 +257,7 @@ const updateOrderStatus = async (orderId: string, status: string) => {
     await loadOrders();
     success(`Status pesanan berhasil diubah menjadi "${statusLabel}"`, 'Berhasil');
   } catch (err: any) {
+    console.error('Error updating order status:', err);
     error(err.response?.data?.message || 'Gagal mengupdate status pesanan', 'Terjadi Kesalahan');
   }
 };
@@ -340,6 +279,7 @@ const deleteOrder = async (orderId: string) => {
     await loadOrders();
     success('Pesanan berhasil dibatalkan', 'Berhasil');
   } catch (err: any) {
+    console.error('Error deleting order:', err);
     error(err.response?.data?.message || 'Gagal menghapus pesanan', 'Terjadi Kesalahan');
   }
 };
@@ -364,34 +304,20 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
-// formatDateTime is already imported from formatters utility above
+const formatDateTime = (date: string) => {
+  return new Date(date).toLocaleString('id-ID');
+};
 
-// Watch for tenantId changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
-
-onMounted(async () => {
-  await nextTick();
-  
-  // Initial load if tenantId is provided
-  if (props.tenantId) {
-    localStorage.setItem('selectedTenantId', props.tenantId);
+watch(() => props.tenantId, (newTenantId, oldTenantId) => {
+  // Only reload if tenantId actually changed
+  if (newTenantId && newTenantId !== oldTenantId) {
+    // Ensure tenantId is set in localStorage for API interceptor
+    localStorage.setItem('selectedTenantId', newTenantId);
+    // Small delay to ensure localStorage is updated
     setTimeout(() => {
       loadOrders();
     }, 100);
   }
-  
-  // Watch for tenantId changes after mount
-  watch(() => props.tenantId, (newTenantId, oldTenantId) => {
-    // Only reload if tenantId actually changed
-    if (newTenantId && newTenantId !== oldTenantId) {
-      // Ensure tenantId is set in localStorage for API interceptor
-      localStorage.setItem('selectedTenantId', newTenantId);
-      // Small delay to ensure localStorage is updated
-      setTimeout(() => {
-        loadOrders();
-      }, 100);
-    }
-  });
-});
+}, { immediate: true });
 </script>
 

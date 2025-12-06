@@ -1,23 +1,10 @@
 import prisma from '../config/database';
-import logger from '../utils/logger';
-import CacheService from '../utils/cache';
 
 /**
  * Calculate total remaining time from all active subscriptions (basic, boost, max)
  * Returns the latest endDate from all active subscriptions
- * Uses caching to improve performance (TTL: 60 seconds)
  */
-export async function getTotalRemainingSubscriptionTime(tenantId: string, useCache: boolean = true): Promise<Date | null> {
-  const cacheKey = `subscription:remaining-time:${tenantId}`;
-  
-  // Try to get from cache first
-  if (useCache) {
-    const cached = await CacheService.get<{ endDate: string | null }>(cacheKey);
-    if (cached !== null) {
-      return cached.endDate ? new Date(cached.endDate) : null;
-    }
-  }
-  
+export async function getTotalRemainingSubscriptionTime(tenantId: string): Promise<Date | null> {
   const now = new Date();
   
   // Get all subscriptions that are still active (not expired)
@@ -55,13 +42,6 @@ export async function getTotalRemainingSubscriptionTime(tenantId: string, useCac
     if (!latestEndDate || tenant.subscriptionEnd > latestEndDate) {
       latestEndDate = tenant.subscriptionEnd;
     }
-  }
-
-  // Cache the result (60 seconds TTL - shorter than product cache because subscription can change more frequently)
-  if (useCache) {
-    await CacheService.set(cacheKey, { 
-      endDate: latestEndDate ? latestEndDate.toISOString() : null 
-    }, 60);
   }
 
   return latestEndDate;
@@ -133,7 +113,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
         },
       });
       
-      logger.info('Deactivated CASHIER, KITCHEN, SUPERVISOR users due to expired subscription', { tenantId });
+      console.log(`✅ Deactivated CASHIER, KITCHEN, SUPERVISOR users for tenant ${tenantId} due to expired subscription (ADMIN_TENANT excluded)`);
     } else {
       // Activate CASHIER, KITCHEN, SUPERVISOR users if subscription is active
       // ADMIN_TENANT can be activated manually by SUPER_ADMIN
@@ -150,7 +130,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
         },
       });
       
-      logger.info('Activated CASHIER, KITCHEN, SUPERVISOR users due to active subscription', { tenantId });
+      console.log(`✅ Activated CASHIER, KITCHEN, SUPERVISOR users for tenant ${tenantId} due to active subscription`);
     }
 
     return {
@@ -159,7 +139,7 @@ export async function updateUserStatusBasedOnSubscription(tenantId: string) {
       usersUpdated: users.length,
     };
   } catch (error: any) {
-      logger.error('Error updating user status for tenant', { tenantId, error: error.message });
+    console.error(`Error updating user status for tenant ${tenantId}:`, error);
     throw error;
   }
 }
@@ -188,7 +168,7 @@ export async function checkAndUpdateAllTenantsUserStatus() {
     const successful = results.filter(r => r.status === 'fulfilled').length;
     const failed = results.filter(r => r.status === 'rejected').length;
 
-    logger.info('Updated user status for all tenants', { successful, failed, total: results.length });
+    console.log(`✅ Updated user status for ${successful} tenants, ${failed} failed`);
 
     return {
       total: tenants.length,
@@ -196,7 +176,7 @@ export async function checkAndUpdateAllTenantsUserStatus() {
       failed,
     };
   } catch (error: any) {
-      logger.error('Error checking and updating all tenants user status', { error: error.message });
+    console.error('Error checking and updating all tenants user status:', error);
     throw error;
   }
 }

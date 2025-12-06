@@ -3,29 +3,15 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">
-          Pemasok
-        </h2>
-        <p class="text-gray-600">
-          Kelola pemasok untuk pesanan pembelian
-        </p>
+        <h2 class="text-2xl font-bold text-gray-900">Suppliers</h2>
+        <p class="text-gray-600">Kelola supplier untuk purchase order</p>
       </div>
       <button
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
         @click="showCreateModal = true"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span>Tambah Supplier</span>
       </button>
@@ -36,118 +22,58 @@
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Cari pemasok..."
+        placeholder="Search suppliers..."
         class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         @input="loadSuppliers"
       />
       <select
         v-model="isActiveFilter"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
         @change="loadSuppliers"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
       >
-        <option value="">
-          Semua Status
-        </option>
-        <option value="true">
-          Aktif
-        </option>
-        <option value="false">
-          Tidak Aktif
-        </option>
+        <option value="">All Status</option>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
       </select>
     </div>
 
     <!-- Loading -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
-    <div
-      v-else-if="!suppliers || suppliers.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-        />
+    <div v-else-if="suppliers.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada supplier
-      </p>
+      <p class="text-gray-500">Belum ada supplier</p>
     </div>
 
     <!-- Suppliers Table -->
-    <div
-      v-else
-      class="bg-white rounded-lg shadow-lg overflow-hidden"
-    >
+    <div v-else class="bg-white rounded-lg shadow-lg overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Contact
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Address
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr
-            v-for="supplier in suppliers"
-            :key="supplier.id"
-            class="hover:bg-gray-50"
-          >
+          <tr v-for="supplier in suppliers" :key="supplier.id" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900">
-                {{ supplier.name }}
-              </div>
-              <div
-                v-if="supplier.contactPerson"
-                class="text-xs text-gray-500"
-              >
-                {{ supplier.contactPerson }}
-              </div>
+              <div class="text-sm font-medium text-gray-900">{{ supplier.name }}</div>
+              <div v-if="supplier.contactPerson" class="text-xs text-gray-500">{{ supplier.contactPerson }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div
-                v-if="supplier.email"
-                class="text-sm text-gray-900"
-              >
-                {{ supplier.email }}
-              </div>
-              <div
-                v-if="supplier.phone"
-                class="text-sm text-gray-500"
-              >
-                {{ supplier.phone }}
-              </div>
+              <div v-if="supplier.email" class="text-sm text-gray-900">{{ supplier.email }}</div>
+              <div v-if="supplier.phone" class="text-sm text-gray-500">{{ supplier.phone }}</div>
             </td>
             <td class="px-6 py-4">
-              <div class="text-sm text-gray-900">
-                {{ supplier.address || '-' }}
-              </div>
+              <div class="text-sm text-gray-900">{{ supplier.address || '-' }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
@@ -159,14 +85,14 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
               <button
-                class="text-blue-600 hover:text-blue-900 mr-4"
                 @click="editSupplier(supplier)"
+                class="text-blue-600 hover:text-blue-900 mr-4"
               >
                 Edit
               </button>
               <button
-                class="text-red-600 hover:text-red-900"
                 @click="deleteSupplier(supplier)"
+                class="text-red-600 hover:text-red-900"
               >
                 Delete
               </button>
@@ -176,25 +102,22 @@
       </table>
 
       <!-- Pagination -->
-      <div
-        v-if="pagination.totalPages > 1"
-        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between"
-      >
+      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div class="text-sm text-gray-700">
           Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of {{ pagination.total }} results
         </div>
         <div class="flex space-x-2">
           <button
+            @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
             class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            @click="changePage(pagination.page - 1)"
           >
             Previous
           </button>
           <button
+            @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
             class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            @click="changePage(pagination.page + 1)"
           >
             Next
           </button>
@@ -215,29 +138,16 @@
               {{ editingSupplier ? 'Edit Supplier' : 'Tambah Supplier' }}
             </h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition"
               @click="closeModal"
+              class="text-gray-400 hover:text-gray-600 transition"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <form
-            class="space-y-4"
-            @submit.prevent="saveSupplier"
-          >
+          <form @submit.prevent="saveSupplier" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
               <input
@@ -294,27 +204,21 @@
               ></textarea>
             </div>
 
-            <div
-              v-if="editingSupplier"
-              class="flex items-center"
-            >
+            <div v-if="editingSupplier" class="flex items-center">
               <input
-                id="isActive"
                 v-model="supplierForm.isActive"
                 type="checkbox"
+                id="isActive"
                 class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
               />
-              <label
-                for="isActive"
-                class="ml-2 text-sm text-gray-700"
-              >Active</label>
+              <label for="isActive" class="ml-2 text-sm text-gray-700">Active</label>
             </div>
 
             <div class="flex space-x-3 pt-4 border-t">
               <button
                 type="button"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="closeModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
@@ -389,15 +293,11 @@ const loadSuppliers = async () => {
       params.isActive = isActiveFilter.value === 'true';
     }
     const response = await api.get('/suppliers', { params });
-    suppliers.value = response.data?.data || response.data || [];
-    pagination.value = response.data?.pagination || {
-      page: 1,
-      limit: pagination.value?.limit || 20,
-      total: 0,
-      totalPages: 0
-    };
+    suppliers.value = response.data.data;
+    pagination.value = response.data.pagination;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat suppliers');
+    console.error('Error loading suppliers:', error);
+    await showError('Gagal memuat suppliers');
   } finally {
     loading.value = false;
   }
@@ -409,21 +309,6 @@ const changePage = (page: number) => {
 };
 
 const saveSupplier = async () => {
-  // Client-side validation
-  if (!supplierForm.value.name || supplierForm.value.name.trim() === '') {
-    await showError('Nama supplier wajib diisi');
-    return;
-  }
-  
-  if (supplierForm.value.email && supplierForm.value.email.trim() !== '') {
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(supplierForm.value.email)) {
-      await showError('Format email tidak valid');
-      return;
-    }
-  }
-  
   saving.value = true;
   try {
     if (editingSupplier.value) {
@@ -436,6 +321,7 @@ const saveSupplier = async () => {
     closeModal();
     await loadSuppliers();
   } catch (error: any) {
+    console.error('Error saving supplier:', error);
     await showError('Gagal menyimpan supplier');
   } finally {
     saving.value = false;
@@ -468,6 +354,7 @@ const deleteSupplier = async (supplier: Supplier) => {
     await showSuccess('Supplier berhasil dihapus');
     await loadSuppliers();
   } catch (error: any) {
+    console.error('Error deleting supplier:', error);
     await showError(error.response?.data?.message || 'Gagal menghapus supplier');
   }
 };

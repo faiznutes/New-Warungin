@@ -2,8 +2,6 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
-import { handleRouteError } from '../utils/route-error-handler';
-import logger from '../utils/logger';
 
 const router = Router();
 
@@ -39,25 +37,21 @@ router.post(
       const { template, data } = req.body;
       
       // Debug: Log received template
-      logger.debug(`Received template request: ${template}`);
+      console.log(`Received template request: ${template}`);
       
       if (!template || !['minimalist', 'modern', 'classic', 'colorful', 'elegant'].includes(template)) {
-        const error = new Error('Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant', 'GENERATE_PDF');
-        return;
+        return res.status(400).json({ 
+          message: 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant' 
+        });
       }
       
       if (!data) {
-        const error = new Error('Data is required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Data is required', 'GENERATE_PDF');
-        return;
+        return res.status(400).json({ message: 'Data is required' });
       }
       
       try {
         // Generate PDF using PDFMake
-        logger.debug(`Generating PDF with template: ${template}`);
+        console.log(`Generating PDF with template: ${template}`);
         const pdfBuffer = await generatePDF(template, data);
         
         // Send PDF as response with CORS headers already set
@@ -68,13 +62,17 @@ router.post(
         
         res.send(pdfBuffer);
         
-      } catch (error: unknown) {
-        handleRouteError(res, error, 'Failed to generate PDF', 'PDF_GENERATION');
-        return;
+      } catch (error: any) {
+        console.error('Error generating PDF with PDFMake:', error);
+        return res.status(500).json({ 
+          message: 'Failed to generate PDF', 
+          error: error.message
+        });
       }
       
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to generate PDF', 'PDF_GENERATION');
+    } catch (error: any) {
+      console.error('PDF generation error:', error);
+      res.status(500).json({ message: error.message || 'Failed to generate PDF' });
     }
   }
 );

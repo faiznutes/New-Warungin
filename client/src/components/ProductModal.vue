@@ -11,29 +11,16 @@
             {{ editingProduct ? 'Edit Produk' : 'Tambah Produk' }}
           </h3>
           <button
-            class="text-gray-400 hover:text-gray-600 transition"
             @click="$emit('close')"
+            class="text-gray-400 hover:text-gray-600 transition"
           >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <form
-          class="space-y-4"
-          @submit.prevent="handleSubmit"
-        >
+        <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama Produk *</label>
             <input
@@ -79,9 +66,7 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
               />
-              <p class="text-xs text-gray-500 mt-1">
-                Harga beli/pokok untuk hitung untung
-              </p>
+              <p class="text-xs text-gray-500 mt-1">Harga beli/pokok untuk hitung untung</p>
             </div>
           </div>
 
@@ -100,21 +85,16 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">&nbsp;</label>
               <div class="flex items-center h-10">
                 <input
-                  id="isConsignment"
                   v-model="form.isConsignment"
                   type="checkbox"
+                  id="isConsignment"
                   class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                 />
-                <label
-                  for="isConsignment"
-                  class="ml-2 text-sm text-gray-700 cursor-pointer"
-                >
+                <label for="isConsignment" class="ml-2 text-sm text-gray-700 cursor-pointer">
                   Produk Titipan
                 </label>
               </div>
-              <p class="text-xs text-gray-500 mt-1">
-                Centang jika produk titipan dari orang lain
-              </p>
+              <p class="text-xs text-gray-500 mt-1">Centang jika produk titipan dari orang lain</p>
             </div>
           </div>
 
@@ -150,21 +130,21 @@
             <div class="flex gap-2 mb-3">
               <button
                 type="button"
+                @click="imageType = 'image'"
                 class="flex-1 px-4 py-2 rounded-lg transition"
                 :class="imageType === 'image' 
                   ? 'bg-primary-600 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                @click="imageType = 'image'"
               >
                 📷 Gambar
               </button>
               <button
                 type="button"
+                @click="imageType = 'emoji'"
                 class="flex-1 px-4 py-2 rounded-lg transition"
                 :class="imageType === 'emoji' 
                   ? 'bg-primary-600 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                @click="imageType = 'emoji'"
               >
                 😀 Emoji
               </button>
@@ -173,10 +153,7 @@
             <!-- Image Type -->
             <div v-if="imageType === 'image'">
               <!-- Image Preview -->
-              <div
-                v-if="form.image"
-                class="mb-3"
-              >
+              <div v-if="form.image" class="mb-3">
                 <div class="relative inline-block">
                   <img
                     :src="form.image"
@@ -185,21 +162,11 @@
                   />
                   <button
                     type="button"
-                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
                     @click="form.image = ''"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
                   >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -209,51 +176,28 @@
               <div class="flex flex-col sm:flex-row gap-2 mb-2">
                 <button
                   type="button"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
                   @click="openFileInput"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span>Pilih dari Gallery</span>
                 </button>
                 <button
                   type="button"
-                  class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center space-x-2"
                   @click="openUrlInput"
+                  class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center space-x-2"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
                   <span>Masukkan URL</span>
                 </button>
               </div>
 
               <!-- URL Input (hidden by default) -->
-              <div
-                v-if="showUrlInput"
-                class="mb-2"
-              >
+              <div v-if="showUrlInput" class="mb-2">
                 <input
                   v-model="form.image"
                   type="url"
@@ -261,9 +205,7 @@
                   placeholder="https://example.com/image.jpg"
                   @blur="showUrlInput = false"
                 />
-                <p class="text-xs text-gray-500 mt-1">
-                  Masukkan URL gambar produk
-                </p>
+                <p class="text-xs text-gray-500 mt-1">Masukkan URL gambar produk</p>
               </div>
 
               <!-- Hidden File Input -->
@@ -279,31 +221,18 @@
             <!-- Emoji Type -->
             <div v-else>
               <!-- Emoji Preview -->
-              <div
-                v-if="form.emoji"
-                class="mb-3"
-              >
+              <div v-if="form.emoji" class="mb-3">
                 <div class="relative inline-block">
                   <div class="w-32 h-32 bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
                     <span class="text-6xl">{{ form.emoji }}</span>
                   </div>
                   <button
                     type="button"
-                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
                     @click="form.emoji = ''"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
                   >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -318,24 +247,20 @@
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-2xl text-center"
                   placeholder="Pilih atau ketik emoji (contoh: 🍕 🍔 🍟)"
                 />
-                <p class="text-xs text-gray-500 mt-1">
-                  Ketik emoji atau pilih dari keyboard emoji
-                </p>
+                <p class="text-xs text-gray-500 mt-1">Ketik emoji atau pilih dari keyboard emoji</p>
               </div>
 
               <!-- Popular Emojis -->
               <div class="mb-2">
-                <p class="text-xs text-gray-600 mb-2">
-                  Emoji Populer:
-                </p>
+                <p class="text-xs text-gray-600 mb-2">Emoji Populer:</p>
                 <div class="flex flex-wrap gap-2">
                   <button
                     v-for="emoji in popularEmojis"
                     :key="emoji"
                     type="button"
+                    @click="form.emoji = emoji"
                     class="w-10 h-10 text-2xl hover:bg-gray-100 rounded-lg transition flex items-center justify-center"
                     :class="{ 'bg-primary-100 border-2 border-primary-500': form.emoji === emoji }"
-                    @click="form.emoji = emoji"
                   >
                     {{ emoji }}
                   </button>
@@ -346,22 +271,19 @@
 
           <div class="flex items-center">
             <input
-              id="isActive"
               v-model="form.isActive"
               type="checkbox"
+              id="isActive"
               class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
             />
-            <label
-              for="isActive"
-              class="ml-2 text-sm text-gray-700"
-            >Aktif</label>
+            <label for="isActive" class="ml-2 text-sm text-gray-700">Aktif</label>
           </div>
 
           <div class="flex space-x-3 pt-4">
             <button
               type="button"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="$emit('close')"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
@@ -388,7 +310,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, nextTick } from 'vue';
+import { ref, watch, computed } from 'vue';
 import ImageCropperModal from './ImageCropperModal.vue';
 import { useNotification } from '../composables/useNotification';
 
@@ -457,8 +379,40 @@ const popularEmojis = [
   '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾',
 ];
 
-// Watch for product prop changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
+watch(() => props.product, (newProduct) => {
+  if (newProduct) {
+    form.value = {
+      name: newProduct.name || '',
+      description: newProduct.description || '',
+      price: typeof newProduct.price === 'string' ? parseFloat(newProduct.price) : newProduct.price || 0,
+      cost: typeof (newProduct as any).cost === 'string' ? parseFloat((newProduct as any).cost) : (newProduct as any).cost || undefined,
+      stock: newProduct.stock || 0,
+      minStock: newProduct.minStock || 0,
+      category: newProduct.category || '',
+      image: newProduct.image || '',
+      emoji: newProduct.emoji || '',
+      isActive: newProduct.isActive !== false,
+      isConsignment: (newProduct as any).isConsignment || false,
+    };
+    // Set image type based on what exists
+    imageType.value = newProduct.emoji ? 'emoji' : 'image';
+  } else {
+    form.value = {
+      name: '',
+      description: '',
+      price: 0,
+      cost: undefined,
+      stock: 0,
+      minStock: 0,
+      category: '',
+      image: '',
+      emoji: '',
+      isActive: true,
+      isConsignment: false,
+    };
+    imageType.value = 'image';
+  }
+}, { immediate: true });
 
 watch(() => props.show, (newShow) => {
   if (!newShow) {
@@ -545,92 +499,7 @@ const handleImageCropped = (imageDataUrl: string) => {
   selectedImageSrc.value = '';
 };
 
-// Set up watch for product prop after mount
-onMounted(async () => {
-  await nextTick();
-  
-  // Watch for product prop changes
-  watch(() => props.product, (newProduct) => {
-    if (newProduct) {
-      form.value = {
-        name: newProduct.name || '',
-        description: newProduct.description || '',
-        price: typeof newProduct.price === 'string' ? parseFloat(newProduct.price) : newProduct.price || 0,
-        cost: typeof (newProduct as any).cost === 'string' ? parseFloat((newProduct as any).cost) : (newProduct as any).cost || undefined,
-        stock: newProduct.stock || 0,
-        minStock: newProduct.minStock || 0,
-        category: newProduct.category || '',
-        image: newProduct.image || '',
-        emoji: newProduct.emoji || '',
-        isActive: newProduct.isActive !== false,
-        isConsignment: (newProduct as any).isConsignment || false,
-      };
-      // Set image type based on what exists
-      imageType.value = newProduct.emoji ? 'emoji' : 'image';
-    } else {
-      form.value = {
-        name: '',
-        description: '',
-        price: 0,
-        cost: undefined,
-        stock: 0,
-        minStock: 0,
-        category: '',
-        image: '',
-        emoji: '',
-        isActive: true,
-        isConsignment: false,
-      };
-      imageType.value = 'image';
-    }
-  });
-  
-  // Initial setup if product is already provided
-  if (props.product) {
-    form.value = {
-      name: props.product.name || '',
-      description: props.product.description || '',
-      price: typeof props.product.price === 'string' ? parseFloat(props.product.price) : props.product.price || 0,
-      cost: typeof (props.product as any).cost === 'string' ? parseFloat((props.product as any).cost) : (props.product as any).cost || undefined,
-      stock: props.product.stock || 0,
-      minStock: props.product.minStock || 0,
-      category: props.product.category || '',
-      image: props.product.image || '',
-      emoji: props.product.emoji || '',
-      isActive: props.product.isActive !== false,
-      isConsignment: (props.product as any).isConsignment || false,
-    };
-    imageType.value = props.product.emoji ? 'emoji' : 'image';
-  }
-});
-
 const handleSubmit = () => {
-  // Client-side validation
-  if (!form.value.name || form.value.name.trim() === '') {
-    showError('Nama produk wajib diisi');
-    return;
-  }
-  
-  if (!form.value.price || form.value.price <= 0) {
-    showError('Harga produk harus lebih dari 0');
-    return;
-  }
-  
-  if (form.value.stock < 0) {
-    showError('Stok produk tidak boleh negatif');
-    return;
-  }
-  
-  if (form.value.minStock < 0) {
-    showError('Stok minimum tidak boleh negatif');
-    return;
-  }
-  
-  if (form.value.cost !== undefined && form.value.cost < 0) {
-    showError('Harga pokok tidak boleh negatif');
-    return;
-  }
-  
   saving.value = true;
   
   // Prepare data - ensure emoji/image are properly set based on type

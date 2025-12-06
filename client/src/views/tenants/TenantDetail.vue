@@ -4,68 +4,40 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex items-center space-x-4">
         <button
-          class="p-2 hover:bg-gray-100 rounded-lg transition"
           @click="$router.push('/app/tenants')"
+          class="p-2 hover:bg-gray-100 rounded-lg transition"
         >
-          <svg
-            class="w-6 h-6 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
+          <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <div class="flex flex-col gap-2">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">
-            {{ tenant?.name || 'Loading...' }}
-          </h2>
-          <p class="text-sm sm:text-base text-gray-600">
-            Detail Tenant & Manajemen Langganan
-          </p>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ tenant?.name || 'Loading...' }}</h2>
+          <p class="text-sm sm:text-base text-gray-600">Detail Tenant & Manajemen Langganan</p>
         </div>
       </div>
     </div>
 
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div
-      v-else-if="tenant"
-      class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8"
-    >
+    <div v-else-if="tenant" class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Tenant Info Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Informasi Tenant
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Tenant</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-            <p class="text-gray-900">
-              {{ tenant.name }}
-            </p>
+            <p class="text-gray-900">{{ tenant.name }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <p class="text-gray-900">
-              {{ tenant.email }}
-            </p>
+            <p class="text-gray-900">{{ tenant.email }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
-            <p class="text-gray-900">
-              {{ tenant.phone || '-' }}
-            </p>
+            <p class="text-gray-900">{{ tenant.phone || '-' }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -82,32 +54,30 @@
       <!-- Subscription Info Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-          <h3 class="text-lg font-semibold text-gray-900">
-            Langganan
-          </h3>
+          <h3 class="text-lg font-semibold text-gray-900">Langganan</h3>
           <div class="flex flex-wrap gap-2">
             <button
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
               @click="showEditPlanModal = true"
+              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
             >
               Edit Paket
             </button>
             <button
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
               @click="showReduceSubscriptionModal = true"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
             >
               Kurangi Durasi
             </button>
             <button
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
               @click="showExtendSubscriptionModal = true"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
             >
               Perpanjang Langganan
             </button>
             <button
               v-if="tenant?.subscriptionEnd && !subscription?.isExpired"
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
               @click="showDeactivateSubscriptionModal = true"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
             >
               Nonaktifkan Langganan
             </button>
@@ -127,26 +97,14 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
-            <p class="text-gray-900">
-              {{ formatDate(tenant.subscriptionStart) }}
-            </p>
+            <p class="text-gray-900">{{ formatDate(tenant.subscriptionStart) }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Berakhir</label>
-            <p class="text-gray-900">
-              {{ formatDate(tenant.subscriptionEnd) }}
-            </p>
+            <p class="text-gray-900">{{ formatDate(tenant.subscriptionEnd) }}</p>
             <!-- Hanya tampilkan warning jika expired dan plan bukan BASIC -->
-            <p
-              v-if="subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'"
-              class="text-xs text-red-600 mt-1 font-medium"
-            >
-              ⚠️ Langganan telah kedaluwarsa - Paket akan otomatis kembali ke BASIC
-            </p>
-            <p
-              v-if="subscription?.subscription?.temporaryUpgrade === true && !subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'"
-              class="text-xs text-yellow-600 mt-1 font-medium"
-            >
+            <p v-if="subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-red-600 mt-1 font-medium">⚠️ Langganan telah kedaluwarsa - Paket akan otomatis kembali ke BASIC</p>
+            <p v-if="subscription?.subscription?.temporaryUpgrade === true && !subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-yellow-600 mt-1 font-medium">
               ⚠️ Upgrade sementara - akan kembali ke BASIC setelah expired
             </p>
           </div>
@@ -171,20 +129,14 @@
               </template>
             </span>
           </div>
-          <div
-            v-if="!subscription?.isExpired"
-            class="w-full bg-gray-200 rounded-full h-2"
-          >
+          <div v-if="!subscription?.isExpired" class="w-full bg-gray-200 rounded-full h-2">
             <div
               class="h-2 rounded-full transition-all"
               :class="(subscription?.daysRemaining || 0) <= 7 ? 'bg-red-500' : (subscription?.daysRemaining || 0) <= 30 ? 'bg-yellow-500' : 'bg-green-500'"
               :style="{ width: `${Math.min(100, Math.max(0, ((subscription?.daysRemaining || 0) / 365) * 100))}%` }"
             ></div>
           </div>
-          <p
-            v-if="subscription?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'"
-            class="text-xs text-gray-500 mt-2"
-          >
+          <p v-if="subscription?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-gray-500 mt-2">
             ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
           </p>
         </div>
@@ -193,26 +145,18 @@
       <!-- Active Addons Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">
-            Addon Aktif
-          </h3>
+          <h3 class="text-lg font-semibold text-gray-900">Addon Aktif</h3>
           <button
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
             @click="showAddAddonModal = true"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
           >
             Tambah Addon
           </button>
         </div>
-        <div
-          v-if="activeAddons.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <div v-if="activeAddons.length === 0" class="text-center py-8 text-gray-500">
           Belum ada addon yang aktif
         </div>
-        <div
-          v-else
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
@@ -220,25 +164,15 @@
           >
             <div class="flex items-start justify-between mb-3">
               <div>
-                <h4 class="font-semibold text-gray-900">
-                  {{ addon.addonName }}
-                </h4>
-                <p class="text-sm text-gray-600">
-                  {{ getAddonDescription(addon) }}
-                </p>
+                <h4 class="font-semibold text-gray-900">{{ addon.addonName }}</h4>
+                <p class="text-sm text-gray-600">{{ getAddonDescription(addon) }}</p>
               </div>
               <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
             </div>
-            <div
-              v-if="addon.limit"
-              class="mb-3"
-            >
+            <div v-if="addon.limit" class="mb-3">
               <div class="flex items-center justify-between text-sm mb-1">
                 <span class="text-gray-600">Penggunaan:</span>
-                <span
-                  class="font-semibold"
-                  :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'"
-                >
+                <span class="font-semibold" :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'">
                   {{ addon.currentUsage }} / {{ addon.limit }}
                 </span>
               </div>
@@ -267,20 +201,20 @@
             </div>
             <div class="flex space-x-2">
               <button
-                class="px-3 py-2 text-sm bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition"
                 @click="reduceAddon(addon)"
+                class="px-3 py-2 text-sm bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition"
               >
                 Kurangi
               </button>
               <button
-                class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
                 @click="extendAddon(addon)"
+                class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
               >
                 Perpanjang
               </button>
               <button
-                class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
                 @click="unsubscribeAddon(addon.addonId)"
+                class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
               >
                 Nonaktifkan
               </button>
@@ -292,73 +226,47 @@
       <!-- Reward Points Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">
-            Reward Points
-          </h3>
+          <h3 class="text-lg font-semibold text-gray-900">Reward Points</h3>
           <button
-            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
             @click="showEditPointsModal = true"
+            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
           >
             Edit Point
           </button>
         </div>
-        <div
-          v-if="loadingPoints"
-          class="flex items-center justify-center py-8"
-        >
+        <div v-if="loadingPoints" class="flex items-center justify-center py-8">
           <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
-        <div
-          v-else
-          class="space-y-4"
-        >
+        <div v-else class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-blue-50 rounded-lg p-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Point Saat Ini</label>
-              <p class="text-2xl font-bold text-blue-600">
-                {{ tenantPoints?.currentPoints || 0 }}
-              </p>
+              <p class="text-2xl font-bold text-blue-600">{{ tenantPoints?.currentPoints || 0 }}</p>
             </div>
             <div class="bg-green-50 rounded-lg p-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Total Diperoleh</label>
-              <p class="text-2xl font-bold text-green-600">
-                {{ tenantPoints?.totalEarned || 0 }}
-              </p>
+              <p class="text-2xl font-bold text-green-600">{{ tenantPoints?.totalEarned || 0 }}</p>
             </div>
             <div class="bg-orange-50 rounded-lg p-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Total Digunakan</label>
-              <p class="text-2xl font-bold text-orange-600">
-                {{ tenantPoints?.totalSpent || 0 }}
-              </p>
+              <p class="text-2xl font-bold text-orange-600">{{ tenantPoints?.totalSpent || 0 }}</p>
             </div>
           </div>
           
           <div class="mt-4">
-            <h4 class="text-sm font-semibold text-gray-900 mb-2">
-              Riwayat Point
-            </h4>
-            <div
-              v-if="pointTransactions.length === 0"
-              class="text-center py-4 text-gray-500 text-sm"
-            >
+            <h4 class="text-sm font-semibold text-gray-900 mb-2">Riwayat Point</h4>
+            <div v-if="pointTransactions.length === 0" class="text-center py-4 text-gray-500 text-sm">
               Belum ada transaksi point
             </div>
-            <div
-              v-else
-              class="space-y-2 max-h-64 overflow-y-auto"
-            >
+            <div v-else class="space-y-2 max-h-64 overflow-y-auto">
               <div
                 v-for="transaction in pointTransactions"
                 :key="transaction.id"
                 class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
               >
                 <div class="flex-1">
-                  <p class="font-semibold text-gray-900 text-sm">
-                    {{ transaction.description }}
-                  </p>
-                  <p class="text-xs text-gray-500 mt-1">
-                    {{ formatDate(transaction.createdAt) }}
-                  </p>
+                  <p class="font-semibold text-gray-900 text-sm">{{ transaction.description }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ formatDate(transaction.createdAt) }}</p>
                 </div>
                 <span
                   :class="[
@@ -378,162 +286,123 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">
-              Pengguna Tenant
-            </h3>
-            <p
-              v-if="userUsage"
-              class="text-sm text-gray-600 mt-1"
-            >
+            <h3 class="text-lg font-semibold text-gray-900">Pengguna Tenant</h3>
+            <p v-if="userUsage" class="text-sm text-gray-600 mt-1">
               Maksimal {{ userUsage.limit === -1 ? 'Unlimited' : userUsage.limit }} pengguna, 
               sedang digunakan {{ userUsage.currentUsage }}
-              <span
-                v-if="userUsage.limit !== -1"
-                class="font-semibold"
-                :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-600' : 'text-green-600'"
-              >
+              <span v-if="userUsage.limit !== -1" class="font-semibold" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-600' : 'text-green-600'">
                 ({{ userUsage.limit - userUsage.currentUsage }} tersedia)
               </span>
             </p>
           </div>
         </div>
         
-        <div
-          v-if="loadingUsers"
-          class="flex items-center justify-center py-8"
-        >
+        <div v-if="loadingUsers" class="flex items-center justify-center py-8">
           <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
         
-        <div
-          v-else-if="tenantUsers.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <div v-else-if="tenantUsers.length === 0" class="text-center py-8 text-gray-500">
           Belum ada pengguna
         </div>
         
         <template v-else>
           <!-- Bulk Actions Bar -->
-          <div
-            v-if="selectedUsers.length > 0"
-            class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between"
-          >
+          <div v-if="selectedUsers.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <span class="text-sm font-medium text-blue-900">
                 {{ selectedUsers.length }} pengguna dipilih
               </span>
               <button
                 v-if="selectedUsers.some(u => !u.isActive)"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
                 @click="bulkActivateUsers"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
               >
                 Aktifkan ({{ selectedUsers.filter(u => !u.isActive).length }})
               </button>
               <button
                 v-if="selectedUsers.some(u => u.isActive)"
-                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
                 @click="bulkDeactivateUsers"
+                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
               >
                 Nonaktifkan ({{ selectedUsers.filter(u => u.isActive).length }})
               </button>
             </div>
             <button
-              class="text-sm text-blue-600 hover:text-blue-800"
               @click="selectedUsers = []"
+              class="text-sm text-blue-600 hover:text-blue-800"
             >
               Batal pilihan
             </button>
           </div>
           
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-4 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      :checked="selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
-                      class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                      @change="toggleSelectAllUsers"
-                    />
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nama
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Login
-                  </th>
-                  <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr
-                  v-for="user in tenantUsers"
-                  :key="user.id"
-                  class="hover:bg-gray-50"
-                  :class="{ 'bg-blue-50': isUserSelected(user.id) }"
-                >
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <input
-                      type="checkbox"
-                      :checked="isUserSelected(user.id)"
-                      class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                      @change="toggleUserSelection(user)"
-                    />
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ user.name }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <div class="text-sm text-gray-600">
-                      {{ user.email }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <span
-                      class="px-2 py-1 text-xs font-semibold rounded-full"
-                      :class="getRoleClass(user.role)"
-                    >
-                      {{ getRoleLabel(user.role) }}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <span
-                      class="px-2 py-1 text-xs font-semibold rounded-full"
-                      :class="user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                    >
-                      {{ user.isActive ? 'Aktif' : 'Tidak Aktif' }}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap">
-                    <div class="text-sm text-gray-500">
-                      {{ user.lastLogin ? formatDate(user.lastLogin) : 'Belum pernah' }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      class="px-3 py-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition"
-                      @click="editUser(user)"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    :checked="selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
+                    @change="toggleSelectAllUsers"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-gray-50" :class="{ 'bg-blue-50': isUserSelected(user.id) }">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <input
+                    type="checkbox"
+                    :checked="isUserSelected(user.id)"
+                    @change="toggleUserSelection(user)"
+                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-600">{{ user.email }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="getRoleClass(user.role)"
+                  >
+                    {{ getRoleLabel(user.role) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  >
+                    {{ user.isActive ? 'Aktif' : 'Tidak Aktif' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">
+                    {{ user.lastLogin ? formatDate(user.lastLogin) : 'Belum pernah' }}
+                  </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    @click="editUser(user)"
+                    class="px-3 py-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition"
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           </div>
         </template>
       </div>
@@ -542,84 +411,46 @@
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">
-              Store/Outlet
-            </h3>
-            <p
-              v-if="outletUsage"
-              class="text-sm text-gray-600 mt-1"
-            >
+            <h3 class="text-lg font-semibold text-gray-900">Store/Outlet</h3>
+            <p v-if="outletUsage" class="text-sm text-gray-600 mt-1">
               Maksimal {{ outletUsage.limit === -1 ? 'Unlimited' : outletUsage.limit }} store, 
               sedang digunakan {{ outletUsage.currentUsage }}
-              <span
-                v-if="outletUsage.limit !== -1"
-                class="font-semibold"
-                :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-600' : 'text-green-600'"
-              >
+              <span v-if="outletUsage.limit !== -1" class="font-semibold" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-600' : 'text-green-600'">
                 ({{ outletUsage.limit - outletUsage.currentUsage }} tersedia)
               </span>
             </p>
           </div>
         </div>
         
-        <div
-          v-if="loadingStores"
-          class="flex items-center justify-center py-8"
-        >
+        <div v-if="loadingStores" class="flex items-center justify-center py-8">
           <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
         
-        <div
-          v-else-if="tenantStores.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <div v-else-if="tenantStores.length === 0" class="text-center py-8 text-gray-500">
           Belum ada store
         </div>
         
-        <div
-          v-else
-          class="overflow-x-auto"
-        >
+        <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nama
-                </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Alamat
-                </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Telepon
-                </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aksi
-                </th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alamat</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="store in tenantStores"
-                :key="store.id"
-                class="hover:bg-gray-50"
-              >
+              <tr v-for="store in tenantStores" :key="store.id" class="hover:bg-gray-50">
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ store.name }}
-                  </div>
+                  <div class="text-sm font-medium text-gray-900">{{ store.name }}</div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div class="text-sm text-gray-600">
-                    {{ store.address || '-' }}
-                  </div>
+                  <div class="text-sm text-gray-600">{{ store.address || '-' }}</div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
-                  <div class="text-sm text-gray-600">
-                    {{ store.phone || '-' }}
-                  </div>
+                  <div class="text-sm text-gray-600">{{ store.phone || '-' }}</div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span
@@ -631,11 +462,11 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                   <button
+                    @click="toggleStoreStatus(store)"
                     class="px-3 py-1 rounded transition"
                     :class="store.isActive !== false 
                       ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' 
                       : 'text-green-600 hover:text-green-900 hover:bg-green-50'"
-                    @click="toggleStoreStatus(store)"
                   >
                     {{ store.isActive !== false ? 'Nonaktifkan' : 'Aktifkan' }}
                   </button>
@@ -648,30 +479,18 @@
 
       <!-- Available Addons Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Addon Tersedia
-        </h3>
-        <div
-          v-if="filteredAvailableAddons.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Addon Tersedia</h3>
+        <div v-if="filteredAvailableAddons.length === 0" class="text-center py-8 text-gray-500">
           Semua addon sudah aktif
         </div>
-        <div
-          v-else
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
             class="border-2 border-gray-200 rounded-lg p-4 transition hover:border-blue-300"
           >
-            <h4 class="font-semibold text-gray-900 mb-2">
-              {{ addon.name }}
-            </h4>
-            <p class="text-sm text-gray-600 mb-3">
-              {{ addon.description }}
-            </p>
+            <h4 class="font-semibold text-gray-900 mb-2">{{ addon.name }}</h4>
+            <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
             
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -679,15 +498,12 @@
                 <span class="text-sm text-gray-500">/bulan</span>
               </div>
             </div>
-            <div
-              v-if="addon.defaultLimit"
-              class="text-sm text-gray-600 mb-3"
-            >
+            <div v-if="addon.defaultLimit" class="text-sm text-gray-600 mb-3">
               Limit: {{ addon.defaultLimit }}
             </div>
             <button
-              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
               @click="subscribeAddon(addon)"
+              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
             >
               Berlangganan
             </button>
@@ -704,16 +520,10 @@
         @click.self="showEditPlanModal = false"
       >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            Edit Paket Langganan
-          </h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Edit Paket Langganan</h3>
           <div class="mb-4">
-            <p class="text-sm text-gray-600 mb-2">
-              Tenant: <strong>{{ tenant?.name }}</strong>
-            </p>
-            <p class="text-sm text-gray-600 mb-2">
-              Paket Saat Ini: <strong>{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</strong>
-            </p>
+            <p class="text-sm text-gray-600 mb-2">Tenant: <strong>{{ tenant?.name }}</strong></p>
+            <p class="text-sm text-gray-600 mb-2">Paket Saat Ini: <strong>{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</strong></p>
             <p class="text-xs text-yellow-600 mb-4 bg-yellow-50 p-2 rounded border border-yellow-200">
               ⚠️ Upgrade ini bersifat sementara. Setelah durasi berakhir ({{ planForm.durationDays }} hari), akan otomatis kembali ke paket BASIC.
             </p>
@@ -724,15 +534,9 @@
               v-model="planForm.subscriptionPlan"
               class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900"
             >
-              <option value="BASIC">
-                Starter (BASIC)
-              </option>
-              <option value="PRO">
-                Boost (PRO)
-              </option>
-              <option value="CUSTOM">
-                Max (CUSTOM)
-              </option>
+              <option value="BASIC">Starter (BASIC)</option>
+              <option value="PRO">Boost (PRO)</option>
+              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
             </select>
           </div>
           <div class="mb-6">
@@ -752,15 +556,15 @@
           </div>
           <div class="flex gap-3">
             <button
+              @click="handleEditPlan"
               :disabled="!planForm.durationDays || planForm.durationDays < 1"
               class="flex-1 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleEditPlan"
             >
               Simpan
             </button>
             <button
-              class="flex-1 px-4 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
               @click="showEditPlanModal = false"
+              class="flex-1 px-4 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
             >
               Batal
             </button>
@@ -777,9 +581,7 @@
         @click.self="showReduceSubscriptionModal = false"
       >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            Kurangi Durasi Langganan
-          </h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Kurangi Durasi Langganan</h3>
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Durasi untuk dikurangi (hari)</label>
@@ -796,15 +598,15 @@
             </div>
             <div class="flex space-x-3">
               <button
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="showReduceSubscriptionModal = false"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
+                @click="handleReduceSubscription"
                 :disabled="!reduceSubscriptionDays || reduceSubscriptionDays < 1 || reducing"
                 class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                @click="handleReduceSubscription"
               >
                 {{ reducing ? 'Memproses...' : 'Kurangi' }}
               </button>
@@ -821,9 +623,7 @@
       @click.self="showExtendSubscriptionModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Perpanjang Langganan
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Perpanjang Langganan</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Durasi (hari)</label>
@@ -837,15 +637,15 @@
           </div>
           <div class="flex space-x-3">
             <button
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="showExtendSubscriptionModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
+              @click="handleExtendSubscription"
               :disabled="!extendSubscriptionDays || extendSubscriptionDays < 1 || extending"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleExtendSubscription"
             >
               {{ extending ? 'Memproses...' : 'Perpanjang' }}
             </button>
@@ -862,16 +662,10 @@
         @click.self="showReduceAddonModal = false"
       >
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            Kurangi Durasi Addon
-          </h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Kurangi Durasi Addon</h3>
           <div class="mb-4">
-            <p class="text-sm text-gray-600 mb-2">
-              Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span>
-            </p>
-            <p class="text-sm text-gray-600">
-              Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span>
-            </p>
+            <p class="text-sm text-gray-600 mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
+            <p class="text-sm text-gray-600">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
           </div>
           <div class="space-y-4">
             <div>
@@ -886,15 +680,15 @@
             </div>
             <div class="flex space-x-3">
               <button
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 @click="showReduceAddonModal = false"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
+                @click="handleReduceAddon"
                 :disabled="!reduceAddonDays || reduceAddonDays < 1 || reducing"
                 class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                @click="handleReduceAddon"
               >
                 {{ reducing ? 'Memproses...' : 'Kurangi' }}
               </button>
@@ -911,16 +705,10 @@
       @click.self="showExtendAddonModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Perpanjang Addon
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Perpanjang Addon</h3>
         <div class="mb-4">
-          <p class="text-sm text-gray-600 mb-2">
-            Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span>
-          </p>
-          <p class="text-sm text-gray-600">
-            Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span>
-          </p>
+          <p class="text-sm text-gray-600 mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
+          <p class="text-sm text-gray-600">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
         </div>
         <div class="space-y-4">
           <div>
@@ -935,15 +723,15 @@
           </div>
           <div class="flex space-x-3">
             <button
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="showExtendAddonModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
+              @click="handleExtendAddon"
               :disabled="!extendAddonDays || extendAddonDays < 1 || extending"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleExtendAddon"
             >
               {{ extending ? 'Memproses...' : 'Perpanjang' }}
             </button>
@@ -959,9 +747,7 @@
       @click.self="showAddAddonModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Tambah Addon
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Addon</h3>
         <div class="space-y-4">
           <div
             v-for="addon in availableAddons.filter(a => !isAddonActive(a.id))"
@@ -972,12 +758,8 @@
           >
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <h4 class="font-semibold text-gray-900 mb-1">
-                  {{ addon.name }}
-                </h4>
-                <p class="text-sm text-gray-600 mb-2">
-                  {{ addon.description }}
-                </p>
+                <h4 class="font-semibold text-gray-900 mb-1">{{ addon.name }}</h4>
+                <p class="text-sm text-gray-600 mb-2">{{ addon.description }}</p>
                 <div class="flex items-center space-x-2">
                   <span class="text-lg font-bold text-blue-600">{{ formatCurrency(addon.price) }}</span>
                   <span class="text-sm text-gray-500">/bulan</span>
@@ -987,15 +769,15 @@
           </div>
           <div class="flex space-x-3 mt-4">
             <button
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="showAddAddonModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
+              @click="handleSubscribeAddon"
               :disabled="!selectedAddonForSubscribe"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleSubscribeAddon"
             >
               Berlangganan
             </button>
@@ -1011,9 +793,7 @@
       @click.self="showEditUserModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Edit Pengguna
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Edit Pengguna</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
@@ -1039,18 +819,10 @@
               v-model="editUserForm.role"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="ADMIN_TENANT">
-                Admin
-              </option>
-              <option value="SUPERVISOR">
-                Supervisor
-              </option>
-              <option value="CASHIER">
-                Kasir
-              </option>
-              <option value="KITCHEN">
-                Dapur
-              </option>
+              <option value="ADMIN_TENANT">Admin</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="CASHIER">Kasir</option>
+              <option value="KITCHEN">Dapur</option>
             </select>
           </div>
           <div>
@@ -1059,12 +831,8 @@
               v-model="editUserForm.isActive"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option :value="true">
-                Aktif
-              </option>
-              <option :value="false">
-                Tidak Aktif
-              </option>
+              <option :value="true">Aktif</option>
+              <option :value="false">Tidak Aktif</option>
             </select>
           </div>
           <div>
@@ -1075,21 +843,19 @@
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Kosongkan jika tidak ingin mengubah password"
             />
-            <p class="text-xs text-gray-500 mt-1">
-              Biarkan kosong jika tidak ingin mengubah password
-            </p>
+            <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengubah password</p>
           </div>
           <div class="flex space-x-3">
             <button
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="showEditUserModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
+              @click="handleUpdateUser"
               :disabled="updatingUser || !editUserForm.name || !editUserForm.email"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleUpdateUser"
             >
               {{ updatingUser ? 'Menyimpan...' : 'Simpan' }}
             </button>
@@ -1105,14 +871,10 @@
       @click.self="showDeactivateSubscriptionModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Nonaktifkan Langganan
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Nonaktifkan Langganan</h3>
         <div class="space-y-4">
           <div class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
-            <p class="text-sm text-yellow-800 font-semibold mb-2">
-              ⚠️ Peringatan
-            </p>
+            <p class="text-sm text-yellow-800 font-semibold mb-2">⚠️ Peringatan</p>
             <p class="text-sm text-yellow-700">
               Dengan menonaktifkan langganan, semua fitur yang memerlukan langganan aktif akan dinonaktifkan, termasuk:
             </p>
@@ -1129,15 +891,15 @@
           </div>
           <div class="flex space-x-3">
             <button
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
               @click="showDeactivateSubscriptionModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
+              @click="handleDeactivateSubscription"
               :disabled="deactivatingSubscription"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleDeactivateSubscription"
             >
               {{ deactivatingSubscription ? 'Memproses...' : 'Nonaktifkan' }}
             </button>
@@ -1153,9 +915,7 @@
       @click.self="showEditPointsModal = false"
     >
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Edit Point Tenant
-        </h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Edit Point Tenant</h3>
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -1186,26 +946,27 @@
         </div>
         <div class="flex space-x-3 mt-6">
           <button
-            class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
             @click="showEditPointsModal = false; editPointsForm = { points: 0, reason: '' };"
+            class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
           >
             Batal
           </button>
           <button
+            @click="handleUpdatePoints"
             :disabled="updatingPoints"
             class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="handleUpdatePoints"
           >
             {{ updatingPoints ? 'Memproses...' : 'Simpan' }}
           </button>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted, nextTick } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
@@ -1312,7 +1073,7 @@ const editUserForm = ref({
   password: '',
 });
 const planForm = ref({
-  subscriptionPlan: 'BASIC' as 'BASIC' | 'PRO' | 'CUSTOM',
+  subscriptionPlan: 'BASIC' as 'BASIC' | 'PRO' | 'ENTERPRISE',
   durationDays: 30, // Default 30 hari
 });
 const extendSubscriptionDays = ref<number>(30);
@@ -1350,7 +1111,7 @@ const hasLimit = (addon: any) => {
 
 // Filter available addons: hide addons without limit that are already active
 const filteredAvailableAddons = computed(() => {
-  return (availableAddons.value || []).filter(addon => {
+  return availableAddons.value.filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
     if (hasLimit(addon)) {
       return true;
@@ -1377,7 +1138,7 @@ const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
     BASIC: 'Starter',
     PRO: 'Boost',
-    CUSTOM: 'Max',
+    ENTERPRISE: 'Max',
   };
   return planNames[plan] || plan;
 };
@@ -1386,7 +1147,7 @@ const getPlanBadgeClass = (plan: string) => {
   const classes: Record<string, string> = {
     BASIC: 'bg-gray-100 text-gray-700',
     PRO: 'bg-blue-100 text-blue-700',
-    CUSTOM: 'bg-purple-100 text-purple-700',
+    ENTERPRISE: 'bg-purple-100 text-purple-700',
   };
   return classes[plan] || 'bg-gray-100 text-gray-700';
 };
@@ -1398,8 +1159,9 @@ const loadActiveAddons = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons');
-    activeAddons.value = response.data?.data || response.data || [];
+    activeAddons.value = response.data || [];
   } catch (error: any) {
+    console.error('Error loading active addons:', error);
     // Don't show error for addons, just set empty array
     activeAddons.value = [];
   }
@@ -1410,19 +1172,16 @@ const loadAvailableAddons = async () => {
     // Available addons are the same for all tenants
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons/available');
-    availableAddons.value = response.data?.data || response.data || [];
+    availableAddons.value = response.data || [];
   } catch (error: any) {
+    console.error('Error loading available addons:', error);
     // Don't show error for addons, just set empty array
     availableAddons.value = [];
   }
 };
 
 const loadUsers = async () => {
-  if (!tenant.value?.id) {
-    tenantUsers.value = [];
-    loadingUsers.value = false;
-    return;
-  }
+  if (!tenant.value?.id) return;
   
   loadingUsers.value = true;
   try {
@@ -1432,43 +1191,27 @@ const loadUsers = async () => {
         page: 1,
         limit: 100, // Get all users for this tenant
       },
-    }).catch(() => {
-      // If API call fails, return null to trigger fallback
-      return null;
     });
+    tenantUsers.value = response.data.data || [];
     
-    // Handle response - check if response is valid (even if empty)
-    if (response && response.data !== undefined) {
-      tenantUsers.value = response.data?.data || response.data || [];
-    } else {
-      // Invalid response structure or API call failed
-      tenantUsers.value = [];
-    }
-    
-    // Load user usage limit (non-blocking, don't fail if this errors)
+    // Load user usage limit
     try {
       const usageResponse = await api.get('/addons/check-limit/ADD_USERS');
       userUsage.value = {
-        currentUsage: usageResponse.data?.currentUsage || 0,
-        limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
+        currentUsage: usageResponse.data.currentUsage || 0,
+        limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      // Set default if error - don't show error for usage limit
+      console.error('Error loading user usage:', error);
+      // Set default if error
       userUsage.value = {
         currentUsage: tenantUsers.value.length,
         limit: -1,
       };
     }
   } catch (error: any) {
-    // Don't show error for loadUsers - users is secondary data
-    // If users fail to load, just set empty array silently
-    // This prevents error popup that blocks user from seeing tenant details
-    // Users can still see tenant info, subscription, addons, stores, etc even if users list fails
-    tenantUsers.value = [];
-    userUsage.value = {
-      currentUsage: 0,
-      limit: -1,
-    };
+    console.error('Error loading users:', error);
+    showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
   } finally {
     loadingUsers.value = false;
   }
@@ -1481,44 +1224,26 @@ const loadStores = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/outlets');
-    
-    // Handle response - check if response is valid (even if empty)
-    if (response && response.data !== undefined) {
-      tenantStores.value = response.data?.data || response.data || [];
-    } else {
-      // Invalid response structure
-      tenantStores.value = [];
-    }
+    tenantStores.value = response.data.data || [];
     
     // Load outlet usage limit
     try {
       const usageResponse = await api.get('/addons/check-limit/ADD_OUTLETS');
       outletUsage.value = {
-        currentUsage: usageResponse.data?.currentUsage || 0,
-        limit: usageResponse.data?.limit === undefined ? -1 : usageResponse.data.limit,
+        currentUsage: usageResponse.data.currentUsage || 0,
+        limit: usageResponse.data.limit === undefined ? -1 : usageResponse.data.limit,
       };
     } catch (error: any) {
-      // Set default if error - don't show error for usage limit
+      console.error('Error loading outlet usage:', error);
+      // Set default if error
       outletUsage.value = {
-        currentUsage: (tenantStores.value || []).filter((s: any) => s.isActive !== false).length,
+        currentUsage: tenantStores.value.filter((s: any) => s.isActive !== false).length,
         limit: -1,
       };
     }
   } catch (error: any) {
-    // Only show error if it's a real HTTP error (4xx or 5xx)
-    // Don't show error for network issues or empty data
-    if (error.response?.status && error.response.status >= 400 && error.response.status !== 404) {
-      // Only show error for server errors (5xx) or client errors other than 404
-      // 404 might mean no outlets exist, which is fine
-      if (error.response.status >= 500) {
-        await showError(error.response?.data?.message || 'Gagal memuat daftar store');
-      }
-      // For 4xx errors (except 404), set empty array silently
-      tenantStores.value = [];
-    } else {
-      // Network error or 404 - set empty array silently (no outlets is valid)
-      tenantStores.value = [];
-    }
+    console.error('Error loading stores:', error);
+    showError(error.response?.data?.message || 'Gagal memuat daftar store');
   } finally {
     loadingStores.value = false;
   }
@@ -1530,13 +1255,14 @@ const loadTenantPoints = async () => {
   loadingPoints.value = true;
   try {
     const balanceRes = await api.get(`/rewards/tenant/${tenant.value.id}/balance`);
-    tenantPoints.value = balanceRes.data || { currentPoints: 0, totalEarned: 0, totalSpent: 0 };
+    tenantPoints.value = balanceRes.data;
     
     const transactionsRes = await api.get(`/rewards/tenant/${tenant.value.id}/transactions`, {
       params: { limit: 20 },
     });
-    pointTransactions.value = transactionsRes.data?.data || transactionsRes.data || [];
+    pointTransactions.value = transactionsRes.data;
   } catch (error: any) {
+    console.error('Error loading tenant points:', error);
     // Don't show error, just set defaults
     tenantPoints.value = { currentPoints: 0, totalEarned: 0, totalSpent: 0 };
     pointTransactions.value = [];
@@ -1565,15 +1291,16 @@ const handleUpdatePoints = async () => {
       reason: editPointsForm.value.reason,
     });
     
-    if (response.data?.success) {
-      await showSuccess(response.data?.message || 'Point berhasil diupdate');
+    if (response.data.success) {
+      await showSuccess(response.data.message);
       showEditPointsModal.value = false;
       editPointsForm.value = { points: 0, reason: '' };
       await loadTenantPoints();
     } else {
-      await showError(response.data?.message || 'Gagal mengupdate point');
+      await showError(response.data.message || 'Gagal mengupdate point');
     }
   } catch (error: any) {
+    console.error('Error updating points:', error);
     await showError(error.response?.data?.message || 'Gagal mengupdate point');
   } finally {
     updatingPoints.value = false;
@@ -1619,7 +1346,7 @@ const toggleSelectAllUsers = () => {
 };
 
 const bulkActivateUsers = async () => {
-  const inactiveUsers = (selectedUsers.value || []).filter(u => !u.isActive);
+  const inactiveUsers = selectedUsers.value.filter(u => !u.isActive);
   if (inactiveUsers.length === 0) return;
   
   const confirmed = await showConfirm(
@@ -1635,11 +1362,11 @@ const bulkActivateUsers = async () => {
       isActive: true,
     });
     
-    if (response.data?.updated && response.data.updated > 0) {
+    if (response.data.updated > 0) {
       await showSuccess(`${response.data.updated} pengguna berhasil diaktifkan`);
     }
-    if (response.data?.failed && response.data.failed > 0) {
-      await showError(`${response.data.failed} pengguna gagal diaktifkan. ${(response.data.errors || []).join(', ')}`);
+    if (response.data.failed > 0) {
+      await showError(`${response.data.failed} pengguna gagal diaktifkan. ${response.data.errors.join(', ')}`);
     }
     
     selectedUsers.value = [];
@@ -1650,7 +1377,7 @@ const bulkActivateUsers = async () => {
 };
 
 const bulkDeactivateUsers = async () => {
-  const activeUsers = (selectedUsers.value || []).filter(u => u.isActive);
+  const activeUsers = selectedUsers.value.filter(u => u.isActive);
   if (activeUsers.length === 0) return;
   
   const confirmed = await showConfirm(
@@ -1666,11 +1393,11 @@ const bulkDeactivateUsers = async () => {
       isActive: false,
     });
     
-    if (response.data?.updated && response.data.updated > 0) {
+    if (response.data.updated > 0) {
       await showSuccess(`${response.data.updated} pengguna berhasil dinonaktifkan`);
     }
-    if (response.data?.failed && response.data.failed > 0) {
-      await showError(`${response.data.failed} pengguna gagal dinonaktifkan. ${(response.data.errors || []).join(', ')}`);
+    if (response.data.failed > 0) {
+      await showError(`${response.data.failed} pengguna gagal dinonaktifkan. ${response.data.errors.join(', ')}`);
     }
     
     selectedUsers.value = [];
@@ -1746,6 +1473,7 @@ const handleUpdateUser = async () => {
     await showSuccess('Pengguna berhasil diperbarui');
     await loadUsers(); // Auto-reload users after update
   } catch (error: any) {
+    console.error('Error updating user:', error);
     await showError(error.response?.data?.message || 'Gagal memperbarui pengguna');
   } finally {
     updatingUser.value = false;
@@ -1773,42 +1501,30 @@ const loadTenantDetail = async () => {
 
   loading.value = true;
   try {
-    // Load tenant info and subscription in parallel for faster loading
-    const [tenantResult, subResult] = await Promise.allSettled([
-      api.get(`/tenants/${tenantId}`),
-      api.get('/subscriptions/current') // tenantId will be added automatically by API interceptor for SUPER_ADMIN
-    ]);
-    
-    // Handle tenant result
-    if (tenantResult.status === 'fulfilled') {
-      tenant.value = tenantResult.value.data;
-    } else {
-      throw new Error(tenantResult.reason?.response?.data?.message || 'Gagal memuat data tenant');
-    }
-    
-    // Handle subscription result
-    if (subResult.status === 'fulfilled') {
-      subscription.value = subResult.value.data;
-    } else {
-      // Subscription error is not critical, set to null
-      subscription.value = null;
-    }
+    // Load tenant info
+    const tenantRes = await api.get(`/tenants/${tenantId}`);
+    tenant.value = tenantRes.data;
+
+    // Load subscription
+    // tenantId will be added automatically by API interceptor for SUPER_ADMIN
+    const subRes = await api.get('/subscriptions/current');
+    subscription.value = subRes.data;
     
     // IMPORTANT: Use isExpired from backend response directly
     // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
     // Backend already calculated isExpired correctly after revert
-    if (subResult.status === 'fulfilled' && subResult.value.data && subResult.value.data.isExpired !== undefined && subscription.value) {
+    if (subRes.data && subRes.data.isExpired !== undefined && subscription.value) {
       // Use isExpired from backend
-      subscription.value.isExpired = subResult.value.data.isExpired;
+      subscription.value.isExpired = subRes.data.isExpired;
     }
     
     // Set initial plan form value
-    planForm.value.subscriptionPlan = (subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'CUSTOM';
+    planForm.value.subscriptionPlan = (subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'ENTERPRISE';
     planForm.value.durationDays = 30; // Reset durasi ke default
 
     // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
     // Only calculate if backend didn't provide these values
-    if (subResult.status === 'fulfilled' && subResult.value.data?.daysRemaining === undefined) {
+    if (subRes.data.daysRemaining === undefined) {
       // Calculate remaining time for countdown only if backend didn't provide
       // Use tenant.subscriptionEnd as fallback if subscription.subscription.endDate is not available
       const subscriptionEndDate = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
@@ -1876,37 +1592,16 @@ const loadTenantDetail = async () => {
         startCountdown();
       }
     }
-    
-    // Set loading to false early so tenant details appear immediately
-    // Don't wait for secondary data (addons, users, stores, points) to load
-    // These will load in background and update UI when ready
-    loading.value = false;
 
-    // Load all additional data in parallel in background (non-blocking)
-    // These calls are independent and can run simultaneously
-    // Use Promise.allSettled to prevent one failure from stopping all others
-    // Don't await - let them load in background while user sees tenant details
-    // This prevents long loading time and error popups from blocking UI
-    Promise.allSettled([
-      loadActiveAddons(),
-      loadAvailableAddons(),
-      loadUsers(),
-      loadStores(),
-      loadTenantPoints()
-    ]).catch(() => {
-      // Silently handle any errors - individual functions already handle their own errors
-      // No need to show error here as it's non-critical data
-    });
-    
-    // Check if any critical function failed (tenant or subscription)
-    // These are the only ones that should cause the page to fail
-    if (tenantResult.status === 'rejected') {
-      // Tenant loading failed - this is critical
-      throw tenantResult.reason;
-    }
-    
-    // Subscription failure is not critical - we can still show the page
-    // Other failures (addons, users, stores, points) are also not critical
+    // Load active addons
+    await loadActiveAddons();
+    // Load available addons
+    await loadAvailableAddons();
+    // Load users and stores for this tenant
+    await loadUsers();
+    await loadStores();
+    // Load tenant points (for super admin)
+    await loadTenantPoints();
   } catch (error: any) {
     // If 401 Unauthorized, redirect to login
     if (error.response?.status === 401) {
@@ -1914,21 +1609,16 @@ const loadTenantDetail = async () => {
       router.push('/login');
       return;
     }
-    // Only show error and redirect if it's a critical error (tenant not found, etc)
-    if (error.response?.status === 404 || error.response?.status === 403) {
-      await showError(error.response?.data?.message || 'Tenant tidak ditemukan atau tidak memiliki akses');
-      router.push('/app/tenants');
-    } else if (error.response?.status && error.response.status >= 500) {
-      // Server error - show error but don't redirect
+    console.error('Error loading tenant detail:', error);
+    // Only show error if it's not a navigation error
+    if (error.response?.status !== 401) {
       await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
     }
-    // For other errors, just log but don't show error (non-critical)
-    // Note: loading.value is already set to false above before Promise.allSettled
-    // So we don't need to set it again here unless there was a critical error
-    if (error.response?.status === 401 || error.response?.status === 404 || error.response?.status >= 500) {
-      // Only set loading to false for critical errors that prevent page display
-      loading.value = false;
+    if (error.response?.status !== 401) {
+      router.push('/app/tenants');
     }
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -1950,6 +1640,7 @@ const handleExtendSubscription = async () => {
     await showSuccess('Langganan berhasil diperpanjang');
     await loadTenantDetail();
   } catch (error: any) {
+    console.error('Error extending subscription:', error);
     await showError(error.response?.data?.message || 'Gagal memperpanjang langganan');
   } finally {
     extending.value = false;
@@ -1987,6 +1678,7 @@ const handleReduceSubscription = async () => {
     await showSuccess('Durasi langganan berhasil dikurangi');
     await loadTenantDetail();
   } catch (error: any) {
+    console.error('Error reducing subscription:', error);
     const errorMessage = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || 'Gagal mengurangi durasi langganan';
     await showError(errorMessage);
   } finally {
@@ -2012,6 +1704,7 @@ const handleEditPlan = async () => {
     await showSuccess('Paket berhasil diupdate (temporary upgrade)');
     await loadTenantDetail();
   } catch (error: any) {
+    console.error('Error updating plan:', error);
     await showError(error.response?.data?.message || 'Gagal mengupdate paket');
   }
 };
@@ -2048,6 +1741,7 @@ const handleExtendAddon = async () => {
     // Reload addons to show updated list
     await loadActiveAddons();
   } catch (error: any) {
+    console.error('Error extending addon:', error);
     await showError(error.response?.data?.message || 'Gagal memperpanjang addon');
   } finally {
     extending.value = false;
@@ -2074,6 +1768,7 @@ const handleReduceAddon = async () => {
     // Reload addons to show updated list
     await loadActiveAddons();
   } catch (error: any) {
+    console.error('Error reducing addon:', error);
     await showError(error.response?.data?.message || 'Gagal mengurangi durasi addon');
   } finally {
     reducing.value = false;
@@ -2107,13 +1802,14 @@ const subscribeAddon = async (addon: AvailableAddon) => {
       itemType: 'addon',
     });
 
-    if (response.data?.success && response.data?.paymentUrl) {
+    if (response.data.success && response.data.paymentUrl) {
       // Redirect to Midtrans payment page
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data?.message || 'Gagal membuat pembayaran');
+      await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
+    console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
   }
 };
@@ -2153,13 +1849,14 @@ const handleSubscribeAddon = async () => {
       itemType: 'addon',
     });
 
-    if (response.data?.success && response.data?.paymentUrl) {
+    if (response.data.success && response.data.paymentUrl) {
       // Redirect to Midtrans payment page
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data?.message || 'Gagal membuat pembayaran');
+      await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
+    console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
   }
 };
@@ -2176,6 +1873,7 @@ const unsubscribeAddon = async (addonId: string) => {
     await loadActiveAddons();
     await loadAvailableAddons();
   } catch (error: any) {
+    console.error('Error unsubscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menonaktifkan addon');
   }
 };
@@ -2187,37 +1885,24 @@ const handleDeactivateSubscription = async () => {
   try {
     await api.put(`/tenants/${tenant.value.id}/deactivate-subscription`);
     
-    await showSuccess('Langganan berhasil dinonaktifkan');
+    showSuccess('Langganan berhasil dinonaktifkan');
     showDeactivateSubscriptionModal.value = false;
     await loadTenantDetail();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menonaktifkan langganan');
+    console.error('Error deactivating subscription:', error);
+    showError(error.response?.data?.message || 'Gagal menonaktifkan langganan');
   } finally {
     deactivatingSubscription.value = false;
   }
 };
 
 // Watch for route changes to update selectedTenantId
-// Watch for route params changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
-
-onMounted(async () => {
-  await nextTick();
-  
-  // Initial setup if route param is provided
-  if (route.params.id && authStore.isSuperAdmin) {
-    authStore.setSelectedTenant(route.params.id as string);
-    localStorage.setItem('selectedTenantId', route.params.id as string);
+watch(() => route.params.id, (newTenantId) => {
+  if (newTenantId && authStore.isSuperAdmin) {
+    authStore.setSelectedTenant(newTenantId as string);
+    localStorage.setItem('selectedTenantId', newTenantId as string);
   }
-  
-  // Watch for route params changes after mount
-  watch(() => route.params.id, (newTenantId) => {
-    if (newTenantId && authStore.isSuperAdmin) {
-      authStore.setSelectedTenant(newTenantId as string);
-      localStorage.setItem('selectedTenantId', newTenantId as string);
-    }
-  });
-});
+}, { immediate: true });
 
 // Countdown real-time
 const startCountdown = () => {
@@ -2264,17 +1949,17 @@ const startCountdown = () => {
           countdownInterval = null;
         }
         
-        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/CUSTOM) and expired
+        // IMPORTANT: Only auto refresh if current plan is BOOST (PRO/ENTERPRISE) and expired
         // If current plan is BASIC and expired, don't auto refresh (just show expired state)
         // This prevents unnecessary page refresh for BASIC plan
         const currentPlan = subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC';
         const subscriptionEnd = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
         
         // Only reload if:
-        // 1. Current plan is PRO or CUSTOM (boost) and expired
+        // 1. Current plan is PRO or ENTERPRISE (boost) and expired
         // 2. SubscriptionEnd is not null (might be temporary upgrade that needs revert)
         // 3. Not already reloading
-        if ((currentPlan === 'PRO' || currentPlan === 'CUSTOM') && subscriptionEnd && !isReloadingTenant.value) {
+        if ((currentPlan === 'PRO' || currentPlan === 'ENTERPRISE') && subscriptionEnd && !isReloadingTenant.value) {
           // Boost plan expired - reload to get reverted BASIC plan with remaining time
           isReloadingTenant.value = true;
           loadTenantDetail().finally(() => {

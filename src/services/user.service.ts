@@ -2,9 +2,8 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 import addonService from './addon.service';
+import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import { sanitizeString, sanitizeEmail } from '../utils/sanitize';
-import CacheService from '../utils/cache';
 
 export interface CreateUserInput {
   name: string;
@@ -35,19 +34,8 @@ export interface UpdateUserInput {
 }
 
 export class UserService {
-  async getUsers(tenantId: string, page: number = 1, limit: number = 10, useCache: boolean = true) {
+  async getUsers(tenantId: string, page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-
-    // Create cache key
-    const cacheKey = `users:${tenantId}:${page}:${limit}`;
-
-    // Try to get from cache first
-    if (useCache) {
-      const cached = await CacheService.get(cacheKey);
-      if (cached) {
-        return cached;
-      }
-    }
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -70,7 +58,7 @@ export class UserService {
       prisma.user.count({ where: { tenantId } }),
     ]);
 
-    const result = {
+    return {
       data: users,
       pagination: {
         page,
@@ -79,13 +67,6 @@ export class UserService {
         totalPages: Math.ceil(total / limit),
       },
     };
-
-    // Cache result for 5 minutes
-    if (useCache) {
-      await CacheService.set(cacheKey, result, 300);
-    }
-
-    return result;
   }
 
   async getUserById(id: string, tenantId: string) {
@@ -135,8 +116,8 @@ export class UserService {
     const user = await prisma.user.create({
       data: {
         tenantId,
-        name: sanitizeString(data.name, 255),
-        email: sanitizeEmail(data.email),
+        name: data.name,
+        email: data.email,
         password: hashedPassword,
         defaultPassword: password, // Store default password (plaintext) for Super Admin to view
         role: data.role,
@@ -165,8 +146,8 @@ export class UserService {
     }
 
     const updateData: any = {};
-    if (data.name) updateData.name = sanitizeString(data.name, 255);
-    if (data.email) updateData.email = sanitizeEmail(data.email);
+    if (data.name) updateData.name = data.name;
+    if (data.email) updateData.email = data.email;
     if (data.role) updateData.role = data.role;
     
     // Allow isActive update based on role and subscription status
@@ -278,10 +259,20 @@ export class UserService {
    */
   private async invalidateAnalyticsCache(tenantId: string): Promise<void> {
     try {
-      // Delete all analytics cache keys for this tenant
-      await CacheService.deletePattern(`analytics:*:${tenantId}`);
-      await CacheService.deletePattern(`analytics:${tenantId}:*`);
-      logger.info('Invalidated analytics cache after user operation', { tenantId });
+      const redis = getRedisClient();
+      if (redis) {
+        // Delete all analytics cache keys for this tenant
+        const keys = await redis.keys(`analytics:*:${tenantId}`);
+        const keys2 = await redis.keys(`analytics:${tenantId}:*`);
+        const allKeys = [...keys, ...keys2];
+        if (allKeys.length > 0) {
+          await redis.del(...allKeys);
+          logger.info('Invalidated analytics cache after user operation', {
+            tenantId,
+            cacheKeysDeleted: allKeys.length
+          });
+        }
+      }
     } catch (error: any) {
       logger.warn('Failed to invalidate analytics cache', {
         error: error.message,

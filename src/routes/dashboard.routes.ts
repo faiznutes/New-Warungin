@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
-import logger from '../utils/logger';
+import { handleApiError } from '../utils/error-handler';
 
 const router = Router();
 
@@ -54,9 +53,10 @@ router.get(
   '/stats',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response, next) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const user = (req as any).user;
+      const userRole = user?.role;
       
       // For Super Admin without selected tenant, return addon & subscription stats
       if (userRole === 'SUPER_ADMIN') {
@@ -82,11 +82,10 @@ router.get(
         tenantId = requireTenantId(req);
       } catch (error: any) {
         // If tenantId is missing, return 400 with helpful message
-        const err = new Error(error.message || 'Tenant ID is required');
-        (err as any).statusCode = 400;
-        (err as any).code = 'TENANT_ID_REQUIRED';
-        handleRouteError(res, err, error.message || 'Tenant ID is required', 'GET_DASHBOARD_STATS');
-        return;
+        return res.status(400).json({ 
+          message: error.message || 'Tenant ID is required',
+          error: 'TENANT_ID_REQUIRED'
+        });
       }
       
       const { startDate, endDate } = req.query;
@@ -96,40 +95,9 @@ router.get(
         endDate ? new Date(endDate as string) : undefined
       );
       res.json(stats);
-    } catch (error: unknown) {
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      const userRole = (req as AuthRequest).user?.role || (req as AuthRequest).role;
-      const queryTenantId = req.query.tenantId as string;
-      
-      // For Super Admin without tenant, return empty stats instead of error
-      if (userRole === 'SUPER_ADMIN' && !queryTenantId) {
-        return res.json({
-          overview: {
-            totalAddonRevenue: 0,
-            totalSubscriptionRevenue: 0,
-            totalRevenue: 0,
-            totalGlobalRevenue: 0,
-            totalAddons: 0,
-            activeSubscriptions: 0,
-            totalTenants: 0,
-            activeTenants: 0,
-            totalUsers: 0,
-            todayAddonRevenue: 0,
-            todaySubscriptionRevenue: 0,
-            todayRevenue: 0,
-            thisMonthAddonRevenue: 0,
-            thisMonthSubscriptionRevenue: 0,
-            thisMonthRevenue: 0,
-            revenueGrowth: 0,
-          },
-          topAddons: [],
-          recentSubscriptions: [],
-          recentAddons: [],
-          subscriptionBreakdown: [],
-        });
-      }
-      
-      handleRouteError(res, error, 'Failed to load dashboard stats', 'DASHBOARD_STATS');
+    } catch (error: any) {
+      // Pass error to Express error handler
+      next(error);
     }
   }
 );
@@ -147,26 +115,14 @@ router.get(
   '/stats/cashier',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
-      if (userRole !== 'CASHIER') {
-        const error = new Error('Access denied. Cashier only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Cashier only.', 'GET_CASHIER_DASHBOARD');
-        return;
+      const user = (req as any).user;
+      if (user.role !== 'CASHIER') {
+        return res.status(403).json({ message: 'Access denied. Cashier only.' });
       }
 
       const tenantId = requireTenantId(req);
-      const user = req.user;
-      
-      if (!user) {
-        const error = new Error('User not found');
-        (error as any).statusCode = 401;
-        handleRouteError(res, error, 'User not found', 'GET_CASHIER_DASHBOARD');
-        return;
-      }
-      
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -207,8 +163,8 @@ router.get(
         todayRevenue: Number(todayRevenue._sum.total || 0),
         recentTransactions,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load cashier stats', 'CASHIER_STATS');
+    } catch (error: any) {
+      handleApiError(res, error, 'Failed to load cashier stats');
     }
   }
 );
@@ -226,14 +182,11 @@ router.get(
   '/stats/kitchen',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const userRole = req.user?.role || req.role;
-      if (userRole !== 'KITCHEN') {
-        const error = new Error('Access denied. Kitchen only.');
-        (error as any).statusCode = 403;
-        handleRouteError(res, error, 'Access denied. Kitchen only.', 'GET_KITCHEN_DASHBOARD');
-        return;
+      const user = (req as any).user;
+      if (user.role !== 'KITCHEN') {
+        return res.status(403).json({ message: 'Access denied. Kitchen only.' });
       }
 
       const tenantId = requireTenantId(req);
@@ -268,8 +221,8 @@ router.get(
         readyOrders,
         totalOrders: pendingOrders + cookingOrders + readyOrders,
       });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load kitchen stats', 'KITCHEN_STATS');
+    } catch (error: any) {
+      handleApiError(res, error, 'Failed to load kitchen stats');
     }
   }
 );
@@ -291,8 +244,9 @@ async function getSuperAdminStats() {
     const { AVAILABLE_ADDONS } = await import('../services/addon.service');
     const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
 
-    // Calculate addon revenue - get ALL addons (not just active) to match report logic
+    // Calculate addon revenue
     const allAddons = await prisma.tenantAddon.findMany({
+      where: { status: 'active' },
       include: { tenant: { select: { name: true } } },
       orderBy: { subscribedAt: 'desc' },
     });
@@ -317,13 +271,10 @@ async function getSuperAdminStats() {
       const revenue = (price * duration) / 30; // Convert to total revenue
 
       totalAddonRevenue += revenue;
-      
-      // Use subscribedAt (it's required field, but handle null case)
-      const subscribedAt = addon.subscribedAt;
-      if (subscribedAt && new Date(subscribedAt) >= todayStart) {
+      if (new Date(addon.subscribedAt) >= todayStart) {
         todayAddonRevenue += revenue;
       }
-      if (subscribedAt && new Date(subscribedAt) >= thisMonthStart) {
+      if (new Date(addon.subscribedAt) >= thisMonthStart) {
         thisMonthAddonRevenue += revenue;
       }
 
@@ -384,7 +335,7 @@ async function getSuperAdminStats() {
     // Recent addon purchases (last 10)
     const recentAddons = allAddons.slice(0, 10).map(addon => ({
       id: addon.id,
-      tenantName: addon.tenant?.name || 'Unknown',
+      tenantName: addon.tenant.name,
       addonName: addon.addonName,
       addonType: addon.addonType,
       subscribedAt: addon.subscribedAt,
@@ -395,8 +346,6 @@ async function getSuperAdminStats() {
     // Calculate growth
     const lastMonthAddonRevenue = allAddons
       .filter(a => {
-        // Use subscribedAt (it's required field, but handle null case)
-        if (!a.subscribedAt) return false;
         const date = new Date(a.subscribedAt);
         return date >= lastMonthStart && date <= lastMonthEnd;
       })
@@ -445,8 +394,7 @@ async function getSuperAdminStats() {
       overview: {
         totalAddonRevenue,
         totalSubscriptionRevenue,
-        totalRevenue, // Total Pendapatan (Subscription + Addons only, no orders)
-        totalGlobalRevenue: totalRevenue, // Alias for frontend compatibility
+        totalRevenue,
         totalAddons: allAddons.length,
         activeSubscriptions,
         totalTenants,
@@ -469,37 +417,21 @@ async function getSuperAdminStats() {
       })),
     };
   } catch (error: any) {
-    logger.error('Error in getSuperAdminStats:', {
-      error: error.message,
-      stack: error.stack,
-      code: error.code,
-    });
+    console.error('Error in getSuperAdminStats:', error);
     
-    // Return empty structure instead of throwing to prevent 502
-    return {
-      overview: {
-        totalAddonRevenue: 0,
-        totalSubscriptionRevenue: 0,
-        totalRevenue: 0,
-        totalGlobalRevenue: 0,
-        totalAddons: 0,
-        activeSubscriptions: 0,
-        totalTenants: 0,
-        activeTenants: 0,
-        totalUsers: 0,
-        todayAddonRevenue: 0,
-        todaySubscriptionRevenue: 0,
-        todayRevenue: 0,
-        thisMonthAddonRevenue: 0,
-        thisMonthSubscriptionRevenue: 0,
-        thisMonthRevenue: 0,
-        revenueGrowth: 0,
-      },
-      topAddons: [],
-      recentSubscriptions: [],
-      recentAddons: [],
-      subscriptionBreakdown: [],
-    };
+    // Handle database connection errors
+    if (error.code === 'P1001' || 
+        error.message?.includes('Can\'t reach database server') || 
+        error.message?.includes('connection') ||
+        error.message?.includes('Database connection error')) {
+      throw {
+        code: 'P1001',
+        message: 'Database connection error. Please check your database configuration.',
+      };
+    }
+    
+    // Re-throw other errors
+    throw error;
   }
 }
 

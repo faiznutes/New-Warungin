@@ -9,23 +9,19 @@
     </div>
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          Pesanan & Transaksi
-        </h2>
-        <p class="text-sm sm:text-base text-gray-600">
-          Kelola pesanan dan riwayat transaksi
-        </p>
-      </div>
-      <button
-        v-if="canDeleteOrders && deletableOrdersCount > 0"
-        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium whitespace-nowrap"
-        @click="deleteAllOrders"
-      >
-        Hapus Semua ({{ deletableOrdersCount }})
-      </button>
-    </div>
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pesanan & Transaksi</h2>
+              <p class="text-sm sm:text-base text-gray-600">Kelola pesanan dan riwayat transaksi</p>
+            </div>
+            <button
+              v-if="canDeleteOrders && deletableOrdersCount > 0"
+              @click="deleteAllOrders"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium whitespace-nowrap"
+            >
+              Hapus Semua ({{ deletableOrdersCount }})
+            </button>
+          </div>
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
@@ -36,47 +32,47 @@
           <label class="block text-xs font-medium text-gray-700 mb-2">Status</label>
           <div class="flex flex-wrap gap-2">
             <button
+              @click="filters.status = ''"
               :class="!filters.status 
                 ? 'bg-primary-600 text-white border-primary-600' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
-              @click="filters.status = ''"
             >
               Semua
             </button>
             <button
+              @click="filters.status = 'PENDING'"
               :class="filters.status === 'PENDING' 
                 ? 'bg-yellow-600 text-white border-yellow-600' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
-              @click="filters.status = 'PENDING'"
             >
               Pending
             </button>
             <button
+              @click="filters.status = 'PROCESSING'"
               :class="filters.status === 'PROCESSING' 
                 ? 'bg-blue-600 text-white border-blue-600' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
-              @click="filters.status = 'PROCESSING'"
             >
               Processing
             </button>
             <button
+              @click="filters.status = 'COMPLETED'"
               :class="filters.status === 'COMPLETED' 
                 ? 'bg-green-600 text-white border-green-600' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
-              @click="filters.status = 'COMPLETED'"
             >
               Completed
             </button>
             <button
+              @click="filters.status = 'CANCELLED'"
               :class="filters.status === 'CANCELLED' 
                 ? 'bg-red-600 text-white border-red-600' 
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
               class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
-              @click="filters.status = 'CANCELLED'"
             >
               Cancelled
             </button>
@@ -89,8 +85,8 @@
           <input
             v-model="filters.month"
             type="month"
-            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             @change="handleMonthChange"
+            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
           />
         </div>
 
@@ -101,14 +97,14 @@
             <input
               v-model="filters.startDate"
               type="date"
-              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
               @change="loadOrders(1)"
+              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             />
             <input
               v-model="filters.endDate"
               type="date"
-              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
               @change="loadOrders(1)"
+              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             />
           </div>
         </div>
@@ -118,27 +114,17 @@
           <label class="block text-xs font-medium text-gray-700 mb-2">Cari Pesanan</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-              <svg
-                class="h-4 w-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <input
               v-model="filters.search"
+              @focus="handleSearchFocus"
+              @input="handleSearchInput"
               type="text"
               placeholder="Cari nomor pesanan..."
               class="block w-full pl-8 pr-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-              @focus="handleSearchFocus"
-              @input="handleSearchInput"
             />
           </div>
         </div>
@@ -146,35 +132,15 @@
     </div>
 
     <!-- Orders Table -->
-    <div
-      v-if="loading"
-      class="flex items-center justify-center py-12"
-    >
-      <div class="text-gray-500">
-        Memuat...
-      </div>
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <div class="text-gray-500">Memuat...</div>
     </div>
 
-    <div
-      v-else-if="orders.length === 0"
-      class="flex flex-col items-center justify-center py-12 bg-white rounded-lg"
-    >
-      <svg
-        class="w-16 h-16 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-        />
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
-      <p class="text-gray-500">
-        Belum ada pesanan
-      </p>
+      <p class="text-gray-500">Belum ada pesanan</p>
     </div>
 
     <!-- Orders List (Mobile & Desktop) -->
@@ -191,16 +157,12 @@
             <input
               type="checkbox"
               :checked="isOrderSelected(order.id)"
-              class="w-4 h-4 mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               @change="toggleOrderSelection(order)"
+              class="mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
             <div class="flex-1 ml-3">
-              <div class="text-sm font-semibold text-gray-900 mb-1">
-                {{ order.orderNumber }}
-              </div>
-              <div class="text-xs text-gray-500">
-                {{ formatDateTime(order.createdAt) }}
-              </div>
+              <div class="text-sm font-semibold text-gray-900 mb-1">{{ order.orderNumber }}</div>
+              <div class="text-xs text-gray-500">{{ formatDateTime(order.createdAt) }}</div>
             </div>
             <span
               class="px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0"
@@ -220,37 +182,34 @@
               <span class="text-gray-600">Total:</span>
               <span class="font-semibold text-gray-900 ml-1">{{ formatCurrency(Number(order.total)) }}</span>
             </div>
-            <div
-              v-if="order.sendToKitchen"
-              class="text-xs text-blue-600"
-            >
+            <div v-if="order.sendToKitchen" class="text-xs text-blue-600">
               → Dikirim ke Dapur
             </div>
           </div>
           <div class="flex flex-wrap gap-2 pt-3 border-t border-gray-200">
             <button
-              class="flex-1 px-3 py-1.5 text-xs bg-primary-50 text-primary-600 rounded hover:bg-primary-100"
               @click="viewOrder(order)"
+              class="flex-1 px-3 py-1.5 text-xs bg-primary-50 text-primary-600 rounded hover:bg-primary-100"
             >
               Detail
             </button>
             <button
-              class="flex-1 px-3 py-1.5 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100"
               @click="printReceipt(order)"
+              class="flex-1 px-3 py-1.5 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100"
             >
               Print
             </button>
             <button
               v-if="order.status === 'PENDING' && !order.sendToKitchen"
-              class="flex-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
               @click="sendToKitchen(order.id)"
+              class="flex-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
             >
               Ke Dapur
             </button>
             <button
               v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
-              class="flex-1 px-3 py-1.5 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100"
               @click="updateStatus(order.id, 'COMPLETED')"
+              class="flex-1 px-3 py-1.5 text-xs bg-green-50 text-green-600 rounded hover:bg-green-100"
             >
               Selesai
             </button>
@@ -259,32 +218,29 @@
       </div>
 
       <!-- Bulk Actions Bar -->
-      <div
-        v-if="selectedOrders.length > 0"
-        class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between"
-      >
+      <div v-if="selectedOrders.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <span class="text-sm font-medium text-blue-900">
             {{ selectedOrders.length }} pesanan dipilih
           </span>
           <button
             v-if="canRefundOrders && selectedOrders.every(o => o.status === 'COMPLETED')"
-            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium"
             @click="bulkRefund"
+            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium"
           >
             Refund ({{ selectedOrders.length }})
           </button>
           <button
             v-if="canDeleteOrders && selectedOrders.every(o => o.status === 'CANCELLED' || o.status === 'REFUNDED')"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
             @click="bulkDelete"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
           >
             Hapus ({{ selectedOrders.length }})
           </button>
         </div>
         <button
-          class="text-sm text-blue-600 hover:text-blue-800"
           @click="selectedOrders = []"
+          class="text-sm text-blue-600 hover:text-blue-800"
         >
           Batal pilihan
         </button>
@@ -292,166 +248,149 @@
 
       <!-- Desktop Table View -->
       <div class="hidden sm:block bg-white rounded-lg shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 lg:px-6 py-3 text-left">
-                  <input
-                    type="checkbox"
-                    :checked="selectedOrders.length === orders.length && orders.length > 0"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    @change="toggleSelectAll"
-                  />
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order Number
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Tanggal
-                </th>
-                <th class="px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="order in orders"
-                :key="order.id"
-                class="hover:bg-gray-50"
-                :class="{ 'bg-blue-50': isOrderSelected(order.id) }"
-              >
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    :checked="isOrderSelected(order.id)"
-                    class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    @change="toggleOrderSelection(order)"
-                  />
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ order.orderNumber }}
-                  </div>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">
-                    {{ order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in' }}
-                  </div>
-                  <div
-                    v-if="order.sendToKitchen"
-                    class="text-xs text-blue-600 mt-1"
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 lg:px-6 py-3 text-left">
+                <input
+                  type="checkbox"
+                  :checked="selectedOrders.length === orders.length && orders.length > 0"
+                  @change="toggleSelectAll"
+                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Order Number
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Customer
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Tanggal
+              </th>
+              <th class="px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="order in orders" :key="order.id" class="hover:bg-gray-50" :class="{ 'bg-blue-50': isOrderSelected(order.id) }">
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  :checked="isOrderSelected(order.id)"
+                  @change="toggleOrderSelection(order)"
+                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ order.orderNumber }}</div>
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in' }}
+                </div>
+                <div v-if="order.sendToKitchen" class="text-xs text-blue-600 mt-1">
+                  → Dapur
+                </div>
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-semibold text-gray-900">{{ formatCurrency(Number(order.total)) }}</div>
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <span
+                  class="px-2 py-1 text-xs font-semibold rounded-full"
+                  :class="getStatusClass(order.status)"
+                >
+                  {{ getStatusLabel(order.status) }}
+                </span>
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">{{ formatDateTime(order.createdAt) }}</div>
+              </td>
+              <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex items-center justify-end space-x-1 sm:space-x-2 flex-wrap">
+                  <button
+                    @click="viewOrder(order)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded"
                   >
-                    → Dapur
-                  </div>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-semibold text-gray-900">
-                    {{ formatCurrency(Number(order.total)) }}
-                  </div>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getStatusClass(order.status)"
+                    Detail
+                  </button>
+                  <button
+                    @click="printReceipt(order)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-600 hover:text-green-900 hover:bg-green-50 rounded"
                   >
-                    {{ getStatusLabel(order.status) }}
-                  </span>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">
-                    {{ formatDateTime(order.createdAt) }}
-                  </div>
-                </td>
-                <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex items-center justify-end space-x-1 sm:space-x-2 flex-wrap">
-                    <button
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded"
-                      @click="viewOrder(order)"
-                    >
-                      Detail
-                    </button>
-                    <button
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-600 hover:text-green-900 hover:bg-green-50 rounded"
-                      @click="printReceipt(order)"
-                    >
-                      Print
-                    </button>
-                    <!-- Edit Order Button (conditional) -->
-                    <button
-                      v-if="canEditOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
-                      @click="editOrder(order)"
-                    >
-                      Edit
-                    </button>
-                    <!-- Cancel Order Button (conditional) -->
-                    <button
-                      v-if="canCancelOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-orange-600 hover:text-orange-900 hover:bg-orange-50 rounded"
-                      @click="cancelOrder(order.id)"
-                    >
-                      Batal
-                    </button>
-                    <!-- Refund Order Button (conditional) -->
-                    <button
-                      v-if="canRefundOrders && order.status === 'COMPLETED'"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded"
-                      @click="refundOrder(order.id)"
-                    >
-                      Refund
-                    </button>
-                    <!-- Delete Order Button (conditional) -->
-                    <button
-                      v-if="canDeleteOrders && (order.status === 'CANCELLED' || order.status === 'REFUNDED')"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
-                      @click="deleteOrder(order.id)"
-                    >
-                      Hapus
-                    </button>
-                    <button
-                      v-if="order.status === 'PENDING' && !order.sendToKitchen"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
-                      @click="sendToKitchen(order.id)"
-                    >
-                      <span class="hidden md:inline">Kirim ke Dapur</span>
-                      <span class="md:hidden">Dapur</span>
-                    </button>
-                    <button
-                      v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
-                      class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-600 hover:text-green-900 hover:bg-green-50 rounded"
-                      @click="updateStatus(order.id, 'COMPLETED')"
-                    >
-                      Selesai
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                    Print
+                  </button>
+                  <!-- Edit Order Button (conditional) -->
+                  <button
+                    v-if="canEditOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')"
+                    @click="editOrder(order)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
+                  >
+                    Edit
+                  </button>
+                  <!-- Cancel Order Button (conditional) -->
+                  <button
+                    v-if="canCancelOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')"
+                    @click="cancelOrder(order.id)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-orange-600 hover:text-orange-900 hover:bg-orange-50 rounded"
+                  >
+                    Batal
+                  </button>
+                  <!-- Refund Order Button (conditional) -->
+                  <button
+                    v-if="canRefundOrders && order.status === 'COMPLETED'"
+                    @click="refundOrder(order.id)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded"
+                  >
+                    Refund
+                  </button>
+                  <!-- Delete Order Button (conditional) -->
+                  <button
+                    v-if="canDeleteOrders && (order.status === 'CANCELLED' || order.status === 'REFUNDED')"
+                    @click="deleteOrder(order.id)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
+                  >
+                    Hapus
+                  </button>
+                  <button
+                    v-if="order.status === 'PENDING' && !order.sendToKitchen"
+                    @click="sendToKitchen(order.id)"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
+                  >
+                    <span class="hidden md:inline">Kirim ke Dapur</span>
+                    <span class="md:hidden">Dapur</span>
+                  </button>
+                  <button
+                    v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
+                    @click="updateStatus(order.id, 'COMPLETED')"
+                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-600 hover:text-green-900 hover:bg-green-50 rounded"
+                  >
+                    Selesai
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       </div>
     </div>
 
     <!-- Pagination -->
-    <div
-      v-if="pagination.totalPages > 1"
-      class="flex items-center justify-center space-x-2 mt-6"
-    >
+    <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
       <button
+        @click="loadOrders(pagination.page - 1)"
         :disabled="pagination.page === 1"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        @click="loadOrders(pagination.page - 1)"
       >
         Sebelumnya
       </button>
@@ -459,9 +398,9 @@
         Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
       </span>
       <button
+        @click="loadOrders(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
         class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        @click="loadOrders(pagination.page + 1)"
       >
         Selanjutnya
       </button>
@@ -478,7 +417,7 @@
   <!-- Order Edit Modal -->
   <OrderEditModal
     :show="showEditModal"
-    :order="editingOrder || null"
+    :order="editingOrder as Order | null"
     @close="showEditModal = false; editingOrder = null"
     @saved="handleOrderSaved"
   />
@@ -487,35 +426,21 @@
   <div
     v-if="selectedOrder"
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4"
-    style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
     @click.self="selectedOrder = null"
+    style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
   >
     <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
         <div>
-          <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
-            Detail Pesanan
-          </h3>
-          <p class="text-sm text-gray-600 mt-1">
-            {{ selectedOrder.orderNumber }}
-          </p>
+          <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Pesanan</h3>
+          <p class="text-sm text-gray-600 mt-1">{{ selectedOrder.orderNumber }}</p>
         </div>
         <button
-          class="text-gray-400 hover:text-gray-600 transition p-2"
           @click="selectedOrder = null"
+          class="text-gray-400 hover:text-gray-600 transition p-2"
         >
-          <svg
-            class="w-5 h-5 sm:w-6 sm:h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -524,9 +449,7 @@
         <!-- Order Info -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <div>
-            <h4 class="text-sm font-medium text-gray-500 mb-2">
-              Informasi Pesanan
-            </h4>
+            <h4 class="text-sm font-medium text-gray-500 mb-2">Informasi Pesanan</h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-600">Nomor Pesanan:</span>
@@ -549,18 +472,13 @@
           </div>
 
           <div>
-            <h4 class="text-sm font-medium text-gray-500 mb-2">
-              Informasi Pelanggan
-            </h4>
+            <h4 class="text-sm font-medium text-gray-500 mb-2">Informasi Pelanggan</h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-600">Nama:</span>
                 <span>{{ (selectedOrder as any).member?.name || (selectedOrder as any).customer?.name || (selectedOrder as any).temporaryCustomerName || 'Pelanggan Umum' }}</span>
               </div>
-              <div
-                v-if="(selectedOrder as any).member?.email || (selectedOrder as any).customer?.email"
-                class="flex justify-between"
-              >
+              <div v-if="(selectedOrder as any).member?.email || (selectedOrder as any).customer?.email" class="flex justify-between">
                 <span class="text-gray-600">Email:</span>
                 <span>{{ (selectedOrder as any).member?.email || (selectedOrder as any).customer?.email }}</span>
               </div>
@@ -570,44 +488,23 @@
 
         <!-- Order Items -->
         <div class="mb-6">
-          <h4 class="text-sm font-medium text-gray-500 mb-3">
-            Item Pesanan
-          </h4>
+          <h4 class="text-sm font-medium text-gray-500 mb-3">Item Pesanan</h4>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                    Produk
-                  </th>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                    Qty
-                  </th>
-                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                    Harga
-                  </th>
-                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                    Subtotal
-                  </th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Harga</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Subtotal</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr
-                  v-for="(item, index) in ((selectedOrder as any).items || [])"
-                  :key="index"
-                >
-                  <td class="px-4 py-2 text-sm">
-                    {{ item.product?.name || item.name }}
-                  </td>
-                  <td class="px-4 py-2 text-sm">
-                    {{ item.quantity }}
-                  </td>
-                  <td class="px-4 py-2 text-sm text-right">
-                    {{ formatCurrency(Number(item.price)) }}
-                  </td>
-                  <td class="px-4 py-2 text-sm text-right font-semibold">
-                    {{ formatCurrency(Number(item.subtotal)) }}
-                  </td>
+                <tr v-for="(item, index) in ((selectedOrder as any).items || [])" :key="index">
+                  <td class="px-4 py-2 text-sm">{{ item.product?.name || item.name }}</td>
+                  <td class="px-4 py-2 text-sm">{{ item.quantity }}</td>
+                  <td class="px-4 py-2 text-sm text-right">{{ formatCurrency(Number(item.price)) }}</td>
+                  <td class="px-4 py-2 text-sm text-right font-semibold">{{ formatCurrency(Number(item.subtotal)) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -621,10 +518,7 @@
               <span class="text-gray-600">Subtotal:</span>
               <span>{{ formatCurrency(Number((selectedOrder as any).subtotal || selectedOrder.total)) }}</span>
             </div>
-            <div
-              v-if="(selectedOrder as any).discount > 0"
-              class="flex justify-between text-red-600"
-            >
+            <div v-if="(selectedOrder as any).discount > 0" class="flex justify-between text-red-600">
               <span>Diskon:</span>
               <span>-{{ formatCurrency(Number((selectedOrder as any).discount)) }}</span>
             </div>
@@ -632,10 +526,7 @@
               <span>Total:</span>
               <span>{{ formatCurrency(Number(selectedOrder.total)) }}</span>
             </div>
-            <div
-              v-if="(selectedOrder as any).transaction"
-              class="flex justify-between text-sm text-gray-600 mt-2"
-            >
+            <div v-if="(selectedOrder as any).transaction" class="flex justify-between text-sm text-gray-600 mt-2">
               <span>Metode Pembayaran:</span>
               <span>{{ getPaymentMethodLabel((selectedOrder as any).transaction.paymentMethod) }}</span>
             </div>
@@ -645,46 +536,46 @@
         <!-- Actions -->
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <button
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             @click="printReceipt(selectedOrder)"
+            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
           >
             Print Receipt
           </button>
           <!-- Edit Order Button (conditional) -->
           <button
             v-if="canEditOrders && (selectedOrder.status === 'PENDING' || selectedOrder.status === 'PROCESSING')"
-            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             @click="editOrder(selectedOrder)"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             Edit Pesanan
           </button>
           <!-- Cancel Order Button (conditional) -->
           <button
             v-if="canCancelOrders && (selectedOrder.status === 'PENDING' || selectedOrder.status === 'PROCESSING')"
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             @click="cancelOrder(selectedOrder.id)"
+            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
           >
             Batalkan Pesanan
           </button>
           <!-- Refund Order Button (conditional) -->
           <button
             v-if="canRefundOrders && selectedOrder.status === 'COMPLETED'"
-            class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
             @click="refundOrder(selectedOrder.id)"
+            class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
             Refund Pesanan
           </button>
           <!-- Delete Order Button (conditional) -->
           <button
             v-if="canDeleteOrders && (selectedOrder.status === 'CANCELLED' || selectedOrder.status === 'REFUNDED')"
-            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
             @click="deleteOrder(selectedOrder.id)"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
           >
             Hapus Pesanan
           </button>
           <button
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             @click="selectedOrder = null"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
           >
             Tutup
           </button>
@@ -817,25 +708,13 @@ const loadOrders = async (page = 1) => {
         }),
       };
       const response = await api.get('/orders', { params });
-      orders.value = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : []);
-      pagination.value = response.data?.pagination || {
-        page: page || 1,
-        limit: pagination.value?.limit || 20,
-        total: 0,
-        totalPages: 0
-      };
+      orders.value = response.data.data;
+      pagination.value = response.data.pagination;
     } catch (error: any) {
+      console.error('Error loading orders:', error);
       if (error.response?.status !== 429) { // Don't show error for rate limiting
-        const errorMessage = error?.response?.data?.message || error?.response?.data?.error || error?.message || 'Gagal memuat pesanan';
-        await showError(errorMessage);
+        await showError(error.response?.data?.message || 'Gagal memuat pesanan');
       }
-      orders.value = [];
-      pagination.value = {
-        page: page || 1,
-        limit: pagination.value?.limit || 20,
-        total: 0,
-        totalPages: 0
-      };
     } finally {
       loading.value = false;
     }
@@ -868,16 +747,17 @@ const viewOrder = async (order: Order) => {
   try {
     // Load full order data
     const response = await api.get(`/orders/${order.id}`);
-    const orderData = response.data || {};
+    const orderData = response.data;
     // Ensure required fields have default values
     selectedOrder.value = {
       ...orderData,
-      subtotal: orderData?.subtotal ?? orderData?.total ?? 0,
-      discount: orderData?.discount ?? 0,
-      items: orderData?.items || [],
+      subtotal: orderData.subtotal ?? orderData.total ?? 0,
+      discount: orderData.discount ?? 0,
+      items: orderData.items ?? [],
     };
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat detail pesanan');
+    console.error('Error loading order details:', error);
+    await showError('Gagal memuat detail pesanan');
   }
 };
 
@@ -899,31 +779,32 @@ const printReceipt = async (order: Order) => {
   try {
     // Load full order data for receipt
     const response = await api.get(`/orders/${order.id}`);
-    const fullOrder = response.data || {};
+    const fullOrder = response.data;
     
     // Prepare receipt data
     const receiptData = {
-      orderNumber: fullOrder?.orderNumber || '',
-      date: fullOrder?.createdAt || new Date().toISOString(),
-      customerName: fullOrder?.member?.name || fullOrder?.customer?.name || fullOrder?.temporaryCustomerName || null,
-      memberName: fullOrder?.member?.name || null,
-      items: (fullOrder?.items || []).map((item: any) => ({
-        name: item?.product?.name || item?.name || 'Unknown',
-        quantity: item?.quantity || 0,
-        price: Number(item?.price || 0),
-        subtotal: Number(item?.subtotal || 0),
-      })),
-      subtotal: Number(fullOrder?.subtotal || fullOrder?.total || 0),
-      discount: Number(fullOrder?.discount || 0),
-      total: Number(fullOrder?.total || 0),
-      paymentMethod: fullOrder?.transaction?.paymentMethod || 'CASH',
-      servedBy: fullOrder?.transaction?.servedBy || null, // Nama kasir/admin yang melayani
+      orderNumber: fullOrder.orderNumber,
+      date: fullOrder.createdAt,
+      customerName: fullOrder.member?.name || fullOrder.customer?.name || fullOrder.temporaryCustomerName || null,
+      memberName: fullOrder.member?.name || null,
+      items: fullOrder.items?.map((item: any) => ({
+        name: item.product?.name || item.name,
+        quantity: item.quantity,
+        price: Number(item.price),
+        subtotal: Number(item.subtotal),
+      })) || [],
+      subtotal: Number(fullOrder.subtotal || fullOrder.total),
+      discount: Number(fullOrder.discount || 0),
+      total: Number(fullOrder.total),
+      paymentMethod: fullOrder.transaction?.paymentMethod || 'CASH',
+      servedBy: fullOrder.transaction?.servedBy || null, // Nama kasir/admin yang melayani
     };
     
     selectedOrderForReceipt.value = { ...order, receiptData } as any;
     showReceiptModal.value = true;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat data order untuk receipt');
+    console.error('Error loading order for receipt:', error);
+    await showError('Gagal memuat data order untuk receipt');
   }
 };
 
@@ -955,17 +836,17 @@ const editOrder = async (order: Order) => {
   try {
     // Load full order data
     const response = await api.get(`/orders/${order.id}`);
-    const orderData = response.data || {};
+    const orderData = response.data;
     // Ensure required fields have default values
     editingOrder.value = {
       ...orderData,
-      subtotal: orderData?.subtotal ?? orderData?.total ?? 0,
+      subtotal: orderData.subtotal ?? orderData.total ?? 0,
       discount: orderData.discount ?? 0,
       items: orderData.items ?? [],
     };
     showEditModal.value = true;
   } catch (error: any) {
-    await showError(error?.response?.data?.message || 'Gagal memuat data pesanan untuk edit');
+    await showError('Gagal memuat data pesanan untuk edit');
   }
 };
 
@@ -1060,14 +941,14 @@ const bulkDelete = async () => {
   if (!confirmed) return;
 
   try {
-    const orderIds = (selectedOrders.value || []).map(o => o.id);
+    const orderIds = selectedOrders.value.map(o => o.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
-    if (response.data?.deleted > 0) {
-      await showSuccess(`${response.data?.deleted} pesanan berhasil dihapus`);
+    if (response.data.deleted > 0) {
+      await showSuccess(`${response.data.deleted} pesanan berhasil dihapus`);
     }
-    if (response.data?.failed > 0) {
-      await showError(`${response.data?.failed} pesanan gagal dihapus. ${(response.data.errors || []).join(', ')}`);
+    if (response.data.failed > 0) {
+      await showError(`${response.data.failed} pesanan gagal dihapus. ${response.data.errors.join(', ')}`);
     }
     
     selectedOrders.value = [];
@@ -1087,14 +968,14 @@ const bulkRefund = async () => {
   if (!confirmed) return;
 
   try {
-    const orderIds = (selectedOrders.value || []).map(o => o.id);
+    const orderIds = selectedOrders.value.map(o => o.id);
     const response = await api.post('/orders/bulk-refund', { orderIds });
     
-    if (response.data?.refunded && response.data.refunded > 0) {
+    if (response.data.refunded > 0) {
       await showSuccess(`${response.data.refunded} pesanan berhasil direfund`);
     }
-    if (response.data?.failed && response.data?.failed > 0) {
-      await showError(`${response.data?.failed} pesanan gagal direfund. ${((response.data.errors || []) || []).join(', ')}`);
+    if (response.data.failed > 0) {
+      await showError(`${response.data.failed} pesanan gagal direfund. ${response.data.errors.join(', ')}`);
     }
     
     selectedOrders.value = [];
@@ -1106,12 +987,12 @@ const bulkRefund = async () => {
 
 // Computed property untuk menghitung jumlah order yang bisa dihapus
 const deletableOrdersCount = computed(() => {
-  return (orders.value || []).filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
+  return orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
 });
 
 // Hapus semua order yang bisa dihapus
 const deleteAllOrders = async () => {
-  const deletableOrders = (orders.value || []).filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
+  const deletableOrders = orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
   
   if (deletableOrders.length === 0) {
     await showError('Tidak ada pesanan yang bisa dihapus. Hanya pesanan dengan status Dibatalkan atau Direfund yang bisa dihapus.');
@@ -1128,11 +1009,11 @@ const deleteAllOrders = async () => {
     const orderIds = deletableOrders.map(o => o.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
-    if (response.data?.deleted > 0) {
-      await showSuccess(`${response.data?.deleted} pesanan berhasil dihapus`);
+    if (response.data.deleted > 0) {
+      await showSuccess(`${response.data.deleted} pesanan berhasil dihapus`);
     }
-    if (response.data?.failed > 0) {
-      await showError(`${response.data?.failed} pesanan gagal dihapus. ${(response.data.errors || []).join(', ')}`);
+    if (response.data.failed > 0) {
+      await showError(`${response.data.failed} pesanan gagal dihapus. ${response.data.errors.join(', ')}`);
     }
     
     selectedOrders.value = [];

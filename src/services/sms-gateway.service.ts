@@ -75,10 +75,9 @@ class SMSGatewayService {
 
     try {
       // Dynamic import Twilio client
-      // Optional dependency, may not be installed
       let twilio: any;
       try {
-        // @ts-expect-error - Optional dependency
+        // @ts-expect-error - Optional dependency, imported dynamically
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');
@@ -134,16 +133,16 @@ class SMSGatewayService {
 
       const data = await response.json() as any;
 
-      if (data.status === 1 || data.status === '1') {
+      if (data?.status === 1 || data?.status === '1') {
         return {
           success: true,
-          messageId: (data.messageId || data.message_id) as string,
+          messageId: data?.messageId || data?.message_id,
           status: 'sent',
         };
       } else {
         return {
           success: false,
-          error: (data.text as string) || 'Zenziva SMS failed',
+          error: data?.text || 'Zenziva SMS failed',
         };
       }
     } catch (error: any) {
@@ -205,10 +204,9 @@ class SMSGatewayService {
     }
 
     try {
-      // Optional dependency, may not be installed
       let twilio: any;
       try {
-        // @ts-expect-error - Optional dependency
+        // @ts-expect-error - Optional dependency, imported dynamically
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');
@@ -254,11 +252,11 @@ class SMSGatewayService {
         case 'ZENZIVA':
           return await this.getZenzivaBalance();
         default:
-          return { balance: 0, currency: 'USD' };
+          return { balance: 0 };
       }
     } catch (error: any) {
       logger.error('Error getting SMS balance:', error);
-      return { balance: 0, currency: 'USD' };
+      return { balance: 0 };
     }
   }
 
@@ -271,10 +269,9 @@ class SMSGatewayService {
     }
 
     try {
-      // Optional dependency, may not be installed
       let twilio: any;
       try {
-        // @ts-expect-error - Optional dependency
+        // @ts-expect-error - Optional dependency, imported dynamically
         twilio = await import('twilio');
       } catch (importError) {
         throw new Error('twilio package is not installed. Install it with: npm install twilio');
@@ -284,8 +281,8 @@ class SMSGatewayService {
       const account = await client.api.accounts(this.config.accountSid).fetch();
       
       return {
-        balance: parseFloat(account.balance || '0'),
-        currency: account.currency || 'USD',
+        balance: parseFloat((account as any)?.balance || '0'),
+        currency: (account as any)?.currency || 'USD',
       };
     } catch (error: any) {
       logger.error('Error getting Twilio balance:', error);

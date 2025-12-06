@@ -11,7 +11,6 @@ import { requireTenantId } from '../utils/tenant';
 import emailSchedulerService from '../services/email-scheduler.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -60,7 +59,6 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -98,7 +96,6 @@ router.get(
   '/upcoming',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -138,7 +135,6 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -268,14 +264,11 @@ router.put(
       }
       const schedule = await emailSchedulerService.updateSchedule(req.params.id, tenantId, updateData);
       res.json(schedule);
-    } catch (error: unknown) {
-      if ((error as Error).message === 'Scheduled campaign not found') {
-        const err = new Error((error as Error).message);
-        (err as any).statusCode = 404;
-        handleRouteError(res, err, (error as Error).message, 'UPDATE_SCHEDULE');
-        return;
+    } catch (error: any) {
+      if (error.message === 'Scheduled campaign not found') {
+        return res.status(404).json({ message: error.message });
       }
-      handleRouteError(res, error, 'Failed to update schedule', 'UPDATE_SCHEDULE');
+      res.status(400).json({ message: error.message });
     }
   }
 );
@@ -309,20 +302,16 @@ router.post(
   '/:id/cancel',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const schedule = await emailSchedulerService.cancelSchedule(req.params.id, tenantId);
       res.json(schedule);
-    } catch (error: unknown) {
-      if ((error as Error).message === 'Scheduled campaign not found') {
-        const err = new Error((error as Error).message);
-        (err as any).statusCode = 404;
-        handleRouteError(res, err, (error as Error).message, 'CANCEL_SCHEDULE');
-        return;
+    } catch (error: any) {
+      if (error.message === 'Scheduled campaign not found') {
+        return res.status(404).json({ message: error.message });
       }
-      handleRouteError(res, error, 'Failed to cancel schedule', 'CANCEL_SCHEDULE');
+      res.status(400).json({ message: error.message });
     }
   }
 );

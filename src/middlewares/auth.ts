@@ -8,13 +8,6 @@ export interface AuthRequest extends Request {
   userId?: string;
   tenantId?: string | null;
   role?: string;
-  user?: {
-    id: string;
-    tenantId: string | null;
-    role: string;
-    email: string;
-    name: string;
-  };
 }
 
 /**
@@ -221,26 +214,17 @@ export const authGuard = async (
     }
 
     // Ensure tenantId is set (use from decoded token or fallback to user.tenantId)
-    // Priority: decoded.tenantId (from JWT) > user.tenantId (from DB) > user.tenant.id (from DB relation)
-    let tenantId: string | null = decoded.tenantId || user.tenantId || user.tenant?.id || null;
+    let tenantId: string | null = decoded.tenantId || user.tenantId || null;
     
     // If tenantId is empty string, convert to null for Super Admin
     if (tenantId === '' && decoded.role === 'SUPER_ADMIN') {
       tenantId = null;
     }
     
-    // For non-Super Admin, tenantId must exist
     if (!tenantId && decoded.role !== 'SUPER_ADMIN') {
-      logAuthError(
-        new Error(`Tenant ID missing for ${decoded.role}. decoded.tenantId: ${decoded.tenantId}, user.tenantId: ${user.tenantId}, user.tenant.id: ${user.tenant?.id}`),
-        'TENANT_ID_MISSING',
-        req
-      );
+      logAuthError(new Error('Tenant ID missing for non-Super Admin'), 'TENANT_ID_MISSING', req);
       setCorsHeaders(res, req);
-      res.status(403).json({ 
-        error: 'Forbidden: Tenant ID not found',
-        message: 'Tenant ID tidak ditemukan. Silakan hubungi administrator jika error ini terus terjadi.'
-      });
+      res.status(403).json({ error: 'Forbidden: Tenant ID not found' });
       return;
     }
     
@@ -250,25 +234,22 @@ export const authGuard = async (
     req.role = decoded.role;
     
     // Also attach to req.user for compatibility with routes
-    req.user = {
+    interface ExtendedRequest extends Request {
+      user?: {
+        id: string;
+        tenantId: string | null;
+        role: string;
+        email: string;
+        name: string;
+      };
+    }
+    (req as ExtendedRequest).user = {
       id: decoded.userId,
       tenantId: tenantId,
       role: decoded.role,
       email: user.email,
       name: user.name,
     };
-    
-    // Log for debugging (consistent with logger behavior: log when not in production)
-    // Logger uses NODE_ENV !== 'production' for debug level, so we should match that
-    if (process.env.NODE_ENV !== 'production' || !tenantId) {
-      logger.debug('Auth middleware - tenantId set', {
-        role: decoded.role,
-        tenantId,
-        decodedTenantId: decoded.tenantId,
-        userTenantId: user.tenantId,
-        tenantIdFromRelation: user.tenant?.id,
-      });
-    }
 
     next();
   } catch (error: unknown) {

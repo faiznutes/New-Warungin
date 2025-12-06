@@ -12,7 +12,7 @@ import { AVAILABLE_ADDONS } from '../services/addon.service';
 const PLAN_PRICES: Record<string, number> = {
   BASIC: 200000,
   PRO: 350000,
-  CUSTOM: 500000,
+  ENTERPRISE: 500000,
 };
 
 const BUNDLE_DISCOUNT_AMOUNT = 150000; // Diskon 150rb untuk bundle
@@ -28,7 +28,7 @@ export function qualifiesForBundleDiscount(addonId: string): boolean {
 
 /**
  * Calculate bundle discount price
- * @param currentPlan - Current subscription plan (BASIC, PRO, CUSTOM)
+ * @param currentPlan - Current subscription plan (BASIC, PRO, ENTERPRISE)
  * @param addonId - Addon ID
  * @param addonPrice - Addon price
  * @returns Object with originalPrice, discount, finalPrice, and shouldUpgradeToBoost

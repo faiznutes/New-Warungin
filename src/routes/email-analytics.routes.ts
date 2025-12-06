@@ -11,7 +11,6 @@ import emailAnalyticsService from '../services/email-analytics.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkDeliveryMarketingAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -132,7 +131,6 @@ router.get(
   '/campaign/:campaignId',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -200,7 +198,6 @@ router.get(
   '/overall',
   authGuard,
   subscriptionGuard,
-  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -258,10 +255,7 @@ router.get(
       const tenantId = req.query.tenantId as string;
 
       if (!email || !tenantId) {
-        const error = new Error('Email and tenantId are required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Email and tenantId are required', 'TRACK_OPEN');
-        return;
+        return res.status(400).json({ message: 'Email and tenantId are required' });
       }
 
       await emailAnalyticsService.trackOpen(campaignId, email, tenantId);
@@ -329,25 +323,20 @@ router.get(
       const tenantId = req.query.tenantId as string;
 
       if (!email || !url || !tenantId) {
-        const error = new Error('Email, url, and tenantId are required');
-        (error as any).statusCode = 400;
-        handleRouteError(res, error, 'Email, url, and tenantId are required', 'TRACK_CLICK');
-        return;
+        return res.status(400).json({ message: 'Email, url, and tenantId are required' });
       }
 
       await emailAnalyticsService.trackClick(campaignId, email, url, tenantId);
 
       // Redirect to target URL
       res.redirect(url);
-    } catch (error: unknown) {
+    } catch (error: any) {
       // Still redirect even if tracking fails
       const url = req.query.url as string;
       if (url) {
         res.redirect(url);
       } else {
-        const err = new Error('Invalid URL');
-        (err as any).statusCode = 400;
-        handleRouteError(res, err, 'Invalid URL', 'TRACK_CLICK');
+        res.status(400).json({ message: 'Invalid URL' });
       }
     }
   }

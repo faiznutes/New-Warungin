@@ -1,7 +1,6 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import env from '../config/env';
-import logger from '../utils/logger';
 
 let io: Server | null = null;
 
@@ -14,22 +13,22 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
   });
 
   io.on('connection', (socket) => {
-    logger.debug('Client connected', { socketId: socket.id });
+    console.log(`✅ Client connected: ${socket.id}`);
 
     socket.on('disconnect', () => {
-      logger.debug('Client disconnected', { socketId: socket.id });
+      console.log(`❌ Client disconnected: ${socket.id}`);
     });
 
     // Join tenant room
     socket.on('join-tenant', (tenantId: string) => {
       socket.join(`tenant:${tenantId}`);
-      logger.debug('Client joined tenant', { socketId: socket.id, tenantId });
+      console.log(`Client ${socket.id} joined tenant: ${tenantId}`);
     });
 
     // Leave tenant room
     socket.on('leave-tenant', (tenantId: string) => {
       socket.leave(`tenant:${tenantId}`);
-      logger.debug('Client left tenant', { socketId: socket.id, tenantId });
+      console.log(`Client ${socket.id} left tenant: ${tenantId}`);
     });
   });
 

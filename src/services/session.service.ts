@@ -35,29 +35,11 @@ export class SessionService {
     ipAddress?: string,
     userAgent?: string
   ): Promise<Session> {
-    const redis = getRedisClient();
-    const sessionId = crypto.randomBytes(32).toString('hex');
-    
+    const redis = await getRedisClient();
     if (!redis) {
-      // Redis not available - fallback to database-only session
-      // Create session in database instead
-      logger.warn('Redis not available - creating session in database only');
-      const session: Session = {
-        id: sessionId,
-        userId,
-        tenantId: tenantId || undefined,
-        deviceInfo,
-        ipAddress,
-        userAgent,
-        createdAt: new Date(),
-        lastActivity: new Date(),
-        expiresAt: new Date(Date.now() + this.SESSION_TTL * 1000),
-      };
-      // Store in database as fallback (if you have a sessions table)
-      // For now, just return the session without Redis storage
-      logger.info('Session created (database fallback)', { userId, sessionId });
-      return session;
+      throw new Error('Redis client not available');
     }
+    const sessionId = crypto.randomBytes(32).toString('hex');
 
     const session: Session = {
       id: sessionId,
@@ -89,9 +71,8 @@ export class SessionService {
    * Get session by ID
    */
   async getSession(sessionId: string): Promise<Session | null> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     if (!redis) {
-      // Redis not available - return null (session not found)
       return null;
     }
     const sessionKey = `${this.SESSION_PREFIX}${sessionId}`;
@@ -114,9 +95,8 @@ export class SessionService {
    * Get all active sessions for user
    */
   async getUserSessions(userId: string): Promise<Session[]> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     if (!redis) {
-      // Redis not available - return empty array
       return [];
     }
     const userSessionsKey = `${this.USER_SESSIONS_PREFIX}${userId}`;
@@ -137,7 +117,7 @@ export class SessionService {
    * Revoke session
    */
   async revokeSession(sessionId: string): Promise<boolean> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     if (!redis) {
       return false;
     }
@@ -167,7 +147,7 @@ export class SessionService {
    * Revoke all sessions for user (except current session)
    */
   async revokeAllUserSessions(userId: string, exceptSessionId?: string): Promise<number> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     if (!redis) {
       return 0;
     }
@@ -220,7 +200,7 @@ export class SessionService {
    * Cleanup expired sessions
    */
   async cleanupExpiredSessions(): Promise<number> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     // This would require scanning all sessions, which is expensive
     // Better to use Redis TTL expiration or scheduled job
     // For now, sessions expire automatically via TTL
@@ -231,7 +211,7 @@ export class SessionService {
    * Get session count for user
    */
   async getSessionCount(userId: string): Promise<number> {
-    const redis = getRedisClient();
+    const redis = await getRedisClient();
     if (!redis) {
       return 0;
     }

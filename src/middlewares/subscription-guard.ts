@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/database';
 import { AuthRequest } from './auth';
 import { updateUserStatusBasedOnSubscription, getTotalRemainingSubscriptionTime } from '../services/user-status.service';
-import logger from '../utils/logger';
 
 /**
  * Middleware to check if tenant subscription is active
@@ -17,21 +16,7 @@ export const subscriptionGuard = async (
   try {
     // Skip check for SUPER_ADMIN and ADMIN_TENANT
     // ADMIN_TENANT needs access to manage subscription even when expired
-    // IMPORTANT: Early return immediately without any database queries to prevent timeout
     if (req.role === 'SUPER_ADMIN' || req.role === 'ADMIN_TENANT') {
-      // Log for debugging (only in development or when explicitly enabled)
-      if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SUBSCRIPTION_GUARD_LOG === 'true') {
-        logger.debug('subscriptionGuard: Skipping check for ADMIN_TENANT/SUPER_ADMIN', {
-          role: req.role,
-          tenantId: req.tenantId,
-          path: req.path,
-          method: req.method,
-        });
-      }
-      
-      // Call next() immediately without await to prevent blocking
-      next();
-      
       // Still update subscription status in background (but not user status for ADMIN_TENANT)
       // ADMIN_TENANT can manage user status manually, so we don't auto-activate/deactivate
       const tenantId = req.tenantId;
@@ -72,7 +57,7 @@ export const subscriptionGuard = async (
 
               if (temporarySubscription && temporarySubscription.endDate && temporarySubscription.endDate <= now) {
                 shouldRevertTemporaryUpgrade = true;
-                logger.info('Temporary upgrade expired', { tenantId, subscriptionEnd: temporarySubscription.endDate.toISOString(), now: now.toISOString() });
+                console.log(`🔄 Temporary upgrade expired for tenant ${tenantId}. Subscription end: ${temporarySubscription.endDate.toISOString()}, Now: ${now.toISOString()}`);
               }
             }
 
@@ -95,7 +80,7 @@ export const subscriptionGuard = async (
                   // The function itself will check if already reverted to prevent multiple reverts
                   await subscriptionService.default.revertTemporaryUpgradeForTenant(tenantId);
                   
-                  logger.info('Auto-reverted temporary upgrade with remaining time calculation (background update)', { tenantId });
+                  console.log(`✅ Auto-reverted temporary upgrade for tenant ${tenantId} with remaining time calculation (background update)`);
                   
                   // Only auto-deactivate users if subscription expired (not for ADMIN_TENANT manual management)
                   // For ADMIN_TENANT, let them manage user status manually
@@ -103,7 +88,7 @@ export const subscriptionGuard = async (
                     await updateUserStatusBasedOnSubscription(tenantId);
                   }
                 } catch (error: any) {
-                  logger.error('Error reverting temporary upgrade (background)', { error: error instanceof Error ? error.message : String(error), tenantId });
+                  console.error('Error reverting temporary upgrade (background):', error);
                   // Don't throw error in background check - just log it
                 }
               }
@@ -125,7 +110,7 @@ export const subscriptionGuard = async (
                 // Apply BASIC plan features (auto-disable users/outlets that exceed limit)
                 await applyPlanFeatures(tenantId, 'BASIC');
                 
-                logger.info(`Auto-reverted ${tenant.subscriptionPlan} subscription to BASIC (background update)`, { tenantId, previousPlan: tenant.subscriptionPlan });
+                console.log(`✅ Auto-reverted ${tenant.subscriptionPlan} subscription to BASIC for tenant ${tenantId} (background update)`);
                 
                 // Only auto-deactivate users if subscription expired (not for ADMIN_TENANT manual management)
                 // For ADMIN_TENANT, let them manage user status manually
@@ -133,7 +118,7 @@ export const subscriptionGuard = async (
                   await updateUserStatusBasedOnSubscription(tenantId);
                 }
               } catch (error: any) {
-                logger.error('Error updating subscription and user status (background)', { error: error instanceof Error ? error.message : String(error), tenantId });
+                console.error('Error updating subscription and user status (background):', error);
                 // Don't throw error in background check - just log it
               }
               }
@@ -141,13 +126,13 @@ export const subscriptionGuard = async (
               // ADMIN_TENANT can manage user status manually
             }
           } catch (error: any) {
-            logger.error('Error in background subscription check', { error: error instanceof Error ? error.message : String(error), tenantId });
+            console.error('Error in background subscription check:', error);
             // Don't throw error in background check - just log it
           }
         });
       }
       
-      // Already called next() above, just return
+      next();
       return;
     }
 
@@ -214,14 +199,14 @@ export const subscriptionGuard = async (
           // Apply BASIC plan features (auto-disable users/outlets that exceed limit)
           await applyPlanFeatures(tenantId, 'BASIC');
           
-          logger.info(`Auto-reverted ${tenant.subscriptionPlan} subscription to BASIC (no subscription end)`, { tenantId, previousPlan: tenant.subscriptionPlan });
+          console.log(`✅ Auto-reverted ${tenant.subscriptionPlan} subscription to BASIC for tenant ${tenantId} (no subscription end)`);
         }
         
         // Deactivate CASHIER, KITCHEN, SUPERVISOR users if subscription is null
         // ADMIN_TENANT is excluded (always remains active)
         await updateUserStatusBasedOnSubscription(tenantId);
       } catch (error: any) {
-        logger.error('Error updating subscription and user status', { error: error instanceof Error ? error.message : String(error), tenantId });
+        console.error('Error updating subscription and user status:', error);
       }
       
       res.status(403).json({ 
@@ -245,7 +230,7 @@ export const subscriptionGuard = async (
           // This will calculate remaining time and revert properly
           await subscriptionService.default.revertTemporaryUpgradeForTenant(tenantId);
           
-          logger.info('Auto-reverted temporary upgrade with remaining time calculation', { tenantId });
+          console.log(`✅ Auto-reverted temporary upgrade for tenant ${tenantId} with remaining time calculation`);
         } else if (tenant.subscriptionPlan !== 'BASIC') {
           // Not a temporary upgrade, just revert to BASIC
           const { applyPlanFeatures } = await import('../services/plan-features.service');
@@ -262,14 +247,14 @@ export const subscriptionGuard = async (
           // Apply BASIC plan features (auto-disable users/outlets that exceed limit)
           await applyPlanFeatures(tenantId, 'BASIC');
           
-          logger.info(`Auto-reverted expired ${tenant.subscriptionPlan} subscription to BASIC`, { tenantId, previousPlan: tenant.subscriptionPlan });
+          console.log(`✅ Auto-reverted expired ${tenant.subscriptionPlan} subscription to BASIC for tenant ${tenantId}`);
         }
         
         // Deactivate CASHIER, KITCHEN, SUPERVISOR users if subscription expired
         // ADMIN_TENANT is excluded (always remains active)
         await updateUserStatusBasedOnSubscription(tenantId);
       } catch (error: any) {
-        logger.error('Error updating subscription and user status', { error: error instanceof Error ? error.message : String(error), tenantId });
+        console.error('Error updating subscription and user status:', error);
       }
       
       res.status(403).json({ 
@@ -285,13 +270,13 @@ export const subscriptionGuard = async (
     try {
       await updateUserStatusBasedOnSubscription(tenantId);
     } catch (error: any) {
-      logger.error('Error updating user status', { error: error instanceof Error ? error.message : String(error), tenantId });
+      console.error('Error updating user status:', error);
     }
 
     // Subscription is active, allow access
     next();
   } catch (error: any) {
-    logger.error('Subscription guard error', { error: error instanceof Error ? error.message : String(error) });
+    console.error('Subscription guard error:', error);
     // Pass error to Express error handler
     next(error);
   }

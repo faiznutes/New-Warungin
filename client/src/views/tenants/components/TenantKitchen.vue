@@ -2,26 +2,12 @@
   <div class="flex flex-col h-full">
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
       <div class="flex items-start gap-3">
-        <svg
-          class="w-5 h-5 text-yellow-600 mt-0.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
+        <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
         <div class="flex-1">
-          <h4 class="font-semibold text-yellow-900">
-            Mode Support Kitchen
-          </h4>
-          <p class="text-sm text-yellow-700">
-            Anda sedang melihat Kitchen Orders untuk tenant yang dipilih. Fitur ini memungkinkan Anda membantu tenant saat mereka mengalami masalah.
-          </p>
+          <h4 class="font-semibold text-yellow-900">Mode Support Kitchen</h4>
+          <p class="text-sm text-yellow-700">Anda sedang melihat Kitchen Orders untuk tenant yang dipilih. Fitur ini memungkinkan Anda membantu tenant saat mereka mengalami masalah.</p>
         </div>
       </div>
     </div>
@@ -33,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, onMounted, nextTick } from 'vue';
+import { watch, onMounted } from 'vue';
 import { useAuthStore } from '../../../stores/auth';
 import { useSocket } from '../../../composables/useSocket';
 import KitchenComponent from '../../../views/kitchen/KitchenOrders.vue';
@@ -46,35 +32,22 @@ const props = defineProps<Props>();
 const authStore = useAuthStore();
 const { socket } = useSocket();
 
-// Watch for tenantId changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
-
-onMounted(async () => {
-  await nextTick();
-  
-  // Initial setup if tenantId is provided
-  if (props.tenantId) {
-    localStorage.setItem('selectedTenantId', props.tenantId);
-    authStore.setSelectedTenant(props.tenantId);
+watch(() => props.tenantId, (newTenantId) => {
+  if (newTenantId) {
+    localStorage.setItem('selectedTenantId', newTenantId);
+    authStore.setSelectedTenant(newTenantId);
     
     // Join tenant room for socket updates
     if (socket?.connected) {
-      socket.emit('join-tenant', props.tenantId);
+      socket.emit('join-tenant', newTenantId);
     }
   }
-  
-  // Watch for tenantId changes after mount
-  watch(() => props.tenantId, (newTenantId) => {
-    if (newTenantId) {
-      localStorage.setItem('selectedTenantId', newTenantId);
-      authStore.setSelectedTenant(newTenantId);
-      
-      // Join tenant room for socket updates
-      if (socket?.connected) {
-        socket.emit('join-tenant', newTenantId);
-      }
-    }
-  });
+}, { immediate: true });
+
+onMounted(() => {
+  if (props.tenantId && socket?.connected) {
+    socket.emit('join-tenant', props.tenantId);
+  }
 });
 </script>
 

@@ -14,16 +14,7 @@ export class ProductAdjustmentService {
   /**
    * Get all product adjustments for a tenant
    */
-  async getAdjustments(tenantId: string, query: { 
-    page?: number; 
-    limit?: number; 
-    productId?: string;
-    search?: string;
-    type?: string;
-    startDate?: string;
-    endDate?: string;
-    reason?: string;
-  }) {
+  async getAdjustments(tenantId: string, query: { page?: number; limit?: number; productId?: string }) {
     const page = query.page || 1;
     const limit = query.limit || 50;
     const skip = (page - 1) * limit;
@@ -31,49 +22,7 @@ export class ProductAdjustmentService {
     const where: any = {
       tenantId,
       ...(query.productId && { productId: query.productId }),
-      ...(query.type && { type: query.type }),
-      ...(query.reason && { reason: { contains: query.reason, mode: 'insensitive' as const } }),
     };
-
-    // Handle date range
-    if (query.startDate || query.endDate) {
-      where.createdAt = {};
-      if (query.startDate) {
-        where.createdAt.gte = new Date(query.startDate);
-      }
-      if (query.endDate) {
-        where.createdAt.lte = new Date(query.endDate + 'T23:59:59.999Z');
-      }
-    }
-
-    // Handle search - need to find products first, then filter by productId
-    let productIds: string[] | undefined;
-    if (query.search) {
-      const products = await prisma.product.findMany({
-        where: {
-          tenantId,
-          OR: [
-            { name: { contains: query.search, mode: 'insensitive' as const } },
-            { sku: { contains: query.search, mode: 'insensitive' as const } },
-          ],
-        },
-        select: { id: true },
-      });
-      productIds = products.map(p => p.id);
-      if (productIds.length === 0) {
-        // No products found, return empty result
-        return {
-          data: [],
-          pagination: {
-            page,
-            limit,
-            total: 0,
-            totalPages: 0,
-          },
-        };
-      }
-      where.productId = { in: productIds };
-    }
 
     const [adjustments, total] = await Promise.all([
       prisma.productAdjustment.findMany({

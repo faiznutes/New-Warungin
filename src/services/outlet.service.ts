@@ -1,8 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import prisma from '../config/database';
+import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
-import CacheService from '../utils/cache';
-import { sanitizeString, sanitizePhone, sanitizeText } from '../utils/sanitize';
 
 export interface CreateOutletInput {
   name: string;
@@ -19,45 +18,10 @@ export interface UpdateOutletInput {
 
 export class OutletService {
   async getOutlets(tenantId: string) {
-    // Log for debugging
-    logger.debug('OutletService.getOutlets called', {
-      tenantId,
-      timestamp: new Date().toISOString(),
-    });
-    
-    // Query all outlets for tenant (including inactive ones)
-    // Don't filter by isActive - show all stores
     const outlets = await prisma.outlet.findMany({
-      where: { 
-        tenantId,
-        // Don't filter by isActive - show all stores
-        // isActive: true, // Removed - show all stores
-      },
+      where: { tenantId },
       orderBy: { createdAt: 'desc' },
     });
-    
-    // Log result for debugging
-    logger.info('OutletService.getOutlets result', {
-      tenantId,
-      count: outlets.length,
-      outletIds: outlets.map(o => o.id),
-      outletNames: outlets.map(o => o.name),
-      outlets: outlets.map(o => ({ 
-        id: o.id, 
-        name: o.name, 
-        isActive: o.isActive,
-        tenantId: o.tenantId 
-      })),
-    });
-    
-    // If no outlets found, log warning
-    if (outlets.length === 0) {
-      logger.warn('OutletService.getOutlets: No outlets found for tenant', {
-        tenantId,
-        timestamp: new Date().toISOString(),
-      });
-    }
-    
     return outlets;
   }
 
@@ -117,9 +81,7 @@ export class OutletService {
     const outlet = await prisma.outlet.create({
       data: {
         tenantId,
-        name: sanitizeString(data.name, 255),
-        address: data.address ? sanitizeText(data.address) : undefined,
-        phone: data.phone ? sanitizePhone(data.phone) : undefined,
+        ...data,
       },
     });
 
@@ -132,15 +94,9 @@ export class OutletService {
   async updateOutlet(tenantId: string, outletId: string, data: UpdateOutletInput) {
     const outlet = await this.getOutlet(tenantId, outletId);
     
-    const updateData: any = {};
-    if (data.name !== undefined) updateData.name = sanitizeString(data.name, 255);
-    if (data.address !== undefined) updateData.address = data.address ? sanitizeText(data.address) : null;
-    if (data.phone !== undefined) updateData.phone = data.phone ? sanitizePhone(data.phone) : null;
-    if (data.isActive !== undefined) updateData.isActive = data.isActive;
-
     const updated = await prisma.outlet.update({
       where: { id: outletId },
-      data: updateData,
+      data,
     });
 
     // Invalidate analytics cache after outlet update
@@ -182,144 +138,25 @@ export class OutletService {
    */
   private async invalidateAnalyticsCache(tenantId: string): Promise<void> {
     try {
-      // Delete all analytics cache keys for this tenant
-      await CacheService.deletePattern(`analytics:*:${tenantId}`);
-      await CacheService.deletePattern(`analytics:${tenantId}:*`);
-      logger.info('Invalidated analytics cache after outlet operation', { tenantId });
+      const redis = getRedisClient();
+      if (redis) {
+        // Delete all analytics cache keys for this tenant
+        const keys = await redis.keys(`analytics:*:${tenantId}`);
+        const keys2 = await redis.keys(`analytics:${tenantId}:*`);
+        const allKeys = [...keys, ...keys2];
+        if (allKeys.length > 0) {
+          await redis.del(...allKeys);
+          logger.info('Invalidated analytics cache after outlet operation', {
+            tenantId,
+            cacheKeysDeleted: allKeys.length
+          });
+        }
+      }
     } catch (error: any) {
       logger.warn('Failed to invalidate analytics cache', {
         error: error.message,
         tenantId
       });
-    }
-  }
-
-  /**
-   * Get outlet reports (Multi-Outlet Advanced)
-   */
-  async getOutletReports(
-    tenantId: string,
-    outletId: string,
-    options?: {
-      startDate?: Date;
-      endDate?: Date;
-    }
-  ): Promise<any> {
-    try {
-      // Verify outlet belongs to tenant
-      const outlet = await this.getOutlet(tenantId, outletId);
-
-      // Get sales data for the outlet
-      const orders = await prisma.order.findMany({
-        where: {
-          outletId: outlet.id,
-          tenantId,
-          createdAt: {
-            gte: options?.startDate,
-            lte: options?.endDate,
-          },
-        },
-        include: {
-          items: {
-            include: {
-              product: true,
-            },
-          },
-        },
-      });
-
-      // Calculate summary
-      const totalSales = orders.reduce((sum, order) => sum + Number(order.total), 0);
-      const totalOrders = orders.length;
-      const totalItems = orders.reduce((sum, order) => sum + order.items.length, 0);
-
-      return {
-        outletId: outlet.id,
-        outletName: outlet.name,
-        period: {
-          startDate: options?.startDate,
-          endDate: options?.endDate,
-        },
-        summary: {
-          totalSales,
-          totalOrders,
-          totalItems,
-        },
-        orders,
-      };
-    } catch (error: any) {
-      logger.error('Error getting outlet reports:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create automatic stock transfer configuration (Multi-Outlet Advanced)
-   */
-  async createAutoTransfer(
-    tenantId: string,
-    data: {
-      fromOutletId: string;
-      toOutletId: string;
-      productId: string;
-      threshold: number;
-      transferQuantity: number;
-      enabled: boolean;
-    }
-  ): Promise<any> {
-    try {
-      // Verify outlets belong to tenant
-      await this.getOutlet(tenantId, data.fromOutletId);
-      await this.getOutlet(tenantId, data.toOutletId);
-
-      // In a real implementation, this would create a configuration record
-      // For now, return a mock response
-      logger.info('Creating auto transfer configuration', {
-        tenantId,
-        fromOutletId: data.fromOutletId,
-        toOutletId: data.toOutletId,
-        productId: data.productId,
-      });
-
-      return {
-        id: `auto-transfer-${Date.now()}`,
-        ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-    } catch (error: any) {
-      logger.error('Error creating auto transfer:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Sync stock across all outlets (Multi-Outlet Advanced)
-   */
-  async syncAllOutlets(tenantId: string): Promise<any> {
-    try {
-      const outlets = await this.getOutlets(tenantId);
-      
-      logger.info('Syncing all outlets', {
-        tenantId,
-        outletCount: outlets.length,
-      });
-
-      // In a real implementation, this would:
-      // 1. Get all products across all outlets
-      // 2. Calculate stock differences
-      // 3. Create transfer orders if needed
-      // 4. Update stock levels
-
-      return {
-        syncedAt: new Date(),
-        outletsSynced: outlets.length,
-        status: 'completed',
-        message: 'All outlets synchronized successfully',
-      };
-    } catch (error: any) {
-      logger.error('Error syncing outlets:', error);
-      throw error;
     }
   }
 }

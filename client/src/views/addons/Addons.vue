@@ -5,92 +5,47 @@
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">
-        Addon
-      </h2>
+      <h2 class="text-2xl font-bold text-gray-900">Addon</h2>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div
-      v-if="needsTenantSelection"
-      class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300"
-    >
-      <svg
-        class="w-20 h-20 text-gray-400 mb-4"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-        />
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
+      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
       </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">
-        Pilih Tenant Terlebih Dahulu
-      </h3>
-      <p class="text-gray-600 text-center max-w-md">
-        Silakan pilih tenant terlebih dahulu untuk melihat dan mengelola addon
-      </p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
+      <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat dan mengelola addon</p>
     </div>
 
-    <div
-      v-else-if="loading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-else-if="loading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center">
         <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">
-          Memuat addon...
-        </div>
+        <div class="text-gray-600 font-medium">Memuat addon...</div>
       </div>
     </div>
 
-    <div
-      v-else
-      class="flex flex-col space-y-6"
-    >
+    <div v-else class="flex flex-col space-y-6">
       <!-- Active Addons -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">
-          Addon Aktif
-        </h3>
-        <div
-          v-if="activeAddons.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Aktif</h3>
+        <div v-if="activeAddons.length === 0" class="text-center py-8 text-gray-500">
           Belum ada addon yang aktif
         </div>
-        <div
-          v-else
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
             class="border-2 border-primary-200 rounded-lg p-4 bg-primary-50"
           >
             <div class="flex items-start justify-between mb-3">
-              <h4 class="font-semibold text-gray-900">
-                {{ addon.addonName }}
-              </h4>
+              <h4 class="font-semibold text-gray-900">{{ addon.addonName }}</h4>
               <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">
-              {{ getAddonDescription(addon) }}
-            </p>
-            <div
-              v-if="addon.limit"
-              class="space-y-2 mb-3"
-            >
+            <p class="text-sm text-gray-600 mb-3">{{ getAddonDescription(addon) }}</p>
+            <div v-if="addon.limit" class="space-y-2">
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Penggunaan:</span>
-                <span
-                  class="font-semibold"
-                  :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'"
-                >
+                <span class="font-semibold" :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'">
                   {{ addon.currentUsage }} / {{ addon.limit }}
                 </span>
               </div>
@@ -98,55 +53,27 @@
                 <div
                   class="h-2 rounded-full transition-all"
                   :class="addon.isLimitReached ? 'bg-red-500' : 'bg-primary-600'"
-                  :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }" 
+                  :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }"
                 ></div>
               </div>
             </div>
-            <div
-              v-if="addon.expiresAt"
-              class="text-xs text-gray-600 mb-3"
+            <button
+              @click="unsubscribeAddon(addon.addonId)"
+              class="mt-3 w-full px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
             >
-              <p>Berakhir: {{ formatDate(addon.expiresAt) }}</p>
-              <p
-                v-if="getDaysUntilExpiry(addon.expiresAt) > 0"
-                class="text-orange-600 font-semibold"
-              >
-                Tersisa {{ getDaysUntilExpiry(addon.expiresAt) }} hari
-              </p>
-            </div>
-            <div class="flex gap-2">
-              <button
-                class="flex-1 px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition font-medium"
-                @click="openExtendModal(addon)"
-              >
-                Perpanjang
-              </button>
-              <button
-                class="flex-1 px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
-                @click="unsubscribeAddon(addon.addonId)"
-              >
-                Nonaktifkan
-              </button>
-            </div>
+              Nonaktifkan
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Available Addons -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">
-          Addon Tersedia
-        </h3>
-        <div
-          v-if="filteredAvailableAddons.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Tersedia</h3>
+        <div v-if="filteredAvailableAddons.length === 0" class="text-center py-8 text-gray-500">
           Semua addon sudah aktif
         </div>
-        <div
-          v-else
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-        >
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
@@ -154,19 +81,12 @@
             :class="addon.comingSoon ? 'border-gray-300 bg-gray-50 opacity-75' : 'border-gray-200 hover:border-primary-300'"
           >
             <div class="flex items-start justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">
-                {{ addon.name }}
-              </h4>
-              <span
-                v-if="addon.comingSoon"
-                class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded"
-              >
-                Segera Hadir
+              <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
+              <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                Coming Soon
               </span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">
-              {{ addon.description }}
-            </p>
+            <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
             
             <div class="flex items-center justify-between mb-3">
               <div>
@@ -174,117 +94,115 @@
                 <span class="text-sm text-gray-500">/bulan</span>
               </div>
             </div>
-            <div
-              v-if="addon.defaultLimit"
-              class="text-sm text-gray-600 mb-3"
-            >
-              Batas: {{ addon.defaultLimit }}
+            <div v-if="addon.defaultLimit" class="text-sm text-gray-600 mb-3">
+              Limit: {{ addon.defaultLimit }}
             </div>
-            <button
-              :disabled="addon.comingSoon"
-              class="w-full px-4 py-2 rounded-lg transition font-medium"
-              :class="addon.comingSoon 
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                : 'bg-primary-600 text-white hover:bg-primary-700'"
-              @click="subscribeAddon(addon)"
-            >
-              {{ addon.comingSoon ? 'Segera Hadir' : 'Berlangganan' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Extend Addon Modal -->
-    <div
-      v-if="showExtendModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="showExtendModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          Perpanjang Addon
-        </h3>
-        <div
-          v-if="selectedAddonForExtend"
-          class="space-y-4"
-        >
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h4 class="font-semibold text-gray-900 mb-1">
-              {{ selectedAddonForExtend.addonName }}
-            </h4>
-            <p class="text-sm text-gray-600">
-              {{ getAddonDescription(selectedAddonForExtend) }}
-            </p>
-            <div
-              v-if="selectedAddonForExtend.expiresAt"
-              class="mt-2 text-xs text-gray-500"
-            >
-              Berakhir: {{ formatDate(selectedAddonForExtend.expiresAt) }}
-            </div>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Durasi Perpanjangan</label>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="flex gap-2">
               <button
-                v-for="duration in durationOptions"
-                :key="duration.value"
-                class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
-                :class="extendDuration === duration.value
-                  ? 'border-green-600 bg-green-50 text-green-700'
-                  : 'border-gray-200 hover:border-green-300 text-gray-700'"
-                @click="extendDuration = duration.value"
+                @click="showAddonDetail(addon)"
+                class="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
               >
-                {{ duration.label }}
-                <span
-                  v-if="duration.discount"
-                  class="block text-xs text-green-600 mt-1"
-                >Diskon {{ duration.discount }}%</span>
+                Detail
+              </button>
+              <button
+                v-if="!addon.comingSoon"
+                @click="subscribeAddon(addon)"
+                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+              >
+                Berlangganan
+              </button>
+              <button
+                v-else
+                disabled
+                class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed font-medium"
+              >
+                Coming Soon
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div
-            v-if="extendDuration && selectedAddonForExtend"
-            class="bg-gray-50 rounded-lg p-4"
-          >
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-gray-700">Durasi:</span>
-              <span class="font-semibold text-gray-900">{{ extendDuration }} hari</span>
+    <!-- Detail Modal -->
+    <div
+      v-if="showDetailModal && selectedAddon"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showDetailModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900">{{ selectedAddon.name }}</h3>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(selectedAddon.price) }}</span>
+                <span class="text-gray-500">/bulan</span>
+                <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                  Coming Soon
+                </span>
+              </div>
             </div>
-            <div
-              v-if="getExtendDiscount() > 0"
-              class="flex justify-between items-center mb-2"
+            <button
+              @click="showDetailModal = false"
+              class="text-gray-400 hover:text-gray-600 transition"
             >
-              <span class="text-gray-700">Diskon:</span>
-              <span class="font-semibold text-green-600">{{ getExtendDiscount() }}%</span>
-            </div>
-            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-              <span class="text-lg font-semibold text-gray-900">Total Pembayaran:</span>
-              <span class="text-2xl font-bold text-green-600">{{ formatCurrency(calculateExtendAddonTotal()) }}</span>
-            </div>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
-          <div class="flex space-x-3">
+          <div class="mb-6">
+            <p class="text-gray-700 mb-4">{{ selectedAddon.description }}</p>
+          </div>
+
+          <div v-if="selectedAddon.details && selectedAddon.details.length > 0" class="mb-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Fitur yang Didapat:</h4>
+            <ul class="space-y-2">
+              <li
+                v-for="(detail, index) in selectedAddon.details"
+                :key="index"
+                class="flex items-start gap-2 text-gray-700"
+              >
+                <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{{ detail }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div v-if="selectedAddon.defaultLimit" class="mb-6 p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-700">
+              <span class="font-semibold">Limit:</span> {{ selectedAddon.defaultLimit }} 
+              <span v-if="selectedAddon.type === 'ADD_OUTLETS'">outlet</span>
+              <span v-else-if="selectedAddon.type === 'ADD_USERS'">pengguna</span>
+              <span v-else-if="selectedAddon.type === 'ADD_PRODUCTS'">produk</span>
+            </p>
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t">
             <button
+              @click="showDetailModal = false"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              @click="showExtendModal = false; selectedAddonForExtend = null; extendDuration = 0"
             >
-              Batal
+              Tutup
             </button>
             <button
-              :disabled="!extendDuration || processing"
-              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              @click="handleExtendAddon"
+              v-if="!selectedAddon.comingSoon"
+              @click="subscribeAddon(selectedAddon); showDetailModal = false"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
             >
-              {{ processing ? 'Memproses...' : 'Perpanjang Addon' }}
+              Berlangganan Sekarang
             </button>
           </div>
         </div>
       </div>
     </div>
+
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -304,94 +222,26 @@ const loading = ref(false);
 const availableAddons = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
 const currentSubscription = ref<any>(null);
-const showExtendModal = ref(false);
-const selectedAddonForExtend = ref<any>(null);
-const extendDuration = ref<number>(0);
-const processing = ref(false);
-
-const durationOptions = [
-  { value: 30, label: '1 Bulan', discount: 0 },
-  { value: 90, label: '3 Bulan', discount: 5 },
-  { value: 180, label: '6 Bulan', discount: 10 },
-  { value: 365, label: '1 Tahun', discount: 15 },
-];
+const showDetailModal = ref(false);
+const selectedAddon = ref<any>(null);
 
 const loadAddons = async () => {
   if (needsTenantSelection.value) {
-    availableAddons.value = [];
-    activeAddons.value = [];
     return; // Don't load if tenant not selected
-  }
-  
-  // For super admin, ensure tenant is selected
-  if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
-    availableAddons.value = [];
-    activeAddons.value = [];
-    return;
-  }
-  
-  // Ensure tenantId is set in localStorage for API interceptor
-  if (authStore.isSuperAdmin && authStore.selectedTenantId) {
-    localStorage.setItem('selectedTenantId', authStore.selectedTenantId);
-    // Wait a bit to ensure localStorage is updated
-    await new Promise(resolve => setTimeout(resolve, 100));
   }
   
   loading.value = true;
   try {
-    const currentTenantId = authStore.selectedTenantId || authStore.currentTenantId;
-    
     const [availableRes, activeRes, subscriptionRes] = await Promise.all([
-      api.get('/addons/available').catch(() => {
-        return { data: [] };
-      }),
-      api.get('/addons').catch(() => {
-        return { data: [] };
-      }),
+      api.get('/addons/available'),
+      api.get('/addons'),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
-    
-    // Parse response data correctly
-    // Backend /addons/available returns array directly: res.json(AVAILABLE_ADDONS)
-    // Backend /addons returns array directly: res.json(addons)
-    // Axios wraps response in .data, so availableRes.data and activeRes.data are arrays
-    
-    let availableData = availableRes.data;
-    let activeData = activeRes.data;
-    
-    // Handle case where response is array directly (axios wraps in .data)
-    // Backend returns array, so availableRes.data and activeRes.data should be arrays
-    if (Array.isArray(availableData)) {
-      // Already an array - correct format
-    } else if (availableData && Array.isArray(availableData.data)) {
-      // Nested in data property (unlikely but handle it)
-      availableData = availableData.data;
-    } else if (availableData && typeof availableData === 'object' && availableData !== null) {
-      // If it's an object but not array, try to extract array from common properties
-      availableData = availableData.data || availableData.addons || [];
-    } else {
-      availableData = [];
-    }
-    
-    if (Array.isArray(activeData)) {
-      // Already an array - correct format
-    } else if (activeData && Array.isArray(activeData.data)) {
-      // Nested in data property (unlikely but handle it)
-      activeData = activeData.data;
-    } else if (activeData && typeof activeData === 'object' && activeData !== null) {
-      // If it's an object but not array, try to extract array from common properties
-      activeData = activeData.data || activeData.addons || [];
-    } else {
-      activeData = [];
-    }
-    
-    availableAddons.value = Array.isArray(availableData) ? availableData : [];
-    activeAddons.value = Array.isArray(activeData) ? activeData : [];
+    availableAddons.value = availableRes.data;
+    activeAddons.value = activeRes.data;
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat addons');
-    availableAddons.value = [];
-    activeAddons.value = [];
+    console.error('Error loading addons:', error);
   } finally {
     loading.value = false;
   }
@@ -416,20 +266,27 @@ const hasLimit = (addon: any) => {
   return addon.defaultLimit !== null && addon.defaultLimit !== undefined;
 };
 
-// Filter available addons: hide addons without limit that are already active
+// Filter and sort available addons
 const filteredAvailableAddons = computed(() => {
-  return (availableAddons.value || []).filter(addon => {
+  const filtered = availableAddons.value.filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
     if (hasLimit(addon)) {
       return true;
     }
-    // Addon tanpa limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
-    // Sembunyikan jika sudah aktif dan belum expired
-    // Tampilkan jika expired atau belum pernah dibeli
+    // Addon tanpa limit - sembunyikan jika sudah aktif dan belum expired
     if (isAddonActive(addon.id)) {
       return false; // Hide if active and not expired
     }
     return true; // Show if expired or not purchased
+  });
+  
+  // Sort: non-API addons first, API addons (coming soon) at the end
+  return filtered.sort((a, b) => {
+    const aIsApi = a.requiresApi === true || a.comingSoon === true;
+    const bIsApi = b.requiresApi === true || b.comingSoon === true;
+    if (aIsApi && !bIsApi) return 1;
+    if (!aIsApi && bIsApi) return -1;
+    return 0;
   });
 });
 
@@ -441,14 +298,18 @@ const getAddonDescription = (activeAddon: any) => {
   return matchedAddon?.description || activeAddon.addonType || 'Tidak ada deskripsi';
 };
 
+const showAddonDetail = (addon: any) => {
+  selectedAddon.value = addon;
+  showDetailModal.value = true;
+};
+
 const subscribeAddon = async (addon: any) => {
   if (needsTenantSelection.value) {
     return; // Don't proceed if tenant not selected
   }
   
-  // Prevent subscribing to coming soon addons
   if (addon.comingSoon) {
-    await showError('Addon ini belum tersedia. Fitur ini sedang dalam pengembangan.');
+    await showError('Addon ini belum tersedia. Coming soon!');
     return;
   }
   
@@ -467,6 +328,7 @@ const subscribeAddon = async (addon: any) => {
       await showError(response.data.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
+    console.error('Error creating payment:', error);
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
   }
 };
@@ -484,100 +346,10 @@ const unsubscribeAddon = async (addonId: string) => {
   }
 };
 
-const openExtendModal = (addon: any) => {
-  selectedAddonForExtend.value = addon;
-  extendDuration.value = 0;
-  showExtendModal.value = true;
-};
-
-// Use formatters utility instead of local function
-import { formatDate } from '../../utils/formatters';
-
-const getDaysUntilExpiry = (expiresAt: string | Date) => {
-  if (!expiresAt) return 0;
-  const expiry = new Date(expiresAt);
-  const now = new Date();
-  const diff = expiry.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-};
-
-const getExtendDiscount = () => {
-  if (!extendDuration.value) return 0;
-  const duration = durationOptions.find(d => d.value === extendDuration.value);
-  return duration?.discount || 0;
-};
-
-const calculateExtendAddonTotal = () => {
-  if (!selectedAddonForExtend.value || !extendDuration.value) return 0;
-  
-  // Find addon price from available addons
-  const addonInfo = availableAddons.value.find(
-    a => a.id === selectedAddonForExtend.value.addonId || a.type === selectedAddonForExtend.value.addonType
-  );
-  
-  if (!addonInfo || !addonInfo.price) return 0;
-  
-  const baseAmount = (addonInfo.price * extendDuration.value) / 30;
-  const discount = getExtendDiscount() / 100;
-  return Math.floor(baseAmount * (1 - discount));
-};
-
-const handleExtendAddon = async () => {
-  if (!selectedAddonForExtend.value || !extendDuration.value) {
-    await showError('Pilih durasi perpanjangan terlebih dahulu');
-    return;
-  }
-
-  processing.value = true;
-  try {
-    // Calculate total amount
-    const total = calculateExtendAddonTotal();
-    
-    // Create payment for addon extension
-    const response = await api.post('/payment/addon', {
-      itemName: `Perpanjang ${selectedAddonForExtend.value.addonName}`,
-      amount: total,
-      itemId: `extend-${selectedAddonForExtend.value.addonId}-${extendDuration.value}`,
-      itemType: 'addon-extend',
-      addonId: selectedAddonForExtend.value.addonId,
-      duration: extendDuration.value,
-    });
-
-    if (response.data.success && response.data.paymentUrl) {
-      // Redirect to Midtrans payment page
-      window.location.href = response.data.paymentUrl;
-    } else {
-      await showError(response.data.message || 'Gagal membuat pembayaran');
-    }
-  } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memperpanjang addon');
-  } finally {
-    processing.value = false;
-  }
-};
-
-const handleTenantChange = async (tenantId: string | null) => {
-  
+const handleTenantChange = (tenantId: string | null) => {
   // Auto-refetch addons when tenant changes
-  if (tenantId) {
-    // Ensure tenantId is set in authStore and localStorage
-    authStore.setSelectedTenant(tenantId);
-    localStorage.setItem('selectedTenantId', tenantId);
-    
-    // Wait a bit longer to ensure state is fully updated
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    // Double-check tenantId is set
-    const currentTenantId = authStore.selectedTenantId || localStorage.getItem('selectedTenantId');
-    
-    // Only load if tenant selection is no longer needed
-    if (!needsTenantSelection.value && currentTenantId) {
-      await loadAddons();
-    }
-  } else {
-    // Clear addons if tenant is deselected
-    availableAddons.value = [];
-    activeAddons.value = [];
+  if (tenantId && !needsTenantSelection.value) {
+    loadAddons();
   }
 };
 

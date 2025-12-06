@@ -1,9 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import financeService from '../services/finance.service';
 import { checkBusinessAnalyticsAddon } from '../middlewares/addon-guard';
-import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -55,8 +54,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const summary = await financeService.getFinancialSummary(tenantId, startDate, endDate);
       res.json(summary);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load financial summary', 'FINANCE_SUMMARY');
+    } catch (error: any) {
+      next(error);
     }
   }
 );
@@ -114,9 +113,9 @@ router.get(
   '/profit-loss',
   authGuard,
   checkBusinessAnalyticsAddon,
-  async (req: AuthRequest, res: Response, next) => {
+  async (req: Request, res: Response, next) => {
     try {
-      const userRole = req.user?.role || req.role;
+      const userRole = (req as any).user?.role;
       
       // For Super Admin, return platform revenue profit-loss (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
@@ -178,8 +177,8 @@ router.get(
       }
       
       res.json(profitLoss);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load profit-loss statement', 'PROFIT_LOSS');
+    } catch (error: any) {
+      next(error);
     }
   }
 );
@@ -232,8 +231,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const balanceSheet = await financeService.getBalanceSheet(tenantId, startDate, endDate);
       res.json(balanceSheet);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load balance sheet', 'BALANCE_SHEET');
+    } catch (error: any) {
+      next(error);
     }
   }
 );
@@ -288,8 +287,8 @@ router.get(
       const endDate = req.query.endDate as string;
       const cashFlow = await financeService.getCashFlow(tenantId, startDate, endDate);
       res.json(cashFlow);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to load cash flow statement', 'CASH_FLOW');
+    } catch (error: any) {
+      next(error);
     }
   }
 );

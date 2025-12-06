@@ -1,30 +1,19 @@
 <template>
-  <ErrorBoundary>
-    <div
-      id="app-wrapper"
-      class="w-full min-h-screen"
-    >
-      <main
-        id="main-content"
-        tabindex="-1"
-      >
-        <router-view />
-      </main>
-      
-      <NotificationModal
-        :show="showNotification"
-        :type="notificationOptions.type"
-        :title="notificationOptions.title"
-        :message="notificationOptions.message"
-        :confirm-text="notificationOptions.confirmText"
-        :cancel-text="notificationOptions.cancelText"
-        @confirm="handleConfirm"
-        @cancel="handleCancel"
-        @close="handleClose"
-      />
-      <PWAInstallPrompt />
-    </div>
-  </ErrorBoundary>
+  <div id="app-wrapper" class="w-full min-h-screen">
+    <router-view />
+    <NotificationModal
+      :show="showNotification"
+      :type="notificationOptions.type"
+      :title="notificationOptions.title"
+      :message="notificationOptions.message"
+      :confirm-text="notificationOptions.confirmText"
+      :cancel-text="notificationOptions.cancelText"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+      @close="handleClose"
+    />
+    <PWAInstallPrompt />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -32,7 +21,6 @@ import { onMounted } from 'vue';
 import { useAuthStore } from './stores/auth';
 import NotificationModal from './components/NotificationModal.vue';
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue';
-import ErrorBoundary from './components/ErrorBoundary.vue';
 import { useNotification } from './composables/useNotification';
 import {
   handleNotificationConfirm as handleConfirm,
@@ -40,10 +28,8 @@ import {
   handleNotificationClose as handleClose,
 } from './composables/useNotification';
 
-// ✅ Composable declarations MUST be before other composables
-const { showNotification, notificationOptions } = useNotification();
-
 const authStore = useAuthStore();
+const { showNotification, notificationOptions } = useNotification();
 
 onMounted(async () => {
   // Skip restore if we're on login page (to avoid flash)
@@ -73,11 +59,12 @@ onMounted(async () => {
       // Verify token is still valid by fetching user data (async, but only if not on login)
       // This is done in background to avoid blocking
       authStore.fetchMe().catch((error) => {
+        console.error('Failed to restore session:', error);
         // If fetchMe fails, token might be invalid, clear everything
         authStore.clearAuth();
       });
     } catch (error) {
-      // Failed to restore user from localStorage, clear auth
+      console.error('Failed to restore user from localStorage:', error);
       authStore.clearAuth();
     }
   } else {

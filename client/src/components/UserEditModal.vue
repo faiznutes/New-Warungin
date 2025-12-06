@@ -9,33 +9,18 @@
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-gray-900">
-                {{ props.user ? 'Edit Pengguna' : 'Tambah Pengguna' }}
-              </h3>
+              <h3 class="text-xl font-bold text-gray-900">Edit Pengguna</h3>
               <button
-                class="text-gray-400 hover:text-gray-600 transition"
                 @click="$emit('close')"
+                class="text-gray-400 hover:text-gray-600 transition"
               >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <form
-              class="space-y-4"
-              @submit.prevent="handleSubmit"
-            >
+            <form @submit.prevent="handleSubmit" class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nama *</label>
                 <input
@@ -66,104 +51,69 @@
                     required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option value="ADMIN_TENANT">
-                      Admin
-                    </option>
-                    <option value="SUPERVISOR">
-                      Supervisor
-                    </option>
-                    <option value="CASHIER">
-                      Kasir
-                    </option>
-                    <option value="KITCHEN">
-                      Dapur
-                    </option>
+                    <option value="ADMIN_TENANT">Admin</option>
+                    <option value="SUPERVISOR">Supervisor</option>
+                    <option value="CASHIER">Kasir</option>
+                    <option value="KITCHEN">Dapur</option>
                   </select>
                 </div>
 
-                <div v-if="props.user">
+                <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                   <select
                     v-model="form.isActive"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option :value="true">
-                      Aktif
-                    </option>
-                    <option :value="false">
-                      Tidak Aktif
-                    </option>
+                    <option :value="true">Aktif</option>
+                    <option :value="false">Tidak Aktif</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  {{ props.user ? 'Password Baru (opsional)' : 'Password (opsional, akan dibuat otomatis jika kosong)' }}
-                </label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru (opsional)</label>
                 <input
                   v-model="form.password"
                   type="password"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  :placeholder="props.user ? 'Kosongkan jika tidak ingin mengubah password' : 'Kosongkan untuk password otomatis'"
+                  placeholder="Kosongkan jika tidak ingin mengubah password"
                 />
-                <div
-                  v-if="authStore.isSuperAdmin && props.user"
-                  class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
-                >
+                <div v-if="authStore.isSuperAdmin && props.user" class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <p class="text-xs font-medium text-gray-700 mb-2">
                     Password aktif saat ini:
                   </p>
-                  <div
-                    v-if="currentPassword"
-                    class="flex items-center gap-2"
-                  >
+                  <div v-if="currentPassword" class="flex items-center gap-2">
                     <span class="font-mono text-sm font-semibold text-gray-900 bg-white px-3 py-2 rounded border border-gray-300 flex-1">{{ currentPassword }}</span>
                     <button
                       type="button"
-                      class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition"
                       @click="copyPassword"
+                      class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition"
                     >
                       Salin
                     </button>
                   </div>
-                  <div
-                    v-else
-                    class="flex items-center gap-2"
-                  >
+                  <div v-else class="flex items-center gap-2">
                     <button
                       type="button"
+                      @click="loadPassword"
                       :disabled="loadingPassword"
                       class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-blue-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Klik untuk melihat password aktif"
-                      @click="loadPassword"
                     >
                       {{ loadingPassword ? 'Memuat...' : 'Lihat Password' }}
                     </button>
-                    <p
-                      v-if="loadingPassword"
-                      class="text-xs text-gray-500"
-                    >
-                      Memuat password...
-                    </p>
+                    <p v-if="loadingPassword" class="text-xs text-gray-500">Memuat password...</p>
                   </div>
                 </div>
               </div>
 
               <!-- Permissions Section -->
-              <div
-                v-if="(form.role === 'CASHIER' || form.role === 'SUPERVISOR' || form.role === 'KITCHEN') && form.permissions"
-                class="border-t pt-4 mt-4"
-              >
-                <h4 class="text-lg font-semibold text-gray-900 mb-4">
-                  Hak Akses & Fitur
-                </h4>
+              <div v-if="(form.role === 'CASHIER' || form.role === 'SUPERVISOR' || form.role === 'KITCHEN') && form.permissions" class="border-t pt-4 mt-4">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Hak Akses & Fitur</h4>
                 <div class="space-y-3">
                   <!-- Order Permissions -->
                   <div class="bg-gray-50 rounded-lg p-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                      Manajemen Pesanan
-                    </h5>
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Pesanan</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -202,9 +152,7 @@
 
                   <!-- Report Permissions -->
                   <div class="bg-gray-50 rounded-lg p-4">
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                      Laporan
-                    </h5>
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Laporan</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -234,13 +182,8 @@
                   </div>
 
                   <!-- Product & Customer Permissions (for Supervisor and Cashier) -->
-                  <div
-                    v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'"
-                    class="bg-gray-50 rounded-lg p-4"
-                  >
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                      Manajemen Data
-                    </h5>
+                  <div v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'" class="bg-gray-50 rounded-lg p-4">
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Data</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -262,13 +205,8 @@
                   </div>
 
                   <!-- Store Access (for Supervisor) -->
-                  <div
-                    v-if="form.role === 'SUPERVISOR'"
-                    class="bg-gray-50 rounded-lg p-4 mt-4"
-                  >
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                      Akses Store
-                    </h5>
+                  <div v-if="form.role === 'SUPERVISOR'" class="bg-gray-50 rounded-lg p-4 mt-4">
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Akses Store</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input
@@ -279,38 +217,22 @@
                         <span class="text-sm font-medium text-gray-700">Pilih Semua Store</span>
                       </label>
                       <div class="border-t pt-2 mt-2 max-h-48 overflow-y-auto">
-                        <div
-                          v-if="loadingStores"
-                          class="text-sm text-gray-500 py-2"
-                        >
-                          Memuat store...
-                        </div>
-                        <div
-                          v-else-if="stores.length === 0"
-                          class="text-sm text-gray-500 py-2"
-                        >
-                          Tidak ada store tersedia
-                        </div>
-                        <div
-                          v-else
-                          class="space-y-2"
-                        >
+                        <div v-if="loadingStores" class="text-sm text-gray-500 py-2">Memuat store...</div>
+                        <div v-else-if="stores.length === 0" class="text-sm text-gray-500 py-2">Tidak ada store tersedia</div>
+                        <div v-else class="space-y-2">
                           <label
                             v-for="store in stores"
                             :key="store.id"
                             class="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
                           >
                             <input
-                              v-model="permissions.allowedStoreIds"
                               :value="store.id"
+                              v-model="permissions.allowedStoreIds"
                               type="checkbox"
                               class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
                             />
                             <span class="text-sm text-gray-700">{{ store.name }}</span>
-                            <span
-                              v-if="!store.isActive"
-                              class="text-xs text-red-600"
-                            >(Tidak Aktif)</span>
+                            <span v-if="!store.isActive" class="text-xs text-red-600">(Tidak Aktif)</span>
                           </label>
                         </div>
                       </div>
@@ -318,32 +240,20 @@
                   </div>
 
                   <!-- Store Assignment (for Cashier and Kitchen) -->
-                  <div
-                    v-if="isCashierOrKitchen"
-                    class="bg-gray-50 rounded-lg p-4 mt-4"
-                  >
-                    <h5 class="text-sm font-semibold text-gray-700 mb-3">
-                      Penugasan Store
-                    </h5>
+                  <div v-if="isCashierOrKitchen" class="bg-gray-50 rounded-lg p-4 mt-4">
+                    <h5 class="text-sm font-semibold text-gray-700 mb-3">Penugasan Store</h5>
                     <div class="space-y-2">
                       <label class="block text-sm font-medium text-gray-700 mb-2">
                         Pilih Store <span class="text-red-500">*</span>
                       </label>
-                      <div
-                        v-if="loadingStores"
-                        class="text-sm text-gray-500 py-2"
-                      >
-                        Memuat store...
-                      </div>
+                      <div v-if="loadingStores" class="text-sm text-gray-500 py-2">Memuat store...</div>
                       <select
                         v-else
                         v-model="permissions.assignedStoreId"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
                       >
-                        <option value="">
-                          -- Pilih Store --
-                        </option>
+                        <option value="">-- Pilih Store --</option>
                         <option
                           v-for="store in stores"
                           :key="store.id"
@@ -364,8 +274,8 @@
               <div class="flex space-x-3 pt-4">
                 <button
                   type="button"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                   @click="$emit('close')"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
                 >
                   Batal
                 </button>
@@ -374,7 +284,7 @@
                   :disabled="saving"
                   class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ saving ? 'Menyimpan...' : (props.user ? 'Update' : 'Simpan') }}
+                  {{ saving ? 'Menyimpan...' : 'Simpan' }}
                 </button>
               </div>
             </form>
@@ -386,7 +296,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import api from '../api';
 import { useAuthStore } from '../stores/auth';
 import { useNotification } from '../composables/useNotification';
@@ -458,8 +368,7 @@ const form = ref<Partial<User & { password?: string; permissions?: UserPermissio
 const permissions = computed({
   get: () => {
     if (!form.value.permissions) {
-      // Initialize permissions if not set (one-time initialization)
-      return {
+      form.value.permissions = {
         canEditOrders: false,
         canDeleteOrders: false,
         canCancelOrders: false,
@@ -495,9 +404,9 @@ const isCashierOrKitchen = computed(() => {
 const selectAllStores = computed({
   get: () => {
     if (!permissions.value.allowedStoreIds) return false;
-    const activeStores = stores.value.filter((s: Store) => s.isActive);
+    const activeStores = stores.value.filter(s => s.isActive);
     return activeStores.length > 0 && 
-           activeStores.every((store: Store) => permissions.value.allowedStoreIds?.includes(store.id));
+           activeStores.every(store => permissions.value.allowedStoreIds?.includes(store.id));
   },
   set: (value: boolean) => {
     handleSelectAllStores(value);
@@ -535,13 +444,14 @@ const loadStores = async (force = false) => {
     loadingStores.value = true;
     try {
       const response = await api.get('/outlets');
-      stores.value = (response.data?.data || response.data || []).map((store: any) => ({
+      stores.value = (response.data.data || []).map((store: any) => ({
         id: store.id,
         name: store.name,
         isActive: store.isActive !== false,
       }));
       storesLoaded.value = true; // Mark as loaded
     } catch (error: any) {
+      console.error('Error loading stores:', error);
       // Don't clear stores on 429 error (rate limiting)
       if (error.response?.status !== 429) {
         stores.value = [];
@@ -560,7 +470,7 @@ const loadStores = async (force = false) => {
 const handleSelectAllStores = (checked: boolean) => {
   if (checked) {
     // Select all active stores
-    const activeStoreIds = stores.value.filter((s: Store) => s.isActive).map((s: Store) => s.id);
+    const activeStoreIds = stores.value.filter(s => s.isActive).map(s => s.id);
     permissions.value.allowedStoreIds = activeStoreIds;
   } else {
     // Deselect all
@@ -568,13 +478,65 @@ const handleSelectAllStores = (checked: boolean) => {
   }
 };
 
-// Watch for user prop changes (defer immediate to avoid initialization issues)
-// Don't watch immediately - handle in onMounted instead
+watch(() => props.user, async (newUser) => {
+  if (newUser) {
+    // Reset stores cache when user changes
+    storesLoaded.value = false;
+    
+    form.value = {
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      isActive: newUser.isActive,
+      password: '',
+      permissions: newUser.permissions || {
+        canEditOrders: false,
+        canDeleteOrders: false,
+        canCancelOrders: false,
+        canRefundOrders: false,
+        canViewReports: false,
+        canEditReports: false,
+        canExportReports: false,
+        canManageProducts: false,
+        canManageCustomers: false,
+        allowedStoreIds: newUser.role === 'SUPERVISOR' ? [] : undefined,
+        assignedStoreId: (newUser.role === 'CASHIER' || newUser.role === 'KITCHEN') ? '' : undefined,
+      },
+    };
+    
+    // Set current password if available (for Super Admin)
+    if (authStore.isSuperAdmin) {
+      // First check if defaultPassword is already in the user object
+      if ((newUser as any).defaultPassword) {
+        currentPassword.value = (newUser as any).defaultPassword;
+      } else {
+        // If not available, try to load it automatically when modal opens
+        currentPassword.value = '';
+        // Auto-load password when modal opens for Super Admin (with delay to ensure modal is ready)
+        setTimeout(async () => {
+          try {
+            await loadPassword();
+          } catch (error) {
+            // Silently fail - user can click "Lihat Password" manually
+            console.log('Password not available yet, user can click to load');
+          }
+        }, 300); // Small delay to ensure modal is fully rendered
+      }
+    } else {
+      currentPassword.value = '';
+    }
+    
+    // Load stores if role requires it (SUPERVISOR, CASHIER, or KITCHEN)
+    if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(newUser.role)) {
+      loadStores(true); // Force reload when user changes
+    }
+  }
+}, { immediate: true });
 
-watch(() => form.value.role, (newRole: string | undefined, oldRole: string | undefined) => {
+watch(() => form.value.role, (newRole, oldRole) => {
   // Only reload stores if role changed to a role that needs stores
   const rolesNeedingStores = ['SUPERVISOR', 'CASHIER', 'KITCHEN'] as const;
-  const oldNeededStores = oldRole && rolesNeedingStores.includes(oldRole as typeof rolesNeedingStores[number]);
+  const oldNeededStores = oldRole && rolesNeedingStores.includes(oldRole as any);
   
   // Ensure permissions object exists
   if (!form.value.permissions) {
@@ -615,159 +577,9 @@ watch(() => form.value.role, (newRole: string | undefined, oldRole: string | und
   }
 });
 
-onMounted(async () => {
-  await nextTick();
-  
-  // Watch for user prop changes
-  watch(() => props.user, async (newUser: User | null) => {
-    if (newUser) {
-      // Reset stores cache when user changes
-      storesLoaded.value = false;
-      
-      form.value = {
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        isActive: newUser.isActive,
-        password: '',
-        permissions: newUser.permissions || {
-          canEditOrders: false,
-          canDeleteOrders: false,
-          canCancelOrders: false,
-          canRefundOrders: false,
-          canViewReports: false,
-          canEditReports: false,
-          canExportReports: false,
-          canManageProducts: false,
-          canManageCustomers: false,
-          allowedStoreIds: newUser.role === 'SUPERVISOR' ? [] : undefined,
-          assignedStoreId: (newUser.role === 'CASHIER' || newUser.role === 'KITCHEN') ? '' : undefined,
-        },
-      };
-      
-      // Set current password if available (for Super Admin)
-      if (authStore.isSuperAdmin) {
-        // First check if defaultPassword is already in the user object
-        if ((newUser as any).defaultPassword) {
-          currentPassword.value = (newUser as any).defaultPassword;
-        } else {
-          // If not available, try to load it automatically when modal opens
-          currentPassword.value = '';
-          // Auto-load password when modal opens for Super Admin (with delay to ensure modal is ready)
-          setTimeout(async () => {
-            try {
-              await loadPassword();
-            } catch (error) {
-              // Silently fail - user can click "Lihat Password" manually
-              console.log('Password not available yet, user can click to load');
-            }
-          }, 300); // Small delay to ensure modal is fully rendered
-        }
-      } else {
-        currentPassword.value = '';
-      }
-      
-      // Load stores if role requires it (SUPERVISOR, CASHIER, or KITCHEN)
-      if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(newUser.role)) {
-        loadStores(true); // Force reload when user changes
-      }
-    }
-  });
-  
-  // Initial setup if user is already provided
-  if (props.user) {
-    storesLoaded.value = false;
-    form.value = {
-      name: props.user.name,
-      email: props.user.email,
-      role: props.user.role,
-      isActive: props.user.isActive,
-      password: '',
-      permissions: props.user.permissions || {
-        canEditOrders: false,
-        canDeleteOrders: false,
-        canCancelOrders: false,
-        canRefundOrders: false,
-        canViewReports: false,
-        canEditReports: false,
-        canExportReports: false,
-        canManageProducts: false,
-        canManageCustomers: false,
-        allowedStoreIds: props.user.role === 'SUPERVISOR' ? [] : undefined,
-        assignedStoreId: (props.user.role === 'CASHIER' || props.user.role === 'KITCHEN') ? '' : undefined,
-      },
-    };
-    
-    if (authStore.isSuperAdmin) {
-      if ((props.user as any).defaultPassword) {
-        currentPassword.value = (props.user as any).defaultPassword;
-      } else {
-        currentPassword.value = '';
-        setTimeout(async () => {
-          try {
-            await loadPassword();
-          } catch (error) {
-            console.log('Password not available yet, user can click to load');
-          }
-        }, 300);
-      }
-    } else {
-      currentPassword.value = '';
-    }
-    
-    if (['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(props.user.role)) {
-      loadStores(true);
-    }
-  } else {
-    // Create mode - reset form to defaults
-    form.value = {
-      name: '',
-      email: '',
-      role: 'CASHIER',
-      isActive: true,
-      password: '',
-      permissions: {
-        canEditOrders: false,
-        canDeleteOrders: false,
-        canCancelOrders: false,
-        canRefundOrders: false,
-        canViewReports: false,
-        canEditReports: false,
-        canExportReports: false,
-        canManageProducts: false,
-        canManageCustomers: false,
-      },
-    };
-    currentPassword.value = '';
-    storesLoaded.value = false;
-  }
-  
-  // Watch for show prop to reset form when modal opens for create
-  watch(() => props.show, (newShow: boolean) => {
-    if (newShow && !props.user) {
-      // Reset form when modal opens for create
-      form.value = {
-        name: '',
-        email: '',
-        role: 'CASHIER',
-        isActive: true,
-        password: '',
-        permissions: {
-          canEditOrders: false,
-          canDeleteOrders: false,
-          canCancelOrders: false,
-          canRefundOrders: false,
-          canViewReports: false,
-          canEditReports: false,
-          canExportReports: false,
-          canManageProducts: false,
-          canManageCustomers: false,
-        },
-      };
-      currentPassword.value = '';
-      storesLoaded.value = false;
-    }
-  });
+onMounted(() => {
+  // Stores will be loaded by watch if needed
+  // No need to load again here to prevent duplicate requests
 });
 
 onUnmounted(() => {
@@ -816,47 +628,6 @@ const copyPassword = async () => {
 };
 
 const handleSubmit = () => {
-  // Client-side validation
-  if (!form.value.name || form.value.name.trim() === '') {
-    showError('Nama pengguna wajib diisi');
-    return;
-  }
-  
-  if (!form.value.email || form.value.email.trim() === '') {
-    showError('Email wajib diisi');
-    return;
-  }
-  
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(form.value.email)) {
-    showError('Format email tidak valid');
-    return;
-  }
-  
-  if (!form.value.role) {
-    showError('Role wajib dipilih');
-    return;
-  }
-  
-  // Password validation (only if creating new user or password is provided)
-  if (!props.user && (!form.value.password || form.value.password.trim() === '')) {
-    showError('Password wajib diisi untuk pengguna baru');
-    return;
-  }
-  
-  if (form.value.password && form.value.password.length < 6) {
-    showError('Password minimal 6 karakter');
-    return;
-  }
-  
-  // Store assignment validation for CASHIER and KITCHEN
-  if ((form.value.role === 'CASHIER' || form.value.role === 'KITCHEN') && 
-      (!form.value.permissions?.assignedStoreId || form.value.permissions.assignedStoreId === '')) {
-    showError('Store wajib dipilih untuk Kasir dan Kitchen');
-    return;
-  }
-  
   const userData: Partial<User & { password?: string; permissions?: UserPermissions }> = {
     name: form.value.name,
     email: form.value.email,

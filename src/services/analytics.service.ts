@@ -1,6 +1,4 @@
 import prisma from '../config/database';
-import logger from '../utils/logger';
-import CacheService from '../utils/cache';
 import { getRedisClient } from '../config/redis';
 
 interface Prediction {
@@ -33,20 +31,25 @@ interface CreateCustomReportInput {
 
 class AnalyticsService {
   async getPredictions(tenantId: string, method: 'moving_average' | 'linear_regression' = 'moving_average', useCache: boolean = true): Promise<Prediction> {
-    const cacheKey = `analytics:predictions:${tenantId}:${method}`;
-    
     // Check cache first if enabled
     if (useCache) {
-      const cached = await CacheService.get<Prediction>(cacheKey);
-      if (cached) {
-        return cached;
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          const cached = await redis.get(`analytics:predictions:${tenantId}`);
+          if (cached) {
+            return JSON.parse(cached);
+          }
+        } catch (error) {
+          // If cache read fails, continue with calculation
+          console.warn('Failed to read from cache, calculating predictions:', error);
+        }
       }
     }
     
     // Get sales data for last 6 months for better accuracy
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    sixMonthsAgo.setHours(0, 0, 0, 0);
 
     const orders = await prisma.order.findMany({
       where: {
@@ -58,13 +61,7 @@ class AnalyticsService {
         total: true,
         createdAt: true,
       },
-      orderBy: {
-        createdAt: 'asc',
-      },
     });
-
-    // Log for debugging
-    logger.debug('getPredictions: Found completed orders', { tenantId, orderCount: orders.length });
 
     // Calculate monthly totals
     const monthlyTotals: Record<string, number> = {};
@@ -76,25 +73,11 @@ class AnalyticsService {
     const months = Object.keys(monthlyTotals).sort();
     const values = months.map(month => monthlyTotals[month] || 0);
 
-    logger.debug('Monthly totals and values', { tenantId, monthlyTotals, values });
-
-    // If no data at all, return 0
-    if (values.length === 0 || values.every(v => v === 0)) {
-      logger.debug('No data available for predictions', { tenantId });
+    if (values.length < 2) {
       return {
         nextMonth: 0,
         trend: 0,
         accuracy: 0,
-      };
-    }
-
-    // If only one month of data, use that month as prediction
-    if (values.length === 1) {
-      logger.debug('Only one month of data, using that as prediction', { tenantId });
-      return {
-        nextMonth: values[0],
-        trend: 0,
-        accuracy: 50,
       };
     }
 
@@ -150,18 +133,11 @@ class AnalyticsService {
       accuracy = Math.round(Math.max(0, Math.min(100, rSquared * 100)));
     }
 
-    const result = {
+    return {
       nextMonth: Math.round(nextMonth * 100) / 100,
       trend: Math.round(trend * 100) / 100,
       accuracy,
     };
-
-    // Cache the result (1 hour TTL for predictions)
-    if (useCache) {
-      await CacheService.set(cacheKey, result, 3600);
-    }
-
-    return result;
   }
 
   async getTrends(tenantId: string, period: 'daily' | 'weekly' | 'monthly' = 'monthly', useCache: boolean = true) {
@@ -176,7 +152,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          logger.warn('Failed to read trends from cache, calculating', { error: error instanceof Error ? error.message : String(error), tenantId });
+          console.warn('Failed to read trends from cache, calculating:', error);
         }
       }
     }
@@ -267,24 +243,38 @@ class AnalyticsService {
 
     const result = { period, data };
     
-    // Cache the result (1 hour TTL for trends)
+    // Cache the result if enabled
     if (useCache) {
-      const trendsCacheKey = `analytics:trends:${period}:${tenantId}`;
-      await CacheService.set(trendsCacheKey, result, 3600);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          await redis.setex(`analytics:trends:${period}:${tenantId}`, 3600, JSON.stringify(result));
+        } catch (error) {
+          // If cache write fails, continue without caching
+          console.warn('Failed to cache trends:', error);
+        }
+      }
     }
 
     return result;
   }
 
   async getTopProducts(tenantId: string, limit: number = 10, useCache: boolean = true): Promise<TopProduct[]> {
-    const cacheKey = `analytics:top-products:${tenantId}`;
-    
     // Check cache first if enabled
     if (useCache) {
-      const cached = await CacheService.get<TopProduct[]>(cacheKey);
-      if (cached) {
-        // Return limited results from cache
-        return cached.slice(0, limit);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          const cached = await redis.get(`analytics:top-products:${tenantId}`);
+          if (cached) {
+            const cachedProducts = JSON.parse(cached);
+            // Return limited results from cache
+            return cachedProducts.slice(0, limit);
+          }
+        } catch (error) {
+          // If cache read fails, continue with calculation
+          console.warn('Failed to read top products from cache, calculating:', error);
+        }
       }
     }
     const products = await prisma.product.findMany({
@@ -314,13 +304,21 @@ class AnalyticsService {
       .sort((a, b) => b.sales - a.sales)
       .slice(0, limit);
     
-    // Cache top 50 products for flexibility (1 hour TTL)
+    // Cache the result if enabled (cache top 50 for flexibility)
     if (useCache) {
-      const allProducts = productsWithSales
-        .filter(product => product.sales > 0) // Filter out products with 0 sales
-        .sort((a, b) => b.sales - a.sales)
-        .slice(0, 50);
-      await CacheService.set(cacheKey, allProducts, 3600);
+      const redis = getRedisClient();
+      if (redis) {
+        try {
+          const allProducts = productsWithSales
+            .filter(product => product.sales > 0) // Filter out products with 0 sales
+            .sort((a, b) => b.sales - a.sales)
+            .slice(0, 50);
+          await redis.setex(`analytics:top-products:${tenantId}`, 3600, JSON.stringify(allProducts));
+        } catch (error) {
+          // If cache write fails, continue without caching
+          console.warn('Failed to cache top products:', error);
+        }
+      }
     }
     
     return result;
@@ -451,7 +449,7 @@ class AnalyticsService {
   async getPlatformTrends(period: 'daily' | 'weekly' | 'monthly' = 'monthly') {
     const now = new Date();
     let startDate: Date;
-    const endDate: Date = now;
+    let endDate: Date = now;
 
     if (period === 'daily') {
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30, 0, 0, 0);

@@ -21,16 +21,16 @@ export interface ArchiveConfig {
 
 export class ArchiveService {
   private defaultConfig: ArchiveConfig = {
-    ordersOlderThanDays: 365, // 1 year
-    transactionsOlderThanDays: 365,
-    reportsOlderThanDays: 180, // 6 months
+    ordersOlderThanDays: 730, // 2 years (for SUPER_ADMIN)
+    transactionsOlderThanDays: 730, // 2 years
+    reportsOlderThanDays: 730, // 2 years
     archivePath: './archives',
   };
 
   /**
    * Archive old orders
    */
-  async archiveOldOrders(tenantId: string, olderThanDays: number = 365): Promise<number> {
+  async archiveOldOrders(tenantId: string, olderThanDays: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
@@ -79,7 +79,7 @@ export class ArchiveService {
   /**
    * Archive old transactions
    */
-  async archiveOldTransactions(tenantId: string, olderThanDays: number = 365): Promise<number> {
+  async archiveOldTransactions(tenantId: string, olderThanDays: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
@@ -124,7 +124,7 @@ export class ArchiveService {
   /**
    * Archive old reports
    */
-  async archiveOldReports(tenantId: string, olderThanDays: number = 180): Promise<number> {
+  async archiveOldReports(tenantId: string, olderThanDays: number = 730): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
