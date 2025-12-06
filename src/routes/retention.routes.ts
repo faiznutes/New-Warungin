@@ -174,13 +174,15 @@ router.post(
           totalDeleted += await retentionService.applyOrdersRetention(tenant.id, retentionDays);
         }
         await logAction(req, 'RETENTION', 'orders', null, { days: retentionDays, deletedCount: totalDeleted }, 'SUCCESS');
-        return res.json({
+        res.json({
           message: `Deleted ${totalDeleted} orders from all tenants based on retention policy`,
           deletedCount: totalDeleted,
         });
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const deletedCount = await retentionService.applyOrdersRetention(tenantId, retentionDays);
       await logAction(req, 'RETENTION', 'orders', null, { days, deletedCount }, 'SUCCESS');
@@ -248,13 +250,15 @@ router.post(
           totalDeleted += await retentionService.applyTransactionsRetention(tenant.id, retentionDays);
         }
         await logAction(req, 'RETENTION', 'transactions', null, { days: retentionDays, deletedCount: totalDeleted }, 'SUCCESS');
-        return res.json({
+        res.json({
           message: `Deleted ${totalDeleted} transactions from all tenants based on retention policy`,
           deletedCount: totalDeleted,
         });
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const deletedCount = await retentionService.applyTransactionsRetention(tenantId, retentionDays);
       await logAction(req, 'RETENTION', 'transactions', null, { days, deletedCount }, 'SUCCESS');
@@ -321,13 +325,15 @@ router.post(
         for (const tenant of allTenants) {
           totalDeleted += await retentionService.applyReportsRetention(tenant.id, retentionDays);
         }
-        return res.json({
+        res.json({
           message: `Deleted ${totalDeleted} reports from all tenants based on retention policy`,
           deletedCount: totalDeleted,
         });
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const deletedCount = await retentionService.applyReportsRetention(tenantId, retentionDays);
       res.json({
@@ -392,13 +398,15 @@ router.post(
         for (const tenant of allTenants) {
           totalDeleted += await retentionService.applyAuditLogsRetention(tenant.id, retentionDays);
         }
-        return res.json({
+        res.json({
           message: `Deleted ${totalDeleted} audit logs from all tenants based on retention policy`,
           deletedCount: totalDeleted,
         });
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const deletedCount = await retentionService.applyAuditLogsRetention(tenantId, retentionDays);
       res.json({
@@ -616,7 +624,7 @@ router.post(
           totalContactSubmissions += result.contactSubmissions;
           totalDemoRequests += result.demoRequests;
         }
-        return res.json({
+        res.json({
           message: 'Applied all retention policies to all tenants',
           orders: totalOrders,
           transactions: totalTransactions,
@@ -625,9 +633,11 @@ router.post(
           contactSubmissions: totalContactSubmissions,
           demoRequests: totalDemoRequests,
         });
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const result = await retentionService.applyAllRetentionPolicies(tenantId, finalPolicy);
       res.json({
