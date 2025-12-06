@@ -187,13 +187,13 @@ const router = createRouter({
           path: 'rewards',
           name: 'rewards',
           component: () => import('../views/rewards/Rewards.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
         },
         {
           path: 'reward-view',
           name: 'reward-view',
           component: () => import('../views/rewards/RewardView.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
         },
         {
           path: 'discounts',
@@ -243,40 +243,46 @@ const router = createRouter({
           path: 'inventory/suppliers',
           name: 'suppliers',
           component: () => import('../views/inventory/Suppliers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'inventory/purchase-orders',
           name: 'purchase-orders',
           component: () => import('../views/inventory/PurchaseOrders.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+        },
+        {
+          path: 'inventory/stock-transfers',
+          name: 'stock-transfers',
+          component: () => import('../views/inventory/StockTransfers.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'inventory/stock-alerts',
           name: 'stock-alerts',
           component: () => import('../views/inventory/StockAlerts.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'INVENTORY_MANAGEMENT' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         // Advanced Reporting
         {
           path: 'reports/advanced',
           name: 'advanced-reporting',
           component: () => import('../views/reports/AdvancedReporting.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'ADVANCED_REPORTING' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
         // Financial Management Enhancement
         {
           path: 'finance/management',
           name: 'financial-management',
           component: () => import('../views/finance/FinancialManagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'FINANCIAL_MANAGEMENT' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
         // AI/ML Features
         {
           path: 'ai-ml',
           name: 'ai-ml-features',
           component: () => import('../views/ai-ml/AIMLFeatures.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'AI_ML_FEATURES' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
         {
           path: 'analytics',
@@ -288,7 +294,7 @@ const router = createRouter({
           path: 'finance',
           name: 'finance',
           component: () => import('../views/finance/AccountingFinance.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'FINANCIAL_MANAGEMENT' },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
         {
           path: 'profit-loss',
@@ -300,7 +306,7 @@ const router = createRouter({
           path: 'settings/store',
           name: 'store-settings',
           component: () => import('../views/settings/StoreSettings.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT'] },
         },
         {
           path: 'settings/2fa',
@@ -342,26 +348,13 @@ const router = createRouter({
           path: 'settings/archive',
           name: 'archive-management',
           component: () => import('../views/settings/ArchiveManagement.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'settings/retention',
           name: 'retention-management',
           component: () => import('../views/settings/RetentionManagement.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
-        },
-        // System Info for Super Admin
-        {
-          path: 'system/info',
-          name: 'system-info',
-          component: () => import('../views/system/SystemInfo.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
-        },
-        {
-          path: 'contact/submissions',
-          name: 'contact-submissions',
-          component: () => import('../views/contact/ContactSubmissions.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'products/adjustments',
@@ -379,7 +372,7 @@ const router = createRouter({
           path: 'stores',
           name: 'stores',
           component: () => import('../views/stores/Stores.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         // Kasir and Admin Tenant
         {
@@ -446,7 +439,7 @@ router.beforeEach(async (to, from, next) => {
       try {
         await authStore.fetchMe();
       } catch (error) {
-        // Session restore failed, redirect to login
+        console.error('Failed to restore session:', error);
         authStore.clearAuth();
         localStorage.removeItem('rememberMe');
         next({ name: 'login', query: { redirect: to.fullPath } });
@@ -511,27 +504,9 @@ router.beforeEach(async (to, from, next) => {
     }
     
     // Admin Tenant bypass addon check for BUSINESS_ANALYTICS (basic analytics access)
-    // Also check if CUSTOM plan (has all features)
-    if (userRole === 'ADMIN_TENANT') {
-      try {
-        // Check plan features first
-        const { default: api } = await import('../api');
-        const planResponse = await api.get('/subscriptions/plan-features').catch(() => null);
-        
-        if (planResponse?.data?.plan === 'CUSTOM') {
-          // CUSTOM plan has all features
-          next();
-          return;
-        }
-        
-        // For BUSINESS_ANALYTICS, allow basic access
-        if (requiredAddon === 'BUSINESS_ANALYTICS') {
-          next();
-          return;
-        }
-      } catch (error: any) {
-        // If error, continue to addon check
-      }
+    if (userRole === 'ADMIN_TENANT' && requiredAddon === 'BUSINESS_ANALYTICS') {
+      next();
+      return;
     }
     
     // For other roles or addons, check if addon is active
@@ -550,7 +525,7 @@ router.beforeEach(async (to, from, next) => {
       }
     } catch (error: any) {
       // If error loading addons, allow access (will be handled by backend)
-      // Silently continue - backend will handle addon validation
+      console.error('Error checking addon:', error);
     }
   }
   

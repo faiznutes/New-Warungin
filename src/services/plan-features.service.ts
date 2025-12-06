@@ -3,9 +3,7 @@ import addonService from './addon.service';
 
 /**
  * Plan base limits (without addons)
- * Basic: Simpel, fitur dasar
- * Pro: Sedikit lebih bagus, tidak terlalu merugikan
- * CUSTOM/MAX: Full fitur + semua addons
+ * Sesuai dengan struktur yang diminta
  */
 const PLAN_FEATURES: Record<string, {
   tenantsLimit: number;
@@ -14,150 +12,34 @@ const PLAN_FEATURES: Record<string, {
   outlets: number;
   addons: string[];
   access: string[];
-  features: {
-    products: boolean;
-    inventory: boolean;
-    orders: boolean;
-    pos: boolean;
-    delivery: boolean;
-    customers: boolean;
-    members: boolean;
-    reports: boolean;
-    advancedReporting: boolean;
-    advancedAnalytics: boolean;
-    financialManagement: boolean;
-    profitLoss: boolean;
-    marketing: boolean;
-    emailMarketing: boolean;
-    stores: boolean;
-    rewards: boolean;
-    discounts: boolean;
-    receiptTemplates: boolean;
-    userManagement: boolean;
-    subscription: boolean;
-    addons: boolean;
-    settings: boolean;
-    webhooks: boolean;
-    sessions: boolean;
-    passwordSettings: boolean;
-    gdpr: boolean;
-    twoFactor: boolean;
-  };
 }> = {
   BASIC: {
     tenantsLimit: 1,
     products: 25,
     users: 4, // 1 admin + 2 kasir + 1 kitchen
     outlets: 1,
-    addons: [],
-    access: ['kasir', 'laporan-dasar'],
-    features: {
-      products: true, // Kelola produk (basic)
-      inventory: false,
-      orders: true, // Kelola pesanan (basic)
-      pos: true, // Point of Sale
-      delivery: false,
-      customers: true, // Kelola pelanggan (basic)
-      members: true, // Member management (basic)
-      reports: true, // Laporan penjualan (basic)
-      advancedReporting: false,
-      advancedAnalytics: false,
-      financialManagement: false,
-      profitLoss: false,
-      marketing: false,
-      emailMarketing: false,
-      stores: false, // Multi-outlet
-      rewards: false,
-      discounts: false,
-      receiptTemplates: true, // Basic receipt
-      userManagement: false,
-      subscription: false,
-      addons: false,
-      settings: true, // Store Settings, Password, GDPR
-      webhooks: false,
-      sessions: false,
-      passwordSettings: true,
-      gdpr: true,
-      twoFactor: false,
-    },
+    addons: ['receipt-basic'],
+    access: ['kasir', 'laporan'],
   },
   PRO: {
-    tenantsLimit: 1,
-    products: 100,
-    users: 10, // 1 admin + 1 supervisor + 6 kasir + 2 kitchen
-    outlets: 2,
-    addons: [],
-    access: ['kasir', 'laporan', 'manajemen-stok', 'multi-outlet'],
-    features: {
-      products: true, // Kelola produk + Product Adjustments
-      inventory: true, // Suppliers, Purchase Orders, Stock Transfers, Stock Alerts
-      orders: true, // Kelola pesanan (full)
-      pos: true, // Point of Sale
-      delivery: false, // Addon
-      customers: true, // Kelola pelanggan (full)
-      members: true, // Member management (full)
-      reports: true, // Laporan penjualan (full)
-      advancedReporting: false, // Addon
-      advancedAnalytics: false, // Addon
-      financialManagement: false, // Addon
-      profitLoss: false, // Addon
-      marketing: false, // Addon
-      emailMarketing: false, // Addon
-      stores: true, // Multi-outlet (2 outlets)
-      rewards: true, // Rewards system
-      discounts: true, // Discounts
-      receiptTemplates: true, // Advanced receipt
-      userManagement: true, // User Management
-      subscription: true, // Subscription management
-      addons: true, // Addon management
-      settings: true, // All settings
-      webhooks: true, // Webhooks
-      sessions: true, // Sessions
-      passwordSettings: true,
-      gdpr: true,
-      twoFactor: true, // 2FA Settings
-    },
+    tenantsLimit: 1, // 1 tenant
+    products: 100, // 100 produk
+    users: 10, // 1 admin + 1 supervisor + 6 kasir + 2 kitchen = 10 total
+    outlets: 2, // 2 outlet
+    addons: ['receipt-advanced', 'multi-outlet'],
+    access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
   },
-  CUSTOM: {
-    tenantsLimit: -1, // Unlimited
-    products: -1, // Unlimited
-    users: -1, // Unlimited
-    outlets: -1, // Unlimited
-    addons: [], // All addons available
+  ENTERPRISE: {
+    tenantsLimit: -1, // Unlimited (custom)
+    products: -1, // Unlimited (custom)
+    users: -1, // Unlimited (custom)
+    outlets: -1, // Unlimited (custom)
+    addons: ['receipt-advanced', 'multi-outlet', 'ecommerce-integration'],
     access: ['semua'],
-    features: {
-      products: true,
-      inventory: true,
-      orders: true,
-      pos: true,
-      delivery: true, // All addons enabled
-      customers: true,
-      members: true,
-      reports: true,
-      advancedReporting: true,
-      advancedAnalytics: true,
-      financialManagement: true,
-      profitLoss: true,
-      marketing: true,
-      emailMarketing: true,
-      stores: true, // Unlimited outlets
-      rewards: true,
-      discounts: true,
-      receiptTemplates: true,
-      userManagement: true,
-      subscription: true,
-      addons: true,
-      settings: true,
-      webhooks: true,
-      sessions: true,
-      passwordSettings: true,
-      gdpr: true,
-      twoFactor: true,
-    },
   },
 };
 
-// Alias untuk backward compatibility (support ENTERPRISE as CUSTOM)
+// Alias untuk backward compatibility
 const PLAN_BASE_LIMITS: Record<string, {
   products: number;
   users: number;
@@ -176,18 +58,11 @@ const PLAN_BASE_LIMITS: Record<string, {
     outlets: PLAN_FEATURES.PRO.outlets,
     features: PLAN_FEATURES.PRO.access,
   },
-  CUSTOM: {
-    products: PLAN_FEATURES.CUSTOM.products,
-    users: PLAN_FEATURES.CUSTOM.users,
-    outlets: PLAN_FEATURES.CUSTOM.outlets,
-    features: PLAN_FEATURES.CUSTOM.access,
-  },
-  // Backward compatibility
   ENTERPRISE: {
-    products: PLAN_FEATURES.CUSTOM.products,
-    users: PLAN_FEATURES.CUSTOM.users,
-    outlets: PLAN_FEATURES.CUSTOM.outlets,
-    features: PLAN_FEATURES.CUSTOM.access,
+    products: PLAN_FEATURES.ENTERPRISE.products,
+    users: PLAN_FEATURES.ENTERPRISE.users,
+    outlets: PLAN_FEATURES.ENTERPRISE.outlets,
+    features: PLAN_FEATURES.ENTERPRISE.access,
   },
 };
 
@@ -196,21 +71,8 @@ const PLAN_BASE_LIMITS: Record<string, {
  * Update features, tenantsLimit, dan semua limit terkait
  */
 export async function applyPlanFeatures(tenantId: string, planName: string) {
-  // Invalidate plan features cache when plan changes
-  try {
-    const CacheService = (await import('../utils/cache')).default;
-    await CacheService.delete(`plan-features:${tenantId}`);
-  } catch (error: any) {
-    // Log but don't fail
-    const logger = (await import('../utils/logger')).default;
-    logger.warn('Failed to invalidate plan features cache', { error: error.message, tenantId });
-  }
-  
-  let plan = (planName || 'BASIC').toUpperCase();
-  // Backward compatibility: ENTERPRISE -> CUSTOM
-  if (plan === 'ENTERPRISE') plan = 'CUSTOM';
-  const planKey = plan as 'BASIC' | 'PRO' | 'CUSTOM';
-  const planConfig = PLAN_FEATURES[planKey] || PLAN_FEATURES.BASIC;
+  const plan = (planName || 'BASIC').toUpperCase() as 'BASIC' | 'PRO' | 'ENTERPRISE';
+  const planConfig = PLAN_FEATURES[plan] || PLAN_FEATURES.BASIC;
 
   // Get current tenant
   const tenant = await prisma.tenant.findUnique({
@@ -357,7 +219,7 @@ export async function applyPlanFeatures(tenantId: string, planName: string) {
   });
 
   return {
-    plan: planKey,
+    plan,
     features: planConfig,
     tenantsLimit: planConfig.tenantsLimit,
     tenantsActive: activeUsersCount,
@@ -367,20 +229,8 @@ export async function applyPlanFeatures(tenantId: string, planName: string) {
 /**
  * Get tenant plan features and limits
  * Combines base plan limits with active addons
- * Uses caching to improve performance (TTL: 120 seconds)
  */
-export async function getTenantPlanFeatures(tenantId: string, useCache: boolean = true): Promise<any> {
-  const CacheService = (await import('../utils/cache')).default;
-  const cacheKey = `plan-features:${tenantId}`;
-  
-  // Try to get from cache first
-  if (useCache) {
-    const cached = await CacheService.get<any>(cacheKey);
-    if (cached !== null) {
-      return cached;
-    }
-  }
-  
+export async function getTenantPlanFeatures(tenantId: string) {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: {
@@ -395,14 +245,11 @@ export async function getTenantPlanFeatures(tenantId: string, useCache: boolean 
     throw new Error('Tenant not found');
   }
 
-  let plan = (tenant.subscriptionPlan || 'BASIC').toUpperCase();
-  // Backward compatibility: ENTERPRISE -> CUSTOM
-  if (plan === 'ENTERPRISE') plan = 'CUSTOM';
-  const planKey = plan as 'BASIC' | 'PRO' | 'CUSTOM';
-  const baseLimits = PLAN_BASE_LIMITS[planKey] || PLAN_BASE_LIMITS.BASIC;
+  const plan = (tenant.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'ENTERPRISE';
+  const baseLimits = PLAN_BASE_LIMITS[plan] || PLAN_BASE_LIMITS.BASIC;
 
   // Get active addons
-  const activeAddons: any[] = await addonService.getTenantAddons(tenantId);
+  const activeAddons = await addonService.getTenantAddons(tenantId);
 
   // Calculate total limits (base + addons)
   let totalProducts = baseLimits.products === -1 ? -1 : baseLimits.products;
@@ -438,59 +285,21 @@ export async function getTenantPlanFeatures(tenantId: string, useCache: boolean 
           features.push('Quick Insight');
         }
         break;
-      case 'ADVANCED_REPORTING':
-        if (!features.includes('Advanced Reporting')) {
-          features.push('Advanced Reporting');
+      case 'EXPORT_REPORTS':
+        if (!features.includes('Export Laporan')) {
           features.push('Export Laporan');
         }
         break;
-      case 'FINANCIAL_MANAGEMENT':
-        if (!features.includes('Financial Management')) {
-          features.push('Financial Management');
-          features.push('Profit & Loss Report');
-          features.push('Accounting Finance');
-        }
-        break;
-      case 'INVENTORY_MANAGEMENT':
-        if (!features.includes('Inventory Management')) {
-          features.push('Inventory Management');
-          features.push('Suppliers');
-          features.push('Purchase Orders');
-          features.push('Stock Transfers');
-          features.push('Stock Alerts');
-        }
-        break;
-      case 'AI_ML_FEATURES':
-        if (!features.includes('AI/ML Features')) {
-          features.push('AI/ML Features');
-        }
-        break;
-      case 'DELIVERY_MARKETING':
-        if (!features.includes('Delivery & Marketing')) {
-          features.push('Delivery & Marketing');
-          features.push('Delivery Orders');
-          features.push('Marketing Campaigns');
-          features.push('Email Templates');
-          features.push('Email Analytics');
-          features.push('Email Scheduler');
-          features.push('Customer Engagement');
-        }
-        break;
       case 'RECEIPT_EDITOR':
-        if (!features.includes('Advanced Receipt Editor')) {
-          features.push('Advanced Receipt Editor');
-        }
-        break;
-      case 'MULTI_OUTLET_ADVANCED':
-        if (!features.includes('Multi-Outlet Advanced')) {
-          features.push('Multi-Outlet Advanced');
+        if (!features.includes('Simple Nota Editor')) {
+          features.push('Simple Nota Editor');
         }
         break;
     }
   }
 
-  const result = {
-    plan: planKey,
+  return {
+    plan,
     limits: {
       products: totalProducts,
       users: totalUsers,
@@ -498,23 +307,15 @@ export async function getTenantPlanFeatures(tenantId: string, useCache: boolean 
     },
     features,
     baseLimits,
-    planFeatures: PLAN_FEATURES[planKey] || PLAN_FEATURES.BASIC,
-    tenantsLimit: tenant.tenantsLimit || PLAN_FEATURES[planKey]?.tenantsLimit || 1,
+    tenantsLimit: tenant.tenantsLimit || PLAN_FEATURES[plan]?.tenantsLimit || 1,
     tenantsActive: tenant.tenantsActive || 0,
-    activeAddons: activeAddons.map((a: any) => ({
+    activeAddons: activeAddons.map(a => ({
       id: a.addonId,
       type: a.addonType,
       name: a.addonName,
       limit: a.limit,
     })),
   };
-  
-  // Cache the result (120 seconds TTL - longer than subscription cache because plan changes less frequently)
-  if (useCache) {
-    await CacheService.set(cacheKey, result, 120);
-  }
-  
-  return result;
 }
 
 /**
@@ -575,6 +376,12 @@ export async function checkPlanFeature(
 ): Promise<boolean> {
   
   const planFeatures = await getTenantPlanFeatures(tenantId);
+  
+  // If plan has 'semua' in features, it means ENTERPRISE plan with access to all features
+  if (planFeatures.features.includes('semua')) {
+    return true;
+  }
+  
   return planFeatures.features.includes(feature);
 }
 

@@ -6,12 +6,12 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId, requireUserId } from '../utils/tenant';
 import purchaseOrderService from '../services/purchase-order.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkInventoryManagementAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -74,7 +74,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -88,63 +88,6 @@ router.get(
       res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to get purchase orders', 'GET_PURCHASE_ORDERS');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/purchase-orders/{id}/receive:
- *   post:
- *     summary: Receive purchase order (update stock)
- *     tags: [Purchase Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/:id/receive',
-  authGuard,
-  subscriptionGuard,
-  checkInventoryManagementAddon,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
-      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
-      const purchaseOrder = await purchaseOrderService.receivePurchaseOrder(
-        req.params.id,
-        tenantId,
-        userId,
-        receivedDate
-      );
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to receive purchase order', 'RECEIVE_PURCHASE_ORDER');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/purchase-orders/{id}/cancel:
- *   post:
- *     summary: Cancel purchase order
- *     tags: [Purchase Orders]
- *     security:
- *       - bearerAuth: []
- */
-router.post(
-  '/:id/cancel',
-  authGuard,
-  subscriptionGuard,
-  checkInventoryManagementAddon,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const purchaseOrder = await purchaseOrderService.cancelPurchaseOrder(req.params.id, tenantId);
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to cancel purchase order', 'CANCEL_PURCHASE_ORDER');
     }
   }
 );
@@ -171,7 +114,7 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -217,6 +160,7 @@ router.post(
   '/',
   authGuard,
   subscriptionGuard,
+  checkInventoryAccess,
   validate({ body: createPurchaseOrderSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -262,6 +206,7 @@ router.put(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkInventoryAccess,
   validate({ body: updatePurchaseOrderSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -280,6 +225,88 @@ router.put(
   }
 );
 
+/**
+ * @swagger
+ * /api/purchase-orders/{id}/receive:
+ *   post:
+ *     summary: Receive purchase order (update stock)
+ *     tags: [Purchase Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               receivedDate:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Purchase order received
+ */
+router.post(
+  '/:id/receive',
+  authGuard,
+  subscriptionGuard,
+  checkInventoryAccess,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const userId = requireUserId(req);
+      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
+      const purchaseOrder = await purchaseOrderService.receivePurchaseOrder(
+        req.params.id,
+        tenantId,
+        userId,
+        receivedDate
+      );
+      res.json(purchaseOrder);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to receive purchase order', 'RECEIVE_PURCHASE_ORDER');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/purchase-orders/{id}/cancel:
+ *   post:
+ *     summary: Cancel purchase order
+ *     tags: [Purchase Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Purchase order cancelled
+ */
+router.post(
+  '/:id/cancel',
+  authGuard,
+  subscriptionGuard,
+  checkInventoryAccess,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const purchaseOrder = await purchaseOrderService.cancelPurchaseOrder(req.params.id, tenantId);
+      res.json(purchaseOrder);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to cancel purchase order', 'CANCEL_PURCHASE_ORDER');
+    }
+  }
+);
 
 export default router;
 

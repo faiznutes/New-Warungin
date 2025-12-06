@@ -6,12 +6,12 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import supplierService from '../services/supplier.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
-import { checkInventoryManagementAddon } from '../middlewares/addon-guard';
 
 const router = Router();
 
@@ -65,7 +65,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -107,7 +107,7 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -158,7 +158,7 @@ router.post(
   '/',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   validate({ body: createSupplierSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -201,7 +201,7 @@ router.put(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   validate({ body: updateSupplierSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -238,7 +238,7 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
-  checkInventoryManagementAddon,
+  checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
