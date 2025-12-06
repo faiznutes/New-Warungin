@@ -526,7 +526,7 @@ const archiveOrders = async () => {
     const response = await api.post('/archives/orders', {
       olderThanDays: archiveOrdersDays.value || 365,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data.count} orders`);
+    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} orders`);
     showArchiveOrdersModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
@@ -542,7 +542,7 @@ const archiveTransactions = async () => {
     const response = await api.post('/archives/transactions', {
       olderThanDays: archiveTransactionsDays.value || 365,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data.count} transactions`);
+    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} transactions`);
     showArchiveTransactionsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {

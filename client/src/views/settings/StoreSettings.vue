@@ -138,14 +138,14 @@ const loadSettings = async () => {
   try {
     const response = await api.get('/tenant/profile');
     storeInfo.value = {
-      name: response.data.name || '',
-      address: response.data.address || '',
-      phone: response.data.phone || '',
-      email: response.data.email || '',
+      name: response.data?.name || '',
+      address: response.data?.address || '',
+      phone: response.data?.phone || '',
+      email: response.data?.email || '',
     };
     receiptSettings.value = {
-      header: response.data.receiptHeader || '',
-      footer: response.data.receiptFooter || '',
+      header: response.data?.receiptHeader || '',
+      footer: response.data?.receiptFooter || '',
     };
   } catch (error: any) {
     // Suppress errors during logout (401/403)

@@ -400,7 +400,7 @@ const updateStatus = async (orderId: string, status: string) => {
     
     // If status is SERVED, remove from list (it's filtered out in loadOrders)
     if (status === 'SERVED') {
-      orders.value = orders.value.filter(o => o.id !== orderId);
+      orders.value = (orders.value || []).filter(o => o.id !== orderId);
     }
     
     // Emit socket event for realtime update
@@ -467,7 +467,7 @@ const bulkUpdateStatus = async () => {
 
     // Emit socket events for realtime update
     if (socket?.connected) {
-      selectedOrders.value.forEach(orderId => {
+      (selectedOrders.value || []).forEach(orderId => {
         socket.emit('order:update', { orderId, kitchenStatus: bulkStatus.value });
       });
     }
@@ -500,7 +500,7 @@ const setupSocketListeners = () => {
         orders.value[index] = { ...orders.value[index], kitchenStatus: data.kitchenStatus };
         // If status is SERVED, remove from list
         if (data.kitchenStatus === 'SERVED') {
-          orders.value = orders.value.filter(o => o.id !== data.orderId);
+          orders.value = (orders.value || []).filter(o => o.id !== data.orderId);
         }
       } else {
         orders.value[index] = { ...orders.value[index], ...data };

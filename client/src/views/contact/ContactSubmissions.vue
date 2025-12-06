@@ -611,10 +611,10 @@ const isOldSubmission = (dateString: string) => {
 
 const filteredSubmissions = computed(() => {
   if (!searchQuery.value) {
-    return submissions.value;
+    return submissions.value || [];
   }
   const query = searchQuery.value.toLowerCase();
-  return submissions.value.filter(
+  return (submissions.value || []).filter(
     (s) =>
       s.name.toLowerCase().includes(query) ||
       s.email.toLowerCase().includes(query) ||
@@ -627,11 +627,11 @@ const filteredSubmissions = computed(() => {
 const thisMonthCount = computed(() => {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  return submissions.value.filter((s) => new Date(s.createdAt) >= startOfMonth).length;
+  return (submissions.value || []).filter((s) => new Date(s.createdAt) >= startOfMonth).length;
 });
 
 const oldSubmissionsCount = computed(() => {
-  return submissions.value.filter((s) => isOldSubmission(s.createdAt)).length;
+  return (submissions.value || []).filter((s) => isOldSubmission(s.createdAt)).length;
 });
 
 const totalPages = computed(() => {

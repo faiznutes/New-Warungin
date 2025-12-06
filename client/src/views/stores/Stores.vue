@@ -450,7 +450,7 @@ const loadStores = async () => {
     stores.value = response.data?.data || response.data || [];
     
     // Get store limit info
-    if (response.data.limit) {
+    if (response.data?.limit) {
       storeLimit.value = response.data.limit;
     }
   } catch (error: any) {

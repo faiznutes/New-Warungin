@@ -759,7 +759,7 @@ const loadSubscription = async () => {
     // IMPORTANT: Use isExpired from backend response directly
     // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
     // Backend already calculated isExpired correctly after revert
-    if (response.data.isExpired !== undefined) {
+    if (response.data?.isExpired !== undefined) {
       // Use isExpired from backend
       subscription.value.isExpired = response.data.isExpired;
     }

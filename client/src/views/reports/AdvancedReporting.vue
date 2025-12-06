@@ -723,7 +723,7 @@ const saveDashboardSettings = async () => {
   saving.value = true;
   try {
     const settings = {
-      widgets: selectedWidgets.value.map(id => ({
+      widgets: (selectedWidgets.value || []).map(id => ({
         id,
         position: { x: 0, y: 0 },
         size: { w: 4, h: 2 },

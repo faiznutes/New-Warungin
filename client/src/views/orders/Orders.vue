@@ -1106,7 +1106,7 @@ const bulkRefund = async () => {
 
 // Computed property untuk menghitung jumlah order yang bisa dihapus
 const deletableOrdersCount = computed(() => {
-  return orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
+  return (orders.value || []).filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
 });
 
 // Hapus semua order yang bisa dihapus
