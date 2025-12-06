@@ -201,20 +201,36 @@ export class AddonService {
     return AVAILABLE_ADDONS;
   }
 
-  async getTenantAddons(tenantId: string) {
+  async getTenantAddons(tenantId: string, page: number = 1, limit: number = 50) {
     const now = new Date();
-    const addons = await prisma.tenantAddon.findMany({
-      where: {
-        tenantId,
-        status: 'active',
-        // Only include addons that are not expired
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: now } },
-        ],
-      },
-      orderBy: { subscribedAt: 'desc' },
-    });
+    const skip = (page - 1) * limit;
+    
+    const [addons, total] = await Promise.all([
+      prisma.tenantAddon.findMany({
+        where: {
+          tenantId,
+          status: 'active',
+          // Only include addons that are not expired
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: now } },
+          ],
+        },
+        orderBy: { subscribedAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.tenantAddon.count({
+        where: {
+          tenantId,
+          status: 'active',
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: now } },
+          ],
+        },
+      }),
+    ]);
 
     // Get current usage for each addon
     const addonsWithUsage = await Promise.all(
@@ -256,7 +272,15 @@ export class AddonService {
       })
     );
 
-    return addonsWithUsage;
+    return {
+      data: addonsWithUsage,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async subscribeAddon(tenantId: string, data: SubscribeAddonInput) {

@@ -38,8 +38,10 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const addons = await addonService.getTenantAddons(tenantId);
-      res.json(addons);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50; // Default 50 for addons (usually small list)
+      const result = await addonService.getTenantAddons(tenantId, page, limit);
+      res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

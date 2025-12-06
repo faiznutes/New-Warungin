@@ -52,8 +52,10 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const outlets = await outletService.getOutlets(tenantId);
-      res.json({ data: outlets });
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50; // Default 50 for outlets
+      const result = await outletService.getOutlets(tenantId, page, limit);
+      res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
     }

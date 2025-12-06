@@ -60,14 +60,11 @@ export class ProductService {
 
     // Cache the result (5 minutes TTL for products list)
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(cacheKey, 300, JSON.stringify(result));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache products', { error: error instanceof Error ? error.message : String(error) });
-        }
+      try {
+        await CacheService.set(cacheKey, result, 300);
+      } catch (error) {
+        // If cache write fails, continue without caching
+        logger.warn('Failed to cache products', { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -96,14 +93,11 @@ export class ProductService {
 
     // Cache the result (10 minutes TTL for individual product)
     if (product && useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          await redis.setex(cacheKey, 600, JSON.stringify(product));
-        } catch (error) {
-          // If cache write fails, continue without caching
-          logger.warn('Failed to cache product', { error: error instanceof Error ? error.message : String(error) });
-        }
+      try {
+        await CacheService.set(cacheKey, product, 600);
+      } catch (error) {
+        // If cache write fails, continue without caching
+        logger.warn('Failed to cache product', { error: error instanceof Error ? error.message : String(error) });
       }
     }
 

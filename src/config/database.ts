@@ -107,16 +107,32 @@ const prisma = new PrismaClient({
 // so we rely on application-level tenant filtering as primary security.
 // RLS policies in database provide additional defense-in-depth.
 
-// Enhanced logging for development
-if (process.env.NODE_ENV === 'development') {
-  prisma.$on('query' as never, (e: any) => {
+// Enhanced logging for development + slow query logging for production
+const SLOW_QUERY_THRESHOLD = parseInt(process.env.SLOW_QUERY_THRESHOLD || '500', 10); // 500ms default
+
+prisma.$on('query' as never, (e: any) => {
+  const duration = e.duration;
+  const isSlow = duration > SLOW_QUERY_THRESHOLD;
+
+  if (process.env.NODE_ENV === 'development') {
+    // In development, log all queries
     logger.debug('Prisma Query', {
       query: e.query,
       params: e.params,
-      duration: `${e.duration}ms`,
+      duration: `${duration}ms`,
       target: e.target,
     });
-  });
+  } else if (isSlow) {
+    // In production, only log slow queries
+    logger.warn('Slow database query detected', {
+      query: e.query.substring(0, 200), // Truncate long queries
+      params: e.params,
+      duration: `${duration}ms`,
+      threshold: `${SLOW_QUERY_THRESHOLD}ms`,
+      target: e.target,
+    });
+  }
+});
 
   prisma.$on('error' as never, (e: any) => {
     logger.error('Prisma Error', {

@@ -75,9 +75,14 @@ app.use(compression());
 // Cookie parser (for CSRF token storage)
 app.use(cookieParser());
 
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parser with size limits
+app.use(express.json({ limit: '10mb' })); // 10MB max request body
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Request/Response size limiters
+import { requestSizeLimiter, responseSizeLimiter } from './middlewares/request-limits';
+app.use(requestSizeLimiter(10)); // 10MB max request
+app.use(responseSizeLimiter(10)); // 10MB max response
 
 // CSRF Protection - Add token to responses (before routes)
 // Note: CSRF protection is optional for JWT-based auth, but adds extra security layer
@@ -87,6 +92,10 @@ app.use('/api', addCSRFToken);
 logger.info('Setting up rate limiting...');
 app.use('/api', apiLimiter);
 logger.info('Rate limiting configured');
+
+// Response time audit middleware
+import { responseTimeAudit } from './middlewares/response-time';
+app.use(responseTimeAudit(1000, true)); // Log requests slower than 1 second
 
 // Metrics middleware (before routes to track all requests)
 app.use(metricsMiddleware);

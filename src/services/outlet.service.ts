@@ -17,12 +17,28 @@ export interface UpdateOutletInput {
 }
 
 export class OutletService {
-  async getOutlets(tenantId: string) {
-    const outlets = await prisma.outlet.findMany({
-      where: { tenantId },
-      orderBy: { createdAt: 'desc' },
-    });
-    return outlets;
+  async getOutlets(tenantId: string, page: number = 1, limit: number = 50) {
+    const skip = (page - 1) * limit;
+    
+    const [outlets, total] = await Promise.all([
+      prisma.outlet.findMany({
+        where: { tenantId },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.outlet.count({ where: { tenantId } }),
+    ]);
+    
+    return {
+      data: outlets,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getOutlet(tenantId: string, outletId: string) {
