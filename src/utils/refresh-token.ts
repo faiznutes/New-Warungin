@@ -65,7 +65,7 @@ async function getTokenFamily(userId: string): Promise<string | null> {
 /**
  * Set token family (for rotation detection)
  */
-async function setTokenFamily(userId: string, familyId: string, ttl: number = REFRESH_TOKEN_TTL): Promise<void> {
+export async function setTokenFamily(userId: string, familyId: string, ttl: number = REFRESH_TOKEN_TTL): Promise<void> {
   try {
     const redis = getRedisClient();
     const key = `${TOKEN_FAMILY_PREFIX}${userId}`;

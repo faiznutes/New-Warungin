@@ -229,7 +229,7 @@ class CustomerEngagementService {
 
     const emails: string[] = [];
     if (customer?.email) emails.push(customer.email);
-    if (member?.customer?.email) emails.push(member.customer.email);
+    if (member?.email) emails.push(member.email);
 
     return [...new Set(emails)]; // Remove duplicates
   }

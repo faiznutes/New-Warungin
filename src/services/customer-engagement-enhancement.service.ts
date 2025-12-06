@@ -389,9 +389,9 @@ class CustomerEngagementEnhancementService {
       try {
         const pushResult = await marketingService.sendCampaign(tenantId, 'promo-campaign', {
           name: promo.name,
-          title: promo.name,
-          message,
+          type: 'PUSH',
           target,
+          content: message,
         });
         totalSent += pushResult.sent;
         totalFailed += pushResult.failed;

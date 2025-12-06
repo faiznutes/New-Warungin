@@ -160,7 +160,7 @@ class DeliveryService {
       items: order.items.map(item => ({
         name: item.product?.name || 'Product',
         quantity: item.quantity,
-        value: item.price * item.quantity,
+        value: Number(item.price) * item.quantity,
       })),
     };
 

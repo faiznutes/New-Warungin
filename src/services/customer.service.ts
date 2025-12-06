@@ -139,10 +139,9 @@ export class CustomerService {
         data: {
           tenantId,
           name: data.name || '',
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
-          notes: data.notes,
+          email: data.email || null,
+          phone: data.phone || null,
+          address: data.address || null,
         },
       });
 
