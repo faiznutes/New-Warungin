@@ -412,7 +412,8 @@ class AdvancedReportingService {
                 recipient,
                 'Scheduled Report',
                 'Please find your scheduled report attached.',
-                exportedReport
+                exportedReport,
+                undefined // attachments parameter
               );
             } catch (emailError) {
               logger.error(`Failed to send report to ${recipient}:`, emailError);
