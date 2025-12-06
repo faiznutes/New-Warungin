@@ -637,6 +637,9 @@ const loadProducts = async () => {
       params: { isActive: true },
     });
     products.value = response.data.data || response.data;
+    
+    // Check for critical stock after loading products
+    await checkCriticalStock();
   } catch (err: any) {
     console.error('Error loading products:', err);
     const errorMessage = err.response?.data?.message || 'Gagal memuat produk';
@@ -644,6 +647,43 @@ const loadProducts = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const checkCriticalStock = async () => {
+  try {
+    const response = await api.get('/inventory/restock-suggestions/critical', {
+      params: { limit: 5 },
+    });
+    criticalStockProducts.value = response.data || [];
+    
+    // Show modal if there are critical stock products and not dismissed today
+    if (criticalStockProducts.value.length > 0) {
+      const dismissedToday = localStorage.getItem(`lowStockDismissed_${new Date().toDateString()}`);
+      if (!dismissedToday) {
+        showLowStockModal.value = true;
+      }
+    }
+  } catch (error: any) {
+    // Silently fail - this is not critical
+    console.log('Could not check critical stock:', error);
+  }
+};
+
+const dismissLowStockModal = () => {
+  showLowStockModal.value = false;
+  // Mark as dismissed for today
+  localStorage.setItem(`lowStockDismissed_${new Date().toDateString()}`, 'true');
+};
+
+const goToRestock = (productId: string) => {
+  dismissLowStockModal();
+  // Navigate to products page with productId filter
+  window.location.href = `/app/products?highlight=${productId}`;
+};
+
+const goToStockAlerts = () => {
+  dismissLowStockModal();
+  window.location.href = '/app/inventory/stock-alerts';
 };
 
 const loadMembers = async () => {
