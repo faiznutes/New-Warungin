@@ -73,7 +73,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
           </div>
           <div>
@@ -86,7 +86,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
           </div>
           <div>
@@ -99,7 +99,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="180"
+              placeholder="730"
             />
           </div>
           <div>
@@ -112,7 +112,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="90"
+              placeholder="730"
             />
           </div>
           <div>
@@ -125,7 +125,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="90"
+              placeholder="730"
             />
           </div>
           <div>
@@ -138,7 +138,7 @@
               min="30"
               max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="90"
+              placeholder="730"
             />
           </div>
         </div>
