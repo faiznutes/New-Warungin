@@ -117,7 +117,7 @@ export class OrderService {
     });
   }
 
-  async createOrder(data: CreateOrderInput, userId: string, tenantId: string): Promise<Order> {
+  async createOrder(data: CreateOrderInput, userId: string, tenantId: string, idempotencyKey?: string): Promise<Order> {
     // Calculate subtotal from items (before any discounts)
     const subtotal = data.items.reduce((sum, item) => {
       return sum + (item.price * item.quantity);
@@ -139,7 +139,7 @@ export class OrderService {
       autoDiscount = autoDiscountResult.discountAmount;
     } catch (error: any) {
       // If discount service fails (e.g., table doesn't exist yet), continue without auto discount
-      console.warn('Failed to apply automatic discounts:', error.message);
+      logger.warn('Failed to apply automatic discounts:', error.message);
       autoDiscount = 0;
     }
 
@@ -169,6 +169,41 @@ export class OrderService {
     
     // Total discount for order record
     const totalDiscount = autoDiscount + memberDiscount + manualDiscount;
+
+    // Check idempotency key if provided (prevent double order)
+    if (idempotencyKey) {
+      const existingOrder = await prisma.order.findFirst({
+        where: {
+          tenantId,
+          // Store idempotency key in notes or create separate field
+          // For now, we'll check by matching order data within last 5 minutes
+          createdAt: {
+            gte: new Date(Date.now() - 5 * 60 * 1000), // Last 5 minutes
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      
+      // If order exists with same items in last 5 minutes, return existing order
+      if (existingOrder) {
+        const existingItems = await prisma.orderItem.findMany({
+          where: { orderId: existingOrder.id },
+        });
+        
+        const isDuplicate = data.items.every(item => 
+          existingItems.some(ei => 
+            ei.productId === item.productId && 
+            ei.quantity === item.quantity &&
+            Math.abs(Number(ei.price) - item.price) < 0.01
+          )
+        ) && existingItems.length === data.items.length;
+        
+        if (isDuplicate) {
+          logger.warn(`Duplicate order detected (idempotency key: ${idempotencyKey}), returning existing order ${existingOrder.id}`);
+          return existingOrder;
+        }
+      }
+    }
 
     // Create order with items in transaction
     return prisma.$transaction(async (tx) => {
@@ -250,9 +285,13 @@ export class OrderService {
       if (retryCount >= 10) {
         throw new Error('Failed to generate unique order number after multiple attempts');
       }
-      // Verify and update product stock
+      // Stock verification will be done inside transaction when updating
+      // This is just a preliminary check to fail fast
       for (const item of data.items) {
-        const product = await productService.getProductById(item.productId, tenantId);
+        const product = await tx.product.findFirst({
+          where: { id: item.productId, tenantId },
+          select: { id: true, name: true, stock: true },
+        });
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
         }
@@ -264,8 +303,10 @@ export class OrderService {
       // Prepare order items with cost and profit calculation
       const orderItemsData = await Promise.all(
         data.items.map(async (item) => {
-          // Get product to retrieve cost
-          const product = await productService.getProductById(item.productId, tenantId);
+          // Get product to retrieve cost (use transaction client)
+          const product = await tx.product.findFirst({
+            where: { id: item.productId, tenantId },
+          });
           if (!product) {
             throw new Error(`Product ${item.productId} not found`);
           }
@@ -317,30 +358,62 @@ export class OrderService {
         },
       });
 
-      // Update product stock and emit socket events
+      // Update product stock within transaction (CRITICAL: must be in same transaction)
       for (const item of data.items) {
-        const updatedProduct = await productService.updateStock(item.productId, item.quantity, tenantId, 'subtract');
-        
-        // Emit stock update via socket
+        // Get current product stock
+        const product = await tx.product.findFirst({
+          where: { id: item.productId, tenantId },
+        });
+
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+
+        // Verify stock is sufficient
+        if (product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stock}, Required: ${item.quantity}`);
+        }
+
+        // Update stock atomically within transaction
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity, // Atomic decrement
+            },
+          },
+        });
+      }
+
+      return order;
+    }, {
+      timeout: 30000, // 30 seconds timeout for order creation with stock updates
+      isolationLevel: 'ReadCommitted',
+    });
+
+    // Emit socket events after transaction completes (outside transaction)
+    for (const item of data.items) {
+      const updatedProduct = await productService.getProductById(item.productId, tenantId, false);
+      if (updatedProduct) {
         const { emitToTenant } = await import('../socket/socket');
         emitToTenant(tenantId, 'product:stock-update', {
           productId: item.productId,
           stock: updatedProduct.stock,
         });
       }
+    }
 
-      // Emit order created event
-      const { emitToTenant } = await import('../socket/socket');
-      emitToTenant(tenantId, 'order:created', {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-      });
-
-      // Invalidate analytics cache after order creation
-      await this.invalidateAnalyticsCache(tenantId);
-
-      return order;
+    // Emit order created event
+    const { emitToTenant } = await import('../socket/socket');
+    emitToTenant(tenantId, 'order:created', {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
     });
+
+    // Invalidate analytics cache after order creation
+    await this.invalidateAnalyticsCache(tenantId);
+
+    return order;
   }
 
   /**
@@ -602,7 +675,7 @@ export class OrderService {
       });
     } catch (error: any) {
       // If transaction doesn't exist or already deleted, continue
-      console.warn('Transaction deletion warning (may not exist):', error.message);
+      logger.warn('Transaction deletion warning (may not exist):', error.message);
     }
 
     // Delete order items first
@@ -652,7 +725,7 @@ export class OrderService {
           });
         } catch (error: any) {
           // If transaction doesn't exist or already deleted, continue
-          console.warn(`Transaction deletion warning for order ${orderId} (may not exist):`, error.message);
+          logger.warn(`Transaction deletion warning for order ${orderId} (may not exist):`, error.message);
         }
 
         // Delete order items first

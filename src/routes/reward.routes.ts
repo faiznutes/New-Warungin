@@ -3,6 +3,7 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -127,7 +128,7 @@ router.post(
         });
       }
 
-      console.log('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
+      logger.info('[Redeem Subscription]', { tenantId, userId, planId, pointsRequired });
 
       const result = await rewardPointService.redeemForSubscription(
         tenantId,
@@ -142,7 +143,7 @@ router.post(
         balance: result,
       });
     } catch (error: any) {
-      console.error('[Redeem Subscription] Error:', error);
+      logger.error('[Redeem Subscription] Error:', { error: error.message, stack: error.stack });
       res.status(400).json({ message: error.message });
     }
   }
@@ -172,7 +173,7 @@ router.post(
         });
       }
 
-      console.log('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
+      logger.info('[Redeem Addon]', { tenantId, userId, addonId, addonName, pointsRequired });
 
       const result = await rewardPointService.redeemForAddon(
         tenantId,
@@ -188,7 +189,7 @@ router.post(
         balance: result,
       });
     } catch (error: any) {
-      console.error('[Redeem Addon] Error:', error);
+      logger.error('[Redeem Addon] Error:', { error: error.message, stack: error.stack });
       res.status(400).json({ message: error.message });
     }
   }
@@ -204,22 +205,22 @@ router.get(
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      console.log('[Rewards Config] Request from tenantId:', tenantId);
+      logger.info('[Rewards Config] Request from tenantId:', tenantId);
       
       const config = rewardPointService.getPointConfig();
       const redemptions = rewardPointService.getAvailableRedemptions();
 
-      console.log('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
-      console.log('[Rewards Config] Addons:', redemptions.addons.length);
-      console.log('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
-      console.log('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
+      logger.info('[Rewards Config] Subscriptions:', redemptions.subscriptions.length);
+      logger.info('[Rewards Config] Addons:', redemptions.addons.length);
+      logger.info('[Rewards Config] Subscription data:', JSON.stringify(redemptions.subscriptions, null, 2));
+      logger.info('[Rewards Config] Addon data:', JSON.stringify(redemptions.addons, null, 2));
 
       res.json({
         config,
         redemptions,
       });
     } catch (error: any) {
-      console.error('[Rewards Config] Error:', error);
+      logger.error('[Rewards Config] Error:', { error: error.message, stack: error.stack });
       res.status(400).json({ message: error.message });
     }
   }

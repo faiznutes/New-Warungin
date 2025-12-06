@@ -5,17 +5,22 @@ import logger from '../utils/logger';
 let redisClient: Redis | null = null;
 let redisFailed = false; // Track if Redis connection has failed
 
-export const getRedisClient = (): Redis | null => {
-  // Redis is optional - return null if not configured
-  // Check if Redis is explicitly disabled or not configured
-  // If REDIS_URL is not set and REDIS_HOST is empty, don't try to connect
+// Initialize Redis connection on module load
+const initializeRedis = async (): Promise<void> => {
   if (!env.REDIS_URL && (!env.REDIS_HOST || env.REDIS_HOST.trim() === '')) {
-    return null;
+    throw new Error('Redis is required but not configured. Please set REDIS_URL or REDIS_HOST in environment variables.');
   }
 
-  // If Redis connection has already failed, don't try again
+export const getRedisClient = (): Redis => {
+  // Redis is MANDATORY for production
+  // Check if Redis is configured
+  if (!env.REDIS_URL && (!env.REDIS_HOST || env.REDIS_HOST.trim() === '')) {
+    throw new Error('Redis is required but not configured. Please set REDIS_URL or REDIS_HOST in environment variables.');
+  }
+
+  // If Redis connection has already failed, throw error (mandatory)
   if (redisFailed) {
-    return null;
+    throw new Error('Redis connection failed. Redis is mandatory for this application.');
   }
 
   if (!redisClient) {
@@ -51,13 +56,10 @@ export const getRedisClient = (): Redis | null => {
       );
 
       redisClient.on('error', (err) => {
-        // Only log if it's not a connection refused (which is expected if Redis is not running)
-        if (!err.message.includes('ECONNREFUSED') && !err.message.includes('connect')) {
-          logger.warn('Redis error (optional service):', err.message);
-        }
-        // Mark as failed and set to null
+        logger.error('Redis error (mandatory service)', { error: err.message });
+        // Mark as failed - Redis is mandatory
         if (err.message.includes('ECONNREFUSED') || err.message.includes('connect')) {
-          logger.info('ℹ️  Redis not available - scheduled jobs disabled (this is normal if Redis is not installed)');
+          logger.error('❌ Redis connection failed - Redis is mandatory for this application');
           redisFailed = true;
           redisClient = null;
         }
@@ -71,10 +73,14 @@ export const getRedisClient = (): Redis | null => {
         logger.info('✅ Redis ready');
       });
     } catch (error) {
-      logger.info('ℹ️  Redis not available - scheduled jobs disabled');
+      logger.error('Failed to initialize Redis (mandatory service)', { error: error instanceof Error ? error.message : String(error) });
       redisClient = null;
-      return null;
+      throw new Error('Failed to initialize Redis. Redis is mandatory for this application.');
     }
+  }
+
+  if (!redisClient) {
+    throw new Error('Redis client not initialized. Redis is mandatory for this application.');
   }
 
   return redisClient;

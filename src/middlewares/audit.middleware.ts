@@ -6,6 +6,7 @@
 import { Request, Response, NextFunction } from 'express';
 import advancedAuditService from '../services/advanced-audit.service';
 import { getTenantId } from '../utils/tenant';
+import logger from './utils/logger';
 
 /**
  * Middleware to log API requests
@@ -34,7 +35,7 @@ export const auditMiddleware = (action: string, resource: string, severity: 'LOW
       }
     } catch (error) {
       // Don't break the request if audit logging fails
-      console.error('Audit middleware error:', error);
+      logger.error('Audit middleware error:', { error: error.message, stack: error.stack });
     }
     next();
   };
@@ -79,7 +80,7 @@ export const auditDataChangeMiddleware = (resource: string) => {
           }
         }
       } catch (error) {
-        console.error('Audit data change middleware error:', error);
+        logger.error('Audit data change middleware error:', { error: error.message, stack: error.stack });
       }
     });
 

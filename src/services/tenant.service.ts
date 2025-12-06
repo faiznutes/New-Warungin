@@ -350,12 +350,16 @@ export const createTenant = async (input: CreateTenantInput) => {
       );
     }
 
+    // Encrypt defaultPassword before storing
+    const { encrypt } = await import('../utils/encryption');
+    const encryptedDefaultPassword = encrypt(defaultPassword);
+
     const users = await Promise.all(
       usersToCreate.map((userData) =>
         tx.user.create({
           data: {
             ...userData,
-            defaultPassword: defaultPassword, // Store default password (plaintext) for Super Admin to view
+            defaultPassword: encryptedDefaultPassword, // Store encrypted default password
           },
         })
       )
@@ -408,7 +412,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     });
     
     // Log subscription creation for debugging
-    console.log(`✅ Subscription created for tenant ${tenant.name}:`, {
+    logger.info(`✅ Subscription created for tenant ${tenant.name}:`, {
       subscriptionId: subscription.id,
       plan: subscriptionPlan,
       amount: planPrice,
@@ -483,13 +487,13 @@ export const createTenant = async (input: CreateTenantInput) => {
     try {
       const { applyPlanFeatures } = await import('./plan-features.service');
       await applyPlanFeatures(result.tenant.id, subscriptionPlan);
-      console.log(`✅ Plan features applied successfully for tenant ${result.tenant.id}`);
+      logger.info(`✅ Plan features applied successfully for tenant ${result.tenant.id}`);
     } catch (error: any) {
       // Log error but don't fail tenant creation
       // This error happens after the response is sent, so it won't affect the client
-      console.error(`⚠️ Error applying plan features (non-blocking) for tenant ${result.tenant.id}:`, error.message || error);
+      logger.error(`⚠️ Error applying plan features (non-blocking) for tenant ${result.tenant.id}:`, error.message || error);
       if (error.stack) {
-        console.error('Error stack:', error.stack);
+        logger.error('Error stack:', error.stack);
       }
     }
   });
@@ -510,9 +514,17 @@ export const createTenant = async (input: CreateTenantInput) => {
       email: u.email,
       name: u.name,
       role: u.role,
-      password: result.defaultPassword, // Return password for super admin to share
+      password: result.defaultPassword ? (async () => {
+        // Decrypt defaultPassword before returning
+        const { decrypt } = await import('../utils/encryption');
+        return decrypt(result.defaultPassword);
+      })() : undefined, // Return decrypted password for super admin to share
     })),
-    defaultPassword: result.defaultPassword,
+    defaultPassword: result.defaultPassword ? (async () => {
+      // Decrypt defaultPassword before returning
+      const { decrypt } = await import('../utils/encryption');
+      return decrypt(result.defaultPassword);
+    })() : undefined,
   };
   } catch (error: any) {
     // Re-throw AppError as is
@@ -520,7 +532,7 @@ export const createTenant = async (input: CreateTenantInput) => {
       throw error;
     }
     // Wrap other errors
-    console.error('Error creating tenant:', error);
+    logger.error('Error creating tenant:', { error: error.message, stack: error.stack });
     throw new AppError(error.message || 'Gagal membuat tenant', 500);
   }
 };
@@ -771,10 +783,14 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
       if (adminUser) {
         const hashedPassword = await bcrypt.hash(input.password, 10);
         
+        // Encrypt defaultPassword before storing
+        const { encrypt: encryptPassword } = await import('../utils/encryption');
+        const encryptedDefaultPassword = encryptPassword(input.password);
+
         // Prepare user update data
         const userUpdateData: any = {
           password: hashedPassword,
-          defaultPassword: input.password, // Store new password (plaintext) for Super Admin to view
+          defaultPassword: encryptedDefaultPassword, // Store encrypted default password
         };
 
         // If email was updated, also normalize the user's email to lowercase
@@ -787,9 +803,9 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
           data: userUpdateData,
         });
 
-        console.log(`✅ Updated admin password for tenant ${id}, user ${adminUser.id}`);
+        logger.info(`✅ Updated admin password for tenant ${id}, user ${adminUser.id}`);
       } else {
-        console.warn(`⚠️  Admin user not found for tenant ${id} when updating password`);
+        logger.warn(`⚠️  Admin user not found for tenant ${id} when updating password`);
       }
     }
 

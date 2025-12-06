@@ -5,6 +5,7 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.get(
       const result = await subscriptionService.getCurrentSubscription(tenantId);
       res.json(result);
     } catch (error: any) {
-      console.error('Error in /subscriptions/current:', error);
+      logger.error('Error in /subscriptions/current:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         message: error.message || 'Failed to load subscription',
         error: process.env.NODE_ENV === 'development' ? error.stack : undefined
@@ -284,7 +285,7 @@ router.delete(
 
       res.json({ message: 'Subscription deleted successfully' });
     } catch (error: any) {
-      console.error('Error deleting subscription:', error);
+      logger.error('Error deleting subscription:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to delete subscription' });
     }
   }
@@ -384,7 +385,7 @@ router.post(
         deletedCount: result.count,
       });
     } catch (error: any) {
-      console.error('Error bulk deleting subscriptions:', error);
+      logger.error('Error bulk deleting subscriptions:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to bulk delete subscriptions' });
     }
   }

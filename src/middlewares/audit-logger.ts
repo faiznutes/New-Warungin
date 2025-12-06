@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import auditLogService, { extractRequestInfo } from '../services/audit-log.service';
 import { AuthRequest } from './auth';
+import logger from './utils/logger';
 
 /**
  * Audit logging middleware
@@ -64,7 +65,7 @@ export const auditLogger = (
           });
         } catch (error: any) {
           // Don't log audit errors - silent fail
-          console.error('Audit logging error:', error.message);
+          logger.error('Audit logging error:', error.message);
         }
       });
 
@@ -116,7 +117,7 @@ export const logAction = async (
     });
   } catch (error: any) {
     // Silent fail - don't break application
-    console.error('Failed to log action:', error.message);
+    logger.error('Failed to log action:', error.message);
   }
 };
 

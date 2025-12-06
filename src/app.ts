@@ -16,10 +16,10 @@ import { initializeSocket } from './socket/socket';
 import { swaggerSpec } from './config/swagger';
 import prisma from './config/database';
 
-console.log('📦 Loading Express app...');
+logger.info('Loading Express app...');
 const app: Express = express();
 const httpServer = createServer(app);
-console.log('✅ Express app and HTTP server created');
+logger.info('Express app and HTTP server created');
 
 // Trust proxy - Required when running behind reverse proxy (nginx, cloudflare, etc.)
 // This allows Express to correctly identify client IPs and handle X-Forwarded-* headers
@@ -28,9 +28,9 @@ console.log('✅ Express app and HTTP server created');
 app.set('trust proxy', 2);
 
 // Security middleware
-console.log('🔒 Setting up security middleware...');
+logger.info('Setting up security middleware...');
 setupSecurity(app);
-console.log('✅ Security middleware configured');
+logger.info('Security middleware configured');
 
 // CORS - Configure before other middleware
 // Security: Only allow configured origins, restrict in production
@@ -84,9 +84,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', addCSRFToken);
 
 // Rate limiting
-console.log('⏱️  Setting up rate limiting...');
+logger.info('Setting up rate limiting...');
 app.use('/api', apiLimiter);
-console.log('✅ Rate limiting configured');
+logger.info('Rate limiting configured');
 
 // Metrics middleware (before routes to track all requests)
 app.use(metricsMiddleware);
@@ -124,7 +124,7 @@ app.get('/health', async (req, res) => {
     health.status = 'degraded';
     // Log error for debugging but don't crash
     if (process.env.NODE_ENV === 'development') {
-      console.error('Health check database error:', error?.message || error);
+      logger.error('Health check database error', { error: error?.message || error });
     }
   }
 
@@ -164,19 +164,19 @@ app.get('/api', (req, res) => {
 // API Documentation (wrap in try-catch to prevent crash)
 try {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log('✅ Swagger UI configured');
+  logger.info('Swagger UI configured');
 } catch (error: any) {
-  console.error('⚠️  Swagger UI setup failed (non-critical):', error?.message || error);
+  logger.warn('Swagger UI setup failed (non-critical)', { error: error?.message || error });
   // Continue without Swagger UI - it's optional
 }
 
 // API routes (wrap in try-catch to prevent crash)
-console.log('🛣️  Setting up API routes...');
+logger.info('Setting up API routes...');
 try {
   app.use('/api', apiRoutes);
-  console.log('✅ API routes configured');
+  logger.info('API routes configured');
 } catch (error: any) {
-  console.error('❌ Failed to setup API routes:', error?.message || error);
+  logger.error('Failed to setup API routes', { error: error?.message || error });
   // This is critical - exit if routes can't be loaded
   process.exit(1);
 }
@@ -189,17 +189,17 @@ app.use(errorHandler);
 
 const PORT = env.PORT || 3000;
 if (!PORT || PORT <= 0) {
-  console.error('❌ Invalid PORT:', PORT);
+  logger.error('Invalid PORT', { port: PORT });
   process.exit(1);
 }
 
 // Initialize Socket.IO (optional service)
-console.log('🔌 Initializing Socket.IO...');
+logger.info('Initializing Socket.IO...');
 try {
   initializeSocket(httpServer);
-  console.log('✅ Socket.IO initialized successfully');
+  logger.info('Socket.IO initialized successfully');
 } catch (error: any) {
-  console.error('❌ Socket.IO initialization failed (non-critical):', error?.message || error);
+  logger.error('Socket.IO initialization failed (non-critical)', { error: error?.message || error });
   // Continue anyway - Socket.IO is optional
 }
 
@@ -209,7 +209,7 @@ setImmediate(() => {
   import('./scheduler').catch((error: any) => {
     // Scheduler is optional, continue if import fails
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️  Scheduler import failed (optional service):', error?.message || error);
+      logger.warn('Scheduler import failed (optional service)', { error: error?.message || error });
     }
   });
 });
@@ -232,7 +232,7 @@ process.on('uncaughtException', (error: Error) => {
   // Process should continue running to avoid 502 errors
 });
 
-console.log(`🚀 Starting HTTP server on port ${PORT}...`);
+logger.info(`Starting HTTP server on port ${PORT}...`);
 
 // Error handling for server listen
 httpServer.on('error', (error: any) => {
@@ -247,12 +247,12 @@ httpServer.on('error', (error: any) => {
 });
 
 httpServer.listen(PORT, () => {
-  // Use console.log to ensure message appears in Docker logs
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Environment: ${env.NODE_ENV}`);
-  console.log(`🌐 Backend URL: ${env.BACKEND_URL}`);
-  console.log(`🔌 Socket.IO initialized`);
-  logger.info(`🚀 Server running on port ${PORT}`);
+  // Use logger for structured logging
+  logger.info(`Server running on port ${PORT}`, {
+    environment: env.NODE_ENV,
+    backendUrl: env.BACKEND_URL,
+    socketIo: 'initialized'
+  });
   logger.info(`📝 Environment: ${env.NODE_ENV}`);
   logger.info(`🌐 Backend URL: ${env.BACKEND_URL}`);
   logger.info(`🔌 Socket.IO initialized`);
@@ -260,11 +260,11 @@ httpServer.listen(PORT, () => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
+  logger.info('SIGTERM received, shutting down gracefully...');
   httpServer.close(() => {
-    console.log('HTTP server closed');
+    logger.info('HTTP server closed');
     prisma.$disconnect().then(() => {
-      console.log('Database disconnected');
+      logger.info('Database disconnected');
       process.exit(0);
     });
   });

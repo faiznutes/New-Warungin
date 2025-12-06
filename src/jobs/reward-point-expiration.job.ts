@@ -1,12 +1,13 @@
 import rewardPointService from '../services/reward-point.service';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 /**
  * Background job untuk auto-expire reward points
  * Run setiap hari untuk expire points yang sudah kadaluarsa
  */
 export async function expireRewardPointsJob() {
-  console.log('[Reward Points Job] Starting expiration check...');
+  logger.info('[Reward Points Job] Starting expiration check...');
 
   try {
     // Get all reward points
@@ -30,21 +31,21 @@ export async function expireRewardPointsJob() {
 
         if (expiredPoints > 0) {
           totalExpired += expiredPoints;
-          console.log(
+          logger.info(
             `[Reward Points Job] Expired ${expiredPoints} points for tenant ${rewardPoint.tenantId}, user ${rewardPoint.userId || 'N/A'}`
           );
         }
 
         processedCount++;
       } catch (error: any) {
-        console.error(
+        logger.error(
           `[Reward Points Job] Error processing reward point ${rewardPoint.id}:`,
           error.message
         );
       }
     }
 
-    console.log(
+    logger.info(
       `[Reward Points Job] Completed. Processed ${processedCount} reward points, expired ${totalExpired} total points.`
     );
 
@@ -54,7 +55,7 @@ export async function expireRewardPointsJob() {
       totalExpired,
     };
   } catch (error: any) {
-    console.error('[Reward Points Job] Fatal error:', error);
+    logger.error('[Reward Points Job] Fatal error:', { error: error.message, stack: error.stack });
     throw error;
   }
 }
@@ -69,6 +70,6 @@ export function scheduleRewardPointExpiration() {
   // cron.schedule('0 0 * * *', expireRewardPointsJob); // Every day at midnight
 
   // Atau bisa diintegrasikan dengan scheduler lain
-  console.log('[Reward Points Job] Scheduled to run daily at midnight');
+  logger.info('[Reward Points Job] Scheduled to run daily at midnight');
 }
 

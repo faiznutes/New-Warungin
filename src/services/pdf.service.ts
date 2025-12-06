@@ -1,5 +1,6 @@
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import logger from './utils/logger';
 
 interface ReportData {
   title?: string;
@@ -1365,9 +1366,9 @@ export function generatePDF(template: string, data: ReportData): Promise<Buffer>
       
       // Debug: Log template being used
       if (!templateFunctions[template]) {
-        console.warn(`Template "${template}" not found, using default (modern)`);
+        logger.warn(`Template "${template}" not found, using default (modern)`);
       } else {
-        console.log(`Using template: ${template}`);
+        logger.info(`Using template: ${template}`);
       }
       
       const docDefinition = templateFunction(data);

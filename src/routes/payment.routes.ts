@@ -5,6 +5,7 @@ import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -49,7 +50,7 @@ router.post(
         res.status(400).json(result);
       }
     } catch (error: any) {
-      console.error('Payment creation error:', error);
+      logger.error('Payment creation error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to create payment' 
@@ -75,7 +76,7 @@ router.get(
       const result = await paymentService.checkPaymentStatus(req.params.orderId);
       res.json(result);
     } catch (error: any) {
-      console.error('Payment status check error:', error);
+      logger.error('Payment status check error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to check payment status' 
@@ -98,7 +99,7 @@ router.post(
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
     } catch (error: any) {
-      console.error('Webhook handling error:', error);
+      logger.error('Webhook handling error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to handle webhook' 
@@ -123,7 +124,7 @@ router.post(
       const result = await paymentService.handleWebhook(req.body);
       res.json(result);
     } catch (error: any) {
-      console.error('n8n webhook processing error:', error);
+      logger.error('n8n webhook processing error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to process webhook' 
@@ -149,7 +150,7 @@ router.post(
       const result = await paymentService.cancelPayment(req.params.orderId);
       res.json(result);
     } catch (error: any) {
-      console.error('Payment cancellation error:', error);
+      logger.error('Payment cancellation error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to cancel payment' 
@@ -218,7 +219,7 @@ router.post(
         res.status(400).json(result);
       }
     } catch (error: any) {
-      console.error('Addon payment creation error:', error);
+      logger.error('Addon payment creation error:', { error: error.message, stack: error.stack });
       res.status(500).json({ 
         success: false, 
         message: error.message || 'Failed to create payment' 

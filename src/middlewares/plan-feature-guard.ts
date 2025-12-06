@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthRequest } from './auth';
 import { checkPlanFeature } from '../services/plan-features.service';
 import { requireTenantId } from '../utils/tenant';
+import logger from './utils/logger';
 
 /**
  * Middleware to check if tenant has access to a specific plan feature
@@ -38,7 +39,7 @@ export const checkPlanFeatureGuard = (featureName: string) => {
 
       next();
     } catch (error: any) {
-      console.error('Plan feature guard error:', error);
+      logger.error('Plan feature guard error:', { error: error.message, stack: error.stack });
       next(error);
     }
   };

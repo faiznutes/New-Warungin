@@ -2,6 +2,7 @@ import Midtrans from 'midtrans-client';
 import crypto from 'crypto';
 import env from '../config/env';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 export interface PaymentRequest {
   orderId: string;
@@ -43,9 +44,9 @@ class PaymentService {
       const isProduction = env.MIDTRANS_IS_PRODUCTION;
       
       if (isProduction && !serverKey.startsWith('Mid-')) {
-        console.warn('⚠️  Warning: Production mode but server key does not start with "Mid-". Make sure you are using production keys.');
+        logger.warn('⚠️  Warning: Production mode but server key does not start with "Mid-". Make sure you are using production keys.');
       } else if (!isProduction && !serverKey.startsWith('SB-')) {
-        console.warn('⚠️  Warning: Sandbox mode but server key does not start with "SB-". Make sure you are using sandbox keys.');
+        logger.warn('⚠️  Warning: Sandbox mode but server key does not start with "SB-". Make sure you are using sandbox keys.');
       }
 
       // Initialize Snap (for web payment)
@@ -62,12 +63,12 @@ class PaymentService {
         clientKey: env.MIDTRANS_CLIENT_KEY.trim(),
       });
       
-      console.log('✅ Midtrans initialized:', {
+      logger.info('✅ Midtrans initialized:', {
         mode: isProduction ? 'PRODUCTION' : 'SANDBOX',
         serverKeyPrefix: serverKey.substring(0, 3),
       });
     } else {
-      console.warn('⚠️  Midtrans not configured. MIDTRANS_SERVER_KEY or MIDTRANS_CLIENT_KEY is missing.');
+      logger.warn('⚠️  Midtrans not configured. MIDTRANS_SERVER_KEY or MIDTRANS_CLIENT_KEY is missing.');
     }
   }
 
@@ -131,7 +132,7 @@ class PaymentService {
         message: 'Payment method not supported',
       };
     } catch (error: any) {
-      console.error('Payment creation error:', error);
+      logger.error('Payment creation error:', { error: error.message, stack: error.stack });
       return {
         success: false,
         message: error.message || 'Failed to create payment',
@@ -158,14 +159,14 @@ class PaymentService {
           (orderId.startsWith('ADD-') || orderId.startsWith('SUB-') || 
            orderId.startsWith('addon-') || orderId.startsWith('subscription-') || orderId.startsWith('upgrade-'))) {
         
-        console.log('Payment is settled, checking if addon/subscription needs activation:', orderId);
+        logger.info('Payment is settled, checking if addon/subscription needs activation:', orderId);
         
         // Process payment activation (similar to webhook)
         // This ensures addon is activated even if webhook is not called
         try {
           await this.processPaymentActivation(orderId, status);
         } catch (activationError: any) {
-          console.error('Error activating addon/subscription during status check:', activationError);
+          logger.error('Error activating addon/subscription during status check:', activationError);
           // Don't fail the status check, just log the error
         }
       }
@@ -177,7 +178,7 @@ class PaymentService {
         message: status.status_message,
       };
     } catch (error: any) {
-      console.error('Payment status check error:', error);
+      logger.error('Payment status check error:', { error: error.message, stack: error.stack });
       return {
         success: false,
         message: error.message || 'Failed to check payment status',
@@ -197,7 +198,7 @@ class PaymentService {
       return; // Not an addon/subscription payment
     }
 
-    console.log('Processing payment activation:', {
+    logger.info('Processing payment activation:', {
       orderId,
       transactionStatus: status.transaction_status,
     });
@@ -209,12 +210,12 @@ class PaymentService {
         where: { orderId },
       });
     } catch (error: any) {
-      console.warn('PaymentMapping table might not exist yet:', error.message);
+      logger.warn('PaymentMapping table might not exist yet:', error.message);
     }
 
     // Check if already activated (mapping status is SETTLED)
     if (mapping && mapping.status === 'SETTLED') {
-      console.log('Payment already processed (status is SETTLED):', orderId);
+      logger.info('Payment already processed (status is SETTLED):', orderId);
       return; // Already activated
     }
 
@@ -266,7 +267,7 @@ class PaymentService {
     }
 
     if (!tenantId || !itemId || !itemType) {
-      console.error('Could not find payment mapping or parse orderId:', {
+      logger.error('Could not find payment mapping or parse orderId:', {
         orderId,
         hasMapping: !!mapping,
         tenantId,
@@ -288,7 +289,7 @@ class PaymentService {
       const addonInfo = AVAILABLE_ADDONS.find(a => a.id === extractedItemId);
 
       if (addonInfo) {
-        console.log('Activating addon via payment status check:', {
+        logger.info('Activating addon via payment status check:', {
           tenantId,
           addonId: extractedItemId,
           addonName: addonInfo.name,
@@ -313,12 +314,12 @@ class PaymentService {
             });
           }
 
-          console.log('Addon activated successfully via payment status check:', {
+          logger.info('Addon activated successfully via payment status check:', {
             tenantId,
             addonId: extractedItemId,
           });
         } catch (error: any) {
-          console.error('Error activating addon via payment status check:', {
+          logger.error('Error activating addon via payment status check:', {
             tenantId,
             addonId: extractedItemId,
             error: error.message,
@@ -327,7 +328,7 @@ class PaymentService {
           throw error; // Re-throw to be handled by caller
         }
       } else {
-        console.error('Addon not found in AVAILABLE_ADDONS:', {
+        logger.error('Addon not found in AVAILABLE_ADDONS:', {
           extractedItemId,
           orderId,
           availableAddonIds: AVAILABLE_ADDONS.map(a => a.id),
@@ -345,7 +346,7 @@ class PaymentService {
           const upgradeType = upgradeParts[2] as 'temporary' | 'until_end' | 'custom';
           const customDuration = upgradeParts[3] ? parseInt(upgradeParts[3]) : undefined;
 
-          console.log('Upgrading subscription via payment status check:', {
+          logger.info('Upgrading subscription via payment status check:', {
             tenantId,
             newPlan,
             upgradeType,
@@ -360,7 +361,7 @@ class PaymentService {
             customDuration,
           });
 
-          console.log('Subscription upgraded successfully via payment status check:', {
+          logger.info('Subscription upgraded successfully via payment status check:', {
             newPlan,
             upgradeType,
           });
@@ -370,7 +371,7 @@ class PaymentService {
           const plan = extendParts[0]?.toUpperCase() as 'BASIC' | 'PRO' | 'ENTERPRISE';
           const duration = extendParts[1] ? parseInt(extendParts[1]) : 30;
 
-          console.log('Extending subscription via payment status check:', {
+          logger.info('Extending subscription via payment status check:', {
             tenantId,
             plan,
             duration,
@@ -383,7 +384,7 @@ class PaymentService {
             duration,
           });
 
-          console.log('Subscription extended successfully via payment status check:', { plan, duration });
+          logger.info('Subscription extended successfully via payment status check:', { plan, duration });
         }
 
         // Update mapping status
@@ -394,7 +395,7 @@ class PaymentService {
           });
         }
       } catch (error: any) {
-        console.error('Error processing subscription payment:', {
+        logger.error('Error processing subscription payment:', {
           orderId,
           tenantId,
           error: error.message,
@@ -427,7 +428,7 @@ class PaymentService {
       const isSubscriptionPayment = orderId.startsWith('SUB-') || orderId.startsWith('subscription-') || orderId.startsWith('upgrade-');
       
       if (isAddonPayment || isSubscriptionPayment) {
-        console.log('Processing addon/subscription payment webhook:', {
+        logger.info('Processing addon/subscription payment webhook:', {
           orderId,
           transactionStatus: status.transaction_status,
           transactionId: status.transaction_id,
@@ -437,9 +438,9 @@ class PaymentService {
           // Payment successful - activate addon/subscription using processPaymentActivation
           try {
             await this.processPaymentActivation(orderId, status);
-            console.log('Payment activation completed via webhook:', orderId);
+            logger.info('Payment activation completed via webhook:', orderId);
           } catch (error: any) {
-            console.error('Error processing payment activation in webhook:', {
+            logger.error('Error processing payment activation in webhook:', {
               orderId,
               error: error.message,
               stack: error.stack,
@@ -448,7 +449,7 @@ class PaymentService {
             // The payment status check will retry activation later
           }
         } else {
-          console.log('Payment not settled yet, status:', status.transaction_status);
+          logger.info('Payment not settled yet, status:', status.transaction_status);
         }
       } else {
         // Handle regular order payment
@@ -481,7 +482,7 @@ class PaymentService {
         message: status.status_message,
       };
     } catch (error: any) {
-      console.error('Webhook handling error:', error);
+      logger.error('Webhook handling error:', { error: error.message, stack: error.stack });
       return {
         success: false,
         message: error.message || 'Failed to handle webhook',
@@ -509,7 +510,7 @@ class PaymentService {
         message: 'Payment cancelled',
       };
     } catch (error: any) {
-      console.error('Payment cancellation error:', error);
+      logger.error('Payment cancellation error:', { error: error.message, stack: error.stack });
       return {
         success: false,
         message: error.message || 'Failed to cancel payment',
@@ -532,7 +533,7 @@ class PaymentService {
   }): Promise<PaymentResponse> {
     try {
       if (!this.snap) {
-        console.error('Midtrans Snap not initialized. Check MIDTRANS_SERVER_KEY and MIDTRANS_CLIENT_KEY in .env');
+        logger.error('Midtrans Snap not initialized. Check MIDTRANS_SERVER_KEY and MIDTRANS_CLIENT_KEY in .env');
         return {
           success: false,
           message: 'Midtrans tidak dikonfigurasi. Silakan hubungi administrator.',
@@ -541,7 +542,7 @@ class PaymentService {
 
       // Validate server key format
       if (!env.MIDTRANS_SERVER_KEY || env.MIDTRANS_SERVER_KEY.length < 20) {
-        console.error('Invalid MIDTRANS_SERVER_KEY format');
+        logger.error('Invalid MIDTRANS_SERVER_KEY format');
         return {
           success: false,
           message: 'Konfigurasi Midtrans tidak valid. Silakan hubungi administrator.',
@@ -583,7 +584,7 @@ class PaymentService {
           },
         });
       } catch (error: any) {
-        console.error('Error storing payment mapping:', error);
+        logger.error('Error storing payment mapping:', { error: error.message, stack: error.stack });
         // Continue even if mapping storage fails - we'll handle it in webhook
       }
       
@@ -612,7 +613,7 @@ class PaymentService {
         },
       };
 
-      console.log('Creating Midtrans transaction:', {
+      logger.info('Creating Midtrans transaction:', {
         orderId,
         amount: data.amount,
         isProduction: env.MIDTRANS_IS_PRODUCTION,
@@ -632,7 +633,7 @@ class PaymentService {
         message: 'Payment token generated',
       };
     } catch (error: any) {
-      console.error('Addon payment creation error:', {
+      logger.error('Addon payment creation error:', {
         message: error.message,
         apiResponse: error.apiResponse,
         httpStatusCode: error.httpStatusCode,

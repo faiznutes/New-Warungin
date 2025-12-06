@@ -1,5 +1,6 @@
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
+import logger from './utils/logger';
 
 interface Prediction {
   nextMonth: number;
@@ -42,7 +43,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read from cache, calculating predictions:', error);
+          logger.warn('Failed to read from cache, calculating predictions:', error);
         }
       }
     }
@@ -152,7 +153,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read trends from cache, calculating:', error);
+          logger.warn('Failed to read trends from cache, calculating:', error);
         }
       }
     }
@@ -251,7 +252,7 @@ class AnalyticsService {
           await redis.setex(`analytics:trends:${period}:${tenantId}`, 3600, JSON.stringify(result));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache trends:', error);
+          logger.warn('Failed to cache trends:', error);
         }
       }
     }
@@ -273,7 +274,7 @@ class AnalyticsService {
           }
         } catch (error) {
           // If cache read fails, continue with calculation
-          console.warn('Failed to read top products from cache, calculating:', error);
+          logger.warn('Failed to read top products from cache, calculating:', error);
         }
       }
     }
@@ -316,7 +317,7 @@ class AnalyticsService {
           await redis.setex(`analytics:top-products:${tenantId}`, 3600, JSON.stringify(allProducts));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache top products:', error);
+          logger.warn('Failed to cache top products:', error);
         }
       }
     }

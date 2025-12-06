@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -48,7 +49,7 @@ router.post(
         message: 'Pesan Anda telah diterima. Tim kami akan menghubungi Anda segera.',
       });
     } catch (error: any) {
-      console.error('Error submitting contact form:', error);
+      logger.error('Error submitting contact form:', { error: error.message, stack: error.stack });
       res.status(500).json({
         success: false,
         message: 'Gagal mengirim pesan. Silakan coba lagi.',
@@ -86,7 +87,7 @@ router.post(
         message: 'Permintaan demo Anda telah diterima. Tim kami akan menghubungi Anda segera.',
       });
     } catch (error: any) {
-      console.error('Error submitting demo request:', error);
+      logger.error('Error submitting demo request:', { error: error.message, stack: error.stack });
       res.status(500).json({
         success: false,
         message: 'Gagal mengirim permintaan demo. Silakan coba lagi.',

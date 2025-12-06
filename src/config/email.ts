@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import env from './env';
+import logger from './utils/logger';
 
 export const emailTransporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
@@ -17,7 +18,7 @@ export const sendEmail = async (
   html: string
 ): Promise<void> => {
   if (!env.SMTP_HOST || !env.SMTP_USER) {
-    console.warn('Email service not configured');
+    logger.warn('Email service not configured');
     return;
   }
 
@@ -28,9 +29,9 @@ export const sendEmail = async (
       subject,
       html,
     });
-    console.log(`✅ Email sent to ${to}`);
+    logger.info(`✅ Email sent to ${to}`);
   } catch (error) {
-    console.error('Email sending error:', error);
+    logger.error('Email sending error:', { error: error.message, stack: error.stack });
     throw error;
   }
 };

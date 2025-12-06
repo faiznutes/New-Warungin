@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import logger from './utils/logger';
 
 dotenv.config();
 
@@ -52,10 +53,10 @@ try {
   env = envSchema.parse(process.env);
 } catch (error) {
   if (error instanceof z.ZodError) {
-    // Using console.error here because logger is not available yet (env not loaded)
-    console.error('❌ Invalid environment variables:');
+    // Logger is available here (imported at top)
+    logger.error('Invalid environment variables:');
     error.errors.forEach((err) => {
-      console.error(`  - ${err.path.join('.')}: ${err.message}`);
+      logger.error(`  - ${err.path.join('.')}: ${err.message}`);
     });
     process.exit(1);
   }

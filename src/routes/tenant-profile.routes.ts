@@ -4,6 +4,7 @@ import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -87,7 +88,7 @@ router.get(
         receiptFooter,
       });
     } catch (error: any) {
-      console.error('Error loading tenant profile:', error);
+      logger.error('Error loading tenant profile:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to load tenant profile' });
     }
   }
@@ -229,7 +230,7 @@ router.put(
         receiptFooter,
       });
     } catch (error: any) {
-      console.error('Error updating tenant profile:', error);
+      logger.error('Error updating tenant profile:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to update tenant profile' });
     }
   }

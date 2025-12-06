@@ -5,6 +5,7 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -75,7 +76,7 @@ router.post(
       
       // Log for Super Admin direct activation
       if (userRole === 'SUPER_ADMIN') {
-        console.log(`✅ Super Admin activated addon for tenant ${tenantId}:`, {
+        logger.info(`✅ Super Admin activated addon for tenant ${tenantId}:`, {
           addonId: addon.id,
           addonName: addonData.addonName,
           addonType: addonData.addonType,
@@ -84,7 +85,7 @@ router.post(
       
       res.status(201).json(addon);
     } catch (error: any) {
-      console.error('Error subscribing addon:', error);
+      logger.error('Error subscribing addon:', { error: error.message, stack: error.stack });
       res.status(400).json({ message: error.message || 'Gagal menambahkan addon' });
     }
   }
@@ -212,7 +213,7 @@ router.delete(
 
       res.json({ message: 'Addon deleted successfully' });
     } catch (error: any) {
-      console.error('Error deleting addon:', error);
+      logger.error('Error deleting addon:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to delete addon' });
     }
   }
@@ -252,7 +253,7 @@ router.post(
         deletedCount: result.count,
       });
     } catch (error: any) {
-      console.error('Error bulk deleting addons:', error);
+      logger.error('Error bulk deleting addons:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to bulk delete addons' });
     }
   }

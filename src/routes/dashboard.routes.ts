@@ -5,6 +5,7 @@ import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { handleApiError } from '../utils/error-handler';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -417,7 +418,7 @@ async function getSuperAdminStats() {
       })),
     };
   } catch (error: any) {
-    console.error('Error in getSuperAdminStats:', error);
+    logger.error('Error in getSuperAdminStats:', { error: error.message, stack: error.stack });
     
     // Handle database connection errors
     if (error.code === 'P1001' || 

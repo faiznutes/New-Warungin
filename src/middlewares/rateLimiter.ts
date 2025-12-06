@@ -110,7 +110,7 @@ const createApiLimiter = () => {
     
     return wrapRateLimiter(limiter);
   } catch (error: any) {
-    logger.error('API rate limiter initialization failed:', error);
+    logger.error('API rate limiter initialization failed:', { error: error.message, stack: error.stack });
     // Return no-op middleware if initialization fails
     return (req: Request, res: Response, next: NextFunction) => next();
   }
@@ -161,7 +161,7 @@ const createAuthLimiter = () => {
     
     return wrapRateLimiter(limiter);
   } catch (error: any) {
-    logger.error('Auth rate limiter initialization failed:', error);
+    logger.error('Auth rate limiter initialization failed:', { error: error.message, stack: error.stack });
     // Return no-op middleware if initialization fails
     return (req: Request, res: Response, next: NextFunction) => next();
   }
@@ -219,7 +219,7 @@ export const authLimiter = createAuthLimiter();
  *     });
  *     return wrapRateLimiter(limiter);
  *   } catch (error) {
- *     console.error('Rate limiter initialization failed:', error);
+ *     logger.error('Rate limiter initialization failed:', { error: error.message, stack: error.stack });
  *     return noOpMiddleware;
  *   }
  * };
@@ -259,7 +259,7 @@ export const authLimiter = createAuthLimiter();
  *     });
  *     return wrapRateLimiter(limiter);
  *   } catch (error) {
- *     console.error('Auth rate limiter initialization failed:', error);
+ *     logger.error('Auth rate limiter initialization failed:', { error: error.message, stack: error.stack });
  *     return noOpMiddleware;
  *   }
  * };

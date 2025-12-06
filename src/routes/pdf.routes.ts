@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.post(
       const { template, data } = req.body;
       
       // Debug: Log received template
-      console.log(`Received template request: ${template}`);
+      logger.info(`Received template request: ${template}`);
       
       if (!template || !['minimalist', 'modern', 'classic', 'colorful', 'elegant'].includes(template)) {
         return res.status(400).json({ 
@@ -51,7 +52,7 @@ router.post(
       
       try {
         // Generate PDF using PDFMake
-        console.log(`Generating PDF with template: ${template}`);
+        logger.info(`Generating PDF with template: ${template}`);
         const pdfBuffer = await generatePDF(template, data);
         
         // Send PDF as response with CORS headers already set
@@ -63,7 +64,7 @@ router.post(
         res.send(pdfBuffer);
         
       } catch (error: any) {
-        console.error('Error generating PDF with PDFMake:', error);
+        logger.error('Error generating PDF with PDFMake:', { error: error.message, stack: error.stack });
         return res.status(500).json({ 
           message: 'Failed to generate PDF', 
           error: error.message
@@ -71,7 +72,7 @@ router.post(
       }
       
     } catch (error: any) {
-      console.error('PDF generation error:', error);
+      logger.error('PDF generation error:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to generate PDF' });
     }
   }

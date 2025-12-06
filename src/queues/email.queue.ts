@@ -1,5 +1,6 @@
 import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
+import logger from './utils/logger';
 
 const redisClient = getRedisClient();
 
@@ -17,7 +18,7 @@ export const addEmailJob = async (
   html: string
 ): Promise<void> => {
   if (!emailQueue) {
-    console.warn('Email queue not available (Redis not configured)');
+    logger.warn('Email queue not available (Redis not configured)');
     return;
   }
   await emailQueue.add('send-email', {

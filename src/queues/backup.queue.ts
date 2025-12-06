@@ -1,5 +1,6 @@
 import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
+import logger from './utils/logger';
 
 const redisClient = getRedisClient();
 
@@ -16,7 +17,7 @@ export const addBackupJob = async (
   type: 'full' | 'incremental' = 'incremental'
 ): Promise<void> => {
   if (!backupQueue) {
-    console.warn('Backup queue not available (Redis not configured)');
+    logger.warn('Backup queue not available (Redis not configured)');
     return;
   }
   await backupQueue.add('database-backup', {

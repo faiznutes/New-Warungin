@@ -11,10 +11,27 @@ export const setupSecurity = (app: Express): void => {
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrc: ["'self'"],
           imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'", 'data:'],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
         },
       },
       crossOriginEmbedderPolicy: false,
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      // Strict-Transport-Security (HSTS)
+      strictTransportSecurity: {
+        maxAge: 31536000, // 1 year
+        includeSubDomains: true,
+        preload: env.NODE_ENV === 'production', // Only enable preload in production
+      },
+      // Additional security headers
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: env.NODE_ENV === 'production',
+      },
     })
   );
 };

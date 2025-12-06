@@ -58,8 +58,15 @@ export class UserService {
       prisma.user.count({ where: { tenantId } }),
     ]);
 
+    // Decrypt defaultPassword for all users
+    const { decrypt } = await import('../utils/encryption');
+    const decryptedUsers = users.map(user => ({
+      ...user,
+      defaultPassword: user.defaultPassword ? decrypt(user.defaultPassword) : null,
+    }));
+
     return {
-      data: users,
+      data: decryptedUsers,
       pagination: {
         page,
         limit,
@@ -70,7 +77,7 @@ export class UserService {
   }
 
   async getUserById(id: string, tenantId: string) {
-    return prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: { id, tenantId },
       select: {
         id: true,
@@ -84,6 +91,17 @@ export class UserService {
         createdAt: true,
       },
     });
+
+    if (!user) {
+      return null;
+    }
+
+    // Decrypt defaultPassword before returning
+    const { decrypt } = await import('../utils/encryption');
+    return {
+      ...user,
+      defaultPassword: user.defaultPassword ? decrypt(user.defaultPassword) : null,
+    };
   }
 
   async createUser(data: CreateUserInput, tenantId: string) {
@@ -113,13 +131,17 @@ export class UserService {
       throw new Error('User with this email already exists');
     }
 
+    // Encrypt defaultPassword before storing
+    const { encrypt } = await import('../utils/encryption');
+    const encryptedDefaultPassword = encrypt(password);
+
     const user = await prisma.user.create({
       data: {
         tenantId,
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        defaultPassword: password, // Store default password (plaintext) for Super Admin to view
+        defaultPassword: encryptedDefaultPassword, // Store encrypted default password
         role: data.role,
       },
       select: {
@@ -136,7 +158,15 @@ export class UserService {
     // Note: Users don't directly affect analytics, but we invalidate for consistency
     await this.invalidateAnalyticsCache(tenantId);
 
-    return { ...user, password: data.password ? undefined : password };
+    // Decrypt defaultPassword before returning
+    const { decrypt } = await import('../utils/encryption');
+    const decryptedDefaultPassword = user.defaultPassword ? decrypt(user.defaultPassword) : undefined;
+
+    return { 
+      ...user, 
+      defaultPassword: decryptedDefaultPassword,
+      password: data.password ? undefined : password 
+    };
   }
 
   async updateUser(id: string, data: UpdateUserInput, tenantId: string, userRole?: string) {
@@ -180,8 +210,10 @@ export class UserService {
     
     if (data.password) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
+      // Encrypt defaultPassword before storing
+      const { encrypt } = await import('../utils/encryption');
       updateData.password = hashedPassword;
-      updateData.defaultPassword = data.password; // Store new password (plaintext) for Super Admin to view
+      updateData.defaultPassword = encrypt(data.password); // Store encrypted default password
     }
     if (data.permissions !== undefined) {
       updateData.permissions = data.permissions;
@@ -200,6 +232,12 @@ export class UserService {
         defaultPassword: true, // Include default password for Super Admin
       },
     });
+
+    // Decrypt defaultPassword before returning
+    if (user.defaultPassword) {
+      const { decrypt } = await import('../utils/encryption');
+      user.defaultPassword = decrypt(user.defaultPassword);
+    }
 
     // Invalidate analytics cache after user update (if needed)
     await this.invalidateAnalyticsCache(tenantId);
@@ -300,7 +338,11 @@ export class UserService {
       where: { id },
       data: { 
         password: hashedPassword,
-        defaultPassword: newPassword, // Store new password (plaintext) for Super Admin to view
+        defaultPassword: (async () => {
+          // Encrypt defaultPassword before storing
+          const { encrypt } = await import('../utils/encryption');
+          return encrypt(newPassword);
+        })(), // Store encrypted default password
       },
     });
 
@@ -314,9 +356,11 @@ export class UserService {
       throw new Error('User not found');
     }
 
-    // Return default password if available
+    // Return default password if available (decrypt first)
     if (user.defaultPassword) {
-      return { password: user.defaultPassword };
+      const { decrypt } = await import('../utils/encryption');
+      const decryptedPassword = decrypt(user.defaultPassword);
+      return { password: decryptedPassword };
     }
 
     // If no default password, reset it and return new password

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 export interface SubscribeAddonInput {
   addonId: string;
@@ -362,7 +363,7 @@ export class AddonService {
             );
           } catch (error: any) {
             // Log error but don't fail the addon subscription
-            console.error('Error awarding points from addon:', error);
+            logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
           }
         }
       }
@@ -387,7 +388,7 @@ export class AddonService {
     });
     
     // Log addon creation for debugging
-    console.log(`✅ Addon subscribed for tenant ${tenantId}:`, {
+    logger.info(`✅ Addon subscribed for tenant ${tenantId}:`, {
       addonId: addon.id,
       addonName: data.addonName,
       subscribedAt: now.toISOString(),
@@ -411,7 +412,7 @@ export class AddonService {
           );
         } catch (error: any) {
           // Log error but don't fail the addon subscription
-          console.error('Error awarding points from addon:', error);
+          logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
         }
       }
     }

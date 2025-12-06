@@ -1,7 +1,8 @@
 import { PrismaClient, Product } from '@prisma/client';
 import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../validators/product.validator';
 import prisma from '../config/database';
-import { getRedisClient } from '../config/redis';
+import CacheService from '../utils/cache';
+import logger from '../utils/logger';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -13,17 +14,14 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(cacheKey);
-          if (cached) {
-            return JSON.parse(cached);
-          }
-        } catch (error) {
-          // If cache read fails, continue with database query
-          console.warn('Failed to read products from cache:', error);
+      try {
+        const cached = await CacheService.get(cacheKey);
+        if (cached) {
+          return cached;
         }
+      } catch (error) {
+        // If cache read fails, continue with database query
+        logger.warn('Failed to read products from cache', { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -68,7 +66,7 @@ export class ProductService {
           await redis.setex(cacheKey, 300, JSON.stringify(result));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache products:', error);
+          logger.warn('Failed to cache products', { error: error instanceof Error ? error.message : String(error) });
         }
       }
     }
@@ -81,17 +79,14 @@ export class ProductService {
 
     // Try to get from cache first
     if (useCache) {
-      const redis = getRedisClient();
-      if (redis) {
-        try {
-          const cached = await redis.get(cacheKey);
-          if (cached) {
-            return JSON.parse(cached);
-          }
-        } catch (error) {
-          // If cache read fails, continue with database query
-          console.warn('Failed to read product from cache:', error);
+      try {
+        const cached = await CacheService.get(cacheKey);
+        if (cached) {
+          return cached;
         }
+      } catch (error) {
+        // If cache read fails, continue with database query
+        logger.warn('Failed to read product from cache', { error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -107,7 +102,7 @@ export class ProductService {
           await redis.setex(cacheKey, 600, JSON.stringify(product));
         } catch (error) {
           // If cache write fails, continue without caching
-          console.warn('Failed to cache product:', error);
+          logger.warn('Failed to cache product', { error: error instanceof Error ? error.message : String(error) });
         }
       }
     }
@@ -141,22 +136,13 @@ export class ProductService {
    * Invalidate product cache for a tenant
    */
   private async invalidateProductCache(tenantId: string): Promise<void> {
-    const redis = getRedisClient();
-    if (redis) {
-      try {
-        // Delete all product-related cache keys for this tenant
-        const keys = await redis.keys(`products:${tenantId}:*`);
-        const productKeys = await redis.keys(`product:${tenantId}:*`);
-        if (keys.length > 0) {
-          await redis.del(...keys);
-        }
-        if (productKeys.length > 0) {
-          await redis.del(...productKeys);
-        }
-      } catch (error) {
-        // If cache invalidation fails, log but don't throw
-        console.warn('Failed to invalidate product cache:', error);
-      }
+    try {
+      // Delete all product-related cache keys for this tenant using CacheService
+      await CacheService.deletePattern(`products:${tenantId}:*`);
+      await CacheService.deletePattern(`product:${tenantId}:*`);
+    } catch (error) {
+      // If cache invalidation fails, log but don't throw
+      logger.warn('Failed to invalidate product cache', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -223,12 +209,9 @@ export class ProductService {
     
     // Also invalidate analytics cache that depends on products
     try {
-      const redis = getRedisClient();
-      if (redis) {
-        await redis.del(`analytics:top-products:${tenantId}`);
-      }
+      await CacheService.delete(`analytics:top-products:${tenantId}`);
     } catch (error) {
-      console.warn('Failed to invalidate analytics cache:', error);
+      logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error) });
     }
 
     // Emit socket event if requested (usually from order service, not from direct product update)
@@ -241,7 +224,7 @@ export class ProductService {
         });
       } catch (error) {
         // Ignore socket errors
-        console.warn('Failed to emit stock update socket event:', error);
+        logger.warn('Failed to emit stock update socket event:', error);
       }
     }
 

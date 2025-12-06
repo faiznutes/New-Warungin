@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import logger from '../utils/logger';
 
 // Clean DATABASE_URL to fix format issues
 function cleanDatabaseUrl(url: string | undefined): string {
@@ -61,10 +62,14 @@ if (isPgbouncer) {
     finalDatabaseUrl = url.toString();
   } catch (error) {
     // If URL parsing fails, try manual string manipulation
-    // Note: Using console.warn here because logger might not be initialized yet
-    // This is during module initialization, before app starts
+    // Note: Logger should be available here, but using try-catch for safety
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('Failed to parse DATABASE_URL, using original:', error);
+      try {
+        logger.warn('Failed to parse DATABASE_URL, using original', { error: error instanceof Error ? error.message : String(error) });
+      } catch {
+        // Fallback to console if logger not available
+        logger.warn('Failed to parse DATABASE_URL, using original:', error);
+      }
     }
     // Add parameters manually if not present
     if (!finalDatabaseUrl.includes('pgbouncer=true')) {
@@ -105,7 +110,7 @@ const prisma = new PrismaClient({
 // Enhanced logging for development
 if (process.env.NODE_ENV === 'development') {
   prisma.$on('query' as never, (e: any) => {
-    console.log('🔵 Prisma Query:', {
+    logger.debug('Prisma Query', {
       query: e.query,
       params: e.params,
       duration: `${e.duration}ms`,
@@ -114,7 +119,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 
   prisma.$on('error' as never, (e: any) => {
-    console.error('🔴 Prisma Error:', {
+    logger.error('Prisma Error', {
       message: e.message,
       target: e.target,
       timestamp: new Date().toISOString(),
@@ -122,14 +127,14 @@ if (process.env.NODE_ENV === 'development') {
   });
 
   prisma.$on('warn' as never, (e: any) => {
-    console.warn('🟡 Prisma Warning:', {
+    logger.warn('Prisma Warning', {
       message: e.message,
       target: e.target,
     });
   });
 
   prisma.$on('info' as never, (e: any) => {
-    console.info('ℹ️  Prisma Info:', {
+    logger.info('Prisma Info', {
       message: e.message,
       target: e.target,
     });
@@ -140,15 +145,24 @@ if (process.env.NODE_ENV === 'development') {
 async function testConnection() {
   try {
     await prisma.$connect();
-    // Using console.log here because logger might not be initialized yet
     if (process.env.NODE_ENV !== 'production') {
-      console.log('✅ Database connection established');
+      try {
+        logger.info('Database connection established');
+      } catch {
+        // Fallback to console if logger not available
+        logger.info('✅ Database connection established');
+      }
     }
   } catch (error: unknown) {
     const err = error as Error;
-    // Using console.error here because logger might not be initialized yet
-    console.error('❌ Database connection failed:', err.message);
-    console.error('Please check your DATABASE_URL in .env file');
+    try {
+      logger.error('Database connection failed', { message: err.message });
+      logger.error('Please check your DATABASE_URL in .env file');
+    } catch {
+      // Fallback to console if logger not available
+      logger.error('❌ Database connection failed:', err.message);
+      logger.error('Please check your DATABASE_URL in .env file');
+    }
     // Don't exit - let the app start and handle errors gracefully
   }
 }
@@ -156,10 +170,14 @@ async function testConnection() {
 // Test connection immediately (non-blocking)
 // Wrap in try-catch to prevent unhandled promise rejection
 testConnection().catch((error: any) => {
-  // Using console.error here because logger might not be initialized yet
   // Don't crash if connection test fails - app will handle it in health check
   if (process.env.NODE_ENV === 'development') {
-    console.error('⚠️  Failed to test database connection (non-blocking):', error?.message || error);
+    try {
+      logger.error('Failed to test database connection (non-blocking)', { error: error?.message || error });
+    } catch {
+      // Fallback to console if logger not available
+      logger.error('⚠️  Failed to test database connection (non-blocking):', error?.message || error);
+    }
   }
 });
 

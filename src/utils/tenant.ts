@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import logger from '../utils/logger';
 
 /**
  * Get tenantId from request
@@ -24,7 +25,7 @@ export const getTenantId = (req: Request): string | null => {
   const tenantId = user?.tenantId || (req as any).tenantId;
   
   if (!tenantId) {
-    console.error('Tenant ID not found in request:', {
+    logger.error('Tenant ID not found in request:', {
       role,
       hasUser: !!user,
       userTenantId: user?.tenantId,

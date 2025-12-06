@@ -14,18 +14,16 @@ export class CacheService {
    * Get value from cache
    */
   static async get<T>(key: string): Promise<T | null> {
-    const redis = getRedisClient();
-    if (!redis) {
-      return null;
-    }
-
     try {
+      const redis = getRedisClient();
       const cached = await redis.get(key);
       if (cached) {
         return JSON.parse(cached) as T;
       }
     } catch (error) {
-      logger.warn(`Failed to read from cache (key: ${key}):`, error);
+      logger.error(`Failed to read from cache (key: ${key})`, { error: error instanceof Error ? error.message : String(error) });
+      // Redis is mandatory, but we don't want to crash the app on cache read failure
+      // Return null to indicate cache miss
     }
 
     return null;
@@ -35,16 +33,13 @@ export class CacheService {
    * Set value in cache
    */
   static async set<T>(key: string, value: T, ttl: number = 300): Promise<boolean> {
-    const redis = getRedisClient();
-    if (!redis) {
-      return false;
-    }
-
     try {
+      const redis = getRedisClient();
       await redis.setex(key, ttl, JSON.stringify(value));
       return true;
     } catch (error) {
-      logger.warn(`Failed to write to cache (key: ${key}):`, error);
+      logger.error(`Failed to write to cache (key: ${key})`, { error: error instanceof Error ? error.message : String(error) });
+      // Redis is mandatory, but we don't want to crash the app on cache write failure
       return false;
     }
   }
@@ -53,16 +48,12 @@ export class CacheService {
    * Delete value from cache
    */
   static async delete(key: string): Promise<boolean> {
-    const redis = getRedisClient();
-    if (!redis) {
-      return false;
-    }
-
     try {
+      const redis = getRedisClient();
       await redis.del(key);
       return true;
     } catch (error) {
-      logger.warn(`Failed to delete from cache (key: ${key}):`, error);
+      logger.error(`Failed to delete from cache (key: ${key})`, { error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }
@@ -71,12 +62,8 @@ export class CacheService {
    * Delete multiple keys matching a pattern
    */
   static async deletePattern(pattern: string): Promise<number> {
-    const redis = getRedisClient();
-    if (!redis) {
-      return 0;
-    }
-
     try {
+      const redis = getRedisClient();
       const keys = await redis.keys(pattern);
       if (keys.length === 0) {
         return 0;
@@ -84,7 +71,7 @@ export class CacheService {
       await redis.del(...keys);
       return keys.length;
     } catch (error) {
-      logger.warn(`Failed to delete cache pattern (pattern: ${pattern}):`, error);
+      logger.error(`Failed to delete cache pattern (pattern: ${pattern})`, { error: error instanceof Error ? error.message : String(error) });
       return 0;
     }
   }

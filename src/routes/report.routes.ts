@@ -4,6 +4,7 @@ import { subscriptionGuard } from '../middlewares/subscription-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
+import logger from './utils/logger';
 
 const router = Router();
 
@@ -162,7 +163,7 @@ router.get(
 
       res.json(report);
     } catch (error: any) {
-      console.error('Error loading tenant report:', error);
+      logger.error('Error loading tenant report:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to load tenant report' });
     }
   }
@@ -193,7 +194,7 @@ router.get(
       const report = await reportService.getTenantReport(tenantId, start, end, reportType);
       res.json(report);
     } catch (error: any) {
-      console.error('Error loading report:', error);
+      logger.error('Error loading report:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to load report' });
     }
   }
@@ -234,7 +235,7 @@ router.get(
       res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
       res.send(html);
     } catch (error: any) {
-      console.error('Error exporting global report PDF:', error);
+      logger.error('Error exporting global report PDF:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to export PDF' });
     }
   }

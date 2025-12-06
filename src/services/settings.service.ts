@@ -1,4 +1,5 @@
 import prisma from '../config/database';
+import logger from './utils/logger';
 
 export interface SystemSettings {
   appName: string;
@@ -52,7 +53,7 @@ export class SettingsService {
       // Return default settings
       return DEFAULT_SETTINGS;
     } catch (error) {
-      console.error('Error loading system settings:', error);
+      logger.error('Error loading system settings:', { error: error.message, stack: error.stack });
       return DEFAULT_SETTINGS;
     }
   }
@@ -85,11 +86,11 @@ export class SettingsService {
       }
 
       // Log settings update (in production, save to database)
-      console.log('System settings updated:', updatedSettings);
+      logger.info('System settings updated:', updatedSettings);
 
       return updatedSettings;
     } catch (error: any) {
-      console.error('Error updating system settings:', error);
+      logger.error('Error updating system settings:', { error: error.message, stack: error.stack });
       throw new Error(error.message || 'Failed to update system settings');
     }
   }
