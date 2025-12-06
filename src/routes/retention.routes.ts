@@ -190,6 +190,7 @@ router.post(
         message: `Deleted ${deletedCount} orders based on retention policy`,
         deletedCount,
       });
+      return;
     } catch (error: unknown) {
       await logAction(req, 'RETENTION', 'orders', null, { error: (error as Error).message }, 'FAILED', (error as Error).message);
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
