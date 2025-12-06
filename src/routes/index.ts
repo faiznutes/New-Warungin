@@ -55,6 +55,7 @@ import ecommerceIntegrationRoutes from './ecommerce-integration.routes';
 import aiMlRoutes from './ai-ml.routes';
 import accountingIntegrationRoutes from './accounting-integration.routes';
 import paymentGatewayIntegrationRoutes from './payment-gateway-integration.routes';
+import superadminBackupRoutes from './superadmin-backup.routes';
 
 const router = Router();
 
@@ -126,6 +127,7 @@ router.use('/ecommerce', ecommerceIntegrationRoutes);
 router.use('/ai-ml', aiMlRoutes);
 router.use('/accounting', accountingIntegrationRoutes);
 router.use('/payment-gateway', paymentGatewayIntegrationRoutes);
+router.use('/superadmin/backups', superadminBackupRoutes);
 // etc.
 
 export default router;

@@ -105,6 +105,7 @@ router.get(
       const policy = req.query.policy ? JSON.parse(req.query.policy as string) : undefined;
       const stats = await retentionService.getRetentionStats(tenantId, policy);
       res.json(stats);
+      return;
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
     }
@@ -267,6 +268,7 @@ router.post(
         message: `Deleted ${deletedCount} transactions based on retention policy`,
         deletedCount,
       });
+      return;
     } catch (error: unknown) {
       await logAction(req, 'RETENTION', 'transactions', null, { error: (error as Error).message }, 'FAILED', (error as Error).message);
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
@@ -341,6 +343,7 @@ router.post(
         message: `Deleted ${deletedCount} reports based on retention policy`,
         deletedCount,
       });
+      return;
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
     }
@@ -414,6 +417,7 @@ router.post(
         message: `Deleted ${deletedCount} audit logs based on retention policy`,
         deletedCount,
       });
+      return;
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
     }
@@ -645,6 +649,7 @@ router.post(
         message: 'Applied all retention policies',
         ...result,
       });
+      return;
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'RETENTION');
     }

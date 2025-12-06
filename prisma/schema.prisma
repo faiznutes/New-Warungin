@@ -1170,3 +1170,27 @@ model CustomerReview {
   @@index([tenantId, rating])
   @@map("customer_reviews")
 }
+
+// Backup Log Model (Super Admin Backup System)
+model BackupLog {
+  id           String    @id @default(uuid())
+  tenantId     String
+  status       String    // success | failed | email_failed
+  generatedAt  DateTime  @default(now())
+  emailSentAt   DateTime?
+  size         Int?      // File size in bytes
+  filePath     String
+  errorMessage String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, generatedAt])
+  @@index([status])
+  @@index([generatedAt])
+  @@map("backup_logs")
+}

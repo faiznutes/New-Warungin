@@ -120,6 +120,18 @@
               </svg>
               <span class="font-medium">Retention Management</span>
             </router-link>
+
+            <router-link
+              to="/app/superadmin/backups"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
+              active-class="bg-blue-700 text-white font-semibold shadow-lg"
+              @click="closeSidebarOnMobile"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="font-medium">Backup Management</span>
+            </router-link>
           </div>
 
           <!-- Business Analytics Menu Section (Always visible for Super Admin) -->
@@ -257,6 +269,7 @@ const pageTitle = computed(() => {
     '/app/settings/system': 'System Settings',
     '/app/settings/archive': 'Archive Management',
     '/app/settings/retention': 'Retention Management',
+    '/app/superadmin/backups': 'Backup Management',
     '/app/analytics': 'Advanced Analytics',
     '/app/finance': 'Keuangan',
     '/app/profit-loss': 'Laporan Laba Rugi',

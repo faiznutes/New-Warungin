@@ -410,3 +410,147 @@ Jika kamu butuh mengembalikan salah satu, tinggal bilang.
 # ✔️ Completed akan tinggal ditandai nanti.
 
 Dokumen ini bisa digabung ke roadmap besar atau dieksekusi terpisah untuk fase UMKM-focused.
+
+
+# 🛡️ SUPER ADMIN BACKUP SYSTEM — TODO FINAL (TEKNIS & TERPISAH)
+
+Dokumen ini khusus untuk modul **Backup Tenant & Backup Database** agar tidak bercampur dengan fitur lain.
+
+---
+
+# 🎯 1. TUJUAN MODUL
+
+* Monitoring stabilitas backup harian semua tenant
+* Debugging cepat jika laporan gagal dikirim
+* Kontrol penuh oleh super admin
+* Transparansi status backup file & email
+
+---
+
+# 📄 2. HALAMAN: `/superadmin/backups`
+
+## Komponen UI
+
+* [ ] Tabel list backup tenant
+* [ ] Filter: tenant, tanggal, status
+* [ ] Aksi cepat:
+
+  * [ ] Resend Email
+  * [ ] Regenerate Backup
+  * [ ] Download
+  * [ ] View HTML
+* [ ] Highlight tenant bermasalah > 1 hari
+* [ ] Badge status: success / warning / failed
+
+## Kolom Tabel
+
+* Tenant
+* Last Backup Time
+* Status
+* Email Sent
+* Size
+* Actions
+
+---
+
+# 🔧 3. BACKEND – DATABASE
+
+## Tabel: `BackupLog`
+
+* id (UUID)
+* tenantId
+* status: success | failed | email_failed
+* generatedAt (datetime)
+* emailSentAt (datetime, nullable)
+* size (int)
+* filePath (string)
+* errorMessage (string, nullable)
+
+---
+
+# 🔌 4. API ENDPOINTS
+
+### GET `/superadmin/backups`
+
+List backup + filter.
+
+### POST `/superadmin/backups/:tenantId/regenerate`
+
+Generate file ulang + update BackupLog.
+
+### POST `/superadmin/backups/:tenantId/resend-email`
+
+Kirim ulang email laporan + update emailSentAt.
+
+### GET `/superadmin/backups/:backupId/download`
+
+File download by superadmin only.
+
+### GET `/superadmin/backups/:backupId/view`
+
+Return isi laporan dalam HTML.
+
+---
+
+# 🕒 5. CRON JOB
+
+### Cron Harian (23:59)
+
+* Generate laporan semua tenant.
+* Simpan file.
+* Kirim email.
+* Insert BackupLog.
+
+### Cron Monitoring (08:00)
+
+* Scan backup gagal > 1 hari.
+* Tandai warning.
+* Jika gagal ≥3 hari → notif internal superadmin.
+
+---
+
+# 🔐 6. SECURITY
+
+* Endpoint hanya untuk `role: superadmin`.
+* Path file tidak boleh di-expose langsung.
+* Backup tidak boleh berisi data sensitif (password, API, token).
+* Folder backup harus isolated: `/storage/backups/...`.
+* Semua file download harus signed URL sementara.
+
+---
+
+# 🎨 7. UI/UX DETAIL
+
+* Status warna:
+
+  * Hijau → success
+  * Kuning → warning
+  * Merah → failed
+* Tooltip errorMessage di status merah
+* Modal khusus untuk "View Backup"
+* Pagination
+* Loading state setiap aksi
+
+---
+
+# 🧪 8. TEST WAJIB
+
+* Test cron berjalan
+* Test regenerate
+* Test resend email
+* Test permission superadmin
+* Test error handling
+* Test download view
+* Test backup failed scenario
+
+---
+
+# 📦 9. OPTIONAL IMPROVEMENT
+
+* Notifikasi Telegram internal untuk superadmin jika backup gagal ≥ 3 hari
+* Export log backup untuk audit internal
+* Toggle backup per tenant
+
+---
+
+# ✔️ READY FOR DEVELOPMENT

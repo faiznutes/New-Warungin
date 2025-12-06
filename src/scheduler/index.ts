@@ -10,6 +10,8 @@ import { getSubscriptionQueue } from '../queues/subscription.queue';
 import { processBackupJob } from '../jobs/backup.job';
 import { processNotificationJob } from '../queues/notification.queue';
 import { processSubscriptionRevertJob } from '../jobs/subscription-revert.job';
+import { processDailyBackupEmailJob } from '../jobs/daily-backup-email.job';
+import { processBackupMonitoringJob } from '../jobs/backup-monitoring.job';
 
 // Initialize workers lazily to avoid blocking app start
 let redisClient: ReturnType<typeof getRedisClient> = null;
@@ -45,10 +47,15 @@ const initializeWorkers = (): void => {
           //   connection: redisClient!,
           // });
 
-          // Backup worker - can be disabled if using n8n
-          // Keeping for now as fallback, but n8n should handle this
+          // Backup worker - handles both database backup and daily email backup
           backupWorker = new Worker('backup', async (job) => {
-            await processBackupJob(job);
+            if (job.name === 'daily-backup-email') {
+              await processDailyBackupEmailJob();
+            } else if (job.name === 'backup-monitoring') {
+              await processBackupMonitoringJob();
+            } else {
+              await processBackupJob(job);
+            }
           }, {
             connection: redisClient!,
           });
@@ -97,7 +104,35 @@ export const scheduleJobs = async (): Promise<void> => {
   const subscriptionQueue = getSubscriptionQueue();
 
   try {
-    // Daily backup job (runs at 2 AM)
+    // Daily backup email job (runs at 23:59 - before midnight)
+    if (backupQueue) {
+      await backupQueue.add(
+        'daily-backup-email',
+        {},
+        {
+          repeat: {
+            pattern: '59 23 * * *', // 23:59 daily
+          },
+        }
+      );
+      logger.info('✅ Daily backup email job scheduled: 23:59 daily');
+    }
+
+    // Backup monitoring job (runs at 08:00)
+    if (backupQueue) {
+      await backupQueue.add(
+        'backup-monitoring',
+        {},
+        {
+          repeat: {
+            pattern: '0 8 * * *', // 08:00 daily
+          },
+        }
+      );
+      logger.info('✅ Backup monitoring job scheduled: 08:00 daily');
+    }
+
+    // Legacy database backup job (runs at 2 AM) - keep for backward compatibility
     if (backupQueue) {
       await backupQueue.add(
         'daily-backup',

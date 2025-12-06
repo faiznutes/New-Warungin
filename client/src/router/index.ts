@@ -357,6 +357,12 @@ const router = createRouter({
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {
+          path: 'superadmin/backups',
+          name: 'superadmin-backups',
+          component: () => import('../views/superadmin/BackupManagement.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
           path: 'products/adjustments',
           name: 'product-adjustments',
           component: () => import('../views/products/ProductAdjustments.vue'),
