@@ -931,7 +931,7 @@ const applyAllRetention = async () => {
       policy: retentionPolicy.value,
     });
     await showSuccess(
-      `Berhasil menghapus: ${response.data.orders} orders, ${response.data.transactions} transactions, ${response.data.reports} reports, ${response.data.auditLogs} audit logs, ${response.data.contactSubmissions} contact submissions, ${response.data.demoRequests} demo requests`
+      `Berhasil menghapus: ${response.data?.orders || 0} orders, ${response.data?.transactions || 0} transactions, ${response.data?.reports || 0} reports, ${response.data?.auditLogs || 0} audit logs, ${response.data?.contactSubmissions || 0} contact submissions, ${response.data?.demoRequests || 0} demo requests`
     );
     showApplyAllModal.value = false;
     await loadStats();

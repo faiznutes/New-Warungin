@@ -558,7 +558,7 @@ const archiveReports = async () => {
     const response = await api.post('/archives/reports', {
       olderThanDays: archiveReportsDays.value || 180,
     });
-    await showSuccess(`Berhasil meng-archive ${response.data.count} reports`);
+    await showSuccess(`Berhasil meng-archive ${response.data?.count || 0} reports`);
     showArchiveReportsModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);
   } catch (error: any) {
@@ -582,7 +582,7 @@ const archiveAll = async () => {
   try {
     const response = await api.post('/archives/all', archiveAllConfig.value);
     await showSuccess(
-      `Berhasil meng-archive: ${response.data.orders} orders, ${response.data.transactions} transactions, ${response.data.reports} reports`
+      `Berhasil meng-archive: ${response.data?.orders || 0} orders, ${response.data?.transactions || 0} transactions, ${response.data?.reports || 0} reports`
     );
     showArchiveAllModal.value = false;
     await Promise.all([loadStats(), loadArchiveFiles()]);

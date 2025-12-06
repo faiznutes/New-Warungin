@@ -1453,15 +1453,10 @@ const loadUsers = async () => {
       };
     }
   } catch (error: any) {
-    // Only show error if it's a real server error (5xx)
-    // Don't show error for client errors (4xx), network issues, or empty data
-    // 4xx errors (like 403, 404) are expected in some cases and shouldn't show error
-    if (error.response?.status && error.response.status >= 500) {
-      // Only show error for server errors (5xx)
-      await showError(error.response?.data?.message || 'Gagal memuat daftar pengguna');
-    }
-    // For all other errors (4xx, network, etc), set empty array silently
-    // No users is a valid state, don't show error
+    // Don't show error for loadUsers - users is secondary data
+    // If users fail to load, just set empty array silently
+    // This prevents error popup that blocks user from seeing tenant details
+    // Users can still see tenant info, subscription, addons, stores, etc even if users list fails
     tenantUsers.value = [];
   } finally {
     loadingUsers.value = false;
@@ -1870,20 +1865,26 @@ const loadTenantDetail = async () => {
         startCountdown();
       }
     }
+    
+    // Set loading to false early so tenant details appear immediately
+    // Don't wait for secondary data (addons, users, stores, points) to load
+    // These will load in background and update UI when ready
+    loading.value = false;
 
-    // Load all additional data in parallel for faster loading
+    // Load all additional data in parallel in background
     // These calls are independent and can run simultaneously
     // Use Promise.allSettled to prevent one failure from stopping all others
-    const results = await Promise.allSettled([
+    // Don't await - let them load in background while user sees tenant details
+    Promise.allSettled([
       loadActiveAddons(),
       loadAvailableAddons(),
       loadUsers(),
       loadStores(),
       loadTenantPoints()
-    ]);
-    
-    // Individual functions handle their own errors, so we don't need to log here
-    // Promise.allSettled ensures all functions complete even if some fail
+    ]).then(() => {
+      // All secondary data loaded - UI will update automatically via reactivity
+      // No need to do anything here, just let it complete silently
+    });
     
     // Check if any critical function failed (tenant or subscription)
     // These are the only ones that should cause the page to fail

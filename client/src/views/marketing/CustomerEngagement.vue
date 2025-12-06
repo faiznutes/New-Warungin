@@ -283,7 +283,7 @@ const loadOverallStats = async () => {
   loading.value = true;
   try {
     const response = await api.get('/customer-engagement/stats/overall');
-    overallStats.value = response.data.distribution || {};
+    overallStats.value = response.data?.distribution || {};
   } catch (error: any) {
     await showError('Gagal memuat overall stats');
   } finally {

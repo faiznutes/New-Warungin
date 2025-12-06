@@ -296,16 +296,16 @@ const awardPoints = async () => {
       },
     });
 
-    if (response.data.success) {
+    if (response.data?.success) {
       statusMessage.value = {
         type: 'success',
-        text: `Selamat! Anda mendapat ${response.data.pointsEarned} point. Total point Anda sekarang: ${response.data.totalPoints}`,
+        text: `Selamat! Anda mendapat ${response.data?.pointsEarned || 0} point. Total point Anda sekarang: ${response.data?.totalPoints || 0}`,
       };
       completed.value = true;
     } else {
       statusMessage.value = {
         type: 'error',
-        text: response.data.message || 'Gagal mendapatkan point',
+        text: response.data?.message || 'Gagal mendapatkan point',
       };
     }
   } catch (error: any) {

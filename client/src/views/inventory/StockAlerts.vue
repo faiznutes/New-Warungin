@@ -254,7 +254,7 @@ const sendAlerts = async () => {
   sending.value = true;
   try {
     const response = await api.post('/stock-alerts/send');
-    await showSuccess(response.data.message || 'Stock alerts berhasil dikirim');
+    await showSuccess(response.data?.message || 'Stock alerts berhasil dikirim');
     await loadLowStockProducts();
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal mengirim stock alerts');

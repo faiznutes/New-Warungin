@@ -919,10 +919,10 @@ const handleUpgrade = async () => {
       itemType: 'subscription',
     });
 
-    if (response.data.success && response.data.paymentUrl) {
+    if (response.data?.success && response.data?.paymentUrl) {
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data.message || 'Gagal membuat pembayaran');
+      await showError(response.data?.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
@@ -954,10 +954,10 @@ const handleExtend = async () => {
       itemType: 'subscription',
     });
 
-    if (response.data.success && response.data.paymentUrl) {
+    if (response.data?.success && response.data?.paymentUrl) {
       window.location.href = response.data.paymentUrl;
     } else {
-      await showError(response.data.message || 'Gagal membuat pembayaran');
+      await showError(response.data?.message || 'Gagal membuat pembayaran');
     }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal membuat pembayaran');
