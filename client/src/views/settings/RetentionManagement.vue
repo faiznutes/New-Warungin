@@ -65,78 +65,78 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Orders (Default: 365 hari)
+              Orders (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.orders"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="365"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Transactions (Default: 365 hari)
+              Transactions (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.transactions"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="365"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Reports (Default: 180 hari)
+              Reports (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.reports"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="180"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Audit Logs (Default: 90 hari)
+              Audit Logs (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.auditLogs"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="90"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Contact Submissions (Default: 90 hari)
+              Contact Submissions (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.contactSubmissions"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="90"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Demo Requests (Default: 90 hari)
+              Demo Requests (Default: 730 hari / 2 tahun)
             </label>
             <input
               v-model.number="retentionPolicy.demoRequests"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               placeholder="90"
             />
@@ -289,9 +289,9 @@
               v-model.number="applyOrdersDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.orders?.toString() || '365'"
+              :placeholder="retentionPolicy.orders?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -335,9 +335,9 @@
               v-model.number="applyTransactionsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.transactions?.toString() || '365'"
+              :placeholder="retentionPolicy.transactions?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -381,9 +381,9 @@
               v-model.number="applyReportsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.reports?.toString() || '180'"
+              :placeholder="retentionPolicy.reports?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -427,9 +427,9 @@
               v-model.number="applyAuditLogsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.auditLogs?.toString() || '90'"
+              :placeholder="retentionPolicy.auditLogs?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -473,9 +473,9 @@
               v-model.number="applyContactSubmissionsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.contactSubmissions?.toString() || '90'"
+              :placeholder="retentionPolicy.contactSubmissions?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -519,9 +519,9 @@
               v-model.number="applyDemoRequestsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.demoRequests?.toString() || '90'"
+              :placeholder="retentionPolicy.demoRequests?.toString() || '730'"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -610,12 +610,12 @@ const stats = ref({
 });
 
 const retentionPolicy = ref({
-  orders: 365,
-  transactions: 365,
-  reports: 180,
-  auditLogs: 90,
-  contactSubmissions: 90,
-  demoRequests: 90,
+  orders: 730, // 2 years default
+  transactions: 730, // 2 years default
+  reports: 730, // 2 years default
+  auditLogs: 730, // 2 years default
+  contactSubmissions: 730, // 2 years default
+  demoRequests: 730, // 2 years default
 });
 
 const showApplyOrdersModal = ref(false);
@@ -626,12 +626,12 @@ const showApplyContactSubmissionsModal = ref(false);
 const showApplyDemoRequestsModal = ref(false);
 const showApplyAllModal = ref(false);
 
-const applyOrdersDays = ref(365);
-const applyTransactionsDays = ref(365);
-const applyReportsDays = ref(180);
-const applyAuditLogsDays = ref(90);
-const applyContactSubmissionsDays = ref(90);
-const applyDemoRequestsDays = ref(90);
+const applyOrdersDays = ref(730); // 2 years default
+const applyTransactionsDays = ref(730); // 2 years default
+const applyReportsDays = ref(730); // 2 years default
+const applyAuditLogsDays = ref(730); // 2 years default
+const applyContactSubmissionsDays = ref(730); // 2 years default
+const applyDemoRequestsDays = ref(730); // 2 years default
 
 const loadStats = async () => {
   if (needsTenantSelection.value) return;
@@ -675,7 +675,7 @@ const applyOrdersRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/orders', {
-      days: applyOrdersDays.value || retentionPolicy.value.orders || 365,
+      days: applyOrdersDays.value || retentionPolicy.value.orders || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} orders`);
     showApplyOrdersModal.value = false;
@@ -703,7 +703,7 @@ const applyTransactionsRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/transactions', {
-      days: applyTransactionsDays.value || retentionPolicy.value.transactions || 365,
+      days: applyTransactionsDays.value || retentionPolicy.value.transactions || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} transactions`);
     showApplyTransactionsModal.value = false;
@@ -731,7 +731,7 @@ const applyReportsRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/reports', {
-      days: applyReportsDays.value || retentionPolicy.value.reports || 180,
+      days: applyReportsDays.value || retentionPolicy.value.reports || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} reports`);
     showApplyReportsModal.value = false;

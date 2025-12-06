@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import retentionService from '../services/retention.service';
-import { requireTenantId } from '../utils/tenant';
 import { AuthRequest } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { logAction } from '../middlewares/audit-logger';
 import { handleRouteError } from '../utils/route-error-handler';
+import prisma from '../config/database';
 
 const router = Router();
 
@@ -71,7 +71,35 @@ router.get(
         return;
       }
       
-      const tenantId = req.query.tenantId as string || requireTenantId(req);
+      // SUPER_ADMIN can view stats for all tenants or specific tenant
+      const tenantId = req.query.tenantId as string || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Get stats for all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        const policy = req.query.policy ? JSON.parse(req.query.policy as string) : undefined;
+        const allStats = await Promise.all(
+          allTenants.map(tenant => retentionService.getRetentionStats(tenant.id, policy))
+        );
+        const totalStats = allStats.reduce((acc, stats) => ({
+          ordersToDelete: acc.ordersToDelete + stats.ordersToDelete,
+          transactionsToDelete: acc.transactionsToDelete + stats.transactionsToDelete,
+          reportsToDelete: acc.reportsToDelete + stats.reportsToDelete,
+          auditLogsToDelete: acc.auditLogsToDelete + stats.auditLogsToDelete,
+          contactSubmissionsToDelete: acc.contactSubmissionsToDelete + stats.contactSubmissionsToDelete,
+          demoRequestsToDelete: acc.demoRequestsToDelete + stats.demoRequestsToDelete,
+        }), {
+          ordersToDelete: 0,
+          transactionsToDelete: 0,
+          reportsToDelete: 0,
+          auditLogsToDelete: 0,
+          contactSubmissionsToDelete: 0,
+          demoRequestsToDelete: 0,
+        });
+        return res.json(totalStats);
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const policy = req.query.policy ? JSON.parse(req.query.policy as string) : undefined;
       const stats = await retentionService.getRetentionStats(tenantId, policy);
       res.json(stats);
@@ -134,7 +162,24 @@ router.post(
       const maxDays = 730; // 2 years max
       const retentionDays = days && days <= maxDays ? days : maxDays;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can apply retention to all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Apply to all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalDeleted = 0;
+        for (const tenant of allTenants) {
+          totalDeleted += await retentionService.applyOrdersRetention(tenant.id, retentionDays);
+        }
+        await logAction(req, 'RETENTION', 'orders', null, { days: retentionDays, deletedCount: totalDeleted }, 'SUCCESS');
+        return res.json({
+          message: `Deleted ${totalDeleted} orders from all tenants based on retention policy`,
+          deletedCount: totalDeleted,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const deletedCount = await retentionService.applyOrdersRetention(tenantId, retentionDays);
       await logAction(req, 'RETENTION', 'orders', null, { days, deletedCount }, 'SUCCESS');
       res.json({
@@ -191,7 +236,24 @@ router.post(
       const maxDays = 730; // 2 years max
       const retentionDays = days && days <= maxDays ? days : maxDays;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can apply retention to all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Apply to all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalDeleted = 0;
+        for (const tenant of allTenants) {
+          totalDeleted += await retentionService.applyTransactionsRetention(tenant.id, retentionDays);
+        }
+        await logAction(req, 'RETENTION', 'transactions', null, { days: retentionDays, deletedCount: totalDeleted }, 'SUCCESS');
+        return res.json({
+          message: `Deleted ${totalDeleted} transactions from all tenants based on retention policy`,
+          deletedCount: totalDeleted,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const deletedCount = await retentionService.applyTransactionsRetention(tenantId, retentionDays);
       await logAction(req, 'RETENTION', 'transactions', null, { days, deletedCount }, 'SUCCESS');
       res.json({
@@ -248,7 +310,23 @@ router.post(
       const maxDays = 730; // 2 years max
       const retentionDays = days && days <= maxDays ? days : maxDays;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can apply retention to all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Apply to all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalDeleted = 0;
+        for (const tenant of allTenants) {
+          totalDeleted += await retentionService.applyReportsRetention(tenant.id, retentionDays);
+        }
+        return res.json({
+          message: `Deleted ${totalDeleted} reports from all tenants based on retention policy`,
+          deletedCount: totalDeleted,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const deletedCount = await retentionService.applyReportsRetention(tenantId, retentionDays);
       res.json({
         message: `Deleted ${deletedCount} reports based on retention policy`,
@@ -303,7 +381,23 @@ router.post(
       const maxDays = 730; // 2 years max
       const retentionDays = days && days <= maxDays ? days : maxDays;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can apply retention to all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Apply to all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalDeleted = 0;
+        for (const tenant of allTenants) {
+          totalDeleted += await retentionService.applyAuditLogsRetention(tenant.id, retentionDays);
+        }
+        return res.json({
+          message: `Deleted ${totalDeleted} audit logs from all tenants based on retention policy`,
+          deletedCount: totalDeleted,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const deletedCount = await retentionService.applyAuditLogsRetention(tenantId, retentionDays);
       res.json({
         message: `Deleted ${deletedCount} audit logs based on retention policy`,
@@ -500,7 +594,39 @@ router.post(
         demoRequests: Math.min(policy.demoRequests || 730, 730),
       } : defaultPolicy;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can apply retention to all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Apply to all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalOrders = 0;
+        let totalTransactions = 0;
+        let totalReports = 0;
+        let totalAuditLogs = 0;
+        let totalContactSubmissions = 0;
+        let totalDemoRequests = 0;
+        for (const tenant of allTenants) {
+          const result = await retentionService.applyAllRetentionPolicies(tenant.id, finalPolicy);
+          totalOrders += result.orders;
+          totalTransactions += result.transactions;
+          totalReports += result.reports;
+          totalAuditLogs += result.auditLogs;
+          totalContactSubmissions += result.contactSubmissions;
+          totalDemoRequests += result.demoRequests;
+        }
+        return res.json({
+          message: 'Applied all retention policies to all tenants',
+          orders: totalOrders,
+          transactions: totalTransactions,
+          reports: totalReports,
+          auditLogs: totalAuditLogs,
+          contactSubmissions: totalContactSubmissions,
+          demoRequests: totalDemoRequests,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const result = await retentionService.applyAllRetentionPolicies(tenantId, finalPolicy);
       res.json({
         message: 'Applied all retention policies',

@@ -395,13 +395,13 @@ const showArchiveTransactionsModal = ref(false);
 const showArchiveReportsModal = ref(false);
 const showArchiveAllModal = ref(false);
 
-const archiveOrdersDays = ref(365);
-const archiveTransactionsDays = ref(365);
-const archiveReportsDays = ref(180);
+const archiveOrdersDays = ref(730); // 2 years default
+const archiveTransactionsDays = ref(730); // 2 years default
+const archiveReportsDays = ref(730); // 2 years default
 const archiveAllConfig = ref({
-  ordersOlderThanDays: 365,
-  transactionsOlderThanDays: 365,
-  reportsOlderThanDays: 180,
+  ordersOlderThanDays: 730, // 2 years
+  transactionsOlderThanDays: 730, // 2 years
+  reportsOlderThanDays: 730, // 2 years
 });
 
 const loadStats = async () => {
