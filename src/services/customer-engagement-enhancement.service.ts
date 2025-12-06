@@ -216,17 +216,9 @@ class CustomerEngagementEnhancementService {
     tenantId: string,
     customerId: string,
     data: { orderId?: string; rating: number; comment?: string; category?: string; isPublic?: boolean }
-  ): Promise<CustomerFeedback> {
+  ) {
     try {
-      const feedback: CustomerFeedback = {
-        customerId,
-        orderId: data.orderId,
-        rating: data.rating,
-        comment: data.comment,
-        createdAt: new Date(),
-      };
-
-      logger.info('Customer feedback submitted:', feedback);
+      logger.info('Customer feedback submitted:', { customerId, orderId: data.orderId, rating: data.rating });
 
       const saved = await prisma.customerFeedback.create({
         data: {
@@ -241,21 +233,8 @@ class CustomerEngagementEnhancementService {
         },
       });
 
-      return {
-        id: saved.id,
-        tenantId: saved.tenantId,
-        customerId: saved.customerId,
-        orderId: saved.orderId,
-        rating: saved.rating,
-        comment: saved.comment,
-        category: saved.category,
-        isPublic: saved.isPublic,
-        status: saved.status,
-        respondedAt: saved.respondedAt,
-        response: saved.response,
-        createdAt: saved.createdAt,
-        updatedAt: saved.updatedAt,
-      };
+      // Return saved feedback (Prisma type)
+      return saved;
     } catch (error: any) {
       logger.error('Error submitting feedback:', error);
       throw error;
