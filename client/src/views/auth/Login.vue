@@ -125,6 +125,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Store Selector Modal -->
+  <StoreSelectorModal
+    :show="showStoreSelector"
+    :required="true"
+    @close="handleStoreSelectorClose"
+    @select="handleStoreSelected"
+  />
 </template>
 
 <script setup lang="ts">
@@ -133,6 +141,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
+import StoreSelectorModal from '../../components/StoreSelectorModal.vue';
 
 const router = useRouter();
 const { error: showError, warning: showWarning } = useNotification();
@@ -144,6 +153,7 @@ const password = ref('');
 const loading = ref(false);
 const showPassword = ref(false);
 const rememberMe = ref(localStorage.getItem('rememberMe') === 'true');
+const showStoreSelector = ref(false);
 
 // Initialize on mount
 onMounted(() => {
@@ -187,9 +197,22 @@ const handleLogin = async () => {
       localStorage.removeItem('rememberedEmail');
     }
     
-    // Redirect to intended destination or dashboard
-    const redirect = route.query.redirect as string || '/app/dashboard';
-    router.push(redirect);
+    // Check if user needs to select a store (supervisor with multiple stores or admin with multiple stores)
+    const user = authStore.user;
+    const needsStoreSelection = 
+      user && (
+        (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1) ||
+        (user.role === 'ADMIN_TENANT' && !authStore.selectedStoreId)
+      );
+    
+    if (needsStoreSelection) {
+      // Show store selector modal
+      showStoreSelector.value = true;
+    } else {
+      // Redirect to intended destination or dashboard
+      const redirect = route.query.redirect as string || '/app/dashboard';
+      router.push(redirect);
+    }
   } catch (error: any) {
     // Handle rate limiting (429) errors with better messaging
     if (error.response?.status === 429) {
@@ -241,5 +264,19 @@ const handleLogin = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const handleStoreSelectorClose = () => {
+  showStoreSelector.value = false;
+  // Redirect to dashboard even if closed
+  const redirect = route.query.redirect as string || '/app/dashboard';
+  router.push(redirect);
+};
+
+const handleStoreSelected = (storeId: string) => {
+  showStoreSelector.value = false;
+  // Redirect to intended destination or dashboard
+  const redirect = route.query.redirect as string || '/app/dashboard';
+  router.push(redirect);
 };
 </script>

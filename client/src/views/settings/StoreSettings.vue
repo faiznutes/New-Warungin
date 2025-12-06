@@ -46,6 +46,43 @@
         </div>
       </div>
 
+      <!-- Feature Toggles -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur Tambahan</h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="text-sm font-medium text-gray-700">Mode Kasir Sederhana</label>
+              <p class="text-xs text-gray-500">Aktifkan mode kasir dengan tombol besar dan UI sederhana</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input
+                v-model="features.simplePosMode"
+                type="checkbox"
+                class="sr-only peer"
+                @change="updateFeatures"
+              />
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="text-sm font-medium text-gray-700">Email Backup Harian</label>
+              <p class="text-xs text-gray-500">Kirim laporan harian otomatis ke email setiap hari</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input
+                v-model="features.email_backup_enabled"
+                type="checkbox"
+                class="sr-only peer"
+                @change="updateFeatures"
+              />
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
       <!-- Receipt Template Management -->
       <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
@@ -112,6 +149,10 @@ const receiptSettings = ref({
   footer: '',
 });
 const showTemplateManager = ref(false);
+const features = ref({
+  simplePosMode: false,
+  email_backup_enabled: true,
+});
 
 const loadSettings = async () => {
   if (!authStore.isAuthenticated) return;
@@ -128,6 +169,13 @@ const loadSettings = async () => {
       header: response.data.receiptHeader || '',
       footer: response.data.receiptFooter || '',
     };
+    
+    // Load features
+    const tenantFeatures = response.data.features || {};
+    features.value = {
+      simplePosMode: tenantFeatures.simplePosMode === true,
+      email_backup_enabled: tenantFeatures.email_backup_enabled !== false, // Default true
+    };
   } catch (error: any) {
     // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
@@ -140,6 +188,26 @@ const loadSettings = async () => {
   }
 };
 
+const updateFeatures = async () => {
+  if (!authStore.isAuthenticated) return;
+  
+  try {
+    await api.put('/tenant/profile', {
+      features: features.value,
+    });
+    await showSuccess('Fitur berhasil diperbarui');
+  } catch (error: any) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      return;
+    }
+    console.error('Error updating features:', error);
+    const errorMessage = error.response?.data?.message || 'Gagal memperbarui fitur';
+    await showError(errorMessage);
+    // Revert on error
+    await loadSettings();
+  }
+};
+
 const saveSettings = async () => {
   if (!authStore.isAuthenticated) return;
   
@@ -148,6 +216,7 @@ const saveSettings = async () => {
       ...storeInfo.value,
       receiptHeader: receiptSettings.value.header,
       receiptFooter: receiptSettings.value.footer,
+      features: features.value,
     });
     await showSuccess('Pengaturan berhasil disimpan');
     // Reload settings to get updated data

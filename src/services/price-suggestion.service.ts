@@ -78,6 +78,52 @@ export class PriceSuggestionService {
   }
 
   /**
+   * Get price suggestions based on cost and category (for new products)
+   */
+  async getPriceSuggestionsByCost(tenantId: string, cost: number, category?: string): Promise<Omit<PriceSuggestion, 'currentPrice'>> {
+    try {
+      if (!cost || cost <= 0) {
+        throw new Error('Cost must be greater than 0');
+      }
+
+      // Calculate suggested prices with margins
+      const suggestedPrice20 = cost / (1 - 0.2); // 20% margin
+      const suggestedPrice30 = cost / (1 - 0.3); // 30% margin
+
+      // Get market price (median price from same category)
+      let marketPrice: number | undefined;
+      if (category) {
+        const categoryProducts = await prisma.product.findMany({
+          where: {
+            tenantId,
+            category,
+            isActive: true,
+          },
+          select: { price: true },
+        });
+
+        if (categoryProducts.length > 0) {
+          const prices = categoryProducts.map(p => Number(p.price)).sort((a, b) => a - b);
+          const mid = Math.floor(prices.length / 2);
+          marketPrice = prices.length % 2 === 0
+            ? (prices[mid - 1] + prices[mid]) / 2
+            : prices[mid];
+        }
+      }
+
+      return {
+        suggestedPrice20: Math.round(suggestedPrice20),
+        suggestedPrice30: Math.round(suggestedPrice30),
+        marketPrice: marketPrice ? Math.round(marketPrice) : undefined,
+        cost,
+      };
+    } catch (error: any) {
+      logger.error('Error getting price suggestions by cost:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get price suggestions for multiple products
    */
   async getBulkPriceSuggestions(tenantId: string, productIds: string[]): Promise<Record<string, PriceSuggestion>> {

@@ -58,6 +58,7 @@ import paymentGatewayIntegrationRoutes from './payment-gateway-integration.route
 import superadminBackupRoutes from './superadmin-backup.routes';
 import restockSuggestionRoutes from './restock-suggestion.routes';
 import priceSuggestionRoutes from './price-suggestion.routes';
+import tenantBackupRoutes from './tenant-backup.routes';
 
 const router = Router();
 
@@ -132,6 +133,7 @@ router.use('/payment-gateway', paymentGatewayIntegrationRoutes);
 router.use('/superadmin/backups', superadminBackupRoutes);
 router.use('/inventory/restock-suggestions', restockSuggestionRoutes);
 router.use('/product/price-suggestion', priceSuggestionRoutes);
+router.use('/tenant/backup', tenantBackupRoutes);
 // etc.
 
 export default router;

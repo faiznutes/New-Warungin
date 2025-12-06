@@ -17,7 +17,7 @@ const PLAN_FEATURES: Record<string, {
     tenantsLimit: 1,
     products: 25,
     users: 4, // 1 admin + 2 kasir + 1 kitchen
-    outlets: 1,
+    outlets: 1, // 1 store (tanpa multi-store)
     addons: ['receipt-basic'],
     access: ['kasir', 'laporan'],
   },
@@ -25,7 +25,7 @@ const PLAN_FEATURES: Record<string, {
     tenantsLimit: 1, // 1 tenant
     products: 100, // 100 produk
     users: 10, // 1 admin + 1 supervisor + 6 kasir + 2 kitchen = 10 total
-    outlets: 2, // 2 outlet
+    outlets: 3, // Maksimal 3 store (sesuai TODO)
     addons: ['receipt-advanced', 'multi-outlet'],
     access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
   },

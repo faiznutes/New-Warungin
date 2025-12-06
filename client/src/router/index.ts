@@ -263,6 +263,12 @@ const router = createRouter({
           component: () => import('../views/inventory/StockAlerts.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
+        {
+          path: 'inventory/restock-suggestions',
+          name: 'restock-suggestions',
+          component: () => import('../views/inventory/RestockSuggestions.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+        },
         // Advanced Reporting
         {
           path: 'reports/advanced',
@@ -380,12 +386,24 @@ const router = createRouter({
           component: () => import('../views/stores/Stores.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
+        {
+          path: 'reports/stores',
+          name: 'store-reports',
+          component: () => import('../views/reports/StoreReports.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+        },
+        {
+          path: 'settings/subscription',
+          name: 'subscription-plans',
+          component: () => import('../views/settings/SubscriptionPlans.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+        },
         // Kasir and Admin Tenant
         {
           path: 'pos',
           name: 'pos',
           component: () => import('../views/pos/POS.vue'),
-          meta: { roles: ['CASHIER', 'ADMIN_TENANT'] },
+          meta: { roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
         },
         // Kitchen only
         {

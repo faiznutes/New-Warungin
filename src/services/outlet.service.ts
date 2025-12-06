@@ -17,17 +17,37 @@ export interface UpdateOutletInput {
 }
 
 export class OutletService {
-  async getOutlets(tenantId: string, page: number = 1, limit: number = 50) {
+  async getOutlets(tenantId: string, page: number = 1, limit: number = 50, userRole?: string, userPermissions?: any) {
     const skip = (page - 1) * limit;
+    
+    // Filter by allowedStoreIds for SUPERVISOR role
+    let whereFilter: any = { tenantId };
+    if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
+      const allowedStoreIds = userPermissions.allowedStoreIds;
+      if (allowedStoreIds.length > 0) {
+        whereFilter.id = { in: allowedStoreIds };
+      } else {
+        // No stores assigned, return empty
+        return {
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+          },
+        };
+      }
+    }
     
     const [outlets, total] = await Promise.all([
       prisma.outlet.findMany({
-        where: { tenantId },
+        where: whereFilter,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.outlet.count({ where: { tenantId } }),
+      prisma.outlet.count({ where: whereFilter }),
     ]);
     
     return {
@@ -107,7 +127,14 @@ export class OutletService {
     return outlet;
   }
 
-  async updateOutlet(tenantId: string, outletId: string, data: UpdateOutletInput) {
+  async updateOutlet(tenantId: string, outletId: string, data: UpdateOutletInput, userRole?: string, userPermissions?: any) {
+    // Check if user is SUPERVISOR and trying to edit outlet they don't have access to
+    if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
+      const allowedStoreIds = userPermissions.allowedStoreIds;
+      if (!allowedStoreIds.includes(outletId)) {
+        throw new Error('Anda tidak memiliki akses untuk mengedit outlet ini');
+      }
+    }
     const outlet = await this.getOutlet(tenantId, outletId);
     
     const updated = await prisma.outlet.update({

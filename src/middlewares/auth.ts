@@ -249,6 +249,7 @@ export const authGuard = async (
       role: decoded.role,
       email: user.email,
       name: user.name,
+      permissions: user.permissions || {},
     };
 
     next();

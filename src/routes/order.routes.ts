@@ -60,7 +60,8 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      const result = await orderService.getOrders(tenantId, req.query as any, userRole);
+      const userPermissions = (req as any).user.permissions;
+      const result = await orderService.getOrders(tenantId, req.query as any, userRole, userPermissions);
       res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'ORDER');

@@ -57,7 +57,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Harga Pokok (Opsional)</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Harga Pokok (HPP) *</label>
               <input
                 v-model.number="form.cost"
                 type="number"
@@ -65,8 +65,55 @@
                 step="100"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
+                @input="loadPriceSuggestions"
               />
-              <p class="text-xs text-gray-500 mt-1">Harga beli/pokok untuk hitung untung</p>
+              <p class="text-xs text-gray-500 mt-1">Harga beli/pokok untuk rekomendasi harga jual</p>
+            </div>
+          </div>
+
+          <!-- Price Suggestions -->
+          <div v-if="priceSuggestions && form.cost && form.cost > 0" class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-blue-900 mb-3">💡 Rekomendasi Harga Jual</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-2 bg-white rounded border border-blue-200">
+                <div>
+                  <p class="text-xs text-gray-600">Margin 20%</p>
+                  <p class="text-lg font-bold text-gray-900">{{ formatCurrency(priceSuggestions.suggestedPrice20) }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="applyPrice(priceSuggestions.suggestedPrice20)"
+                  class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Gunakan
+                </button>
+              </div>
+              <div class="flex items-center justify-between p-2 bg-white rounded border border-blue-200">
+                <div>
+                  <p class="text-xs text-gray-600">Margin 30%</p>
+                  <p class="text-lg font-bold text-gray-900">{{ formatCurrency(priceSuggestions.suggestedPrice30) }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="applyPrice(priceSuggestions.suggestedPrice30)"
+                  class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                  Gunakan
+                </button>
+              </div>
+              <div v-if="priceSuggestions.marketPrice" class="flex items-center justify-between p-2 bg-white rounded border border-green-200">
+                <div>
+                  <p class="text-xs text-gray-600">Harga Pasaran (Kategori)</p>
+                  <p class="text-lg font-bold text-green-700">{{ formatCurrency(priceSuggestions.marketPrice) }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="applyPrice(priceSuggestions.marketPrice!)"
+                  class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
+                >
+                  Gunakan
+                </button>
+              </div>
             </div>
           </div>
 
@@ -313,6 +360,8 @@
 import { ref, watch, computed } from 'vue';
 import ImageCropperModal from './ImageCropperModal.vue';
 import { useNotification } from '../composables/useNotification';
+import api from '../api';
+import { formatCurrency } from '../utils/formatters';
 
 const { error: showError } = useNotification();
 
@@ -366,6 +415,13 @@ const showUrlInput = ref(false);
 const showCropper = ref(false);
 const selectedImageSrc = ref('');
 const imageType = ref<'image' | 'emoji'>('image');
+const priceSuggestions = ref<{
+  suggestedPrice20: number;
+  suggestedPrice30: number;
+  marketPrice?: number;
+  cost: number;
+} | null>(null);
+const loadingSuggestions = ref(false);
 
 const popularEmojis = [
   '🍕', '🍔', '🍟', '🌭', '🍿', '🧂', '🥓', '🥚',
@@ -396,6 +452,10 @@ watch(() => props.product, (newProduct) => {
     };
     // Set image type based on what exists
     imageType.value = newProduct.emoji ? 'emoji' : 'image';
+    // Load price suggestions if cost exists
+    if (form.value.cost && form.value.cost > 0) {
+      loadPriceSuggestions();
+    }
   } else {
     form.value = {
       name: '',
@@ -431,6 +491,7 @@ watch(() => props.show, (newShow) => {
       isConsignment: false,
     };
     imageType.value = 'image';
+    priceSuggestions.value = null;
   }
 });
 
@@ -448,6 +509,13 @@ watch(() => form.value.emoji, (newEmoji) => {
   if (newEmoji && imageType.value === 'emoji') {
     // Ensure image is cleared when emoji is set
     form.value.image = '';
+  }
+});
+
+// Watch category changes to reload price suggestions
+watch(() => form.value.category, () => {
+  if (form.value.cost && form.value.cost > 0) {
+    loadPriceSuggestions();
   }
 });
 
@@ -497,6 +565,40 @@ const handleImageCropped = (imageDataUrl: string) => {
   form.value.emoji = ''; // Clear emoji when image is set
   showCropper.value = false;
   selectedImageSrc.value = '';
+};
+
+const loadPriceSuggestions = async () => {
+  if (!form.value.cost || form.value.cost <= 0) {
+    priceSuggestions.value = null;
+    return;
+  }
+
+  // Debounce: wait 500ms after user stops typing
+  if ((window as any).priceSuggestionTimeout) {
+    clearTimeout((window as any).priceSuggestionTimeout);
+  }
+
+  (window as any).priceSuggestionTimeout = setTimeout(async () => {
+    loadingSuggestions.value = true;
+    try {
+      const params: any = { cost: form.value.cost };
+      if (form.value.category) {
+        params.category = form.value.category;
+      }
+      
+      const response = await api.get('/product/price-suggestion/by-cost', { params });
+      priceSuggestions.value = response.data;
+    } catch (error: any) {
+      console.error('Error loading price suggestions:', error);
+      priceSuggestions.value = null;
+    } finally {
+      loadingSuggestions.value = false;
+    }
+  }, 500);
+};
+
+const applyPrice = (price: number) => {
+  form.value.price = Math.round(price);
 };
 
 const handleSubmit = () => {

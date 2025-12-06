@@ -151,6 +151,111 @@ export const AVAILABLE_ADDONS = [
     requiresApi: false,
     comingSoon: false,
   },
+  {
+    id: 'restock_suggestion',
+    name: 'Restock Suggestion',
+    type: 'RESTOCK_SUGGESTION',
+    description: 'Saran restock otomatis berdasarkan pola penjualan. Rekomendasi jumlah pembelian berdasarkan kecepatan jual dan stok minimal. Cocok untuk tenant yang tidak langganan PRO.',
+    defaultLimit: null,
+    price: 50000,
+    category: 'feature',
+    details: [
+      'Saran restock otomatis berdasarkan pola penjualan',
+      'Rekomendasi jumlah pembelian berdasarkan kecepatan jual',
+      'Perkiraan kapan stok habis',
+      'Produk paling laku mingguan',
+      'Notifikasi stok mendekati minimal',
+      'Algoritma prediksi berbasis data historis',
+      'Export daftar restock ke Excel/PDF',
+      'Integrasi dengan laporan penjualan',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
+  {
+    id: 'stock_transfer',
+    name: 'Transfer Stok Antar Store',
+    type: 'STOCK_TRANSFER',
+    description: 'Transfer stok antar store/cabang dengan validasi otomatis. Riwayat transfer lengkap dan tracking perpindahan stok. Cocok untuk tenant dengan lebih dari 1 store manual.',
+    defaultLimit: null,
+    price: 80000,
+    category: 'feature',
+    details: [
+      'Transfer stok antar store/cabang',
+      'Validasi stok cukup sebelum transfer',
+      'Riwayat transfer lengkap dengan tracking',
+      'Notifikasi transfer masuk/keluar',
+      'Laporan transfer per periode',
+      'Multi-store support',
+      'Auto-update stok setelah transfer',
+      'Approval workflow untuk transfer besar',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
+  {
+    id: 'supervisor_role',
+    name: 'Supervisor Role',
+    type: 'SUPERVISOR_ROLE',
+    description: 'Role khusus supervisor cabang dengan akses terbatas. Bisa melihat stok & penjualan cabangnya saja, tidak bisa edit cabang lain. Cocok untuk manajemen multi-store.',
+    defaultLimit: null,
+    price: 60000,
+    category: 'feature',
+    details: [
+      'Role khusus supervisor cabang',
+      'Akses terbatas ke cabang yang ditugaskan',
+      'Bisa melihat stok & penjualan cabangnya saja',
+      'Tidak bisa edit cabang lain',
+      'Permission management per supervisor',
+      'Audit trail aktivitas supervisor',
+      'Multi-supervisor support',
+      'Dashboard khusus supervisor',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
+  {
+    id: 'price_recommendation_plus',
+    name: 'Price Recommendation Plus',
+    type: 'PRICE_RECOMMENDATION_PLUS',
+    description: 'Rekomendasi harga dengan margin custom (bukan hanya 20-30%). Analisis harga pasar lebih detail dan rekomendasi margin optimal berdasarkan kategori produk.',
+    defaultLimit: null,
+    price: 40000,
+    category: 'feature',
+    details: [
+      'Rekomendasi harga dengan margin custom',
+      'Analisis harga pasar lebih detail',
+      'Rekomendasi margin optimal per kategori',
+      'Perbandingan harga dengan kompetitor',
+      'Saran harga berdasarkan profit target',
+      'Multiple margin presets (10%, 15%, 20%, 25%, 30%, 35%, 40%)',
+      'Analisis break-even point',
+      'Export rekomendasi harga ke Excel',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
+  {
+    id: 'bulk_import',
+    name: 'Import Massal',
+    type: 'BULK_IMPORT',
+    description: 'Import massal produk, stok, dan pelanggan dari file Excel/CSV. Validasi data otomatis, preview sebelum import, dan error handling yang jelas.',
+    defaultLimit: null,
+    price: 100000,
+    category: 'feature',
+    details: [
+      'Import massal produk dari Excel/CSV',
+      'Import stok dari Excel/CSV',
+      'Import pelanggan dari Excel/CSV',
+      'Validasi data otomatis sebelum import',
+      'Preview data sebelum import',
+      'Error handling yang jelas',
+      'Template Excel untuk download',
+      'Support untuk update data existing',
+    ],
+    requiresApi: false,
+    comingSoon: false,
+  },
   // ========== ADDON API (Coming Soon - Di Akhir) ==========
   {
     id: 'ecommerce_integration',
@@ -257,6 +362,11 @@ export class AddonService {
           case 'EXPORT_REPORTS':
           case 'RECEIPT_EDITOR':
           case 'DELIVERY_MARKETING':
+          case 'RESTOCK_SUGGESTION':
+          case 'STOCK_TRANSFER':
+          case 'SUPERVISOR_ROLE':
+          case 'PRICE_RECOMMENDATION_PLUS':
+          case 'BULK_IMPORT':
           case 'E_COMMERCE':
           case 'PAYMENT_ACCOUNTING':
             // These addons don't have usage limits

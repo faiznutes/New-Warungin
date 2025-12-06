@@ -22,7 +22,21 @@
       <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="tenant" class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div v-else-if="!tenant" class="flex flex-col items-center justify-center py-16 px-4">
+      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Tenant Tidak Ditemukan</h3>
+      <p class="text-gray-600 text-center max-w-md mb-4">Tenant yang Anda cari tidak ditemukan atau terjadi kesalahan saat memuat data.</p>
+      <button
+        @click="loadTenantDetail"
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+      >
+        Coba Lagi
+      </button>
+    </div>
+
+    <div v-else class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Tenant Info Card -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Tenant</h3>
@@ -1611,11 +1625,17 @@ const loadTenantDetail = async () => {
     }
     console.error('Error loading tenant detail:', error);
     // Only show error if it's not a navigation error
-    if (error.response?.status !== 401) {
+    if (error.response?.status !== 401 && error.response?.status !== 404) {
       await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
     }
-    if (error.response?.status !== 401) {
-      router.push('/app/tenants');
+    // Don't redirect on error - let user see the error state
+    // Only redirect on 404 (not found)
+    if (error.response?.status === 404) {
+      await showError('Tenant tidak ditemukan');
+      // Small delay before redirect to show error message
+      setTimeout(() => {
+        router.push('/app/tenants');
+      }, 1500);
     }
   } finally {
     loading.value = false;
@@ -1897,10 +1917,19 @@ const handleDeactivateSubscription = async () => {
 };
 
 // Watch for route changes to update selectedTenantId
-watch(() => route.params.id, (newTenantId) => {
-  if (newTenantId && authStore.isSuperAdmin) {
-    authStore.setSelectedTenant(newTenantId as string);
-    localStorage.setItem('selectedTenantId', newTenantId as string);
+// Watch for route changes to update selectedTenantId and reload data
+watch(() => route.params.id, (newTenantId, oldTenantId) => {
+  if (newTenantId) {
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(newTenantId as string);
+      localStorage.setItem('selectedTenantId', newTenantId as string);
+    }
+    // Reload tenant detail when route param changes (but not on initial mount)
+    if (authStore.isAuthenticated && oldTenantId !== undefined && newTenantId !== oldTenantId) {
+      // Reset tenant to null to show loading state
+      tenant.value = null;
+      loadTenantDetail();
+    }
   }
 }, { immediate: true });
 

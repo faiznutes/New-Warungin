@@ -238,7 +238,7 @@ const loadAddons = async () => {
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
     availableAddons.value = availableRes.data;
-    activeAddons.value = activeRes.data;
+    activeAddons.value = activeRes.data?.data || activeRes.data || []; // Handle paginated response
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
     console.error('Error loading addons:', error);

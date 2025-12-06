@@ -37,6 +37,37 @@ router.get(
 
 /**
  * @swagger
+ * /api/product/price-suggestion/by-cost:
+ *   get:
+ *     summary: Get price suggestions based on cost and category (for new products)
+ *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/by-cost',
+  authGuard,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const tenantId = requireTenantId(req);
+      const cost = parseFloat(req.query.cost as string);
+      const category = req.query.category as string | undefined;
+
+      if (!cost || cost <= 0) {
+        res.status(400).json({ message: 'Cost must be greater than 0' });
+        return;
+      }
+
+      const suggestions = await priceSuggestionService.getPriceSuggestionsByCost(tenantId, cost, category);
+      res.json(suggestions);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get price suggestions by cost', 'PRICE_SUGGESTION');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/product/price-suggestion/bulk:
  *   post:
  *     summary: Get price suggestions for multiple products

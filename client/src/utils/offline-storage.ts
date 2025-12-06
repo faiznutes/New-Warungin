@@ -12,9 +12,23 @@ interface OfflineAction {
   synced: boolean;
 }
 
+interface OfflineOrder {
+  id: string; // UUID untuk transaksi offline
+  orderData: any;
+  timestamp: number;
+  synced: boolean;
+  serverOrderId?: string; // ID dari server setelah sync
+}
+
+interface OfflineProduct {
+  id: string;
+  data: any;
+  timestamp: number;
+}
+
 class OfflineStorage {
   private dbName = 'warungin-offline';
-  private dbVersion = 1;
+  private dbVersion = 2; // Increment version untuk schema baru
   private db: IDBDatabase | null = null;
 
   /**
@@ -50,6 +64,19 @@ class OfflineStorage {
         if (!db.objectStoreNames.contains('cache')) {
           const cacheStore = db.createObjectStore('cache', { keyPath: 'key' });
           cacheStore.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+
+        // Create object store for offline orders
+        if (!db.objectStoreNames.contains('orders')) {
+          const orderStore = db.createObjectStore('orders', { keyPath: 'id' });
+          orderStore.createIndex('synced', 'synced', { unique: false });
+          orderStore.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+
+        // Create object store for cached products
+        if (!db.objectStoreNames.contains('products')) {
+          const productStore = db.createObjectStore('products', { keyPath: 'id' });
+          productStore.createIndex('timestamp', 'timestamp', { unique: false });
         }
       };
     });
@@ -219,6 +246,207 @@ class OfflineStorage {
 
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Generate UUID for offline transactions
+   */
+  generateUUID(): string {
+    return `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Store offline order
+   */
+  async storeOrder(orderData: any): Promise<string> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const id = this.generateUUID();
+    const offlineOrder: OfflineOrder = {
+      id,
+      orderData,
+      timestamp: Date.now(),
+      synced: false,
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readwrite');
+      const store = transaction.objectStore('orders');
+      const request = store.add(offlineOrder);
+
+      request.onsuccess = () => {
+        console.log('Offline order stored:', id);
+        resolve(id);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to store offline order:', request.error);
+        reject(request.error);
+      };
+    });
+  }
+
+  /**
+   * Get all unsynced orders
+   */
+  async getUnsyncedOrders(): Promise<OfflineOrder[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readonly');
+      const store = transaction.objectStore('orders');
+      const index = store.index('synced');
+      const request = index.getAll(false);
+
+      request.onsuccess = () => {
+        resolve(request.result || []);
+      };
+
+      request.onerror = () => {
+        console.error('Failed to get unsynced orders:', request.error);
+        reject(request.error);
+      };
+    });
+  }
+
+  /**
+   * Mark order as synced
+   */
+  async markOrderAsSynced(orderId: string, serverOrderId: string): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readwrite');
+      const store = transaction.objectStore('orders');
+      const getRequest = store.get(orderId);
+
+      getRequest.onsuccess = () => {
+        const order = getRequest.result;
+        if (order) {
+          order.synced = true;
+          order.serverOrderId = serverOrderId;
+          const updateRequest = store.put(order);
+          updateRequest.onsuccess = () => resolve();
+          updateRequest.onerror = () => reject(updateRequest.error);
+        } else {
+          resolve();
+        }
+      };
+
+      getRequest.onerror = () => reject(getRequest.error);
+    });
+  }
+
+  /**
+   * Delete synced order
+   */
+  async deleteOrder(orderId: string): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readwrite');
+      const store = transaction.objectStore('orders');
+      const request = store.delete(orderId);
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Cache products for offline use
+   */
+  async cacheProducts(products: any[]): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const transaction = this.db.transaction(['products'], 'readwrite');
+    const store = transaction.objectStore('products');
+
+    // Clear old products first
+    await new Promise<void>((resolve, reject) => {
+      const clearRequest = store.clear();
+      clearRequest.onsuccess = () => resolve();
+      clearRequest.onerror = () => reject(clearRequest.error);
+    });
+
+    // Store new products
+    for (const product of products) {
+      const offlineProduct: OfflineProduct = {
+        id: product.id,
+        data: product,
+        timestamp: Date.now(),
+      };
+      store.put(offlineProduct);
+    }
+
+    return new Promise((resolve, reject) => {
+      transaction.oncomplete = () => {
+        console.log('Products cached for offline use');
+        resolve();
+      };
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
+  /**
+   * Get cached products
+   */
+  async getCachedProducts(): Promise<any[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['products'], 'readonly');
+      const store = transaction.objectStore('products');
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const products = (request.result || []).map((p: OfflineProduct) => p.data);
+        resolve(products);
+      };
+
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Update product stock locally (for offline mode)
+   */
+  async updateProductStockLocally(productId: string, newStock: number): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['products'], 'readwrite');
+      const store = transaction.objectStore('products');
+      const getRequest = store.get(productId);
+
+      getRequest.onsuccess = () => {
+        const product = getRequest.result;
+        if (product) {
+          product.data.stock = newStock;
+          const updateRequest = store.put(product);
+          updateRequest.onsuccess = () => resolve();
+          updateRequest.onerror = () => reject(updateRequest.error);
+        } else {
+          resolve();
+        }
+      };
+
+      getRequest.onerror = () => reject(getRequest.error);
     });
   }
 }

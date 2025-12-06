@@ -112,12 +112,50 @@ export class RestockSuggestionService {
 
   /**
    * Get critical restock suggestions (for popup/reminder)
+   * Returns products with stock = 0 or stock <= minStock in a simple format
    */
-  async getCriticalRestockSuggestions(tenantId: string, limit: number = 5): Promise<RestockSuggestion[]> {
-    const allSuggestions = await this.getRestockSuggestions(tenantId);
-    return allSuggestions
-      .filter(s => s.urgency === 'critical' || s.urgency === 'warning')
-      .slice(0, limit);
+  async getCriticalRestockSuggestions(tenantId: string, limit: number = 5): Promise<any[]> {
+    try {
+      // Get all active products (Prisma doesn't support field-to-field comparison in where clause)
+      const allProducts = await prisma.product.findMany({
+        where: {
+          tenantId,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          stock: true,
+          minStock: true,
+        },
+      });
+
+      // Filter products with critical stock (stock = 0 or stock <= minStock)
+      const criticalProducts = allProducts.filter(
+        p => p.stock === 0 || (p.minStock > 0 && p.stock <= p.minStock)
+      );
+
+      // Sort by urgency: stock = 0 first, then by stock level
+      criticalProducts.sort((a, b) => {
+        if (a.stock === 0 && b.stock !== 0) return -1;
+        if (a.stock !== 0 && b.stock === 0) return 1;
+        return a.stock - b.stock;
+      });
+
+      // Take only the limit
+      const limitedProducts = criticalProducts.slice(0, limit);
+
+      // Return in format expected by frontend
+      return limitedProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        stock: Number(p.stock),
+        minStock: Number(p.minStock),
+      }));
+    } catch (error: any) {
+      logger.error('Error getting critical restock suggestions:', error);
+      throw error;
+    }
   }
 }
 

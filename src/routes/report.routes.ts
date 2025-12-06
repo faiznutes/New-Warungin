@@ -5,6 +5,7 @@ import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
 import logger from '../utils/logger';
+import prisma from '../config/database';
 
 const router = Router();
 
@@ -96,17 +97,28 @@ router.get(
       const tenantId = requireTenantId(req);
       const { startDate, endDate, reportType, period, format } = req.query;
 
-      // Check if export format is requested (requires EXPORT_REPORTS addon)
+      // Check if export format is requested (requires PRO/MAX plan or EXPORT_REPORTS addon)
       if (format && (format === 'CSV' || format === 'PDF' || format === 'EXCEL')) {
-        // Check addon for export
-        const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
-        const hasExportAddon = addons.data.some(
-          (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
-        );
+        // Get tenant to check subscription plan
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: tenantId },
+          select: { subscriptionPlan: true },
+        });
         
-        if (!hasExportAddon) {
+        const isProOrMax = tenant?.subscriptionPlan === 'PRO' || tenant?.subscriptionPlan === 'MAX';
+        
+        // Check addon for export (if not PRO/MAX)
+        let hasExportAddon = false;
+        if (!isProOrMax) {
+          const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
+          hasExportAddon = addons.data.some(
+            (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
+          );
+        }
+        
+        if (!isProOrMax && !hasExportAddon) {
           return res.status(403).json({ 
-            message: 'Export Laporan addon is required to export reports' 
+            message: 'Export Laporan memerlukan paket PRO/MAX atau addon Export Laporan' 
           });
         }
       }
@@ -115,6 +127,9 @@ router.get(
       const end = endDate ? new Date(endDate as string) : undefined;
       const type = (reportType as string) || 'sales';
       const periodType = (period as string) || 'all';
+      
+      const userRole = (req as any).user.role;
+      const userPermissions = (req as any).user.permissions;
 
       // Use new report service methods
       let report: any;
@@ -237,6 +252,52 @@ router.get(
     } catch (error: any) {
       logger.error('Error exporting global report PDF:', { error: error.message, stack: error.stack });
       res.status(500).json({ message: error.message || 'Failed to export PDF' });
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/reports/multi:
+ *   get:
+ *     summary: Get multi-store report (sales per store, combined, stock per store)
+ *     tags: [Reports]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ */
+router.get(
+  '/multi',
+  authGuard,
+  subscriptionGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const { startDate, endDate } = req.query;
+
+      const start = startDate ? new Date(startDate as string) : new Date();
+      start.setHours(0, 0, 0, 0);
+      start.setDate(start.getDate() - 30); // Default: last 30 days
+
+      const end = endDate ? new Date(endDate as string) : new Date();
+      end.setHours(23, 59, 59, 999);
+
+      const userRole = (req as any).user.role;
+      const userPermissions = (req as any).user.permissions;
+      const report = await reportService.getMultiStoreReport(tenantId, start, end, userRole, userPermissions);
+      res.json(report);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || 'Failed to generate multi-store report' });
     }
   }
 );

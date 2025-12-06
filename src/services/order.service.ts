@@ -6,7 +6,7 @@ import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
 
 export class OrderService {
-  async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string) {
+  async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string, userPermissions?: any) {
     const { page, limit, status, customerId, outletId, startDate, endDate, sortBy, sortOrder } = query;
     const skip = (page - 1) * limit;
 
@@ -24,11 +24,49 @@ export class OrderService {
       }
     }
 
+    // Filter by allowedStoreIds for SUPERVISOR role
+    let outletFilter: any = outletId ? { outletId } : {};
+    if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
+      const allowedStoreIds = userPermissions.allowedStoreIds;
+      if (allowedStoreIds.length > 0) {
+        // If outletId is provided, check if it's in allowedStoreIds
+        if (outletId) {
+          if (!allowedStoreIds.includes(outletId)) {
+            // Supervisor trying to access outlet they don't have access to
+            return {
+              data: [],
+              pagination: {
+                page,
+                limit,
+                total: 0,
+                totalPages: 0,
+              },
+            };
+          }
+          outletFilter = { outletId };
+        } else {
+          // Filter to only show orders from allowed stores
+          outletFilter = { outletId: { in: allowedStoreIds } };
+        }
+      } else {
+        // No stores assigned, return empty
+        return {
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+          },
+        };
+      }
+    }
+
     const where: Prisma.OrderWhereInput = {
       tenantId,
       ...(status && { status }),
       ...(customerId && { customerId }),
-      ...(outletId && { outletId }),
+      ...outletFilter,
       ...(startDate && endDate && {
         createdAt: {
           gte: new Date(startDate),

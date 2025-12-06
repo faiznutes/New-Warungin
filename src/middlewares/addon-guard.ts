@@ -36,6 +36,11 @@ export const checkAddon = (addonType: string) => {
           'EXPORT_REPORTS': 'Export Laporan',
           'RECEIPT_EDITOR': 'Simple Nota Editor',
           'DELIVERY_MARKETING': 'Delivery & Marketing',
+          'RESTOCK_SUGGESTION': 'Restock Suggestion',
+          'STOCK_TRANSFER': 'Transfer Stok Antar Store',
+          'SUPERVISOR_ROLE': 'Supervisor Role',
+          'PRICE_RECOMMENDATION_PLUS': 'Price Recommendation Plus',
+          'BULK_IMPORT': 'Import Massal',
           'E_COMMERCE': 'Integrasi E-commerce',
           'PAYMENT_ACCOUNTING': 'Integrasi Payment & Accounting',
         };

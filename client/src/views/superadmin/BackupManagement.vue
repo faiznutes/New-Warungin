@@ -111,14 +111,26 @@
                 :key="log.id"
                 class="hover:bg-gray-50"
                 :class="{
-                  'bg-red-50': log.status === 'failed',
-                  'bg-yellow-50': log.status === 'email_failed',
+                  'bg-red-100 border-l-4 border-red-500': criticalTenants.has(log.tenantId),
+                  'bg-red-50': log.status === 'failed' && !criticalTenants.has(log.tenantId),
+                  'bg-yellow-50': log.status === 'email_failed' && !criticalTenants.has(log.tenantId),
                   'bg-green-50': log.status === 'success' && isOldBackup(log.generatedAt),
                 }"
               >
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ log.tenant.name }}</div>
-                  <div class="text-sm text-gray-500">{{ log.tenant.email }}</div>
+                  <div class="flex items-center gap-2">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{ log.tenant.name }}</div>
+                      <div class="text-sm text-gray-500">{{ log.tenant.email }}</div>
+                    </div>
+                    <span
+                      v-if="criticalTenants.has(log.tenantId)"
+                      class="px-2 py-1 text-xs font-bold rounded-full bg-red-600 text-white"
+                      title="Backup gagal 3+ hari berturut-turut"
+                    >
+                      ⚠️ KRITIS
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ formatDate(log.generatedAt) }}
@@ -257,6 +269,7 @@ const { success: showSuccess, error: showError, confirm: showConfirm } = useNoti
 const loading = ref(true);
 const backupLogs = ref<any[]>([]);
 const tenants = ref<any[]>([]);
+const criticalTenants = ref<Set<string>>(new Set());
 const pagination = ref({
   page: 1,
   limit: 20,
@@ -280,6 +293,23 @@ const loadTenants = async () => {
     tenants.value = response.data.data || [];
   } catch (error: any) {
     console.error('Error loading tenants:', error);
+  }
+};
+
+const loadCriticalTenants = async () => {
+  try {
+    const response = await api.get('/superadmin/backups/critical');
+    const critical = response.data.criticalTenants || [];
+    criticalTenants.value = new Set(critical.map((t: any) => t.tenantId));
+    
+    if (critical.length > 0) {
+      showError(
+        `⚠️ Peringatan: ${critical.length} tenant memiliki backup gagal 3+ hari berturut-turut!`,
+        'Tenant Bermasalah'
+      );
+    }
+  } catch (error: any) {
+    console.error('Error loading critical tenants:', error);
   }
 };
 
@@ -430,7 +460,7 @@ const regenerateBackup = async (tenantId: string) => {
 };
 
 onMounted(async () => {
-  await Promise.all([loadTenants(), loadBackups()]);
+  await Promise.all([loadTenants(), loadBackups(), loadCriticalTenants()]);
 });
 </script>
 

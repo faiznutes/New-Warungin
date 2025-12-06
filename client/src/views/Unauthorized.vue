@@ -47,6 +47,11 @@ const getAddonName = (type: string | undefined) => {
   const addonNames: Record<string, string> = {
     'BUSINESS_ANALYTICS': 'Business Analytics & Insight',
     'EXPORT_REPORTS': 'Export Laporan',
+    'RESTOCK_SUGGESTION': 'Restock Suggestion',
+    'STOCK_TRANSFER': 'Transfer Stok Antar Store',
+    'SUPERVISOR_ROLE': 'Supervisor Role',
+    'PRICE_RECOMMENDATION_PLUS': 'Price Recommendation Plus',
+    'BULK_IMPORT': 'Import Massal',
     'RECEIPT_EDITOR': 'Simple Nota Editor',
     'DELIVERY_MARKETING': 'Delivery & Marketing',
   };

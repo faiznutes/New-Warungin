@@ -6,12 +6,14 @@ import logger from '../utils/logger';
 import { backupQueue } from '../queues/backup.queue';
 import { notificationQueue } from '../queues/notification.queue';
 import { getSubscriptionQueue } from '../queues/subscription.queue';
+import { getAddonQueue } from '../queues/addon.queue';
 // import { processEmailJob } from '../jobs/email.job';
 import { processBackupJob } from '../jobs/backup.job';
 import { processNotificationJob } from '../queues/notification.queue';
 import { processSubscriptionRevertJob } from '../jobs/subscription-revert.job';
 import { processDailyBackupEmailJob } from '../jobs/daily-backup-email.job';
 import { processBackupMonitoringJob } from '../jobs/backup-monitoring.job';
+import { processAddonExpiryCheckerJob } from '../jobs/addon-expiry-checker.job';
 
 // Initialize workers lazily to avoid blocking app start
 let redisClient: ReturnType<typeof getRedisClient> = null;
@@ -19,6 +21,7 @@ let redisClient: ReturnType<typeof getRedisClient> = null;
 let backupWorker: Worker | null = null;
 let notificationWorker: Worker | null = null;
 let subscriptionWorker: Worker | null = null;
+let addonWorker: Worker | null = null;
 let workersInitialized = false;
 
 // Initialize workers only when needed (lazy initialization)
@@ -60,6 +63,15 @@ const initializeWorkers = (): void => {
             connection: redisClient!,
           });
 
+          // Addon expiry checker worker
+          addonWorker = new Worker('addon', async (job) => {
+            if (job.name === 'check-expired-addons') {
+              await processAddonExpiryCheckerJob();
+            }
+          }, {
+            connection: redisClient!,
+          });
+
           notificationWorker = new Worker('notification', async (job) => {
             await processNotificationJob(job);
           }, {
@@ -84,6 +96,7 @@ const initializeWorkers = (): void => {
         backupWorker = null;
         notificationWorker = null;
         subscriptionWorker = null;
+        addonWorker = null;
       }
       workersInitialized = true;
     }, 2000); // Wait 2 seconds for Redis connection
@@ -163,6 +176,21 @@ export const scheduleJobs = async (): Promise<void> => {
       );
       
       logger.info(`✅ Subscription revert job scheduled: ${pattern}`);
+    }
+
+    // Addon expiry checker job (runs daily at 4 AM)
+    const addonQueue = getAddonQueue();
+    if (addonQueue) {
+      await addonQueue.add(
+        'check-expired-addons',
+        {},
+        {
+          repeat: {
+            pattern: '0 4 * * *', // 4 AM daily
+          },
+        }
+      );
+      logger.info('✅ Addon expiry checker job scheduled: 04:00 daily');
     }
 
     logger.info('✅ Scheduled jobs initialized');

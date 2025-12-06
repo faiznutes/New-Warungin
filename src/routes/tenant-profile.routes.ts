@@ -15,6 +15,7 @@ const updateProfileSchema = z.object({
   address: z.string().optional(),
   receiptHeader: z.string().optional(),
   receiptFooter: z.string().optional(),
+  features: z.record(z.any()).optional(),
 });
 
 /**
@@ -51,6 +52,7 @@ router.get(
           phone: true,
           address: true,
           slug: true,
+          features: true,
         },
       });
 
@@ -86,6 +88,7 @@ router.get(
         ...tenant,
         receiptHeader,
         receiptFooter,
+        features: tenant.features || {},
       });
     } catch (error: any) {
       logger.error('Error loading tenant profile:', { error: error.message, stack: error.stack });
@@ -144,6 +147,7 @@ router.put(
       }
       if (req.body.phone !== undefined) updateData.phone = req.body.phone;
       if (req.body.address !== undefined) updateData.address = req.body.address;
+      if (req.body.features !== undefined) updateData.features = req.body.features;
 
       // Update tenant
       const updatedTenant = await prisma.tenant.update({
@@ -156,6 +160,7 @@ router.put(
           phone: true,
           address: true,
           slug: true,
+          features: true,
         },
       });
 
@@ -228,6 +233,7 @@ router.put(
         ...updatedTenant,
         receiptHeader,
         receiptFooter,
+        features: updatedTenant.features || {},
       });
     } catch (error: any) {
       logger.error('Error updating tenant profile:', { error: error.message, stack: error.stack });

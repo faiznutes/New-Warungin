@@ -54,7 +54,9 @@ router.get(
       const tenantId = requireTenantId(req);
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 50; // Default 50 for outlets
-      const result = await outletService.getOutlets(tenantId, page, limit);
+      const userRole = req.role;
+      const userPermissions = (req as any).user?.permissions;
+      const result = await outletService.getOutlets(tenantId, page, limit, userRole, userPermissions);
       res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
@@ -216,10 +218,12 @@ router.put(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   subscriptionGuard,
   validate({ body: updateOutletSchema }),
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const outlet = await outletService.updateOutlet(tenantId, req.params.id, req.body);
+      const userRole = req.role;
+      const userPermissions = (req as any).user?.permissions;
+      const outlet = await outletService.updateOutlet(tenantId, req.params.id, req.body, userRole, userPermissions);
       res.json({ data: outlet });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'OUTLET');

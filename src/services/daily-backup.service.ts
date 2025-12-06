@@ -521,6 +521,148 @@ export class DailyBackupService {
   }
 
   /**
+   * Generate preview of daily backup (without saving or sending email)
+   */
+  async generateDailyBackupPreview(tenantId: string): Promise<DailyBackupReport> {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      throw new Error(`Tenant ${tenantId} not found`);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Get sales data
+    const salesReport = await reportService.getSalesReport(tenantId, today, tomorrow);
+    const totalRevenue = salesReport.totalRevenue || 0;
+    const totalOrders = salesReport.totalOrders || 0;
+    const totalItems = salesReport.totalItems || 0;
+
+    // Get cash in/out
+    const [cashFlows, completedTransactions] = await Promise.all([
+      prisma.cashFlow.findMany({
+        where: {
+          tenantId,
+          date: { gte: today, lt: tomorrow },
+        },
+      }),
+      prisma.transaction.findMany({
+        where: {
+          tenantId,
+          createdAt: { gte: today, lt: tomorrow },
+          status: 'COMPLETED',
+        },
+      }),
+    ]);
+
+    const cashInFromSales = completedTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+    const cashInFromFlow = cashFlows
+      .filter(cf => cf.type === 'INCOME')
+      .reduce((sum, cf) => sum + Number(cf.amount), 0);
+    const cashIn = cashInFromSales + cashInFromFlow;
+    const cashOut = cashFlows
+      .filter(cf => cf.type === 'EXPENSE')
+      .reduce((sum, cf) => sum + Number(cf.amount), 0);
+
+    // Get receivables and payables
+    const [receivables, payables] = await Promise.all([
+      prisma.order.aggregate({
+        where: {
+          tenantId,
+          status: 'PENDING',
+          paymentMethod: { in: ['CREDIT', 'INSTALLMENT'] },
+        },
+        _sum: { total: true },
+      }),
+      prisma.purchaseOrder.aggregate({
+        where: {
+          tenantId,
+          status: 'PENDING',
+        },
+        _sum: { total: true },
+      }),
+    ]);
+
+    // Get low stock products
+    const products = await prisma.product.findMany({
+      where: {
+        tenantId,
+        isActive: true,
+      },
+      select: {
+        name: true,
+        stock: true,
+        minStock: true,
+      },
+    });
+
+    const lowStockProducts = products
+      .filter(p => p.stock <= p.minStock && p.stock > 0)
+      .map(p => ({
+        name: p.name,
+        stock: Number(p.stock),
+        minStock: Number(p.minStock),
+      }));
+
+    const outOfStock = products.filter(p => p.stock === 0).length;
+
+    return {
+      tenantId,
+      tenantName: tenant.name,
+      tenantEmail: tenant.email,
+      date: today,
+      sales: {
+        totalRevenue,
+        totalOrders,
+        totalItems,
+      },
+      cash: {
+        cashIn,
+        cashOut,
+      },
+      debts: {
+        totalReceivables: Number(receivables._sum.total || 0),
+        totalPayables: Number(payables._sum.total || 0),
+      },
+      stock: {
+        lowStock: lowStockProducts.length,
+        outOfStock,
+        lowStockProducts: lowStockProducts.slice(0, 10),
+      },
+    };
+  }
+
+  /**
+   * Generate HTML from report data
+   */
+  generateReportHTMLFromData(report: DailyBackupReport): string {
+    return this.generateReportHTML(report);
+  }
+
+  /**
+   * Get latest backup log for tenant
+   */
+  async getLatestBackup(tenantId: string) {
+    return prisma.backupLog.findFirst({
+      where: { tenantId },
+      orderBy: { generatedAt: 'desc' },
+      select: {
+        id: true,
+        status: true,
+        generatedAt: true,
+        emailSentAt: true,
+        size: true,
+        errorMessage: true,
+      },
+    });
+  }
+
+  /**
    * Regenerate backup for a tenant
    */
   async regenerateBackup(tenantId: string): Promise<{

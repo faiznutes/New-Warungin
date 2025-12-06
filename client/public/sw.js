@@ -3,8 +3,10 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = 'warungin-v1';
-const RUNTIME_CACHE = 'warungin-runtime-v1';
+const CACHE_NAME = 'warungin-v2';
+const RUNTIME_CACHE = 'warungin-runtime-v2';
+const PRODUCT_IMAGES_CACHE = 'warungin-product-images-v1';
+const POS_LAYOUT_CACHE = 'warungin-pos-layout-v1';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to cache on install
@@ -13,6 +15,7 @@ const STATIC_ASSETS = [
   '/offline.html',
   '/favicon.svg',
   '/site.webmanifest',
+  '/app/pos', // Cache POS layout
 ];
 
 // Install event - cache static assets
@@ -34,7 +37,12 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
+          .filter((name) => 
+            name !== CACHE_NAME && 
+            name !== RUNTIME_CACHE && 
+            name !== PRODUCT_IMAGES_CACHE &&
+            name !== POS_LAYOUT_CACHE
+          )
           .map((name) => {
             console.log('[Service Worker] Deleting old cache:', name);
             return caches.delete(name);
@@ -57,6 +65,51 @@ self.addEventListener('fetch', (event) => {
 
   // Skip cross-origin requests
   if (url.origin !== location.origin) {
+    return;
+  }
+
+  // Product images - Cache first, fallback to network
+  if (url.pathname.startsWith('/uploads/products/') || url.pathname.includes('/product-image')) {
+    event.respondWith(
+      caches.open(PRODUCT_IMAGES_CACHE).then((cache) => {
+        return cache.match(request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          return fetch(request).then((response) => {
+            if (response && response.status === 200) {
+              const responseClone = response.clone();
+              cache.put(request, responseClone);
+            }
+            return response;
+          }).catch(() => {
+            // Return placeholder image if offline
+            return new Response('', { status: 404 });
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // POS layout and assets - Cache aggressively
+  if (url.pathname.startsWith('/app/pos') || url.pathname.includes('pos-simple')) {
+    event.respondWith(
+      caches.open(POS_LAYOUT_CACHE).then((cache) => {
+        return cache.match(request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          return fetch(request).then((response) => {
+            if (response && response.status === 200) {
+              const responseClone = response.clone();
+              cache.put(request, responseClone);
+            }
+            return response;
+          });
+        });
+      })
+    );
     return;
   }
 
