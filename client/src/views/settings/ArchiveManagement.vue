@@ -189,11 +189,11 @@
               v-model.number="archiveOrdersDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
-            <p class="text-xs text-gray-500 mt-1">Default: 365 days (1 year)</p>
+            <p class="text-xs text-gray-500 mt-1">Default: 730 days (2 years) - Maksimal 2 tahun ke belakang</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
@@ -231,11 +231,11 @@
               v-model.number="archiveTransactionsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
-            <p class="text-xs text-gray-500 mt-1">Default: 365 days (1 year)</p>
+            <p class="text-xs text-gray-500 mt-1">Default: 730 days (2 years) - Maksimal 2 tahun ke belakang</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
@@ -273,11 +273,11 @@
               v-model.number="archiveReportsDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="180"
+              placeholder="730"
             />
-            <p class="text-xs text-gray-500 mt-1">Default: 180 days (6 months)</p>
+            <p class="text-xs text-gray-500 mt-1">Default: 730 days (2 years) - Maksimal 2 tahun ke belakang</p>
           </div>
           <div class="flex space-x-3 pt-4">
             <button
@@ -320,9 +320,9 @@
               v-model.number="archiveAllConfig.ordersOlderThanDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
           </div>
           <div>
@@ -333,9 +333,9 @@
               v-model.number="archiveAllConfig.transactionsOlderThanDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="365"
+              placeholder="730"
             />
           </div>
           <div>
@@ -346,9 +346,9 @@
               v-model.number="archiveAllConfig.reportsOlderThanDays"
               type="number"
               min="30"
-              max="3650"
+              max="730"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="180"
+              placeholder="730"
             />
           </div>
           <div class="flex space-x-3 pt-4">
@@ -436,7 +436,7 @@ const archiveOrders = async () => {
   archiving.value = true;
   try {
     const response = await api.post('/archives/orders', {
-      olderThanDays: archiveOrdersDays.value || 365,
+      olderThanDays: archiveOrdersDays.value || 730,
     });
     showSuccess(`Berhasil meng-archive ${response.data.count} orders`);
     showArchiveOrdersModal.value = false;
@@ -452,7 +452,7 @@ const archiveTransactions = async () => {
   archiving.value = true;
   try {
     const response = await api.post('/archives/transactions', {
-      olderThanDays: archiveTransactionsDays.value || 365,
+      olderThanDays: archiveTransactionsDays.value || 730,
     });
     showSuccess(`Berhasil meng-archive ${response.data.count} transactions`);
     showArchiveTransactionsModal.value = false;
@@ -468,7 +468,7 @@ const archiveReports = async () => {
   archiving.value = true;
   try {
     const response = await api.post('/archives/reports', {
-      olderThanDays: archiveReportsDays.value || 180,
+      olderThanDays: archiveReportsDays.value || 730,
     });
     showSuccess(`Berhasil meng-archive ${response.data.count} reports`);
     showArchiveReportsModal.value = false;

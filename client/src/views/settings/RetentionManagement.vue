@@ -634,8 +634,7 @@ const applyContactSubmissionsDays = ref(730); // 2 years default
 const applyDemoRequestsDays = ref(730); // 2 years default
 
 const loadStats = async () => {
-  if (needsTenantSelection.value) return;
-
+  // SUPER_ADMIN can view stats for all tenants without selecting tenant
   try {
     const policy = {
       orders: retentionPolicy.value.orders,
@@ -759,7 +758,7 @@ const applyAuditLogsRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/audit-logs', {
-      days: applyAuditLogsDays.value || retentionPolicy.value.auditLogs || 90,
+      days: applyAuditLogsDays.value || retentionPolicy.value.auditLogs || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} audit logs`);
     showApplyAuditLogsModal.value = false;
@@ -787,7 +786,7 @@ const applyContactSubmissionsRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/contact-submissions', {
-      days: applyContactSubmissionsDays.value || retentionPolicy.value.contactSubmissions || 90,
+      days: applyContactSubmissionsDays.value || retentionPolicy.value.contactSubmissions || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} contact submissions`);
     showApplyContactSubmissionsModal.value = false;
@@ -815,7 +814,7 @@ const applyDemoRequestsRetention = async () => {
   applying.value = true;
   try {
     const response = await api.post('/retention/demo-requests', {
-      days: applyDemoRequestsDays.value || retentionPolicy.value.demoRequests || 90,
+      days: applyDemoRequestsDays.value || retentionPolicy.value.demoRequests || 730,
     });
     showSuccess(`Berhasil menghapus ${response.data.deletedCount} demo requests`);
     showApplyDemoRequestsModal.value = false;
