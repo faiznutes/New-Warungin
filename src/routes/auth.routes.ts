@@ -193,6 +193,100 @@ router.post('/login', authLimiter, async (req, res, next) => {
   }
 });
 
+// Refresh token endpoint
+router.post('/refresh', async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    
+    if (!refreshToken) {
+      return res.status(400).json({
+        error: 'Refresh token required',
+        message: 'Please provide a refresh token',
+      });
+    }
+    
+    const { verifyAndRotateRefreshToken } = await import('../utils/refresh-token');
+    const { token, refreshToken: newRefreshToken, payload } = await verifyAndRotateRefreshToken(refreshToken);
+    
+    // Get user data
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        tenantId: true,
+        isActive: true,
+        permissions: true,
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            isActive: true,
+          },
+        },
+      },
+    });
+    
+    if (!user || !user.isActive) {
+      return res.status(401).json({
+        error: 'User not found or inactive',
+        message: 'User account not found or inactive',
+      });
+    }
+    
+    res.json({
+      token,
+      refreshToken: newRefreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        tenantId: user.tenantId || null,
+        tenantName: user.tenant?.name || null,
+        isActive: user.isActive,
+        permissions: user.permissions || null,
+      },
+    });
+  } catch (error: unknown) {
+    const err = error as Error;
+    logRouteError(error, 'REFRESH_TOKEN', req);
+    
+    if (err.message.includes('revoked') || err.message.includes('Invalid')) {
+      res.status(401).json({
+        error: 'Invalid refresh token',
+        message: err.message,
+      });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: 'Failed to refresh token',
+      });
+    }
+  }
+});
+
+// Logout endpoint (revoke refresh tokens)
+router.post('/logout', authGuard, async (req: AuthRequest, res, next) => {
+  try {
+    const userId = req.userId;
+    
+    if (userId) {
+      const { revokeAllRefreshTokens } = await import('../utils/refresh-token');
+      await revokeAllRefreshTokens(userId);
+    }
+    
+    res.json({ message: 'Logged out successfully' });
+  } catch (error: unknown) {
+    logRouteError(error, 'LOGOUT', req);
+    // Still return success even if revocation fails
+    res.json({ message: 'Logged out successfully' });
+  }
+});
+
 // Get current user
 router.get('/me', authGuard, async (req: AuthRequest, res, next) => {
   try {

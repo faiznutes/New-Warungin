@@ -88,10 +88,22 @@ app.use(responseSizeLimiter(10)); // 10MB max response
 // Note: CSRF protection is optional for JWT-based auth, but adds extra security layer
 app.use('/api', addCSRFToken);
 
-// Rate limiting
+// Rate limiting - Use Redis-based rate limiter if available, fallback to memory-based
 logger.info('Setting up rate limiting...');
-app.use('/api', apiLimiter);
-logger.info('Rate limiting configured');
+try {
+  const { redisApiLimiter, redisAuthLimiter } = await import('./middlewares/redis-rate-limiter');
+  app.use('/api', redisApiLimiter);
+  app.use('/api/auth/login', redisAuthLimiter);
+  logger.info('Redis-based rate limiting configured');
+} catch (error) {
+  // Fallback to memory-based rate limiter
+  logger.warn('Redis rate limiter not available, using memory-based limiter', {
+    error: error instanceof Error ? error.message : String(error),
+  });
+  app.use('/api', apiLimiter);
+  app.use('/api/auth/login', authLimiter);
+  logger.info('Memory-based rate limiting configured');
+}
 
 // Response time audit middleware
 import { responseTimeAudit } from './middlewares/response-time';
