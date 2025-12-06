@@ -55,6 +55,10 @@
     "check:all": "npm run type-check && npm run lint && cd client && npm run lint && cd .. && npx prisma validate && npm run prisma:generate",
     "check:all:with-tests": "npm run check:all && npm test -- --run",
     "check:quick": "npx tsc --noEmit && cd client && npx vue-tsc --noEmit && cd .. && npm run lint && cd client && npm run lint && cd ..",
+    "check:ui": "node scripts/check-ui.js",
+    "check:logic": "node scripts/check-logic.js",
+    "check:events": "node scripts/check-events.js",
+    "check:full-auto": "npm run check:ui && npm run check:logic && npm run check:events",
     "pre-commit": "npm run type-check && npm run lint && npx prisma validate"
   },
   "keywords": [

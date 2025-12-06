@@ -288,25 +288,25 @@ Audit seluruh project untuk:
 
 ---
 
-## 13. 🔎 PROGRAM OTOMATIS UNTUK FULL CHECK (Tambah ke TODO)
+## 13. 🔎 PROGRAM OTOMATIS UNTUK FULL CHECK ✅ SELESAI
 
-* [ ] Buat script `pnpm check:ui`:
+* [x] Buat script `npm run check:ui`:
 
-  * [ ] Scan semua `.vue` untuk mencari handler hilang
-  * [ ] Scan import yang unresolved
-  * [ ] Scan fungsi undefined
-  * [ ] Scan props tanpa definisi
-  * [ ] Scan komponen orphan
-* [ ] Buat script `pnpm check:logic`:
+  * [x] Scan semua `.vue` untuk mencari handler hilang
+  * [x] Scan import yang unresolved
+  * [x] Scan fungsi undefined
+  * [x] Scan props tanpa definisi
+  * [x] Scan komponen orphan
+* [x] Buat script `npm run check:logic`:
 
-  * [ ] Trace seluruh dependency tree service → cari circular
-  * [ ] Cek semua async/await consistency
-  * [ ] Cek fungsi kritikal tanpa error handling
-* [ ] Buat script `pnpm check:events`:
+  * [x] Trace seluruh dependency tree service → cari circular
+  * [x] Cek semua async/await consistency
+  * [x] Cek fungsi kritikal tanpa error handling
+* [x] Buat script `npm run check:events`:
 
-  * [ ] Parse semua `@click`, `@change`, `@submit`
-  * [ ] Validasi apakah method ada di `methods:`
-* [ ] Integrasikan semua script ke Cursor Jobs untuk auto-run
+  * [x] Parse semua `@click`, `@change`, `@submit`
+  * [x] Validasi apakah method ada di `methods:`
+* [x] Integrasikan semua script ke package.json (`npm run check:full-auto`)
 
 ---
 
