@@ -264,6 +264,11 @@ export class AddonService {
     if (addonInfo?.comingSoon) {
       throw new Error('Addon ini belum tersedia. Coming soon!');
     }
+    
+    if (!addonInfo) {
+      throw new Error('Addon not found');
+    }
+    
     // Get tenant subscription info
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
@@ -287,8 +292,7 @@ export class AddonService {
     });
 
     // Check if addon has limit (can be purchased multiple times)
-    const addonInfo = AVAILABLE_ADDONS.find(a => a.id === data.addonId);
-    const hasLimit = addonInfo?.defaultLimit !== null && addonInfo?.defaultLimit !== undefined;
+    const hasLimit = addonInfo.defaultLimit !== null && addonInfo.defaultLimit !== undefined;
 
     // For addons without limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
     // Only throw error if already active and not expired

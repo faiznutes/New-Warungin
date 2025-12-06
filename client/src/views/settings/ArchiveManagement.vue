@@ -410,6 +410,11 @@ const loadStats = async () => {
     stats.value = response.data;
   } catch (error: any) {
     console.error('Error loading archive stats:', error);
+    if (error.response?.status === 403) {
+      showError('Anda tidak memiliki akses untuk melihat statistik archive. Hanya Super Admin yang bisa mengakses.');
+    } else {
+      showError(error.response?.data?.message || 'Gagal memuat statistik archive');
+    }
   }
 };
 
@@ -419,7 +424,11 @@ const loadArchiveFiles = async () => {
     archiveFiles.value = response.data.files || [];
   } catch (error: any) {
     console.error('Error loading archive files:', error);
-    showError('Gagal memuat daftar file archive');
+    if (error.response?.status === 403) {
+      showError('Anda tidak memiliki akses untuk melihat file archive. Hanya Super Admin yang bisa mengakses.');
+    } else {
+      showError(error.response?.data?.message || 'Gagal memuat daftar file archive');
+    }
   }
 };
 

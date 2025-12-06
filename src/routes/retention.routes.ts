@@ -293,7 +293,6 @@ router.post(
   validate({ body: applyRetentionSchema }),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const tenantId = requireTenantId(req);
       // Only SUPER_ADMIN can apply retention (2 years back)
       if (req.role !== 'SUPER_ADMIN') {
         res.status(403).json({ message: 'Only super admin can apply retention policies' });
@@ -303,6 +302,8 @@ router.post(
       const { days = 730 } = req.body; // Default 2 years
       const maxDays = 730; // 2 years max
       const retentionDays = days && days <= maxDays ? days : maxDays;
+      
+      const tenantId = req.body.tenantId || requireTenantId(req);
       
       const tenantId = req.body.tenantId || requireTenantId(req);
       const deletedCount = await retentionService.applyAuditLogsRetention(tenantId, retentionDays);

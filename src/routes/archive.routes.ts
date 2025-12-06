@@ -66,7 +66,12 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
+      // Only SUPER_ADMIN can view archive stats
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can view archive statistics' });
+      }
+      
+      const tenantId = req.query.tenantId as string || requireTenantId(req);
       const stats = await archiveService.getArchiveStats(tenantId);
       res.json(stats);
     } catch (error: unknown) {
@@ -116,7 +121,12 @@ router.get(
   authGuard,
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
+      // Only SUPER_ADMIN can list archive files
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can list archive files' });
+      }
+      
+      const tenantId = req.query.tenantId as string || requireTenantId(req);
       const archivePath = path.join('./archives', tenantId);
       
       if (!fs.existsSync(archivePath)) {
@@ -494,13 +504,13 @@ router.post(
   auditLogger('RESTORE', 'archives'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const { archiveFile } = req.body;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can restore
-      if (req.role !== 'ADMIN_TENANT' && req.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can restore data' });
+      // Only SUPER_ADMIN can restore archives
+      if (req.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can restore archives' });
       }
+      
+      const { archiveFile, tenantId: requestTenantId } = req.body;
+      const tenantId = requestTenantId || requireTenantId(req);
 
       // Verify archive file belongs to tenant
       if (!archiveFile.includes(tenantId)) {

@@ -651,7 +651,11 @@ const loadStats = async () => {
     stats.value = response.data;
   } catch (error: any) {
     console.error('Error loading retention stats:', error);
-    showError('Gagal memuat statistik retensi');
+    if (error.response?.status === 403) {
+      showError('Anda tidak memiliki akses untuk melihat statistik retensi. Hanya Super Admin yang bisa mengakses.');
+    } else {
+      showError(error.response?.data?.message || 'Gagal memuat statistik retensi');
+    }
   }
 };
 
