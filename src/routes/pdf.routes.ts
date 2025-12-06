@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 const router = Router();
 

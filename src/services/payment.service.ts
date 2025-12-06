@@ -2,7 +2,7 @@ import Midtrans from 'midtrans-client';
 import crypto from 'crypto';
 import env from '../config/env';
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 export interface PaymentRequest {
   orderId: string;

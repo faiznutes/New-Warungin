@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import env from './config/env';
 import { setupSecurity } from './middlewares/security';
-import { apiLimiter } from './middlewares/rateLimiter';
+import { apiLimiter, authLimiter } from './middlewares/rateLimiter';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { addCSRFToken } from './middlewares/csrf';
 import { metricsMiddleware } from './middlewares/metrics';
@@ -90,20 +90,23 @@ app.use('/api', addCSRFToken);
 
 // Rate limiting - Use Redis-based rate limiter if available, fallback to memory-based
 logger.info('Setting up rate limiting...');
-try {
-  const { redisApiLimiter, redisAuthLimiter } = await import('./middlewares/redis-rate-limiter');
-  app.use('/api', redisApiLimiter);
-  app.use('/api/auth/login', redisAuthLimiter);
-  logger.info('Redis-based rate limiting configured');
-} catch (error) {
-  // Fallback to memory-based rate limiter
-  logger.warn('Redis rate limiter not available, using memory-based limiter', {
-    error: error instanceof Error ? error.message : String(error),
-  });
-  app.use('/api', apiLimiter);
-  app.use('/api/auth/login', authLimiter);
-  logger.info('Memory-based rate limiting configured');
-}
+// Use IIFE to handle async import
+(async () => {
+  try {
+    const { redisApiLimiter, redisAuthLimiter } = await import('./middlewares/redis-rate-limiter');
+    app.use('/api', redisApiLimiter);
+    app.use('/api/auth/login', redisAuthLimiter);
+    logger.info('Redis-based rate limiting configured');
+  } catch (error) {
+    // Fallback to memory-based rate limiter
+    logger.warn('Redis rate limiter not available, using memory-based limiter', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    app.use('/api', apiLimiter);
+    app.use('/api/auth/login', authLimiter);
+    logger.info('Memory-based rate limiting configured');
+  }
+})();
 
 // Response time audit middleware
 import { responseTimeAudit } from './middlewares/response-time';

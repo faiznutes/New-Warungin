@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import auditLogService, { extractRequestInfo } from '../services/audit-log.service';
 import { AuthRequest } from './auth';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Audit logging middleware

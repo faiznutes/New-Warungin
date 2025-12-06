@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/database';
 import { AuthRequest } from './auth';
 import { updateUserStatusBasedOnSubscription, getTotalRemainingSubscriptionTime } from '../services/user-status.service';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Middleware to check if tenant subscription is active

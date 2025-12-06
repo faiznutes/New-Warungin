@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 import { Request } from 'express';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 export interface AuditLogData {
   tenantId?: string | null;

@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import env from '../config/env';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 let io: Server | null = null;
 

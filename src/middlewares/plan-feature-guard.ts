@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthRequest } from './auth';
 import { checkPlanFeature } from '../services/plan-features.service';
 import { requireTenantId } from '../utils/tenant';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Middleware to check if tenant has access to a specific plan feature

@@ -1,6 +1,6 @@
 import { Queue } from 'bullmq';
 import { getRedisClient } from '../config/redis';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 const redisClient = getRedisClient();
 

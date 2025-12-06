@@ -1,6 +1,6 @@
 import rewardPointService from '../services/reward-point.service';
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Background job untuk auto-expire reward points

@@ -6,7 +6,7 @@
 import { Request, Response, NextFunction } from 'express';
 import advancedAuditService from '../services/advanced-audit.service';
 import { getTenantId } from '../utils/tenant';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Middleware to log API requests

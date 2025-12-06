@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import prisma from '../config/database';
 import { generateToken, TokenPayload } from '../utils/jwt';
 import { AppError } from '../middlewares/errorHandler';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 export interface LoginInput {
   email: string;
@@ -245,10 +245,10 @@ export const login = async (input: LoginInput) => {
   };
 
   const token = generateToken(tokenPayload);
-  const refreshToken = generateRefreshToken(tokenPayload);
   
-  // Set token family for rotation tracking
-  const { setTokenFamily } = await import('../utils/refresh-token');
+  // Generate refresh token and set token family for rotation tracking
+  const { generateRefreshToken, setTokenFamily } = await import('../utils/refresh-token');
+  const refreshToken = generateRefreshToken(tokenPayload);
   const familyId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
   await setTokenFamily(user.id, familyId);
 

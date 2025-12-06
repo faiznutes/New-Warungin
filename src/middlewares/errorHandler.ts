@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 import { Prisma } from '@prisma/client';
 import logger from '../utils/logger';
+import { sanitizeError, sanitizeForLogging } from '../utils/log-sanitizer';
 
 export class AppError extends Error {
   statusCode: number;

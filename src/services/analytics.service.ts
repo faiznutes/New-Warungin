@@ -1,6 +1,6 @@
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 interface Prediction {
   nextMonth: number;

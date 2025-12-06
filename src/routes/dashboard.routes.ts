@@ -5,7 +5,7 @@ import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { handleApiError } from '../utils/error-handler';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 const router = Router();
 

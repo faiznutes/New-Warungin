@@ -206,7 +206,7 @@ export class OrderService {
     }
 
     // Create order with items in transaction
-    return prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx) => {
       // Get tenant info for order number generation
       const tenant = await tx.tenant.findUnique({
         where: { id: tenantId },
@@ -861,5 +861,4 @@ export class OrderService {
   }
 }
 
-export default new OrderService();
-
+export default new Orde

@@ -3,7 +3,7 @@ import { authGuard, AuthRequest } from '../middlewares/auth';
 import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 const router = Router();
 

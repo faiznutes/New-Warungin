@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 const router = Router();
 

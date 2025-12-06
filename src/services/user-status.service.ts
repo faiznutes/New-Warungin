@@ -1,5 +1,5 @@
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 /**
  * Calculate total remaining time from all active subscriptions (basic, boost, max)

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 export interface SubscribeAddonInput {
   addonId: string;

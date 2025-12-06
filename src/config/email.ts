@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import env from './env';
-import logger from './utils/logger';
+import logger from '../utils/logger';
 
 export const emailTransporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
