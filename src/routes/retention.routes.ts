@@ -304,8 +304,6 @@ router.post(
       const retentionDays = days && days <= maxDays ? days : maxDays;
       
       const tenantId = req.body.tenantId || requireTenantId(req);
-      
-      const tenantId = req.body.tenantId || requireTenantId(req);
       const deletedCount = await retentionService.applyAuditLogsRetention(tenantId, retentionDays);
       res.json({
         message: `Deleted ${deletedCount} audit logs based on retention policy`,
