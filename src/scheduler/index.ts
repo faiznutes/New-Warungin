@@ -140,6 +140,9 @@ export const scheduleJobs = async (): Promise<void> => {
 // This can be called directly or integrated with a cron library
 let scheduledEmailInterval: NodeJS.Timeout | null = null;
 
+// Webhook retry queue processor (runs every 10 seconds)
+let webhookRetryInterval: NodeJS.Timeout | null = null;
+
 export const startScheduledEmailProcessor = (): void => {
   // Only start if not already running
   if (scheduledEmailInterval) {
@@ -174,6 +177,48 @@ export const stopScheduledEmailProcessor = (): void => {
   }
 };
 
+/**
+ * Start webhook retry queue processor
+ */
+export const startWebhookRetryProcessor = (): void => {
+  if (webhookRetryInterval) {
+    return; // Already running
+  }
+
+  import('../utils/webhook-queue').then(({ processRetryQueue }) => {
+    import('../services/payment.service').then(({ default: paymentService }) => {
+      // Process retry queue every 10 seconds
+      webhookRetryInterval = setInterval(async () => {
+        try {
+          await processRetryQueue(async (payload) => {
+            // Re-process webhook
+            await paymentService.handleWebhook(payload.notification);
+          });
+        } catch (error: any) {
+          logger.error('Error processing webhook retry queue', {
+            error: error.message,
+            stack: error.stack,
+          });
+        }
+      }, 10000); // Every 10 seconds
+
+      logger.info('✅ Webhook retry queue processor started (runs every 10 seconds)');
+    }).catch((error) => {
+      logger.warn('⚠️  Failed to start webhook retry processor:', error);
+    });
+  }).catch((error) => {
+    logger.warn('⚠️  Failed to start webhook retry processor:', error);
+  });
+};
+
+export const stopWebhookRetryProcessor = (): void => {
+  if (webhookRetryInterval) {
+    clearInterval(webhookRetryInterval);
+    webhookRetryInterval = null;
+    logger.info('✅ Webhook retry processor stopped');
+  }
+};
+
 // Start scheduler (only after workers are initialized)
 if (process.env.NODE_ENV !== 'test') {
   // Initialize workers asynchronously
@@ -192,6 +237,11 @@ if (process.env.NODE_ENV !== 'test') {
   setTimeout(() => {
     startScheduledEmailProcessor();
   }, 3000); // Start after workers are initialized
+
+  // Start webhook retry queue processor
+  setTimeout(() => {
+    startWebhookRetryProcessor();
+  }, 4000); // Start after workers are initialized
 }
 
 // Email queue disabled - using n8n instead

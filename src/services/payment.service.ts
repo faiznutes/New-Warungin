@@ -408,6 +408,7 @@ class PaymentService {
 
   /**
    * Handle Midtrans webhook notification
+   * Includes signature verification (via Midtrans SDK), idempotency check, and retry queue
    */
   async handleWebhook(notification: any): Promise<PaymentResponse> {
     try {
@@ -418,7 +419,25 @@ class PaymentService {
         };
       }
 
+      // Verify signature using Midtrans SDK (transaction.notification verifies signature)
       const status = await this.coreApi.transaction.notification(notification);
+      
+      // Idempotency check - prevent duplicate processing
+      const { isProcessed, markAsProcessed } = await import('../utils/webhook-queue');
+      const transactionId = status.transaction_id;
+      
+      if (await isProcessed(transactionId)) {
+        logger.info('Webhook already processed (idempotency check)', {
+          transactionId,
+          orderId: status.order_id,
+        });
+        return {
+          success: true,
+          transactionId,
+          status: status.transaction_status,
+          message: 'Already processed',
+        };
+      }
       
       // Check if this is an addon/subscription payment
       const orderId = status.order_id;
@@ -468,13 +487,19 @@ class PaymentService {
             orderStatus = 'CANCELLED';
           }
 
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { status: orderStatus },
+          // Use transaction to ensure atomic update
+          await prisma.$transaction(async (tx) => {
+            await tx.order.update({
+              where: { id: order.id, tenantId: order.tenantId }, // Ensure tenantId in where clause
+              data: { status: orderStatus },
+            });
           });
         }
       }
 
+      // Mark as processed on success
+      await markAsProcessed(transactionId);
+      
       return {
         success: true,
         transactionId: status.transaction_id,
@@ -482,7 +507,30 @@ class PaymentService {
         message: status.status_message,
       };
     } catch (error: any) {
-      logger.error('Webhook handling error:', { error: error.message, stack: error.stack });
+      logger.error('Webhook handling error', {
+        error: error.message,
+        stack: error.stack,
+        notification: notification?.transaction_id || 'unknown',
+      });
+      
+      // Add to retry queue if processing failed
+      try {
+        const { addToRetryQueue } = await import('../utils/webhook-queue');
+        const transactionId = notification?.transaction_id || `unknown-${Date.now()}`;
+        await addToRetryQueue({
+          orderId: notification?.order_id || 'unknown',
+          transactionId,
+          transactionStatus: notification?.transaction_status || 'unknown',
+          notification,
+          timestamp: Date.now(),
+          retryCount: 0,
+        });
+      } catch (queueError) {
+        logger.error('Failed to add webhook to retry queue', {
+          error: queueError instanceof Error ? queueError.message : String(queueError),
+        });
+      }
+      
       return {
         success: false,
         message: error.message || 'Failed to handle webhook',
