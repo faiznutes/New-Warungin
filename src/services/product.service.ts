@@ -79,7 +79,7 @@ export class ProductService {
       try {
         const cached = await CacheService.get(cacheKey);
         if (cached) {
-          return cached;
+          return cached as Product | null;
         }
       } catch (error) {
         // If cache read fails, continue with database query

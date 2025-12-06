@@ -100,8 +100,8 @@ router.get(
       if (format && (format === 'CSV' || format === 'PDF' || format === 'EXCEL')) {
         // Check addon for export
         const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
-        const hasExportAddon = addons.some(
-          (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'active'
+        const hasExportAddon = addons.data.some(
+          (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
         );
         
         if (!hasExportAddon) {
