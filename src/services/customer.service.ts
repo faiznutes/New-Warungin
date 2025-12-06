@@ -137,8 +137,12 @@ export class CustomerService {
     try {
       const customer = await prisma.customer.create({
         data: {
-          ...data,
           tenantId,
+          name: data.name || '',
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          notes: data.notes,
         },
       });
 

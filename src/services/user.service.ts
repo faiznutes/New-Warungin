@@ -334,15 +334,15 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password and default password
+    // Encrypt defaultPassword before storing
+    const { encrypt } = await import('../utils/encryption');
+    const encryptedDefaultPassword = encrypt(newPassword);
+    
     await prisma.user.update({
       where: { id },
       data: { 
         password: hashedPassword,
-        defaultPassword: (async () => {
-          // Encrypt defaultPassword before storing
-          const { encrypt } = await import('../utils/encryption');
-          return encrypt(newPassword);
-        })(), // Store encrypted default password
+        defaultPassword: encryptedDefaultPassword, // Store encrypted default password
       },
     });
 

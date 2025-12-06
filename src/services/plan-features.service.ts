@@ -249,7 +249,8 @@ export async function getTenantPlanFeatures(tenantId: string) {
   const baseLimits = PLAN_BASE_LIMITS[plan] || PLAN_BASE_LIMITS.BASIC;
 
   // Get active addons
-  const activeAddons = await addonService.getTenantAddons(tenantId);
+  const activeAddonsResult = await addonService.getTenantAddons(tenantId);
+  const activeAddons = activeAddonsResult.data;
 
   // Calculate total limits (base + addons)
   let totalProducts = baseLimits.products === -1 ? -1 : baseLimits.products;

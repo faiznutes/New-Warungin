@@ -115,8 +115,20 @@ export class ProductService {
 
     const product = await prisma.product.create({
       data: {
-        ...data,
         tenantId,
+        name: data.name,
+        price: data.price,
+        stock: data.stock || 0,
+        description: data.description,
+        sku: data.sku,
+        barcode: data.barcode,
+        cost: data.cost,
+        minStock: data.minStock,
+        category: data.category,
+        image: data.image,
+        emoji: data.emoji,
+        isActive: data.isActive !== undefined ? data.isActive : true,
+        isConsignment: data.isConsignment || false,
       },
     });
 
