@@ -367,7 +367,7 @@ export class AddonService {
       }
       
       const updatedAddon = await prisma.tenantAddon.update({
-        where: { id: existing.id },
+        where: { id: existing.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
         data: updateData,
       });
       
@@ -488,7 +488,7 @@ export class AddonService {
     };
 
     return prisma.tenantAddon.update({
-      where: { id: addon.id },
+      where: { id: addon.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
       data: {
         expiresAt: newExpiry,
         config: updatedConfig,
@@ -543,7 +543,7 @@ export class AddonService {
 
     // Addon expiry can exceed subscription expiry (flat duration)
     return prisma.tenantAddon.update({
-      where: { id: addon.id },
+      where: { id: addon.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
       data: {
         expiresAt: newExpiry,
       },
@@ -565,7 +565,7 @@ export class AddonService {
     }
 
     return prisma.tenantAddon.update({
-      where: { id: addon.id },
+      where: { id: addon.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
       data: { status: 'inactive' },
     });
   }

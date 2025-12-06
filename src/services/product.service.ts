@@ -148,7 +148,7 @@ export class ProductService {
     }
 
     const updatedProduct = await prisma.product.update({
-      where: { id },
+      where: { id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
       data,
     });
 
@@ -174,55 +174,61 @@ export class ProductService {
   }
 
   async updateStock(id: string, quantity: number, tenantId: string, operation: 'add' | 'subtract' | 'set' = 'set', emitSocketEvent: boolean = false): Promise<Product> {
-    const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    let newStock: number;
-    switch (operation) {
-      case 'add':
-        newStock = product.stock + quantity;
-        break;
-      case 'subtract':
-        newStock = Math.max(0, product.stock - quantity);
-        break;
-      case 'set':
-      default:
-        newStock = quantity;
-        break;
-    }
-
-    const updatedProduct = await prisma.product.update({
-      where: { id },
-      data: { stock: newStock },
-    });
-
-    // Invalidate cache for this product and products list
-    await this.invalidateProductCache(tenantId);
+    // Use distributed lock to prevent race conditions
+    const { withLock } = await import('../utils/distributed-lock');
+    const lockKey = `stock:${tenantId}:${id}`;
     
-    // Also invalidate analytics cache that depends on products
-    try {
-      await CacheService.delete(`analytics:top-products:${tenantId}`);
-    } catch (error) {
-      logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error) });
-    }
-
-    // Emit socket event if requested (usually from order service, not from direct product update)
-    if (emitSocketEvent) {
-      try {
-        const { emitToTenant } = await import('../socket/socket');
-        emitToTenant(tenantId, 'product:stock-update', {
-          productId: id,
-          stock: updatedProduct.stock,
-        });
-      } catch (error) {
-        // Ignore socket errors
-        logger.warn('Failed to emit stock update socket event:', error);
+    return withLock(lockKey, async () => {
+      const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
+      if (!product) {
+        throw new Error('Product not found');
       }
-    }
 
-    return updatedProduct;
+      let newStock: number;
+      switch (operation) {
+        case 'add':
+          newStock = product.stock + quantity;
+          break;
+        case 'subtract':
+          newStock = Math.max(0, product.stock - quantity);
+          break;
+        case 'set':
+        default:
+          newStock = quantity;
+          break;
+      }
+
+      const updatedProduct = await prisma.product.update({
+        where: { id, tenantId }, // Ensure tenantId is in where clause for security
+        data: { stock: newStock },
+      });
+
+      // Invalidate cache for this product and products list
+      await this.invalidateProductCache(tenantId);
+      
+      // Also invalidate analytics cache that depends on products
+      try {
+        await CacheService.delete(`analytics:top-products:${tenantId}`);
+      } catch (error) {
+        logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error) });
+      }
+
+      // Emit socket event if requested (usually from order service, not from direct product update)
+      if (emitSocketEvent) {
+        try {
+          const { emitToTenant } = await import('../socket/socket');
+          emitToTenant(tenantId, 'product:stock-update', {
+            productId: id,
+            stock: updatedProduct.stock,
+          });
+        } catch (error) {
+          // Ignore socket errors
+          logger.warn('Failed to emit stock update socket event:', error);
+        }
+      }
+
+      return updatedProduct;
+    }, 10); // 10 seconds lock timeout for stock operations
   }
 
   async getLowStockProducts(tenantId: string): Promise<Product[]> {
