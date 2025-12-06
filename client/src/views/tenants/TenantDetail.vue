@@ -1871,19 +1871,20 @@ const loadTenantDetail = async () => {
     // These will load in background and update UI when ready
     loading.value = false;
 
-    // Load all additional data in parallel in background
+    // Load all additional data in parallel in background (non-blocking)
     // These calls are independent and can run simultaneously
     // Use Promise.allSettled to prevent one failure from stopping all others
     // Don't await - let them load in background while user sees tenant details
+    // This prevents long loading time and error popups from blocking UI
     Promise.allSettled([
       loadActiveAddons(),
       loadAvailableAddons(),
       loadUsers(),
       loadStores(),
       loadTenantPoints()
-    ]).then(() => {
-      // All secondary data loaded - UI will update automatically via reactivity
-      // No need to do anything here, just let it complete silently
+    ]).catch(() => {
+      // Silently handle any errors - individual functions already handle their own errors
+      // No need to show error here as it's non-critical data
     });
     
     // Check if any critical function failed (tenant or subscription)
@@ -1911,8 +1912,12 @@ const loadTenantDetail = async () => {
       await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
     }
     // For other errors, just log but don't show error (non-critical)
-  } finally {
-    loading.value = false;
+    // Note: loading.value is already set to false above before Promise.allSettled
+    // So we don't need to set it again here unless there was a critical error
+    if (error.response?.status === 401 || error.response?.status === 404 || error.response?.status >= 500) {
+      // Only set loading to false for critical errors that prevent page display
+      loading.value = false;
+    }
   }
 };
 
