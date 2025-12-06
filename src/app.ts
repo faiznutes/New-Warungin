@@ -117,11 +117,17 @@ app.get('/health', async (req, res) => {
 
   // Check database connection
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await prisma.$queryRaw`SELECT 1`.catch(() => {
+      throw new Error('Database query failed');
+    });
     health.services.database = 'connected';
-  } catch (error) {
+  } catch (error: any) {
     health.services.database = 'disconnected';
     health.status = 'degraded';
+    // Log error for debugging but don't crash
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Health check database error:', error?.message || error);
+    }
   }
 
   // Check Redis connection
