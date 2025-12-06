@@ -315,6 +315,202 @@ Dokumen ini berisi daftar lengkap tugas, perbaikan, dan enhancement untuk projec
 
 ### ✨ Fitur Baru (Features to Add)
 
+#### 🎛️ Super Admin Dashboard Enhancements
+
+- [ ] **System Info Page**
+  - **Location:** Sub menu di Super Admin Dashboard
+  - **Action:**
+    - Buat page baru `/app/system-info` di super admin
+    - Tampilkan detail aplikasi:
+      - Versi aplikasi
+      - Versi Node.js
+      - Versi database (PostgreSQL)
+      - Versi Redis
+      - Status services (Backend, Frontend, Database, Redis)
+      - Uptime information
+      - System resources (CPU, Memory, Disk jika memungkinkan)
+      - Environment information (production/staging/development)
+      - Last deployment date
+      - Active users count
+      - Total tenants count
+      - Database size
+      - Log file locations
+    - Design: Card-based layout dengan icons
+    - Auto-refresh setiap beberapa detik untuk real-time info
+
+- [ ] **Role & Permission Documentation Page**
+  - **Location:** Sub menu di Super Admin Dashboard
+  - **Action:**
+    - Buat page baru `/app/role-permissions` atau `/app/system-guide`
+    - Tampilkan informasi lengkap:
+      - **Super Admin bisa akses apa saja:**
+        - Manage semua tenants
+        - System settings
+        - Global reports & analytics
+        - User management (semua tenants)
+        - Subscription management
+        - Addons management
+        - System configuration
+        - Contact submissions management
+        - Demo requests management
+        - Archive & retention policies
+        - Audit logs (semua tenants)
+      - **Admin Tenant bisa akses apa saja:**
+        - Manage tenant sendiri
+        - Manage users di tenant sendiri
+        - Manage products, orders, customers
+        - Reports & analytics (tenant scope)
+        - Settings tenant
+        - Subscription info (read-only)
+        - Addons info (read-only)
+      - **Penjelasan Paket (Subscription Packages):**
+        - Daftar semua paket yang tersedia
+        - Fitur-fitur yang termasuk di setiap paket
+        - Limit/quotas untuk setiap paket
+        - Pricing information
+        - Comparison table antar paket
+      - **Penjelasan Addons:**
+        - Daftar semua addons yang tersedia
+        - Deskripsi setiap addon
+        - Fitur-fitur yang ditambahkan oleh addon
+        - Pricing untuk setiap addon
+        - Status aktif/tidak aktif
+    - Design: Tabbed interface atau accordion untuk memudahkan navigasi
+    - Update otomatis dari database untuk paket dan addons yang tersedia
+
+#### 📧 Contact Form Management
+
+- [ ] **Contact Form Enhancement**
+  - **Location:** Frontend - Formulir Kontak Warungin (`/contact`)
+  - **Action:**
+    - Tambahkan field **Nomor Telepon** di contact form
+    - Update schema validation di backend (`contactFormSchema`)
+    - Update database schema jika perlu (tambah field `phone` di `ContactSubmission`)
+    - Update frontend form (`client/src/views/marketing/Contact.vue`)
+    - Validasi format nomor telepon (opsional, bisa format Indonesia)
+
+- [ ] **Contact Submissions Management Page**
+  - **Location:** Sub menu di Super Admin Dashboard (`/app/contact-submissions`)
+  - **Action:**
+    - Buat page baru untuk menampilkan semua contact form submissions
+    - Tampilkan data:
+      - Nama
+      - Email
+      - Nomor Telepon (baru)
+      - Subjek
+      - Pesan
+      - Tanggal kirim
+      - Status (processed/unprocessed)
+    - **Features:**
+      - **Checkbox untuk menandai sudah diproses atau belum:**
+        - Field `isProcessed` di database (boolean)
+        - Toggle checkbox untuk update status
+        - Visual indicator (badge/color) untuk status
+      - **Filter berdasarkan waktu:**
+        - Filter berdasarkan bulan (dropdown select bulan)
+        - Filter berdasarkan hari (date picker atau range)
+        - Filter berdasarkan tahun
+        - Quick filter: Hari ini, Minggu ini, Bulan ini, Tahun ini
+      - **Filter berdasarkan status:**
+        - Semua
+        - Sudah diproses
+        - Belum diproses
+      - **Search functionality:**
+        - Search berdasarkan nama, email, subjek, atau pesan
+      - **Pagination:**
+        - Tampilkan 10/25/50 per page
+      - **Actions:**
+        - Mark as processed/unprocessed (bulk action)
+        - Delete submission
+        - View detail (modal atau expand row)
+        - Export to CSV/Excel
+    - **Backend API:**
+      - GET `/api/contact-submissions` (dengan filters, pagination, search)
+      - PATCH `/api/contact-submissions/:id` (update isProcessed)
+      - PATCH `/api/contact-submissions/bulk` (bulk update)
+      - DELETE `/api/contact-submissions/:id`
+    - **Permissions:** Hanya SUPER_ADMIN yang bisa akses
+
+- [ ] **Database Schema Update untuk Contact Submissions**
+  - **Action:**
+    - Tambahkan field `phone` (String, optional) di `ContactSubmission` model
+    - Tambahkan field `isProcessed` (Boolean, default: false) di `ContactSubmission` model
+    - Tambahkan field `processedAt` (DateTime, optional) untuk tracking kapan diproses
+    - Tambahkan field `processedBy` (User relation, optional) untuk tracking siapa yang memproses
+    - Buat migration file untuk update schema
+    - Update Prisma schema
+
+#### 🤖 N8N Automation Integration
+
+- [ ] **N8N Webhook Integration untuk Contact Submissions**
+  - **Action:**
+    - Setup webhook endpoint di N8N untuk menerima contact form submissions
+    - Trigger otomatis saat ada contact form baru:
+      - Send email notification ke admin
+      - Create ticket di sistem ticketing (jika ada)
+      - Send notification ke Slack/Discord/Telegram
+      - Add to CRM system (jika terintegrasi)
+    - Webhook payload structure:
+      ```json
+      {
+        "event": "contact.submission.created",
+        "data": {
+          "id": "uuid",
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "subject": "string",
+          "message": "string",
+          "createdAt": "datetime",
+          "isProcessed": false
+        }
+      }
+      ```
+
+- [ ] **N8N Workflow untuk Auto-responder**
+  - **Action:**
+    - Setup workflow untuk auto-reply email ke pengirim contact form
+    - Template email: "Terima kasih telah menghubungi kami, tim kami akan segera merespons"
+    - Personalisasi dengan nama pengirim
+    - Include ticket/reference number jika ada
+
+- [ ] **N8N Workflow untuk Status Update Notification**
+  - **Action:**
+    - Trigger saat admin mark submission sebagai "processed"
+    - Send email ke pengirim bahwa pesan mereka sudah diproses
+    - Include follow-up message jika perlu
+
+- [ ] **N8N Configuration Documentation**
+  - **Action:**
+    - Document webhook URL yang perlu dikonfigurasi di N8N
+    - Document authentication method (API key atau JWT)
+    - Document payload structure
+    - Document error handling
+    - Document retry mechanism
+    - Contoh workflow setup di N8N
+
+- [ ] **Environment Variables untuk N8N**
+  - **Action:**
+    - Tambahkan `N8N_WEBHOOK_URL` di `.env`
+    - Tambahkan `N8N_API_KEY` untuk authentication (jika perlu)
+    - Tambahkan `N8N_ENABLED` (boolean) untuk enable/disable integration
+    - Update `.env.example` dengan variables baru
+
+- [ ] **Backend Service untuk N8N Integration**
+  - **Action:**
+    - Buat service `n8n.service.ts` untuk handle webhook calls
+    - Implementasi retry mechanism jika webhook gagal
+    - Logging untuk tracking webhook calls
+    - Error handling yang proper
+    - Queue system (optional) untuk handle high volume
+
+- [ ] **Testing N8N Integration**
+  - **Action:**
+    - Test webhook trigger saat contact form submitted
+    - Test dengan N8N workflow yang sudah dibuat
+    - Test error handling (N8N down, network error, dll)
+    - Test dengan berbagai payload scenarios
+
 #### Business Features
 
 - [ ] **E-commerce Integration**
@@ -613,6 +809,18 @@ Dokumen ini berisi daftar lengkap tugas, perbaikan, dan enhancement untuk projec
 7. **Add .env.example dengan semua variables**
    - **Time:** 30 min
    - **Impact:** Medium (developer experience)
+
+8. **Contact Form - Tambah field nomor telepon**
+   - **Time:** 1-2 jam
+   - **Impact:** Medium (user experience)
+
+9. **System Info Page di Super Admin**
+   - **Time:** 3-4 jam
+   - **Impact:** Medium (admin experience)
+
+10. **Role & Permission Documentation Page**
+    - **Time:** 4-6 jam
+    - **Impact:** Medium (user guidance)
 
 ---
 
