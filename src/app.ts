@@ -224,6 +224,18 @@ try {
   // Continue anyway - Socket.IO is optional
 }
 
+// Initialize API key rotation system
+setImmediate(async () => {
+  try {
+    const { initializeApiKeys } = await import('./utils/api-key-rotation');
+    await initializeApiKeys();
+  } catch (error) {
+    logger.warn('Failed to initialize API keys (non-critical)', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
 // Initialize scheduler (optional - requires Redis)
 // Load asynchronously to prevent blocking app start
 setImmediate(() => {

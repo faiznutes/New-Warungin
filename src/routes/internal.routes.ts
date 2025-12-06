@@ -11,15 +11,29 @@ import * as fs from 'fs';
 
 const router = Router();
 
-// Internal API Key middleware (for n8n)
-const validateInternalApiKey = (req: Request, res: Response, next: Function) => {
+// Internal API Key middleware (for n8n) with rotation support
+const validateInternalApiKey = async (req: Request, res: Response, next: Function) => {
   const apiKey = req.headers['x-internal-api-key'] as string;
-  const expectedKey = process.env.INTERNAL_API_KEY || 'change-me-in-production';
   
-  if (!apiKey || apiKey !== expectedKey) {
+  if (!apiKey) {
     return res.status(401).json({ 
       success: false, 
-      message: 'Invalid or missing internal API key' 
+      message: 'Missing internal API key' 
+    });
+  }
+  
+  // Validate using rotation-aware validator
+  const { validateApiKey } = await import('../utils/api-key-rotation');
+  const isValid = await validateApiKey(apiKey);
+  
+  if (!isValid) {
+    logger.warn('Invalid API key attempt', {
+      keyPrefix: apiKey.substring(0, 8) + '...',
+      path: req.path,
+    });
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Invalid internal API key' 
     });
   }
   
