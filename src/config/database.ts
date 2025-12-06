@@ -125,39 +125,47 @@ prisma.$on('query' as never, (e: any) => {
   } else if (isSlow) {
     // In production, only log slow queries
     // Sanitize query params to prevent leaking sensitive data
-    const { sanitizeForLogging } = await import('../utils/log-sanitizer');
-    logger.warn('Slow database query detected', sanitizeForLogging({
-      query: e.query.substring(0, 200), // Truncate long queries
-      params: e.params,
-      duration: `${duration}ms`,
-      threshold: `${SLOW_QUERY_THRESHOLD}ms`,
-      target: e.target,
-    }));
+    // Note: Using dynamic import inside event handler to avoid top-level await
+    import('../utils/log-sanitizer').then(({ sanitizeForLogging }) => {
+      logger.warn('Slow database query detected', sanitizeForLogging({
+        query: e.query.substring(0, 200), // Truncate long queries
+        params: e.params,
+        duration: `${duration}ms`,
+        threshold: `${SLOW_QUERY_THRESHOLD}ms`,
+        target: e.target,
+      }));
+    }).catch(() => {
+      // Fallback if sanitizer fails
+      logger.warn('Slow database query detected', {
+        query: e.query.substring(0, 200),
+        duration: `${duration}ms`,
+        threshold: `${SLOW_QUERY_THRESHOLD}ms`,
+      });
+    });
   }
 });
 
-  prisma.$on('error' as never, (e: any) => {
-    logger.error('Prisma Error', {
-      message: e.message,
-      target: e.target,
-      timestamp: new Date().toISOString(),
-    });
+prisma.$on('error' as never, (e: any) => {
+  logger.error('Prisma Error', {
+    message: e.message,
+    target: e.target,
+    timestamp: new Date().toISOString(),
   });
+});
 
-  prisma.$on('warn' as never, (e: any) => {
-    logger.warn('Prisma Warning', {
-      message: e.message,
-      target: e.target,
-    });
+prisma.$on('warn' as never, (e: any) => {
+  logger.warn('Prisma Warning', {
+    message: e.message,
+    target: e.target,
   });
+});
 
-  prisma.$on('info' as never, (e: any) => {
-    logger.info('Prisma Info', {
-      message: e.message,
-      target: e.target,
-    });
+prisma.$on('info' as never, (e: any) => {
+  logger.info('Prisma Info', {
+    message: e.message,
+    target: e.target,
   });
-}
+});
 
 // Test connection on startup
 async function testConnection() {

@@ -1,313 +1,412 @@
-# 🧨 Warungin POS — Refocused TODO (Production-First)
+# 🧩 TODO – Fitur Khusus UMKM (Low-Margin, Simple, Practical)
 
-> **Versi minimalis, brutal, prioritas tinggi.**
-> Fokus: *Security, Stability, POS Performance, PWA, Multi-Tenant Safety.*
-> Siap commit sebagai `TODO.md`.
-
----
-
-# 🚀 PRIORITAS UTAMA (Wajib Sebelum Launch)
-
-## 1. 🔒 SECURITY HARDENING (P1 — Must Finish)
-
-* [ ] **Hapus 244+ `console.log`**, ganti ke `logger` terstruktur.
-* [ ] **Encrypt defaultPassword** (AES-256) atau hapus fitur ini total.
-* [ ] **Refresh Token Rotation + Blacklist** (Redis mandatory).
-* [ ] **Server-side input sanitization** (gabungkan Zod + sanitizer).
-* [ ] **CSP Headers + Strict-Transport-Security**.
-* [ ] **Audit env leaks** (no secrets in logs, no accidental dumps).
-* [ ] **Hardening rate limit** (per-user + per-IP dengan Redis).
-* [ ] **Secure payment callbacks:** idempotency + signature verification.
-* [ ] **Audit multi-tenant isolation:** pastikan 0 potensi cross-tenant.
-* [ ] **API key rotation** untuk integrations.
-* [ ] **Check raw queries** → pastikan 0 string-concat SQL.
+Dokumen ini khusus berisi fitur **praktis & bernilai langsung** untuk UMKM kecil (laba 50–150 ribu/hari).
+Semua fitur fokus ke: **kemudahan**, **kecepatan**, **keamanan data**, dan **tidak membebani biaya**.
 
 ---
 
-## 2. 🧪 TESTING FOUNDATION (P1)
+# 🎯 1. MODE "KASIR SEDERHANA" (Simple POS Mode)
 
-* [ ] Setup **test DB** (Docker).
-* [ ] 10 Integration Tests kritikal:
+> Target: Kasir yang tidak tech-savvy — UI harus seperti kalkulator + tombol besar.
 
-  * [ ] Auth → login, refresh, 2FA
-  * [ ] Tenant isolation (paling penting)
-  * [ ] POS order → stock update transactional
-  * [ ] Payment callback
-  * [ ] User roles/permissions
-* [ ] Unit tests minimal untuk:
+## Fitur
 
-  * [ ] auth.service
-  * [ ] user.service
-  * [ ] order.service
-  * [ ] payment.service
-  * [ ] tenant.service
-* [ ] Remove `tsc` error bypass → fix semua TS errors.
+* [ ] Tampilan POS minimalis:
 
----
+  * [ ] 3–5 kategori besar saja
+  * [ ] Tombol produk ukuran besar
+  * [ ] Hanya 1–2 aksi per langkah
+  * [ ] Tidak ada popup panjang
+  * [ ] Warna kontras tinggi (mudah terlihat)
+* [ ] Mode pembayaran cepat:
 
-## 3. 🔁 TRANSACTIONAL SAFETY (P1)
+  * [ ] Tunai → input angka → hitung otomatis
+  * [ ] Non-tunai → single click selesai
+* [ ] Quick actions:
 
-* [ ] Bungkus seluruh proses transaksi (order, stock, payment) dalam Prisma **transaction()**.
-* [ ] Tambahkan **idempotent transaction key** untuk mencegah double order.
-* [ ] Retry queue untuk payment callback gagal (Redis list).
-* [ ] Locking untuk operasi stok.
+  * [ ] Void item
+  * [ ] Tambah qty
+  * [ ] Diskon cepat (nilai/%)
+* [ ] Auto landscape (wajib untuk tablet/HP kasir):
 
----
+  * [ ] Deteksi orientation → paksa landscape
+  * [ ] Pesan pop-up jika portrait
+* [ ] Setting untuk toggle "Mode Sederhana" di Tenant Settings.
 
-## 4. ⚡ PERFORMANCE BASELINE (P1)
+## Technical
 
-* [ ] Redis jadi **mandatory**, bukan optional.
-* [ ] Tambah database indexes (audit schema).
-* [ ] Tambah slow-query logging.
-* [ ] Pagination WAJIB di semua list endpoints.
-* [ ] Limit response size + request size.
-* [ ] Response-time middleware audit.
+* [ ] Layout baru: `/pos-simple`
+* [ ] Komponen tombol besar reusable
+* [ ] Gunakan local state untuk performa
+* [ ] Cache produk di IndexedDB
+* [ ] Disable animasi yang berat
 
 ---
 
-# 📱 PHASE 2 — POS Frontend Stability + PWA
+# 🔋 2. OFFLINE-FIRST POS MODE
 
-## 5. 📱 PWA UPGRADE (P2)
+> UMKM jaringan internetnya lemah. POS harus tetap jalan tanpa internet.
 
-* [ ] Full PWA support (manifest, sw, offline fallback).
-* [ ] Auto update SW tanpa user action.
-* [ ] Cache strategy: static + API fallback.
-* [ ] PWA onboarding screen.
+## Fitur Utama
 
-### **Auto Landscape Mode (Tablet/Kasir)**
+* [ ] Transaksi tetap bisa dibuat saat offline
+* [ ] Stok berkurang secara lokal
+* [ ] Queue transaksi lokal (IndexedDB)
+* [ ] Auto-sync saat kembali online:
 
-* [ ] Detect device → force landscape layout untuk POS.
-* [ ] Tambah CSS orientation-lock.
-* [ ] Warning modal saat user portrait.
-* [ ] POS layout optimize untuk landscape.
+  * [ ] Upload transaksi tertunda
+  * [ ] Reconcile stok ke server
+* [ ] Notifikasi status:
 
----
+  * [ ] "Anda offline — transaksi aman"
+  * [ ] "Sedang sync…"
+  * [ ] "Sync berhasil"
+* [ ] Offline fallback untuk halaman POS:
 
-## 6. 💥 POS FRONTEND RESILIENCE (P2)
+  * [ ] Pre-cache assets
+  * [ ] Pre-cache daftar produk
 
-* [ ] Offline-safe POS mode:
+## Technical
 
-  * [ ] Queue transaksi lokal (localStorage/IndexedDB).
-  * [ ] Auto-sync saat online.
-* [ ] Error Boundary global (tidak crash total).
-* [ ] Auto retry untuk request kritikal.
-* [ ] Socket auto-reconnect.
-* [ ] Optimasi loading POS < 1.5s.
-
----
-
-# 📊 PHASE 3 — Core Features yang Layak Jual
-
-## 7. 📊 Laporan yang Dibutuhkan User (P2)
-
-* [ ] Profit & Loss / Laba Rugi.
-* [ ] Penjualan per kategori.
-* [ ] Produk terlaris.
-* [ ] Stok minimum (alert).
-* [ ] Closing shift.
+* [ ] Service Worker advanced caching
+* [ ] IndexedDB wrapper (Dexie.js lebih simpel)
+* [ ] Sync manager (retry setiap 10 detik)
+* [ ] UUID untuk transaksi offline
+* [ ] Mekanisme konflik: server menang + kirim diff
 
 ---
 
-## 8. 🧹 CODE CLEANUP (P2)
+# 📦 3. SARAN RESTOCK OTOMATIS (AUTO RESTOCK SUGGESTION)
 
-* [ ] Hapus commented code (rateLimiter, old services).
-* [ ] Audit folder `scripts/` → buang 50% tidak terpakai.
-* [ ] Kurangi file service tidak digunakan.
-* [ ] Standardize error handler (1 file saja).
-* [ ] Zero `any` types di module kritikal.
+> UMKM suka fitur ini karena membantu mereka menentukan belanja harian.
 
----
+## Fitur
 
-# 🕸️ PHASE 4 — Infrastructure
+* [ ] Sistem membaca pola penjualan:
 
-## 9. 🏗️ DEPLOYMENT & DEVOPS (P3)
+  * [ ] Produk yang stoknya < minimal
+  * [ ] Produk paling laku mingguan
+  * [ ] Rekomendasi jumlah pembelian
+* [ ] Halaman Restock Suggestion:
 
-* [ ] CI/CD (GitHub Actions):
+  * [ ] List produk mendekati habis
+  * [ ] Perkiraan kapan habis berdasarkan kecepatan jual
+  * [ ] Saran qty beli
+* [ ] Reminder otomatis (popup) ketika:
 
-  * [ ] Lint → Test → Build → Deploy.
-* [ ] Docker multi-stage build optimization.
-* [ ] Staging environment terpisah.
-* [ ] DB backup automation.
-* [ ] Log rotation + structured logging.
+  * [ ] stok < minimal
+  * [ ] stok habis
+* [ ] Reminder email setiap jam 8 malam untuk pemilik
 
----
+## Technical
 
-# 🔐 PHASE 5 — Code Security Audit (Cursor Workflow)
+* [ ] Endpoint `/inventory/restock-suggestions`
+* [ ] Algoritma sederhana:
 
-Karena kamu pakai **Cursor + Vibes Coding**, struktur audit harus spesifik:
-
-### 10. 🔍 SECURITY AUDIT TASKLIST (P3)
-
-* [ ] Gunakan perintah Cursor:
-  "Audit seluruh file untuk credential leak + password plaintext + token exposure"
-* [ ] Cari pattern sensitive dengan regex:
-
-  * [ ] `(password|secret|token|key)`
-* [ ] Jalankan AI audit untuk folder:
-
-  * [ ] `/services`
-  * [ ] `/middlewares`
-  * [ ] `/prisma`
-  * [ ] `/auth`
-* [ ] Generate Security Weakness Report via Cursor.
-* [ ] Generate Auto-Fix Patch untuk 10 critical issues.
-* [ ] Validate patch manual.
+  * `avg_daily_sales = penjualan 14 hari / 14`
+  * `days_left = stok / avg_daily_sales`
+  * `jika days_left < 2 → rekomendasi beli`
+* [ ] Cron job harian untuk mengirim reminder
 
 ---
 
-# 🌍 PHASE 6 — PWA + Multi-Device Experience
+# 📧 4. AUTO-BACKUP EMAIL HARIAN UNTUK PEMILIK (Tanpa API WhatsApp)
 
-## 11. 📱 Multi-Device Layout (P4)
+> Fitur ini *sangat bernilai* bagi UMKM karena memberi rasa aman.
 
-* [ ] Template layout: Desktop, Tablet Landscape, Phone.
-* [ ] Breakpoints untuk kasir (landscape optimized).
-* [ ] Touch-optimized UI components.
-* [ ] Keyboard shortcuts untuk desktop kasir.
+## Fitur
 
----
+* [ ] Generate laporan harian jam 23:59:
 
-# ♻️ PHASE 7 — Fitur Nice-to-Have (tunda sampai stabil)
+  * [ ] Penjualan harian
+  * [ ] Kas masuk
+  * [ ] Kas keluar
+  * [ ] Hutang/piutang
+  * [ ] Stok habis/mau habis
+* [ ] Format PDF atau HTML
+* [ ] Kirim otomatis ke email pemilik tenant
+* [ ] Tenant bisa toggle fitur ini (on/off)
 
-* [ ] Contact Submissions Management.
-* [ ] System Info Page.
-* [ ] N8N Webhook.
-* [ ] Push Notifications.
-* [ ] AI/ML Feature Playground.
+## Technical
 
----
-
-# ⭐ PRIORITAS BESAR (Versi Singkat)
-
-1. **Security** (paling wajib)
-2. **Transactional Safety**
-3. **Testing**
-4. **POS Stabil, Offline-Safe**
-5. **PWA + Auto Landscape**
-6. **Performance Optimized**
-7. Baru fitur tambahan
+* [ ] Buat cron job di server (node-cron atau sistem scheduler)
+* [ ] Template email HTML
+* [ ] PDF generator (puppeteer / pdfkit)
+* [ ] Endpoint untuk preview laporan
+* [ ] Setting baru: `email_backup_enabled: boolean`
+* [ ] Tambahkan record log pengiriman
 
 ---
 
-# 🔥 Speed Checklist untuk Cursor
+# 🏢 5. SUPER ADMIN — BACKUP STATUS PAGE
 
-Gunakan prompt ini di Cursor (simpan juga sebagai script):
+> Untuk monitoring dan troubleshooting.
 
-```
-[Audit Mode]
-- Cari seluruh console.log
-- Cari plaintext password
-- Cari code yang berpotensi expose tenant lain
-- Cari raw SQL atau dynamic query
-- Cari missing await pada operasi DB
-- Cari fungsi non-transactional yang menyentuh stock/order/payment
-- Cari potensi race condition
-- Cari unused imports, dead code, commented blocks
-```
+## Fitur
 
-```
-[Refactor Mode]
-- Buat patch penghapusan console.log
-- Konversi semua operasi critical → Prisma.transaction()
-- Tambah idempotent key di order service
-- Standardize all error handlers
-```
+* [ ] Halaman baru: `/superadmin/backups`
+* [ ] Daftar backup harian tiap tenant:
 
-```
-[Security Mode]
-- Tambahkan CSP
-- Tambahkan sanitization
-- Tambahkan JWT rotation
-- Tambahkan Redis rate limit
-```
+  * [ ] Tenant name
+  * [ ] Last backup date
+  * [ ] Status (success/failed)
+  * [ ] Jumlah email terkirim
+* [ ] Bisa lihat laporan terakhir tiap tenant
+* [ ] Filter berdasarkan tanggal
+* [ ] Notifikasi error jika backup gagal 3 hari berturut-turut
 
-```
-[PWA Mode]
-- Buat manifest.json
-- Buat service worker dengan auto update
-- Buat offline fallback
-```
+## Technical
+
+* [ ] Tabel database baru: `BackupLog`
+
+  * id
+  * tenantId
+  * sentAt
+  * status
+  * size
+* [ ] API endpoints: GET logs, resync, regenerate
 
 ---
 
-# 📌 Catatan
+# 🧮 6. PRODUK REKOMENDASI HARGA (Price Suggestion)
 
-> Fokus pada produk yang **bisa dijual dan stabil**, bukan yang “wah tapi nggak dipakai market”.
+> UMKM sering bingung kasih harga. Bantu mereka ambil keputusan.
 
-Setelah Phase 1–2 selesai, kamu sudah siap *public beta*.
+## Fitur
 
----
+* [ ] Input HPP produk (bahan pokok)
+* [ ] Sistem memberi rekomendasi:
 
-# 🛠️ CURSOR.AI FULL CHECK COMMANDS (Tambahan)
+  * [ ] Harga jual 20% margin
+  * [ ] Harga jual 30% margin
+  * [ ] Harga jual "ramai pasaran"
+* [ ] Bisa klik "Gunakan harga ini" → update produk
+* [ ] Tampilkan rekomendasi langsung di form tambah produk
 
-## 12. 🔍 FULL FUNCTIONALITY CHECK (Cursor AI)
+## Technical
 
-Gunakan command berikut untuk menemukan error UI/UX, button tidak bekerja, event hilang, dan logic kacau:
+* [ ] Field baru: `hpp` (cost)
+* [ ] Endpoint `/product/price-suggestion`
+* [ ] Cara menentukan harga pasaran:
 
-### **[UI Event Audit]**
-
-```
-Cari di seluruh project:
-- Fungsi yang dipanggil tapi tidak ada implementasi
-- onClick/onSubmit/onChange yang referensinya undefined
-- Komponen yang import function yang tidak pernah digunakan
-- Komponen yang punya button tanpa handler
-- Emit event yang tidak ditangkap di parent
-- Handler async tanpa await (potensi race condition)
-- try/catch kosong di UI yang menelan error
-```
-
-### **[Component Wiring Audit]**
-
-```
-Audit semua .vue:
-- Cari `@click="*"` → pastikan semua method ada
-- Cari "TODO" dalam fungsi UI
-- Cari komponen yang memakai props tapi tidak diberikan dari parent
-- Cari komponen yang punya watch tapi logikanya kosong
-```
-
-### **[Event Flow Debug]**
-
-```
-Untuk setiap page POS:
-- Trace alur onClick dari button → method → service
-- Cari missing return
-- Cari missing await
-- Cari state yang diubah tapi UI tidak reactive
-```
-
-### **[Global Logic Checker]**
-
-```
-Audit seluruh project untuk:
-- Fungsi yang namanya sama tapi beda isi (duplikat)
-- Fungsi yang tidak dipakai (dead code)
-- Import yang salah path
-- Komponen yang tidak pernah dipakai
-```
+  * [ ] Ambil median penjualan rata-rata kategori (internal tenant)
+  * [ ] Simple analytics — tidak perlu AI dulu
 
 ---
 
-## 13. 🔎 PROGRAM OTOMATIS UNTUK FULL CHECK ✅ SELESAI
+# 🚨 7. REMINDER STOK HABIS OTOMATIS (POP-UP)
 
-* [x] Buat script `npm run check:ui`:
+> Pop-up sederhana tapi sangat berguna.
 
-  * [x] Scan semua `.vue` untuk mencari handler hilang
-  * [x] Scan import yang unresolved
-  * [x] Scan fungsi undefined
-  * [x] Scan props tanpa definisi
-  * [x] Scan komponen orphan
-* [x] Buat script `npm run check:logic`:
+## Fitur
 
-  * [x] Trace seluruh dependency tree service → cari circular
-  * [x] Cek semua async/await consistency
-  * [x] Cek fungsi kritikal tanpa error handling
-* [x] Buat script `npm run check:events`:
+* [ ] Pop-up otomatis ketika masuk POS jika ada produk:
 
-  * [x] Parse semua `@click`, `@change`, `@submit`
-  * [x] Validasi apakah method ada di `methods:`
-* [x] Integrasikan semua script ke package.json (`npm run check:full-auto`)
+  * stok = 0
+  * stok < minimal
+* [ ] Tampilkan list 5 produk paling kritikal
+* [ ] Tombol "Tambah Stok Cepat"
+* [ ] Tombol "Abaikan Hari Ini"
+
+## Technical
+
+* [ ] Endpoint `/inventory/low-stock`
+* [ ] Popup global component
+* [ ] Local suppression (per hari)
 
 ---
 
-# ✔️ Last Updated: (akan diperbarui setelah commit berikutnya)
+# 📋 8. TESTING (WAJIB UNTUK FASE INI)
+
+> Supaya fitur-fitur UMKM tidak gampang rusak.
+
+* [ ] Test offline transaction sync
+* [ ] Test stok update di mode offline → online
+* [ ] Test popup reminder
+* [ ] Test simple POS mode buttons
+* [ ] Test price suggestion endpoint
+* [ ] Test daily email backup cron
+
+---
+
+# 🔧 9. PWA OPTIMIZATION UNTUK UMKM
+
+* [ ] Cache foto produk
+* [ ] Cache layout POS Simple
+* [ ] Auto landscape lock
+* [ ] Splash screen custom
+* [ ] Icon besar untuk akses cepat
+
+---
+
+# 🏬 10. MULTI-STORE SIMPLE MODE (Untuk UMKM Omzet Besar)
+
+> Fitur untuk tenant dengan omzet 2–5 juta per hari. Tetap sederhana, tidak seperti ERP.
+
+## Fitur Inti
+
+* [ ] Multi store basic (maks. 3 cabang bawaan)
+* [ ] Halaman "Pilih Toko" saat login super admin tenant
+* [ ] Transfer stok antar store:
+
+  * [ ] Store A → Store B
+  * [ ] Store A → Store C
+  * [ ] Form transfer sederhana: pilih produk + qty
+  * [ ] Riwayat transfer antar cabang
+* [ ] Laporan gabungan antar store:
+
+  * [ ] Penjualan harian per store
+  * [ ] Penjualan gabungan semua store
+  * [ ] Stok per store
+* [ ] Role khusus "Supervisor Cabang":
+
+  * [ ] Bisa melihat stok & penjualan cabangnya saja
+  * [ ] Tidak bisa edit cabang lain
+
+## Technical
+
+* [ ] Tambahkan table `Store` (linked ke tenant)
+* [ ] Field baru `storeId` untuk produk, transaksi, stok
+* [ ] Endpoint `/store/transfer`
+* [ ] Mekanisme pengurangan stok cabang asal → penambahan cabang tujuan
+* [ ] Validasi stok cukup saat transfer
+* [ ] Laporan multi-store di endpoint `/reports/multi`
+
+## Alur UI Sederhana
+
+* [ ] Menu baru: **Manajemen Cabang**
+
+  * [ ] Tambah cabang (max 3 default)
+  * [ ] Edit cabang
+* [ ] Menu: **Transfer Stok**
+* [ ] Menu: **Laporan Cabang**
+
+---
+
+# 🧾 11. PAKET LANGGANAN (BASIC / PRO / MAX)
+
+> Struktur paket sederhana yang scalable tanpa bikin sistem jadi ERP.
+
+## 🎟️ BASIC – UMKM kecil
+
+* [ ] 1 store
+* [ ] 1 user kasir
+* [ ] Simple POS Mode
+* [ ] Offline-first
+* [ ] Reminder stok habis
+* [ ] Auto-backup email
+* [ ] Price suggestion (margin 20–30%)
+* [ ] Laporan harian basic
+* [ ] PWA + Auto landscape
+* [ ] Tanpa multi-store
+
+## ⚡ PRO – UMKM sedang–besar
+
+* [ ] Maksimal 3 store
+* [ ] 5 user
+* [ ] Semua fitur BASIC
+* [ ] Multi-store sederhana
+* [ ] Transfer stok antar store
+* [ ] Laporan per store + gabungan
+* [ ] Restock suggestion otomatis
+* [ ] Supervisor cabang role
+* [ ] Export laporan PDF/Excel
+
+## 🔴 MAX – Paket untuk UMKM besar / semi enterprise
+
+* [ ] Unlimited store
+* [ ] Unlimited user
+* [ ] Semua fitur PRO
+* [ ] Custom fitur (dari fitur yang tersedia)
+* [ ] Prioritas support
+* [ ] Import massal produk & stok
+* [ ] Custom laporan sederhana
+* [ ] API internal terbatas
+
+## Technical
+
+* [ ] Table `SubscriptionPlan`
+* [ ] Field baru pada tenant:
+
+  * [ ] `plan: basic | pro | max`
+  * [ ] `storeLimit`
+  * [ ] `userLimit`
+* [ ] Middleware limit fitur Berdasarkan paket
+* [ ] Endpoint `/tenant/upgrade`
+* [ ] Page baru: **Paket Langganan**
+* [ ] Halaman upgrade/downgrade tenant
+* [ ] Banner pengingat jika limit tercapai
+
+---
+
+# 🧩 12. ADDONS SYSTEM (Untuk Tenant Tanpa Langganan & Tenant Pro/Max)
+
+> Addons = fitur tambahan berbayar satuan. Cocok untuk tenant yang tidak ingin langganan paket.
+
+## Fitur Addons Utama (Hanya yang bernilai & tidak bikin sistem berat)
+
+* [ ] Addon: **Export Laporan (PDF/Excel)**
+* [ ] Addon: **Restock Suggestion** (jika tidak langganan PRO)
+* [ ] Addon: **Transfer Stok Antar Store** (jika tenant punya >1 store manual)
+* [ ] Addon: **Supervisor Role**
+* [ ] Addon: **Price Recommendation Plus** (margin custom)
+* [ ] Addon: **Import Massal** (produk, stok, pelanggan)
+
+> Addons ini adalah versi modular dari fitur PRO/MAX tanpa perlu paket penuh.
+
+---
+
+## Checklist Cek Route & Error Prevention
+
+* [ ] Validasi semua route addons:
+
+  * [ ] `/addons/list`
+  * [ ] `/addons/activate`
+  * [ ] `/addons/deactivate`
+  * [ ] `/addons/status`
+* [ ] Middleware addons-permission:
+
+  * [ ] Jika route butuh addon → cek tenant aktif
+  * [ ] Jika tidak aktif → return error simple + CTA beli addon
+* [ ] Audit 404 route untuk addons lama yang dihapus
+* [ ] Hapus route addons yang sudah dipangkas sebelumnya
+* [ ] Pastikan semua komponen yang memanggil addon memiliki guard:
+
+  * [ ] UI tampil → hanya jika addon aktif
+  * [ ] Button disable → jika addon tidak aktif
+
+---
+
+## Tambah ke TODO: Sistem Pengelolaan Addons
+
+* [ ] Table `Addon` (nama, slug, deskripsi, harga)
+* [ ] Table `TenantAddon` (tenantId, addonId, activeAt, expiredAt)
+* [ ] Backend logic aktivasi addon
+* [ ] Expired addons checker (cron job harian)
+* [ ] Page di tenant settings:
+
+  * [ ] "Marketplace Addons"
+  * [ ] Tombol aktifkan → pembayaran manual di awal
+* [ ] Notifikasi jika addon mendekati masa habis (3 hari sebelumnya)
+
+---
+
+## Addons Lama yang Sudah Dipangkas (DIPASTIKAN TERHAPUS)
+
+*(Ini sudah tidak dimasukkan agar project kamu tidak kacau)*
+
+* ❌ AI Analytics Addon
+* ❌ Integrasi marketplace eksternal
+* ❌ FCM Notifications
+* ❌ Automasi Webhooks (N8N)
+* ❌ Multi-gudang tingkat ERP
+* ❌ Audit log enterprise
+
+Semua *sudah dibuang* dan **tidak muncul lagi di TODO**.
+Jika kamu butuh mengembalikan salah satu, tinggal bilang.
+
+---
+
+# ✔️ Completed akan tinggal ditandai nanti.
+
+Dokumen ini bisa digabung ke roadmap besar atau dieksekusi terpisah untuk fase UMKM-focused.

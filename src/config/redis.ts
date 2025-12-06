@@ -10,6 +10,7 @@ const initializeRedis = async (): Promise<void> => {
   if (!env.REDIS_URL && (!env.REDIS_HOST || env.REDIS_HOST.trim() === '')) {
     throw new Error('Redis is required but not configured. Please set REDIS_URL or REDIS_HOST in environment variables.');
   }
+};
 
 export const getRedisClient = (): Redis => {
   // Redis is MANDATORY for production
