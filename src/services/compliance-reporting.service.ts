@@ -146,12 +146,12 @@ class ComplianceReportingService {
             action: 'DATA_DELETION',
             resource: 'USER',
             resourceId: request.userId,
-            metadata: JSON.stringify({
+            details: JSON.stringify({
               reason: request.reason,
               deletePersonalData: request.deletePersonalData,
               anonymizeTransactions: request.anonymizeTransactions,
+              severity: 'HIGH',
             }),
-            severity: 'HIGH',
           },
         });
       }

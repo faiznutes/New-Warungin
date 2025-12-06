@@ -83,11 +83,13 @@ class AdvancedAuditService {
           action: event.action,
           resource: event.resource,
           resourceId: event.resourceId,
-          changes: event.changes ? JSON.stringify(event.changes) : null,
+          details: event.changes || event.metadata ? JSON.stringify({
+            changes: event.changes,
+            metadata: event.metadata,
+            severity: event.severity,
+          }) : null,
           ipAddress: event.ipAddress,
           userAgent: event.userAgent,
-          metadata: event.metadata ? JSON.stringify(event.metadata) : null,
-          severity: event.severity,
         },
       });
 
@@ -229,7 +231,8 @@ class AdvancedAuditService {
       if (query.userId) where.userId = query.userId;
       if (query.action) where.action = query.action;
       if (query.resource) where.resource = query.resource;
-      if (query.severity) where.severity = query.severity;
+      // Severity is stored in details JSON, filter by action instead
+      // if (query.severity) where.action = query.severity;
       if (query.startDate || query.endDate) {
         where.createdAt = {};
         if (query.startDate) where.createdAt.gte = query.startDate;
@@ -256,11 +259,15 @@ class AdvancedAuditService {
       ]);
 
       return {
-        data: logs.map(log => ({
-          ...log,
-          changes: log.changes ? JSON.parse(log.changes) : null,
-          metadata: log.metadata ? JSON.parse(log.metadata) : null,
-        })),
+        data: logs.map(log => {
+          const details = log.details ? (typeof log.details === 'string' ? JSON.parse(log.details) : log.details) : null;
+          return {
+            ...log,
+            changes: details?.changes || null,
+            metadata: details?.metadata || null,
+            severity: details?.severity || 'MEDIUM',
+          };
+        }),
         pagination: {
           page,
           limit,
@@ -294,10 +301,11 @@ class AdvancedAuditService {
           where,
           _count: { action: true },
         }),
+        // Group by action instead of severity (severity not in schema)
         prisma.auditLog.groupBy({
-          by: ['severity'],
+          by: ['action'],
           where,
-          _count: { severity: true },
+          _count: { action: true },
         }),
         prisma.auditLog.groupBy({
           by: ['userId'],
@@ -313,7 +321,7 @@ class AdvancedAuditService {
           return acc;
         }, {} as Record<string, number>),
         bySeverity: bySeverity.reduce((acc, item) => {
-          acc[item.severity] = item._count.severity;
+          acc[item.action] = item._count.action;
           return acc;
         }, {} as Record<string, number>),
         byUser: byUser.reduce((acc, item) => {
@@ -342,7 +350,7 @@ class AdvancedAuditService {
           log.action,
           log.resource,
           log.resourceId || '',
-          log.severity,
+          (log.details && typeof log.details === 'object' ? (log.details as any).severity : 'MEDIUM'),
           log.ipAddress || '',
         ]);
 

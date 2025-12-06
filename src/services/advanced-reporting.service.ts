@@ -164,7 +164,7 @@ class AdvancedReportingService {
         data = orders;
         summary = {
           totalOrders: orders.length,
-          totalRevenue: orders.reduce((sum, o) => sum + Number(o.totalAmount), 0),
+          totalRevenue: orders.reduce((sum, o) => sum + Number(o.total), 0),
         };
       } else if (template.type === 'INVENTORY') {
         const products = await prisma.product.findMany({ where: { tenantId } });
