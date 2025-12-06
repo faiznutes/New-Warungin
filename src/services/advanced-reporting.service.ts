@@ -403,7 +403,8 @@ class AdvancedReportingService {
           );
 
           // Export report in requested format
-          const exportedReport = await this.exportReport(reportData, scheduledReport.format);
+          const format = scheduledReport.format as 'PDF' | 'EXCEL' | 'CSV' | 'HTML';
+          const exportedReport = await this.exportReport(reportData, format);
 
           // Send via email
           for (const recipient of scheduledReport.recipients) {
