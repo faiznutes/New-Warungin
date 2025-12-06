@@ -426,7 +426,23 @@ router.post(
       const maxDays = 730; // 2 years
       const archiveDays = olderThanDays && olderThanDays <= maxDays ? olderThanDays : maxDays;
       
-      const tenantId = req.body.tenantId || requireTenantId(req);
+      // SUPER_ADMIN can archive all tenants or specific tenant
+      const tenantId = req.body.tenantId || (req.query.tenantId as string) || null;
+      if (!tenantId && req.role === 'SUPER_ADMIN') {
+        // Archive all tenants
+        const allTenants = await prisma.tenant.findMany({ select: { id: true } });
+        let totalCount = 0;
+        for (const tenant of allTenants) {
+          totalCount += await archiveService.archiveOldTransactions(tenant.id, archiveDays);
+        }
+        return res.json({
+          message: `Archived ${totalCount} transactions from all tenants`,
+          count: totalCount,
+        });
+      }
+      if (!tenantId) {
+        return res.status(400).json({ message: 'Tenant ID is required' });
+      }
       const count = await archiveService.archiveOldTransactions(tenantId, archiveDays);
       res.json({
         message: `Archived ${count} transactions`,

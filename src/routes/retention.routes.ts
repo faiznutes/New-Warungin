@@ -95,10 +95,12 @@ router.get(
           contactSubmissionsToDelete: 0,
           demoRequestsToDelete: 0,
         });
-        return res.json(totalStats);
+        res.json(totalStats);
+        return;
       }
       if (!tenantId) {
-        return res.status(400).json({ message: 'Tenant ID is required' });
+        res.status(400).json({ message: 'Tenant ID is required' });
+        return;
       }
       const policy = req.query.policy ? JSON.parse(req.query.policy as string) : undefined;
       const stats = await retentionService.getRetentionStats(tenantId, policy);
