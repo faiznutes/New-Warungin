@@ -424,25 +424,41 @@ const getActiveAddons = (): any[] => {
 };
 
 // Helper function to safely set activeAddons (always ensures it's an array)
+// NORMALISASI DATA: Setiap data yang masuk akan dinormalisasi menjadi array
 const setActiveAddons = (value: any): void => {
   try {
+    // LOGGING untuk debugging - log tipe dan isi data yang masuk
+    console.log('[AppLayout] setActiveAddons called with:', {
+      type: typeof value,
+      isArray: Array.isArray(value),
+      value: value,
+      hasData: value?.data ? 'yes' : 'no',
+      hasAddons: value?.addons ? 'yes' : 'no'
+    });
+    
+    // NORMALISASI: Pastikan selalu array
     if (Array.isArray(value)) {
       _activeAddons.value = value;
+      console.log('[AppLayout] setActiveAddons: Set as array, length:', value.length);
       return;
     }
     if (value && typeof value === 'object') {
       if (Array.isArray(value.data)) {
         _activeAddons.value = value.data;
+        console.log('[AppLayout] setActiveAddons: Extracted from value.data, length:', value.data.length);
         return;
       }
       if (Array.isArray(value.addons)) {
         _activeAddons.value = value.addons;
+        console.log('[AppLayout] setActiveAddons: Extracted from value.addons, length:', value.addons.length);
         return;
       }
     }
+    // FALLBACK: Jika tidak valid, set ke array kosong
     _activeAddons.value = [];
+    console.log('[AppLayout] setActiveAddons: Invalid data, set to empty array');
   } catch (error) {
-    console.error('Error in setActiveAddons:', error);
+    console.error('[AppLayout] Error in setActiveAddons:', error);
     _activeAddons.value = [];
   }
 };
@@ -579,14 +595,25 @@ const loadAddons = async () => {
   if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN') {
     try {
       const response = await api.get('/addons');
-      // Use helper function to safely set (always ensures array)
+      
+      // LOGGING: Log response structure untuk debugging
+      console.log('[AppLayout] loadAddons - API Response:', {
+        type: typeof response?.data,
+        isArray: Array.isArray(response?.data),
+        hasData: response?.data?.data ? 'yes' : 'no',
+        hasAddons: response?.data?.addons ? 'yes' : 'no',
+        data: response?.data
+      });
+      
+      // NORMALISASI: Use helper function to safely set (always ensures array)
       setActiveAddons(response.data);
     } catch (error) {
-      console.error('Failed to load addons:', error);
+      console.error('[AppLayout] Failed to load addons:', error);
+      // FALLBACK: Set ke array kosong jika error
       setActiveAddons([]);
     }
     
-    // Final validation using helper function
+    // GUARD CLAUSE: Final validation using helper function
     getActiveAddons(); // This will auto-fix if needed
   }
 };

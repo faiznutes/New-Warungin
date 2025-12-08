@@ -585,25 +585,41 @@ const getActiveAddons = (): any[] => {
 };
 
 // Helper function to safely set activeAddons (always ensures it's an array)
+// NORMALISASI DATA: Setiap data yang masuk akan dinormalisasi menjadi array
 const setActiveAddons = (value: any): void => {
   try {
+    // LOGGING untuk debugging - log tipe dan isi data yang masuk
+    console.log('[Dashboard] setActiveAddons called with:', {
+      type: typeof value,
+      isArray: Array.isArray(value),
+      value: value,
+      hasData: value?.data ? 'yes' : 'no',
+      hasAddons: value?.addons ? 'yes' : 'no'
+    });
+    
+    // NORMALISASI: Pastikan selalu array
     if (Array.isArray(value)) {
       _activeAddons.value = value;
+      console.log('[Dashboard] setActiveAddons: Set as array, length:', value.length);
       return;
     }
     if (value && typeof value === 'object') {
       if (Array.isArray(value.data)) {
         _activeAddons.value = value.data;
+        console.log('[Dashboard] setActiveAddons: Extracted from value.data, length:', value.data.length);
         return;
       }
       if (Array.isArray(value.addons)) {
         _activeAddons.value = value.addons;
+        console.log('[Dashboard] setActiveAddons: Extracted from value.addons, length:', value.addons.length);
         return;
       }
     }
+    // FALLBACK: Jika tidak valid, set ke array kosong
     _activeAddons.value = [];
+    console.log('[Dashboard] setActiveAddons: Invalid data, set to empty array');
   } catch (error) {
-    console.error('Error in setActiveAddons:', error);
+    console.error('[Dashboard] Error in setActiveAddons:', error);
     _activeAddons.value = [];
   }
 };
@@ -909,15 +925,27 @@ const loadAddons = async () => {
   try {
     const response = await api.get('/addons');
     
-    // Extract addons data with multiple fallbacks
+    // LOGGING: Log response structure untuk debugging
+    console.log('[Dashboard] loadActiveAddons - API Response:', {
+      type: typeof response?.data,
+      isArray: Array.isArray(response?.data),
+      hasData: response?.data?.data ? 'yes' : 'no',
+      hasAddons: response?.data?.addons ? 'yes' : 'no',
+      data: response?.data
+    });
+    
+    // NORMALISASI: Extract addons data with multiple fallbacks
     let addonsData: any = null;
     if (response?.data) {
       if (Array.isArray(response.data)) {
         addonsData = response.data;
+        console.log('[Dashboard] loadActiveAddons: Using response.data as array, length:', addonsData.length);
       } else if (response.data.data && Array.isArray(response.data.data)) {
         addonsData = response.data.data;
+        console.log('[Dashboard] loadActiveAddons: Using response.data.data, length:', addonsData.length);
       } else if (response.data.addons && Array.isArray(response.data.addons)) {
         addonsData = response.data.addons;
+        console.log('[Dashboard] loadActiveAddons: Using response.data.addons, length:', addonsData.length);
       }
     }
     

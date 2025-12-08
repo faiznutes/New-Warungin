@@ -2,6 +2,15 @@
  * Safe wrapper for array methods
  * Ensures we always have a valid array before calling array methods
  * This prevents "B.value.some is not a function" errors
+ * 
+ * DOKUMENTASI STRUKTUR DATA:
+ * - activeAddons.value: SELALU array of Addon objects
+ *   Struktur: [{ addonId: string, addonType: string, status: string, ... }]
+ * - availableAddons.value: SELALU array of AvailableAddon objects
+ *   Struktur: [{ id: string, name: string, type: string, price: number, ... }]
+ * 
+ * NORMALISASI: Semua data dari API akan dinormalisasi menjadi array sebelum digunakan
+ * FALLBACK: Jika data tidak valid, akan dikembalikan ke array kosong []
  */
 export const safeArrayMethod = <T>(
   arr: any,
@@ -21,6 +30,14 @@ export const safeArrayMethod = <T>(
 /**
  * Ensure value is always an array
  * Auto-fixes if value is not an array
+ * 
+ * NORMALISASI: Mencoba extract array dari berbagai struktur object
+ * - value.data (jika array)
+ * - value.addons (jika array)
+ * - value.items (jika array)
+ * - value.results (jika array)
+ * 
+ * FALLBACK: Mengembalikan defaultValue (default: []) jika tidak valid
  */
 export const ensureArray = <T>(value: any, defaultValue: T[] = []): T[] => {
   try {
@@ -44,6 +61,7 @@ export const ensureArray = <T>(value: any, defaultValue: T[] = []): T[] => {
 
 /**
  * Safe .some() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .some()
  */
 export const safeSome = <T>(
   arr: any,
@@ -58,6 +76,7 @@ export const safeSome = <T>(
 
 /**
  * Safe .filter() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .filter()
  */
 export const safeFilter = <T>(
   arr: any,
@@ -72,6 +91,7 @@ export const safeFilter = <T>(
 
 /**
  * Safe .map() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .map()
  */
 export const safeMap = <T, R>(
   arr: any,
@@ -86,6 +106,7 @@ export const safeMap = <T, R>(
 
 /**
  * Safe .find() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .find()
  */
 export const safeFind = <T>(
   arr: any,
@@ -100,6 +121,7 @@ export const safeFind = <T>(
 
 /**
  * Safe .reduce() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .reduce()
  */
 export const safeReduce = <T, R>(
   arr: any,
@@ -115,6 +137,7 @@ export const safeReduce = <T, R>(
 
 /**
  * Safe .findIndex() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .findIndex()
  */
 export const safeFindIndex = <T>(
   arr: any,
@@ -129,6 +152,7 @@ export const safeFindIndex = <T>(
 
 /**
  * Safe .every() method
+ * GUARD CLAUSE: Memastikan array sebelum memanggil .every()
  */
 export const safeEvery = <T>(
   arr: any,

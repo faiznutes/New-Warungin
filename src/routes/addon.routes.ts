@@ -42,11 +42,22 @@ router.get(
       const limit = parseInt(req.query.limit as string) || 50; // Default 50 for addons (usually small list)
       const result = await addonService.getTenantAddons(tenantId, page, limit);
       
-      // Ensure data is always an array
+      // NORMALISASI: Ensure data is always an array
+      // REVIEW API: Konsistenkan response structure - selalu return { data: [], pagination: {} }
       if (result && result.data) {
         result.data = Array.isArray(result.data) ? result.data : [];
       } else {
         result.data = [];
+      }
+      
+      // LOGGING: Log response structure untuk debugging (hanya di development)
+      if (process.env.NODE_ENV === 'development') {
+        logger.info('GET /addons response:', {
+          tenantId,
+          dataType: typeof result.data,
+          isArray: Array.isArray(result.data),
+          dataLength: Array.isArray(result.data) ? result.data.length : 0
+        });
       }
       
       res.json(result);

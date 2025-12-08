@@ -238,19 +238,60 @@ const loadAddons = async () => {
       api.get('/addons'),
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
-    availableAddons.value = availableRes.data;
-    // Ensure activeAddons is always an array
-    const addonsData = activeRes.data?.data || activeRes.data || [];
+    
+    // LOGGING: Log response structure untuk debugging
+    console.log('[Addons] API Response - availableRes:', {
+      type: typeof availableRes.data,
+      isArray: Array.isArray(availableRes.data),
+      data: availableRes.data
+    });
+    console.log('[Addons] API Response - activeRes:', {
+      type: typeof activeRes.data,
+      isArray: Array.isArray(activeRes.data),
+      hasData: activeRes.data?.data ? 'yes' : 'no',
+      data: activeRes.data
+    });
+    
+    // NORMALISASI: Pastikan availableAddons selalu array
+    if (Array.isArray(availableRes.data)) {
+      availableAddons.value = availableRes.data;
+    } else {
+      console.warn('[Addons] availableRes.data is not array, setting to empty array');
+      availableAddons.value = [];
+    }
+    
+    // NORMALISASI: Pastikan activeAddons selalu array dengan multiple fallbacks
+    let addonsData: any = null;
+    if (activeRes?.data) {
+      if (Array.isArray(activeRes.data)) {
+        addonsData = activeRes.data;
+      } else if (activeRes.data.data && Array.isArray(activeRes.data.data)) {
+        addonsData = activeRes.data.data;
+      } else if (activeRes.data.addons && Array.isArray(activeRes.data.addons)) {
+        addonsData = activeRes.data.addons;
+      }
+    }
+    
+    // FALLBACK: Jika tidak valid, set ke array kosong
     activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
+    console.log('[Addons] Normalized activeAddons, length:', activeAddons.value.length);
+    
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
-    console.error('Error loading addons:', error);
+    console.error('[Addons] Error loading addons:', error);
+    // FALLBACK: Set ke array kosong jika error
     activeAddons.value = [];
+    availableAddons.value = [];
   } finally {
     loading.value = false;
-    // Final safety check
+    // GUARD CLAUSE: Final safety check
     if (!Array.isArray(activeAddons.value)) {
+      console.warn('[Addons] activeAddons is not array in finally, fixing...');
       activeAddons.value = [];
+    }
+    if (!Array.isArray(availableAddons.value)) {
+      console.warn('[Addons] availableAddons is not array in finally, fixing...');
+      availableAddons.value = [];
     }
   }
 };

@@ -1,0 +1,110 @@
+TODO WAJIB (Urut Berdasarkan Dampak)
+1. Audit semua variabel .value yang kamu pakai
+
+Terlalu jelas bahwa kamu pakai reactive variable (Vue/React/whatever) tanpa memastikan tipe datanya benar.
+Checklist:
+
+Telusuri semua B.value
+
+Cek apakah data yang masuk selalu array
+
+Kalau nggak, tetapkan bentuk default (misal: [])
+
+2. Tambahkan normalisasi data sebelum dipakai
+
+Setiap kali kamu terima data dari:
+
+API
+
+props
+
+event
+
+form
+
+localStorage
+… kamu HARUS pastikan bentuknya konsisten.
+
+Todo teknis:
+
+B.value = Array.isArray(B.value) ? B.value : [];
+
+
+atau
+
+B.value = Array.isArray(raw) ? raw : [raw];
+
+
+Ini menghentikan error sejenis dari akar.
+
+3. Pasang guard clause sebelum .some, .map, .filter
+
+Selama kamu nggak disiplin, minimal cegah kecelakaan:
+
+if (!Array.isArray(B.value)) return;
+
+
+Ini murah tapi efektif.
+
+4. Logging input untuk fase debugging
+
+Masalah besar kamu: kamu nggak nge-log apa yang kamu terima.
+Padahal satu console.log bisa menghemat 30 menit debugging.
+
+Todo:
+
+Tambahkan log tiap kali B.value berubah
+
+Log tipe dan isinya
+
+Contoh:
+
+console.log("B.value updated:", B.value);
+
+5. Review semua API/backend yang supply data
+
+Seringkali error kayak gini muncul karena backend kirim data beda bentuk:
+
+Kadang array
+
+Kadang object tunggal
+
+Kadang null
+
+Checklist:
+
+Konsistenkan API (harus array? harus object?)
+
+Atau normalize di frontend
+
+Kalau API-nya kamu sendiri: perbaiki.
+Kalau API orang lain: normalize.
+
+6. Dokumentasikan struktur data kamu
+
+Kalau kamu nggak bisa menjelaskan bentuk B.value dengan 1 kalimat jelas, berarti kamu tidak punya kontrol atas data kamu.
+
+Todo:
+
+Buat catatan singkat: “B.value selalu array of …”
+
+Tempelkan di tempat kamu baca datanya.
+
+7. Tambahkan fallback value di init state
+
+Setiap state wajib punya bentuk default:
+
+const B = ref([]);
+
+
+Bukan:
+
+const B = ref();
+
+
+atau
+
+let B;
+
+
+Kamu bikin error sendiri dari awal.
