@@ -272,7 +272,6 @@ const isAddonActive = (addonId: string) => {
     console.error('Error checking addon active status:', error);
     return false;
   }
-  });
 };
 
 // Check if addon has limit (can be purchased multiple times)
