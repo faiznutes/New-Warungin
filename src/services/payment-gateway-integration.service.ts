@@ -386,7 +386,7 @@ class PaymentGatewayIntegrationService {
         paymentId,
         status,
         amount: data.amount?.value || 0,
-        transactionTime: data.transactionDate,
+        paidAt: data.transactionDate ? new Date(data.transactionDate) : undefined,
         externalId: data.referenceNo,
       };
     } catch (error: any) {

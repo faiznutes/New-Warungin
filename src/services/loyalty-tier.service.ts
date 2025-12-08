@@ -274,10 +274,10 @@ class LoyaltyTierService {
         where: {
           tenantId,
           isActive: true,
-          validFrom: {
+          startDate: {
             lte: new Date(),
           },
-          validUntil: {
+          endDate: {
             gte: new Date(),
           },
         },
