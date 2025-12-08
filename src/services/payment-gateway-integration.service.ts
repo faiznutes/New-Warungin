@@ -387,7 +387,6 @@ class PaymentGatewayIntegrationService {
         status,
         amount: data.amount?.value || 0,
         paidAt: data.transactionDate ? new Date(data.transactionDate) : undefined,
-        externalId: data.referenceNo,
       };
     } catch (error: any) {
       logger.error('OVO status check failed', { 
@@ -447,8 +446,7 @@ class PaymentGatewayIntegrationService {
         paymentId,
         status,
         amount: data.amount || 0,
-        transactionTime: data.paidAt || data.createdAt,
-        externalId: data.transactionId,
+        paidAt: data.paidAt || data.createdAt ? new Date(data.paidAt || data.createdAt) : undefined,
       };
     } catch (error: any) {
       logger.error('DANA status check failed', { 
@@ -504,8 +502,7 @@ class PaymentGatewayIntegrationService {
         paymentId,
         status,
         amount: data.amount || 0,
-        transactionTime: data.transactionTime,
-        externalId: data.linkAjaTransactionId,
+        paidAt: data.transactionTime ? new Date(data.transactionTime) : undefined,
       };
     } catch (error: any) {
       logger.error('LinkAja status check failed', { 
