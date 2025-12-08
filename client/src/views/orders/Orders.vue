@@ -231,7 +231,7 @@
             Refund ({{ selectedOrders.length }})
           </button>
           <button
-            v-if="canDeleteOrders && selectedOrders.every(o => o.status === 'CANCELLED' || o.status === 'REFUNDED')"
+            v-if="canDeleteOrders && canDeleteSelectedOrders"
             @click="bulkDelete"
             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
           >
@@ -1012,7 +1012,7 @@ const deleteAllOrders = async () => {
   if (!confirmed) return;
 
   try {
-    const orderIds = deletableOrders.map(o => o.id);
+    const orderIds = safeMap(deletableOrders, (o: any) => o?.id);
     const response = await api.post('/orders/bulk-delete', { orderIds });
     
     if (response.data.deleted > 0) {

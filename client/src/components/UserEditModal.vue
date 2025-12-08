@@ -300,7 +300,7 @@ import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import api from '../api';
 import { useAuthStore } from '../stores/auth';
 import { useNotification } from '../composables/useNotification';
-import { safeFilter, safeMap } from '../utils/array-helpers';
+import { safeFilter, safeMap, safeEvery } from '../utils/array-helpers';
 
 const authStore = useAuthStore();
 const { error: showError, success: showSuccess } = useNotification();
