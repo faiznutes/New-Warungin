@@ -330,28 +330,28 @@
           
           <template v-else>
           <!-- Bulk Actions Bar -->
-          <div v-if="selectedUsers.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
+          <div v-if="Array.isArray(selectedUsers) && selectedUsers.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
               <span class="text-sm font-medium text-blue-900">
-                {{ selectedUsers.length }} pengguna dipilih
+                {{ Array.isArray(selectedUsers) ? selectedUsers.length : 0 }} pengguna dipilih
               </span>
               <button
-                v-if="selectedUsers.some(u => !u.isActive)"
+                v-if="Array.isArray(selectedUsers) && selectedUsers.some(u => !u.isActive)"
                 @click="bulkActivateUsers"
                 class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
               >
-                Aktifkan ({{ selectedUsers.filter(u => !u.isActive).length }})
+                Aktifkan ({{ Array.isArray(selectedUsers) ? selectedUsers.filter(u => !u.isActive).length : 0 }})
               </button>
               <button
-                v-if="selectedUsers.some(u => u.isActive)"
+                v-if="Array.isArray(selectedUsers) && selectedUsers.some(u => u.isActive)"
                 @click="bulkDeactivateUsers"
                 class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
               >
-                Nonaktifkan ({{ selectedUsers.filter(u => u.isActive).length }})
+                Nonaktifkan ({{ Array.isArray(selectedUsers) ? selectedUsers.filter(u => u.isActive).length : 0 }})
               </button>
             </div>
             <button
-              @click="selectedUsers = []"
+              @click="selectedUsers = [] as any[]"
               class="text-sm text-blue-600 hover:text-blue-800"
             >
               Batal pilihan
@@ -365,7 +365,7 @@
                 <th class="px-4 py-3 text-left">
                   <input
                     type="checkbox"
-                    :checked="selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
+                    :checked="Array.isArray(selectedUsers) && Array.isArray(tenantUsers) && selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
                     @change="toggleSelectAllUsers"
                     class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
@@ -1116,6 +1116,7 @@ const getAddonDaysRemaining = (addon: Addon) => {
 };
 
 const isAddonActive = (addonId: string) => {
+  if (!Array.isArray(activeAddons.value)) return false;
   const now = new Date();
   return activeAddons.value.some(a => {
     if (a.addonId !== addonId) return false;
@@ -1349,10 +1350,12 @@ const toggleStoreStatus = async (store: any) => {
 
 // Bulk user operations
 const isUserSelected = (userId: string) => {
+  if (!Array.isArray(selectedUsers.value)) return false;
   return selectedUsers.value.some(u => u.id === userId);
 };
 
 const toggleUserSelection = (user: any) => {
+  if (!Array.isArray(selectedUsers.value)) selectedUsers.value = [];
   const index = selectedUsers.value.findIndex(u => u.id === user.id);
   if (index > -1) {
     selectedUsers.value.splice(index, 1);
@@ -1362,6 +1365,9 @@ const toggleUserSelection = (user: any) => {
 };
 
 const toggleSelectAllUsers = () => {
+  if (!Array.isArray(selectedUsers.value)) selectedUsers.value = [];
+  if (!Array.isArray(tenantUsers.value)) return;
+  
   if (selectedUsers.value.length === tenantUsers.value.length) {
     selectedUsers.value = [];
   } else {
@@ -1370,6 +1376,7 @@ const toggleSelectAllUsers = () => {
 };
 
 const bulkActivateUsers = async () => {
+  if (!Array.isArray(selectedUsers.value)) return;
   const inactiveUsers = selectedUsers.value.filter(u => !u.isActive);
   if (inactiveUsers.length === 0) return;
   
@@ -1401,6 +1408,7 @@ const bulkActivateUsers = async () => {
 };
 
 const bulkDeactivateUsers = async () => {
+  if (!Array.isArray(selectedUsers.value)) return;
   const activeUsers = selectedUsers.value.filter(u => u.isActive);
   if (activeUsers.length === 0) return;
   
