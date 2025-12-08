@@ -826,7 +826,9 @@ let countdownInterval: NodeJS.Timeout | null = null;
 const loadAddons = async () => {
   try {
     const response = await api.get('/addons');
-    activeAddons.value = response.data || [];
+    // Ensure activeAddons is always an array
+    const addonsData = response.data?.data || response.data || [];
+    activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
   } catch (error: any) {
     // Silently fail if addons can't be loaded
     console.error('Error loading addons:', error);
@@ -1011,10 +1013,10 @@ const renderCharts = () => {
     topProductsChart = new Chart(topProductsCtx, {
       type: 'bar',
       data: {
-        labels: stats.value.charts.topProducts.map((p: any) => p.name),
+        labels: Array.isArray(stats.value.charts.topProducts) ? stats.value.charts.topProducts.map((p: any) => p.name) : [],
         datasets: [{
           label: 'Jumlah Terjual',
-          data: stats.value.charts.topProducts.map((p: any) => p.quantity),
+          data: Array.isArray(stats.value.charts.topProducts) ? stats.value.charts.topProducts.map((p: any) => p.quantity) : [],
           backgroundColor: 'rgba(75, 192, 192, 0.6)',
           borderColor: 'rgba(75, 192, 192, 1)',
           borderWidth: 1,
@@ -1037,9 +1039,9 @@ const renderCharts = () => {
     salesByStatusChart = new Chart(salesByStatusCtx, {
       type: 'pie',
       data: {
-        labels: stats.value.charts.salesByStatus.map((s: any) => getStatusLabel(s.status)),
+        labels: Array.isArray(stats.value.charts.salesByStatus) ? stats.value.charts.salesByStatus.map((s: any) => getStatusLabel(s.status)) : [],
         datasets: [{
-          data: stats.value.charts.salesByStatus.map((s: any) => s.count),
+          data: Array.isArray(stats.value.charts.salesByStatus) ? stats.value.charts.salesByStatus.map((s: any) => s.count) : [],
           backgroundColor: [
             'rgba(255, 206, 86, 0.6)', // PENDING
             'rgba(54, 162, 235, 0.6)', // PROCESSING
@@ -1082,12 +1084,4 @@ watch(() => authStore.currentTenantId, () => {
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Only load stats if user is authenticated
-  if (authStore.isAuthenticated) {
-    loadStats();
-  }
-});
-
-onUnmounted(() => {
-  stopCountdown();
-});
-</script>
+  if (authSto
