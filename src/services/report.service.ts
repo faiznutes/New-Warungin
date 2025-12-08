@@ -299,49 +299,8 @@ export class ReportService {
         };
       });
 
-      // Calculate total global revenue
+      // Calculate total global revenue (only from subscription + addon, NOT tenant orders)
       const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
-
-      // Get tenant reports (orders per tenant)
-      const tenantReports = await Promise.all(
-        tenants.map(async (tenant) => {
-          const tenantOrders = await readReplica.order.findMany({
-            where: {
-              tenantId: tenant.id,
-              status: 'COMPLETED',
-              ...(start || end ? {
-                createdAt: {
-                  ...(start ? { gte: start } : {}),
-                  ...(end ? { lte: end } : {}),
-                },
-              } : {}),
-            },
-          });
-
-          const tenantTransactions = await readReplica.transaction.findMany({
-            where: {
-              tenantId: tenant.id,
-              status: 'COMPLETED',
-              ...(start || end ? {
-                createdAt: {
-                  ...(start ? { gte: start } : {}),
-                  ...(end ? { lte: end } : {}),
-                },
-              } : {}),
-            },
-          });
-
-          const totalRevenue = tenantTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
-          const totalOrders = tenantOrders.length;
-
-          return {
-            tenantId: tenant.id,
-            tenantName: tenant.name,
-            totalRevenue,
-            totalOrders,
-          };
-        })
-      );
 
       const result = {
         summary: {
@@ -353,16 +312,16 @@ export class ReportService {
         },
         subscriptions: subscriptionList,
         addons: addonList,
-        tenantReports,
       };
       
-      logger.info('Global report generated successfully', {
+      logger.info('Global report generated successfully (subscription + addon revenue only)', {
         totalGlobalRevenue,
         totalSubscriptionRevenue,
         totalAddonRevenue,
         subscriptionCount: subscriptionList.length,
         addonCount: addonList.length,
-        tenantCount: tenants.length,
+        activeTenants: tenants.filter(t => t.isActive).length,
+        totalTenants: tenants.length,
       });
       
       return result;

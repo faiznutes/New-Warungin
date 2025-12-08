@@ -163,7 +163,7 @@ onMounted(() => {
   if (authStore.isAuthenticated) {
     const redirect = route.query.redirect as string;
     if (redirect) {
-      router.push(redirect);
+    router.push(redirect);
     } else {
       // Router guard will handle redirect to appropriate dashboard
       router.push('/app');
@@ -234,7 +234,7 @@ const handleLogin = async () => {
       // Redirect to intended destination or appropriate dashboard based on role
       const redirect = route.query.redirect as string;
       if (redirect) {
-        router.push(redirect);
+      router.push(redirect);
       } else {
         // Directly redirect to appropriate dashboard based on role
         // Double check user role to ensure correct redirect
@@ -304,7 +304,7 @@ const handleStoreSelectorClose = () => {
   // Redirect to intended destination or appropriate dashboard based on role
   const redirect = route.query.redirect as string;
   if (redirect) {
-    router.push(redirect);
+  router.push(redirect);
   } else {
     // Directly redirect to appropriate dashboard based on role
     const userRole = authStore.user?.role;
@@ -321,7 +321,7 @@ const handleStoreSelected = (storeId: string) => {
   // Redirect to intended destination or appropriate dashboard based on role
   const redirect = route.query.redirect as string;
   if (redirect) {
-    router.push(redirect);
+  router.push(redirect);
   } else {
     // Directly redirect to appropriate dashboard based on role
     const userRole = authStore.user?.role;

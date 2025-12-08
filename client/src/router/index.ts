@@ -460,7 +460,7 @@ router.beforeEach(async (to, from, next) => {
       if (authStore.isSuperAdmin) {
         next({ name: 'super-dashboard' });
       } else {
-        next({ name: 'dashboard' });
+      next({ name: 'dashboard' });
       }
       return;
     }
@@ -577,7 +577,7 @@ router.beforeEach(async (to, from, next) => {
       if (authStore.isSuperAdmin) {
         next({ name: 'super-dashboard' });
       } else {
-        next({ name: 'dashboard' });
+      next({ name: 'dashboard' });
       }
       return;
     }
@@ -596,7 +596,7 @@ router.beforeEach(async (to, from, next) => {
           if (authStore.isSuperAdmin) {
             next({ name: 'super-dashboard' });
           } else {
-            next({ name: 'dashboard' });
+          next({ name: 'dashboard' });
           }
           return;
         }
@@ -610,7 +610,7 @@ router.beforeEach(async (to, from, next) => {
     if (authStore.isSuperAdmin) {
       next({ name: 'super-dashboard' });
     } else {
-      next({ name: 'dashboard' });
+    next({ name: 'dashboard' });
     }
     return;
   }
