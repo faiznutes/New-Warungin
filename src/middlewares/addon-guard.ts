@@ -26,10 +26,41 @@ export const checkAddon = (addonType: string) => {
       const tenantId = requireTenantId(req);
       const addons = await addonService.getTenantAddons(tenantId);
       
-      const addonsData = Array.isArray(addons.data) ? addons.data : [];
-      const hasAddon = addonsData.some(
-        (addon: any) => addon && addon.addonType === addonType && addon.status === 'ACTIVE'
-      );
+      // Ensure addons.data is always an array
+      const addonsData = Array.isArray(addons?.data) ? addons.data : [];
+      
+      // Double-check before using .some()
+      if (!Array.isArray(addonsData) || addonsData.length === 0) {
+        const addonNames: Record<string, string> = {
+          'BUSINESS_ANALYTICS': 'Business Analytics & Insight',
+          'EXPORT_REPORTS': 'Export Laporan',
+          'RECEIPT_EDITOR': 'Simple Nota Editor',
+          'DELIVERY_MARKETING': 'Delivery & Marketing',
+          'RESTOCK_SUGGESTION': 'Restock Suggestion',
+          'STOCK_TRANSFER': 'Transfer Stok Antar Store',
+          'SUPERVISOR_ROLE': 'Supervisor Role',
+          'PRICE_RECOMMENDATION_PLUS': 'Price Recommendation Plus',
+          'BULK_IMPORT': 'Import Massal',
+          'E_COMMERCE': 'Integrasi E-commerce',
+          'PAYMENT_ACCOUNTING': 'Integrasi Payment & Accounting',
+        };
+        
+        const addonName = addonNames[addonType] || addonType;
+        return res.status(403).json({ 
+          message: `${addonName} addon is required to access this feature` 
+        });
+      }
+      
+      // Safe .some() call with try-catch
+      let hasAddon = false;
+      try {
+        hasAddon = addonsData.some(
+          (addon: any) => addon && addon.addonType === addonType && addon.status === 'ACTIVE'
+        );
+      } catch (error: any) {
+        logger.error('Error checking addon in addon-guard:', { error: error.message, addonType });
+        hasAddon = false;
+      }
       
       if (!hasAddon) {
         const addonNames: Record<string, string> = {

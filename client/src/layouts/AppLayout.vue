@@ -404,30 +404,72 @@ const _activeAddons = ref<any[]>([]);
 
 // Helper function to always get a valid array from activeAddons
 const getActiveAddons = (): any[] => {
-  const value = _activeAddons.value;
-  if (value === null || value === undefined || !Array.isArray(value)) {
+  try {
+    const value = _activeAddons.value;
+    if (value === null || value === undefined || !Array.isArray(value)) {
+      _activeAddons.value = [];
+      return [];
+    }
+    // Double-check: ensure it's really an array
+    if (!Array.isArray(value)) {
+      _activeAddons.value = [];
+      return [];
+    }
+    return value;
+  } catch (error) {
+    console.error('Error in getActiveAddons:', error);
     _activeAddons.value = [];
     return [];
   }
-  return value;
 };
 
 // Helper function to safely set activeAddons (always ensures it's an array)
 const setActiveAddons = (value: any): void => {
-  if (Array.isArray(value)) {
-    _activeAddons.value = value;
-  } else if (value && typeof value === 'object' && Array.isArray(value.data)) {
-    _activeAddons.value = value.data;
-  } else if (value && typeof value === 'object' && Array.isArray(value.addons)) {
-    _activeAddons.value = value.addons;
-  } else {
+  try {
+    if (Array.isArray(value)) {
+      _activeAddons.value = value;
+      return;
+    }
+    if (value && typeof value === 'object') {
+      if (Array.isArray(value.data)) {
+        _activeAddons.value = value.data;
+        return;
+      }
+      if (Array.isArray(value.addons)) {
+        _activeAddons.value = value.addons;
+        return;
+      }
+    }
     _activeAddons.value = [];
+  } catch (error) {
+    console.error('Error in setActiveAddons:', error);
+    _activeAddons.value = [];
+  }
+};
+
+// Safe wrapper for array methods - ensures we always have an array before calling methods
+const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T => {
+  try {
+    if (!arr) return fallback;
+    if (!Array.isArray(arr)) return fallback;
+    return method(arr);
+  } catch (error) {
+    console.error('Error in safeArrayMethod:', error);
+    return fallback;
   }
 };
 
 // Computed property that always returns an array (safer than direct ref access)
 const activeAddons = computed({
-  get: () => getActiveAddons(),
+  get: (): any[] => {
+    const result = getActiveAddons();
+    // Triple-check: ensure computed property always returns array
+    if (!Array.isArray(result)) {
+      _activeAddons.value = [];
+      return [];
+    }
+    return result;
+  },
   set: (value: any) => setActiveAddons(value)
 });
 
@@ -570,29 +612,43 @@ watch(() => userRole.value, () => {
 }, { immediate: true });
 
 const hasBusinessAnalytics = computed(() => {
-  // Use computed property activeAddons which always returns array
-  const addons = activeAddons.value;
-  try {
-    return addons.some(
-      (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-    );
-  } catch (error) {
-    console.error('Error checking business analytics:', error);
-    return false;
-  }
+  // Use safe wrapper to ensure we always have array before calling .some()
+  return safeArrayMethod(
+    activeAddons.value,
+    (addons) => {
+      try {
+        // Additional check inside
+        if (!Array.isArray(addons)) return false;
+        return addons.some(
+          (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+        );
+      } catch (error) {
+        console.error('Error in hasBusinessAnalytics .some():', error);
+        return false;
+      }
+    },
+    false
+  );
 });
 
 const hasDeliveryMarketing = computed(() => {
-  // Use computed property activeAddons which always returns array
-  const addons = activeAddons.value;
-  try {
-    return addons.some(
-      (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
-    );
-  } catch (error) {
-    console.error('Error checking delivery marketing:', error);
-    return false;
-  }
+  // Use safe wrapper to ensure we always have array before calling .some()
+  return safeArrayMethod(
+    activeAddons.value,
+    (addons) => {
+      try {
+        // Additional check inside
+        if (!Array.isArray(addons)) return false;
+        return addons.some(
+          (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+        );
+      } catch (error) {
+        console.error('Error in hasDeliveryMarketing .some():', error);
+        return false;
+      }
+    },
+    false
+  );
 });
 
 const userName = computed(() => authStore.user?.name || 'User');

@@ -1150,21 +1150,44 @@ const getAddonDaysRemaining = (addon: Addon) => {
   return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 };
 
+// Safe wrapper for array methods
+const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T => {
+  try {
+    if (!arr) return fallback;
+    if (!Array.isArray(arr)) return fallback;
+    return method(arr);
+  } catch (error) {
+    console.error('Error in safeArrayMethod:', error);
+    return fallback;
+  }
+};
+
 const isAddonActive = (addonId: string) => {
-  if (!Array.isArray(activeAddons.value)) return false;
   const now = new Date();
-  return activeAddons.value.some(a => {
-    if (a.addonId !== addonId) return false;
-    // Check if addon is active (status === 'active' and not expired)
-    if (a.status !== 'active') return false;
-    // Check if expired
-    if (a.expiresAt) {
-      const expiresAt = new Date(a.expiresAt);
-      return expiresAt > now;
-    }
-    // If no expiry date, consider it active if status is active
-    return true;
-  });
+  return safeArrayMethod(
+    activeAddons.value,
+    (addons) => {
+      try {
+        if (!Array.isArray(addons)) return false;
+        return addons.some(a => {
+          if (!a || a.addonId !== addonId) return false;
+          // Check if addon is active (status === 'active' and not expired)
+          if (a.status !== 'active') return false;
+          // Check if expired
+          if (a.expiresAt) {
+            const expiresAt = new Date(a.expiresAt);
+            return expiresAt > now;
+          }
+          // If no expiry date, consider it active if status is active
+          return true;
+        });
+      } catch (error) {
+        console.error('Error checking addon active status:', error);
+        return false;
+      }
+    },
+    false
+  );
 };
 
 // Check if addon has limit (can be purchased multiple times)
@@ -1242,7 +1265,15 @@ const loadActiveAddons = async () => {
     
     // Get total limits for each addon type
     for (const addonType of limitAddonTypes) {
-      if (Array.isArray(filteredAddons) && filteredAddons.some((a: any) => a && a.addonType === addonType)) {
+      const hasAddonType = safeArrayMethod(
+        filteredAddons,
+        (addons) => {
+          if (!Array.isArray(addons)) return false;
+          return addons.some((a: any) => a && a.addonType === addonType);
+        },
+        false
+      );
+      if (hasAddonType) {
         limitPromises[addonType] = api.get(`/addons/check-limit/${addonType}`).catch(() => ({ data: { limit: -1, currentUsage: 0 } }));
       }
     }

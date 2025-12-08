@@ -255,23 +255,41 @@ const loadAddons = async () => {
 };
 
 
-const isAddonActive = (addonId: string) => {
-  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
-  const now = new Date();
+// Safe wrapper for array methods
+const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T => {
   try {
-    return activeAddons.value.some(a => {
-      if (!a || a.addonId !== addonId) return false;
-      // Check if expired
-      if (a.expiresAt) {
-      const expiresAt = new Date(a.expiresAt);
-      return expiresAt > now;
-    }
-      return true;
-    });
+    if (!arr) return fallback;
+    if (!Array.isArray(arr)) return fallback;
+    return method(arr);
   } catch (error) {
-    console.error('Error checking addon active status:', error);
-    return false;
+    console.error('Error in safeArrayMethod:', error);
+    return fallback;
   }
+};
+
+const isAddonActive = (addonId: string) => {
+  const now = new Date();
+  return safeArrayMethod(
+    activeAddons.value,
+    (addons) => {
+      try {
+        if (!Array.isArray(addons)) return false;
+        return addons.some(a => {
+          if (!a || a.addonId !== addonId) return false;
+          // Check if expired
+          if (a.expiresAt) {
+            const expiresAt = new Date(a.expiresAt);
+            return expiresAt > now;
+          }
+          return true;
+        });
+      } catch (error) {
+        console.error('Error checking addon active status:', error);
+        return false;
+      }
+    },
+    false
+  );
 };
 
 // Check if addon has limit (can be purchased multiple times)
