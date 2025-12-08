@@ -195,9 +195,31 @@ export class ReportService {
   async getGlobalReport(start?: Date, end?: Date) {
     try {
       const readReplica = getReadReplicaClient();
+      
+      // Build date filters
+      let subscriptionFilter: any = {};
+      let addonFilter: any = {};
+      
+      if (start || end) {
+        const filter: any = {};
+        if (start) {
+          filter.gte = new Date(start);
+          filter.gte.setHours(0, 0, 0, 0);
+        }
+        if (end) {
+          filter.lte = new Date(end);
+          filter.lte.setHours(23, 59, 59, 999);
+        }
+        subscriptionFilter.createdAt = filter;
+        addonFilter.subscribedAt = filter;
+      }
+
+      // Get all tenants
       const tenants = await readReplica.tenant.findMany({
         include: {
-          subscriptions: true,
+          subscriptions: {
+            where: subscriptionFilter.createdAt ? subscriptionFilter : undefined,
+          },
           _count: {
             select: {
               users: true,
@@ -207,12 +229,129 @@ export class ReportService {
         },
       });
 
+      // Get all subscriptions within date range
+      const subscriptions = await readReplica.subscription.findMany({
+        where: subscriptionFilter.createdAt ? subscriptionFilter : {},
+        include: {
+          tenant: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // Get all addons within date range
+      const addons = await readReplica.tenantAddon.findMany({
+        where: addonFilter.subscribedAt ? addonFilter : {},
+        include: {
+          tenant: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          subscribedAt: 'desc',
+        },
+      });
+
+      // Get addon prices
+      const { AVAILABLE_ADDONS } = await import('./addon.service');
+      const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
+
+      // Calculate subscription revenue
+      let totalSubscriptionRevenue = 0;
+      const subscriptionList = subscriptions.map(sub => {
+        const amount = Number(sub.amount);
+        totalSubscriptionRevenue += amount;
+        return {
+          id: sub.id,
+          tenantName: sub.tenant.name,
+          plan: sub.plan,
+          amount: amount,
+          createdAt: sub.createdAt,
+          status: sub.status,
+        };
+      });
+
+      // Calculate addon revenue
+      let totalAddonRevenue = 0;
+      const addonList = addons.map(addon => {
+        const price = addonPriceMap.get(addon.addonId) || 0;
+        const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+          ? (addon.config as any).originalDuration || 30
+          : 30;
+        const revenue = (price * duration) / 30; // Convert to total revenue
+        totalAddonRevenue += revenue;
+        return {
+          id: addon.id,
+          tenantName: addon.tenant.name,
+          addonName: addon.addonName,
+          amount: revenue,
+          subscribedAt: addon.subscribedAt,
+          status: addon.status,
+        };
+      });
+
+      // Calculate total global revenue
+      const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
+
+      // Get tenant reports (orders per tenant)
+      const tenantReports = await Promise.all(
+        tenants.map(async (tenant) => {
+          const tenantOrders = await readReplica.order.findMany({
+            where: {
+              tenantId: tenant.id,
+              status: 'COMPLETED',
+              ...(start || end ? {
+                createdAt: {
+                  ...(start ? { gte: start } : {}),
+                  ...(end ? { lte: end } : {}),
+                },
+              } : {}),
+            },
+          });
+
+          const tenantTransactions = await readReplica.transaction.findMany({
+            where: {
+              tenantId: tenant.id,
+              status: 'COMPLETED',
+              ...(start || end ? {
+                createdAt: {
+                  ...(start ? { gte: start } : {}),
+                  ...(end ? { lte: end } : {}),
+                },
+              } : {}),
+            },
+          });
+
+          const totalRevenue = tenantTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+          const totalOrders = tenantOrders.length;
+
+          return {
+            tenantId: tenant.id,
+            tenantName: tenant.name,
+            totalRevenue,
+            totalOrders,
+          };
+        })
+      );
+
       return {
-        totalTenants: tenants.length,
-        activeTenants: tenants.filter(t => t.isActive).length,
-        totalUsers: tenants.reduce((sum, t) => sum + t._count.users, 0),
-        totalOrders: tenants.reduce((sum, t) => sum + t._count.orders, 0),
-        tenants,
+        summary: {
+          totalGlobalRevenue,
+          totalSubscriptionRevenue,
+          totalAddonRevenue,
+          activeTenants: tenants.filter(t => t.isActive).length,
+          totalTenants: tenants.length,
+        },
+        subscriptions: subscriptionList,
+        addons: addonList,
+        tenantReports,
       };
     } catch (error: any) {
       logger.error('Error generating global report', { error: error.message });
