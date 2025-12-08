@@ -187,7 +187,8 @@
     </div>
 
     <!-- Super Admin Dashboard (when no tenant selected) -->
-    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Priority: Show super admin dashboard FIRST if super admin and no tenant selected -->
+    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId && !loading" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Hero Section with Gradient -->
       <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -542,8 +543,9 @@
     </div>
 
     <!-- Tenant Stats (when tenant is selected) -->
-    <!-- Only show tenant dashboard if NOT super admin OR super admin has selected tenant -->
-    <div v-else-if="stats && (!authStore.isSuperAdmin || authStore.selectedTenantId)" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Only show tenant dashboard if NOT super admin OR super admin has explicitly selected tenant -->
+    <!-- Make sure super admin without selectedTenantId never shows tenant dashboard -->
+    <div v-else-if="stats && (!authStore.isSuperAdmin || (authStore.isSuperAdmin && authStore.selectedTenantId))" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
       <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -1616,6 +1618,7 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
     // If selectedTenantId is cleared (null), clear stats to force reload super admin stats
     if (!newTenantId && authStore.isSuperAdmin) {
       stats.value = null;
+      superAdminStats.value = null;
     }
     loadStats();
   }
@@ -1623,10 +1626,11 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
 
 // Watch for route changes to ensure selectedTenantId is cleared when navigating to dashboard
 watch(() => route.name, (newRouteName, oldRouteName) => {
-  // When super admin navigates to dashboard, clear selectedTenantId
+  // When super admin navigates to dashboard, ALWAYS clear selectedTenantId
   if (authStore.isSuperAdmin && newRouteName === 'dashboard') {
     const isFromTenantPage = oldRouteName === 'tenant-detail' || oldRouteName === 'tenants' || route.path?.includes('/tenants');
-    if (isFromTenantPage) {
+    // ALWAYS clear if coming from tenant page OR if selectedTenantId exists
+    if (isFromTenantPage || authStore.selectedTenantId) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
       // Clear stats to force reload super admin stats
@@ -1643,14 +1647,16 @@ watch(() => route.name, (newRouteName, oldRouteName) => {
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // For super admin, ensure selectedTenantId is cleared when mounting dashboard
-  // This ensures super admin dashboard is shown, not tenant dashboard
+  // For super admin, ALWAYS ensure selectedTenantId is cleared when mounting dashboard
+  // This ensures super admin dashboard is ALWAYS shown, not tenant dashboard
   if (authStore.isSuperAdmin && route.name === 'dashboard') {
-    // Check if we're coming from a tenant page - if so, clear selection
+    // ALWAYS clear selectedTenantId when mounting dashboard for super admin
+    // This ensures consistent UI - super admin should see super admin dashboard by default
     const previousRoute = sessionStorage.getItem('previousRoute');
     const isFromTenantPage = previousRoute?.startsWith('/app/tenants');
     
-    if (isFromTenantPage) {
+    // If coming from tenant page OR if selectedTenantId exists, clear it
+    if (isFromTenantPage || authStore.selectedTenantId) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
       // Clear stats to force reload super admin stats
