@@ -166,10 +166,17 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userId = requireUserId(req);
+      
+      // Convert expectedDate from string to Date if provided
+      const purchaseOrderData = {
+        ...req.body,
+        expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
+      };
+      
       const purchaseOrder = await purchaseOrderService.createPurchaseOrder(
         tenantId,
         userId,
-        req.body
+        purchaseOrderData
       );
       res.status(201).json(purchaseOrder);
     } catch (error: unknown) {
@@ -212,11 +219,19 @@ router.put(
     try {
       const tenantId = requireTenantId(req);
       const userId = requireUserId(req);
+      
+      // Convert dates from string to Date if provided
+      const updateData = {
+        ...req.body,
+        expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
+        receivedDate: req.body.receivedDate ? new Date(req.body.receivedDate) : undefined,
+      };
+      
       const purchaseOrder = await purchaseOrderService.updatePurchaseOrder(
         req.params.id,
         tenantId,
         userId,
-        req.body
+        updateData
       );
       res.json(purchaseOrder);
     } catch (error: unknown) {

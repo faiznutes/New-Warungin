@@ -142,12 +142,40 @@ class PurchaseOrderService {
    */
   async createPurchaseOrder(tenantId: string, userId: string, data: CreatePurchaseOrderInput) {
     try {
+      // Validate input
+      if (!data.items || data.items.length === 0) {
+        throw new Error('Purchase order must have at least one item');
+      }
+
       // Verify supplier exists
       await supplierService.getSupplierById(data.supplierId, tenantId);
 
+      // Verify all products exist and belong to tenant
+      const productIds = data.items.map(item => item.productId);
+      const products = await prisma.product.findMany({
+        where: {
+          id: { in: productIds },
+          tenantId,
+        },
+        select: { id: true },
+      });
+
+      if (products.length !== productIds.length) {
+        const foundIds = products.map(p => p.id);
+        const missingIds = productIds.filter(id => !foundIds.includes(id));
+        throw new Error(`Products not found: ${missingIds.join(', ')}`);
+      }
+
       // Calculate total amount
       const totalAmount = new Prisma.Decimal(
-        data.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+        data.items.reduce((sum, item) => {
+          const quantity = Number(item.quantity);
+          const unitPrice = Number(item.unitPrice);
+          if (isNaN(quantity) || isNaN(unitPrice) || quantity <= 0 || unitPrice <= 0) {
+            throw new Error(`Invalid quantity or unitPrice for product ${item.productId}`);
+          }
+          return sum + (quantity * unitPrice);
+        }, 0)
       );
 
       return await prisma.$transaction(async (tx) => {
@@ -160,19 +188,25 @@ class PurchaseOrderService {
             tenantId,
             supplierId: data.supplierId,
             orderNumber,
-            expectedDate: data.expectedDate,
+            expectedDate: data.expectedDate || undefined,
             totalAmount,
-            notes: data.notes,
+            notes: data.notes || undefined,
             createdBy: userId,
             status: 'PENDING',
             items: {
-              create: data.items.map(item => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalPrice: item.quantity * item.unitPrice,
-                notes: item.notes,
-              })),
+              create: data.items.map(item => {
+                const quantity = Number(item.quantity);
+                const unitPrice = new Prisma.Decimal(item.unitPrice);
+                const totalPrice = new Prisma.Decimal(quantity * Number(item.unitPrice));
+                
+                return {
+                  productId: item.productId,
+                  quantity: quantity,
+                  unitPrice: unitPrice,
+                  totalPrice: totalPrice,
+                  notes: item.notes || undefined,
+                };
+              }),
             },
           },
           include: {
@@ -185,10 +219,26 @@ class PurchaseOrderService {
           },
         });
 
+        logger.info('Purchase order created successfully', {
+          purchaseOrderId: purchaseOrder.id,
+          orderNumber: purchaseOrder.orderNumber,
+          tenantId,
+          userId,
+        });
+
         return purchaseOrder;
       });
     } catch (error: any) {
-      logger.error('Error creating purchase order:', error);
+      logger.error('Error creating purchase order:', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        userId,
+        data: {
+          supplierId: data.supplierId,
+          itemsCount: data.items?.length,
+        },
+      });
       throw error;
     }
   }
