@@ -73,9 +73,9 @@ export class ReportService {
         }),
       ]);
 
-      const totalRevenue = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+      const totalRevenue = transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
       const totalOrders = orders.length;
-      const totalItems = orders.reduce((sum, o) => sum + o.items.length, 0);
+      const totalItems = orders.reduce((sum: number, o: any) => sum + o.items.length, 0);
 
       return {
         totalRevenue,
@@ -115,7 +115,7 @@ export class ReportService {
       });
 
       // Group by product
-      const productStats = orderItems.reduce((acc, item) => {
+      const productStats = orderItems.reduce((acc: Record<string, any>, item: any) => {
         const productId = item.productId;
         if (!acc[productId]) {
           acc[productId] = {
@@ -171,9 +171,9 @@ export class ReportService {
         },
       });
 
-      return customers.map((customer) => {
+      return customers.map((customer: any) => {
         const totalSpent = customer.orders.reduce(
-          (sum, order) => sum + Number(order.total),
+          (sum: number, order: any) => sum + Number(order.total),
           0
         );
         const orderCount = customer.orders.length;
@@ -269,7 +269,7 @@ export class ReportService {
 
       // Calculate subscription revenue
       let totalSubscriptionRevenue = 0;
-      const subscriptionList = subscriptions.map(sub => {
+      const subscriptionList = subscriptions.map((sub: any) => {
         const amount = Number(sub.amount);
         totalSubscriptionRevenue += amount;
         return {
@@ -286,7 +286,7 @@ export class ReportService {
 
       // Calculate addon revenue
       let totalAddonRevenue = 0;
-      const addonList = addons.map(addon => {
+      const addonList = addons.map((addon: any) => {
         const price = addonPriceMap.get(addon.addonId) || 0;
         const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
           ? (addon.config as any).originalDuration || 30
@@ -313,7 +313,7 @@ export class ReportService {
           totalGlobalRevenue,
           totalSubscriptionRevenue,
           totalAddonRevenue,
-          activeTenants: tenants.filter(t => t.isActive).length,
+          activeTenants: tenants.filter((t: any) => t.isActive).length,
         totalTenants: tenants.length,
         },
         subscriptions: subscriptionList,
@@ -326,7 +326,7 @@ export class ReportService {
         totalAddonRevenue,
         subscriptionCount: subscriptionList.length,
         addonCount: addonList.length,
-        activeTenants: tenants.filter(t => t.isActive).length,
+        activeTenants: tenants.filter((t: any) => t.isActive).length,
         totalTenants: tenants.length,
       });
       
@@ -712,7 +712,7 @@ export class ReportService {
       }> = {};
 
       // Initialize all outlets
-      outlets.forEach(outlet => {
+      outlets.forEach((outlet: any) => {
         salesByOutlet[outlet.id] = {
           outlet,
           revenue: 0,
@@ -730,7 +730,7 @@ export class ReportService {
       };
 
       // Calculate sales per outlet
-      orders.forEach(order => {
+      orders.forEach((order: any) => {
         const outletId = order.outletId || 'no-outlet';
         if (!salesByOutlet[outletId]) {
           salesByOutlet[outletId] = {
@@ -747,16 +747,16 @@ export class ReportService {
 
       // Calculate combined totals
       const combined = {
-        revenue: transactions.reduce((sum, t) => sum + Number(t.amount), 0),
+        revenue: transactions.reduce((sum: number, t: any) => sum + Number(t.amount), 0),
         orders: orders.length,
-        items: orders.reduce((sum, o) => sum + o.items.length, 0),
+        items: orders.reduce((sum: number, o: any) => sum + o.items.length, 0),
       };
 
       // Stock per outlet (simplified - all products shown for all outlets)
-      const stockByOutlet = outlets.map(outlet => {
+      const stockByOutlet = outlets.map((outlet: any) => {
         const totalProducts = products.length;
-        const totalStock = products.reduce((sum, p) => sum + Number(p.stock), 0);
-        const lowStockCount = products.filter(p => p.stock <= (p.minStock || 0)).length;
+        const totalStock = products.reduce((sum: number, p: any) => sum + Number(p.stock), 0);
+        const lowStockCount = products.filter((p: any) => p.stock <= (p.minStock || 0)).length;
 
         return {
           outlet,
