@@ -26,8 +26,9 @@ export const checkAddon = (addonType: string) => {
       const tenantId = requireTenantId(req);
       const addons = await addonService.getTenantAddons(tenantId);
       
-      const hasAddon = addons.data.some(
-        (addon) => addon.addonType === addonType && addon.status === 'ACTIVE'
+      const addonsData = Array.isArray(addons.data) ? addons.data : [];
+      const hasAddon = addonsData.some(
+        (addon: any) => addon && addon.addonType === addonType && addon.status === 'ACTIVE'
       );
       
       if (!hasAddon) {

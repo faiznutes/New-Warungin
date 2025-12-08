@@ -18,8 +18,9 @@ const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Fu
     
     const tenantId = requireTenantId(req);
     const addons = await addonService.getTenantAddons(tenantId);
-    const hasBusinessAnalytics = addons.data.some(
-      (addon) => addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'ACTIVE'
+    const addonsData = Array.isArray(addons.data) ? addons.data : [];
+    const hasBusinessAnalytics = addonsData.some(
+      (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'ACTIVE'
     );
     
     if (!hasBusinessAnalytics) {

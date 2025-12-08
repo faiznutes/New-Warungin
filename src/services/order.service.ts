@@ -157,8 +157,9 @@ export class OrderService {
 
   async createOrder(data: CreateOrderInput, userId: string, tenantId: string, idempotencyKey?: string): Promise<Order> {
     // Calculate subtotal from items (before any discounts)
-    const subtotal = data.items.reduce((sum, item) => {
-      return sum + (item.price * item.quantity);
+    const itemsArray = Array.isArray(data.items) ? data.items : [];
+    const subtotal = itemsArray.reduce((sum: number, item: any) => {
+      return sum + ((item?.price || 0) * (item?.quantity || 0));
     }, 0);
 
     // Apply automatic discounts (from discount rules)
@@ -228,13 +229,17 @@ export class OrderService {
           where: { orderId: existingOrder.id },
         });
         
-        const isDuplicate = data.items.every(item => 
-          existingItems.some(ei => 
-            ei.productId === item.productId && 
+        // Ensure both are arrays before comparison
+        const itemsArray = Array.isArray(data.items) ? data.items : [];
+        const existingItemsArray = Array.isArray(existingItems) ? existingItems : [];
+        
+        const isDuplicate = itemsArray.every((item: any) => 
+          existingItemsArray.some((ei: any) => 
+            ei && item && ei.productId === item.productId && 
             ei.quantity === item.quantity &&
             Math.abs(Number(ei.price) - item.price) < 0.01
           )
-        ) && existingItems.length === data.items.length;
+        ) && existingItemsArray.length === itemsArray.length;
         
         if (isDuplicate) {
           logger.warn(`Duplicate order detected (idempotency key: ${idempotencyKey}), returning existing order ${existingOrder.id}`);

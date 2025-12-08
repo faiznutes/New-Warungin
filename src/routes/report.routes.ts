@@ -111,8 +111,9 @@ router.get(
         let hasExportAddon = false;
         if (!isProOrMax) {
           const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
-          hasExportAddon = addons.data.some(
-            (addon) => addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
+          const addonsData = Array.isArray(addons.data) ? addons.data : [];
+          hasExportAddon = addonsData.some(
+            (addon: any) => addon && addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
           );
         }
         
