@@ -771,10 +771,13 @@ const loadProducts = async () => {
     const response = await api.get('/products', {
       params: { isActive: true },
     });
-    products.value = response.data.data || response.data;
+    const productsData = response.data.data || response.data;
+    products.value = Array.isArray(productsData) ? productsData : [];
     
     // Cache products for offline use
-    await offlineStorage.cacheProducts(products.value);
+    if (Array.isArray(products.value)) {
+      await offlineStorage.cacheProducts(products.value);
+    }
     
     await checkCriticalStock();
   } catch (err: any) {
