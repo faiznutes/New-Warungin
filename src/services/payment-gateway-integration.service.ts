@@ -299,10 +299,17 @@ class PaymentGatewayIntegrationService {
    */
   private generateOVOSignature(
     config: PaymentGatewayConfig,
-    request: PaymentRequest,
+    requestOrPaymentId: PaymentRequest | string,
     timestamp: string
   ): string {
-    const data = `${config.merchantId}${request.amount}${request.orderId}${timestamp}${config.apiSecret}`;
+    let data: string;
+    if (typeof requestOrPaymentId === 'string') {
+      // For status check
+      data = `${config.merchantId}${requestOrPaymentId}${timestamp}${config.apiSecret}`;
+    } else {
+      // For payment creation
+      data = `${config.merchantId}${requestOrPaymentId.amount}${requestOrPaymentId.orderId}${timestamp}${config.apiSecret}`;
+    }
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
@@ -311,10 +318,17 @@ class PaymentGatewayIntegrationService {
    */
   private generateDANASignature(
     config: PaymentGatewayConfig,
-    request: PaymentRequest,
+    requestOrPaymentId: PaymentRequest | string,
     timestamp: string
   ): string {
-    const data = `${config.merchantId}${request.amount}${request.orderId}${timestamp}${config.apiSecret}`;
+    let data: string;
+    if (typeof requestOrPaymentId === 'string') {
+      // For status check
+      data = `${config.merchantId}${requestOrPaymentId}${timestamp}${config.apiSecret}`;
+    } else {
+      // For payment creation
+      data = `${config.merchantId}${requestOrPaymentId.amount}${requestOrPaymentId.orderId}${timestamp}${config.apiSecret}`;
+    }
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
@@ -334,36 +348,191 @@ class PaymentGatewayIntegrationService {
    * Check OVO payment status
    */
   private async checkOVOStatus(config: PaymentGatewayConfig, paymentId: string): Promise<PaymentStatus> {
-    // TODO: Implement actual OVO status check API
-    return {
-      paymentId,
-      status: 'PENDING',
-      amount: 0,
-    };
+    try {
+      // OVO Status Check API endpoint
+      const timestamp = new Date().toISOString();
+      const signature = this.generateOVOSignature(config, paymentId, timestamp);
+      
+      const response = await axios.post(
+        `https://api.ovo.id/v2.0/payment/status`,
+        {
+          partnerReferenceNo: paymentId,
+          merchantId: config.merchantId,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-TIMESTAMP': timestamp,
+            'X-SIGNATURE': signature,
+            'X-PARTNER-ID': config.merchantId,
+            'Authorization': `Bearer ${config.apiKey}`,
+          },
+          timeout: 10000,
+        }
+      );
+
+      const data = response.data;
+      let status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' = 'PENDING';
+      
+      if (data.latestTransactionStatus === '00') {
+        status = 'SUCCESS';
+      } else if (data.latestTransactionStatus === '03') {
+        status = 'EXPIRED';
+      } else if (data.latestTransactionStatus && data.latestTransactionStatus !== '01') {
+        status = 'FAILED';
+      }
+
+      return {
+        paymentId,
+        status,
+        amount: data.amount?.value || 0,
+        transactionTime: data.transactionDate,
+        externalId: data.referenceNo,
+      };
+    } catch (error: any) {
+      logger.error('OVO status check failed', { 
+        error: error.message, 
+        paymentId,
+        merchantId: config.merchantId 
+      });
+      
+      // Return last known status or PENDING if API fails
+      return {
+        paymentId,
+        status: 'PENDING',
+        amount: 0,
+        error: 'Unable to check payment status at this time',
+      };
+    }
   }
 
   /**
    * Check DANA payment status
    */
   private async checkDANAStatus(config: PaymentGatewayConfig, paymentId: string): Promise<PaymentStatus> {
-    // TODO: Implement actual DANA status check API
-    return {
-      paymentId,
-      status: 'PENDING',
-      amount: 0,
-    };
+    try {
+      // DANA Status Check API endpoint
+      const timestamp = Date.now().toString();
+      const signature = this.generateDANASignature(config, paymentId, timestamp);
+      
+      const response = await axios.get(
+        `https://api.dana.id/v1/payment/query`,
+        {
+          params: {
+            merchantId: config.merchantId,
+            orderId: paymentId,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`,
+            'X-DANA-SIGNATURE': signature,
+            'X-DANA-TIMESTAMP': timestamp,
+          },
+          timeout: 10000,
+        }
+      );
+
+      const data = response.data;
+      let status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' = 'PENDING';
+      
+      if (data.paymentStatus === 'SUCCESS' || data.status === 'PAID') {
+        status = 'SUCCESS';
+      } else if (data.paymentStatus === 'EXPIRED' || data.status === 'EXPIRED') {
+        status = 'EXPIRED';
+      } else if (data.paymentStatus === 'FAILED' || data.status === 'FAILED') {
+        status = 'FAILED';
+      }
+
+      return {
+        paymentId,
+        status,
+        amount: data.amount || 0,
+        transactionTime: data.paidAt || data.createdAt,
+        externalId: data.transactionId,
+      };
+    } catch (error: any) {
+      logger.error('DANA status check failed', { 
+        error: error.message, 
+        paymentId,
+        merchantId: config.merchantId 
+      });
+      
+      return {
+        paymentId,
+        status: 'PENDING',
+        amount: 0,
+        error: 'Unable to check payment status at this time',
+      };
+    }
   }
 
   /**
    * Check LinkAja payment status
    */
   private async checkLinkAjaStatus(config: PaymentGatewayConfig, paymentId: string): Promise<PaymentStatus> {
-    // TODO: Implement actual LinkAja status check API
-    return {
-      paymentId,
-      status: 'PENDING',
-      amount: 0,
-    };
+    try {
+      // LinkAja Status Check API endpoint
+      const timestamp = new Date().toISOString();
+      const signature = this.generateLinkAjaStatusSignature(config, paymentId, timestamp);
+      
+      const response = await axios.get(
+        `https://api.linkaja.id/v1/transaction/status/${paymentId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-LINKAJA-MERCHANT-ID': config.merchantId,
+            'X-LINKAJA-TIMESTAMP': timestamp,
+            'X-LINKAJA-SIGNATURE': signature,
+            'Authorization': `Bearer ${config.apiKey}`,
+          },
+          timeout: 10000,
+        }
+      );
+
+      const data = response.data;
+      let status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' = 'PENDING';
+      
+      if (data.status === 'SUCCESS' || data.transactionStatus === 'COMPLETED') {
+        status = 'SUCCESS';
+      } else if (data.status === 'EXPIRED' || data.transactionStatus === 'EXPIRED') {
+        status = 'EXPIRED';
+      } else if (data.status === 'FAILED' || data.transactionStatus === 'FAILED' || data.transactionStatus === 'CANCELLED') {
+        status = 'FAILED';
+      }
+
+      return {
+        paymentId,
+        status,
+        amount: data.amount || 0,
+        transactionTime: data.transactionTime,
+        externalId: data.linkAjaTransactionId,
+      };
+    } catch (error: any) {
+      logger.error('LinkAja status check failed', { 
+        error: error.message, 
+        paymentId,
+        merchantId: config.merchantId 
+      });
+      
+      return {
+        paymentId,
+        status: 'PENDING',
+        amount: 0,
+        error: 'Unable to check payment status at this time',
+      };
+    }
+  }
+
+  /**
+   * Generate signature for LinkAja status check
+   */
+  private generateLinkAjaStatusSignature(
+    config: PaymentGatewayConfig,
+    paymentId: string,
+    timestamp: string
+  ): string {
+    const data = `${config.merchantId}${paymentId}${timestamp}${config.apiSecret}`;
+    return crypto.createHash('sha256').update(data).digest('hex');
   }
 }
 
