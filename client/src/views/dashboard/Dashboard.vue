@@ -436,7 +436,7 @@
               </svg>
             </router-link>
           </div>
-          <div v-if="stats?.charts?.topProducts?.length === 0" class="text-center py-12 text-gray-500">
+          <div v-if="!Array.isArray(stats?.charts?.topProducts) || stats?.charts?.topProducts?.length === 0" class="text-center py-12 text-gray-500">
             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
@@ -475,7 +475,7 @@
               </svg>
             </router-link>
           </div>
-          <div v-if="stats?.charts?.salesByStatus?.length === 0" class="text-center py-12 text-gray-500">
+          <div v-if="!Array.isArray(stats?.charts?.salesByStatus) || stats?.charts?.salesByStatus?.length === 0" class="text-center py-12 text-gray-500">
             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
@@ -561,10 +561,18 @@ const activeAddons = ref<any[]>([]);
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
-  if (!Array.isArray(activeAddons.value)) return false;
-  return activeAddons.value.some(
-    (addon) => addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-  );
+  // Ensure activeAddons.value is always an array before using .some()
+  if (!activeAddons.value || !Array.isArray(activeAddons.value)) {
+    return false;
+  }
+  try {
+    return activeAddons.value.some(
+      (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+    );
+  } catch (error) {
+    console.error('Error checking business analytics:', error);
+    return false;
+  }
 });
 const showWelcomeSection = computed(() => {
   // For admin/supervisor, wait for subscription to finish loading before showing welcome
@@ -827,11 +835,24 @@ const loadAddons = async () => {
   try {
     const response = await api.get('/addons');
     // Ensure activeAddons is always an array
-    const addonsData = response.data?.data || response.data || [];
-    activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
+    const addonsData = response.data?.data || response.data;
+    
+    // Multiple checks to ensure it's always an array
+    if (Array.isArray(addonsData)) {
+      activeAddons.value = addonsData;
+    } else if (addonsData && typeof addonsData === 'object' && Array.isArray(addonsData.addons)) {
+      activeAddons.value = addonsData.addons;
+    } else {
+      activeAddons.value = [];
+    }
   } catch (error: any) {
     // Silently fail if addons can't be loaded
     console.error('Error loading addons:', error);
+    activeAddons.value = [];
+  }
+  
+  // Final safety check - ensure it's always an array
+  if (!Array.isArray(activeAddons.value)) {
     activeAddons.value = [];
   }
 };
@@ -1066,6 +1087,14 @@ const renderCharts = () => {
   }
 };
 
+// Watch activeAddons to ensure it's always an array
+watch(() => activeAddons.value, (newValue) => {
+  if (!Array.isArray(newValue)) {
+    console.warn('activeAddons.value is not an array, resetting to []');
+    activeAddons.value = [];
+  }
+}, { deep: true, immediate: true });
+
 // Watch for tenant changes and reload stats and subscription
 watch(() => authStore.currentTenantId, () => {
   // Only load stats if user is authenticated
@@ -1074,6 +1103,7 @@ watch(() => authStore.currentTenantId, () => {
     if (isAdminOrSupervisor.value) {
       currentSubscription.value = null;
       subscriptionLoading.value = false;
+      activeAddons.value = []; // Reset addons when tenant changes
     }
     loadStats();
   }
@@ -1084,4 +1114,12 @@ watch(() => authStore.currentTenantId, () => {
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Only load stats if user is authenticated
-  if (authSto
+  if (authStore.isAuthenticated) {
+    loadStats();
+  }
+});
+
+onUnmounted(() => {
+  stopCountdown();
+});
+</script>
