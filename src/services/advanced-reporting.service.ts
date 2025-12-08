@@ -257,7 +257,7 @@ class AdvancedReportingService {
         format: saved.format as any,
         isActive: saved.isActive,
         nextRunAt: saved.nextRunAt,
-        lastRunAt: saved.lastRunAt ?? undefined,
+        lastRunAt: saved.lastRunAt ? saved.lastRunAt : undefined,
       };
     } catch (error: any) {
       logger.error('Error creating scheduled report:', error);
@@ -512,14 +512,21 @@ class AdvancedReportingService {
    */
   async getDashboardSettings(tenantId: string, userId?: string): Promise<any> {
     try {
-      const settings = await prisma.dashboardSettings.findUnique({
-        where: {
-          tenantId_userId: {
-            tenantId,
-            userId: userId ?? null,
-          },
-        },
-      });
+      const settings = userId 
+        ? await prisma.dashboardSettings.findUnique({
+            where: {
+              tenantId_userId: {
+                tenantId,
+                userId: userId,
+              },
+            },
+          })
+        : await prisma.dashboardSettings.findFirst({
+            where: {
+              tenantId,
+              userId: null,
+            },
+          });
 
       if (settings) {
         return {
@@ -549,12 +556,19 @@ class AdvancedReportingService {
   async saveDashboardSettings(tenantId: string, userId: string | undefined, settings: any): Promise<void> {
     try {
       await prisma.dashboardSettings.upsert({
-        where: {
-          tenantId_userId: {
-            tenantId,
-            userId: userId ?? null,
-          },
-        },
+        where: userId 
+          ? {
+              tenantId_userId: {
+                tenantId,
+                userId: userId,
+              },
+            }
+          : {
+              tenantId_userId: {
+                tenantId,
+                userId: null as any,
+              },
+            },
         create: {
           tenantId,
           userId: userId || null,
