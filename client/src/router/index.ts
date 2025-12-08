@@ -585,8 +585,20 @@ router.beforeEach(async (to, from, next) => {
       try {
         const outletsResponse = await api.get('/outlets');
         const outletsData = outletsResponse.data?.data || outletsResponse.data || [];
+        // NORMALISASI: Pastikan outlets selalu array
         const outlets = Array.isArray(outletsData) ? outletsData : [];
-        const activeOutlets = outlets.filter((o: any) => o && o.isActive !== false);
+        
+        // LOGGING: Log untuk debugging
+        console.log('[Router] Checking outlets for role guard:', {
+          outletsType: typeof outlets,
+          outletsIsArray: Array.isArray(outlets),
+          outletsLength: outlets.length
+        });
+        
+        // GUARD CLAUSE: Safe filter dengan check
+        const activeOutlets = Array.isArray(outlets) 
+          ? outlets.filter((o: any) => o && o.isActive !== false)
+          : [];
         
         if (!Array.isArray(activeOutlets) || activeOutlets.length === 0) {
           // No stores available - show warning for SPV/kasir/dapur
@@ -694,14 +706,28 @@ router.beforeEach(async (to, from, next) => {
         return;
       }
       
-      // Safe .some() call with try-catch
+      // Safe .some() call with try-catch and logging
       let hasAddon = false;
       try {
-        hasAddon = activeAddons.some(
-          (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
-        );
+        // LOGGING: Log untuk debugging
+        console.log('[Router] Checking addon requirement:', {
+          requiredAddon,
+          activeAddonsType: typeof activeAddons,
+          activeAddonsIsArray: Array.isArray(activeAddons),
+          activeAddonsLength: Array.isArray(activeAddons) ? activeAddons.length : 0
+        });
+        
+        // GUARD CLAUSE: Double-check sebelum .some()
+        if (!Array.isArray(activeAddons)) {
+          console.warn('[Router] activeAddons is not array in addon guard, setting to empty array');
+          hasAddon = false;
+        } else {
+          hasAddon = activeAddons.some(
+            (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
+          );
+        }
       } catch (error: any) {
-        console.error('Error checking addon in router guard:', error);
+        console.error('[Router] Error checking addon in router guard:', error);
         hasAddon = false;
       }
       
