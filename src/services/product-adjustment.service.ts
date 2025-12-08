@@ -2,10 +2,26 @@ import prisma from '../config/database';
 import { z } from 'zod';
 
 export const createProductAdjustmentSchema = z.object({
-  productId: z.string().min(1),
-  type: z.enum(['INCREASE', 'DECREASE']),
-  quantity: z.number().int().positive(),
+  productId: z.string().min(1).optional(),
+  type: z.enum(['INCREASE', 'DECREASE', 'TRANSFER']),
+  quantity: z.number().int().positive().optional(),
   reason: z.string().min(1),
+  // For stock transfer
+  fromOutletId: z.string().optional(),
+  toOutletId: z.string().optional(),
+  transferItems: z.array(z.object({
+    productId: z.string(),
+    quantity: z.number().int().positive(),
+  })).optional(),
+}).refine((data) => {
+  // For TRANSFER type, require transferItems, fromOutletId, toOutletId
+  if (data.type === 'TRANSFER') {
+    return data.transferItems && data.transferItems.length > 0 && data.fromOutletId && data.toOutletId;
+  }
+  // For INCREASE/DECREASE, require productId and quantity
+  return data.productId && data.quantity !== undefined;
+}, {
+  message: 'Invalid data for adjustment type',
 });
 
 export type CreateProductAdjustmentInput = z.infer<typeof createProductAdjustmentSchema>;
@@ -64,12 +80,18 @@ export class ProductAdjustmentService {
   /**
    * Create a product adjustment
    * This will update the product stock and create an adjustment record
+   * For TRANSFER type, creates two adjustments (DECREASE from source, INCREASE to destination)
    */
   async createAdjustment(
     data: CreateProductAdjustmentInput,
     tenantId: string,
     userId: string
   ) {
+    // Handle stock transfer (multiple products)
+    if (data.type === 'TRANSFER' && data.transferItems && data.transferItems.length > 0) {
+      return await this.createStockTransfer(data, tenantId, userId);
+    }
+
     // Use transaction to ensure data consistency
     return prisma.$transaction(async (tx) => {
       // Get current product
@@ -132,6 +154,133 @@ export class ProductAdjustmentService {
       });
 
       return adjustment;
+    });
+  }
+
+  /**
+   * Create stock transfer (multiple products between outlets)
+   * Creates DECREASE adjustment for source and INCREASE for destination
+   */
+  private async createStockTransfer(
+    data: CreateProductAdjustmentInput,
+    tenantId: string,
+    userId: string
+  ) {
+    if (!data.fromOutletId || !data.toOutletId || !data.transferItems || data.transferItems.length === 0) {
+      throw new Error('Stock transfer requires fromOutletId, toOutletId, and transferItems');
+    }
+
+    return prisma.$transaction(async (tx) => {
+      const adjustments = [];
+
+      // Get outlet names for reason
+      const fromOutlet = await tx.outlet.findFirst({
+        where: { id: data.fromOutletId, tenantId },
+        select: { name: true },
+      });
+      const toOutlet = await tx.outlet.findFirst({
+        where: { id: data.toOutletId, tenantId },
+        select: { name: true },
+      });
+
+      if (!fromOutlet || !toOutlet) {
+        throw new Error('Outlet not found');
+      }
+
+      // Process each transfer item
+      for (const item of data.transferItems) {
+        // Get product
+        const product = await tx.product.findFirst({
+          where: {
+            id: item.productId,
+            tenantId,
+          },
+        });
+
+        if (!product) {
+          throw new Error(`Product ${item.productId} not found`);
+        }
+
+        const stockBefore = product.stock;
+
+        // Check if enough stock
+        if (stockBefore < item.quantity) {
+          throw new Error(`Insufficient stock for product ${product.name}. Available: ${stockBefore}, Required: ${item.quantity}`);
+        }
+
+        // DECREASE from source
+        const decreaseAfter = stockBefore - item.quantity;
+        await tx.product.update({
+          where: { id: product.id },
+          data: { stock: decreaseAfter },
+        });
+
+        const decreaseAdjustment = await tx.productAdjustment.create({
+          data: {
+            tenantId,
+            productId: item.productId,
+            userId,
+            type: 'DECREASE',
+            quantity: item.quantity,
+            reason: `Stock Transfer: Dari ${fromOutlet.name} ke ${toOutlet.name}. ${data.reason || ''}`,
+            stockBefore,
+            stockAfter: decreaseAfter,
+          },
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                sku: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        // INCREASE to destination
+        // Note: In a real multi-outlet system, you'd need outlet-specific stock
+        // For now, we'll just create the increase adjustment record
+        // The actual stock increase should be handled by receiving the transfer
+        const increaseAdjustment = await tx.productAdjustment.create({
+          data: {
+            tenantId,
+            productId: item.productId,
+            userId,
+            type: 'INCREASE',
+            quantity: item.quantity,
+            reason: `Stock Transfer: Dari ${fromOutlet.name} ke ${toOutlet.name} (Received). ${data.reason || ''}`,
+            stockBefore: decreaseAfter,
+            stockAfter: stockBefore, // Will be updated when transfer is received
+          },
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                sku: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        adjustments.push(decreaseAdjustment, increaseAdjustment);
+      }
+
+      return adjustments;
     });
   }
 

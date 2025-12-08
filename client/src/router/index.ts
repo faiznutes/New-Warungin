@@ -265,12 +265,6 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
-          path: 'inventory/stock-transfers',
-          name: 'stock-transfers',
-          component: () => import('../views/inventory/StockTransfers.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
-        },
-        {
           path: 'inventory/stock-alerts',
           name: 'stock-alerts',
           component: () => import('../views/inventory/StockAlerts.vue'),

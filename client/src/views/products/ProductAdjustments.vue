@@ -6,15 +6,26 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Product Adjustments</h1>
         <p class="text-gray-600">Riwayat penyesuaian stok produk</p>
       </div>
-      <button
-        @click="showAdjustmentModal = true"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Tambah Penyesuaian
-      </button>
+      <div class="flex gap-2">
+        <button
+          @click="showAdjustmentModal = true; adjustmentMode = 'adjustment'"
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Tambah Penyesuaian
+        </button>
+        <button
+          @click="showAdjustmentModal = true; adjustmentMode = 'transfer'"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+          Stock Transfer
+        </button>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -163,12 +174,14 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showAdjustmentModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Tambah Penyesuaian Produk</h3>
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ adjustmentMode === 'transfer' ? 'Stock Transfer' : 'Tambah Penyesuaian Produk' }}
+            </h3>
             <button
-              @click="showAdjustmentModal = false"
+              @click="closeModal"
               class="text-gray-400 hover:text-gray-600"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +190,36 @@
             </button>
           </div>
 
-          <form @submit.prevent="saveAdjustment" class="space-y-4">
+          <!-- Mode Toggle -->
+          <div class="mb-4 flex gap-2 border-b">
+            <button
+              type="button"
+              @click="adjustmentMode = 'adjustment'"
+              :class="[
+                'px-4 py-2 font-medium transition',
+                adjustmentMode === 'adjustment'
+                  ? 'border-b-2 border-primary-600 text-primary-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              ]"
+            >
+              Penyesuaian
+            </button>
+            <button
+              type="button"
+              @click="adjustmentMode = 'transfer'"
+              :class="[
+                'px-4 py-2 font-medium transition',
+                adjustmentMode === 'transfer'
+                  ? 'border-b-2 border-green-600 text-green-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              ]"
+            >
+              Stock Transfer
+            </button>
+          </div>
+
+          <!-- Adjustment Form -->
+          <form v-if="adjustmentMode === 'adjustment'" @submit.prevent="saveAdjustment" class="space-y-4">
             <!-- Product Selection -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Produk *</label>
@@ -255,10 +297,121 @@
               </button>
               <button
                 type="button"
-                @click="showAdjustmentModal = false"
+                @click="closeModal"
                 class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
               >
                 Batal
+              </button>
+            </div>
+          </form>
+
+          <!-- Stock Transfer Form -->
+          <form v-else @submit.prevent="saveTransfer" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dari Outlet *</label>
+                <select
+                  v-model="transferForm.fromOutletId"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                >
+                  <option value="">Pilih Outlet</option>
+                  <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                    {{ outlet.name }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ke Outlet *</label>
+                <select
+                  v-model="transferForm.toOutletId"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                >
+                  <option value="">Pilih Outlet</option>
+                  <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                    {{ outlet.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+              <textarea
+                v-model="transferForm.reason"
+                rows="2"
+                placeholder="Catatan untuk stock transfer"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              ></textarea>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-sm font-medium text-gray-700">Produk *</label>
+                <button
+                  type="button"
+                  @click="addTransferItem"
+                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                >
+                  + Tambah Produk
+                </button>
+              </div>
+              <div class="space-y-2">
+                <div
+                  v-for="(item, index) in transferForm.items"
+                  :key="index"
+                  class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
+                >
+                  <div class="col-span-8">
+                    <select
+                      v-model="item.productId"
+                      required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                    >
+                      <option value="">Pilih Produk</option>
+                      <option v-for="product in products" :key="product.id" :value="product.id">
+                        {{ product.name }} (Stok: {{ product.stock }})
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-span-3">
+                    <input
+                      v-model.number="item.quantity"
+                      type="number"
+                      min="1"
+                      required
+                      placeholder="Qty"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                    />
+                  </div>
+                  <div class="col-span-1 flex items-center justify-end">
+                    <button
+                      type="button"
+                      @click="removeTransferItem(index)"
+                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex space-x-3 pt-4">
+              <button
+                type="button"
+                @click="closeModal"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                :disabled="saving || transferForm.items.length === 0"
+                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+              >
+                {{ saving ? 'Menyimpan...' : 'Buat Transfer' }}
               </button>
             </div>
           </form>
@@ -280,7 +433,9 @@ const loading = ref(false);
 const saving = ref(false);
 const adjustments = ref<any[]>([]);
 const products = ref<any[]>([]);
+const outlets = ref<any[]>([]);
 const showAdjustmentModal = ref(false);
+const adjustmentMode = ref<'adjustment' | 'transfer'>('adjustment');
 
 const filters = ref({
   search: '',
@@ -301,6 +456,13 @@ const adjustmentForm = ref({
   type: 'INCREASE' as 'INCREASE' | 'DECREASE',
   quantity: 1,
   reason: '',
+});
+
+const transferForm = ref({
+  fromOutletId: '',
+  toOutletId: '',
+  reason: '',
+  items: [{ productId: '', quantity: 1 }],
 });
 
 const loadAdjustments = async (page = 1) => {
@@ -337,18 +499,21 @@ const loadProducts = async () => {
   }
 };
 
+const loadOutlets = async () => {
+  try {
+    const response = await api.get('/outlets', { params: { limit: 100 } });
+    outlets.value = response.data.data || response.data || [];
+  } catch (error: any) {
+    console.error('Error loading outlets:', error);
+  }
+};
+
 const saveAdjustment = async () => {
   saving.value = true;
   try {
     await api.post('/products/adjustments', adjustmentForm.value);
     await showSuccess('Penyesuaian produk berhasil disimpan');
-    showAdjustmentModal.value = false;
-    adjustmentForm.value = {
-      productId: '',
-      type: 'INCREASE',
-      quantity: 1,
-      reason: '',
-    };
+    closeModal();
     await loadAdjustments(pagination.value.page);
     await loadProducts();
   } catch (error: any) {
@@ -359,9 +524,61 @@ const saveAdjustment = async () => {
   }
 };
 
+const addTransferItem = () => {
+  transferForm.value.items.push({ productId: '', quantity: 1 });
+};
+
+const removeTransferItem = (index: number) => {
+  transferForm.value.items.splice(index, 1);
+};
+
+const saveTransfer = async () => {
+  saving.value = true;
+  try {
+    const data = {
+      type: 'TRANSFER',
+      reason: transferForm.value.reason || 'Stock transfer antar outlet',
+      fromOutletId: transferForm.value.fromOutletId,
+      toOutletId: transferForm.value.toOutletId,
+      transferItems: transferForm.value.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    };
+    await api.post('/products/adjustments', data);
+    await showSuccess('Stock transfer berhasil dibuat');
+    closeModal();
+    await loadAdjustments(pagination.value.page);
+    await loadProducts();
+  } catch (error: any) {
+    console.error('Error saving transfer:', error);
+    await showError(error.response?.data?.message || 'Gagal menyimpan stock transfer');
+  } finally {
+    saving.value = false;
+  }
+};
+
+const closeModal = () => {
+  showAdjustmentModal.value = false;
+  adjustmentForm.value = {
+    productId: '',
+    type: 'INCREASE',
+    quantity: 1,
+    reason: '',
+  };
+  transferForm.value = {
+    fromOutletId: '',
+    toOutletId: '',
+    reason: '',
+    items: [{ productId: '', quantity: 1 }],
+  };
+  adjustmentMode.value = 'adjustment';
+};
+
 onMounted(() => {
   loadAdjustments();
   loadProducts();
+  loadOutlets();
 });
 </script>
 

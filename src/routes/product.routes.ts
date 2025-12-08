@@ -435,32 +435,41 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userId = req.userId!;
-      const adjustment = await productAdjustmentService.createAdjustment(
+      const result = await productAdjustmentService.createAdjustment(
         req.body,
         tenantId,
         userId
       );
       
-      // Log audit
-      await logAction(
-        req,
-        'CREATE',
-        'product_adjustments',
-        adjustment.id,
-        {
-          productId: adjustment.productId,
-          type: adjustment.type,
-          quantity: adjustment.quantity,
-          reason: adjustment.reason,
-        },
-        'SUCCESS'
-      );
+      // Handle array response for stock transfer
+      const adjustments = Array.isArray(result) ? result : [result];
       
-      res.status(201).json(adjustment);
+      // Log audit for each adjustment
+      for (const adjustment of adjustments) {
+        await logAction(
+          req,
+          'CREATE',
+          'product_adjustments',
+          adjustment.id,
+          {
+            productId: adjustment.productId,
+            type: adjustment.type,
+            quantity: adjustment.quantity,
+            reason: adjustment.reason,
+          },
+          'SUCCESS'
+        );
+      }
+      
+      // Return array for transfer, single object for regular adjustment
+      res.status(201).json(Array.isArray(result) ? { data: result, type: 'TRANSFER' } : result);
     } catch (error: any) {
       await logAction(req, 'CREATE', 'product_adjustments', null, { error: error.message }, 'FAILED', error.message);
-      if (error.message === 'Product not found') {
+      if (error.message === 'Product not found' || error.message.includes('not found')) {
         return res.status(404).json({ message: error.message });
+      }
+      if (error.message.includes('Insufficient stock')) {
+        return res.status(400).json({ message: error.message });
       }
       res.status(500).json({ message: error.message });
     }
