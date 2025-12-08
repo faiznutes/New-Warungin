@@ -41,9 +41,27 @@ router.get(
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 50; // Default 50 for addons (usually small list)
       const result = await addonService.getTenantAddons(tenantId, page, limit);
+      
+      // Ensure data is always an array
+      if (result && result.data) {
+        result.data = Array.isArray(result.data) ? result.data : [];
+      } else {
+        result.data = [];
+      }
+      
       res.json(result);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error getting tenant addons:', { error: error.message, stack: error.stack });
+      // Return empty array structure on error
+      res.json({
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 50,
+          total: 0,
+          totalPages: 0,
+        },
+      });
     }
   }
 );
