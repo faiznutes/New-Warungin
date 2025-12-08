@@ -293,7 +293,7 @@ export class ReportService {
           : 30;
         const revenue = (price * duration) / 30; // Convert to total revenue
         totalAddonRevenue += revenue;
-        return {
+      return {
           id: addon.id,
           tenantId: addon.tenant.id,
           tenantName: addon.tenant.name,
@@ -314,7 +314,7 @@ export class ReportService {
           totalSubscriptionRevenue,
           totalAddonRevenue,
           activeTenants: tenants.filter(t => t.isActive).length,
-          totalTenants: tenants.length,
+        totalTenants: tenants.length,
         },
         subscriptions: subscriptionList,
         addons: addonList,
