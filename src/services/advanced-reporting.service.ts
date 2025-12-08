@@ -248,7 +248,10 @@ class AdvancedReportingService {
         },
       });
 
-      const lastRunAt: Date | undefined = saved.lastRunAt ? saved.lastRunAt : undefined;
+      // Convert null to undefined for TypeScript strict mode
+      const lastRunAt: Date | undefined = saved.lastRunAt !== null && saved.lastRunAt !== undefined 
+        ? saved.lastRunAt 
+        : undefined;
       
       return {
         id: saved.id,
@@ -259,7 +262,7 @@ class AdvancedReportingService {
         format: saved.format as any,
         isActive: saved.isActive,
         nextRunAt: saved.nextRunAt,
-        lastRunAt,
+        lastRunAt: lastRunAt as Date | undefined,
       };
     } catch (error: any) {
       logger.error('Error creating scheduled report:', error);
