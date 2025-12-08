@@ -424,9 +424,9 @@ const templateForm = ref({
 const loadTemplates = async () => {
   try {
     const response = await api.get('/subscription-receipts/templates');
-    templates.value = response.data;
-    if (templates.value.length > 0 && !selectedTemplate.value) {
-      selectedTemplate.value = templates.value.find(t => t.isDefault) || templates.value[0];
+    templates.value = Array.isArray(response.data) ? response.data : [];
+    if (Array.isArray(templates.value) && templates.value.length > 0 && !selectedTemplate.value) {
+      selectedTemplate.value = templates.value.find(t => t && t.isDefault) || templates.value[0];
     }
   } catch (error: any) {
     console.error('Error loading templates:', error);

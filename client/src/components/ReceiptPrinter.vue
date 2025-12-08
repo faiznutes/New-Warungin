@@ -331,9 +331,9 @@ const getTemplateFontSize = (templateType: string, styles?: any): string => {
 const loadTemplates = async () => {
   try {
     const response = await api.get('/receipts/templates');
-    templates.value = response.data;
-    if (templates.value.length > 0) {
-      const defaultTemplate = templates.value.find(t => t.isDefault) || templates.value[0];
+    templates.value = Array.isArray(response.data) ? response.data : [];
+    if (Array.isArray(templates.value) && templates.value.length > 0) {
+      const defaultTemplate = templates.value.find(t => t && t.isDefault) || templates.value[0];
       selectedTemplate.value = defaultTemplate.id;
       await loadTemplate(defaultTemplate.id);
     }
