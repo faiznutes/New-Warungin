@@ -989,7 +989,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, onUnmounted, onBeforeRouteLeave } from 'vue';
-import { useRouter } from 'vue-router';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
