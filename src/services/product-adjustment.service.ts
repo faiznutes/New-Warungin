@@ -1,28 +1,26 @@
 import prisma from '../config/database';
 import { z } from 'zod';
 
-export const createProductAdjustmentSchema = z.object({
-  productId: z.string().min(1).optional(),
-  type: z.enum(['INCREASE', 'DECREASE', 'TRANSFER']),
-  quantity: z.number().int().positive().optional(),
-  reason: z.string().min(1),
-  // For stock transfer
-  fromOutletId: z.string().optional(),
-  toOutletId: z.string().optional(),
-  transferItems: z.array(z.object({
-    productId: z.string(),
+export const createProductAdjustmentSchema = z.discriminatedUnion('type', [
+  // Regular adjustment (INCREASE/DECREASE)
+  z.object({
+    type: z.enum(['INCREASE', 'DECREASE']),
+    productId: z.string().min(1),
     quantity: z.number().int().positive(),
-  })).optional(),
-}).refine((data) => {
-  // For TRANSFER type, require transferItems, fromOutletId, toOutletId
-  if (data.type === 'TRANSFER') {
-    return data.transferItems && data.transferItems.length > 0 && data.fromOutletId && data.toOutletId;
-  }
-  // For INCREASE/DECREASE, require productId and quantity
-  return data.productId && data.quantity !== undefined;
-}, {
-  message: 'Invalid data for adjustment type',
-});
+    reason: z.string().min(1),
+  }),
+  // Stock transfer
+  z.object({
+    type: z.literal('TRANSFER'),
+    reason: z.string().min(1),
+    fromOutletId: z.string().min(1),
+    toOutletId: z.string().min(1),
+    transferItems: z.array(z.object({
+      productId: z.string().min(1),
+      quantity: z.number().int().positive(),
+    })).min(1),
+  }),
+]);
 
 export type CreateProductAdjustmentInput = z.infer<typeof createProductAdjustmentSchema>;
 
