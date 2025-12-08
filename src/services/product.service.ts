@@ -113,6 +113,20 @@ export class ProductService {
       throw new Error(limitCheck.message || `Product limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more products.`);
     }
 
+    // Validate barcode uniqueness per tenant (if barcode provided)
+    if (data.barcode) {
+      const existingProduct = await prisma.product.findFirst({
+        where: {
+          tenantId,
+          barcode: data.barcode,
+        },
+      });
+      
+      if (existingProduct) {
+        throw new Error(`Barcode ${data.barcode} already exists for another product in this tenant`);
+      }
+    }
+
     const product = await prisma.product.create({
       data: {
         tenantId,
@@ -157,6 +171,21 @@ export class ProductService {
     const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
     if (!product) {
       throw new Error('Product not found');
+    }
+
+    // Validate barcode uniqueness per tenant (if barcode is being updated)
+    if (data.barcode) {
+      const existingProduct = await prisma.product.findFirst({
+        where: {
+          tenantId,
+          barcode: data.barcode,
+          id: { not: id }, // Exclude current product
+        },
+      });
+      
+      if (existingProduct) {
+        throw new Error(`Barcode ${data.barcode} already exists for another product in this tenant`);
+      }
     }
 
     const updatedProduct = await prisma.product.update({
