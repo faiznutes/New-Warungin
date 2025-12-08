@@ -20,11 +20,11 @@
         <!-- Navigation -->
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
           <router-link
-            to="/app/dashboard"
+            to="/app/super-dashboard"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
             active-class="bg-blue-700 text-white font-semibold shadow-lg"
             exact-active-class="bg-blue-700 text-white font-semibold shadow-lg"
-            @click="handleDashboardClick"
+            @click="closeSidebarOnMobile"
           >
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -261,7 +261,7 @@ const userInitials = computed(() => {
 
 const pageTitle = computed(() => {
   const titles: Record<string, string> = {
-    '/app/dashboard': 'Dashboard',
+    '/app/super-dashboard': 'Dashboard',
     '/app/tenants': 'Tenant Management',
     '/app/tenants/support': 'Tenant Support',
     '/app/addons': 'Addon Management',
@@ -283,15 +283,7 @@ const closeSidebarOnMobile = () => {
   }
 };
 
-const handleDashboardClick = () => {
-  // ALWAYS clear selectedTenantId when super admin clicks dashboard link
-  // This ensures super admin dashboard is always shown when clicking dashboard
-  if (authStore.isSuperAdmin) {
-    authStore.setSelectedTenant(null);
-    localStorage.removeItem('selectedTenantId');
-  }
-  closeSidebarOnMobile();
-};
+// Removed handleDashboardClick - no longer needed with separate super-dashboard route
 
 const handleResize = () => {
   windowWidth.value = window.innerWidth;

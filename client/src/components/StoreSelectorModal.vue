@@ -172,8 +172,8 @@ const handleConfirm = async () => {
     emit('select', selectedStoreId.value);
     emit('close');
     
-    // Redirect to dashboard
-    router.push('/app/dashboard');
+    // Redirect to appropriate dashboard (router guard will handle)
+    router.push('/app');
   } catch (error: any) {
     console.error('Error selecting store:', error);
   } finally {
@@ -188,8 +188,8 @@ const handleCancel = () => {
   }
   
   emit('close');
-  // Redirect to dashboard anyway
-  router.push('/app/dashboard');
+  // Redirect to appropriate dashboard (router guard will handle)
+  router.push('/app');
 };
 
 watch(() => props.show, (newValue) => {

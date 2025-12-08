@@ -97,9 +97,9 @@ const handleSelect = (tenantId: string) => {
 
 const handleCancel = () => {
   emit('close');
-  // Redirect to dashboard if no tenant selected
+  // Redirect to appropriate dashboard if no tenant selected (router guard will handle)
   if (!authStore.selectedTenantId) {
-    router.push('/app/dashboard');
+    router.push('/app');
   }
 };
 

@@ -149,7 +149,8 @@ const goToPaymentPage = () => {
 
 const goToDashboard = () => {
   if (authStore.isAuthenticated) {
-    router.push('/app/dashboard');
+    // Router guard will redirect to appropriate dashboard based on role
+    router.push('/app');
   } else {
     router.push('/login');
   }

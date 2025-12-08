@@ -91,14 +91,20 @@ const router = createRouter({
     {
       path: '/app',
       component: () => import('../layouts/DynamicLayout.vue'),
-      redirect: '/app/dashboard',
+      redirect: '/app', // Will be handled by beforeEach guard to redirect to appropriate dashboard
       meta: { requiresAuth: true },
       children: [
         {
           path: 'dashboard',
           name: 'dashboard',
           component: () => import('../views/dashboard/Dashboard.vue'),
-          meta: { roles: ['SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
+        },
+        {
+          path: 'super-dashboard',
+          name: 'super-dashboard',
+          component: () => import('../views/superadmin/SuperDashboard.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
         },
         // Super Admin only
         {
@@ -434,15 +440,61 @@ router.beforeEach(async (to, from, next) => {
   
   // If going to login page, skip all checks to avoid flash
   if (to.name === 'login') {
-    // If already authenticated, redirect to dashboard
+    // If already authenticated, redirect to appropriate dashboard
     const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (hasToken && authStore.isAuthenticated) {
+      // Redirect super admin to super-dashboard, others to dashboard
+      if (authStore.isSuperAdmin) {
+        next({ name: 'super-dashboard' });
+      } else {
       next({ name: 'dashboard' });
+      }
       return;
     }
     // Otherwise, allow access to login page immediately
     next();
     return;
+  }
+  
+  // Redirect super admin from dashboard to super-dashboard
+  if (authStore.isSuperAdmin && to.name === 'dashboard') {
+    next({ name: 'super-dashboard' });
+    return;
+  }
+  
+  // Redirect non-super admin from super-dashboard to dashboard
+  if (!authStore.isSuperAdmin && to.name === 'super-dashboard') {
+    next({ name: 'dashboard' });
+    return;
+  }
+  
+  // Redirect /app to appropriate dashboard based on role
+  // IMPORTANT: Check user role AFTER authentication is confirmed
+  if (to.path === '/app' || to.path === '/app/') {
+    // Wait for user data to be loaded if not yet available
+    if (to.meta.requiresAuth && hasToken && !authStore.user) {
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+      if (rememberMe) {
+        try {
+          await authStore.fetchMe();
+        } catch (error) {
+          console.error('Failed to restore session:', error);
+          authStore.clearAuth();
+          localStorage.removeItem('rememberMe');
+          next({ name: 'login', query: { redirect: to.fullPath } });
+          return;
+        }
+      }
+    }
+    
+    // Now check role after user data is loaded
+    if (authStore.isSuperAdmin) {
+      next({ name: 'super-dashboard' });
+      return;
+    } else {
+      next({ name: 'dashboard' });
+      return;
+    }
   }
   
   // Check token first (synchronous) to avoid flash during logout
@@ -485,9 +537,13 @@ router.beforeEach(async (to, from, next) => {
     const allowedRoles = to.meta.roles as string[];
     
     if (!allowedRoles.includes(userRole)) {
-      // Redirect to dashboard instead of unauthorized for better UX
+      // Redirect to appropriate dashboard based on role instead of unauthorized for better UX
       // Supervisor should not see unauthorized page
-      next({ name: 'dashboard' });
+      if (authStore.isSuperAdmin) {
+        next({ name: 'super-dashboard' });
+      } else {
+        next({ name: 'dashboard' });
+      }
       return;
     }
     
@@ -501,8 +557,12 @@ router.beforeEach(async (to, from, next) => {
         const hasPermission = userPermissions[requiredPermission] === true;
         
         if (!hasPermission) {
-          // Redirect to dashboard if permission not granted
-          next({ name: 'dashboard' });
+          // Redirect to appropriate dashboard based on role if permission not granted
+          if (authStore.isSuperAdmin) {
+            next({ name: 'super-dashboard' });
+          } else {
+            next({ name: 'dashboard' });
+          }
           return;
         }
       }
@@ -511,7 +571,12 @@ router.beforeEach(async (to, from, next) => {
   
   // Legacy admin check (for backward compatibility)
   if (to.meta.requiresAdmin && authStore.user?.role !== 'ADMIN_TENANT' && authStore.user?.role !== 'SUPER_ADMIN') {
-    next({ name: 'dashboard' });
+    // Redirect to appropriate dashboard based on role
+    if (authStore.isSuperAdmin) {
+      next({ name: 'super-dashboard' });
+    } else {
+      next({ name: 'dashboard' });
+    }
     return;
   }
   
@@ -550,22 +615,6 @@ router.beforeEach(async (to, from, next) => {
     } catch (error: any) {
       // If error loading addons, allow access (will be handled by backend)
       console.error('Error checking addon:', error);
-    }
-  }
-  
-  // For super admin, ALWAYS clear selectedTenantId when navigating to dashboard
-  // This ensures consistent UI - dashboard should ALWAYS show super admin view
-  // unless explicitly selecting a tenant from within dashboard
-  if (authStore.isSuperAdmin && to.name === 'dashboard') {
-    // ALWAYS clear selectedTenantId when navigating to dashboard
-    // Clear if coming from tenant page OR if selectedTenantId exists
-    // This ensures super admin ALWAYS sees super admin dashboard when clicking dashboard link
-    const isFromTenantPage = from.path?.startsWith('/app/tenants');
-    if (isFromTenantPage || authStore.selectedTenantId) {
-      authStore.setSelectedTenant(null);
-      localStorage.removeItem('selectedTenantId');
-      // Force clear by setting it explicitly
-      // This ensures the UI updates immediately
     }
   }
   

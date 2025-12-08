@@ -2199,8 +2199,8 @@ onMounted(async () => {
 
 // Clear selectedTenantId when leaving tenant detail
 onBeforeRouteLeave((to, from, next) => {
-  // If super admin is navigating to dashboard or tenant list, clear selectedTenantId
-  if (authStore.isSuperAdmin && (to.name === 'dashboard' || to.name === 'tenants')) {
+  // If super admin is navigating to dashboard, super-dashboard, or tenant list, clear selectedTenantId
+  if (authStore.isSuperAdmin && (to.name === 'dashboard' || to.name === 'super-dashboard' || to.name === 'tenants')) {
     authStore.setSelectedTenant(null);
     localStorage.removeItem('selectedTenantId');
   }

@@ -190,6 +190,9 @@ const handleLogin = async () => {
     
     await authStore.login(trimmedEmail, trimmedPassword, rememberMe.value);
     
+    // IMPORTANT: Wait a tick to ensure user data is fully loaded and reactive
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
     // Store email if remember me is checked
     if (rememberMe.value) {
       localStorage.setItem('rememberedEmail', trimmedEmail);
@@ -209,9 +212,20 @@ const handleLogin = async () => {
       // Show store selector modal
       showStoreSelector.value = true;
     } else {
-      // Redirect to intended destination or dashboard
-      const redirect = route.query.redirect as string || '/app/dashboard';
-      router.push(redirect);
+      // Redirect to intended destination or appropriate dashboard based on role
+      const redirect = route.query.redirect as string;
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        // Directly redirect to appropriate dashboard based on role
+        // Double check user role to ensure correct redirect
+        const userRole = authStore.user?.role;
+        if (userRole === 'SUPER_ADMIN') {
+          router.push({ name: 'super-dashboard' });
+        } else {
+          router.push({ name: 'dashboard' });
+        }
+      }
     }
   } catch (error: any) {
     // Handle rate limiting (429) errors with better messaging
@@ -268,15 +282,35 @@ const handleLogin = async () => {
 
 const handleStoreSelectorClose = () => {
   showStoreSelector.value = false;
-  // Redirect to dashboard even if closed
-  const redirect = route.query.redirect as string || '/app/dashboard';
-  router.push(redirect);
+  // Redirect to intended destination or appropriate dashboard based on role
+  const redirect = route.query.redirect as string;
+  if (redirect) {
+    router.push(redirect);
+  } else {
+    // Directly redirect to appropriate dashboard based on role
+    const userRole = authStore.user?.role;
+    if (userRole === 'SUPER_ADMIN') {
+      router.push({ name: 'super-dashboard' });
+    } else {
+      router.push({ name: 'dashboard' });
+    }
+  }
 };
 
 const handleStoreSelected = (storeId: string) => {
   showStoreSelector.value = false;
-  // Redirect to intended destination or dashboard
-  const redirect = route.query.redirect as string || '/app/dashboard';
-  router.push(redirect);
+  // Redirect to intended destination or appropriate dashboard based on role
+  const redirect = route.query.redirect as string;
+  if (redirect) {
+    router.push(redirect);
+  } else {
+    // Directly redirect to appropriate dashboard based on role
+    const userRole = authStore.user?.role;
+    if (userRole === 'SUPER_ADMIN') {
+      router.push({ name: 'super-dashboard' });
+    } else {
+      router.push({ name: 'dashboard' });
+    }
+  }
 };
 </script>

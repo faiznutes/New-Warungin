@@ -93,7 +93,8 @@ const handleRegister = async () => {
   loading.value = true;
   try {
     await authStore.register(form.value);
-    router.push('/app/dashboard');
+    // Router guard will redirect to appropriate dashboard based on role
+    router.push('/app');
   } catch (error: any) {
     await showError(error.response?.data?.error || 'Registration failed');
   } finally {
