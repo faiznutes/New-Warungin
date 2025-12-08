@@ -30,8 +30,9 @@ export const sendEmail = async (
       html,
     });
     logger.info(`✅ Email sent to ${to}`);
-  } catch (error) {
-    logger.error('Email sending error:', { error: error.message, stack: error.stack });
+  } catch (error: unknown) {
+    const err = error as Error;
+    logger.error('Email sending error:', { error: err.message, stack: err.stack });
     throw error;
   }
 };

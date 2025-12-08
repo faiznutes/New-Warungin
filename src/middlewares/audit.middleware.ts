@@ -33,9 +33,10 @@ export const auditMiddleware = (action: string, resource: string, severity: 'LOW
           severity,
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // Don't break the request if audit logging fails
-      logger.error('Audit middleware error:', { error: error.message, stack: error.stack });
+      const err = error as Error;
+      logger.error('Audit middleware error:', { error: err.message, stack: err.stack });
     }
     next();
   };
@@ -79,8 +80,9 @@ export const auditDataChangeMiddleware = (resource: string) => {
             });
           }
         }
-      } catch (error) {
-        logger.error('Audit data change middleware error:', { error: error.message, stack: error.stack });
+      } catch (error: unknown) {
+        const err = error as Error;
+        logger.error('Audit data change middleware error:', { error: err.message, stack: err.stack });
       }
     });
 

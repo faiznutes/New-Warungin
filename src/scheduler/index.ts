@@ -16,7 +16,7 @@ import { processBackupMonitoringJob } from '../jobs/backup-monitoring.job';
 import { processAddonExpiryCheckerJob } from '../jobs/addon-expiry-checker.job';
 
 // Initialize workers lazily to avoid blocking app start
-let redisClient: ReturnType<typeof getRedisClient> = null;
+let redisClient: ReturnType<typeof getRedisClient> | null = null;
 // Email worker disabled - using n8n instead
 let backupWorker: Worker | null = null;
 let notificationWorker: Worker | null = null;

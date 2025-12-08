@@ -50,8 +50,9 @@ export class SettingsService {
 
       // Return default settings
       return DEFAULT_SETTINGS;
-    } catch (error) {
-      logger.error('Error loading system settings:', { error: error.message, stack: error.stack });
+    } catch (error: unknown) {
+      const err = error as Error;
+      logger.error('Error loading system settings:', { error: err.message, stack: err.stack });
       return DEFAULT_SETTINGS;
     }
   }

@@ -83,11 +83,11 @@ class AdvancedAuditService {
           action: event.action,
           resource: event.resource,
           resourceId: event.resourceId,
-          details: event.changes || event.metadata ? JSON.stringify({
+          details: (event.changes || event.metadata) ? JSON.stringify({
             changes: event.changes,
             metadata: event.metadata,
             severity: event.severity,
-          }) : null,
+          }) : undefined,
           ipAddress: event.ipAddress,
           userAgent: event.userAgent,
         },

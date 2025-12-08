@@ -250,7 +250,9 @@ export const authGuard = async (
       role: decoded.role,
       email: user.email,
       name: user.name,
-      permissions: user.permissions || {},
+      permissions: (user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions)) 
+        ? user.permissions as Record<string, any> 
+        : {},
     };
 
     next();
