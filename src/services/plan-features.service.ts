@@ -406,6 +406,19 @@ export async function checkPlanLimit(
     ? `Limit ${limitType} tercapai (${currentUsage}/${limit}). Upgrade paket atau beli addon untuk menambah limit.`
     : undefined;
 
+  // Debug logging for outlet limit
+  if (limitType === 'outlets') {
+    const planFeatures = await getTenantPlanFeatures(tenantId);
+    console.log(`[checkPlanLimit] Outlet limit calculation for tenant ${tenantId}:`, {
+      plan: planFeatures.plan,
+      baseLimit: PLAN_BASE_LIMITS[planFeatures.plan]?.outlets,
+      activeAddons: planFeatures.activeAddons.filter(a => a.type === 'ADD_OUTLETS'),
+      totalLimit: limit,
+      currentUsage,
+      allowed,
+    });
+  }
+
   return {
     allowed,
     currentUsage,

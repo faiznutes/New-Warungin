@@ -745,6 +745,14 @@ export class AddonService {
     const planFeaturesService = (await import('./plan-features.service')).default;
     const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, limitType);
 
+    // Debug logging
+    console.log(`[checkLimit] ${addonType} for tenant ${tenantId}:`, {
+      limitType,
+      limit: limitCheck.limit,
+      currentUsage: limitCheck.currentUsage,
+      allowed: limitCheck.allowed,
+    });
+
     return {
       allowed: limitCheck.allowed,
       currentUsage: limitCheck.currentUsage,
