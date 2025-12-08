@@ -523,6 +523,7 @@ import { useAuthStore } from '../../stores/auth';
 import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
 import QuickInsightWidget from '../../components/QuickInsightWidget.vue';
+import { safeArrayMethod, ensureArray } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const route = useRoute();
