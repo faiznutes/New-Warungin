@@ -783,7 +783,7 @@
         <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Addon</h3>
         <div class="space-y-4">
           <div
-            v-for="addon in availableAddons.filter(a => !isAddonActive(a.id))"
+            v-for="addon in filteredAvailableAddons"
             :key="addon.id"
             class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition cursor-pointer"
             :class="{ 'border-blue-500 bg-blue-50': selectedAddonForSubscribe?.id === addon.id }"
@@ -1150,20 +1150,16 @@ const hasLimit = (addon: any) => {
   return addon.defaultLimit !== null && addon.defaultLimit !== undefined;
 };
 
-// Filter available addons: hide addons without limit that are already active
+// Filter available addons: semua addon selalu ditampilkan (bisa dibeli berkali-kali)
 const filteredAvailableAddons = computed(() => {
   return availableAddons.value.filter(addon => {
-    // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
+    // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
     }
-    // Addon tanpa limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
-    // Sembunyikan jika sudah aktif dan belum expired
-    // Tampilkan jika expired atau belum pernah dibeli
-    if (isAddonActive(addon.id)) {
-      return false; // Hide if active and not expired
-    }
-    return true; // Show if expired or not purchased
+    // Addon tanpa limit juga selalu ditampilkan (bisa dibeli berkali-kali untuk extend durasi)
+    // Tidak perlu filter - semua addon bisa dibeli berkali-kali
+    return true;
   });
 });
 

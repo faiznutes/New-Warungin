@@ -19,6 +19,28 @@
       </button>
     </div>
 
+    <!-- Outlet Limit Info with Progress Bar -->
+    <div v-if="outletLimit && outletLimit.limit !== undefined && outletLimit.limit !== -1" class="mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <p class="font-semibold text-blue-900">Limit Outlet/Store</p>
+          <p class="text-sm text-blue-700">
+            {{ outletLimit.currentUsage || 0 }} / {{ outletLimit.limit }} outlet
+            <span class="font-semibold" :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'text-red-600' : 'text-green-600'">
+              ({{ outletLimit.limit - (outletLimit.currentUsage || 0) }} tersedia)
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="w-full bg-blue-200 rounded-full h-3">
+        <div
+          class="h-3 rounded-full transition-all"
+          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
+          :style="{ width: `${Math.min(100, ((outletLimit.currentUsage || 0) / outletLimit.limit) * 100)}%` }"
+        ></div>
+      </div>
+    </div>
+
     <!-- Stores List -->
     <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center">
@@ -223,6 +245,7 @@ const loading = ref(false);
 const processing = ref(false);
 const showCreateModal = ref(false);
 const editingStore = ref<Store | null>(null);
+const outletLimit = ref<any>(null);
 
 const storeForm = ref({
   name: '',
@@ -236,6 +259,15 @@ const loadStores = async () => {
   try {
     const response = await api.get('/outlets');
     stores.value = response.data.data || [];
+    
+    // Load outlet limit
+    try {
+      const limitRes = await api.get('/addons/check-limit/ADD_OUTLETS');
+      outletLimit.value = limitRes.data;
+    } catch (e) {
+      // Ignore if no addon
+      outletLimit.value = null;
+    }
   } catch (error: any) {
     await showError(error.response?.data?.message || 'Gagal memuat data store');
   } finally {

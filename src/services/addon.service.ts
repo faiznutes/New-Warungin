@@ -430,20 +430,10 @@ export class AddonService {
     // Check if addon has limit (can be purchased multiple times)
     const hasLimit = addonInfo.defaultLimit !== null && addonInfo.defaultLimit !== undefined;
 
-    // For addons without limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR)
-    // Only throw error if already active and not expired
-    if (!hasLimit && existing && existing.status === 'active') {
-      const now = new Date();
-      if (existing.expiresAt) {
-        const expiresAt = new Date(existing.expiresAt);
-        if (expiresAt > now) {
-          throw new Error('Addon already subscribed');
-        }
-      } else {
-        throw new Error('Addon already subscribed');
-      }
-    }
+    // For addons without limit (BUSINESS_ANALYTICS, EXPORT_REPORTS, RECEIPT_EDITOR, etc.)
+    // Allow multiple purchases to extend duration - update existing if active
     // For addons with limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS), allow multiple purchases
+    // If existing, add to the limit instead of replacing it
 
     const now = new Date();
     // Calculate addon expiry: flat duration from now (can exceed subscription end)
@@ -463,47 +453,89 @@ export class AddonService {
     };
 
     if (existing) {
-      // Update existing addon
-      // If subscribedAt is not set, set it to now for global report tracking
-      const updateData: any = {
-        status: 'active',
-        expiresAt,
-        limit: data.limit,
-        config: addonConfig,
-      };
-      
-      // Only update subscribedAt if it's not already set
-      if (!existing.subscribedAt) {
-        updateData.subscribedAt = now;
-      }
-      
-      const updatedAddon = await prisma.tenantAddon.update({
-        where: { id: existing.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
-        data: updateData,
-      });
-      
-      // Award points from addon purchase (10rb = 5 point) if extending/renewing
-      // Calculate amount based on addon price and duration
-      if (addonInfo && addonInfo.price && data.duration) {
-        const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
+      if (hasLimit) {
+        // For addons with limit, add to existing limit (allow multiple purchases)
+        const newLimit = (existing.limit || 0) + (data.limit || addonInfo.defaultLimit || 0);
         
-        if (amount > 0) {
-          try {
-            const rewardPointService = (await import('./reward-point.service')).default;
-            await rewardPointService.awardPointsFromAddon(
-              tenantId,
-              amount,
-              data.addonName,
-              data.addonType
-            );
-          } catch (error: any) {
-            // Log error but don't fail the addon subscription
-            logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
+        // Update existing addon with increased limit
+        const updateData: any = {
+          status: 'active',
+          expiresAt,
+          limit: newLimit,
+          config: addonConfig,
+        };
+        
+        // Only update subscribedAt if it's not already set
+        if (!existing.subscribedAt) {
+          updateData.subscribedAt = now;
+        }
+        
+        const updatedAddon = await prisma.tenantAddon.update({
+          where: { id: existing.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
+          data: updateData,
+        });
+        
+        // Award points from addon purchase (10rb = 5 point) if extending/renewing
+        // Calculate amount based on addon price and duration
+        if (addonInfo && addonInfo.price && data.duration) {
+          const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
+          
+          if (amount > 0) {
+            try {
+              const rewardPointService = (await import('./reward-point.service')).default;
+              await rewardPointService.awardPointsFromAddon(
+                tenantId,
+                amount,
+                data.addonName,
+                data.addonType
+              );
+            } catch (error: any) {
+              // Log error but don't fail the addon subscription
+              logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
+            }
           }
         }
+        
+        return updatedAddon;
+      } else {
+        // For addons without limit, extend duration (allow multiple purchases to extend)
+        const updateData: any = {
+          status: 'active',
+          expiresAt,
+          config: addonConfig,
+        };
+        
+        // Only update subscribedAt if it's not already set
+        if (!existing.subscribedAt) {
+          updateData.subscribedAt = now;
+        }
+        
+        const updatedAddon = await prisma.tenantAddon.update({
+          where: { id: existing.id, tenantId },
+          data: updateData,
+        });
+        
+        // Award points from addon purchase
+        if (addonInfo && addonInfo.price && data.duration) {
+          const amount = Math.floor((addonInfo.price * data.duration) / 30);
+          
+          if (amount > 0) {
+            try {
+              const rewardPointService = (await import('./reward-point.service')).default;
+              await rewardPointService.awardPointsFromAddon(
+                tenantId,
+                amount,
+                data.addonName,
+                data.addonType
+              );
+            } catch (error: any) {
+              logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
+            }
+          }
+        }
+        
+        return updatedAddon;
       }
-      
-      return updatedAddon;
     }
 
     // Create new addon subscription

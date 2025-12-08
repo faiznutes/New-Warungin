@@ -22,24 +22,25 @@
       </div>
     </div>
 
-    <!-- User Limit Info -->
-    <div v-if="userLimit && userLimit.limit" class="mb-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-      <div class="flex items-center justify-between">
+    <!-- User Limit Info with Progress Bar -->
+    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+      <div class="flex items-center justify-between mb-2">
         <div>
           <p class="font-semibold text-blue-900">Limit Pengguna</p>
           <p class="text-sm text-blue-700">
-            {{ userLimit.currentUsage }} / {{ userLimit.limit }} pengguna aktif
+            {{ userLimit.currentUsage || 0 }} / {{ userLimit.limit }} pengguna aktif
+            <span class="font-semibold" :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'text-red-600' : 'text-green-600'">
+              ({{ userLimit.limit - (userLimit.currentUsage || 0) }} tersedia)
+            </span>
           </p>
         </div>
-        <div class="flex-1 max-w-xs ml-4">
-          <div class="w-full bg-blue-200 rounded-full h-2">
-            <div
-              class="bg-blue-600 h-2 rounded-full transition-all"
-              :class="userLimit.currentUsage >= userLimit.limit ? 'bg-red-600' : ''"
-              :style="{ width: `${Math.min(100, (userLimit.currentUsage / userLimit.limit) * 100)}%` }"
-            ></div>
-          </div>
-        </div>
+      </div>
+      <div class="w-full bg-blue-200 rounded-full h-3">
+        <div
+          class="h-3 rounded-full transition-all"
+          :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'bg-red-500' : (userLimit.currentUsage || 0) >= (userLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
+          :style="{ width: `${Math.min(100, ((userLimit.currentUsage || 0) / userLimit.limit) * 100)}%` }"
+        ></div>
       </div>
     </div>
 

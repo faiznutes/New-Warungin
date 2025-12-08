@@ -220,6 +220,28 @@
       </div>
     </div>
 
+    <!-- Product Limit Info with Progress Bar -->
+    <div v-if="productLimit && productLimit.limit !== undefined && productLimit.limit !== -1" class="mb-4 sm:mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <p class="font-semibold text-blue-900">Limit Produk</p>
+          <p class="text-sm text-blue-700">
+            {{ productLimit.currentUsage || 0 }} / {{ productLimit.limit }} produk
+            <span class="font-semibold" :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'text-red-600' : 'text-green-600'">
+              ({{ productLimit.limit - (productLimit.currentUsage || 0) }} tersedia)
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="w-full bg-blue-200 rounded-full h-3">
+        <div
+          class="h-3 rounded-full transition-all"
+          :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'bg-red-500' : (productLimit.currentUsage || 0) >= (productLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
+          :style="{ width: `${Math.min(100, ((productLimit.currentUsage || 0) / productLimit.limit) * 100)}%` }"
+        ></div>
+      </div>
+    </div>
+
       <!-- Tenant Selection Message -->
       <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300 mx-4 sm:mx-6">
         <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -269,15 +269,13 @@ const hasLimit = (addon: any) => {
 // Filter and sort available addons
 const filteredAvailableAddons = computed(() => {
   const filtered = availableAddons.value.filter(addon => {
-    // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan
+    // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
     }
-    // Addon tanpa limit - sembunyikan jika sudah aktif dan belum expired
-    if (isAddonActive(addon.id)) {
-      return false; // Hide if active and not expired
-    }
-    return true; // Show if expired or not purchased
+    // Addon tanpa limit juga selalu ditampilkan (bisa dibeli berkali-kali untuk extend durasi)
+    // Tidak perlu filter - semua addon bisa dibeli berkali-kali
+    return true;
   });
   
   // Sort: non-API addons first, API addons (coming soon) at the end
