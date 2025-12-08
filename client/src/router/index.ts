@@ -584,10 +584,11 @@ router.beforeEach(async (to, from, next) => {
       // Check if user has any stores available
       try {
         const outletsResponse = await api.get('/outlets');
-        const outlets = outletsResponse.data?.data || [];
-        const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
+        const outletsData = outletsResponse.data?.data || outletsResponse.data || [];
+        const outlets = Array.isArray(outletsData) ? outletsData : [];
+        const activeOutlets = outlets.filter((o: any) => o && o.isActive !== false);
         
-        if (activeOutlets.length === 0) {
+        if (!Array.isArray(activeOutlets) || activeOutlets.length === 0) {
           // No stores available - show warning for SPV/kasir/dapur
           const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
             next({ 
@@ -618,7 +619,7 @@ router.beforeEach(async (to, from, next) => {
     const userRole = authStore.user.role;
     const allowedRoles = to.meta.roles as string[];
     
-    if (!allowedRoles.includes(userRole)) {
+    if (!Array.isArray(allowedRoles) || !allowedRoles.includes(userRole)) {
       // Redirect to appropriate dashboard based on role instead of unauthorized for better UX
       // Supervisor should not see unauthorized page
       if (authStore.isSuperAdmin) {
@@ -684,10 +685,16 @@ router.beforeEach(async (to, from, next) => {
     try {
       const { default: api } = await import('../api');
       const response = await api.get('/addons');
-      const activeAddons = response.data || [];
+      const addonsData = response.data?.data || response.data || [];
+      const activeAddons = Array.isArray(addonsData) ? addonsData : [];
+      
+      if (!Array.isArray(activeAddons) || activeAddons.length === 0) {
+        next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
+        return;
+      }
       
       const hasAddon = activeAddons.some(
-        (addon: any) => addon.addonType === requiredAddon && addon.status === 'active'
+        (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
       );
       
       if (!hasAddon) {

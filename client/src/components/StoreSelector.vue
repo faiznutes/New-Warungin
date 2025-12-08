@@ -98,7 +98,8 @@ const shouldShow = computed(() => {
 
 const selectedStoreName = computed(() => {
   if (!selectedStoreId.value) return '';
-  const store = stores.value.find(s => s.id === selectedStoreId.value);
+  if (!Array.isArray(stores.value)) return '';
+  const store = stores.value.find(s => s && s.id === selectedStoreId.value);
   return store?.name || '';
 });
 
