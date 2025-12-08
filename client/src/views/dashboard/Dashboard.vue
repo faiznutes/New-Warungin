@@ -1124,25 +1124,26 @@ const renderCharts = () => {
 // Watch activeAddons to ensure it's always an array
 // Use immediate: true to check on component mount
 // This watcher runs BEFORE computed properties are evaluated
+// Watch activeAddons to ensure it's always an array
+// Use immediate: true to check on component mount
+// Use helper function to auto-fix any non-array values
 watch(() => activeAddons.value, (newValue) => {
   if (newValue === null || newValue === undefined || !Array.isArray(newValue)) {
     console.warn('activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
-    activeAddons.value = [];
+    setActiveAddons([]);
   }
 }, { deep: true, immediate: true });
 
 // Additional immediate check on authentication state
 watch(() => authStore.isAuthenticated, (isAuth) => {
-  if (isAuth && !Array.isArray(activeAddons.value)) {
-    activeAddons.value = [];
+  if (isAuth) {
+    getActiveAddons(); // Auto-fix if needed
   }
 }, { immediate: true });
 
 // Watch user role to ensure activeAddons is array when user changes
 watch(() => authStore.user?.role, () => {
-  if (!Array.isArray(activeAddons.value)) {
-    activeAddons.value = [];
-  }
+  getActiveAddons(); // Auto-fix if needed
 }, { immediate: true });
 
 // Watch for tenant changes and reload stats and subscription
