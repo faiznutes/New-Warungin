@@ -55,7 +55,7 @@ export function checkPasswordStrength(password: string): PasswordStrength {
 
   // Common password check (basic)
   const commonPasswords = ['password', '12345678', 'qwerty', 'abc123'];
-  if (commonPasswords.some(common => password.toLowerCase().includes(common))) {
+  if (Array.isArray(commonPasswords) && commonPasswords.some((common: string) => password.toLowerCase().includes(common))) {
     feedback.push('Password terlalu umum, gunakan password yang lebih unik');
     score = Math.max(0, score - 1);
   }

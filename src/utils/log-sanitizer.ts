@@ -58,12 +58,12 @@ function isSensitiveKey(key: string): boolean {
   const lowerKey = key.toLowerCase();
   
   // Check exact matches
-  if (SENSITIVE_KEYS.some(sk => lowerKey === sk.toLowerCase())) {
+  if (Array.isArray(SENSITIVE_KEYS) && SENSITIVE_KEYS.some((sk: string) => lowerKey === sk.toLowerCase())) {
     return true;
   }
   
   // Check pattern matches
-  return SENSITIVE_PATTERNS.some(pattern => pattern.test(key));
+  return Array.isArray(SENSITIVE_PATTERNS) && SENSITIVE_PATTERNS.some((pattern: RegExp) => pattern.test(key));
 }
 
 /**
@@ -125,7 +125,7 @@ export function sanitizeForLogging(data: any): any {
   // Handle strings - check if they contain sensitive patterns
   if (typeof data === 'string') {
     // Check if string contains sensitive patterns
-    if (SENSITIVE_PATTERNS.some(pattern => pattern.test(data))) {
+    if (Array.isArray(SENSITIVE_PATTERNS) && SENSITIVE_PATTERNS.some((pattern: RegExp) => pattern.test(data))) {
       return '[REDACTED]';
     }
     return data;
