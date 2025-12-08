@@ -262,8 +262,8 @@
       </svg>
       <span class="text-sm font-semibold text-green-800">Sync berhasil! ({{ pendingSyncCount }} menunggu sync)</span>
     </div>
-    <!-- Store Selector -->
-    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <!-- Store Selector (Hanya untuk SUPERVISOR) -->
+    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
     

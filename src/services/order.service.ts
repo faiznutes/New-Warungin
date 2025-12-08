@@ -24,9 +24,16 @@ export class OrderService {
       }
     }
 
-    // Filter by allowedStoreIds for SUPERVISOR role
+    // Filter by store permissions
     let outletFilter: any = outletId ? { outletId } : {};
-    if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
+    
+    // CASHIER dan KITCHEN: otomatis filter berdasarkan assignedStoreId
+    if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && userPermissions?.assignedStoreId) {
+      const assignedStoreId = userPermissions.assignedStoreId;
+      outletFilter = { outletId: assignedStoreId };
+    }
+    // SUPERVISOR: filter berdasarkan allowedStoreIds
+    else if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
       const allowedStoreIds = userPermissions.allowedStoreIds;
       if (allowedStoreIds.length > 0) {
         // If outletId is provided, check if it's in allowedStoreIds
@@ -155,7 +162,16 @@ export class OrderService {
     });
   }
 
-  async createOrder(data: CreateOrderInput, userId: string, tenantId: string, idempotencyKey?: string): Promise<Order> {
+  async createOrder(data: CreateOrderInput, userId: string, tenantId: string, idempotencyKey?: string, userRole?: string): Promise<Order> {
+    // Validasi: Kasir harus punya shift aktif
+    if (userRole === 'CASHIER') {
+      const cashShiftService = (await import('./cash-shift.service')).default;
+      const hasActiveShift = await cashShiftService.hasActiveShift(tenantId, userId);
+      if (!hasActiveShift) {
+        throw new Error('Kasir harus membuka shift terlebih dahulu sebelum melakukan transaksi');
+      }
+    }
+
     // Calculate subtotal from items (before any discounts)
     const itemsArray = Array.isArray(data.items) ? data.items : [];
     const subtotal = itemsArray.reduce((sum: number, item: any) => {

@@ -90,10 +90,17 @@ router.get(
       }
       
       const { startDate, endDate } = req.query;
+      
+      // Auto-filter berdasarkan assignedStoreId untuk kasir/dapur
+      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
+      const outletId = assignedStoreId || undefined;
+      
       const stats = await dashboardService.getDashboardStats(
         tenantId,
         startDate ? new Date(startDate as string) : undefined,
-        endDate ? new Date(endDate as string) : undefined
+        endDate ? new Date(endDate as string) : undefined,
+        true,
+        outletId
       );
       res.json(stats);
     } catch (error: any) {
@@ -126,6 +133,10 @@ router.get(
       const tenantId = requireTenantId(req);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      
+      // Auto-filter berdasarkan assignedStoreId untuk kasir
+      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
+      const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
 
       const [todayOrders, todayRevenue, recentTransactions] = await Promise.all([
         prisma.order.count({
@@ -133,6 +144,7 @@ router.get(
             tenantId,
             userId: user.id,
             createdAt: { gte: today },
+            ...outletFilter,
           },
         }),
         prisma.order.aggregate({
@@ -141,6 +153,7 @@ router.get(
             userId: user.id,
             status: 'COMPLETED',
             createdAt: { gte: today },
+            ...outletFilter,
           },
           _sum: { total: true },
         }),
@@ -148,6 +161,7 @@ router.get(
           where: {
             tenantId,
             userId: user.id,
+            ...outletFilter,
           },
           take: 10,
           orderBy: { createdAt: 'desc' },
@@ -191,6 +205,10 @@ router.get(
       }
 
       const tenantId = requireTenantId(req);
+      
+      // Auto-filter berdasarkan assignedStoreId untuk kitchen
+      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
+      const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
 
       const [pendingOrders, cookingOrders, readyOrders] = await Promise.all([
         prisma.order.count({
@@ -198,6 +216,7 @@ router.get(
             tenantId,
             sendToKitchen: true,
             kitchenStatus: 'PENDING',
+            ...outletFilter,
           },
         }),
         prisma.order.count({
@@ -205,6 +224,7 @@ router.get(
             tenantId,
             sendToKitchen: true,
             kitchenStatus: 'COOKING',
+            ...outletFilter,
           },
         }),
         prisma.order.count({
@@ -212,6 +232,7 @@ router.get(
             tenantId,
             sendToKitchen: true,
             kitchenStatus: 'READY',
+            ...outletFilter,
           },
         }),
       ]);

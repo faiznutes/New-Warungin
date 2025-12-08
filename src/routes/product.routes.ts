@@ -430,7 +430,7 @@ router.post(
   '/adjustments',
   authGuard,
   subscriptionGuard,
-  validate({ body: createProductAdjustmentSchema }),
+  validate({ body: createProductAdjustmentSchema as any }),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

@@ -16,6 +16,26 @@
           <p class="text-sm sm:text-base text-gray-600">Detail Tenant & Manajemen Langganan</p>
         </div>
       </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          @click="showCreateTenantModal = true"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Tambah Tenant
+        </button>
+        <button
+          @click="showCreateUserModal = true"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Tambah Pengguna
+        </button>
+      </div>
     </div>
 
     <!-- Error Boundary -->
@@ -833,6 +853,156 @@
       </div>
     </div>
 
+    <!-- Create Tenant Modal -->
+    <div
+      v-if="showCreateTenantModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showCreateTenantModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Tenant Baru</h3>
+        <form @submit.prevent="handleCreateTenant" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Tenant <span class="text-red-500">*</span></label>
+            <input
+              v-model="createTenantForm.name"
+              type="text"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Nama tenant"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+            <input
+              v-model="createTenantForm.email"
+              type="email"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="email@example.com"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+            <input
+              v-model="createTenantForm.phone"
+              type="text"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="081234567890"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+            <textarea
+              v-model="createTenantForm.address"
+              rows="3"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Alamat tenant"
+            ></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Paket Langganan</label>
+            <select
+              v-model="createTenantForm.subscriptionPlan"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="BASIC">Starter (BASIC)</option>
+              <option value="PRO">Boost (PRO)</option>
+              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
+            </select>
+          </div>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              @click="showCreateTenantModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              :disabled="creatingTenant"
+              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ creatingTenant ? 'Membuat...' : 'Buat Tenant' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div
+      v-if="showCreateUserModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showCreateUserModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Pengguna Baru</h3>
+        <form @submit.prevent="handleCreateUser" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nama <span class="text-red-500">*</span></label>
+            <input
+              v-model="createUserForm.name"
+              type="text"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Nama pengguna"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+            <input
+              v-model="createUserForm.email"
+              type="email"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="email@example.com"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+            <input
+              v-model="createUserForm.password"
+              type="password"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Kosongkan untuk auto-generate"
+            />
+            <p class="text-xs text-gray-500 mt-1">Kosongkan untuk generate password otomatis</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+            <select
+              v-model="createUserForm.role"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="ADMIN_TENANT">Admin</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="CASHIER">Kasir</option>
+              <option value="KITCHEN">Dapur</option>
+            </select>
+          </div>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              @click="showCreateUserModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              :disabled="creatingUser"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ creatingUser ? 'Membuat...' : 'Buat Pengguna' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Edit User Modal -->
     <div
       v-if="showEditUserModal"
@@ -1095,6 +1265,8 @@ const showExtendAddonModal = ref(false);
 const showReduceAddonModal = ref(false);
 const showAddAddonModal = ref(false);
 const showEditUserModal = ref(false);
+const showCreateTenantModal = ref(false);
+const showCreateUserModal = ref(false);
 const showDeactivateSubscriptionModal = ref(false);
 const deactivatingSubscription = ref(false);
 const loadingUsers = ref(false);

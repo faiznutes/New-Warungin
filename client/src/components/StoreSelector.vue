@@ -89,11 +89,13 @@ const selectedStoreId = ref<string | null>(
 );
 
 const shouldShow = computed(() => {
-  // Show if user is not super admin, or if super admin has selected a tenant
+  // Hanya tampilkan untuk SUPERVISOR (bisa switch store)
+  // Kasir dan Dapur tidak perlu store selector, langsung pakai assignedStoreId
   if (authStore.isSuperAdmin) {
     return !!authStore.selectedTenantId;
   }
-  return true;
+  // Hanya SUPERVISOR yang bisa switch store
+  return authStore.user?.role === 'SUPERVISOR';
 });
 
 const selectedStoreName = computed(() => {
@@ -109,11 +111,52 @@ const loadStores = async () => {
   loading.value = true;
   try {
     const response = await api.get('/outlets');
-    stores.value = response.data.data || [];
+    const allStores = response.data.data || [];
     
-    // If no store selected but stores exist, select first one if only one store
-    if (!selectedStoreId.value && stores.value.length === 1) {
-      handleStoreChange({ target: { value: stores.value[0].id } } as any);
+    // Filter stores berdasarkan role dan permissions
+    if (authStore.user?.role === 'SUPERVISOR') {
+      // SUPERVISOR: hanya tampilkan stores yang diizinkan
+      const permissions = (authStore.user as any)?.permissions;
+      const allowedStoreIds = Array.isArray(permissions?.allowedStoreIds) 
+        ? permissions.allowedStoreIds 
+        : [];
+      
+      if (allowedStoreIds.length > 0) {
+        stores.value = allStores.filter((s: any) => 
+          allowedStoreIds.includes(s.id) && s.isActive !== false
+        );
+      } else {
+        stores.value = [];
+      }
+    } else if (authStore.user?.role === 'CASHIER' || authStore.user?.role === 'KITCHEN') {
+      // CASHIER/KITCHEN: hanya tampilkan assigned store
+      const permissions = (authStore.user as any)?.permissions;
+      const assignedStoreId = permissions?.assignedStoreId;
+      
+      if (assignedStoreId) {
+        stores.value = allStores.filter((s: any) => 
+          s.id === assignedStoreId && s.isActive !== false
+        );
+      } else {
+        stores.value = [];
+      }
+    } else {
+      // ADMIN_TENANT atau lainnya: tampilkan semua stores
+      stores.value = allStores.filter((s: any) => s.isActive !== false);
+    }
+    
+    // Auto-select store jika belum dipilih
+    if (!selectedStoreId.value && stores.value.length > 0) {
+      // Untuk SUPERVISOR dengan multiple stores, pilih yang pertama atau yang tersimpan
+      if (authStore.user?.role === 'SUPERVISOR' && stores.value.length > 1) {
+        const savedStoreId = localStorage.getItem('selectedStoreId');
+        const savedStore = stores.value.find((s: any) => s.id === savedStoreId);
+        const storeId = savedStore ? savedStoreId : stores.value[0].id;
+        handleStoreChange({ target: { value: storeId } } as any);
+      } else if (stores.value.length === 1) {
+        // Auto-select jika hanya 1 store
+        handleStoreChange({ target: { value: stores.value[0].id } } as any);
+      }
     }
   } catch (error: any) {
     console.error('Error loading stores:', error);

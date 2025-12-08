@@ -124,10 +124,13 @@ class FinanceService {
     const discount = orders.reduce((sum, order) => sum + parseFloat((order.discount || 0).toString()), 0);
 
     // Calculate COGS (Cost of Goods Sold) - from product cost
+    // Set 0 jika product tidak punya HPP/cost
     const cogs = orders.reduce((sum, order) => {
       return sum + order.items.reduce((itemSum, item) => {
-        // Get cost from database, default to 0 if not available
-        const productCost = item.product.cost ? parseFloat(item.product.cost.toString()) : 0;
+        // Get cost from database, default to 0 if not available or null
+        const productCost = (item.product.cost && item.product.cost > 0) 
+          ? parseFloat(item.product.cost.toString()) 
+          : 0;
         return itemSum + (productCost * item.quantity);
       }, 0);
     }, 0);
@@ -377,8 +380,9 @@ class FinanceService {
     // Platform doesn't have discounts
     const discount = 0;
 
-    // COGS (Cost of Goods Sold) - estimated as 20% of revenue (platform maintenance costs)
-    const cogs = revenue * 0.2;
+    // COGS (Cost of Goods Sold) - Set 0 untuk subscription dan addons (tidak punya HPP)
+    // Subscription dan addons adalah layanan digital, tidak ada cost of goods sold
+    const cogs = 0;
 
     // Gross Profit
     const grossProfit = revenue - discount - cogs;

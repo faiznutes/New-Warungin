@@ -19,7 +19,7 @@ export interface TopProductDetail {
 }
 
 export class DashboardService {
-  async getDashboardStats(tenantId: string, startDate?: Date, endDate?: Date, useCache: boolean = true) {
+  async getDashboardStats(tenantId: string, startDate?: Date, endDate?: Date, useCache: boolean = true, outletId?: string) {
     // Create cache key based on tenant, dates
     const cacheKey = `dashboard:${tenantId}:${startDate?.toISOString() || 'all'}:${endDate?.toISOString() || 'all'}`;
 
@@ -34,6 +34,7 @@ export class DashboardService {
     try {
       const where: Prisma.OrderWhereInput = {
         tenantId,
+        ...(outletId && { outletId }),
         ...(startDate && endDate && {
           createdAt: {
             gte: startDate,
@@ -73,6 +74,7 @@ export class DashboardService {
       prisma.order.count({
         where: {
           tenantId,
+          ...(outletId && { outletId }),
           createdAt: {
             gte: new Date(new Date().setHours(0, 0, 0, 0)),
           },
@@ -81,6 +83,7 @@ export class DashboardService {
       prisma.order.aggregate({
         where: {
           tenantId,
+          ...(outletId && { outletId }),
           status: 'COMPLETED',
           createdAt: {
             gte: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -89,7 +92,10 @@ export class DashboardService {
         _sum: { total: true },
       }),
       prisma.order.findMany({
-        where: { tenantId },
+        where: { 
+          tenantId,
+          ...(outletId && { outletId }),
+        },
         take: 10,
         orderBy: { createdAt: 'desc' },
         include: {
@@ -112,6 +118,7 @@ export class DashboardService {
     const previousRevenue = await prisma.order.aggregate({
       where: {
         tenantId,
+        ...(outletId && { outletId }),
         status: 'COMPLETED',
         createdAt: {
           gte: previousStartDate,
@@ -130,7 +137,10 @@ export class DashboardService {
     // Sales by status
     const salesByStatus = await prisma.order.groupBy({
       by: ['status'],
-      where: { tenantId },
+      where: { 
+        tenantId,
+        ...(outletId && { outletId }),
+      },
       _count: { id: true },
     });
 
@@ -143,6 +153,7 @@ export class DashboardService {
           order: {
             tenantId,
             status: 'COMPLETED',
+            ...(outletId && { outletId }),
           },
         },
         _sum: {

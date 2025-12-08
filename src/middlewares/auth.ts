@@ -228,6 +228,16 @@ export const authGuard = async (
       return;
     }
     
+    // Auto-set storeId untuk kasir/dapur dari permissions
+    let autoStoreId: string | null = null;
+    if (decoded.role === 'CASHIER' || decoded.role === 'KITCHEN') {
+      interface UserPermissions {
+        assignedStoreId?: string;
+      }
+      const permissions = (user.permissions as UserPermissions) || {};
+      autoStoreId = permissions?.assignedStoreId || null;
+    }
+    
     // Attach user info to request
     req.userId = decoded.userId;
     req.tenantId = tenantId;
@@ -242,7 +252,9 @@ export const authGuard = async (
         email: string;
         name: string;
         permissions?: Record<string, any>;
+        assignedStoreId?: string | null;
       };
+      assignedStoreId?: string | null;
     }
     (req as ExtendedRequest).user = {
       id: decoded.userId,
@@ -253,7 +265,9 @@ export const authGuard = async (
       permissions: (user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions)) 
         ? user.permissions as Record<string, any> 
         : {},
+      assignedStoreId: autoStoreId,
     };
+    (req as ExtendedRequest).assignedStoreId = autoStoreId;
 
     next();
   } catch (error: unknown) {

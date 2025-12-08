@@ -219,86 +219,86 @@ const handleLogin = async () => {
       localStorage.removeItem('rememberedEmail');
     }
     
-    // Check if user needs to select a store
+    // Auto-select store berdasarkan permissions untuk SPV/Kasir/Dapur
     const user = authStore.user;
     
-    // Check if there's a saved store ID in localStorage
-    const savedStoreId = localStorage.getItem('selectedStoreId');
-    if (savedStoreId && !authStore.selectedStoreId) {
-      // Try to restore saved store
+    if (user && ['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(user.role)) {
+      const permissions = user.permissions as any;
+      let storeToSelect: string | null = null;
+      
       try {
         const outletsResponse = await api.get('/outlets');
-        const outlets = outletsResponse.data?.data || [];
-        const savedStore = outlets.find((o: any) => o.id === savedStoreId && o.isActive !== false);
-        if (savedStore) {
-          authStore.setSelectedStore(savedStoreId);
+        const allOutlets = outletsResponse.data?.data || [];
+        const activeOutlets = allOutlets.filter((o: any) => o.isActive !== false);
+        
+        if (user.role === 'CASHIER' || user.role === 'KITCHEN') {
+          // CASHIER dan KITCHEN: Auto-select assignedStoreId
+          const assignedStoreId = permissions?.assignedStoreId;
+          if (assignedStoreId) {
+            const assignedStore = activeOutlets.find((o: any) => o.id === assignedStoreId);
+            if (assignedStore) {
+              storeToSelect = assignedStoreId;
+            }
+          }
+        } else if (user.role === 'SUPERVISOR') {
+          // SUPERVISOR: Auto-select berdasarkan allowedStoreIds
+          const allowedStoreIds = Array.isArray(permissions?.allowedStoreIds) 
+            ? permissions.allowedStoreIds 
+            : [];
+          
+          if (allowedStoreIds.length > 0) {
+            // Filter outlets berdasarkan allowedStoreIds
+            const allowedOutlets = activeOutlets.filter((o: any) => 
+              allowedStoreIds.includes(o.id)
+            );
+            
+            if (allowedOutlets.length === 1) {
+              // Auto-select jika hanya 1 store
+              storeToSelect = allowedOutlets[0].id;
+            } else if (allowedOutlets.length > 1) {
+              // Jika lebih dari 1, pilih yang pertama atau yang tersimpan
+              const savedStoreId = localStorage.getItem('selectedStoreId');
+              const savedStore = allowedOutlets.find((o: any) => o.id === savedStoreId);
+              storeToSelect = savedStore ? savedStoreId : allowedOutlets[0].id;
+            }
+          }
+        }
+        
+        // Set store jika ditemukan
+        if (storeToSelect) {
+          authStore.setSelectedStore(storeToSelect);
+          localStorage.setItem('selectedStoreId', storeToSelect);
+        } else if (activeOutlets.length === 0) {
+          // No stores available
+          await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
+        } else if (user.role === 'SUPERVISOR' && Array.isArray(permissions?.allowedStoreIds) && permissions.allowedStoreIds.length > 1) {
+          // SUPERVISOR dengan multiple stores - tidak perlu modal, bisa switch di page
+          // Auto-select store pertama atau yang tersimpan
+          const allowedStoreIds = permissions.allowedStoreIds;
+          const allowedOutlets = activeOutlets.filter((o: any) => allowedStoreIds.includes(o.id));
+          if (allowedOutlets.length > 0) {
+            const savedStoreId = localStorage.getItem('selectedStoreId');
+            const savedStore = allowedOutlets.find((o: any) => o.id === savedStoreId);
+            const storeId = savedStore ? savedStoreId : allowedOutlets[0].id;
+            authStore.setSelectedStore(storeId);
+            localStorage.setItem('selectedStoreId', storeId);
+          }
         }
       } catch (error) {
-        console.error('Error checking saved store:', error);
+        console.error('Error auto-selecting store:', error);
       }
     }
     
-    // ADMIN_TENANT tidak perlu toko - langsung ke dashboard
-    // SPV, kasir, dan dapur tetap perlu toko
-    const getPermissions = (u: any) => {
-      const perms = u?.permissions;
-      if (!perms || typeof perms !== 'object') return null;
-      return perms;
-    };
-    
-    const getallowedStoreIds = (u: any): string[] => {
-      const perms = getPermissions(u);
-      const allowedIds = perms?.allowedStoreIds;
-      if (Array.isArray(allowedIds)) return allowedIds;
-      return [];
-    };
-    
-    const needsStoreSelection = 
-      user && (
-        (user.role === 'SUPERVISOR' && getallowedStoreIds(user).length > 1 && !authStore.selectedStoreId) ||
-        (['CASHIER', 'KITCHEN'].includes(user.role) && !authStore.selectedStoreId)
-      );
-    
-    if (needsStoreSelection) {
-      // Check if stores are available
-      try {
-        const outletsResponse = await api.get('/outlets');
-        const outlets = outletsResponse.data?.data || [];
-        const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
-        
-        if (activeOutlets.length === 0) {
-          // No stores available - show warning for SPV/kasir/dapur
-          await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
-          router.push('/app');
-        } else if (activeOutlets.length === 1) {
-          // Auto-select if only one store
-          authStore.setSelectedStore(activeOutlets[0].id);
-          localStorage.setItem('selectedStoreId', activeOutlets[0].id);
-            router.push('/app');
-        } else {
-          // Multiple stores - show selector modal
-      showStoreSelector.value = true;
-        }
-      } catch (error) {
-        console.error('Error checking stores:', error);
-        // If error, show warning and redirect
-        await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
-        router.push('/app');
-      }
-    } else {
-      // Redirect to intended destination or appropriate dashboard based on role
-      const redirect = route.query.redirect as string;
-      if (redirect) {
+    // Redirect setelah auto-select store
+    const redirect = route.query.redirect as string;
+    if (redirect) {
       router.push(redirect);
+    } else {
+      const userRole = authStore.user?.role;
+      if (userRole === 'SUPER_ADMIN') {
+        router.push({ name: 'super-dashboard' });
       } else {
-        // Directly redirect to appropriate dashboard based on role
-        // Double check user role to ensure correct redirect
-        const userRole = authStore.user?.role;
-        if (userRole === 'SUPER_ADMIN') {
-          router.push({ name: 'super-dashboard' });
-        } else {
-          router.push({ name: 'dashboard' });
-        }
+        router.push({ name: 'dashboard' });
       }
     }
   } catch (error: any) {

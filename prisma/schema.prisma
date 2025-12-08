@@ -69,6 +69,7 @@ model Tenant {
   customerFeedbacks   CustomerFeedback[]
   customerReviews     CustomerReview[]
   backupLogs          BackupLog[]
+  cashShifts          CashShift[]
 
   @@map("tenants")
 }
@@ -98,6 +99,7 @@ model User {
   tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   orders       Order[]
   transactions Transaction[]
+  cashShifts   CashShift[]
   rewardPoints RewardPoint[] @relation("UserRewardPoints")
   productAdjustments ProductAdjustment[]
   auditLogs    AuditLog[]
@@ -1199,4 +1201,33 @@ model BackupLog {
   @@index([status])
   @@index([generatedAt])
   @@map("backup_logs")
+}
+
+// Cash Shift Model (Kasir - Uang Modal & Rekap Fisik)
+model CashShift {
+  id              String    @id @default(uuid())
+  tenantId        String
+  kasirId         String    // User ID dengan role CASHIER
+  shiftStart      DateTime  @default(now())
+  shiftEnd        DateTime?
+  modalAwal       Decimal   @db.Decimal(10, 2)
+  uangFisikTutup  Decimal?  @db.Decimal(10, 2)
+  saldoSeharusnya Decimal?  @db.Decimal(10, 2)
+  selisih         Decimal?  @db.Decimal(10, 2)
+  status          String    @default("open") // open | closed
+  catatan         String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kasir  User   @relation(fields: [kasirId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([kasirId])
+  @@index([tenantId, kasirId])
+  @@index([tenantId, status])
+  @@index([tenantId, shiftStart])
+  @@unique([tenantId, kasirId, status], where: { status: "open" }) // Satu kasir hanya boleh 1 shift open
+  @@map("cash_shifts")
 }

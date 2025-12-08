@@ -86,16 +86,26 @@ export class ProductAdjustmentService {
     userId: string
   ) {
     // Handle stock transfer (multiple products)
-    if (data.type === 'TRANSFER' && data.transferItems && data.transferItems.length > 0) {
-      return await this.createStockTransfer(data, tenantId, userId);
+    if (data.type === 'TRANSFER') {
+      if ('transferItems' in data && data.transferItems && data.transferItems.length > 0) {
+        return await this.createStockTransfer(data as Extract<CreateProductAdjustmentInput, { type: 'TRANSFER' }>, tenantId, userId);
+      }
+      throw new Error('Stock transfer requires transferItems');
     }
+
+    // Regular adjustment (INCREASE/DECREASE)
+    if (!('productId' in data) || !('quantity' in data)) {
+      throw new Error('Regular adjustment requires productId and quantity');
+    }
+
+    const regularData = data as Extract<CreateProductAdjustmentInput, { type: 'INCREASE' | 'DECREASE' }>;
 
     // Use transaction to ensure data consistency
     return prisma.$transaction(async (tx) => {
       // Get current product
       const product = await tx.product.findFirst({
         where: {
-          id: data.productId,
+          id: regularData.productId,
           tenantId,
         },
       });
@@ -108,11 +118,11 @@ export class ProductAdjustmentService {
       let stockAfter: number;
 
       // Calculate new stock
-      if (data.type === 'INCREASE') {
-        stockAfter = stockBefore + data.quantity;
+      if (regularData.type === 'INCREASE') {
+        stockAfter = stockBefore + regularData.quantity;
       } else {
         // DECREASE
-        stockAfter = Math.max(0, stockBefore - data.quantity);
+        stockAfter = Math.max(0, stockBefore - regularData.quantity);
       }
 
       // Update product stock
@@ -125,11 +135,11 @@ export class ProductAdjustmentService {
       const adjustment = await tx.productAdjustment.create({
         data: {
           tenantId,
-          productId: data.productId,
+          productId: regularData.productId,
           userId,
-          type: data.type,
-          quantity: data.quantity,
-          reason: data.reason,
+          type: regularData.type,
+          quantity: regularData.quantity,
+          reason: regularData.reason,
           stockBefore,
           stockAfter,
         },
@@ -160,7 +170,7 @@ export class ProductAdjustmentService {
    * Creates DECREASE adjustment for source and INCREASE for destination
    */
   private async createStockTransfer(
-    data: CreateProductAdjustmentInput,
+    data: Extract<CreateProductAdjustmentInput, { type: 'TRANSFER' }>,
     tenantId: string,
     userId: string
   ) {

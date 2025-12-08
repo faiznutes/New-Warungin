@@ -102,6 +102,20 @@
               <span class="text-xs sm:text-sm text-gray-600">Buat transaksi baru</span>
             </div>
           </router-link>
+          <router-link
+            to="/app/cashier/cash-shift"
+            class="flex items-center p-5 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl hover:from-green-100 hover:to-emerald-200 transition-all duration-200 border-2 border-green-200 hover:border-green-400 hover:shadow-lg group"
+          >
+            <div class="w-14 h-14 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-md">
+              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <span class="font-bold text-gray-900 block text-base">Uang Modal & Rekap</span>
+              <span class="text-xs sm:text-sm text-gray-600">Kelola shift dan rekap fisik</span>
+            </div>
+          </router-link>
         </div>
       </div>
     </div>

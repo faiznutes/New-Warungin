@@ -249,9 +249,10 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userId = (req as any).user.id;
+      const userRole = (req as any).user.role;
       // Get idempotency key from header (X-Idempotency-Key)
       const idempotencyKey = req.headers['x-idempotency-key'] as string | undefined;
-      const order = await orderService.createOrder(req.body, userId, tenantId, idempotencyKey);
+      const order = await orderService.createOrder(req.body, userId, tenantId, idempotencyKey, userRole);
       res.status(201).json(order);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create order', 'CREATE_ORDER');

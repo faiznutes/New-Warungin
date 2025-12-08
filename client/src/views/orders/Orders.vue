@@ -3,8 +3,8 @@
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
-    <!-- Store Selector -->
-    <div class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <!-- Store Selector (Hanya untuk SUPERVISOR) -->
+    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
 

@@ -102,6 +102,12 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
         },
         {
+          path: 'cashier/cash-shift',
+          name: 'cash-shift',
+          component: () => import('../views/cashier/CashShift.vue'),
+          meta: { roles: ['CASHIER'] },
+        },
+        {
           path: 'super-dashboard',
           name: 'super-dashboard',
           component: () => import('../views/superadmin/SuperDashboard.vue'),

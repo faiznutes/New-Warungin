@@ -16,9 +16,16 @@ export class ReportService {
       // Use read replica for reporting
       const readReplica = getReadReplicaClient();
 
-      // Filter by allowedStoreIds for SUPERVISOR role
+      // Filter by store permissions
       let outletFilter: any = {};
-      if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
+      
+      // CASHIER dan KITCHEN: otomatis filter berdasarkan assignedStoreId
+      if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && userPermissions?.assignedStoreId) {
+        const assignedStoreId = userPermissions.assignedStoreId;
+        outletFilter = { outletId: assignedStoreId };
+      }
+      // SUPERVISOR: filter berdasarkan allowedStoreIds
+      else if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
         const allowedStoreIds = userPermissions.allowedStoreIds;
         if (allowedStoreIds.length > 0) {
           outletFilter = { outletId: { in: allowedStoreIds } };
@@ -57,10 +64,12 @@ export class ReportService {
         readReplica.transaction.findMany({
           where: {
             tenantId,
-            ...(userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds && userPermissions.allowedStoreIds.length > 0
+            ...(outletFilter.outletId
               ? {
                   order: {
-                    outletId: { in: userPermissions.allowedStoreIds },
+                    outletId: typeof outletFilter.outletId === 'string' 
+                      ? outletFilter.outletId 
+                      : outletFilter.outletId,
                   },
                 }
               : {}),
