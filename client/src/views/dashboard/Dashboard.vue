@@ -607,17 +607,6 @@ const setActiveAddons = (value: any): void => {
   }
 };
 
-// Safe wrapper for array methods - ensures we always have an array before calling methods
-const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T => {
-  try {
-    if (!arr) return fallback;
-    if (!Array.isArray(arr)) return fallback;
-    return method(arr);
-  } catch (error) {
-    console.error('Error in safeArrayMethod:', error);
-    return fallback;
-  }
-};
 
 // Computed property that always returns an array (safer than direct ref access)
 // This is the ONLY way to access activeAddons - always returns array

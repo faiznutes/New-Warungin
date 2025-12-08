@@ -1142,17 +1142,6 @@ const getAddonDaysRemaining = (addon: Addon) => {
   return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 };
 
-// Safe wrapper for array methods
-const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T => {
-  try {
-    if (!arr) return fallback;
-    if (!Array.isArray(arr)) return fallback;
-    return method(arr);
-  } catch (error) {
-    console.error('Error in safeArrayMethod:', error);
-    return fallback;
-  }
-};
 
 // Computed property for filtered active addons (safe for template)
 const filteredActiveAddons = computed(() => {
