@@ -385,6 +385,15 @@ watch(connected, (isConnected) => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // For super admin, ensure selectedTenantId is synced with localStorage
+  if (authStore.isSuperAdmin) {
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+      authStore.setSelectedTenant(storedTenantId);
+    }
+  }
+  
   loadOrders();
   
   if (connected.value) {

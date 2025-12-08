@@ -295,10 +295,12 @@
 import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
+import { useAuthStore } from '../../stores/auth';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { useNotification } from '../../composables/useNotification';
 import { generateFinancialReportPDF } from '../../utils/financial-report-export';
 
+const authStore = useAuthStore();
 const { needsTenantSelection } = useTenantCheck();
 const { success: showSuccess, error: showError } = useNotification();
 
@@ -420,6 +422,15 @@ const exportFinancialReport = async () => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // For super admin, ensure selectedTenantId is synced with localStorage
+  if (authStore.isSuperAdmin) {
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+      authStore.setSelectedTenant(storedTenantId);
+    }
+  }
+  
   if (!needsTenantSelection.value) {
     loadFinancialData();
   }
