@@ -195,8 +195,22 @@ const handleLogin = async () => {
     
     await authStore.login(trimmedEmail, trimmedPassword, rememberMe.value);
     
-    // IMPORTANT: Wait a tick to ensure user data is fully loaded and reactive
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // IMPORTANT: Wait for user data to be fully loaded and reactive
+    // Login function already calls fetchMe, but we need to ensure it's complete
+    let retries = 0;
+    while (!authStore.user && retries < 10) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      retries++;
+    }
+    
+    // If user still not loaded, try to fetch manually
+    if (!authStore.user) {
+      try {
+        await authStore.fetchMe();
+      } catch (error) {
+        console.error('Failed to fetch user after login:', error);
+      }
+    }
     
     // Store email if remember me is checked
     if (rememberMe.value) {
