@@ -543,7 +543,8 @@
 
     <!-- Tenant Stats (when tenant is selected) -->
     <!-- Admin/Regular Tenant Dashboard (when tenant selected or not super admin) -->
-    <div v-else-if="stats && (!authStore.isSuperAdmin || authStore.selectedTenantId)" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Show tenant dashboard if: (NOT super admin) OR (super admin WITH selectedTenantId) -->
+    <div v-else-if="stats && (!authStore.isSuperAdmin || (authStore.isSuperAdmin && authStore.selectedTenantId))" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
       <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -1621,6 +1622,8 @@ watch(() => route.path, (newPath, oldPath) => {
     if (isFromTenantList || isFromTenantDetail) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
+      // Clear stats to force reload super admin dashboard
+      stats.value = null;
       // Reload stats to show super admin dashboard
       if (authStore.isAuthenticated) {
         loadStats();
@@ -1643,6 +1646,8 @@ onMounted(() => {
     if (isFromTenantList || isFromTenantDetail) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
+      // Clear stats to force reload super admin dashboard
+      stats.value = null;
     } else {
       // Otherwise, sync with localStorage (for direct navigation or other pages)
       const storedTenantId = localStorage.getItem('selectedTenantId');
@@ -1655,7 +1660,12 @@ onMounted(() => {
     }
     
     // Ensure stats are initialized for super admin view to prevent UI break
+    // Clear stats if coming from tenant detail to force reload super admin stats
     if (!authStore.selectedTenantId) {
+      // If coming from tenant detail, clear stats to force reload
+      if (isFromTenantDetail) {
+        stats.value = null;
+      }
       if (!stats.value) {
         stats.value = { overview: {} };
       }
