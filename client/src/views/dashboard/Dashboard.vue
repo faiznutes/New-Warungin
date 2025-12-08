@@ -563,11 +563,18 @@ const _activeAddons = ref<any[]>([]);
 
 // Helper function to always get a valid array from activeAddons
 // This ensures we never access a non-array value
+// GUARD CLAUSE: Triple-check untuk memastikan selalu array
 const getActiveAddons = (): any[] => {
   try {
     const value = _activeAddons.value;
+    
+    // LOGGING: Log untuk debugging jika value tidak valid
+    if (value !== null && value !== undefined && !Array.isArray(value)) {
+      console.warn('[Dashboard] getActiveAddons: Value is not array, type:', typeof value, 'value:', value);
+    }
+    
     if (value === null || value === undefined || !Array.isArray(value)) {
-      // Auto-fix if not array
+      // AUTO-FIX: Auto-fix if not array
       _activeAddons.value = [];
       return [];
     }
@@ -578,7 +585,7 @@ const getActiveAddons = (): any[] => {
     }
     return value;
   } catch (error) {
-    console.error('Error in getActiveAddons:', error);
+    console.error('[Dashboard] Error in getActiveAddons:', error);
     _activeAddons.value = [];
     return [];
   }
@@ -949,16 +956,22 @@ const loadAddons = async () => {
       }
     }
     
-    // Use helper function to safely set (always ensures array)
-    setActiveAddons(addonsData);
+    // NORMALISASI: Use helper function to safely set (always ensures array)
+    if (addonsData) {
+      setActiveAddons(addonsData);
+      console.log('[Dashboard] loadActiveAddons: Successfully loaded', addonsData.length, 'addons');
+    } else {
+      console.warn('[Dashboard] loadActiveAddons: No valid addons data found, setting to empty array');
+      setActiveAddons([]);
+    }
     
   } catch (error: any) {
-    // Silently fail if addons can't be loaded
-    console.error('Error loading addons:', error);
+    // FALLBACK: Silently fail if addons can't be loaded
+    console.error('[Dashboard] Error loading addons:', error);
     setActiveAddons([]);
   }
   
-  // Final validation using helper function
+  // GUARD CLAUSE: Final validation using helper function
   getActiveAddons(); // This will auto-fix if needed
 };
 

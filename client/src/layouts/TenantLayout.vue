@@ -653,10 +653,18 @@ const hasUnreadInfo = ref(false);
 const _activeAddons = ref<any[]>([]);
 
 // Helper function to always get a valid array from activeAddons
+// GUARD CLAUSE: Triple-check untuk memastikan selalu array
 const getActiveAddons = (): any[] => {
   try {
     const value = _activeAddons.value;
+    
+    // LOGGING: Log untuk debugging jika value tidak valid
+    if (value !== null && value !== undefined && !Array.isArray(value)) {
+      console.warn('[TenantLayout] getActiveAddons: Value is not array, type:', typeof value, 'value:', value);
+    }
+    
     if (value === null || value === undefined || !Array.isArray(value)) {
+      // AUTO-FIX: Auto-fix if not array
       _activeAddons.value = [];
       return [];
     }
@@ -667,7 +675,7 @@ const getActiveAddons = (): any[] => {
     }
     return value;
   } catch (error) {
-    console.error('Error in getActiveAddons:', error);
+    console.error('[TenantLayout] Error in getActiveAddons:', error);
     _activeAddons.value = [];
     return [];
   }
