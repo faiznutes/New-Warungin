@@ -61,13 +61,14 @@
       <!-- Actions -->
       <div class="flex gap-3">
         <button
-          v-if="!isSupervisor && stores.length > 0"
+          v-if="!isSupervisor"
           @click="handleCancel"
           class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
         >
-          Batal
+          {{ stores.length === 0 ? 'Tutup' : 'Batal' }}
         </button>
         <button
+          v-if="stores.length > 0"
           @click="handleConfirm"
           :disabled="!selectedStoreId || selecting"
           class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
@@ -80,6 +81,13 @@
             </svg>
             Memproses...
           </span>
+        </button>
+        <button
+          v-else
+          @click="handleCancel"
+          class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          Tutup
         </button>
       </div>
     </div>
@@ -186,7 +194,13 @@ const handleConfirm = async () => {
 
 const handleCancel = () => {
   if (props.required) {
-    // If required, can't cancel - just return
+    // If required and no stores, allow cancel to redirect
+    if (stores.value.length === 0) {
+      emit('close');
+      router.push('/app');
+      return;
+    }
+    // If required and has stores, can't cancel - just return
     return;
   }
   

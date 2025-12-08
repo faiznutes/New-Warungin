@@ -561,6 +561,7 @@ const activeAddons = ref<any[]>([]);
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
+  if (!Array.isArray(activeAddons.value)) return false;
   return activeAddons.value.some(
     (addon) => addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
   );

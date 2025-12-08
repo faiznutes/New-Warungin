@@ -221,9 +221,26 @@ const handleLogin = async () => {
     
     // Check if user needs to select a store
     const user = authStore.user;
+    
+    // Check if there's a saved store ID in localStorage
+    const savedStoreId = localStorage.getItem('selectedStoreId');
+    if (savedStoreId && !authStore.selectedStoreId) {
+      // Try to restore saved store
+      try {
+        const outletsResponse = await api.get('/outlets');
+        const outlets = outletsResponse.data?.data || [];
+        const savedStore = outlets.find((o: any) => o.id === savedStoreId && o.isActive !== false);
+        if (savedStore) {
+          authStore.setSelectedStore(savedStoreId);
+        }
+      } catch (error) {
+        console.error('Error checking saved store:', error);
+      }
+    }
+    
     const needsStoreSelection = 
       user && (
-        (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1) ||
+        (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1 && !authStore.selectedStoreId) ||
         (user.role === 'ADMIN_TENANT' && !authStore.selectedStoreId) ||
         (['CASHIER', 'KITCHEN'].includes(user.role) && !authStore.selectedStoreId)
       );
@@ -236,24 +253,22 @@ const handleLogin = async () => {
         const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
         
         if (activeOutlets.length === 0) {
-          // No stores available
-          if (user.role === 'ADMIN_TENANT') {
-            // Show store selector with "Tidak ada toko tersedia" message
-            showStoreSelector.value = true;
-          } else {
-            // For cashier/spv/kitchen, show warning
-            await showWarning('Anda belum memiliki toko yang ditugaskan. Silakan hubungi owner untuk diberikan akses toko.');
-            // Still redirect to dashboard, but they'll see the warning
-            router.push('/app');
-          }
+          // No stores available - don't show modal, just redirect with warning
+          await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
+          router.push('/app');
+        } else if (activeOutlets.length === 1) {
+          // Auto-select if only one store
+          authStore.setSelectedStore(activeOutlets[0].id);
+          localStorage.setItem('selectedStoreId', activeOutlets[0].id);
+          router.push('/app');
         } else {
-      // Show store selector modal
-      showStoreSelector.value = true;
+          // Multiple stores - show selector modal
+          showStoreSelector.value = true;
         }
       } catch (error) {
         console.error('Error checking stores:', error);
-        // Show store selector anyway
-        showStoreSelector.value = true;
+        // If error, just redirect to dashboard
+        router.push('/app');
       }
     } else {
       // Redirect to intended destination or appropriate dashboard based on role
