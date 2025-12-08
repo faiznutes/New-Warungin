@@ -99,6 +99,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import api from '../api';
+import { safeSome, safeFilter } from '../utils/array-helpers';
 
 interface Props {
   show: boolean;
@@ -146,7 +147,7 @@ const loadStores = async () => {
     } else {
       // For admin, get all stores
       const response = await api.get('/outlets');
-      stores.value = (response.data.data || []).filter((store: any) => store.isActive);
+      stores.value = safeFilter(response.data.data || [], (store: any) => store?.isActive);
     }
     
     // Auto-select if only one store
@@ -155,7 +156,7 @@ const loadStores = async () => {
     } else if (Array.isArray(stores.value) && stores.value.length > 1) {
       // Check if there's a previously selected store
       const savedStoreId = localStorage.getItem('selectedStoreId');
-      if (savedStoreId && stores.value.some(s => s && s.id === savedStoreId)) {
+      if (savedStoreId && safeSome(stores.value, (s: any) => s && s.id === savedStoreId)) {
         selectedStoreId.value = savedStoreId;
       }
     }

@@ -596,6 +596,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
+import { safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
 import api from '../../api';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -787,7 +788,7 @@ const printReceipt = async (order: Order) => {
       date: fullOrder.createdAt,
       customerName: fullOrder.member?.name || fullOrder.customer?.name || fullOrder.temporaryCustomerName || null,
       memberName: fullOrder.member?.name || null,
-      items: fullOrder.items?.map((item: any) => ({
+      items: safeMap(fullOrder.items || [], (item: any) => ({
         name: item.product?.name || item.name,
         quantity: item.quantity,
         price: Number(item.price),
@@ -911,13 +912,12 @@ const handleOrderSaved = async (order: Order) => {
 
 // Bulk operations
 const isOrderSelected = (orderId: string) => {
-  if (!Array.isArray(selectedOrders.value)) return false;
-  return selectedOrders.value.some(o => o.id === orderId);
+  return safeSome(selectedOrders.value, (o: any) => o && o.id === orderId);
 };
 
 const toggleOrderSelection = (order: Order) => {
   if (!Array.isArray(selectedOrders.value)) selectedOrders.value = [];
-  const index = selectedOrders.value.findIndex(o => o.id === order.id);
+  const index = safeFindIndex(selectedOrders.value, (o: any) => o && o.id === order.id);
   if (index > -1) {
     selectedOrders.value.splice(index, 1);
   } else {
@@ -992,7 +992,7 @@ const bulkRefund = async () => {
 // Computed property untuk menghitung jumlah order yang bisa dihapus
 const deletableOrdersCount = computed(() => {
   if (!Array.isArray(orders.value)) return 0;
-  return orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
+  return safeFilter(orders.value, (o: any) => o && (o.status === 'CANCELLED' || o.status === 'REFUNDED')).length;
 });
 
 // Hapus semua order yang bisa dihapus

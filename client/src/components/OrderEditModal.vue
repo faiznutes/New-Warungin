@@ -157,6 +157,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { safeMap } from '../utils/array-helpers';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
 import api from '../api';
 
@@ -227,7 +228,7 @@ const getStatusLabel = (status: string) => {
 watch(() => props.order, (newOrder) => {
   if (newOrder) {
     // Clone items untuk editing
-    orderItems.value = newOrder.items.map(item => ({
+    orderItems.value = safeMap(newOrder.items || [], (item: any) => ({
       ...item,
       quantity: item.quantity,
       price: Number(item.price),

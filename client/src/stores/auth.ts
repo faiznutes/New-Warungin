@@ -151,7 +151,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       
       // Filter out System tenant (double check, backend already filters)
-      tenants.value = tenantList.filter(tenant => tenant.name !== 'System');
+      // Use safe filter to ensure array
+      tenants.value = safeFilter(tenantList, (tenant: any) => tenant && tenant.name !== 'System');
       return tenants.value;
     } catch (error) {
       console.error('Error fetching tenants:', error);

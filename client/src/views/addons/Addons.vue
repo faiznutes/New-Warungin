@@ -207,7 +207,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
+import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap, safeFind } from '../../utils/array-helpers';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -289,8 +289,8 @@ const hasLimit = (addon: any) => {
 
 // Filter and sort available addons
 const filteredAvailableAddons = computed(() => {
-  if (!Array.isArray(availableAddons.value)) return [];
-  const filtered = availableAddons.value.filter(addon => {
+  // All addons are shown (can be purchased multiple times)
+  const filtered = safeFilter(availableAddons.value, (addon: any) => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
@@ -302,8 +302,8 @@ const filteredAvailableAddons = computed(() => {
   
   // Sort: non-API addons first, API addons (coming soon) at the end
   return filtered.sort((a, b) => {
-    const aIsApi = a.requiresApi === true || a.comingSoon === true;
-    const bIsApi = b.requiresApi === true || b.comingSoon === true;
+    const aIsApi = a?.requiresApi === true || a?.comingSoon === true;
+    const bIsApi = b?.requiresApi === true || b?.comingSoon === true;
     if (aIsApi && !bIsApi) return 1;
     if (!aIsApi && bIsApi) return -1;
     return 0;
@@ -312,11 +312,10 @@ const filteredAvailableAddons = computed(() => {
 
 const getAddonDescription = (activeAddon: any) => {
   // Find matching addon from available addons by addonId or addonType
-  if (!Array.isArray(availableAddons.value)) return '';
-  const matchedAddon = availableAddons.value.find(
-    a => a.id === activeAddon.addonId || a.type === activeAddon.addonType
+  const matchedAddon = safeFind(availableAddons.value, (a: any) => 
+    a && (a.id === activeAddon?.addonId || a.type === activeAddon?.addonType)
   );
-  return matchedAddon?.description || activeAddon.addonType || 'Tidak ada deskripsi';
+  return matchedAddon?.description || activeAddon?.addonType || 'Tidak ada deskripsi';
 };
 
 const showAddonDetail = (addon: any) => {

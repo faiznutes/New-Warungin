@@ -615,6 +615,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
+import { safeSome, safeFilter, safeMap, safeReduce, safeFind } from '../../utils/array-helpers';
 import { useSocket } from '../../composables/useSocket';
 import { useNotification } from '../../composables/useNotification';
 import { offlineStorage } from '../../utils/offline-storage';
@@ -672,32 +673,32 @@ const pendingSyncCount = ref(0);
 
 // Computed
 const categories = computed(() => {
-  if (!Array.isArray(products.value)) return ['SEMUA'];
-  const cats = new Set(products.value.map(p => p.category).filter(Boolean));
+  const categoriesList = safeMap(products.value, (p: any) => p?.category).filter(Boolean);
+  const cats = new Set(categoriesList);
   return ['SEMUA', ...Array.from(cats)];
 });
 
 const filteredProducts = computed(() => {
-  if (!Array.isArray(products.value)) return [];
-  if (!searchQuery.value) return products.value.filter(p => p.isActive && p.stock > 0);
+  if (!searchQuery.value) {
+    return safeFilter(products.value, (p: any) => p?.isActive && p?.stock > 0);
+  }
   const query = searchQuery.value.toLowerCase();
-  return products.value.filter(
-    p => p.isActive && p.stock > 0 && (p.name.toLowerCase().includes(query) || p.category?.toLowerCase().includes(query))
+  return safeFilter(products.value, (p: any) => 
+    p?.isActive && p?.stock > 0 && 
+    (p?.name?.toLowerCase().includes(query) || p?.category?.toLowerCase().includes(query))
   );
 });
 
 const filteredProductsSimple = computed(() => {
-  if (!Array.isArray(products.value)) return [];
-  let filtered = products.value.filter(p => p.isActive && p.stock > 0);
+  let filtered = safeFilter(products.value, (p: any) => p?.isActive && p?.stock > 0);
   if (selectedCategory.value && selectedCategory.value !== 'SEMUA') {
-    filtered = filtered.filter(p => p.category === selectedCategory.value);
+    filtered = safeFilter(filtered, (p: any) => p?.category === selectedCategory.value);
   }
   return filtered;
 });
 
 const subtotal = computed(() => {
-  if (!Array.isArray(cart.value)) return 0;
-  return cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return safeReduce(cart.value, (sum: number, item: any) => sum + (item?.price || 0) * (item?.quantity || 0), 0);
 });
 
 const discount = computed(() => {
@@ -833,8 +834,7 @@ const goToStockAlerts = () => {
 };
 
 const isInCart = (productId: string) => {
-  if (!Array.isArray(cart.value)) return false;
-  return cart.value.some(item => item.id === productId);
+  return safeSome(cart.value, (item: any) => item && item.id === productId);
 };
 
 const addToCart = async (product: any) => {

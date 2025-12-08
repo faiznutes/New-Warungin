@@ -112,3 +112,31 @@ export const safeReduce = <T, R>(
     initialValue
   );
 };
+
+/**
+ * Safe .findIndex() method
+ */
+export const safeFindIndex = <T>(
+  arr: any,
+  predicate: (item: T, index: number, array: T[]) => boolean
+): number => {
+  return safeArrayMethod(
+    arr,
+    (array) => array.findIndex(predicate),
+    -1
+  );
+};
+
+/**
+ * Safe .every() method
+ */
+export const safeEvery = <T>(
+  arr: any,
+  predicate: (item: T, index: number, array: T[]) => boolean
+): boolean => {
+  return safeArrayMethod(
+    arr,
+    (array) => array.every(predicate),
+    false
+  );
+};

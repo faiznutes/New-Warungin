@@ -300,6 +300,7 @@ import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import api from '../api';
 import { useAuthStore } from '../stores/auth';
 import { useNotification } from '../composables/useNotification';
+import { safeFilter, safeMap } from '../utils/array-helpers';
 
 const authStore = useAuthStore();
 const { error: showError, success: showSuccess } = useNotification();
@@ -405,9 +406,9 @@ const selectAllStores = computed({
   get: () => {
     if (!permissions.value.allowedStoreIds) return false;
     if (!Array.isArray(stores.value)) return false;
-    const activeStores = stores.value.filter(s => s && s.isActive);
+    const activeStores = safeFilter(stores.value, (s: any) => s && s.isActive);
     return activeStores.length > 0 && 
-           activeStores.every(store => store && permissions.value.allowedStoreIds?.includes(store.id));
+           safeEvery(activeStores, (store: any) => store && permissions.value.allowedStoreIds?.includes(store.id));
   },
   set: (value: boolean) => {
     handleSelectAllStores(value);
@@ -445,7 +446,7 @@ const loadStores = async (force = false) => {
     loadingStores.value = true;
     try {
       const response = await api.get('/outlets');
-      stores.value = (response.data.data || []).map((store: any) => ({
+      stores.value = safeMap(response.data.data || [], (store: any) => ({
         id: store.id,
         name: store.name,
         isActive: store.isActive !== false,
@@ -472,7 +473,7 @@ const handleSelectAllStores = (checked: boolean) => {
   if (checked) {
     // Select all active stores
     if (!Array.isArray(stores.value)) return;
-    const activeStoreIds = stores.value.filter(s => s && s.isActive).map(s => s.id);
+    const activeStoreIds = safeMap(safeFilter(stores.value, (s: any) => s && s.isActive), (s: any) => s.id);
     permissions.value.allowedStoreIds = activeStoreIds;
   } else {
     // Deselect all

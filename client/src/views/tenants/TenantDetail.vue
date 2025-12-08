@@ -1206,8 +1206,8 @@ const hasLimit = (addon: any) => {
 
 // Filter available addons: semua addon selalu ditampilkan (bisa dibeli berkali-kali)
 const filteredAvailableAddons = computed(() => {
-  if (!Array.isArray(availableAddons.value)) return [];
-  return availableAddons.value.filter(addon => {
+  // All addons are shown (can be purchased multiple times)
+  return safeFilter(availableAddons.value, (addon: any) => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
