@@ -559,10 +559,9 @@ const isReloadingSubscription = ref(false); // Flag to prevent multiple reloads
 // Initialize activeAddons as empty array and ensure it's always an array
 const activeAddons = ref<any[]>([]);
 
-// Ensure activeAddons is always an array (defensive initialization)
-if (!Array.isArray(activeAddons.value)) {
-  activeAddons.value = [];
-}
+// Defensive: Immediately ensure it's an array (before any computed properties are created)
+// This is critical because computed properties can be evaluated before onMounted
+activeAddons.value = [];
 
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
@@ -1111,6 +1110,7 @@ const renderCharts = () => {
 
 // Watch activeAddons to ensure it's always an array
 // Use immediate: true to check on component mount
+// This watcher runs BEFORE computed properties are evaluated
 watch(() => activeAddons.value, (newValue) => {
   if (newValue === null || newValue === undefined || !Array.isArray(newValue)) {
     console.warn('activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
@@ -1118,9 +1118,16 @@ watch(() => activeAddons.value, (newValue) => {
   }
 }, { deep: true, immediate: true });
 
-// Additional immediate check on mount
+// Additional immediate check on authentication state
 watch(() => authStore.isAuthenticated, (isAuth) => {
   if (isAuth && !Array.isArray(activeAddons.value)) {
+    activeAddons.value = [];
+  }
+}, { immediate: true });
+
+// Watch user role to ensure activeAddons is array when user changes
+watch(() => authStore.user?.role, () => {
+  if (!Array.isArray(activeAddons.value)) {
     activeAddons.value = [];
   }
 }, { immediate: true });
