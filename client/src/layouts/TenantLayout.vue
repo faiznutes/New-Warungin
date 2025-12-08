@@ -648,13 +648,45 @@ const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const showInfoModal = ref(false);
 const hasUnreadInfo = ref(false);
-const activeAddons = ref<any[]>([]);
+// Use internal ref that we control, and expose via computed property that always returns array
+const _activeAddons = ref<any[]>([]);
+
+// Helper function to always get a valid array from activeAddons
+const getActiveAddons = (): any[] => {
+  const value = _activeAddons.value;
+  if (value === null || value === undefined || !Array.isArray(value)) {
+    _activeAddons.value = [];
+    return [];
+  }
+  return value;
+};
+
+// Helper function to safely set activeAddons (always ensures it's an array)
+const setActiveAddons = (value: any): void => {
+  if (Array.isArray(value)) {
+    _activeAddons.value = value;
+  } else if (value && typeof value === 'object' && Array.isArray(value.data)) {
+    _activeAddons.value = value.data;
+  } else if (value && typeof value === 'object' && Array.isArray(value.addons)) {
+    _activeAddons.value = value.addons;
+  } else {
+    _activeAddons.value = [];
+  }
+};
+
+// Computed property that always returns an array (safer than direct ref access)
+const activeAddons = computed({
+  get: () => getActiveAddons(),
+  set: (value: any) => setActiveAddons(value)
+});
+
 const currentSubscription = ref<any>(null);
 
 const hasBusinessAnalytics = computed(() => {
-  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
+  // Use computed property activeAddons which always returns array
+  const addons = activeAddons.value;
   try {
-    return activeAddons.value.some(
+    return addons.some(
       (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
     );
   } catch (error) {
@@ -664,9 +696,10 @@ const hasBusinessAnalytics = computed(() => {
 });
 
 const hasDeliveryMarketing = computed(() => {
-  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
+  // Use computed property activeAddons which always returns array
+  const addons = activeAddons.value;
   try {
-    return activeAddons.value.some(
+    return addons.some(
       (addon: any) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
     );
   } catch (error) {
@@ -812,18 +845,15 @@ const loadAddons = async () => {
   if (authStore.user?.role === 'ADMIN_TENANT') {
     try {
       const response = await api.get('/addons');
-      // Ensure activeAddons is always an array
-      const addonsData = response.data?.data || response.data || [];
-      activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
+      // Use helper function to safely set (always ensures array)
+      setActiveAddons(response.data);
     } catch (error) {
       console.error('Failed to load addons:', error);
-      activeAddons.value = [];
+      setActiveAddons([]);
     }
     
-    // Final safety check
-    if (!Array.isArray(activeAddons.value)) {
-      activeAddons.value = [];
-    }
+    // Final validation using helper function
+    getActiveAddons(); // This will auto-fix if needed
   }
 };
 
