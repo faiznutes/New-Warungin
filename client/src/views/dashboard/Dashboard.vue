@@ -187,7 +187,7 @@
     </div>
 
     <!-- Super Admin Dashboard (when no tenant selected) -->
-    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId && !loading" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Hero Section with Gradient -->
       <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -542,9 +542,7 @@
     </div>
 
     <!-- Tenant Stats (when tenant is selected) -->
-    <!-- Admin/Regular Tenant Dashboard (when tenant selected or not super admin) -->
-    <!-- Show tenant dashboard if: (NOT super admin) OR (super admin WITH selectedTenantId) -->
-    <div v-else-if="stats && (!authStore.isSuperAdmin || (authStore.isSuperAdmin && authStore.selectedTenantId))" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div v-else-if="stats" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
       <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -1610,74 +1608,16 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
   }
 });
 
-// Watch for route changes to clear selectedTenantId when super admin navigates to dashboard
-watch(() => route.path, (newPath, oldPath) => {
-  // When super admin navigates to dashboard, clear selectedTenantId to show super admin dashboard
-  // Clear if coming from tenant list OR tenant detail page
-  if (authStore.isSuperAdmin && newPath === '/app/dashboard') {
-    const isFromTenantList = oldPath === '/app/tenants';
-    const isFromTenantDetail = oldPath?.match(/^\/app\/tenants\/[^/]+$/);
-    
-    // Clear selection if coming from tenant list or tenant detail
-    if (isFromTenantList || isFromTenantDetail) {
-      authStore.setSelectedTenant(null);
-      localStorage.removeItem('selectedTenantId');
-      // Clear stats to force reload super admin dashboard
-      stats.value = null;
-      // Reload stats to show super admin dashboard
-      if (authStore.isAuthenticated) {
-        loadStats();
-      }
-    }
+// Watch for selectedTenantId changes to reload stats when tenant selection changes
+watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
+  // Only reload if tenantId actually changed and user is authenticated
+  if (newTenantId !== oldTenantId && authStore.isAuthenticated) {
+    loadStats();
   }
 }, { immediate: false });
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Reset state to ensure consistency
-  // For Super Admin, ensure selectedTenantId is properly initialized from localStorage
-  if (authStore.isSuperAdmin) {
-    // Check if we're coming from tenant list or tenant detail - clear selection
-    const previousRoute = sessionStorage.getItem('previousRoute');
-    const isFromTenantList = previousRoute === '/app/tenants';
-    const isFromTenantDetail = previousRoute?.match(/^\/app\/tenants\/[^/]+$/);
-    
-    // If coming from tenant list or tenant detail, clear selection to show super admin dashboard
-    if (isFromTenantList || isFromTenantDetail) {
-      authStore.setSelectedTenant(null);
-      localStorage.removeItem('selectedTenantId');
-      // Clear stats to force reload super admin dashboard
-      stats.value = null;
-    } else {
-      // Otherwise, sync with localStorage (for direct navigation or other pages)
-      const storedTenantId = localStorage.getItem('selectedTenantId');
-      if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
-        authStore.setSelectedTenant(storedTenantId);
-      } else if (!storedTenantId && authStore.selectedTenantId) {
-        // Clear if localStorage doesn't have it but store does (inconsistency)
-        authStore.setSelectedTenant(null);
-      }
-    }
-    
-    // Ensure stats are initialized for super admin view to prevent UI break
-    // Clear stats if coming from tenant detail to force reload super admin stats
-    if (!authStore.selectedTenantId) {
-      // If coming from tenant detail, clear stats to force reload
-      if (isFromTenantDetail) {
-        stats.value = null;
-      }
-      if (!stats.value) {
-        stats.value = { overview: {} };
-      }
-      if (!superAdminStats.value || Object.keys(superAdminStats.value).length === 0) {
-        superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
-      }
-    }
-  }
-  
-  // Store current route for next navigation
-  sessionStorage.setItem('previousRoute', route.path);
-  
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
     loadStats();

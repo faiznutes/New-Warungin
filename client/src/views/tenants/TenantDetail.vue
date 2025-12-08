@@ -988,7 +988,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted, onBeforeRouteLeave } from 'vue';
+import { useRouter } from 'vue-router';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
@@ -2195,6 +2196,16 @@ onMounted(async () => {
     errorMessage.value = error?.message || 'Terjadi kesalahan saat memuat halaman';
     loading.value = false;
   }
+});
+
+// Clear selectedTenantId when leaving tenant detail to go to dashboard
+onBeforeRouteLeave((to, from, next) => {
+  // If super admin is navigating to dashboard, clear selectedTenantId
+  if (authStore.isSuperAdmin && to.name === 'dashboard') {
+    authStore.setSelectedTenant(null);
+    localStorage.removeItem('selectedTenantId');
+  }
+  next();
 });
 
 onUnmounted(() => {

@@ -284,12 +284,9 @@ const closeSidebarOnMobile = () => {
 };
 
 const handleDashboardClick = () => {
-  // Clear selectedTenantId when super admin clicks dashboard link to show super admin dashboard
-  // This ensures consistent UI when navigating back to dashboard
+  // Clear selectedTenantId when super admin clicks dashboard link
   if (authStore.isSuperAdmin) {
-    // Clear selection when clicking dashboard link (from any page)
     authStore.setSelectedTenant(null);
-    localStorage.removeItem('selectedTenantId');
   }
   closeSidebarOnMobile();
 };
