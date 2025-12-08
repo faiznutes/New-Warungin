@@ -248,6 +248,8 @@ class AdvancedReportingService {
         },
       });
 
+      const lastRunAt: Date | undefined = saved.lastRunAt ? saved.lastRunAt : undefined;
+      
       return {
         id: saved.id,
         templateId: saved.templateId,
@@ -257,7 +259,7 @@ class AdvancedReportingService {
         format: saved.format as any,
         isActive: saved.isActive,
         nextRunAt: saved.nextRunAt,
-        lastRunAt: (saved.lastRunAt ?? undefined) as Date | undefined,
+        lastRunAt,
       };
     } catch (error: any) {
       logger.error('Error creating scheduled report:', error);
