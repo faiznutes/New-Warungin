@@ -1625,11 +1625,14 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
 watch(() => route.name, (newRouteName, oldRouteName) => {
   // When super admin navigates to dashboard, clear selectedTenantId
   if (authStore.isSuperAdmin && newRouteName === 'dashboard') {
-    const isFromTenantPage = oldRouteName === 'tenant-detail' || route.path?.includes('/tenants');
+    const isFromTenantPage = oldRouteName === 'tenant-detail' || oldRouteName === 'tenants' || route.path?.includes('/tenants');
     if (isFromTenantPage) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
+      // Clear stats to force reload super admin stats
       stats.value = null;
+      superAdminStats.value = null;
+      // Force reload super admin stats
       if (authStore.isAuthenticated) {
         loadStats();
       }
@@ -1652,6 +1655,7 @@ onMounted(() => {
       localStorage.removeItem('selectedTenantId');
       // Clear stats to force reload super admin stats
       stats.value = null;
+      superAdminStats.value = null;
     }
   }
   

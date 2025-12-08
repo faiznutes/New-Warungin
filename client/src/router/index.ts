@@ -557,13 +557,20 @@ router.beforeEach(async (to, from, next) => {
   // This ensures consistent UI - dashboard should always show super admin view
   // unless explicitly selecting a tenant from within dashboard
   if (authStore.isSuperAdmin && to.name === 'dashboard') {
-    // Clear selectedTenantId when navigating to dashboard from any page
+    // Clear selectedTenantId when navigating to dashboard from any tenant page
     // This ensures super admin always sees super admin dashboard when clicking dashboard link
     const isFromTenantPage = from.path?.startsWith('/app/tenants');
     if (isFromTenantPage) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
+      // Force clear by setting it explicitly
+      // This ensures the UI updates immediately
     }
+  }
+  
+  // Store previous route for navigation tracking
+  if (from.path) {
+    sessionStorage.setItem('previousRoute', from.path);
   }
   
   next();
