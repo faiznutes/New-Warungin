@@ -207,11 +207,21 @@ router.post(
   validate({ body: createUserSchema }),
   async (req: Request, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
       
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can create users' });
+        return res.status(403).json({ message: 'Only tenant admin or super admin can create users' });
+      }
+
+      // For SUPER_ADMIN, tenantId can be provided in body or query
+      let tenantId: string;
+      if (userRole === 'SUPER_ADMIN') {
+        tenantId = req.body.tenantId || req.query.tenantId as string;
+        if (!tenantId) {
+          return res.status(400).json({ message: 'tenantId is required for super admin' });
+        }
+      } else {
+        tenantId = requireTenantId(req);
       }
 
       const result = await userService.createUser(req.body, tenantId);

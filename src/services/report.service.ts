@@ -237,6 +237,7 @@ export class ReportService {
         include: {
           tenant: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -252,6 +253,7 @@ export class ReportService {
         include: {
           tenant: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -272,6 +274,7 @@ export class ReportService {
         totalSubscriptionRevenue += amount;
         return {
           id: sub.id,
+          tenantId: sub.tenant.id,
           tenantName: sub.tenant.name,
           plan: sub.plan,
           amount: amount,
@@ -291,6 +294,7 @@ export class ReportService {
         totalAddonRevenue += revenue;
         return {
           id: addon.id,
+          tenantId: addon.tenant.id,
           tenantName: addon.tenant.name,
           addonName: addon.addonName,
           amount: revenue,
@@ -375,7 +379,7 @@ export class ReportService {
   /**
    * Export report in various formats
    */
-  async exportReport(reportData: any, format: 'PDF' | 'EXCEL' | 'CSV', metadata?: any): Promise<Buffer | string> {
+  async exportReport(reportData: any, format: 'PDF' | 'EXCEL' | 'CSV', metadata?: any): Promise<any> {
     try {
       switch (format) {
         case 'PDF':
@@ -396,7 +400,7 @@ export class ReportService {
   /**
    * Export to PDF using pdf.service
    */
-  private async exportToPDF(reportData: any, metadata?: any): Promise<Buffer> {
+  private async exportToPDF(reportData: any, metadata?: any): Promise<any> {
     const { generatePDF } = await import('./pdf.service');
     
     const pdfData = {
@@ -414,7 +418,7 @@ export class ReportService {
   /**
    * Export to Excel (requires exceljs)
    */
-  private async exportToExcel(reportData: any, metadata?: any): Promise<Buffer> {
+  private async exportToExcel(reportData: any, metadata?: any): Promise<any> {
     try {
       // Try to use exceljs if available
       // Use dynamic import with type assertion to avoid TS error if module not installed
@@ -431,6 +435,8 @@ export class ReportService {
         // Fallback: return CSV as Excel-compatible format
         logger.warn('exceljs not installed, falling back to CSV format');
         const csv = await this.exportToCSV(reportData, metadata);
+        // Buffer is available in Node.js runtime
+        // @ts-ignore - Buffer is available in Node.js
         return Buffer.from(csv, 'utf-8');
       }
       
@@ -468,11 +474,14 @@ export class ReportService {
       }
       
       const buffer = await workbook.xlsx.writeBuffer();
+      // Buffer is available in Node.js runtime
+      // @ts-ignore - Buffer is available in Node.js
       return Buffer.from(buffer);
     } catch (error: any) {
       logger.error('Error exporting to Excel:', error);
       // Fallback to CSV
       const csv = await this.exportToCSV(reportData, metadata);
+      // @ts-ignore - Buffer is available in Node.js
       return Buffer.from(csv, 'utf-8');
     }
   }

@@ -182,6 +182,50 @@ router.post(
 );
 
 /**
+ * Update addon (Super Admin only)
+ */
+router.put(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as any;
+      const userRole = authReq.role || authReq.user?.role;
+      
+      // Only SUPER_ADMIN can update addon
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can update addon' });
+      }
+
+      const addonId = req.params.id;
+      const { status } = req.body;
+      
+      // Check if addon exists
+      const addon = await prisma.tenantAddon.findUnique({
+        where: { id: addonId },
+      });
+
+      if (!addon) {
+        return res.status(404).json({ message: 'Addon not found' });
+      }
+
+      // Update addon
+      const updated = await prisma.tenantAddon.update({
+        where: { id: addonId },
+        data: {
+          ...(status && { status }),
+        },
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      logger.error('Error updating addon:', { error: error.message, stack: error.stack });
+      res.status(500).json({ message: error.message || 'Failed to update addon' });
+    }
+  }
+);
+
+/**
  * Delete addon (Super Admin only)
  */
 router.delete(
