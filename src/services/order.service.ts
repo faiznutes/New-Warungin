@@ -330,7 +330,11 @@ export class OrderService {
       }
       // Stock verification will be done inside transaction when updating
       // This is just a preliminary check to fail fast
-      for (const item of data.items) {
+      const itemsArrayForCheck = Array.isArray(data.items) ? data.items : [];
+      for (const item of itemsArrayForCheck) {
+        if (!item || !item.productId) {
+          throw new Error('Invalid item data');
+        }
         const product = await tx.product.findFirst({
           where: { id: item.productId, tenantId },
           select: { id: true, name: true, stock: true },
@@ -338,8 +342,9 @@ export class OrderService {
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
         }
-        if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stock}, Required: ${item.quantity}`);
+        const itemQuantity = item.quantity || 0;
+        if (product.stock < itemQuantity) {
+          throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stock}, Required: ${itemQuantity}`);
         }
       }
 
@@ -560,6 +565,9 @@ export class OrderService {
         // Create new items with cost and profit
         const newItems = await Promise.all(
           newItemsArray.map(async (item: any) => {
+            if (!item || !item.productId) {
+              throw new Error('Invalid item data');
+            }
             // Get product to retrieve cost
             const product = await productService.getProductById(item.productId, tenantId);
             if (!product) {
