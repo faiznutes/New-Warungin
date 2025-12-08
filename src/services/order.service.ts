@@ -168,10 +168,10 @@ export class OrderService {
       const discountService = (await import('./discount.service')).default;
       const autoDiscountResult = await discountService.applyDiscounts(
         tenantId,
-        data.items.map(item => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price,
+        itemsArray.map((item: any) => ({
+          productId: item?.productId,
+          quantity: item?.quantity || 0,
+          price: item?.price || 0,
         })),
         subtotal
       );
@@ -345,7 +345,10 @@ export class OrderService {
 
       // Prepare order items with cost and profit calculation
       const orderItemsData = await Promise.all(
-        data.items.map(async (item) => {
+        itemsArray.map(async (item: any) => {
+          if (!item || !item.productId) {
+            throw new Error('Invalid item data');
+          }
           // Get product to retrieve cost (use transaction client)
           const product = await tx.product.findFirst({
             where: { id: item.productId, tenantId },
@@ -358,14 +361,16 @@ export class OrderService {
           const cost = product.cost ? Number(product.cost) : null;
           
           // Calculate profit = (price - cost) * quantity (only if cost exists)
-          const profit = cost !== null ? (item.price - cost) * item.quantity : null;
+          const itemPrice = item?.price || 0;
+          const itemQuantity = item?.quantity || 0;
+          const profit = cost !== null ? (itemPrice - cost) * itemQuantity : null;
 
           return {
             productId: item.productId,
-            quantity: item.quantity,
-            price: item.price.toString(),
+            quantity: itemQuantity,
+            price: itemPrice.toString(),
             cost: cost !== null ? cost.toString() : null,
-            subtotal: (item.price * item.quantity).toString(),
+            subtotal: (itemPrice * itemQuantity).toString(),
             profit: profit !== null ? profit.toString() : null,
           };
         })
@@ -506,20 +511,26 @@ export class OrderService {
         }
 
         // Restore stock for removed items
-        const currentItemIds = new Set(currentOrder.items.map(item => item.productId));
-        const newItemIds = new Set(data.items.map((item: any) => item.productId));
+        const currentItemsArray = Array.isArray(currentOrder.items) ? currentOrder.items : [];
+        const newItemsArray = Array.isArray(data.items) ? data.items : [];
+        
+        const currentItemIds = new Set(currentItemsArray.map((item: any) => item?.productId).filter(Boolean));
+        const newItemIds = new Set(newItemsArray.map((item: any) => item?.productId).filter(Boolean));
         
         // Items to remove (in current but not in new)
-        const itemsToRemove = currentOrder.items.filter(item => !newItemIds.has(item.productId));
+        const itemsToRemove = currentItemsArray.filter((item: any) => item && !newItemIds.has(item.productId));
         for (const item of itemsToRemove) {
-          await productService.updateStock(item.productId, item.quantity, tenantId, 'add');
+          if (item?.productId && item?.quantity) {
+            await productService.updateStock(item.productId, item.quantity, tenantId, 'add');
+          }
         }
 
         // Update quantities for existing items
-        for (const currentItem of currentOrder.items) {
-          const newItem = data.items.find((item: any) => item.productId === currentItem.productId);
+        for (const currentItem of currentItemsArray) {
+          if (!currentItem?.productId) continue;
+          const newItem = newItemsArray.find((item: any) => item && item.productId === currentItem.productId);
           if (newItem) {
-            const quantityDiff = newItem.quantity - currentItem.quantity;
+            const quantityDiff = (newItem.quantity || 0) - (currentItem.quantity || 0);
             if (quantityDiff !== 0) {
               // Adjust stock based on quantity difference
               if (quantityDiff > 0) {
@@ -534,9 +545,11 @@ export class OrderService {
         }
 
         // Add stock for new items
-        const itemsToAdd = data.items.filter((item: any) => !currentItemIds.has(item.productId));
+        const itemsToAdd = newItemsArray.filter((item: any) => item && !currentItemIds.has(item.productId));
         for (const item of itemsToAdd) {
-          await productService.updateStock(item.productId, item.quantity, tenantId, 'subtract');
+          if (item?.productId && item?.quantity) {
+            await productService.updateStock(item.productId, item.quantity, tenantId, 'subtract');
+          }
         }
 
         // Delete all existing items
@@ -546,7 +559,7 @@ export class OrderService {
 
         // Create new items with cost and profit
         const newItems = await Promise.all(
-          data.items.map(async (item: any) => {
+          newItemsArray.map(async (item: any) => {
             // Get product to retrieve cost
             const product = await productService.getProductById(item.productId, tenantId);
             if (!product) {
