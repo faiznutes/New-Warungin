@@ -388,6 +388,7 @@ import ReportExportModal from '../../components/ReportExportModal.vue';
 import { getPeriodLabel } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
 import { usePermissions } from '../../composables/usePermissions';
+import { safeMap } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const { showError } = useNotification();
@@ -491,52 +492,57 @@ const reportHeaders = computed(() => {
 const reportRows = computed(() => {
   if (!reportData.value) return [];
   
+  // GUARD CLAUSE: Pastikan byDate selalu array (dideklarasikan sekali di luar switch)
+  const byDate = Array.isArray(reportData.value?.byDate) 
+    ? reportData.value.byDate 
+    : [];
+  
   switch (reportType.value) {
     case 'sales':
-      const salesRows = reportData.value.byDate?.map((item: any, index: number) => {
+      const salesRows = safeMap(byDate, (item: any, index: number) => {
         // Calculate revenue based on reportViewType
-        let revenue = item.revenue || 0;
+        let revenue = item?.revenue || 0;
         let costOfGoods = 0;
         
         // Calculate cost of goods from products if available
-        if (item.products && Array.isArray(item.products)) {
-          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p.cost || 0), 0);
-        } else if (item.costOfGoods) {
+        if (item?.products && Array.isArray(item.products)) {
+          costOfGoods = item.products.reduce((sum: number, p: any) => sum + (p?.cost || 0), 0);
+        } else if (item?.costOfGoods) {
           costOfGoods = item.costOfGoods;
         }
         
         // Apply filter
         if (reportViewType.value === 'revenue') {
           // Hanya harga jual
-          revenue = item.revenue || 0;
+          revenue = item?.revenue || 0;
         } else if (reportViewType.value === 'profit') {
           // Harga jual dikurangi harga pokok (untung)
-          revenue = (item.revenue || 0) - costOfGoods;
+          revenue = (item?.revenue || 0) - costOfGoods;
         } else {
           // Full: tetap revenue asli
-          revenue = item.revenue || 0;
+          revenue = item?.revenue || 0;
         }
         
         // Store product details for this row (sudah diproses di loadReport)
-        if (item.products && Array.isArray(item.products)) {
+        if (item?.products && Array.isArray(item.products)) {
           productDetails.value[index] = item.products;
         }
         
         return [
-          formatDate(item.date),
+          formatDate(item?.date),
           formatCurrency(revenue),
-          item.count || 0,
-          formatCurrency(revenue / (item.count || 1)),
+          item?.count || 0,
+          formatCurrency(revenue / (item?.count || 1)),
         ];
-      }) || [];
+      });
       return salesRows;
     case 'financial':
       // If byDate exists, use it; otherwise show summary
-      if (reportData.value.byDate && reportData.value.byDate.length > 0) {
-        return reportData.value.byDate.map((item: any) => {
-          let revenue = item.revenue || reportData.value.revenue || 0;
-          let costOfGoods = item.costOfGoods || reportData.value.costOfGoods || 0;
-          let grossProfit = item.grossProfit || reportData.value.grossProfit || 0;
+      if (byDate && byDate.length > 0) {
+        return safeMap(byDate, (item: any) => {
+          let revenue = item?.revenue || reportData.value?.revenue || 0;
+          let costOfGoods = item?.costOfGoods || reportData.value?.costOfGoods || 0;
+          let grossProfit = item?.grossProfit || reportData.value?.grossProfit || 0;
           
           if (reportViewType.value === 'revenue') {
             costOfGoods = 0;
@@ -547,11 +553,11 @@ const reportRows = computed(() => {
           }
           
           return [
-            formatDate(item.date),
+            formatDate(item?.date),
             formatCurrency(revenue),
             formatCurrency(costOfGoods),
             formatCurrency(grossProfit),
-            `${(item.profitMargin || reportData.value.profitMargin || 0).toFixed(2)}%`,
+            `${(item?.profitMargin || reportData.value?.profitMargin || 0).toFixed(2)}%`,
           ];
         });
       } else {

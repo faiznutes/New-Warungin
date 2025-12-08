@@ -406,6 +406,7 @@ import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
 import { usePermissions } from '../../composables/usePermissions';
+import { safeMap } from '../../utils/array-helpers';
 
 interface Product {
   id: string;
@@ -598,7 +599,10 @@ const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
   // Format data based on export format
   if (format === 'csv') {
     // For CSV, use raw numbers (no currency formatting)
-    const csvData = exportData.map(item => ({
+    // GUARD CLAUSE: Pastikan exportData selalu array
+    const safeExportData = Array.isArray(exportData) ? exportData : [];
+    
+    const csvData = safeMap(safeExportData, (item: any) => ({
       Nama: item.Nama || '',
       Kategori: item.Kategori || '',
       'Harga Jual': typeof item.Harga === 'string' ? item.Harga.replace(/[^\d]/g, '') : (item.Harga || 0),
@@ -613,7 +617,10 @@ const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
     exportToCSV(csvData, 'produk', ['Nama', 'Kategori', 'Harga Jual', 'Harga Pokok', 'Stok', 'Stok Minimum', 'Status Stok', 'Deskripsi', 'Produk Titipan', 'Status']);
   } else {
     // For Excel/PDF, format with currency
-    const formattedData = exportData.map(item => ({
+    // GUARD CLAUSE: Pastikan exportData selalu array
+    const safeExportData = Array.isArray(exportData) ? exportData : [];
+    
+    const formattedData = safeMap(safeExportData, (item: any) => ({
       ...item,
       'Harga Jual': formatCurrency(Number(item['Harga Jual'] || 0)),
       'Harga Pokok': item['Harga Pokok'] ? formatCurrency(Number(item['Harga Pokok'])) : '-',

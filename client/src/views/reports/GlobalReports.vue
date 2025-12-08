@@ -861,6 +861,7 @@ import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
 import GlobalReportExportModal from '../../components/GlobalReportExportModal.vue';
+import { safeFilter } from '../../utils/array-helpers';
 
 const router = useRouter();
 
@@ -901,10 +902,15 @@ const dateRange = ref({
 const filteredSubscriptions = computed(() => {
   if (!reportData.value || !reportData.value.subscriptions) return [];
   
-  let filtered = [...reportData.value.subscriptions];
+  // GUARD CLAUSE: Pastikan reportData.value.subscriptions selalu array
+  const subscriptions = Array.isArray(reportData.value?.subscriptions) 
+    ? reportData.value.subscriptions 
+    : [];
+  
+  let filtered = [...subscriptions];
   
   if (subscriptionFilter.value !== 'all') {
-    filtered = filtered.filter((sub: any) => sub.status === subscriptionFilter.value);
+    filtered = safeFilter(filtered, (sub: any) => sub && sub.status === subscriptionFilter.value);
   }
   
   return filtered;
@@ -927,10 +933,15 @@ const totalSubscriptionPages = computed(() => {
 const filteredAddons = computed(() => {
   if (!reportData.value || !reportData.value.addons) return [];
   
-  let filtered = [...reportData.value.addons];
+  // GUARD CLAUSE: Pastikan reportData.value.addons selalu array
+  const addons = Array.isArray(reportData.value?.addons) 
+    ? reportData.value.addons 
+    : [];
+  
+  let filtered = [...addons];
   
   if (addonFilter.value !== 'all') {
-    filtered = filtered.filter((addon: any) => addon.status === addonFilter.value);
+    filtered = safeFilter(filtered, (addon: any) => addon && addon.status === addonFilter.value);
   }
   
   return filtered;
