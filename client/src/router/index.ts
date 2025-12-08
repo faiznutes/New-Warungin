@@ -573,9 +573,10 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
   
-  // Check store requirement for CASHIER, SUPERVISOR, KITCHEN
+  // Check store requirement for CASHIER, SUPERVISOR, KITCHEN (NOT ADMIN_TENANT)
   if (hasToken && authStore.user && authStore.isAuthenticated) {
     const userRole = authStore.user.role;
+    // ADMIN_TENANT tidak perlu toko - skip check
     const requiresStore = ['CASHIER', 'SUPERVISOR', 'KITCHEN'].includes(userRole);
     const hasStore = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
     
@@ -587,20 +588,13 @@ router.beforeEach(async (to, from, next) => {
         const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
         
         if (activeOutlets.length === 0) {
-          // No stores available - show warning
-          if (userRole === 'ADMIN_TENANT') {
-            // Admin tenant without stores - already handled by store selector
-            next();
-            return;
-          } else {
-            // Cashier/SPV/Kitchen without stores - show warning
-            const warning = 'Anda belum memiliki toko yang ditugaskan. Silakan hubungi owner untuk diberikan akses toko.';
-            next({ 
-              name: 'unauthorized', 
-              query: { message: warning } 
-            });
-            return;
-          }
+          // No stores available - show warning for SPV/kasir/dapur
+          const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
+          next({ 
+            name: 'unauthorized', 
+            query: { message: warning } 
+          });
+          return;
         } else {
           // Has stores but not selected - redirect to login to show store selector
           next({ name: 'login', query: { redirect: to.fullPath } });
@@ -608,7 +602,13 @@ router.beforeEach(async (to, from, next) => {
         }
       } catch (error) {
         console.error('Error checking stores:', error);
-        // Continue if error checking stores
+        // If error, show warning and continue
+        const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
+        next({ 
+          name: 'unauthorized', 
+          query: { message: warning } 
+        });
+        return;
       }
     }
   }

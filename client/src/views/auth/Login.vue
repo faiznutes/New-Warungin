@@ -238,10 +238,11 @@ const handleLogin = async () => {
       }
     }
     
+    // ADMIN_TENANT tidak perlu toko - langsung ke dashboard
+    // SPV, kasir, dan dapur tetap perlu toko
     const needsStoreSelection = 
       user && (
         (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1 && !authStore.selectedStoreId) ||
-        (user.role === 'ADMIN_TENANT' && !authStore.selectedStoreId) ||
         (['CASHIER', 'KITCHEN'].includes(user.role) && !authStore.selectedStoreId)
       );
     
@@ -253,7 +254,7 @@ const handleLogin = async () => {
         const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
         
         if (activeOutlets.length === 0) {
-          // No stores available - don't show modal, just redirect with warning
+          // No stores available - show warning for SPV/kasir/dapur
           await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
           router.push('/app');
         } else if (activeOutlets.length === 1) {
@@ -267,7 +268,8 @@ const handleLogin = async () => {
         }
       } catch (error) {
         console.error('Error checking stores:', error);
-        // If error, just redirect to dashboard
+        // If error, show warning and redirect
+        await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
         router.push('/app');
       }
     } else {
