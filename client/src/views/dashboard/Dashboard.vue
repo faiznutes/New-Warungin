@@ -557,11 +557,15 @@ const currentSubscription = ref<any>(null);
 const subscriptionLoading = ref(false);
 const isReloadingSubscription = ref(false); // Flag to prevent multiple reloads
 // Initialize activeAddons as empty array and ensure it's always an array
+// CRITICAL: Initialize as empty array immediately to prevent computed properties from accessing non-array
 const activeAddons = ref<any[]>([]);
 
 // Defensive: Immediately ensure it's an array (before any computed properties are created)
 // This is critical because computed properties can be evaluated before onMounted
-activeAddons.value = [];
+// Double-check to ensure it's really an array
+if (!Array.isArray(activeAddons.value)) {
+  activeAddons.value = [];
+}
 
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
