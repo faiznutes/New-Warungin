@@ -92,7 +92,7 @@ export function logWithContext(
   context: Record<string, any> = {}
 ) {
   try {
-    logger[level](message, context);
+  logger[level](message, context);
   } catch (error) {
     // Fallback to console if logger fails
     console.error('Logger error:', error);

@@ -187,7 +187,7 @@
     </div>
 
     <!-- Super Admin Dashboard (when no tenant selected) -->
-    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId && !loading" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Hero Section with Gradient -->
       <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -542,7 +542,8 @@
     </div>
 
     <!-- Tenant Stats (when tenant is selected) -->
-    <div v-else-if="stats" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Admin/Regular Tenant Dashboard (when tenant selected or not super admin) -->
+    <div v-else-if="stats && (!authStore.isSuperAdmin || authStore.selectedTenantId)" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
       <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -1109,6 +1110,11 @@ const loadSuperAdminStats = async () => {
     // Load stats from API (includes addon & subscription revenue) - ini cepat
     const response = await api.get('/dashboard/stats');
     stats.value = response.data;
+    superAdminStats.value = {
+      totalTenants: stats.value?.overview?.totalTenants || 0,
+      activeTenants: stats.value?.overview?.activeTenants || 0,
+      totalRevenue: stats.value?.overview?.totalRevenue || 0,
+    };
     
     // Load global report data dan tenants secara lazy (tidak di awal)
     // Akan di-load saat user klik atau saat dibutuhkan
@@ -1128,12 +1134,22 @@ const loadSuperAdminStats = async () => {
     if (error.response?.status === 503) {
       console.error('Database connection error:', error.response?.data?.message);
       await showError('Koneksi database terputus. Silakan periksa konfigurasi database atau hubungi administrator.');
+      // Set default stats to prevent UI break
+      stats.value = { overview: {} };
+      superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
       return;
     }
     
     console.error('Error loading super admin stats:', error);
     const errorMessage = error.response?.data?.message || 'Gagal memuat statistik super admin';
     await showError(errorMessage);
+    // Set default stats to prevent UI break - ensure UI still renders
+    if (!stats.value) {
+      stats.value = { overview: {} };
+    }
+    if (!superAdminStats.value || Object.keys(superAdminStats.value).length === 0) {
+      superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+    }
   }
 };
 
@@ -1201,9 +1217,21 @@ const loadStats = async () => {
   if (authStore.isSuperAdmin) {
     if (!authStore.selectedTenantId) {
       // No tenant selected, load super admin stats
-      loading.value = false;
-      stats.value = null;
-      await loadSuperAdminStats();
+      loading.value = true;
+      try {
+        await loadSuperAdminStats();
+      } catch (error) {
+        // Error already handled in loadSuperAdminStats
+        // Ensure stats are set to prevent UI break
+        if (!stats.value) {
+          stats.value = { overview: {} };
+        }
+        if (!superAdminStats.value || !superAdminStats.value.totalTenants) {
+          superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+        }
+      } finally {
+        loading.value = false;
+      }
       return;
     }
     // Tenant selected, load stats for that tenant
@@ -1248,6 +1276,11 @@ const loadStats = async () => {
     // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.log('Unauthorized - user may have logged out');
+      // Set default stats to prevent UI break for super admin
+      if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+        stats.value = { overview: {} };
+        superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+      }
       return;
     }
     
@@ -1255,6 +1288,11 @@ const loadStats = async () => {
     if (error.response?.status === 503) {
       console.error('Database connection error:', error.response?.data?.message);
       await showError('Koneksi database terputus. Silakan periksa konfigurasi database atau hubungi administrator.');
+      // Set default stats to prevent UI break for super admin
+      if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+        stats.value = { overview: {} };
+        superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+      }
       return;
     }
     
@@ -1264,16 +1302,31 @@ const loadStats = async () => {
       // If it's tenant ID required, don't show alert (will be handled by tenant selector)
       if (errorMessage.includes('Tenant ID') || errorMessage.includes('tenant')) {
         console.log('Tenant ID required - will be handled by tenant selector');
+        // For super admin, ensure UI still shows super admin dashboard
+        if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+          stats.value = { overview: {} };
+          superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+        }
         return;
       }
       console.error('Error loading stats:', error);
       await showError(errorMessage);
+      // Set default stats to prevent UI break
+      if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+        stats.value = { overview: {} };
+        superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+      }
       return;
     }
     
     console.error('Error loading stats:', error);
     const errorMessage = error.response?.data?.message || 'Gagal memuat statistik';
     await showError(errorMessage);
+    // Set default stats to prevent UI break
+    if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
+      stats.value = { overview: {} };
+      superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+    }
   } finally {
     loading.value = false;
   }
@@ -1565,6 +1618,15 @@ onMounted(() => {
     } else if (!storedTenantId && authStore.selectedTenantId) {
       // Clear if localStorage doesn't have it but store does (inconsistency)
       authStore.setSelectedTenant(null);
+    }
+    // Ensure stats are initialized for super admin view to prevent UI break
+    if (!authStore.selectedTenantId) {
+      if (!stats.value) {
+        stats.value = { overview: {} };
+      }
+      if (!superAdminStats.value || Object.keys(superAdminStats.value).length === 0) {
+        superAdminStats.value = { totalTenants: 0, activeTenants: 0, totalRevenue: 0 };
+      }
     }
   }
   

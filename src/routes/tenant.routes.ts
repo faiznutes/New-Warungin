@@ -18,14 +18,14 @@ const router = Router();
  */
 function logRouteError(error: unknown, context: string, req: any) {
   try {
-    const err = error as Error & { 
-      code?: string; 
-      statusCode?: number; 
-      message?: string;
-      name?: string;
-      stack?: string;
-    };
-    
+  const err = error as Error & { 
+    code?: string; 
+    statusCode?: number; 
+    message?: string;
+    name?: string;
+    stack?: string;
+  };
+  
     // Safely extract error info
     const errorInfo: any = {
       message: err.message || 'Unknown error',
