@@ -282,6 +282,7 @@ const hasLimit = (addon: any) => {
 
 // Filter and sort available addons
 const filteredAvailableAddons = computed(() => {
+  if (!Array.isArray(availableAddons.value)) return [];
   const filtered = availableAddons.value.filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
@@ -304,6 +305,7 @@ const filteredAvailableAddons = computed(() => {
 
 const getAddonDescription = (activeAddon: any) => {
   // Find matching addon from available addons by addonId or addonType
+  if (!Array.isArray(availableAddons.value)) return '';
   const matchedAddon = availableAddons.value.find(
     a => a.id === activeAddon.addonId || a.type === activeAddon.addonType
   );

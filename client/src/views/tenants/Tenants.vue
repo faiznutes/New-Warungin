@@ -263,19 +263,20 @@ const tenantForm = ref({
 });
 
 const filteredTenants = computed(() => {
+  if (!Array.isArray(tenants.value)) return [];
   let result = tenants.value;
 
   if (filters.value.search) {
     const search = filters.value.search.toLowerCase();
     result = result.filter(t =>
-      t.name.toLowerCase().includes(search) ||
-      (t.email && t.email.toLowerCase().includes(search))
+      t && (t.name?.toLowerCase().includes(search) ||
+      (t.email && t.email.toLowerCase().includes(search)))
     );
   }
 
   if (filters.value.isActive !== '') {
     const isActive = filters.value.isActive === 'true';
-    result = result.filter(t => (t.isActive !== false) === isActive);
+    result = result.filter(t => t && (t.isActive !== false) === isActive);
   }
 
   return result;

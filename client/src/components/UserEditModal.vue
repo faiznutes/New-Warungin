@@ -404,9 +404,10 @@ const isCashierOrKitchen = computed(() => {
 const selectAllStores = computed({
   get: () => {
     if (!permissions.value.allowedStoreIds) return false;
-    const activeStores = stores.value.filter(s => s.isActive);
+    if (!Array.isArray(stores.value)) return false;
+    const activeStores = stores.value.filter(s => s && s.isActive);
     return activeStores.length > 0 && 
-           activeStores.every(store => permissions.value.allowedStoreIds?.includes(store.id));
+           activeStores.every(store => store && permissions.value.allowedStoreIds?.includes(store.id));
   },
   set: (value: boolean) => {
     handleSelectAllStores(value);
@@ -470,7 +471,8 @@ const loadStores = async (force = false) => {
 const handleSelectAllStores = (checked: boolean) => {
   if (checked) {
     // Select all active stores
-    const activeStoreIds = stores.value.filter(s => s.isActive).map(s => s.id);
+    if (!Array.isArray(stores.value)) return;
+    const activeStoreIds = stores.value.filter(s => s && s.isActive).map(s => s.id);
     permissions.value.allowedStoreIds = activeStoreIds;
   } else {
     // Deselect all

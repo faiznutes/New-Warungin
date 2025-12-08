@@ -1174,6 +1174,7 @@ const hasLimit = (addon: any) => {
 
 // Filter available addons: semua addon selalu ditampilkan (bisa dibeli berkali-kali)
 const filteredAvailableAddons = computed(() => {
+  if (!Array.isArray(availableAddons.value)) return [];
   return availableAddons.value.filter(addon => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
@@ -1187,6 +1188,7 @@ const filteredAvailableAddons = computed(() => {
 
 const getAddonDescription = (activeAddon: any) => {
   // Find matching addon from available addons by addonId or addonType
+  if (!Array.isArray(availableAddons.value)) return '';
   const matchedAddon = availableAddons.value.find(
     a => a.id === activeAddon.addonId || a.type === activeAddon.addonType
   );
@@ -1345,7 +1347,7 @@ const loadStores = async () => {
       console.error('Error loading outlet usage:', error);
       // Set default if error
       outletUsage.value = {
-        currentUsage: tenantStores.value.filter((s: any) => s.isActive !== false).length,
+        currentUsage: Array.isArray(tenantStores.value) ? tenantStores.value.filter((s: any) => s.isActive !== false).length : 0,
         limit: -1,
       };
     }

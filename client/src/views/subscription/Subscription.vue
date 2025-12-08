@@ -506,11 +506,13 @@ const currentPlan = computed(() => subscription.value?.plan || 'BASIC');
 
 const availablePlans = computed(() => {
   // Filter out current plan
-  return subscriptionPlans.filter(p => p.id !== currentPlan.value);
+  if (!Array.isArray(subscriptionPlans)) return [];
+  return subscriptionPlans.filter(p => p && p.id !== currentPlan.value);
 });
 
 const getPlanName = (planId: string) => {
-  const plan = subscriptionPlans.find(p => p.id === planId);
+  if (!Array.isArray(subscriptionPlans)) return planId;
+  const plan = subscriptionPlans.find(p => p && p.id === planId);
   return plan?.name || planId;
 };
 

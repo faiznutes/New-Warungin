@@ -152,10 +152,10 @@ const loadStores = async () => {
     // Auto-select if only one store
     if (stores.value.length === 1) {
       selectedStoreId.value = stores.value[0].id;
-    } else if (stores.value.length > 1) {
+    } else if (Array.isArray(stores.value) && stores.value.length > 1) {
       // Check if there's a previously selected store
       const savedStoreId = localStorage.getItem('selectedStoreId');
-      if (savedStoreId && stores.value.some(s => s.id === savedStoreId)) {
+      if (savedStoreId && stores.value.some(s => s && s.id === savedStoreId)) {
         selectedStoreId.value = savedStoreId;
       }
     }
