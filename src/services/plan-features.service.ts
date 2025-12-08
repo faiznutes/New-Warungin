@@ -395,8 +395,10 @@ export async function checkPlanLimit(
       });
       break;
     case 'outlets':
+      // Count all outlets (both active and inactive) for usage calculation
+      // isActive filter removed because we want to count all outlets created
       currentUsage = await prisma.outlet.count({
-        where: { tenantId, isActive: true },
+        where: { tenantId },
       });
       break;
   }

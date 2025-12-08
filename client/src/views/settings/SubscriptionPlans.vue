@@ -371,27 +371,26 @@ const loadCurrentPlan = async () => {
 
 const checkLimits = async () => {
   try {
-    // Get tenant profile to check limits
-    const profileResponse = await api.get('/tenant/profile');
-    const features = profileResponse.data.features || {};
+    // Use check-limit API to get actual limits (subscription + addons)
+    const [outletsLimitRes, usersLimitRes] = await Promise.all([
+      api.get('/addons/check-limit/ADD_OUTLETS').catch(() => ({ data: { limit: -1, currentUsage: 0 } })),
+      api.get('/addons/check-limit/ADD_USERS').catch(() => ({ data: { limit: -1, currentUsage: 0 } })),
+    ]);
     
-    // Check outlet limit
-    const outletsResponse = await api.get('/outlets');
-    const outlets = outletsResponse.data.data || [];
-    const activeOutlets = outlets.filter((o: any) => o.isActive).length;
+    const outletsLimit = outletsLimitRes.data;
+    const usersLimit = usersLimitRes.data;
     
-    // Get plan features to check limits
-    const plan = currentPlan.value?.plan || 'BASIC';
-    const limits: Record<string, { outlets: number; users: number }> = {
-      BASIC: { outlets: 1, users: 4 },
-      PRO: { outlets: 3, users: 10 },
-      ENTERPRISE: { outlets: -1, users: -1 },
-    };
-    
-    const planLimits = limits[plan] || limits.BASIC;
-    
-    if (planLimits.outlets !== -1 && activeOutlets >= planLimits.outlets * 0.8) {
-      limitWarning.value = `Anda telah menggunakan ${activeOutlets}/${planLimits.outlets} store. Pertimbangkan untuk upgrade ke paket yang lebih tinggi.`;
+    // Check if any limit is approaching (>= 80%)
+    if (outletsLimit.limit !== undefined && outletsLimit.limit !== -1) {
+      const usagePercent = (outletsLimit.currentUsage || 0) / outletsLimit.limit;
+      if (usagePercent >= 0.8) {
+        limitWarning.value = `Anda telah menggunakan ${outletsLimit.currentUsage || 0}/${outletsLimit.limit} store. Pertimbangkan untuk upgrade ke paket yang lebih tinggi atau beli addon tambahan.`;
+      }
+    } else if (usersLimit.limit !== undefined && usersLimit.limit !== -1) {
+      const usagePercent = (usersLimit.currentUsage || 0) / usersLimit.limit;
+      if (usagePercent >= 0.8) {
+        limitWarning.value = `Anda telah menggunakan ${usersLimit.currentUsage || 0}/${usersLimit.limit} pengguna. Pertimbangkan untuk upgrade ke paket yang lebih tinggi atau beli addon tambahan.`;
+      }
     }
   } catch (error: any) {
     console.error('Error checking limits:', error);
