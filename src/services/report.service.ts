@@ -196,6 +196,8 @@ export class ReportService {
     try {
       const readReplica = getReadReplicaClient();
       
+      logger.info('Generating global report', { start, end });
+      
       // Build date filters
       let subscriptionFilter: any = {};
       let addonFilter: any = {};
@@ -231,7 +233,7 @@ export class ReportService {
 
       // Get all subscriptions within date range
       const subscriptions = await readReplica.subscription.findMany({
-        where: subscriptionFilter.createdAt ? subscriptionFilter : {},
+        where: subscriptionFilter.createdAt ? subscriptionFilter : undefined,
         include: {
           tenant: {
             select: {
@@ -246,7 +248,7 @@ export class ReportService {
 
       // Get all addons within date range
       const addons = await readReplica.tenantAddon.findMany({
-        where: addonFilter.subscribedAt ? addonFilter : {},
+        where: addonFilter.subscribedAt ? addonFilter : undefined,
         include: {
           tenant: {
             select: {
@@ -341,7 +343,7 @@ export class ReportService {
         })
       );
 
-      return {
+      const result = {
         summary: {
           totalGlobalRevenue,
           totalSubscriptionRevenue,
@@ -353,8 +355,24 @@ export class ReportService {
         addons: addonList,
         tenantReports,
       };
+      
+      logger.info('Global report generated successfully', {
+        totalGlobalRevenue,
+        totalSubscriptionRevenue,
+        totalAddonRevenue,
+        subscriptionCount: subscriptionList.length,
+        addonCount: addonList.length,
+        tenantCount: tenants.length,
+      });
+      
+      return result;
     } catch (error: any) {
-      logger.error('Error generating global report', { error: error.message });
+      logger.error('Error generating global report', { 
+        error: error.message,
+        stack: error.stack,
+        start,
+        end,
+      });
       throw error;
     }
   }
