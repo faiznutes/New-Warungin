@@ -1139,11 +1139,11 @@ const processPaymentSimple = async (paymentMethod: string) => {
     if (!isOnline.value || error.code === 'ERR_NETWORK' || error.code === 'ERR_INTERNET_DISCONNECTED') {
       // Store offline
       const orderData: any = {
-        items: cart.value.map(item => ({
+        items: Array.isArray(cart.value) ? cart.value.map(item => ({
           productId: item.id,
           quantity: item.quantity,
           price: item.price,
-        })),
+        })) : [],
         discount: discount.value,
       };
       const transactionData: any = {
@@ -1300,7 +1300,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
         quantity: item.quantity,
         price: item.price,
         subtotal: item.price * item.quantity,
-      })),
+      })) : [],
       subtotal: parseFloat(order.subtotal),
       discount: orderDiscount,
       total: finalTotalFromOrder,
