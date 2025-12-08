@@ -988,8 +988,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted, onBeforeRouteLeave } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -2198,7 +2198,7 @@ onMounted(async () => {
 });
 
 // Clear selectedTenantId when leaving tenant detail
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((to: any, from: any, next: any) => {
   // If super admin is navigating to dashboard, super-dashboard, or tenant list, clear selectedTenantId
   if (authStore.isSuperAdmin && (to.name === 'dashboard' || to.name === 'super-dashboard' || to.name === 'tenants')) {
     authStore.setSelectedTenant(null);
