@@ -241,6 +241,14 @@ export const authGuard = async (
         role: string;
         email: string;
         name: string;
+        permissions?: Record<string, any>;
+      };
+      user?: {
+        id: string;
+        tenantId: string | null;
+        role: string;
+        email: string;
+        name: string;
       };
     }
     (req as ExtendedRequest).user = {

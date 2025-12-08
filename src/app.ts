@@ -252,11 +252,15 @@ setImmediate(() => {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection:', {
+    promise: String(promise),
+    reason: reason instanceof Error ? reason.message : String(reason),
+    stack: reason instanceof Error ? reason.stack : undefined,
+  });
   // Don't exit the process, just log the error
   // Log stack trace for debugging
   if (reason instanceof Error) {
-    logger.error('Unhandled Rejection Error Stack:', reason.stack);
+    logger.error('Unhandled Rejection Error Stack:', { stack: reason.stack });
   }
 });
 

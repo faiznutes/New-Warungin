@@ -126,13 +126,14 @@ export class DailyBackupService {
         .reduce((sum, cf) => sum + Number(cf.amount), 0);
 
       // Get receivables and payables
-      const receivables = await prisma.order.aggregate({
+      // Get receivables from transactions with credit/installment payment methods
+      const receivables = await prisma.transaction.aggregate({
         where: {
           tenantId,
           status: 'PENDING',
           paymentMethod: { in: ['CREDIT', 'INSTALLMENT'] },
         },
-        _sum: { total: true },
+        _sum: { amount: true },
       });
 
       const payables = await prisma.purchaseOrder.aggregate({
@@ -140,7 +141,7 @@ export class DailyBackupService {
           tenantId,
           status: 'PENDING',
         },
-        _sum: { total: true },
+        _sum: { totalAmount: true },
       });
 
       // Get low stock products
@@ -182,8 +183,8 @@ export class DailyBackupService {
           cashOut,
         },
         debts: {
-          totalReceivables: Number(receivables._sum.total || 0),
-          totalPayables: Number(payables._sum.total || 0),
+          totalReceivables: Number(receivables._sum.amount || 0),
+          totalPayables: Number(payables._sum.totalAmount || 0),
         },
         stock: {
           lowStock: lowStockProducts.length,
@@ -571,20 +572,20 @@ export class DailyBackupService {
 
     // Get receivables and payables
     const [receivables, payables] = await Promise.all([
-      prisma.order.aggregate({
+      prisma.transaction.aggregate({
         where: {
           tenantId,
           status: 'PENDING',
           paymentMethod: { in: ['CREDIT', 'INSTALLMENT'] },
         },
-        _sum: { total: true },
+        _sum: { amount: true },
       }),
       prisma.purchaseOrder.aggregate({
         where: {
           tenantId,
           status: 'PENDING',
         },
-        _sum: { total: true },
+        _sum: { totalAmount: true },
       }),
     ]);
 
