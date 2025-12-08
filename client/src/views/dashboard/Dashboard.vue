@@ -542,7 +542,8 @@
     </div>
 
     <!-- Tenant Stats (when tenant is selected) -->
-    <div v-else-if="stats" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Only show tenant dashboard if NOT super admin OR super admin has selected tenant -->
+    <div v-else-if="stats && (!authStore.isSuperAdmin || authStore.selectedTenantId)" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
       <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
@@ -1612,12 +1613,48 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
 watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
   // Only reload if tenantId actually changed and user is authenticated
   if (newTenantId !== oldTenantId && authStore.isAuthenticated) {
+    // If selectedTenantId is cleared (null), clear stats to force reload super admin stats
+    if (!newTenantId && authStore.isSuperAdmin) {
+      stats.value = null;
+    }
     loadStats();
+  }
+}, { immediate: false });
+
+// Watch for route changes to ensure selectedTenantId is cleared when navigating to dashboard
+watch(() => route.name, (newRouteName, oldRouteName) => {
+  // When super admin navigates to dashboard, clear selectedTenantId
+  if (authStore.isSuperAdmin && newRouteName === 'dashboard') {
+    const isFromTenantPage = oldRouteName === 'tenant-detail' || route.path?.includes('/tenants');
+    if (isFromTenantPage) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+      stats.value = null;
+      if (authStore.isAuthenticated) {
+        loadStats();
+      }
+    }
   }
 }, { immediate: false });
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // For super admin, ensure selectedTenantId is cleared when mounting dashboard
+  // This ensures super admin dashboard is shown, not tenant dashboard
+  if (authStore.isSuperAdmin && route.name === 'dashboard') {
+    // Check if we're coming from a tenant page - if so, clear selection
+    const previousRoute = sessionStorage.getItem('previousRoute');
+    const isFromTenantPage = previousRoute?.startsWith('/app/tenants');
+    
+    if (isFromTenantPage) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+      // Clear stats to force reload super admin stats
+      stats.value = null;
+    }
+  }
+  
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
     loadStats();
