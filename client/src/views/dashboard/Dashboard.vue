@@ -796,11 +796,24 @@ const loadCashierStats = async () => {
   
   try {
     const response = await api.get('/dashboard/stats/cashier');
+    
+    // NORMALISASI: Pastikan recentTransactions selalu array
+    const recentTransactions = Array.isArray(response.data.recentTransactions) 
+      ? response.data.recentTransactions 
+      : [];
+    
+    // LOGGING: Log untuk debugging
+    console.log('[Dashboard] loadCashierStats - API Response:', {
+      hasRecentTransactions: !!response.data.recentTransactions,
+      isArray: Array.isArray(response.data.recentTransactions),
+      recentTransactionsLength: recentTransactions.length
+    });
+    
     cashierStats.value = {
       todayTransactions: response.data.todayTransactions || response.data.todayOrders || 0,
       todayRevenue: response.data.todayRevenue || 0,
       averageTransaction: response.data.averageTransaction || 0,
-      recentTransactions: response.data.recentTransactions || [],
+      recentTransactions: recentTransactions, // GUARD CLAUSE: Selalu array
     };
   } catch (error: any) {
     // Suppress errors during logout (401/403)
@@ -811,7 +824,7 @@ const loadCashierStats = async () => {
     if (error.response?.status === 503) {
       return;
     }
-    console.error('Error loading cashier stats:', error);
+    console.error('[Dashboard] Error loading cashier stats:', error);
   }
 };
 
@@ -835,7 +848,7 @@ const loadKitchenStats = async () => {
     if (error.response?.status === 503) {
       return;
     }
-    console.error('Error loading kitchen stats:', error);
+    console.error('[Dashboard] Error loading kitchen stats:', error);
   }
 };
 
@@ -880,7 +893,35 @@ const loadStats = async () => {
     // This section removed - super admin will be redirected to super-dashboard
     
     const response = await api.get('/dashboard/stats', { params });
-    stats.value = response.data;
+    
+    // NORMALISASI: Normalize stats data dan pastikan charts data selalu array
+    const statsData = response.data || {};
+    
+    // NORMALISASI: Pastikan charts.topProducts dan charts.salesByStatus selalu array
+    if (statsData.charts) {
+      if (!Array.isArray(statsData.charts.topProducts)) {
+        statsData.charts.topProducts = [];
+      }
+      if (!Array.isArray(statsData.charts.salesByStatus)) {
+        statsData.charts.salesByStatus = [];
+      }
+    } else {
+      statsData.charts = {
+        topProducts: [],
+        salesByStatus: []
+      };
+    }
+    
+    // LOGGING: Log untuk debugging
+    console.log('[Dashboard] loadStats - API Response:', {
+      hasCharts: !!statsData.charts,
+      topProductsIsArray: Array.isArray(statsData.charts?.topProducts),
+      topProductsLength: Array.isArray(statsData.charts?.topProducts) ? statsData.charts.topProducts.length : 0,
+      salesByStatusIsArray: Array.isArray(statsData.charts?.salesByStatus),
+      salesByStatusLength: Array.isArray(statsData.charts?.salesByStatus) ? statsData.charts.salesByStatus.length : 0
+    });
+    
+    stats.value = statsData;
     renderCharts();
   } catch (error: any) {
     // Don't show alert if user is not authenticated (likely logged out)
@@ -909,7 +950,7 @@ const loadStats = async () => {
         console.log('Tenant ID required - will be handled by tenant selector');
         return;
       }
-      console.error('Error loading stats:', error);
+      console.error('[Dashboard] Error loading stats:', error);
       await showError(errorMessage);
       return;
     }

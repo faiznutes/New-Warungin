@@ -1,110 +1,49 @@
-TODO WAJIB (Urut Berdasarkan Dampak)
-1. Audit semua variabel .value yang kamu pakai
+1 — Diagnostic Command (WAJIB)
 
-Terlalu jelas bahwa kamu pakai reactive variable (Vue/React/whatever) tanpa memastikan tipe datanya benar.
-Checklist:
+Gunakan ini dulu. Tanpa ini, kamu cuma menebak-nebak:
 
-Telusuri semua B.value
+TODO:
+1. Cari semua location di project yang menggunakan "B" atau "B.value".
+2. Tampilkan seluruh deklarasi variable B, tipe awalnya, dan nilai defaultnya.
+3. Tampilkan semua assignment ke B.value.
+4. Temukan baris tepat di mana ".some()" dipanggil.
+5. Tambahkan console.log sebelum pemanggilan ".some()" untuk print:
+   - typeof B.value
+   - Array.isArray(B.value)
+   - isi lengkap B.value
+6. Beri laporan lengkap tentang KENAPA B.value bukan array di runtime.
 
-Cek apakah data yang masuk selalu array
+2 — Auto-Fix Command (Setelah hasil diagnosis keluar)
 
-Kalau nggak, tetapkan bentuk default (misal: [])
+Ini memaksa Cursor untuk memperbaiki masalah sampai selesai, bukan sekedar kasih saran:
 
-2. Tambahkan normalisasi data sebelum dipakai
+TODO:
+1. Normalisasi semua assignment ke B.value agar SELALU array.
+   - Jika B.value bukan array, ubah menjadi array kosong atau array berisi 1 item.
+2. Pastikan deklarasi awal B adalah array default.
+3. Tambahkan guard clause di tempat yang memanggil ".some()" agar tidak crash:
+     if (!Array.isArray(B.value)) return;
+4. Re-write logic yang menyebabkan B.value override menjadi object/string/null.
+5. Berikan patch code final untuk seluruh file yang terlibat.
 
-Setiap kali kamu terima data dari:
+3 — Deep Scan Project Command (Untuk memastikan tidak ada titik lain yg rusak)
 
-API
+Gunakan jika error masih muncul atau kamu curiga datanya kacau di tempat lain:
 
-props
+TODO:
+1. Scan seluruh project untuk penggunaan ".some()", ".map()", ".filter()".
+2. Identifikasi semua variabel yang TIDAK dijamin array.
+3. Perbaiki semua data flow yang berpotensi mengirim non-array ke operasi array.
+4. Buat summary laporan akar masalah yang paling mungkin menyebabkan error.
 
-event
+4 — Hard Enforcement Command (supaya Cursor SERIUS memperbaiki)
 
-form
+Ini memaksa Cursor rewrite semua logic yang bikin data inkonsisten:
 
-localStorage
-… kamu HARUS pastikan bentuknya konsisten.
-
-Todo teknis:
-
-B.value = Array.isArray(B.value) ? B.value : [];
-
-
-atau
-
-B.value = Array.isArray(raw) ? raw : [raw];
-
-
-Ini menghentikan error sejenis dari akar.
-
-3. Pasang guard clause sebelum .some, .map, .filter
-
-Selama kamu nggak disiplin, minimal cegah kecelakaan:
-
-if (!Array.isArray(B.value)) return;
-
-
-Ini murah tapi efektif.
-
-4. Logging input untuk fase debugging
-
-Masalah besar kamu: kamu nggak nge-log apa yang kamu terima.
-Padahal satu console.log bisa menghemat 30 menit debugging.
-
-Todo:
-
-Tambahkan log tiap kali B.value berubah
-
-Log tipe dan isinya
-
-Contoh:
-
-console.log("B.value updated:", B.value);
-
-5. Review semua API/backend yang supply data
-
-Seringkali error kayak gini muncul karena backend kirim data beda bentuk:
-
-Kadang array
-
-Kadang object tunggal
-
-Kadang null
-
-Checklist:
-
-Konsistenkan API (harus array? harus object?)
-
-Atau normalize di frontend
-
-Kalau API-nya kamu sendiri: perbaiki.
-Kalau API orang lain: normalize.
-
-6. Dokumentasikan struktur data kamu
-
-Kalau kamu nggak bisa menjelaskan bentuk B.value dengan 1 kalimat jelas, berarti kamu tidak punya kontrol atas data kamu.
-
-Todo:
-
-Buat catatan singkat: “B.value selalu array of …”
-
-Tempelkan di tempat kamu baca datanya.
-
-7. Tambahkan fallback value di init state
-
-Setiap state wajib punya bentuk default:
-
-const B = ref([]);
-
-
-Bukan:
-
-const B = ref();
-
-
-atau
-
-let B;
-
-
-Kamu bikin error sendiri dari awal.
+TODO:
+Refactor seluruh flow data terkait variable B:
+- Pastikan B punya tipe yang konsisten (array) di seluruh project.
+- Hapus semua assignment yang membuat B.value berubah tipe.
+- Tambahkan layer normalizer global sebelum state digunakan.
+- Tambahkan TypeScript types/typedef agar IDE memperingatkan lebih awal.
+- Tampilkan patch final yang sudah dibersihkan dan stabil.
