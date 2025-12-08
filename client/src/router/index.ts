@@ -296,13 +296,6 @@ const router = createRouter({
           component: () => import('../views/finance/FinancialManagement.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
-        // AI/ML Features
-        {
-          path: 'ai-ml',
-          name: 'ai-ml-features',
-          component: () => import('../views/ai-ml/AIMLFeatures.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
-        },
         {
           path: 'analytics',
           name: 'analytics',

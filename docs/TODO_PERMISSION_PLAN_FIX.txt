@@ -23,7 +23,7 @@ ENTERPRISE:
   - Users: Unlimited
   - Outlets: Unlimited
   - Access: ['semua']
-  - Addons included: ['receipt-advanced', 'multi-outlet', 'ecommerce-integration']
+  - Addons included: ['receipt-advanced', 'multi-outlet']
 
 ADDON TYPES:
 ------------

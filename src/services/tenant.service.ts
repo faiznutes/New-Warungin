@@ -441,7 +441,7 @@ export const createTenant = async (input: CreateTenantInput) => {
       products: -1,
       users: -1,
       outlets: -1,
-      addons: ['receipt-advanced', 'multi-outlet', 'ecommerce-integration'],
+      addons: ['receipt-advanced', 'multi-outlet'],
       access: ['semua'],
     };
     

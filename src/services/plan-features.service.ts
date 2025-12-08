@@ -34,7 +34,7 @@ const PLAN_FEATURES: Record<string, {
     products: -1, // Unlimited (custom)
     users: -1, // Unlimited (custom)
     outlets: -1, // Unlimited (custom)
-    addons: ['receipt-advanced', 'multi-outlet', 'ecommerce-integration'],
+    addons: ['receipt-advanced', 'multi-outlet'],
     access: ['semua'],
   },
 };

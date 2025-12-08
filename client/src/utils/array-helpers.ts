@@ -32,11 +32,23 @@ export const safeArrayMethod = <T>(
   fallback: T
 ): T => {
   try {
-    if (!arr) return fallback;
-    if (!Array.isArray(arr)) return fallback;
-    return method(arr);
+    // GUARD: Comprehensive check before accessing property
+    if (arr === null || arr === undefined) {
+      console.warn('[safeArrayMethod] Array is null/undefined, using fallback');
+      return fallback;
+    }
+    
+    // GUARD: Check if it's actually an array (not just truthy)
+    if (!Array.isArray(arr)) {
+      console.warn('[safeArrayMethod] Value is not an array, type:', typeof arr, 'using fallback');
+      return fallback;
+    }
+    
+    // Try to call the method with extra safety
+    const result = method(arr);
+    return result;
   } catch (error) {
-    console.error('Error in safeArrayMethod:', error);
+    console.error('[safeArrayMethod] Error executing method:', error, 'arr type:', typeof arr, 'isArray:', Array.isArray(arr));
     return fallback;
   }
 };

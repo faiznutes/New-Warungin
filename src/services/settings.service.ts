@@ -10,7 +10,6 @@ export interface SystemSettings {
   maxUsersPerTenant: number;
   features: {
     multiOutlet: boolean;
-    ecommerce: boolean;
     delivery: boolean;
     accounting: boolean;
   };
@@ -25,7 +24,6 @@ const DEFAULT_SETTINGS: SystemSettings = {
   maxUsersPerTenant: 50,
   features: {
     multiOutlet: true,
-    ecommerce: false,
     delivery: false,
     accounting: false,
   },

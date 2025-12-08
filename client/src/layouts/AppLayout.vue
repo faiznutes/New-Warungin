@@ -636,43 +636,75 @@ watch(() => userRole.value, () => {
 }, { immediate: true });
 
 const hasBusinessAnalytics = computed(() => {
-  // Use safe wrapper to ensure we always have array before calling .some()
-  return safeArrayMethod(
-    activeAddons.value,
-    (addons) => {
-      try {
-        // Additional check inside
-        if (!Array.isArray(addons)) return false;
-        return addons.some(
-          (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-        );
-      } catch (error) {
-        console.error('Error in hasBusinessAnalytics .some():', error);
-        return false;
-      }
-    },
-    false
-  );
+  try {
+    // TRIPLE GUARD: Check directly on value before calling any methods
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
+      console.warn('[AppLayout hasBusinessAnalytics] activeAddons is not valid:', {
+        type: typeof addonsToCheck,
+        isArray: Array.isArray(addonsToCheck),
+        value: addonsToCheck
+      });
+      return false;
+    }
+    
+    // Use safe wrapper as additional layer
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          // Final check inside
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+          );
+        } catch (error) {
+          console.error('Error in hasBusinessAnalytics .some():', error);
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error('[AppLayout hasBusinessAnalytics] Outer error:', error);
+    return false;
+  }
 });
 
 const hasDeliveryMarketing = computed(() => {
-  // Use safe wrapper to ensure we always have array before calling .some()
-  return safeArrayMethod(
-    activeAddons.value,
-    (addons) => {
-      try {
-        // Additional check inside
-        if (!Array.isArray(addons)) return false;
-        return addons.some(
-          (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
-        );
-      } catch (error) {
-        console.error('Error in hasDeliveryMarketing .some():', error);
-        return false;
-      }
-    },
-    false
-  );
+  try {
+    // TRIPLE GUARD: Check directly on value before calling any methods
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
+      console.warn('[AppLayout hasDeliveryMarketing] activeAddons is not valid:', {
+        type: typeof addonsToCheck,
+        isArray: Array.isArray(addonsToCheck),
+        value: addonsToCheck
+      });
+      return false;
+    }
+    
+    // Use safe wrapper as additional layer
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          // Final check inside
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+          );
+        } catch (error) {
+          console.error('Error in hasDeliveryMarketing .some():', error);
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error('[AppLayout hasDeliveryMarketing] Outer error:', error);
+    return false;
+  }
 });
 
 const userName = computed(() => authStore.user?.name || 'User');

@@ -198,18 +198,6 @@
                   </svg>
                   <span class="font-medium">Financial Management</span>
                 </router-link>
-
-                <router-link
-                  to="/app/ai-ml"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
-                  @click="closeSidebarOnMobile"
-                >
-                  <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  <span class="font-medium">AI/ML Features</span>
-                </router-link>
               </div>
             </div>
           </div>
@@ -739,43 +727,75 @@ const activeAddons = computed({
 const currentSubscription = ref<any>(null);
 
 const hasBusinessAnalytics = computed(() => {
-  // Use safe wrapper to ensure we always have array before calling .some()
-  return safeArrayMethod(
-    activeAddons.value,
-    (addons) => {
-      try {
-        // Additional check inside
-        if (!Array.isArray(addons)) return false;
-        return addons.some(
-          (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-        );
-      } catch (error) {
-        console.error('Error in hasBusinessAnalytics .some():', error);
-        return false;
-      }
-    },
-    false
-  );
+  try {
+    // TRIPLE GUARD: Check directly on value before calling any methods
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
+      console.warn('[TenantLayout hasBusinessAnalytics] activeAddons is not valid:', {
+        type: typeof addonsToCheck,
+        isArray: Array.isArray(addonsToCheck),
+        value: addonsToCheck
+      });
+      return false;
+    }
+    
+    // Use safe wrapper as additional layer
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          // Final check inside
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+          );
+        } catch (error) {
+          console.error('Error in hasBusinessAnalytics .some():', error);
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error('[TenantLayout hasBusinessAnalytics] Outer error:', error);
+    return false;
+  }
 });
 
 const hasDeliveryMarketing = computed(() => {
-  // Use safe wrapper to ensure we always have array before calling .some()
-  return safeArrayMethod(
-    activeAddons.value,
-    (addons) => {
-      try {
-        // Additional check inside
-        if (!Array.isArray(addons)) return false;
-        return addons.some(
-          (addon: any) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
-        );
-      } catch (error) {
-        console.error('Error in hasDeliveryMarketing .some():', error);
-        return false;
-      }
-    },
-    false
-  );
+  try {
+    // TRIPLE GUARD: Check directly on value before calling any methods
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
+      console.warn('[TenantLayout hasDeliveryMarketing] activeAddons is not valid:', {
+        type: typeof addonsToCheck,
+        isArray: Array.isArray(addonsToCheck),
+        value: addonsToCheck
+      });
+      return false;
+    }
+    
+    // Use safe wrapper as additional layer
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          // Final check inside
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon: any) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+          );
+        } catch (error) {
+          console.error('Error in hasDeliveryMarketing .some():', error);
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error('[TenantLayout hasDeliveryMarketing] Outer error:', error);
+    return false;
+  }
 });
 
 // Check if user has access to Inventory Management (PRO/ENTERPRISE only)
@@ -830,8 +850,7 @@ const autoExpandMenu = () => {
   }
   
   if (currentPath.includes('/reports') || currentPath.includes('/analytics') || 
-      currentPath.includes('/finance') || currentPath.includes('/profit-loss') ||
-      currentPath.includes('/ai-ml')) {
+      currentPath.includes('/finance') || currentPath.includes('/profit-loss')) {
     expandedMenus.value.laporan = true;
   }
   
@@ -984,6 +1003,23 @@ watch(() => route.path, () => {
   autoExpandMenu();
 }, { immediate: true });
 
+// Watch activeAddons to ensure it's always valid array
+// This prevents "B.value.some is not a function" error when data is loading
+watch(
+  () => _activeAddons.value,
+  (newVal) => {
+    // GUARD: Ensure value is always an array
+    if (!Array.isArray(newVal)) {
+      console.warn('[TenantLayout Watch] activeAddons is not array, fixing:', {
+        type: typeof newVal,
+        value: newVal
+      });
+      _activeAddons.value = [];
+    }
+  },
+  { deep: true, immediate: true }
+);
+
 // Load menu state on mount
 onMounted(() => {
   loadMenuState();
@@ -1019,7 +1055,6 @@ const pageTitle = computed(() => {
     '/app/profit-loss': 'Laporan Laba Rugi',
     '/app/reports/advanced': 'Advanced Reporting',
     '/app/finance/management': 'Financial Management',
-    '/app/ai-ml': 'AI/ML Features',
   };
   return titles[route.path] || 'Dashboard';
 });

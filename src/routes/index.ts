@@ -51,8 +51,6 @@ import customerEngagementEnhancementRoutes from './customer-engagement-enhanceme
 import advancedReportingRoutes from './advanced-reporting.routes';
 import financialManagementEnhancementRoutes from './financial-management-enhancement.routes';
 import advancedAuditRoutes from './advanced-audit.routes';
-import ecommerceIntegrationRoutes from './ecommerce-integration.routes';
-import aiMlRoutes from './ai-ml.routes';
 import accountingIntegrationRoutes from './accounting-integration.routes';
 import paymentGatewayIntegrationRoutes from './payment-gateway-integration.routes';
 import superadminBackupRoutes from './superadmin-backup.routes';
@@ -126,8 +124,6 @@ router.use('/customer-engagement', customerEngagementEnhancementRoutes);
 router.use('/advanced-reporting', advancedReportingRoutes);
 router.use('/financial-management', financialManagementEnhancementRoutes);
 router.use('/advanced-audit', advancedAuditRoutes);
-router.use('/ecommerce', ecommerceIntegrationRoutes);
-router.use('/ai-ml', aiMlRoutes);
 router.use('/accounting', accountingIntegrationRoutes);
 router.use('/payment-gateway', paymentGatewayIntegrationRoutes);
 router.use('/superadmin/backups', superadminBackupRoutes);

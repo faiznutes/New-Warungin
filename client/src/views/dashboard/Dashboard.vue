@@ -650,23 +650,39 @@ const activeAddons = computed({
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
-  // Use safe wrapper to ensure we always have array before calling .some()
-  return safeArrayMethod(
-    activeAddons.value,
-    (addons) => {
-      try {
-        // Additional check inside
-        if (!Array.isArray(addons)) return false;
-        return addons.some(
-          (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-        );
-      } catch (error) {
-        console.error('Error in hasBusinessAnalytics .some():', error);
-        return false;
-      }
-    },
-    false
-  );
+  try {
+    // TRIPLE GUARD: Check directly on value before calling any methods
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
+      console.warn('[Dashboard hasBusinessAnalytics] activeAddons is not valid:', {
+        type: typeof addonsToCheck,
+        isArray: Array.isArray(addonsToCheck),
+        value: addonsToCheck
+      });
+      return false;
+    }
+    
+    // Use safe wrapper as additional layer
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          // Final check inside
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+          );
+        } catch (error) {
+          console.error('Error in hasBusinessAnalytics .some():', error);
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error('[Dashboard hasBusinessAnalytics] Outer error:', error);
+    return false;
+  }
 });
 const showWelcomeSection = computed(() => {
   // For admin/supervisor, wait for subscription to finish loading before showing welcome
@@ -1290,6 +1306,23 @@ watch(() => authStore.currentTenantId, () => {
 });
 
 // Removed super admin watches - super admin has separate super-dashboard route
+
+// Watch activeAddons to ensure it's always valid array
+// This prevents "B.value.some is not a function" error when data is loading
+watch(
+  () => _activeAddons.value,
+  (newVal) => {
+    // GUARD: Ensure value is always an array
+    if (!Array.isArray(newVal)) {
+      console.warn('[Dashboard Watch] activeAddons is not array, fixing:', {
+        type: typeof newVal,
+        value: newVal
+      });
+      _activeAddons.value = [];
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
