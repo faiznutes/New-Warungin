@@ -1628,9 +1628,9 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
 watch(() => route.name, (newRouteName, oldRouteName) => {
   // When super admin navigates to dashboard, ALWAYS clear selectedTenantId
   if (authStore.isSuperAdmin && newRouteName === 'dashboard') {
-    const isFromTenantPage = oldRouteName === 'tenant-detail' || oldRouteName === 'tenants' || route.path?.includes('/tenants');
-    // ALWAYS clear if coming from tenant page OR if selectedTenantId exists
-    if (isFromTenantPage || authStore.selectedTenantId) {
+    // ALWAYS clear selectedTenantId when navigating to dashboard
+    // Clear regardless of where we're coming from
+    if (authStore.selectedTenantId) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
       // Clear stats to force reload super admin stats
@@ -1651,12 +1651,9 @@ onMounted(() => {
   // This ensures super admin dashboard is ALWAYS shown, not tenant dashboard
   if (authStore.isSuperAdmin && route.name === 'dashboard') {
     // ALWAYS clear selectedTenantId when mounting dashboard for super admin
-    // This ensures consistent UI - super admin should see super admin dashboard by default
-    const previousRoute = sessionStorage.getItem('previousRoute');
-    const isFromTenantPage = previousRoute?.startsWith('/app/tenants');
-    
-    // If coming from tenant page OR if selectedTenantId exists, clear it
-    if (isFromTenantPage || authStore.selectedTenantId) {
+    // This ensures consistent UI - super admin should ALWAYS see super admin dashboard by default
+    // Clear regardless of previous route or selectedTenantId state
+    if (authStore.selectedTenantId) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
       // Clear stats to force reload super admin stats
