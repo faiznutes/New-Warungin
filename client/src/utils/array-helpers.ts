@@ -5,12 +5,26 @@
  * 
  * DOKUMENTASI STRUKTUR DATA:
  * - activeAddons.value: SELALU array of Addon objects
- *   Struktur: [{ addonId: string, addonType: string, status: string, ... }]
+ *   Struktur: [{ addonId: string, addonType: string, status: string, expiresAt?: Date, ... }]
+ *   Default: [] (array kosong)
+ *   Sumber: API GET /addons (response.data atau response.data.data)
+ * 
  * - availableAddons.value: SELALU array of AvailableAddon objects
- *   Struktur: [{ id: string, name: string, type: string, price: number, ... }]
+ *   Struktur: [{ id: string, name: string, type: string, price: number, description: string, ... }]
+ *   Default: [] (array kosong)
+ *   Sumber: API GET /addons/available (response.data)
  * 
  * NORMALISASI: Semua data dari API akan dinormalisasi menjadi array sebelum digunakan
+ *   - Jika response.data adalah array langsung → gunakan langsung
+ *   - Jika response.data.data adalah array → extract dari .data
+ *   - Jika response.data.addons adalah array → extract dari .addons
+ *   - Jika tidak valid → fallback ke []
+ * 
  * FALLBACK: Jika data tidak valid, akan dikembalikan ke array kosong []
+ * 
+ * GUARD CLAUSE: Semua array methods dilindungi dengan check Array.isArray() sebelum dipanggil
+ * 
+ * LOGGING: Semua perubahan data di-log untuk debugging (prefixed dengan [ComponentName])
  */
 export const safeArrayMethod = <T>(
   arr: any,

@@ -1211,9 +1211,13 @@ const renderCharts = () => {
 // Watch internal _activeAddons to ensure it's always an array
 // Use immediate: true to check on component mount
 // Use helper function to auto-fix any non-array values
+// GUARD CLAUSE: Watch untuk auto-fix jika value berubah menjadi non-array
 watch(() => _activeAddons.value, (newValue) => {
   if (newValue === null || newValue === undefined || !Array.isArray(newValue)) {
-    console.warn('_activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
+    console.warn('[Dashboard] Watch: _activeAddons.value is not an array, resetting to []', { 
+      type: typeof newValue, 
+      value: newValue 
+    });
     setActiveAddons([]);
   }
 }, { deep: true, immediate: true });
