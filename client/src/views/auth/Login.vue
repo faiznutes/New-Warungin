@@ -247,8 +247,8 @@ const handleLogin = async () => {
             router.push('/app');
           }
         } else {
-          // Show store selector modal
-          showStoreSelector.value = true;
+      // Show store selector modal
+      showStoreSelector.value = true;
         }
       } catch (error) {
         console.error('Error checking stores:', error);

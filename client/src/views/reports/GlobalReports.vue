@@ -428,30 +428,30 @@
           
           <div v-if="selectedSubscription" class="space-y-4">
             <div class="space-y-4">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Tenant</label>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Tenant</label>
                   <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedSubscription.tenantName }}</p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Paket</label>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Paket</label>
                   <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedSubscription.plan }}</p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Jumlah</label>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Jumlah</label>
                   <p class="mt-1 text-sm text-gray-900 font-semibold text-green-600">{{ formatCurrency(selectedSubscription.amount) }}</p>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Status</label>
-                  <span
-                    :class="[
-                      'mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                      selectedSubscription.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    ]"
-                  >
-                    {{ selectedSubscription.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
-                  </span>
-                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Status</label>
+                <span
+                  :class="[
+                    'mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                    selectedSubscription.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  ]"
+                >
+                  {{ selectedSubscription.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
+                </span>
+              </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Dibeli Oleh</label>
                   <div class="mt-1 flex items-center gap-2">
@@ -465,11 +465,14 @@
                       {{ selectedSubscription.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
                     </span>
                   </div>
+                  <p class="mt-1 text-xs text-gray-500 italic">
+                    {{ selectedSubscription.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
+                  </p>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
-                  <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
-                </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
+                <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+              </div>
               </div>
               
               <div class="border-t pt-4">
@@ -543,6 +546,23 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">ID Addon</label>
                 <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedAddon.id }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Dibeli Oleh</label>
+                <div class="mt-1 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    :checked="selectedAddon.purchasedBy === 'ADMIN'"
+                    disabled
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm text-gray-900 font-medium">
+                    {{ selectedAddon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs text-gray-500 italic">
+                  {{ selectedAddon.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
+                </p>
               </div>
             </div>
             
@@ -647,6 +667,23 @@
                   <option value="EXPIRED">Expired</option>
                 </select>
               </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    :checked="editingSubscription.purchasedBy === 'ADMIN'"
+                    disabled
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm text-gray-900 font-medium">
+                    {{ editingSubscription.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs text-gray-500 italic">
+                  {{ editingSubscription.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
+                </p>
+              </div>
             </div>
             
             <div class="flex justify-end space-x-3 pt-4 border-t">
@@ -707,6 +744,23 @@
                   <option value="active">Aktif</option>
                   <option value="expired">Expired</option>
                 </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    :checked="editingAddon.purchasedBy === 'ADMIN'"
+                    disabled
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm text-gray-900 font-medium">
+                    {{ editingAddon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                  </span>
+                </div>
+                <p class="mt-1 text-xs text-gray-500 italic">
+                  {{ editingAddon.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
+                </p>
               </div>
             </div>
             

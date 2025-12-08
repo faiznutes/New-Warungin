@@ -182,8 +182,8 @@
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
             v-for="addon in activeAddons.filter(a => {
-              // Filter: only show addons that are actually active (status === 'active' and not expired)
-              if (a.status !== 'active') return false;
+              // Filter: only show addons that are actually active (status === 'active' or no status but not expired)
+              if (a.status && a.status !== 'active') return false;
               if (a.expiresAt) {
                 const expiresAt = new Date(a.expiresAt);
                 return expiresAt > new Date();
@@ -1042,6 +1042,7 @@ interface Addon {
   addonId: string;
   addonName: string;
   addonType: string;
+  status?: string;
   limit?: number;
   currentUsage?: number;
   isLimitReached?: boolean;
@@ -1199,10 +1200,14 @@ const loadActiveAddons = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons');
+    // Handle paginated response (response.data.data) or direct array (response.data)
+    const addonsData = response.data?.data || response.data || [];
     // Filter to only show active addons (status === 'active' and not expired)
     const now = new Date();
-    activeAddons.value = (response.data || []).filter((addon: any) => {
-      if (addon.status !== 'active') return false;
+    activeAddons.value = (Array.isArray(addonsData) ? addonsData : []).filter((addon: any) => {
+      // Ensure status exists and is 'active'
+      if (addon.status && addon.status !== 'active') return false;
+      // If no status field, assume active if not expired
       if (addon.expiresAt) {
         const expiresAt = new Date(addon.expiresAt);
         return expiresAt > now;
@@ -1915,6 +1920,12 @@ const handleReduceAddon = async () => {
 
   reducing.value = true;
   try {
+    // Ensure we have the correct addon data from database
+    if (!selectedAddon.value.addonId) {
+      await showError('Data addon tidak valid');
+      return;
+    }
+    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     await api.post('/addons/reduce', {
       addonId: selectedAddon.value.addonId,

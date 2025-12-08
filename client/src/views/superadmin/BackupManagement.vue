@@ -335,11 +335,35 @@ const loadBackups = async () => {
     }
 
     const response = await api.get('/superadmin/backups', { params });
-    backupLogs.value = response.data.data || [];
-    pagination.value = response.data.pagination || pagination.value;
+    // Handle response format
+    if (response.data && response.data.data) {
+      backupLogs.value = response.data.data || [];
+      pagination.value = response.data.pagination || {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+      };
+    } else {
+      backupLogs.value = [];
+      pagination.value = {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+      };
+    }
   } catch (error: any) {
     console.error('Error loading backups:', error);
-    showError(error.response?.data?.message || 'Gagal memuat backup logs');
+    const errorMessage = error.response?.data?.message || error.message || 'Database error occurred. Please try again.';
+    await showError(errorMessage);
+    backupLogs.value = [];
+    pagination.value = {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    };
   } finally {
     loading.value = false;
   }

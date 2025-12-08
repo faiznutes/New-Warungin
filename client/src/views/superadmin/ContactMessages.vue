@@ -308,8 +308,24 @@ const loadMessages = async () => {
     }
 
     const response = await api.get('/contact', { params });
-    messages.value = response.data.data;
-    pagination.value = response.data.pagination;
+    // Handle response format - check if data exists
+    if (response.data && response.data.data) {
+      messages.value = response.data.data;
+      pagination.value = response.data.pagination || {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+      };
+    } else {
+      messages.value = [];
+      pagination.value = {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+      };
+    }
   } catch (error: any) {
     console.error('Error loading messages:', error);
     await showError('Gagal memuat pesan kontak');
