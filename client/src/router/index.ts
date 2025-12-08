@@ -456,14 +456,35 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
   
+  // Check token first (synchronous) to avoid flash during logout
+  const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+  
+  // IMPORTANT: Load user data if not available before checking role-based redirects
+  // This ensures isSuperAdmin is correctly determined
+  if (to.meta.requiresAuth && hasToken && !authStore.user) {
+    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    if (rememberMe) {
+      try {
+        await authStore.fetchMe();
+      } catch (error) {
+        console.error('Failed to restore session:', error);
+        authStore.clearAuth();
+        localStorage.removeItem('rememberMe');
+        next({ name: 'login', query: { redirect: to.fullPath } });
+        return;
+      }
+    }
+  }
+  
   // Redirect super admin from dashboard to super-dashboard
-  if (authStore.isSuperAdmin && to.name === 'dashboard') {
+  // IMPORTANT: Check after user data is loaded
+  if (authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
     next({ name: 'super-dashboard' });
     return;
   }
   
   // Redirect non-super admin from super-dashboard to dashboard
-  if (!authStore.isSuperAdmin && to.name === 'super-dashboard') {
+  if (authStore.user && !authStore.isSuperAdmin && to.name === 'super-dashboard') {
     next({ name: 'dashboard' });
     return;
   }
@@ -471,34 +492,19 @@ router.beforeEach(async (to, from, next) => {
   // Redirect /app to appropriate dashboard based on role
   // IMPORTANT: Check user role AFTER authentication is confirmed
   if (to.path === '/app' || to.path === '/app/') {
-    // Wait for user data to be loaded if not yet available
-    if (to.meta.requiresAuth && hasToken && !authStore.user) {
-      const rememberMe = localStorage.getItem('rememberMe') === 'true';
-      if (rememberMe) {
-        try {
-          await authStore.fetchMe();
-        } catch (error) {
-          console.error('Failed to restore session:', error);
-          authStore.clearAuth();
-          localStorage.removeItem('rememberMe');
-          next({ name: 'login', query: { redirect: to.fullPath } });
-          return;
-        }
-      }
-    }
-    
     // Now check role after user data is loaded
-    if (authStore.isSuperAdmin) {
+    if (authStore.user && authStore.isSuperAdmin) {
       next({ name: 'super-dashboard' });
       return;
-    } else {
+    } else if (authStore.user) {
       next({ name: 'dashboard' });
+      return;
+    } else {
+      // If no user data, redirect to login
+      next({ name: 'login', query: { redirect: to.fullPath } });
       return;
     }
   }
-  
-  // Check token first (synchronous) to avoid flash during logout
-  const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
   
   // If route requires auth but no token, redirect immediately without async operations
   if (to.meta.requiresAuth && !hasToken) {
@@ -527,6 +533,13 @@ router.beforeEach(async (to, from, next) => {
     if (!authStore.isAuthenticated) {
       authStore.clearAuth();
       next({ name: 'login', query: { redirect: to.fullPath } });
+      return;
+    }
+    
+    // IMPORTANT: After authentication is confirmed, check if Super Admin is trying to access dashboard
+    // This must be done AFTER user data is loaded
+    if (authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
+      next({ name: 'super-dashboard' });
       return;
     }
   }
