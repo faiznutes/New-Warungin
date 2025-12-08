@@ -553,6 +553,19 @@ router.beforeEach(async (to, from, next) => {
     }
   }
   
+  // For super admin, clear selectedTenantId when navigating to dashboard from tenant list
+  // This ensures consistent UI when returning to dashboard
+  if (authStore.isSuperAdmin && to.name === 'dashboard' && from.name === 'tenants') {
+    // Clear selection when navigating from tenant list to dashboard
+    authStore.setSelectedTenant(null);
+    localStorage.removeItem('selectedTenantId');
+  }
+  
+  // Store previous route for navigation tracking
+  if (from.path) {
+    sessionStorage.setItem('previousRoute', from.path);
+  }
+  
   next();
 });
 

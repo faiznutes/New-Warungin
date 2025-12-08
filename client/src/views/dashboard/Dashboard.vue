@@ -871,6 +871,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
 import api from '../../api';
 import { formatCurrency, formatDateTime, formatRemainingTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -879,6 +880,7 @@ import { useNotification } from '../../composables/useNotification';
 import QuickInsightWidget from '../../components/QuickInsightWidget.vue';
 
 const authStore = useAuthStore();
+const route = useRoute();
 const { error: showError } = useNotification();
 const loading = ref(false);
 const dateRange = ref('today');
@@ -1607,18 +1609,48 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
   }
 });
 
+// Watch for route changes to clear selectedTenantId when super admin navigates to dashboard from tenant list
+watch(() => route.path, (newPath, oldPath) => {
+  // When super admin navigates to dashboard, clear selectedTenantId to show super admin dashboard
+  // But only if coming from tenant list page, not from tenant detail
+  if (authStore.isSuperAdmin && newPath === '/app/dashboard') {
+    // Check if coming from tenant list (exact match) - clear selection
+    if (oldPath === '/app/tenants') {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+      // Reload stats to show super admin dashboard
+      if (authStore.isAuthenticated) {
+        loadStats();
+      }
+    }
+  }
+}, { immediate: false });
+
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Reset state to ensure consistency
   // For Super Admin, ensure selectedTenantId is properly initialized from localStorage
   if (authStore.isSuperAdmin) {
-    const storedTenantId = localStorage.getItem('selectedTenantId');
-    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
-      authStore.setSelectedTenant(storedTenantId);
-    } else if (!storedTenantId && authStore.selectedTenantId) {
-      // Clear if localStorage doesn't have it but store does (inconsistency)
+    // Check if we're coming from tenant list (not detail) - clear selection
+    const previousRoute = sessionStorage.getItem('previousRoute');
+    const isFromTenantList = previousRoute === '/app/tenants';
+    const isFromTenantDetail = previousRoute?.match(/\/app\/tenants\/[^/]+$/);
+    
+    // If coming from tenant list (not detail), clear selection to show super admin dashboard
+    if (isFromTenantList && !isFromTenantDetail) {
       authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+    } else {
+      // Otherwise, sync with localStorage (for tenant detail or direct navigation)
+      const storedTenantId = localStorage.getItem('selectedTenantId');
+      if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+        authStore.setSelectedTenant(storedTenantId);
+      } else if (!storedTenantId && authStore.selectedTenantId) {
+        // Clear if localStorage doesn't have it but store does (inconsistency)
+        authStore.setSelectedTenant(null);
+      }
     }
+    
     // Ensure stats are initialized for super admin view to prevent UI break
     if (!authStore.selectedTenantId) {
       if (!stats.value) {
@@ -1629,6 +1661,9 @@ onMounted(() => {
       }
     }
   }
+  
+  // Store current route for next navigation
+  sessionStorage.setItem('previousRoute', route.path);
   
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {

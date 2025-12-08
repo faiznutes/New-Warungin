@@ -310,6 +310,15 @@ watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // For super admin, ensure selectedTenantId is synced with localStorage
+  if (authStore.isSuperAdmin) {
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+      authStore.setSelectedTenant(storedTenantId);
+    }
+  }
+  
   if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
     if (!needsTenantSelection.value) {
       loadUsers();
