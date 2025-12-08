@@ -116,12 +116,13 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibeli Oleh</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="!reportData || !reportData.subscriptions || filteredSubscriptions.length === 0">
-                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data subscription</td>
+                <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data subscription</td>
               </tr>
               <tr v-else v-for="sub in paginatedSubscriptions" :key="sub.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -153,6 +154,20 @@
                   <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="sub.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
                     {{ sub.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      :checked="sub.purchasedBy === 'ADMIN'"
+                      disabled
+                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      title="Dibeli oleh Admin"
+                    />
+                    <span class="text-xs text-gray-600">
+                      {{ sub.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
@@ -257,12 +272,13 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibeli Oleh</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="!reportData || !reportData.addons || filteredAddons.length === 0">
-                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data addon</td>
+                <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Tidak ada data addon</td>
               </tr>
               <tr v-else v-for="addon in paginatedAddons" :key="addon.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -294,6 +310,20 @@
                   <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="addon.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
                     {{ addon.status === 'active' ? 'Aktif' : 'Expired' }}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      :checked="addon.purchasedBy === 'ADMIN'"
+                      disabled
+                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      title="Dibeli oleh Admin"
+                    />
+                    <span class="text-xs text-gray-600">
+                      {{ addon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">

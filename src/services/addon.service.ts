@@ -8,6 +8,7 @@ export interface SubscribeAddonInput {
   addonType: string;
   limit?: number;
   duration?: number; // days
+  purchasedBy?: string; // "ADMIN" = dibeli oleh Super Admin, "SELF" = dibeli sendiri oleh tenant
 }
 
 export const AVAILABLE_ADDONS = [
@@ -518,6 +519,7 @@ export class AddonService {
         subscribedAt: now, // Set subscribedAt untuk laporan global
         expiresAt,
         config: addonConfig,
+        purchasedBy: data.purchasedBy || 'SELF', // "ADMIN" jika dibeli oleh Super Admin, "SELF" jika dibeli sendiri
       },
     });
     

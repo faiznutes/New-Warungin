@@ -52,6 +52,7 @@ router.post(
         const result = await subscriptionService.extendSubscription(tenantId, {
           plan: req.body.plan,
           duration: req.body.duration,
+          purchasedBy: userRole === 'SUPER_ADMIN' ? 'ADMIN' : 'SELF', // Track purchase type
         });
         res.json(result);
       } else {
@@ -59,7 +60,9 @@ router.post(
         if (userRole !== 'SUPER_ADMIN') {
           return res.status(403).json({ message: 'Plan is required for tenant admin' });
         }
-        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration);
+        const result = await subscriptionService.extendSubscriptionCustom(tenantId, req.body.duration, {
+          purchasedBy: userRole === 'SUPER_ADMIN' ? 'ADMIN' : 'SELF', // Track purchase type
+        });
         res.json(result);
       }
     } catch (error: any) {
@@ -96,6 +99,7 @@ router.post(
         newPlan: req.body.newPlan,
         upgradeType: req.body.upgradeType,
         customDuration: req.body.customDuration,
+        purchasedBy: userRole === 'SUPER_ADMIN' ? 'ADMIN' : 'SELF', // Track purchase type
       });
       res.json(result);
     } catch (error: any) {

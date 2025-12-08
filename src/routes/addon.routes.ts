@@ -72,6 +72,7 @@ router.post(
         addonType: req.body.addonType,
         limit: req.body.limit || null,
         duration: req.body.duration || undefined,
+        purchasedBy: userRole === 'SUPER_ADMIN' ? 'ADMIN' : 'SELF', // Track purchase type
       };
 
       const addon = await addonService.subscribeAddon(tenantId, addonData);

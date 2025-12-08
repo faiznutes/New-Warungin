@@ -395,6 +395,7 @@ export const createTenant = async (input: CreateTenantInput) => {
         endDate: subscriptionEnd,
         status: 'ACTIVE',
         amount: planPrice.toString(), // Set amount sesuai harga paket untuk laporan global
+        purchasedBy: 'SELF', // Initial subscription saat registrasi tenant adalah self-purchase
       },
     });
     

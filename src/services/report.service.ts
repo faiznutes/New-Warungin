@@ -280,6 +280,7 @@ export class ReportService {
           amount: amount,
           createdAt: sub.createdAt,
           status: sub.status,
+          purchasedBy: (sub as any).purchasedBy || 'SELF', // "ADMIN" atau "SELF"
         };
       });
 
@@ -300,6 +301,7 @@ export class ReportService {
           amount: revenue,
           subscribedAt: addon.subscribedAt,
           status: addon.status,
+          purchasedBy: (addon as any).purchasedBy || 'SELF', // "ADMIN" atau "SELF"
         };
       });
 

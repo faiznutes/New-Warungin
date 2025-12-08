@@ -435,6 +435,7 @@ model TenantAddon {
   subscribedAt DateTime  @default(now())
   expiresAt    DateTime?
   config       Json?
+  purchasedBy  String    @default("SELF") // "ADMIN" = dibeli oleh Super Admin, "SELF" = dibeli sendiri oleh tenant
 
   // Relations
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -456,6 +457,7 @@ model Subscription {
   amount           Decimal  @db.Decimal(10, 2)
   temporaryUpgrade Boolean  @default(false) // true jika upgrade sementara 1 bulan
   previousPlan     String? // Plan sebelumnya (untuk revert)
+  purchasedBy      String   @default("SELF") // "ADMIN" = dibeli oleh Super Admin, "SELF" = dibeli sendiri oleh tenant
   createdAt        DateTime @default(now())
 
   // Relations

@@ -7,12 +7,14 @@ import logger from '../utils/logger';
 export interface CreateSubscriptionInput {
   plan: 'BASIC' | 'PRO' | 'ENTERPRISE';
   duration: number; // days
+  purchasedBy?: string; // "ADMIN" = dibeli oleh Super Admin, "SELF" = dibeli sendiri oleh tenant
 }
 
 export interface UpgradeSubscriptionInput {
   newPlan: 'BASIC' | 'PRO' | 'ENTERPRISE';
   upgradeType: 'temporary' | 'until_end' | 'custom'; // temporary = 1 bulan, until_end = sampai masa aktif, custom = 3/6/12 bulan
   customDuration?: number; // days, only for custom type
+  purchasedBy?: string; // "ADMIN" = dibeli oleh Super Admin, "SELF" = dibeli sendiri oleh tenant
 }
 
 export class SubscriptionService {
@@ -399,6 +401,7 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
+          purchasedBy: data.purchasedBy || 'SELF', // "ADMIN" jika dibeli oleh Super Admin, "SELF" jika dibeli sendiri
         },
       });
 
@@ -615,6 +618,7 @@ export class SubscriptionService {
           endDate: upgradeEndDate,
           status: 'ACTIVE',
           amount: finalAmount.toString(),
+          purchasedBy: data.purchasedBy || 'SELF', // "ADMIN" jika dibeli oleh Super Admin, "SELF" jika dibeli sendiri
           ...(temporaryUpgrade && { temporaryUpgrade: true }),
           ...(previousPlan && { previousPlan }),
         } as any,
@@ -1397,7 +1401,7 @@ export class SubscriptionService {
    * Extend subscription with custom duration (for Super Admin)
    * This allows extending without changing plan
    */
-  async extendSubscriptionCustom(tenantId: string, duration: number) {
+  async extendSubscriptionCustom(tenantId: string, duration: number, options?: { purchasedBy?: string }) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
     });
@@ -1473,6 +1477,7 @@ export class SubscriptionService {
           endDate,
           status: 'ACTIVE',
           amount: amount.toString(),
+          purchasedBy: options?.purchasedBy || 'SELF', // "ADMIN" jika dibeli oleh Super Admin, "SELF" jika dibeli sendiri
           // Preserve temporaryUpgrade flags if it's a temporary upgrade
           ...(shouldPreserveTemporaryUpgrade ? {
             temporaryUpgrade: true,
