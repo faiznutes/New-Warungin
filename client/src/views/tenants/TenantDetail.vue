@@ -1222,7 +1222,7 @@ const loadActiveAddons = async () => {
     const addonsData = response.data?.data || response.data || [];
     // Filter to only show active addons (status === 'active' and not expired)
     const now = new Date();
-    activeAddons.value = (Array.isArray(addonsData) ? addonsData : []).filter((addon: any) => {
+    let filteredAddons = (Array.isArray(addonsData) ? addonsData : []).filter((addon: any) => {
       // Ensure status exists and is 'active'
       if (addon.status && addon.status !== 'active') return false;
       // If no status field, assume active if not expired
@@ -1231,6 +1231,42 @@ const loadActiveAddons = async () => {
         return expiresAt > now;
       }
       return true;
+    });
+    
+    // For addons with limits (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS), get total limit from check-limit API
+    // This ensures we show total limit (subscription + all addons) instead of individual addon limit
+    const limitAddonTypes = ['ADD_OUTLETS', 'ADD_USERS', 'ADD_PRODUCTS'];
+    const limitPromises: Record<string, Promise<any>> = {};
+    
+    // Get total limits for each addon type
+    for (const addonType of limitAddonTypes) {
+      if (filteredAddons.some((a: any) => a.addonType === addonType)) {
+        limitPromises[addonType] = api.get(`/addons/check-limit/${addonType}`).catch(() => ({ data: { limit: -1, currentUsage: 0 } }));
+      }
+    }
+    
+    // Wait for all limit checks
+    const limitResults = await Promise.all(Object.values(limitPromises));
+    const limitMap: Record<string, { limit: number; currentUsage: number }> = {};
+    let limitIndex = 0;
+    for (const addonType of limitAddonTypes) {
+      if (limitPromises[addonType]) {
+        limitMap[addonType] = limitResults[limitIndex].data;
+        limitIndex++;
+      }
+    }
+    
+    // Update addons with total limit and currentUsage
+    activeAddons.value = filteredAddons.map((addon: any) => {
+      if (limitMap[addon.addonType]) {
+        return {
+          ...addon,
+          limit: limitMap[addon.addonType].limit,
+          currentUsage: limitMap[addon.addonType].currentUsage,
+          isLimitReached: limitMap[addon.addonType].limit !== -1 && limitMap[addon.addonType].currentUsage >= limitMap[addon.addonType].limit,
+        };
+      }
+      return addon;
     });
   } catch (error: any) {
     console.error('Error loading active addons:', error);
