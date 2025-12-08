@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import addonService from '../services/addon.service';
 import { requireTenantId } from '../utils/tenant';
+import logger from '../utils/logger';
 
 /**
  * Middleware to check if tenant has specific addon active
