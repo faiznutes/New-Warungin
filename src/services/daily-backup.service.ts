@@ -126,12 +126,12 @@ export class DailyBackupService {
         .reduce((sum, cf) => sum + Number(cf.amount), 0);
 
       // Get receivables and payables
-      // Get receivables from transactions with credit/installment payment methods
+      // Get receivables from transactions with pending status (credit-like transactions)
+      // Note: PaymentMethod enum doesn't have CREDIT/INSTALLMENT, so we get all pending transactions
       const receivables = await prisma.transaction.aggregate({
         where: {
           tenantId,
           status: 'PENDING',
-          paymentMethod: { in: ['CREDIT', 'INSTALLMENT'] },
         },
         _sum: { amount: true },
       });
@@ -576,7 +576,6 @@ export class DailyBackupService {
         where: {
           tenantId,
           status: 'PENDING',
-          paymentMethod: { in: ['CREDIT', 'INSTALLMENT'] },
         },
         _sum: { amount: true },
       }),
@@ -627,8 +626,8 @@ export class DailyBackupService {
         cashOut,
       },
       debts: {
-        totalReceivables: Number(receivables._sum.total || 0),
-        totalPayables: Number(payables._sum.total || 0),
+        totalReceivables: Number((receivables._sum as any)?.amount || 0),
+        totalPayables: Number((payables._sum as any)?.totalAmount || 0),
       },
       stock: {
         lowStock: lowStockProducts.length,

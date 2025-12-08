@@ -301,8 +301,10 @@ export class ReportService {
   private async exportToExcel(reportData: any, metadata?: any): Promise<Buffer> {
     try {
       // Try to use exceljs if available
+      // Use dynamic import with type assertion to avoid TS error if module not installed
       let ExcelJS: any = null;
       try {
+        // @ts-ignore - exceljs may not be installed
         ExcelJS = await import('exceljs');
       } catch (error) {
         // exceljs not installed, will use CSV fallback
