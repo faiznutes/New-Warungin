@@ -556,17 +556,17 @@ const kitchenStats = ref<{
 const currentSubscription = ref<any>(null);
 const subscriptionLoading = ref(false);
 const isReloadingSubscription = ref(false); // Flag to prevent multiple reloads
-// Initialize activeAddons as empty array and ensure it's always an array
-// CRITICAL: Initialize as empty array immediately to prevent computed properties from accessing non-array
-const activeAddons = ref<any[]>([]);
+// Initialize activeAddons as empty array
+// Use internal ref that we control, and expose via computed property that always returns array
+const _activeAddons = ref<any[]>([]);
 
 // Helper function to always get a valid array from activeAddons
 // This ensures we never access a non-array value
 const getActiveAddons = (): any[] => {
-  const value = activeAddons.value;
+  const value = _activeAddons.value;
   if (value === null || value === undefined || !Array.isArray(value)) {
     // Auto-fix if not array
-    activeAddons.value = [];
+    _activeAddons.value = [];
     return [];
   }
   return value;
@@ -575,24 +575,28 @@ const getActiveAddons = (): any[] => {
 // Helper function to safely set activeAddons (always ensures it's an array)
 const setActiveAddons = (value: any): void => {
   if (Array.isArray(value)) {
-    activeAddons.value = value;
+    _activeAddons.value = value;
   } else if (value && typeof value === 'object' && Array.isArray(value.data)) {
-    activeAddons.value = value.data;
+    _activeAddons.value = value.data;
   } else if (value && typeof value === 'object' && Array.isArray(value.addons)) {
-    activeAddons.value = value.addons;
+    _activeAddons.value = value.addons;
   } else {
-    activeAddons.value = [];
+    _activeAddons.value = [];
   }
 };
 
 // Computed property that always returns an array (safer than direct ref access)
-const safeActiveAddons = computed(() => getActiveAddons());
+// This is the ONLY way to access activeAddons - always returns array
+const activeAddons = computed({
+  get: () => getActiveAddons(),
+  set: (value: any) => setActiveAddons(value)
+});
 
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
-  // Use safe computed property instead of direct ref access
-  const addons = safeActiveAddons.value;
+  // Use computed property activeAddons which always returns array
+  const addons = activeAddons.value;
   try {
     return addons.some(
       (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
@@ -1124,12 +1128,12 @@ const renderCharts = () => {
 // Watch activeAddons to ensure it's always an array
 // Use immediate: true to check on component mount
 // This watcher runs BEFORE computed properties are evaluated
-// Watch activeAddons to ensure it's always an array
+// Watch internal _activeAddons to ensure it's always an array
 // Use immediate: true to check on component mount
 // Use helper function to auto-fix any non-array values
-watch(() => activeAddons.value, (newValue) => {
+watch(() => _activeAddons.value, (newValue) => {
   if (newValue === null || newValue === undefined || !Array.isArray(newValue)) {
-    console.warn('activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
+    console.warn('_activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
     setActiveAddons([]);
   }
 }, { deep: true, immediate: true });
