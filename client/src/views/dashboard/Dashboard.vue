@@ -560,34 +560,45 @@ const isReloadingSubscription = ref(false); // Flag to prevent multiple reloads
 // CRITICAL: Initialize as empty array immediately to prevent computed properties from accessing non-array
 const activeAddons = ref<any[]>([]);
 
-// Defensive: Immediately ensure it's an array (before any computed properties are created)
-// This is critical because computed properties can be evaluated before onMounted
-// Double-check to ensure it's really an array
-if (!Array.isArray(activeAddons.value)) {
-  activeAddons.value = [];
-}
+// Helper function to always get a valid array from activeAddons
+// This ensures we never access a non-array value
+const getActiveAddons = (): any[] => {
+  const value = activeAddons.value;
+  if (value === null || value === undefined || !Array.isArray(value)) {
+    // Auto-fix if not array
+    activeAddons.value = [];
+    return [];
+  }
+  return value;
+};
+
+// Helper function to safely set activeAddons (always ensures it's an array)
+const setActiveAddons = (value: any): void => {
+  if (Array.isArray(value)) {
+    activeAddons.value = value;
+  } else if (value && typeof value === 'object' && Array.isArray(value.data)) {
+    activeAddons.value = value.data;
+  } else if (value && typeof value === 'object' && Array.isArray(value.addons)) {
+    activeAddons.value = value.addons;
+  } else {
+    activeAddons.value = [];
+  }
+};
+
+// Computed property that always returns an array (safer than direct ref access)
+const safeActiveAddons = computed(() => getActiveAddons());
 
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
-  // Ensure activeAddons.value is always an array before using .some()
-  // Multiple checks for safety
-  if (activeAddons.value === null || activeAddons.value === undefined) {
-    return false;
-  }
-  if (!Array.isArray(activeAddons.value)) {
-    console.warn('activeAddons.value is not an array in hasBusinessAnalytics, resetting to []');
-    activeAddons.value = [];
-    return false;
-  }
+  // Use safe computed property instead of direct ref access
+  const addons = safeActiveAddons.value;
   try {
-    return activeAddons.value.some(
+    return addons.some(
       (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
     );
   } catch (error) {
     console.error('Error checking business analytics:', error);
-    // Reset to empty array if error occurs
-    activeAddons.value = [];
     return false;
   }
 });
