@@ -1228,6 +1228,5 @@ model CashShift {
   @@index([tenantId, kasirId])
   @@index([tenantId, status])
   @@index([tenantId, shiftStart])
-  @@unique([tenantId, kasirId, status], where: { status: "open" }) // Satu kasir hanya boleh 1 shift open
   @@map("cash_shifts")
 }

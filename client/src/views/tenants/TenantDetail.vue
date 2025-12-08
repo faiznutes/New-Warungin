@@ -1188,7 +1188,7 @@ import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
-import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap, safeFind } from '../../utils/array-helpers';
+import { safeArrayMethod, safeFilter, safeMap, safeFind } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -1251,8 +1251,8 @@ const availableAddons = ref<AvailableAddon[]>([]);
 const loading = ref(true); // Start with true to show loading state immediately
 const isReloadingTenant = ref(false); // Flag to prevent multiple reloads
 const currentTime = ref(new Date());
-let countdownInterval: NodeJS.Timeout | null = null;
-let pointsUpdateInterval: NodeJS.Timeout | null = null;
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+let pointsUpdateInterval: ReturnType<typeof setInterval> | null = null;
 const extending = ref(false);
 const reducing = ref(false);
 const hasError = ref(false);
@@ -1287,6 +1287,21 @@ const loadingStores = ref(false);
 const tenantStores = ref<any[]>([]);
 const outletUsage = ref<{ currentUsage: number; limit: number } | null>(null);
 const selectedUsers = ref<any[]>([]);
+const creatingTenant = ref(false);
+const creatingUser = ref(false);
+const createTenantForm = ref({
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  subscriptionPlan: 'BASIC',
+});
+const createUserForm = ref({
+  name: '',
+  email: '',
+  password: '',
+  role: 'CASHIER' as 'ADMIN_TENANT' | 'SUPERVISOR' | 'CASHIER' | 'KITCHEN',
+});
 const editUserForm = ref({
   name: '',
   email: '',
@@ -1343,7 +1358,8 @@ const filteredActiveAddons = computed(() => {
   );
 });
 
-const isAddonActive = (addonId: string) => {
+// Removed unused isAddonActive function
+const _isAddonActive = (addonId: string) => {
   const now = new Date();
   return safeArrayMethod(
     activeAddons.value,
@@ -1460,7 +1476,7 @@ const loadActiveAddons = async () => {
     }
     
     // Wait for all limit checks
-    const limitResults = await Promise.all(Object.values(limitPromises));
+    const limitResults = await Promise.all(Object.values(limitPromises).filter((p: any) => p instanceof Promise));
     const limitMap: Record<string, { limit: number; currentUsage: number }> = {};
     let limitIndex = 0;
     for (const addonType of limitAddonTypes) {
@@ -1499,6 +1515,26 @@ const loadAvailableAddons = async () => {
     console.error('Error loading available addons:', error);
     // Don't show error for addons, just set empty array
     availableAddons.value = [];
+  }
+};
+
+const loadTenantUsers = async () => {
+  if (!tenant.value?.id) return;
+  loadingUsers.value = true;
+  try {
+    const response = await api.get('/users', {
+      params: { limit: 1000 },
+    });
+    tenantUsers.value = response.data.data || [];
+    
+    // Get user usage
+    const usageResponse = await api.get('/users/usage');
+    userUsage.value = usageResponse.data;
+  } catch (error: any) {
+    console.error('Error loading users:', error);
+    tenantUsers.value = [];
+  } finally {
+    loadingUsers.value = false;
   }
 };
 
@@ -2252,6 +2288,93 @@ const subscribeAddon = async (addon: AvailableAddon) => {
   } catch (error: any) {
     console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
+  }
+};
+
+const handleCreateTenant = async () => {
+  if (!createTenantForm.value.name || !createTenantForm.value.email) {
+    await showError('Nama dan email wajib diisi');
+    return;
+  }
+
+  creatingTenant.value = true;
+  try {
+    const response = await api.post('/tenants', {
+      name: createTenantForm.value.name,
+      email: createTenantForm.value.email,
+      phone: createTenantForm.value.phone || undefined,
+      address: createTenantForm.value.address || undefined,
+      subscriptionPlan: createTenantForm.value.subscriptionPlan,
+    });
+
+    const defaultPassword = response.data?.defaultPassword || response.data?.users?.[0]?.password;
+    showCreateTenantModal.value = false;
+    createTenantForm.value = {
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      subscriptionPlan: 'BASIC',
+    };
+
+    if (defaultPassword) {
+      await showSuccess(`Tenant berhasil dibuat! Password default: ${defaultPassword}`);
+    } else {
+      await showSuccess('Tenant berhasil dibuat!');
+    }
+
+    // Reload tenant list atau redirect
+    router.push('/app/tenants');
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Gagal membuat tenant';
+    await showError(errorMessage);
+  } finally {
+    creatingTenant.value = false;
+  }
+};
+
+const handleCreateUser = async () => {
+  if (!createUserForm.value.name || !createUserForm.value.email || !createUserForm.value.role) {
+    await showError('Nama, email, dan role wajib diisi');
+    return;
+  }
+
+  if (!tenant.value?.id) {
+    await showError('Tenant ID tidak ditemukan');
+    return;
+  }
+
+  creatingUser.value = true;
+  try {
+    const response = await api.post('/users', {
+      name: createUserForm.value.name,
+      email: createUserForm.value.email,
+      password: createUserForm.value.password || undefined,
+      role: createUserForm.value.role,
+      tenantId: tenant.value.id,
+    });
+
+    showCreateUserModal.value = false;
+    createUserForm.value = {
+      name: '',
+      email: '',
+      password: '',
+      role: 'CASHIER',
+    };
+
+    const defaultPassword = response.data?.password || response.data?.defaultPassword;
+    if (defaultPassword) {
+      await showSuccess(`Pengguna berhasil dibuat! Password: ${defaultPassword}`);
+    } else {
+      await showSuccess('Pengguna berhasil dibuat!');
+    }
+
+    await loadTenantUsers();
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Gagal membuat pengguna';
+    await showError(errorMessage);
+  } finally {
+    creatingUser.value = false;
   }
 };
 
