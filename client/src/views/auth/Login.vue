@@ -159,10 +159,15 @@ const showStoreSelector = ref(false);
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // If already authenticated, redirect to dashboard
+  // If already authenticated, redirect to appropriate dashboard based on role
   if (authStore.isAuthenticated) {
-    const redirect = route.query.redirect as string || '/app/dashboard';
-    router.push(redirect);
+    const redirect = route.query.redirect as string;
+    if (redirect) {
+      router.push(redirect);
+    } else {
+      // Router guard will handle redirect to appropriate dashboard
+      router.push('/app');
+    }
     return;
   }
   
