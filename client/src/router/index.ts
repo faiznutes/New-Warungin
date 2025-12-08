@@ -132,6 +132,12 @@ const router = createRouter({
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {
+          path: 'superadmin/contact-messages',
+          name: 'contact-messages',
+          component: () => import('../views/superadmin/ContactMessages.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
           path: 'settings/system',
           name: 'system-settings',
           component: () => import('../views/settings/SystemSettings.vue'),

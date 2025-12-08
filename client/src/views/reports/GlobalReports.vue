@@ -427,77 +427,63 @@
           </div>
           
           <div v-if="selectedSubscription" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Tenant</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.tenantName }}</p>
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Tenant</label>
+                  <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedSubscription.tenantName }}</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Paket</label>
+                  <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedSubscription.plan }}</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Jumlah</label>
+                  <p class="mt-1 text-sm text-gray-900 font-semibold text-green-600">{{ formatCurrency(selectedSubscription.amount) }}</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Status</label>
+                  <span
+                    :class="[
+                      'mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                      selectedSubscription.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    ]"
+                  >
+                    {{ selectedSubscription.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
+                  </span>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Dibeli Oleh</label>
+                  <div class="mt-1 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      :checked="selectedSubscription.purchasedBy === 'ADMIN'"
+                      disabled
+                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-900 font-medium">
+                      {{ selectedSubscription.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
+                  <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+                </div>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Paket</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedSubscription.plan }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Jumlah</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedSubscription.amount) }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Status</label>
-                <span
-                  :class="[
-                    'mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                    selectedSubscription.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  ]"
-                >
-                  {{ selectedSubscription.status === 'ACTIVE' ? 'Aktif' : 'Expired' }}
-                </span>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
-                <p class="mt-1 text-sm text-gray-900">{{ new Date(selectedSubscription.createdAt).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">ID Subscription</label>
-                <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedSubscription.id }}</p>
+              
+              <div class="border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">ID Subscription</label>
+                <p class="text-sm text-gray-500 font-mono bg-gray-50 p-2 rounded">{{ selectedSubscription.id }}</p>
               </div>
             </div>
             
-            <div class="flex justify-end space-x-3 pt-4 border-t">
+            <div class="flex justify-end pt-4 border-t">
               <button
                 @click="showSubscriptionModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
                 Tutup
-              </button>
-              <router-link
-                :to="`/app/tenants/${selectedSubscription.tenantId}`"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
-                @click="showSubscriptionModal = false"
-              >
-                Lihat Tenant
-              </router-link>
-              <button
-                @click="openEditSubscriptionModal(selectedSubscription)"
-                class="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
-              >
-                Edit
-              </button>
-              <button
-                @click="openAddAdminModal(selectedSubscription.tenantId)"
-                class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
-              >
-                Tambah Admin
-              </button>
-              <button
-                @click="goToTenantPurchase(selectedSubscription.tenantId)"
-                class="px-4 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition"
-              >
-                Beli Sendiri
-              </button>
-              <button
-                @click="deleteSubscription(selectedSubscription)"
-                class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
-              >
-                Hapus Subscription
               </button>
             </div>
           </div>
