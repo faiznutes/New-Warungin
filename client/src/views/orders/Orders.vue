@@ -911,10 +911,12 @@ const handleOrderSaved = async (order: Order) => {
 
 // Bulk operations
 const isOrderSelected = (orderId: string) => {
+  if (!Array.isArray(selectedOrders.value)) return false;
   return selectedOrders.value.some(o => o.id === orderId);
 };
 
 const toggleOrderSelection = (order: Order) => {
+  if (!Array.isArray(selectedOrders.value)) selectedOrders.value = [];
   const index = selectedOrders.value.findIndex(o => o.id === order.id);
   if (index > -1) {
     selectedOrders.value.splice(index, 1);
@@ -924,6 +926,8 @@ const toggleOrderSelection = (order: Order) => {
 };
 
 const toggleSelectAll = () => {
+  if (!Array.isArray(orders.value)) return;
+  if (!Array.isArray(selectedOrders.value)) selectedOrders.value = [];
   if (selectedOrders.value.length === orders.value.length) {
     selectedOrders.value = [];
   } else {
@@ -932,7 +936,7 @@ const toggleSelectAll = () => {
 };
 
 const bulkDelete = async () => {
-  if (selectedOrders.value.length === 0) return;
+  if (!Array.isArray(selectedOrders.value) || selectedOrders.value.length === 0) return;
   
   const confirmed = await showConfirm(
     `Apakah Anda yakin ingin menghapus ${selectedOrders.value.length} pesanan? Tindakan ini tidak dapat dibatalkan.`,
@@ -959,7 +963,7 @@ const bulkDelete = async () => {
 };
 
 const bulkRefund = async () => {
-  if (selectedOrders.value.length === 0) return;
+  if (!Array.isArray(selectedOrders.value) || selectedOrders.value.length === 0) return;
   
   const confirmed = await showConfirm(
     `Apakah Anda yakin ingin melakukan refund untuk ${selectedOrders.value.length} pesanan?`,
@@ -987,11 +991,13 @@ const bulkRefund = async () => {
 
 // Computed property untuk menghitung jumlah order yang bisa dihapus
 const deletableOrdersCount = computed(() => {
+  if (!Array.isArray(orders.value)) return 0;
   return orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED').length;
 });
 
 // Hapus semua order yang bisa dihapus
 const deleteAllOrders = async () => {
+  if (!Array.isArray(orders.value)) return;
   const deletableOrders = orders.value.filter(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
   
   if (deletableOrders.length === 0) {

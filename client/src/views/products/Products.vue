@@ -487,14 +487,16 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
     const response = await api.get('/products', { params });
-    products.value = response.data.data;
-    pagination.value = response.data.pagination;
+    products.value = Array.isArray(response.data.data) ? response.data.data : [];
+    pagination.value = response.data.pagination || { page: 1, limit: 12, total: 0, totalPages: 0 };
 
     // Extract unique categories
     const uniqueCategories = new Set<string>();
-    products.value.forEach(p => {
-      if (p.category) uniqueCategories.add(p.category);
-    });
+    if (Array.isArray(products.value)) {
+      products.value.forEach(p => {
+        if (p.category) uniqueCategories.add(p.category);
+      });
+    }
     categories.value = Array.from(uniqueCategories);
 
     // Load product limit
