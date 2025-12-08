@@ -578,13 +578,15 @@ export class OrderService {
             const cost = product.cost ? Number(product.cost) : null;
             
             // Calculate profit = (price - cost) * quantity (only if cost exists)
-            const profit = cost !== null ? (item.price - cost) * item.quantity : null;
+            const itemPrice = item?.price || 0;
+            const itemQuantity = item?.quantity || 0;
+            const profit = cost !== null ? (itemPrice - cost) * itemQuantity : null;
 
             return {
               orderId: id,
               productId: item.productId,
-              quantity: item.quantity,
-              price: item.price.toString(),
+              quantity: itemQuantity,
+              price: itemPrice.toString(),
               cost: cost !== null ? cost.toString() : null,
               subtotal: (item.price * item.quantity).toString(),
               profit: profit !== null ? profit.toString() : null,
