@@ -240,9 +240,22 @@ const handleLogin = async () => {
     
     // ADMIN_TENANT tidak perlu toko - langsung ke dashboard
     // SPV, kasir, dan dapur tetap perlu toko
+    const getPermissions = (u: any) => {
+      const perms = u?.permissions;
+      if (!perms || typeof perms !== 'object') return null;
+      return perms;
+    };
+    
+    const getallowedStoreIds = (u: any): string[] => {
+      const perms = getPermissions(u);
+      const allowedIds = perms?.allowedStoreIds;
+      if (Array.isArray(allowedIds)) return allowedIds;
+      return [];
+    };
+    
     const needsStoreSelection = 
       user && (
-        (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1 && !authStore.selectedStoreId) ||
+        (user.role === 'SUPERVISOR' && getallowedStoreIds(user).length > 1 && !authStore.selectedStoreId) ||
         (['CASHIER', 'KITCHEN'].includes(user.role) && !authStore.selectedStoreId)
       );
     
