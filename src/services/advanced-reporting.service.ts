@@ -257,7 +257,7 @@ class AdvancedReportingService {
         format: saved.format as any,
         isActive: saved.isActive,
         nextRunAt: saved.nextRunAt,
-        lastRunAt: saved.lastRunAt !== null ? saved.lastRunAt : undefined,
+        lastRunAt: saved.lastRunAt !== null && saved.lastRunAt !== undefined ? saved.lastRunAt : undefined,
       };
     } catch (error: any) {
       logger.error('Error creating scheduled report:', error);
