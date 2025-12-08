@@ -556,21 +556,35 @@ const kitchenStats = ref<{
 const currentSubscription = ref<any>(null);
 const subscriptionLoading = ref(false);
 const isReloadingSubscription = ref(false); // Flag to prevent multiple reloads
+// Initialize activeAddons as empty array and ensure it's always an array
 const activeAddons = ref<any[]>([]);
+
+// Ensure activeAddons is always an array (defensive initialization)
+if (!Array.isArray(activeAddons.value)) {
+  activeAddons.value = [];
+}
 
 const userRole = computed(() => authStore.user?.role || '');
 const isAdminOrSupervisor = computed(() => userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPERVISOR');
 const hasBusinessAnalytics = computed(() => {
   // Ensure activeAddons.value is always an array before using .some()
-  if (!activeAddons.value || !Array.isArray(activeAddons.value)) {
+  // Multiple checks for safety
+  if (activeAddons.value === null || activeAddons.value === undefined) {
+    return false;
+  }
+  if (!Array.isArray(activeAddons.value)) {
+    console.warn('activeAddons.value is not an array in hasBusinessAnalytics, resetting to []');
+    activeAddons.value = [];
     return false;
   }
   try {
-  return activeAddons.value.some(
-      (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-  );
+    return activeAddons.value.some(
+      (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+    );
   } catch (error) {
     console.error('Error checking business analytics:', error);
+    // Reset to empty array if error occurs
+    activeAddons.value = [];
     return false;
   }
 });
@@ -832,6 +846,11 @@ const currentTime = ref(new Date());
 let countdownInterval: NodeJS.Timeout | null = null;
 
 const loadAddons = async () => {
+  // Initialize as empty array before API call
+  if (!Array.isArray(activeAddons.value)) {
+    activeAddons.value = [];
+  }
+  
   try {
     const response = await api.get('/addons');
     // Ensure activeAddons is always an array
@@ -842,6 +861,8 @@ const loadAddons = async () => {
       activeAddons.value = addonsData;
     } else if (addonsData && typeof addonsData === 'object' && Array.isArray(addonsData.addons)) {
       activeAddons.value = addonsData.addons;
+    } else if (addonsData && typeof addonsData === 'object' && addonsData.data && Array.isArray(addonsData.data)) {
+      activeAddons.value = addonsData.data;
     } else {
       activeAddons.value = [];
     }
@@ -853,6 +874,7 @@ const loadAddons = async () => {
   
   // Final safety check - ensure it's always an array
   if (!Array.isArray(activeAddons.value)) {
+    console.warn('activeAddons.value is not an array after loadAddons, resetting to []');
     activeAddons.value = [];
   }
 };
@@ -1088,12 +1110,20 @@ const renderCharts = () => {
 };
 
 // Watch activeAddons to ensure it's always an array
+// Use immediate: true to check on component mount
 watch(() => activeAddons.value, (newValue) => {
-  if (!Array.isArray(newValue)) {
-    console.warn('activeAddons.value is not an array, resetting to []');
+  if (newValue === null || newValue === undefined || !Array.isArray(newValue)) {
+    console.warn('activeAddons.value is not an array, resetting to []', { type: typeof newValue, value: newValue });
     activeAddons.value = [];
   }
 }, { deep: true, immediate: true });
+
+// Additional immediate check on mount
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (isAuth && !Array.isArray(activeAddons.value)) {
+    activeAddons.value = [];
+  }
+}, { immediate: true });
 
 // Watch for tenant changes and reload stats and subscription
 watch(() => authStore.currentTenantId, () => {
@@ -1113,6 +1143,12 @@ watch(() => authStore.currentTenantId, () => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Ensure activeAddons is initialized as array before any computed properties are accessed
+  if (!Array.isArray(activeAddons.value)) {
+    activeAddons.value = [];
+  }
+  
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
     loadStats();
