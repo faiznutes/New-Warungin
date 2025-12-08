@@ -112,9 +112,19 @@ router.get(
         if (!isProOrMax) {
           const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
           const addonsData = Array.isArray(addons.data) ? addons.data : [];
-          hasExportAddon = addonsData.some(
-            (addon: any) => addon && addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
-          );
+          // Ensure addonsData is array before using .some()
+          if (Array.isArray(addonsData) && addonsData.length > 0) {
+            try {
+              hasExportAddon = addonsData.some(
+                (addon: any) => addon && addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
+              );
+            } catch (error: any) {
+              logger.error('Error checking export reports addon:', { error: error.message });
+              hasExportAddon = false;
+            }
+          } else {
+            hasExportAddon = false;
+          }
         }
         
         if (!isProOrMax && !hasExportAddon) {

@@ -18,10 +18,27 @@ const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Fu
     
     const tenantId = requireTenantId(req);
     const addons = await addonService.getTenantAddons(tenantId);
-    const addonsData = Array.isArray(addons.data) ? addons.data : [];
-    const hasBusinessAnalytics = addonsData.some(
-      (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'ACTIVE'
-    );
+    
+    // Ensure addons.data is always an array
+    const addonsData = Array.isArray(addons?.data) ? addons.data : [];
+    
+    // Double-check before using .some()
+    if (!Array.isArray(addonsData) || addonsData.length === 0) {
+      return res.status(403).json({ 
+        message: 'Business Analytics & Insight addon is required to access this feature' 
+      });
+    }
+    
+    // Safe .some() call with try-catch
+    let hasBusinessAnalytics = false;
+    try {
+      hasBusinessAnalytics = addonsData.some(
+        (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'ACTIVE'
+      );
+    } catch (error: any) {
+      console.error('Error checking business analytics addon:', error);
+      hasBusinessAnalytics = false;
+    }
     
     if (!hasBusinessAnalytics) {
       return res.status(403).json({ 

@@ -688,14 +688,22 @@ router.beforeEach(async (to, from, next) => {
       const addonsData = response.data?.data || response.data || [];
       const activeAddons = Array.isArray(addonsData) ? addonsData : [];
       
+      // Double-check before using array methods
       if (!Array.isArray(activeAddons) || activeAddons.length === 0) {
         next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
         return;
       }
       
-      const hasAddon = activeAddons.some(
-        (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
-      );
+      // Safe .some() call with try-catch
+      let hasAddon = false;
+      try {
+        hasAddon = activeAddons.some(
+          (addon: any) => addon && addon.addonType === requiredAddon && addon.status === 'active'
+        );
+      } catch (error: any) {
+        console.error('Error checking addon in router guard:', error);
+        hasAddon = false;
+      }
       
       if (!hasAddon) {
         next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
