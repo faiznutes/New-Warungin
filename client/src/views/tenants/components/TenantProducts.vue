@@ -121,6 +121,7 @@ const products = ref<any[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<any>(null);
+const productLimit = ref<any>(null);
 const filters = ref({
   search: '',
 });
@@ -174,6 +175,15 @@ const loadProducts = async () => {
     }
     
     products.value = allProducts;
+    
+    // Load product limit
+    try {
+      const limitRes = await api.get('/addons/check-limit/ADD_PRODUCTS');
+      productLimit.value = limitRes.data;
+    } catch (e) {
+      // Ignore if no addon
+      productLimit.value = null;
+    }
   } catch (err: any) {
     console.error('Error loading products:', err);
     error('Gagal memuat produk', 'Terjadi Kesalahan');

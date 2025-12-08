@@ -455,6 +455,28 @@
           </div>
         </div>
         
+        <!-- Outlet Limit Progress Bar -->
+        <div v-if="outletUsage && outletUsage.limit !== undefined && outletUsage.limit !== -1" class="mb-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="font-semibold text-blue-900">Limit Outlet/Store</p>
+              <p class="text-sm text-blue-700">
+                {{ outletUsage.currentUsage || 0 }} / {{ outletUsage.limit }} outlet
+                <span class="font-semibold" :class="(outletUsage.currentUsage || 0) >= outletUsage.limit ? 'text-red-600' : 'text-green-600'">
+                  ({{ outletUsage.limit - (outletUsage.currentUsage || 0) }} tersedia)
+                </span>
+              </p>
+            </div>
+          </div>
+          <div class="w-full bg-blue-200 rounded-full h-3">
+            <div
+              class="h-3 rounded-full transition-all"
+              :class="(outletUsage.currentUsage || 0) >= outletUsage.limit ? 'bg-red-500' : (outletUsage.currentUsage || 0) >= (outletUsage.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
+              :style="{ width: `${Math.min(100, ((outletUsage.currentUsage || 0) / outletUsage.limit) * 100)}%` }"
+            ></div>
+          </div>
+        </div>
+        
         <div v-if="loadingStores" class="flex items-center justify-center py-8">
           <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
