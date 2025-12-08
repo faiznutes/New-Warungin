@@ -188,7 +188,8 @@
 
     <!-- Super Admin Dashboard (when no tenant selected) -->
     <!-- Priority: Show super admin dashboard FIRST if super admin and no tenant selected -->
-    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId && !loading" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
+    <!-- Remove !loading check to ensure super admin dashboard always shows when no tenant selected -->
+    <div v-else-if="authStore.isSuperAdmin && !authStore.selectedTenantId" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Hero Section with Gradient -->
       <div class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
