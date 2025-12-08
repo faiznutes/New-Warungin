@@ -207,7 +207,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { safeArrayMethod, ensureArray } from '../../utils/array-helpers';
+import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';

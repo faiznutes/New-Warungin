@@ -635,7 +635,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { safeArrayMethod, ensureArray } from '../utils/array-helpers';
+import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap } from '../utils/array-helpers';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import AdminInfoModal from '../components/AdminInfoModal.vue';

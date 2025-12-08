@@ -523,7 +523,7 @@ import { useAuthStore } from '../../stores/auth';
 import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
 import QuickInsightWidget from '../../components/QuickInsightWidget.vue';
-import { safeArrayMethod, ensureArray } from '../../utils/array-helpers';
+import { safeArrayMethod, ensureArray, safeMap, safeSome, safeFilter } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -1111,10 +1111,10 @@ const renderCharts = () => {
     topProductsChart = new Chart(topProductsCtx, {
       type: 'bar',
       data: {
-        labels: Array.isArray(stats.value.charts.topProducts) ? stats.value.charts.topProducts.map((p: any) => p.name) : [],
+        labels: safeMap(stats.value?.charts?.topProducts || [], (p: any) => p?.name || ''),
         datasets: [{
           label: 'Jumlah Terjual',
-          data: Array.isArray(stats.value.charts.topProducts) ? stats.value.charts.topProducts.map((p: any) => p.quantity) : [],
+          data: safeMap(stats.value?.charts?.topProducts || [], (p: any) => p?.quantity || 0),
           backgroundColor: 'rgba(75, 192, 192, 0.6)',
           borderColor: 'rgba(75, 192, 192, 1)',
           borderWidth: 1,
@@ -1137,9 +1137,9 @@ const renderCharts = () => {
     salesByStatusChart = new Chart(salesByStatusCtx, {
       type: 'pie',
       data: {
-        labels: Array.isArray(stats.value.charts.salesByStatus) ? stats.value.charts.salesByStatus.map((s: any) => getStatusLabel(s.status)) : [],
+        labels: safeMap(stats.value?.charts?.salesByStatus || [], (s: any) => getStatusLabel(s?.status || '')),
         datasets: [{
-          data: Array.isArray(stats.value.charts.salesByStatus) ? stats.value.charts.salesByStatus.map((s: any) => s.count) : [],
+          data: safeMap(stats.value?.charts?.salesByStatus || [], (s: any) => s?.count || 0),
           backgroundColor: [
             'rgba(255, 206, 86, 0.6)', // PENDING
             'rgba(54, 162, 235, 0.6)', // PROCESSING

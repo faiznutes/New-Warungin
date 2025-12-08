@@ -1018,6 +1018,7 @@ import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
+import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const route = useRoute();
