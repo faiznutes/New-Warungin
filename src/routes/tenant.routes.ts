@@ -14,27 +14,43 @@ const router = Router();
 
 /**
  * Helper to log route errors with context
+ * Safe wrapper to prevent logging errors from breaking the app
  */
 function logRouteError(error: unknown, context: string, req: any) {
-  const err = error as Error & { 
-    code?: string; 
-    statusCode?: number; 
-    message?: string;
-    name?: string;
-    stack?: string;
-  };
-  
-  logger.error(`Tenant route error [${context}]:`, {
-    message: err.message,
-    name: err.name,
-    code: err.code,
-    statusCode: err.statusCode,
-    stack: err.stack,
-    path: req.url || req.path,
-    method: req.method,
-    userId: (req as AuthRequest).userId,
-    tenantId: (req as AuthRequest).tenantId,
-  });
+  try {
+    const err = error as Error & { 
+      code?: string; 
+      statusCode?: number; 
+      message?: string;
+      name?: string;
+      stack?: string;
+    };
+    
+    // Safely extract error info
+    const errorInfo: any = {
+      message: err.message || 'Unknown error',
+      name: err.name || 'Error',
+    };
+    
+    // Only add optional fields if they exist
+    if (err.code) errorInfo.code = err.code;
+    if (err.statusCode) errorInfo.statusCode = err.statusCode;
+    if (err.stack) errorInfo.stack = err.stack;
+    if (req?.url) errorInfo.path = req.url;
+    if (req?.path) errorInfo.path = errorInfo.path || req.path;
+    if (req?.method) errorInfo.method = req.method;
+    if ((req as AuthRequest)?.userId) errorInfo.userId = (req as AuthRequest).userId;
+    if ((req as AuthRequest)?.tenantId) errorInfo.tenantId = (req as AuthRequest).tenantId;
+    
+    logger.error(`Tenant route error [${context}]:`, errorInfo);
+  } catch (logError) {
+    // Fallback to console if logger fails
+    try {
+      console.error(`Tenant route error [${context}]:`, error);
+    } catch (e) {
+      // Silent fail if even console.error fails
+    }
+  }
 }
 
 // Only SUPER_ADMIN can create tenants

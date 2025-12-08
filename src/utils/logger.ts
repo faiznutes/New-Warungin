@@ -91,7 +91,99 @@ export function logWithContext(
   message: string,
   context: Record<string, any> = {}
 ) {
-  logger[level](message, context);
+  try {
+    logger[level](message, context);
+  } catch (error) {
+    // Fallback to console if logger fails
+    console.error('Logger error:', error);
+    console[level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log'](message, context);
+  }
 }
 
-export default logger;
+// Helper to safely serialize metadata, preventing circular reference errors
+function safeSerialize(meta: any): any {
+  if (!meta) return undefined;
+  
+  try {
+    // Use a Set to track visited objects and prevent circular references
+    const visited = new WeakSet();
+    
+    const replacer = (key: string, value: any): any => {
+      // Skip req/res objects to avoid circular references
+      if (key === 'req' || key === 'res') {
+        return '[Object]';
+      }
+      
+      // Handle objects
+      if (typeof value === 'object' && value !== null) {
+        // Check for circular reference
+        if (visited.has(value)) {
+          return '[Circular]';
+        }
+        visited.add(value);
+      }
+      
+      // Handle functions
+      if (typeof value === 'function') {
+        return '[Function]';
+      }
+      
+      // Handle undefined (JSON.stringify removes undefined, but we want to keep it)
+      if (value === undefined) {
+        return null;
+      }
+      
+      return value;
+    };
+    
+    // Try to stringify and parse to catch any serialization errors
+    const serialized = JSON.stringify(meta, replacer);
+    return JSON.parse(serialized);
+  } catch (error) {
+    // If serialization fails, return a safe representation
+    return { 
+      error: 'Failed to serialize metadata',
+      message: meta?.message || String(meta),
+    };
+  }
+}
+
+// Safe logger wrapper to prevent errors from breaking the app
+// This ensures that even if winston logger fails, we still log to console
+const safeLogger = {
+  info: (message: string, meta?: any) => {
+    try {
+      const safeMeta = safeSerialize(meta);
+      logger.info(message, safeMeta);
+    } catch (error) {
+      // Fallback to console if logger fails
+      console.log(message, meta);
+    }
+  },
+  warn: (message: string, meta?: any) => {
+    try {
+      const safeMeta = safeSerialize(meta);
+      logger.warn(message, safeMeta);
+    } catch (error) {
+      console.warn(message, meta);
+    }
+  },
+  error: (message: string, meta?: any) => {
+    try {
+      const safeMeta = safeSerialize(meta);
+      logger.error(message, safeMeta);
+    } catch (error) {
+      console.error(message, meta);
+    }
+  },
+  debug: (message: string, meta?: any) => {
+    try {
+      const safeMeta = safeSerialize(meta);
+      logger.debug(message, safeMeta);
+    } catch (error) {
+      console.debug(message, meta);
+    }
+  },
+};
+
+export default safeLogger;

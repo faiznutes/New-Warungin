@@ -68,6 +68,7 @@ model Tenant {
   bankReconciliations BankReconciliation[]
   customerFeedbacks   CustomerFeedback[]
   customerReviews     CustomerReview[]
+  backupLogs          BackupLog[]
 
   @@map("tenants")
 }

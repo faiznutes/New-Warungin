@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex items-center space-x-4">
         <button
-          @click="$router.push('/app/tenants')"
+          @click="handleBackToTenants"
           class="p-2 hover:bg-gray-100 rounded-lg transition"
         >
           <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,58 +18,67 @@
       </div>
     </div>
 
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
-    <div v-else-if="!tenant" class="flex flex-col items-center justify-center py-16 px-4">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Error Boundary -->
+    <div v-if="hasError" class="flex flex-col items-center justify-center py-16 px-4">
+      <svg class="w-20 h-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Tenant Tidak Ditemukan</h3>
-      <p class="text-gray-600 text-center max-w-md mb-4">Tenant yang Anda cari tidak ditemukan atau terjadi kesalahan saat memuat data.</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Terjadi Kesalahan</h3>
+      <p class="text-gray-600 text-center max-w-md mb-4">{{ errorMessage || 'Terjadi kesalahan saat memuat halaman. Silakan coba lagi.' }}</p>
       <button
-        @click="loadTenantDetail"
+        @click="retryLoad"
         class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
       >
         Coba Lagi
       </button>
     </div>
 
-    <div v-else class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8">
-      <!-- Tenant Info Card -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Tenant</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-            <p class="text-gray-900">{{ tenant.name }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <p class="text-gray-900">{{ tenant.email }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
-            <p class="text-gray-900">{{ tenant.phone || '-' }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <span
-              class="px-2 py-1 text-xs font-semibold rounded-full"
-              :class="tenant.isActive !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-            >
-              {{ tenant.isActive !== false ? 'Aktif' : 'Tidak Aktif' }}
-            </span>
-          </div>
-        </div>
-      </div>
+    <!-- Loading State -->
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-12"
+    >
+      <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+    </div>
 
-      <!-- Subscription Info Card -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-          <h3 class="text-lg font-semibold text-gray-900">Langganan</h3>
-          <div class="flex flex-wrap gap-2">
+    <!-- Tenant Content -->
+    <div
+      v-else-if="tenant"
+      class="flex flex-col gap-6 px-4 sm:px-6 pb-6 sm:pb-8"
+    >
+          <!-- Tenant Info Card -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Tenant</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                <p class="text-gray-900">{{ tenant.name }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <p class="text-gray-900">{{ tenant.email }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
+                <p class="text-gray-900">{{ tenant.phone || '-' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <span
+                  class="px-2 py-1 text-xs font-semibold rounded-full"
+                  :class="tenant.isActive !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                >
+                  {{ tenant.isActive !== false ? 'Aktif' : 'Tidak Aktif' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subscription Info Card -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+              <h3 class="text-lg font-semibold text-gray-900">Langganan</h3>
+              <div class="flex flex-wrap gap-2">
             <button
               @click="showEditPlanModal = true"
               class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium"
@@ -95,69 +104,69 @@
             >
               Nonaktifkan Langganan
             </button>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Paket</label>
-            <div class="flex items-center gap-2">
-              <span 
-                class="px-2 py-1 text-xs font-semibold rounded-full"
-                :class="getPlanBadgeClass(subscription?.plan || tenant.subscriptionPlan || 'BASIC')"
-              >
-                {{ getPlanName(subscription?.plan || tenant.subscriptionPlan || 'BASIC') }}
-              </span>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Paket</label>
+                <div class="flex items-center gap-2">
+                  <span 
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    :class="getPlanBadgeClass(subscription?.plan || tenant.subscriptionPlan || 'BASIC')"
+                  >
+                    {{ getPlanName(subscription?.plan || tenant.subscriptionPlan || 'BASIC') }}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
+                <p class="text-gray-900">{{ formatDate(tenant.subscriptionStart) }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Berakhir</label>
+                <p class="text-gray-900">{{ formatDate(tenant.subscriptionEnd) }}</p>
+                <!-- Hanya tampilkan warning jika expired dan plan bukan BASIC -->
+                <p v-if="subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-red-600 mt-1 font-medium">⚠️ Langganan telah kedaluwarsa - Paket akan otomatis kembali ke BASIC</p>
+                <p v-if="(subscription as any)?.subscription?.temporaryUpgrade === true && !subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-yellow-600 mt-1 font-medium">
+                  ⚠️ Upgrade sementara - akan kembali ke BASIC setelah expired
+                </p>
+              </div>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Sisa Waktu</span>
+                <span
+                  class="text-lg font-bold"
+                  :class="(subscription?.daysRemaining || 0) <= 0 ? 'text-gray-500' : (subscription?.daysRemaining || 0) <= 7 ? 'text-red-600' : (subscription?.daysRemaining || 0) <= 30 ? 'text-yellow-600' : 'text-green-600'"
+                >
+                  <template v-if="subscription?.isExpired">
+                    <span class="text-gray-500">Kedaluwarsa</span>
+                  </template>
+                  <template v-else>
+                    {{ formatRemainingTime(
+                      subscription?.daysRemaining ?? 0,
+                      subscription?.hoursRemaining ?? 0,
+                      subscription?.minutesRemaining ?? 0,
+                      subscription?.secondsRemaining ?? 0
+                    ) }}
+                  </template>
+                </span>
+              </div>
+              <div v-if="!subscription?.isExpired" class="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  class="h-2 rounded-full transition-all"
+                  :class="(subscription?.daysRemaining || 0) <= 7 ? 'bg-red-500' : (subscription?.daysRemaining || 0) <= 30 ? 'bg-yellow-500' : 'bg-green-500'"
+                  :style="{ width: `${Math.min(100, Math.max(0, ((subscription?.daysRemaining || 0) / 365) * 100))}%` }"
+                ></div>
+              </div>
+              <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-gray-500 mt-2">
+                ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
+              </p>
             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Mulai</label>
-            <p class="text-gray-900">{{ formatDate(tenant.subscriptionStart) }}</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Berakhir</label>
-            <p class="text-gray-900">{{ formatDate(tenant.subscriptionEnd) }}</p>
-            <!-- Hanya tampilkan warning jika expired dan plan bukan BASIC -->
-            <p v-if="subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-red-600 mt-1 font-medium">⚠️ Langganan telah kedaluwarsa - Paket akan otomatis kembali ke BASIC</p>
-            <p v-if="subscription?.subscription?.temporaryUpgrade === true && !subscription?.isExpired && (subscription?.plan || tenant?.subscriptionPlan || 'BASIC') !== 'BASIC'" class="text-xs text-yellow-600 mt-1 font-medium">
-              ⚠️ Upgrade sementara - akan kembali ke BASIC setelah expired
-            </p>
-          </div>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-gray-700">Sisa Waktu</span>
-            <span
-              class="text-lg font-bold"
-              :class="(subscription?.daysRemaining || 0) <= 0 ? 'text-gray-500' : (subscription?.daysRemaining || 0) <= 7 ? 'text-red-600' : (subscription?.daysRemaining || 0) <= 30 ? 'text-yellow-600' : 'text-green-600'"
-            >
-              <template v-if="subscription?.isExpired">
-                <span class="text-gray-500">Kedaluwarsa</span>
-              </template>
-              <template v-else>
-                {{ formatRemainingTime(
-                  subscription?.daysRemaining || 0,
-                  subscription?.hoursRemaining,
-                  subscription?.minutesRemaining,
-                  subscription?.secondsRemaining
-                ) }}
-              </template>
-            </span>
-          </div>
-          <div v-if="!subscription?.isExpired" class="w-full bg-gray-200 rounded-full h-2">
-            <div
-              class="h-2 rounded-full transition-all"
-              :class="(subscription?.daysRemaining || 0) <= 7 ? 'bg-red-500' : (subscription?.daysRemaining || 0) <= 30 ? 'bg-yellow-500' : 'bg-green-500'"
-              :style="{ width: `${Math.min(100, Math.max(0, ((subscription?.daysRemaining || 0) / 365) * 100))}%` }"
-            ></div>
-          </div>
-          <p v-if="subscription?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-gray-500 mt-2">
-            ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
-          </p>
-        </div>
-      </div>
 
-      <!-- Active Addons Card -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+          <!-- Active Addons Card -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">Addon Aktif</h3>
           <button
@@ -235,10 +244,10 @@
             </div>
           </div>
         </div>
-      </div>
+          </div>
 
-      <!-- Reward Points Card -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+          <!-- Reward Points Card -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold text-gray-900">Reward Points</h3>
           <button
@@ -309,17 +318,17 @@
               </span>
             </p>
           </div>
-        </div>
+          </div>
         
-        <div v-if="loadingUsers" class="flex items-center justify-center py-8">
-          <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-        
-        <div v-else-if="tenantUsers.length === 0" class="text-center py-8 text-gray-500">
-          Belum ada pengguna
-        </div>
-        
-        <template v-else>
+          <div v-if="loadingUsers" class="flex items-center justify-center py-8">
+            <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          
+          <div v-else-if="tenantUsers.length === 0" class="text-center py-8 text-gray-500">
+            Belum ada pengguna
+          </div>
+          
+          <template v-else>
           <!-- Bulk Actions Bar -->
           <div v-if="selectedUsers.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -975,7 +984,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -1044,13 +1052,15 @@ const tenant = ref<Tenant | null>(null);
 const subscription = ref<Subscription | null>(null);
 const activeAddons = ref<Addon[]>([]);
 const availableAddons = ref<AvailableAddon[]>([]);
-const loading = ref(false);
+const loading = ref(true); // Start with true to show loading state immediately
 const isReloadingTenant = ref(false); // Flag to prevent multiple reloads
 const currentTime = ref(new Date());
 let countdownInterval: NodeJS.Timeout | null = null;
 let pointsUpdateInterval: NodeJS.Timeout | null = null;
 const extending = ref(false);
 const reducing = ref(false);
+const hasError = ref(false);
+const errorMessage = ref<string>('');
 
 const showExtendSubscriptionModal = ref(false);
 const showReduceSubscriptionModal = ref(false);
@@ -1494,6 +1504,21 @@ const handleUpdateUser = async () => {
   }
 };
 
+const handleBackToTenants = () => {
+  // Clear selectedTenantId when going back to tenants list
+  if (authStore.isSuperAdmin) {
+    authStore.setSelectedTenant(null);
+    localStorage.removeItem('selectedTenantId');
+  }
+  router.push('/app/tenants');
+};
+
+const retryLoad = () => {
+  hasError.value = false;
+  errorMessage.value = '';
+  loadTenantDetail();
+};
+
 const loadTenantDetail = async () => {
   // Check if user is still authenticated before making API calls
   if (!authStore.isAuthenticated) {
@@ -1503,6 +1528,11 @@ const loadTenantDetail = async () => {
 
   const tenantId = route.params.id as string;
   if (!tenantId) {
+    // Clear selectedTenantId when no tenant ID
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+    }
     router.push('/app/tenants');
     return;
   }
@@ -1513,23 +1543,46 @@ const loadTenantDetail = async () => {
     localStorage.setItem('selectedTenantId', tenantId);
   }
 
+  // Reset state
   loading.value = true;
+  hasError.value = false;
+  errorMessage.value = '';
+  tenant.value = null; // Reset tenant to show loading state
+  
   try {
     // Load tenant info
     const tenantRes = await api.get(`/tenants/${tenantId}`);
+    
+    // Check if tenant data is null or undefined
+    if (!tenantRes?.data) {
+      throw new Error('Tenant data is null or undefined');
+    }
+    
     tenant.value = tenantRes.data;
 
     // Load subscription
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
-    const subRes = await api.get('/subscriptions/current');
-    subscription.value = subRes.data;
-    
-    // IMPORTANT: Use isExpired from backend response directly
-    // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
-    // Backend already calculated isExpired correctly after revert
-    if (subRes.data && subRes.data.isExpired !== undefined && subscription.value) {
-      // Use isExpired from backend
-      subscription.value.isExpired = subRes.data.isExpired;
+    let subRes: any = null;
+    try {
+      subRes = await api.get('/subscriptions/current');
+      subscription.value = subRes?.data || null;
+      
+      // IMPORTANT: Use isExpired from backend response directly
+      // Don't recalculate isExpired based on subscriptionEnd to avoid flash to expired
+      // Backend already calculated isExpired correctly after revert
+      if (subRes?.data && subRes.data.isExpired !== undefined && subscription.value) {
+        // Use isExpired from backend
+        subscription.value.isExpired = subRes.data.isExpired;
+      }
+    } catch (subError: any) {
+      console.error('Error loading subscription:', subError);
+      // Set default subscription if error
+      subscription.value = {
+        plan: tenant.value?.subscriptionPlan || 'BASIC',
+        daysRemaining: 0,
+        isExpired: true,
+        status: 'EXPIRED',
+      };
     }
     
     // Set initial plan form value
@@ -1538,7 +1591,7 @@ const loadTenantDetail = async () => {
 
     // Use daysRemaining, hoursRemaining, minutesRemaining, secondsRemaining from backend if available
     // Only calculate if backend didn't provide these values
-    if (subRes.data.daysRemaining === undefined) {
+    if (subRes?.data?.daysRemaining === undefined) {
       // Calculate remaining time for countdown only if backend didn't provide
       // Use tenant.subscriptionEnd as fallback if subscription.subscription.endDate is not available
       const subscriptionEndDate = (subscription.value as any)?.subscription?.endDate || tenant.value?.subscriptionEnd;
@@ -1607,33 +1660,84 @@ const loadTenantDetail = async () => {
       }
     }
 
-    // Load active addons
-    await loadActiveAddons();
-    // Load available addons
-    await loadAvailableAddons();
-    // Load users and stores for this tenant
-    await loadUsers();
-    await loadStores();
-    // Load tenant points (for super admin)
-    await loadTenantPoints();
+    // Load active addons (don't fail if error)
+    try {
+      await loadActiveAddons();
+    } catch (error) {
+      console.error('Error loading active addons:', error);
+    }
+    
+    // Load available addons (don't fail if error)
+    try {
+      await loadAvailableAddons();
+    } catch (error) {
+      console.error('Error loading available addons:', error);
+    }
+    
+    // Load users and stores for this tenant (don't fail if error)
+    try {
+      await loadUsers();
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+    
+    try {
+      await loadStores();
+    } catch (error) {
+      console.error('Error loading stores:', error);
+    }
+    
+    // Load tenant points (for super admin) (don't fail if error)
+    try {
+      await loadTenantPoints();
+    } catch (error) {
+      console.error('Error loading tenant points:', error);
+    }
   } catch (error: any) {
+    console.error('Error in onMounted:', error);
+    
     // If 401 Unauthorized, redirect to login
-    if (error.response?.status === 401) {
+    if (error?.response?.status === 401) {
       authStore.clearAuth();
       router.push('/login');
       return;
     }
-    console.error('Error loading tenant detail:', error);
-    // Only show error if it's not a navigation error
+    
+    // Clear selectedTenantId on error to prevent dashboard showing wrong view
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+    }
+    
+    // Set error state for error boundary
+    hasError.value = true;
+    errorMessage.value = error?.response?.data?.message || error?.message || 'Terjadi kesalahan saat memuat halaman';
+    
+    // Ensure tenant is null to show error state
+    tenant.value = null;
+    loading.value = false;
+    
+    // Only show error notification if it's not a navigation error
     if (error.response?.status !== 401 && error.response?.status !== 404) {
       await showError(error.response?.data?.message || 'Gagal memuat detail tenant');
     }
     // Don't redirect on error - let user see the error state
     // Only redirect on 404 (not found)
     if (error.response?.status === 404) {
+      errorMessage.value = 'Tenant tidak ditemukan';
       await showError('Tenant tidak ditemukan');
+      // Clear selectedTenantId before redirect
+      if (authStore.isSuperAdmin) {
+        authStore.setSelectedTenant(null);
+        localStorage.removeItem('selectedTenantId');
+      }
       // Small delay before redirect to show error message
       setTimeout(() => {
+        // Clear selectedTenantId before redirect
+        if (authStore.isSuperAdmin) {
+          authStore.setSelectedTenant(null);
+          localStorage.removeItem('selectedTenantId');
+        }
         router.push('/app/tenants');
       }, 1500);
     }
@@ -1918,20 +2022,42 @@ const handleDeactivateSubscription = async () => {
 
 // Watch for route changes to update selectedTenantId
 // Watch for route changes to update selectedTenantId and reload data
+// Watch for route param changes (but not on initial mount to avoid double loading)
+let isInitialMount = true;
 watch(() => route.params.id, (newTenantId, oldTenantId) => {
+  // Skip on initial mount - onMounted will handle it
+  if (isInitialMount) {
+    isInitialMount = false;
+    return;
+  }
+  
   if (newTenantId) {
     if (authStore.isSuperAdmin) {
       authStore.setSelectedTenant(newTenantId as string);
       localStorage.setItem('selectedTenantId', newTenantId as string);
     }
-    // Reload tenant detail when route param changes (but not on initial mount)
-    if (authStore.isAuthenticated && oldTenantId !== undefined && newTenantId !== oldTenantId) {
-      // Reset tenant to null to show loading state
+    // Reload tenant detail when route param changes
+    if (authStore.isAuthenticated && newTenantId !== oldTenantId) {
+      // Reset state to show loading state
       tenant.value = null;
+      subscription.value = null;
+      activeAddons.value = [];
+      tenantUsers.value = [];
+      tenantStores.value = [];
+      hasError.value = false;
+      errorMessage.value = '';
+      loading.value = true;
       loadTenantDetail();
     }
+  } else {
+    // If no tenant ID, clear state and redirect
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+    }
+    router.push('/app/tenants');
   }
-}, { immediate: true });
+});
 
 // Countdown real-time
 const startCountdown = () => {
@@ -2010,20 +2136,56 @@ const stopCountdown = () => {
   }
 };
 
-onMounted(() => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Only load if authenticated
-  if (authStore.isAuthenticated) {
-    loadTenantDetail();
+onMounted(async () => {
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Auto-refresh removed per user request
+    // Check authentication first
+    if (!authStore.isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    
+    // Check if tenant ID exists in route
+    const tenantId = route.params.id as string;
+    if (!tenantId) {
+      if (authStore.isSuperAdmin) {
+        authStore.setSelectedTenant(null);
+        localStorage.removeItem('selectedTenantId');
+      }
+      router.push('/app/tenants');
+      return;
+    }
+    
+    // Set selectedTenantId for Super Admin
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(tenantId);
+      localStorage.setItem('selectedTenantId', tenantId);
+    }
+    
+    // Initialize state - set loading to true first
+    hasError.value = false;
+    errorMessage.value = '';
+    tenant.value = null;
+    loading.value = true;
+    
+    // Load tenant detail
+    await loadTenantDetail();
     
     // Load points once for Super Admin (no auto-refresh)
-    if (authStore.isSuperAdmin) {
-      loadTenantPoints();
+    if (authStore.isSuperAdmin && tenant.value) {
+      try {
+        await loadTenantPoints();
+      } catch (error) {
+        console.error('Error loading tenant points:', error);
+        // Don't fail the whole page if points loading fails
+      }
     }
-  } else {
-    router.push('/login');
+  } catch (error: any) {
+    console.error('Error in onMounted:', error);
+    hasError.value = true;
+    errorMessage.value = error?.message || 'Terjadi kesalahan saat memuat halaman';
+    loading.value = false;
   }
 });
 

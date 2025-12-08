@@ -41,8 +41,25 @@
 
     <!-- Products Tab Content -->
     <div v-if="activeTab === 'products'" class="flex flex-col h-full">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
+    <!-- Error Boundary -->
+    <div v-if="hasError" class="flex flex-col items-center justify-center py-16 px-4">
+      <svg class="w-20 h-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">Terjadi Kesalahan</h3>
+      <p class="text-gray-600 text-center max-w-md mb-4">{{ errorMessage || 'Terjadi kesalahan saat memuat halaman. Silakan coba lagi.' }}</p>
+      <button
+        @click="retryLoad"
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+      >
+        Coba Lagi
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="flex flex-col h-full">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Produk</h2>
         <p class="text-sm sm:text-base text-gray-600">Kelola produk dan stok</p>
@@ -203,31 +220,31 @@
       </div>
     </div>
 
-    <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat produk</p>
-    </div>
-
-    <!-- Products Grid -->
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat produk...</div>
+      <!-- Tenant Selection Message -->
+      <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300 mx-4 sm:mx-6">
+        <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
+        <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat produk</p>
       </div>
-    </div>
 
-    <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-      <p class="text-gray-500">Belum ada produk</p>
-    </div>
+      <!-- Products Grid -->
+      <div v-else-if="loading" class="flex items-center justify-center py-12">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div class="text-gray-600 font-medium">Memuat produk...</div>
+        </div>
+      </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-2 sm:px-0">
+      <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
+        <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        <p class="text-gray-500">Belum ada produk</p>
+      </div>
+
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-2 sm:px-0">
       <div
         v-for="product in products"
         :key="product.id"
@@ -334,7 +351,9 @@
         Selanjutnya
       </button>
     </div>
-  </div>
+      </div>
+    </div>
+    </div>
 
   <!-- Product Modal -->
   <ProductModal
@@ -347,7 +366,6 @@
     <!-- Adjustments Tab Content (Admin Tenant Only) -->
     <div v-if="activeTab === 'adjustments' && authStore.user?.role === 'ADMIN_TENANT'" class="flex-1 overflow-auto px-4 sm:px-6 py-6">
       <ProductAdjustments />
-    </div>
     </div>
 </template>
 
@@ -393,6 +411,14 @@ const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<Product | null>(null);
 const activeTab = ref<'products' | 'adjustments'>('products');
+const hasError = ref(false);
+const errorMessage = ref<string>('');
+
+const retryLoad = () => {
+  hasError.value = false;
+  errorMessage.value = '';
+  loadProducts(1);
+};
 
 // Watch activeTab to prevent Super Admin from accessing adjustments tab
 watch(activeTab, (newTab) => {
@@ -428,6 +454,8 @@ const loadProducts = async (page = 1) => {
   }
   
   loading.value = true;
+  hasError.value = false;
+  errorMessage.value = '';
   try {
     const params: any = {
       page,
@@ -456,7 +484,27 @@ const loadProducts = async (page = 1) => {
     }
   } catch (error: any) {
     console.error('Error loading products:', error);
-    await showError(error.response?.data?.message || 'Gagal memuat produk');
+    
+    // Set error state for error boundary
+    hasError.value = true;
+    errorMessage.value = error?.response?.data?.message || error?.message || 'Gagal memuat produk';
+    
+    // If 401 Unauthorized, redirect to login
+    if (error?.response?.status === 401) {
+      authStore.clearAuth();
+      router.push('/login');
+      return;
+    }
+    
+    // Clear selectedTenantId on error for Super Admin
+    if (authStore.isSuperAdmin) {
+      authStore.setSelectedTenant(null);
+      localStorage.removeItem('selectedTenantId');
+    }
+    
+    if (error.response?.status !== 429 && error.response?.status !== 401) { // Don't show error for rate limiting or auth
+      await showError(error.response?.data?.message || 'Gagal memuat produk');
+    }
   } finally {
     loading.value = false;
   }
@@ -836,11 +884,17 @@ watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
   }
 }, { immediate: false });
 
-onMounted(() => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Always load products on mount (if tenant is selected)
-  if (!needsTenantSelection.value) {
-    loadProducts(1);
+onMounted(async () => {
+  try {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Always load products on mount (if tenant is selected)
+    if (!needsTenantSelection.value) {
+      await loadProducts(1);
+    }
+  } catch (error: any) {
+    console.error('Error in onMounted:', error);
+    hasError.value = true;
+    errorMessage.value = error?.message || 'Terjadi kesalahan saat memuat halaman';
   }
 });
 </script>

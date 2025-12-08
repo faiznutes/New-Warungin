@@ -1537,7 +1537,16 @@ watch(() => authStore.currentTenantId, () => {
 });
 
 // Also watch for selectedTenantId changes (for Super Admin)
-watch(() => authStore.selectedTenantId, () => {
+watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
+  // Ensure state consistency - sync with localStorage
+  if (authStore.isSuperAdmin) {
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    if (newTenantId !== storedTenantId) {
+      // Sync store with localStorage
+      authStore.setSelectedTenant(storedTenantId);
+    }
+  }
+  
   if (authStore.isAuthenticated && isAdminOrSupervisor.value) {
     currentSubscription.value = null;
     subscriptionLoading.value = false;
@@ -1547,6 +1556,18 @@ watch(() => authStore.selectedTenantId, () => {
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Reset state to ensure consistency
+  // For Super Admin, ensure selectedTenantId is properly initialized from localStorage
+  if (authStore.isSuperAdmin) {
+    const storedTenantId = localStorage.getItem('selectedTenantId');
+    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+      authStore.setSelectedTenant(storedTenantId);
+    } else if (!storedTenantId && authStore.selectedTenantId) {
+      // Clear if localStorage doesn't have it but store does (inconsistency)
+      authStore.setSelectedTenant(null);
+    }
+  }
+  
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
     loadStats();

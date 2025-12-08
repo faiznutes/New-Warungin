@@ -301,7 +301,7 @@ export class ReportService {
   private async exportToExcel(reportData: any, metadata?: any): Promise<Buffer> {
     try {
       // Try to use exceljs if available
-      const ExcelJS = await import('exceljs').catch(() => null);
+      const ExcelJS = await import('exceljs').catch(() => null) as any;
       
       if (!ExcelJS) {
         // Fallback: return CSV as Excel-compatible format
