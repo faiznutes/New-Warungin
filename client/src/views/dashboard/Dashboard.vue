@@ -1609,13 +1609,16 @@ watch(() => authStore.selectedTenantId, (newTenantId, oldTenantId) => {
   }
 });
 
-// Watch for route changes to clear selectedTenantId when super admin navigates to dashboard from tenant list
+// Watch for route changes to clear selectedTenantId when super admin navigates to dashboard
 watch(() => route.path, (newPath, oldPath) => {
   // When super admin navigates to dashboard, clear selectedTenantId to show super admin dashboard
-  // But only if coming from tenant list page, not from tenant detail
+  // Clear if coming from tenant list OR tenant detail page
   if (authStore.isSuperAdmin && newPath === '/app/dashboard') {
-    // Check if coming from tenant list (exact match) - clear selection
-    if (oldPath === '/app/tenants') {
+    const isFromTenantList = oldPath === '/app/tenants';
+    const isFromTenantDetail = oldPath?.match(/^\/app\/tenants\/[^/]+$/);
+    
+    // Clear selection if coming from tenant list or tenant detail
+    if (isFromTenantList || isFromTenantDetail) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
       // Reload stats to show super admin dashboard
@@ -1631,17 +1634,17 @@ onMounted(() => {
   // Reset state to ensure consistency
   // For Super Admin, ensure selectedTenantId is properly initialized from localStorage
   if (authStore.isSuperAdmin) {
-    // Check if we're coming from tenant list (not detail) - clear selection
+    // Check if we're coming from tenant list or tenant detail - clear selection
     const previousRoute = sessionStorage.getItem('previousRoute');
     const isFromTenantList = previousRoute === '/app/tenants';
-    const isFromTenantDetail = previousRoute?.match(/\/app\/tenants\/[^/]+$/);
+    const isFromTenantDetail = previousRoute?.match(/^\/app\/tenants\/[^/]+$/);
     
-    // If coming from tenant list (not detail), clear selection to show super admin dashboard
-    if (isFromTenantList && !isFromTenantDetail) {
+    // If coming from tenant list or tenant detail, clear selection to show super admin dashboard
+    if (isFromTenantList || isFromTenantDetail) {
       authStore.setSelectedTenant(null);
       localStorage.removeItem('selectedTenantId');
     } else {
-      // Otherwise, sync with localStorage (for tenant detail or direct navigation)
+      // Otherwise, sync with localStorage (for direct navigation or other pages)
       const storedTenantId = localStorage.getItem('selectedTenantId');
       if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
         authStore.setSelectedTenant(storedTenantId);
