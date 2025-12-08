@@ -124,8 +124,14 @@ router.get(
           orderBy: { generatedAt: 'desc' },
           skip,
           take: limitNum,
+        }).catch((error) => {
+          logger.error('Error fetching backup logs:', { error: error.message, stack: error.stack });
+          throw error;
         }),
-        prisma.backupLog.count({ where }),
+        prisma.backupLog.count({ where }).catch((error) => {
+          logger.error('Error counting backup logs:', { error: error.message, stack: error.stack });
+          throw error;
+        }),
       ]);
 
       res.json({

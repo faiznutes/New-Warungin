@@ -219,17 +219,42 @@ const handleLogin = async () => {
       localStorage.removeItem('rememberedEmail');
     }
     
-    // Check if user needs to select a store (supervisor with multiple stores or admin with multiple stores)
+    // Check if user needs to select a store
     const user = authStore.user;
     const needsStoreSelection = 
       user && (
         (user.role === 'SUPERVISOR' && ((user as any).permissions?.allowedStoreIds?.length || 0) > 1) ||
-        (user.role === 'ADMIN_TENANT' && !authStore.selectedStoreId)
+        (user.role === 'ADMIN_TENANT' && !authStore.selectedStoreId) ||
+        (['CASHIER', 'KITCHEN'].includes(user.role) && !authStore.selectedStoreId)
       );
     
     if (needsStoreSelection) {
-      // Show store selector modal
-      showStoreSelector.value = true;
+      // Check if stores are available
+      try {
+        const outletsResponse = await api.get('/outlets');
+        const outlets = outletsResponse.data?.data || [];
+        const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
+        
+        if (activeOutlets.length === 0) {
+          // No stores available
+          if (user.role === 'ADMIN_TENANT') {
+            // Show store selector with "Tidak ada toko tersedia" message
+            showStoreSelector.value = true;
+          } else {
+            // For cashier/spv/kitchen, show warning
+            await showWarning('Anda belum memiliki toko yang ditugaskan. Silakan hubungi owner untuk diberikan akses toko.');
+            // Still redirect to dashboard, but they'll see the warning
+            router.push('/app');
+          }
+        } else {
+          // Show store selector modal
+          showStoreSelector.value = true;
+        }
+      } catch (error) {
+        console.error('Error checking stores:', error);
+        // Show store selector anyway
+        showStoreSelector.value = true;
+      }
     } else {
       // Redirect to intended destination or appropriate dashboard based on role
       const redirect = route.query.redirect as string;

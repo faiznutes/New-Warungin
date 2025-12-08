@@ -219,49 +219,85 @@ export class ArchiveService {
     reportsCount: number;
     totalSize: number;
   }> {
-    const archiveDir = path.join(this.defaultConfig.archivePath, tenantId);
-    
-    if (!fs.existsSync(archiveDir)) {
+    try {
+      const archiveDir = path.join(this.defaultConfig.archivePath, tenantId);
+      
+      if (!fs.existsSync(archiveDir)) {
+        return { ordersCount: 0, transactionsCount: 0, reportsCount: 0, totalSize: 0 };
+      }
+
+      let ordersCount = 0;
+      let transactionsCount = 0;
+      let reportsCount = 0;
+      let totalSize = 0;
+
+      const ordersDir = path.join(archiveDir, 'orders');
+      const transactionsDir = path.join(archiveDir, 'transactions');
+      const reportsDir = path.join(archiveDir, 'reports');
+
+      try {
+        if (fs.existsSync(ordersDir)) {
+          const files = fs.readdirSync(ordersDir);
+          ordersCount = files.length;
+          files.forEach(file => {
+            try {
+              const filePath = path.join(ordersDir, file);
+              if (fs.existsSync(filePath)) {
+                totalSize += fs.statSync(filePath).size;
+              }
+            } catch (error) {
+              logger.warn('Error reading archive file:', { file, error });
+            }
+          });
+        }
+      } catch (error) {
+        logger.error('Error reading orders archive:', { error });
+      }
+
+      try {
+        if (fs.existsSync(transactionsDir)) {
+          const files = fs.readdirSync(transactionsDir);
+          transactionsCount = files.length;
+          files.forEach(file => {
+            try {
+              const filePath = path.join(transactionsDir, file);
+              if (fs.existsSync(filePath)) {
+                totalSize += fs.statSync(filePath).size;
+              }
+            } catch (error) {
+              logger.warn('Error reading archive file:', { file, error });
+            }
+          });
+        }
+      } catch (error) {
+        logger.error('Error reading transactions archive:', { error });
+      }
+
+      try {
+        if (fs.existsSync(reportsDir)) {
+          const files = fs.readdirSync(reportsDir);
+          reportsCount = files.length;
+          files.forEach(file => {
+            try {
+              const filePath = path.join(reportsDir, file);
+              if (fs.existsSync(filePath)) {
+                totalSize += fs.statSync(filePath).size;
+              }
+            } catch (error) {
+              logger.warn('Error reading archive file:', { file, error });
+            }
+          });
+        }
+      } catch (error) {
+        logger.error('Error reading reports archive:', { error });
+      }
+
+      return { ordersCount, transactionsCount, reportsCount, totalSize };
+    } catch (error: any) {
+      logger.error('Error getting archive stats:', { tenantId, error: error.message, stack: error.stack });
+      // Return default values on error
       return { ordersCount: 0, transactionsCount: 0, reportsCount: 0, totalSize: 0 };
     }
-
-    let ordersCount = 0;
-    let transactionsCount = 0;
-    let reportsCount = 0;
-    let totalSize = 0;
-
-    const ordersDir = path.join(archiveDir, 'orders');
-    const transactionsDir = path.join(archiveDir, 'transactions');
-    const reportsDir = path.join(archiveDir, 'reports');
-
-    if (fs.existsSync(ordersDir)) {
-      const files = fs.readdirSync(ordersDir);
-      ordersCount = files.length;
-      files.forEach(file => {
-        const filePath = path.join(ordersDir, file);
-        totalSize += fs.statSync(filePath).size;
-      });
-    }
-
-    if (fs.existsSync(transactionsDir)) {
-      const files = fs.readdirSync(transactionsDir);
-      transactionsCount = files.length;
-      files.forEach(file => {
-        const filePath = path.join(transactionsDir, file);
-        totalSize += fs.statSync(filePath).size;
-      });
-    }
-
-    if (fs.existsSync(reportsDir)) {
-      const files = fs.readdirSync(reportsDir);
-      reportsCount = files.length;
-      files.forEach(file => {
-        const filePath = path.join(reportsDir, file);
-        totalSize += fs.statSync(filePath).size;
-      });
-    }
-
-    return { ordersCount, transactionsCount, reportsCount, totalSize };
   }
 }
 

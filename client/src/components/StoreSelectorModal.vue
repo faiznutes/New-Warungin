@@ -16,6 +16,9 @@
         <p class="text-gray-600 text-sm">
           {{ isSupervisor ? 'Pilih toko yang ingin Anda kelola' : 'Pilih toko untuk melanjutkan' }}
         </p>
+        <p v-if="stores.length === 0" class="text-red-600 text-sm mt-2 font-medium">
+          Tidak ada toko tersedia
+        </p>
       </div>
 
       <!-- Store List -->

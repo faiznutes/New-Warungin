@@ -126,10 +126,9 @@ class FinanceService {
     // Calculate COGS (Cost of Goods Sold) - from product cost
     const cogs = orders.reduce((sum, order) => {
       return sum + order.items.reduce((itemSum, item) => {
+        // Get cost from database, default to 0 if not available
         const productCost = item.product.cost ? parseFloat(item.product.cost.toString()) : 0;
-        // If no cost, estimate as 60% of selling price
-        const estimatedCost = productCost > 0 ? productCost : (parseFloat(item.product.price.toString()) * 0.6);
-        return itemSum + (estimatedCost * item.quantity);
+        return itemSum + (productCost * item.quantity);
       }, 0);
     }, 0);
 

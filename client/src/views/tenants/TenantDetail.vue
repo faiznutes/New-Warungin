@@ -181,14 +181,22 @@
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
-            v-for="addon in activeAddons"
+            v-for="addon in activeAddons.filter(a => {
+              // Filter: only show addons that are actually active (status === 'active' and not expired)
+              if (a.status !== 'active') return false;
+              if (a.expiresAt) {
+                const expiresAt = new Date(a.expiresAt);
+                return expiresAt > new Date();
+              }
+              return true;
+            })"
             :key="addon.id"
             class="border-2 border-gray-200 rounded-lg p-4 hover:border-green-300 transition"
           >
             <div class="flex items-start justify-between mb-3">
               <div>
                 <h4 class="font-semibold text-gray-900">{{ addon.addonName }}</h4>
-                <p class="text-sm text-gray-600">{{ getAddonDescription(addon) }}</p>
+                <p class="text-sm text-gray-600">{{ getAddonDescription(addon) || 'Tidak ada deskripsi' }}</p>
               </div>
               <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
             </div>
@@ -210,7 +218,9 @@
             <div class="mb-3">
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Berakhir:</span>
-                <span class="font-semibold text-gray-900">{{ formatDate(addon.expiresAt) }}</span>
+                <span class="font-semibold text-gray-900">
+                  {{ addon.expiresAt ? formatDate(addon.expiresAt) : '-' }}
+                </span>
               </div>
               <div class="flex items-center justify-between text-sm mt-1">
                 <span class="text-gray-600">Sisa:</span>
@@ -236,7 +246,7 @@
                 Perpanjang
               </button>
               <button
-                @click="unsubscribeAddon(addon.addonId)"
+                @click="unsubscribeAddon(addon)"
                 class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
               >
                 Nonaktifkan
@@ -1111,6 +1121,8 @@ const getAddonDaysRemaining = (addon: Addon) => {
   if (!addon.expiresAt) return 0;
   const now = new Date();
   const expiresAt = new Date(addon.expiresAt);
+  // Check if addon is expired
+  if (expiresAt <= now) return 0;
   const diffTime = expiresAt.getTime() - now.getTime();
   return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 };
@@ -1120,11 +1132,14 @@ const isAddonActive = (addonId: string) => {
   const now = new Date();
   return activeAddons.value.some(a => {
     if (a.addonId !== addonId) return false;
+    // Check if addon is active (status === 'active' and not expired)
+    if (a.status !== 'active') return false;
     // Check if expired
     if (a.expiresAt) {
       const expiresAt = new Date(a.expiresAt);
       return expiresAt > now;
     }
+    // If no expiry date, consider it active if status is active
     return true;
   });
 };
@@ -1184,7 +1199,16 @@ const loadActiveAddons = async () => {
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const response = await api.get('/addons');
-    activeAddons.value = response.data || [];
+    // Filter to only show active addons (status === 'active' and not expired)
+    const now = new Date();
+    activeAddons.value = (response.data || []).filter((addon: any) => {
+      if (addon.status !== 'active') return false;
+      if (addon.expiresAt) {
+        const expiresAt = new Date(addon.expiresAt);
+        return expiresAt > now;
+      }
+      return true;
+    });
   } catch (error: any) {
     console.error('Error loading active addons:', error);
     // Don't show error for addons, just set empty array
@@ -1858,6 +1882,12 @@ const handleExtendAddon = async () => {
 
   extending.value = true;
   try {
+    // Ensure we have the correct addon data from database
+    if (!selectedAddon.value.addonId) {
+      await showError('Data addon tidak valid');
+      return;
+    }
+    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     await api.post('/addons/extend', {
       addonId: selectedAddon.value.addonId,
@@ -1993,13 +2023,14 @@ const handleSubscribeAddon = async () => {
   }
 };
 
-const unsubscribeAddon = async (addonId: string) => {
+const unsubscribeAddon = async (addon: Addon) => {
   const confirmed = await showConfirm('Apakah Anda yakin ingin menonaktifkan addon ini?');
   if (!confirmed) return;
 
   try {
+    // Use addon.id (database ID) instead of addonId for unsubscribe
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
-    await api.post(`/addons/unsubscribe/${addonId}`);
+    await api.post(`/addons/unsubscribe/${addon.addonId}`);
     await showSuccess('Addon berhasil dinonaktifkan');
     // Reload addons to show updated list
     await loadActiveAddons();

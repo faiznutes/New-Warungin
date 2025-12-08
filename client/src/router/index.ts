@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import MarketingLayout from '../layouts/MarketingLayout.vue';
+import api from '../api';
 
 // Helper function to get layout based on role
 const getLayoutForRole = (role: string | undefined) => {
@@ -570,6 +571,46 @@ router.beforeEach(async (to, from, next) => {
   if (hasToken && authStore.user && !authStore.isSuperAdmin && to.name === 'super-dashboard') {
     next({ name: 'dashboard' });
     return;
+  }
+  
+  // Check store requirement for CASHIER, SUPERVISOR, KITCHEN
+  if (hasToken && authStore.user && authStore.isAuthenticated) {
+    const userRole = authStore.user.role;
+    const requiresStore = ['CASHIER', 'SUPERVISOR', 'KITCHEN'].includes(userRole);
+    const hasStore = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    
+    if (requiresStore && !hasStore && to.name !== 'login' && to.name !== 'unauthorized') {
+      // Check if user has any stores available
+      try {
+        const outletsResponse = await api.get('/outlets');
+        const outlets = outletsResponse.data?.data || [];
+        const activeOutlets = outlets.filter((o: any) => o.isActive !== false);
+        
+        if (activeOutlets.length === 0) {
+          // No stores available - show warning
+          if (userRole === 'ADMIN_TENANT') {
+            // Admin tenant without stores - already handled by store selector
+            next();
+            return;
+          } else {
+            // Cashier/SPV/Kitchen without stores - show warning
+            const warning = 'Anda belum memiliki toko yang ditugaskan. Silakan hubungi owner untuk diberikan akses toko.';
+            next({ 
+              name: 'unauthorized', 
+              query: { message: warning } 
+            });
+            return;
+          }
+        } else {
+          // Has stores but not selected - redirect to login to show store selector
+          next({ name: 'login', query: { redirect: to.fullPath } });
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking stores:', error);
+        // Continue if error checking stores
+      }
+    }
   }
   
   // Role-based access control

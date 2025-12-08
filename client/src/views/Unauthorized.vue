@@ -22,7 +22,9 @@
         </router-link>
       </div>
       <div v-else class="mb-8">
-        <p class="text-lg text-gray-600 mb-8">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+        <p class="text-lg text-gray-600 mb-8">
+          {{ route.query.message || 'Anda tidak memiliki izin untuk mengakses halaman ini.' }}
+        </p>
         <router-link
           to="/app"
           class="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"

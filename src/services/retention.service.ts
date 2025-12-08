@@ -204,80 +204,111 @@ export class RetentionService {
     contactSubmissionsToDelete: number;
     demoRequestsToDelete: number;
   }> {
-    const finalPolicy = { ...this.defaultPolicy, ...policy };
+    try {
+      const finalPolicy = { ...this.defaultPolicy, ...policy };
 
-    const cutoffOrders = new Date();
-    cutoffOrders.setDate(cutoffOrders.getDate() - finalPolicy.orders);
+      const cutoffOrders = new Date();
+      cutoffOrders.setDate(cutoffOrders.getDate() - finalPolicy.orders);
 
-    const cutoffTransactions = new Date();
-    cutoffTransactions.setDate(cutoffTransactions.getDate() - finalPolicy.transactions);
+      const cutoffTransactions = new Date();
+      cutoffTransactions.setDate(cutoffTransactions.getDate() - finalPolicy.transactions);
 
-    const cutoffReports = new Date();
-    cutoffReports.setDate(cutoffReports.getDate() - finalPolicy.reports);
+      const cutoffReports = new Date();
+      cutoffReports.setDate(cutoffReports.getDate() - finalPolicy.reports);
 
-    const cutoffAuditLogs = new Date();
-    cutoffAuditLogs.setDate(cutoffAuditLogs.getDate() - finalPolicy.auditLogs);
+      const cutoffAuditLogs = new Date();
+      cutoffAuditLogs.setDate(cutoffAuditLogs.getDate() - finalPolicy.auditLogs);
 
-    const cutoffContactSubmissions = new Date();
-    cutoffContactSubmissions.setDate(cutoffContactSubmissions.getDate() - finalPolicy.contactSubmissions);
+      const cutoffContactSubmissions = new Date();
+      cutoffContactSubmissions.setDate(cutoffContactSubmissions.getDate() - finalPolicy.contactSubmissions);
 
-    const cutoffDemoRequests = new Date();
-    cutoffDemoRequests.setDate(cutoffDemoRequests.getDate() - finalPolicy.demoRequests);
+      const cutoffDemoRequests = new Date();
+      cutoffDemoRequests.setDate(cutoffDemoRequests.getDate() - finalPolicy.demoRequests);
 
-    const [
-      ordersToDelete,
-      transactionsToDelete,
-      reportsToDelete,
-      auditLogsToDelete,
-      contactSubmissionsToDelete,
-      demoRequestsToDelete,
-    ] = await Promise.all([
-      prisma.order.count({
-        where: {
-          tenantId,
-          createdAt: { lt: cutoffOrders },
-          status: { in: ['COMPLETED', 'CANCELLED'] },
-        },
-      }),
-      prisma.transaction.count({
-        where: {
-          tenantId,
-          createdAt: { lt: cutoffTransactions },
-          status: { in: ['COMPLETED', 'FAILED'] },
-        },
-      }),
-      prisma.report.count({
-        where: {
-          tenantId,
-          createdAt: { lt: cutoffReports },
-        },
-      }),
-      prisma.auditLog.count({
-        where: {
-          tenantId,
-          createdAt: { lt: cutoffAuditLogs },
-        },
-      }),
-      prisma.contactSubmission.count({
-        where: {
-          createdAt: { lt: cutoffContactSubmissions },
-        },
-      }),
-      prisma.demoRequest.count({
-        where: {
-          createdAt: { lt: cutoffDemoRequests },
-        },
-      }),
-    ]);
+      const [
+        ordersToDelete,
+        transactionsToDelete,
+        reportsToDelete,
+        auditLogsToDelete,
+        contactSubmissionsToDelete,
+        demoRequestsToDelete,
+      ] = await Promise.all([
+        prisma.order.count({
+          where: {
+            tenantId,
+            createdAt: { lt: cutoffOrders },
+            status: { in: ['COMPLETED', 'CANCELLED'] },
+          },
+        }).catch((error) => {
+          logger.error('Error counting orders for retention:', { tenantId, error });
+          return 0;
+        }),
+        prisma.transaction.count({
+          where: {
+            tenantId,
+            createdAt: { lt: cutoffTransactions },
+            status: { in: ['COMPLETED', 'FAILED'] },
+          },
+        }).catch((error) => {
+          logger.error('Error counting transactions for retention:', { tenantId, error });
+          return 0;
+        }),
+        prisma.report.count({
+          where: {
+            tenantId,
+            createdAt: { lt: cutoffReports },
+          },
+        }).catch((error) => {
+          logger.error('Error counting reports for retention:', { tenantId, error });
+          return 0;
+        }),
+        prisma.auditLog.count({
+          where: {
+            tenantId,
+            createdAt: { lt: cutoffAuditLogs },
+          },
+        }).catch((error) => {
+          logger.error('Error counting audit logs for retention:', { tenantId, error });
+          return 0;
+        }),
+        prisma.contactSubmission.count({
+          where: {
+            createdAt: { lt: cutoffContactSubmissions },
+          },
+        }).catch((error) => {
+          logger.error('Error counting contact submissions for retention:', { error });
+          return 0;
+        }),
+        prisma.demoRequest.count({
+          where: {
+            createdAt: { lt: cutoffDemoRequests },
+          },
+        }).catch((error) => {
+          logger.error('Error counting demo requests for retention:', { error });
+          return 0;
+        }),
+      ]);
 
-    return {
-      ordersToDelete,
-      transactionsToDelete,
-      reportsToDelete,
-      auditLogsToDelete,
-      contactSubmissionsToDelete,
-      demoRequestsToDelete,
-    };
+      return {
+        ordersToDelete,
+        transactionsToDelete,
+        reportsToDelete,
+        auditLogsToDelete,
+        contactSubmissionsToDelete,
+        demoRequestsToDelete,
+      };
+    } catch (error: any) {
+      logger.error('Error getting retention stats:', { tenantId, error: error.message, stack: error.stack });
+      // Return default values on error
+      return {
+        ordersToDelete: 0,
+        transactionsToDelete: 0,
+        reportsToDelete: 0,
+        auditLogsToDelete: 0,
+        contactSubmissionsToDelete: 0,
+        demoRequestsToDelete: 0,
+      };
+    }
   }
 }
 
