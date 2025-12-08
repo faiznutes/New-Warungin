@@ -248,9 +248,26 @@ export async function getTenantPlanFeatures(tenantId: string) {
   const plan = (tenant.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'ENTERPRISE';
   const baseLimits = PLAN_BASE_LIMITS[plan] || PLAN_BASE_LIMITS.BASIC;
 
-  // Get active addons
-  const activeAddonsResult = await addonService.getTenantAddons(tenantId);
-  const activeAddons = activeAddonsResult.data;
+  // Get active addons - get all pages to ensure all addons are included
+  // For limit calculation, we need ALL active addons, not just first page
+  let allActiveAddons: any[] = [];
+  let page = 1;
+  const pageLimit = 100; // Get more per page
+  let hasMore = true;
+  
+  while (hasMore) {
+    const activeAddonsResult = await addonService.getTenantAddons(tenantId, page, pageLimit);
+    const pageAddons = activeAddonsResult.data || [];
+    allActiveAddons = [...allActiveAddons, ...pageAddons];
+    
+    // Check if there are more pages
+    const total = activeAddonsResult.pagination?.total || 0;
+    const totalPages = activeAddonsResult.pagination?.totalPages || 1;
+    hasMore = page < totalPages && pageAddons.length === pageLimit;
+    page++;
+  }
+  
+  const activeAddons = allActiveAddons;
 
   // Calculate total limits (base + addons)
   let totalProducts = baseLimits.products === -1 ? -1 : baseLimits.products;
@@ -260,24 +277,38 @@ export async function getTenantPlanFeatures(tenantId: string) {
   if (totalTenants === -1) totalTenants = -1; // Keep unlimited
   const features = [...baseLimits.features];
 
-  // Add addon limits
+  // Add addon limits - sum all addons of the same type
+  // Group addons by type and sum their limits
+  const addonLimitsByType: Record<string, number> = {
+    ADD_PRODUCTS: 0,
+    ADD_USERS: 0,
+    ADD_OUTLETS: 0,
+  };
+  
+  for (const addon of activeAddons) {
+    if (addon.addonType === 'ADD_PRODUCTS' && addon.limit) {
+      addonLimitsByType.ADD_PRODUCTS += addon.limit;
+    } else if (addon.addonType === 'ADD_USERS' && addon.limit) {
+      addonLimitsByType.ADD_USERS += addon.limit;
+    } else if (addon.addonType === 'ADD_OUTLETS' && addon.limit) {
+      addonLimitsByType.ADD_OUTLETS += addon.limit;
+    }
+  }
+  
+  // Add summed addon limits to base limits
+  if (totalProducts !== -1) {
+    totalProducts += addonLimitsByType.ADD_PRODUCTS;
+  }
+  if (totalUsers !== -1) {
+    totalUsers += addonLimitsByType.ADD_USERS;
+  }
+  if (totalOutlets !== -1) {
+    totalOutlets += addonLimitsByType.ADD_OUTLETS;
+  }
+  
+  // Process feature addons
   for (const addon of activeAddons) {
     switch (addon.addonType) {
-      case 'ADD_PRODUCTS':
-        if (totalProducts !== -1 && addon.limit) {
-          totalProducts += addon.limit;
-        }
-        break;
-      case 'ADD_USERS':
-        if (totalUsers !== -1 && addon.limit) {
-          totalUsers += addon.limit;
-        }
-        break;
-      case 'ADD_OUTLETS':
-        if (totalOutlets !== -1 && addon.limit) {
-          totalOutlets += addon.limit;
-        }
-        break;
       case 'BUSINESS_ANALYTICS':
         if (!features.includes('Business Analytics & Insight')) {
           features.push('Business Analytics & Insight');
