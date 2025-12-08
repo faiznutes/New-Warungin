@@ -849,37 +849,35 @@ const currentTime = ref(new Date());
 let countdownInterval: NodeJS.Timeout | null = null;
 
 const loadAddons = async () => {
-  // Initialize as empty array before API call
-  if (!Array.isArray(activeAddons.value)) {
-    activeAddons.value = [];
-  }
+  // Always initialize as empty array before API call
+  setActiveAddons([]);
   
   try {
     const response = await api.get('/addons');
-    // Ensure activeAddons is always an array
-    const addonsData = response.data?.data || response.data;
     
-    // Multiple checks to ensure it's always an array
-    if (Array.isArray(addonsData)) {
-      activeAddons.value = addonsData;
-    } else if (addonsData && typeof addonsData === 'object' && Array.isArray(addonsData.addons)) {
-      activeAddons.value = addonsData.addons;
-    } else if (addonsData && typeof addonsData === 'object' && addonsData.data && Array.isArray(addonsData.data)) {
-      activeAddons.value = addonsData.data;
-    } else {
-      activeAddons.value = [];
+    // Extract addons data with multiple fallbacks
+    let addonsData: any = null;
+    if (response?.data) {
+      if (Array.isArray(response.data)) {
+        addonsData = response.data;
+      } else if (response.data.data && Array.isArray(response.data.data)) {
+        addonsData = response.data.data;
+      } else if (response.data.addons && Array.isArray(response.data.addons)) {
+        addonsData = response.data.addons;
+      }
     }
+    
+    // Use helper function to safely set (always ensures array)
+    setActiveAddons(addonsData);
+    
   } catch (error: any) {
     // Silently fail if addons can't be loaded
     console.error('Error loading addons:', error);
-    activeAddons.value = [];
+    setActiveAddons([]);
   }
   
-  // Final safety check - ensure it's always an array
-  if (!Array.isArray(activeAddons.value)) {
-    console.warn('activeAddons.value is not an array after loadAddons, resetting to []');
-    activeAddons.value = [];
-  }
+  // Final validation using helper function
+  getActiveAddons(); // This will auto-fix if needed
 };
 
 const loadSubscription = async () => {
@@ -1140,12 +1138,12 @@ watch(() => authStore.user?.role, () => {
 watch(() => authStore.currentTenantId, () => {
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
-    // Reset subscription when tenant changes
-    if (isAdminOrSupervisor.value) {
-      currentSubscription.value = null;
-      subscriptionLoading.value = false;
-      activeAddons.value = []; // Reset addons when tenant changes
-    }
+      // Reset subscription when tenant changes
+      if (isAdminOrSupervisor.value) {
+        currentSubscription.value = null;
+        subscriptionLoading.value = false;
+        setActiveAddons([]); // Reset addons when tenant changes using helper
+      }
     loadStats();
   }
 });
@@ -1156,9 +1154,8 @@ onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
   // Ensure activeAddons is initialized as array before any computed properties are accessed
-  if (!Array.isArray(activeAddons.value)) {
-    activeAddons.value = [];
-  }
+  // Use helper function to auto-fix
+  getActiveAddons();
   
   // Only load stats if user is authenticated
   if (authStore.isAuthenticated) {
