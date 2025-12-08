@@ -1018,7 +1018,7 @@ import api from '../../api';
 import { formatCurrency, formatDate, formatRemainingTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
-import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
+import { safeArrayMethod, ensureArray, safeSome, safeFilter, safeMap, safeFind } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -1220,10 +1220,11 @@ const filteredAvailableAddons = computed(() => {
 
 const getAddonDescription = (activeAddon: any) => {
   // Find matching addon from available addons by addonId or addonType
-  const matchedAddon = safeFind(availableAddons.value, (a: any) => 
-    a && (a.id === activeAddon?.addonId || a.type === activeAddon?.addonType)
+  if (!Array.isArray(availableAddons.value)) return '';
+  const matchedAddon = availableAddons.value.find(
+    a => a.id === activeAddon.addonId || a.type === activeAddon.addonType
   );
-  return matchedAddon?.description || activeAddon?.addonType || 'Tidak ada deskripsi';
+  return matchedAddon?.description || activeAddon.addonType || 'Tidak ada deskripsi';
 };
 
 const getPlanName = (plan: string) => {
