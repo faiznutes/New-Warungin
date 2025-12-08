@@ -181,15 +181,7 @@
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
-            v-for="addon in activeAddons.filter(a => {
-              // Filter: only show addons that are actually active (status === 'active' or no status but not expired)
-              if (a.status && a.status !== 'active') return false;
-              if (a.expiresAt) {
-                const expiresAt = new Date(a.expiresAt);
-                return expiresAt > new Date();
-              }
-              return true;
-            })"
+            v-for="addon in filteredActiveAddons"
             :key="addon.id"
             class="border-2 border-gray-200 rounded-lg p-4 hover:border-green-300 transition"
           >
@@ -1161,6 +1153,33 @@ const safeArrayMethod = <T>(arr: any, method: (arr: any[]) => T, fallback: T): T
     return fallback;
   }
 };
+
+// Computed property for filtered active addons (safe for template)
+const filteredActiveAddons = computed(() => {
+  return safeArrayMethod(
+    activeAddons.value,
+    (addons) => {
+      try {
+        if (!Array.isArray(addons)) return [];
+        const now = new Date();
+        return addons.filter(a => {
+          if (!a) return false;
+          // Filter: only show addons that are actually active (status === 'active' or no status but not expired)
+          if (a.status && a.status !== 'active') return false;
+          if (a.expiresAt) {
+            const expiresAt = new Date(a.expiresAt);
+            return expiresAt > now;
+          }
+          return true;
+        });
+      } catch (error) {
+        console.error('Error filtering active addons:', error);
+        return [];
+      }
+    },
+    []
+  );
+});
 
 const isAddonActive = (addonId: string) => {
   const now = new Date();
