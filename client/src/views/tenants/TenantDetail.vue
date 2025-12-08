@@ -1240,7 +1240,7 @@ const loadActiveAddons = async () => {
     
     // Get total limits for each addon type
     for (const addonType of limitAddonTypes) {
-      if (filteredAddons.some((a: any) => a.addonType === addonType)) {
+      if (Array.isArray(filteredAddons) && filteredAddons.some((a: any) => a && a.addonType === addonType)) {
         limitPromises[addonType] = api.get(`/addons/check-limit/${addonType}`).catch(() => ({ data: { limit: -1, currentUsage: 0 } }));
       }
     }

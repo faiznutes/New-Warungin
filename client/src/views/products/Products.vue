@@ -493,9 +493,9 @@ const loadProducts = async (page = 1) => {
     // Extract unique categories
     const uniqueCategories = new Set<string>();
     if (Array.isArray(products.value)) {
-      products.value.forEach(p => {
-        if (p.category) uniqueCategories.add(p.category);
-      });
+    products.value.forEach(p => {
+      if (p.category) uniqueCategories.add(p.category);
+    });
     }
     categories.value = Array.from(uniqueCategories);
 

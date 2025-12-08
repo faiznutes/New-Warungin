@@ -566,9 +566,9 @@ const hasBusinessAnalytics = computed(() => {
     return false;
   }
   try {
-    return activeAddons.value.some(
+  return activeAddons.value.some(
       (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-    );
+  );
   } catch (error) {
     console.error('Error checking business analytics:', error);
     return false;

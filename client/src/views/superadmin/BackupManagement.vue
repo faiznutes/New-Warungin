@@ -337,7 +337,7 @@ const loadBackups = async () => {
     const response = await api.get('/superadmin/backups', { params });
     // Handle response format
     if (response.data && response.data.data) {
-      backupLogs.value = response.data.data || [];
+    backupLogs.value = response.data.data || [];
       pagination.value = response.data.pagination || {
         page: 1,
         limit: 20,

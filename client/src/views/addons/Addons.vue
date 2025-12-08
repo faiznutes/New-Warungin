@@ -238,26 +238,40 @@ const loadAddons = async () => {
       api.get('/subscriptions/current').catch(() => ({ data: null })), // Optional, don't fail if no subscription
     ]);
     availableAddons.value = availableRes.data;
-    activeAddons.value = activeRes.data?.data || activeRes.data || []; // Handle paginated response
+    // Ensure activeAddons is always an array
+    const addonsData = activeRes.data?.data || activeRes.data || [];
+    activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
     currentSubscription.value = subscriptionRes.data;
   } catch (error: any) {
     console.error('Error loading addons:', error);
+    activeAddons.value = [];
   } finally {
     loading.value = false;
+    // Final safety check
+    if (!Array.isArray(activeAddons.value)) {
+      activeAddons.value = [];
+    }
   }
 };
 
 
 const isAddonActive = (addonId: string) => {
+  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
   const now = new Date();
-  return activeAddons.value.some(a => {
-    if (a.addonId !== addonId) return false;
-    // Check if expired
-    if (a.expiresAt) {
+  try {
+    return activeAddons.value.some(a => {
+      if (!a || a.addonId !== addonId) return false;
+      // Check if expired
+      if (a.expiresAt) {
       const expiresAt = new Date(a.expiresAt);
       return expiresAt > now;
     }
-    return true;
+      return true;
+    });
+  } catch (error) {
+    console.error('Error checking addon active status:', error);
+    return false;
+  }
   });
 };
 

@@ -590,11 +590,11 @@ router.beforeEach(async (to, from, next) => {
         if (activeOutlets.length === 0) {
           // No stores available - show warning for SPV/kasir/dapur
           const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
-          next({ 
-            name: 'unauthorized', 
-            query: { message: warning } 
-          });
-          return;
+            next({ 
+              name: 'unauthorized', 
+              query: { message: warning } 
+            });
+            return;
         } else {
           // Has stores but not selected - redirect to login to show store selector
           next({ name: 'login', query: { redirect: to.fullPath } });

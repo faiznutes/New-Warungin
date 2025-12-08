@@ -261,10 +261,10 @@ const handleLogin = async () => {
           // Auto-select if only one store
           authStore.setSelectedStore(activeOutlets[0].id);
           localStorage.setItem('selectedStoreId', activeOutlets[0].id);
-          router.push('/app');
+            router.push('/app');
         } else {
           // Multiple stores - show selector modal
-          showStoreSelector.value = true;
+      showStoreSelector.value = true;
         }
       } catch (error) {
         console.error('Error checking stores:', error);

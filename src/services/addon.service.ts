@@ -458,45 +458,45 @@ export class AddonService {
         const newLimit = (existing.limit || 0) + (data.limit || addonInfo.defaultLimit || 0);
         
         // Update existing addon with increased limit
-        const updateData: any = {
-          status: 'active',
-          expiresAt,
+      const updateData: any = {
+        status: 'active',
+        expiresAt,
           limit: newLimit,
-          config: addonConfig,
-        };
+        config: addonConfig,
+      };
+      
+      // Only update subscribedAt if it's not already set
+      if (!existing.subscribedAt) {
+        updateData.subscribedAt = now;
+      }
+      
+      const updatedAddon = await prisma.tenantAddon.update({
+        where: { id: existing.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
+        data: updateData,
+      });
+      
+      // Award points from addon purchase (10rb = 5 point) if extending/renewing
+      // Calculate amount based on addon price and duration
+      if (addonInfo && addonInfo.price && data.duration) {
+        const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
         
-        // Only update subscribedAt if it's not already set
-        if (!existing.subscribedAt) {
-          updateData.subscribedAt = now;
-        }
-        
-        const updatedAddon = await prisma.tenantAddon.update({
-          where: { id: existing.id, tenantId }, // Ensure tenantId is in where clause for multi-tenant isolation
-          data: updateData,
-        });
-        
-        // Award points from addon purchase (10rb = 5 point) if extending/renewing
-        // Calculate amount based on addon price and duration
-        if (addonInfo && addonInfo.price && data.duration) {
-          const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
-          
-          if (amount > 0) {
-            try {
-              const rewardPointService = (await import('./reward-point.service')).default;
-              await rewardPointService.awardPointsFromAddon(
-                tenantId,
-                amount,
-                data.addonName,
-                data.addonType
-              );
-            } catch (error: any) {
-              // Log error but don't fail the addon subscription
-              logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
-            }
+        if (amount > 0) {
+          try {
+            const rewardPointService = (await import('./reward-point.service')).default;
+            await rewardPointService.awardPointsFromAddon(
+              tenantId,
+              amount,
+              data.addonName,
+              data.addonType
+            );
+          } catch (error: any) {
+            // Log error but don't fail the addon subscription
+            logger.error('Error awarding points from addon:', { error: error.message, stack: error.stack });
           }
         }
-        
-        return updatedAddon;
+      }
+      
+      return updatedAddon;
       } else {
         // For addons without limit, extend duration (allow multiple purchases to extend)
         const updateData: any = {

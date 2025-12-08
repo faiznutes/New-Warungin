@@ -776,7 +776,7 @@ const loadProducts = async () => {
     
     // Cache products for offline use
     if (Array.isArray(products.value)) {
-      await offlineStorage.cacheProducts(products.value);
+    await offlineStorage.cacheProducts(products.value);
     }
     
     await checkCriticalStock();
@@ -845,9 +845,9 @@ const addToCart = async (product: any) => {
     if (updatedProduct.stock <= 0) {
       showError('Stok produk habis', 'Stok Tidak Tersedia');
       if (Array.isArray(products.value)) {
-        const productIndex = products.value.findIndex(p => p.id === product.id);
-        if (productIndex !== -1) {
-          products.value[productIndex].stock = updatedProduct.stock;
+      const productIndex = products.value.findIndex(p => p.id === product.id);
+      if (productIndex !== -1) {
+        products.value[productIndex].stock = updatedProduct.stock;
         }
       }
       return;
@@ -859,9 +859,9 @@ const addToCart = async (product: any) => {
       if (existingItem.quantity >= updatedProduct.stock) {
         await showWarning('Stok tidak mencukupi');
         if (Array.isArray(products.value)) {
-          const productIndex = products.value.findIndex(p => p.id === product.id);
-          if (productIndex !== -1) {
-            products.value[productIndex].stock = updatedProduct.stock;
+        const productIndex = products.value.findIndex(p => p.id === product.id);
+        if (productIndex !== -1) {
+          products.value[productIndex].stock = updatedProduct.stock;
           }
         }
         return;
@@ -879,9 +879,9 @@ const addToCart = async (product: any) => {
     }
     
     if (Array.isArray(products.value)) {
-      const productIndex = products.value.findIndex(p => p.id === product.id);
-      if (productIndex !== -1) {
-        products.value[productIndex].stock = updatedProduct.stock;
+    const productIndex = products.value.findIndex(p => p.id === product.id);
+    if (productIndex !== -1) {
+      products.value[productIndex].stock = updatedProduct.stock;
       }
     }
   } catch (error: any) {
@@ -921,9 +921,9 @@ const increaseQuantity = async (productId: string) => {
       if (item.quantity >= updatedProduct.stock) {
         showError('Stok tidak mencukupi', 'Stok Tidak Tersedia');
         if (Array.isArray(products.value)) {
-          const productIndex = products.value.findIndex(p => p.id === productId);
-          if (productIndex !== -1) {
-            products.value[productIndex].stock = updatedProduct.stock;
+        const productIndex = products.value.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+          products.value[productIndex].stock = updatedProduct.stock;
           }
         }
         return;
@@ -931,9 +931,9 @@ const increaseQuantity = async (productId: string) => {
       item.quantity++;
       
       if (Array.isArray(products.value)) {
-        const productIndex = products.value.findIndex(p => p.id === productId);
-        if (productIndex !== -1) {
-          products.value[productIndex].stock = updatedProduct.stock;
+      const productIndex = products.value.findIndex(p => p.id === productId);
+      if (productIndex !== -1) {
+        products.value[productIndex].stock = updatedProduct.stock;
         }
       }
     } catch (error: any) {
@@ -1424,9 +1424,9 @@ onMounted(() => {
   if (socket) {
     socket.on('product:stock-update', (data: { productId: string; stock: number }) => {
       if (Array.isArray(products.value)) {
-        const productIndex = products.value.findIndex(p => p.id === data.productId);
-        if (productIndex !== -1) {
-          products.value[productIndex].stock = data.stock;
+      const productIndex = products.value.findIndex(p => p.id === data.productId);
+      if (productIndex !== -1) {
+        products.value[productIndex].stock = data.stock;
         }
       }
     });
@@ -1434,12 +1434,12 @@ onMounted(() => {
     socket.on('order:created', (data: any) => {
       if (data.orderId && data.items && Array.isArray(products.value)) {
         if (Array.isArray(data.items)) {
-          data.items.forEach((item: any) => {
-            const productIndex = products.value.findIndex(p => p.id === item.id || p.id === item.productId);
-            if (productIndex !== -1 && item.stock !== undefined) {
-              products.value[productIndex].stock = item.stock;
-            }
-          });
+        data.items.forEach((item: any) => {
+          const productIndex = products.value.findIndex(p => p.id === item.id || p.id === item.productId);
+          if (productIndex !== -1 && item.stock !== undefined) {
+            products.value[productIndex].stock = item.stock;
+          }
+        });
         }
       }
     });

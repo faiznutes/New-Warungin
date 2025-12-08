@@ -517,9 +517,16 @@ const loadAddons = async () => {
   if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN') {
     try {
       const response = await api.get('/addons');
-      activeAddons.value = response.data || [];
+      // Ensure activeAddons is always an array
+      const addonsData = response.data?.data || response.data || [];
+      activeAddons.value = Array.isArray(addonsData) ? addonsData : [];
     } catch (error) {
       console.error('Failed to load addons:', error);
+      activeAddons.value = [];
+    }
+    
+    // Final safety check
+    if (!Array.isArray(activeAddons.value)) {
       activeAddons.value = [];
     }
   }
@@ -535,15 +542,27 @@ watch(() => userRole.value, () => {
 }, { immediate: true });
 
 const hasBusinessAnalytics = computed(() => {
-  return activeAddons.value.some(
-    (addon) => addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-  );
+  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
+  try {
+    return activeAddons.value.some(
+      (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+    );
+  } catch (error) {
+    console.error('Error checking business analytics:', error);
+    return false;
+  }
 });
 
 const hasDeliveryMarketing = computed(() => {
-  return activeAddons.value.some(
-    (addon) => addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
-  );
+  if (!activeAddons.value || !Array.isArray(activeAddons.value)) return false;
+  try {
+    return activeAddons.value.some(
+      (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+    );
+  } catch (error) {
+    console.error('Error checking delivery marketing:', error);
+    return false;
+  }
 });
 
 const userName = computed(() => authStore.user?.name || 'User');

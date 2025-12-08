@@ -36,11 +36,11 @@
         </div>
       </div>
       <div class="w-full bg-blue-200 rounded-full h-3">
-        <div
+            <div
           class="h-3 rounded-full transition-all"
           :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'bg-red-500' : (userLimit.currentUsage || 0) >= (userLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
           :style="{ width: `${Math.min(100, ((userLimit.currentUsage || 0) / userLimit.limit) * 100)}%` }"
-        ></div>
+            ></div>
       </div>
     </div>
 

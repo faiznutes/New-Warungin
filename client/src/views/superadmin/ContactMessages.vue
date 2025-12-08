@@ -310,7 +310,7 @@ const loadMessages = async () => {
     const response = await api.get('/contact', { params });
     // Handle response format - check if data exists
     if (response.data && response.data.data) {
-      messages.value = response.data.data;
+    messages.value = response.data.data;
       pagination.value = response.data.pagination || {
         page: 1,
         limit: 20,
