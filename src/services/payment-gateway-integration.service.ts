@@ -397,12 +397,12 @@ class PaymentGatewayIntegrationService {
       });
       
       // Return last known status or PENDING if API fails
-      return {
-        paymentId,
-        status: 'PENDING',
-        amount: 0,
+    return {
+      paymentId,
+      status: 'PENDING',
+      amount: 0,
         error: 'Unable to check payment status at this time',
-      };
+    };
     }
   }
 
@@ -457,12 +457,12 @@ class PaymentGatewayIntegrationService {
         merchantId: config.merchantId 
       });
       
-      return {
-        paymentId,
-        status: 'PENDING',
-        amount: 0,
+    return {
+      paymentId,
+      status: 'PENDING',
+      amount: 0,
         error: 'Unable to check payment status at this time',
-      };
+    };
     }
   }
 
@@ -514,10 +514,10 @@ class PaymentGatewayIntegrationService {
         merchantId: config.merchantId 
       });
       
-      return {
-        paymentId,
-        status: 'PENDING',
-        amount: 0,
+    return {
+      paymentId,
+      status: 'PENDING',
+      amount: 0,
         error: 'Unable to check payment status at this time',
       };
     }
