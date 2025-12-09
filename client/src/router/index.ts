@@ -130,7 +130,7 @@ const router = createRouter({
           path: 'tenants/support',
           name: 'tenant-support',
           component: () => import('../views/tenants/TenantSupport.vue'),
-          meta: { roles: ['SUPER_ADMIN'] },
+          meta: { roles: ['SUPER_ADMIN', 'ADMIN_TENANT'] },
         },
         {
           path: 'reports/global',

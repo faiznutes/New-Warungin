@@ -9,8 +9,8 @@
         </div>
       </div>
 
-      <!-- Tenant Selector -->
-      <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5">
+      <!-- Tenant Selector (only for SUPER_ADMIN) -->
+      <div v-if="authStore.isSuperAdmin" class="bg-white rounded-lg shadow-sm p-4 sm:p-5">
         <label class="block text-sm font-medium text-gray-700 mb-3">
           Pilih Tenant <span class="text-red-500">*</span>
         </label>
@@ -47,6 +47,16 @@
           <span class="px-2 py-1 text-xs rounded-full" :class="selectedTenant.isActive === false ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'">
             {{ selectedTenant.isActive === false ? 'Tidak Aktif' : 'Aktif' }}
           </span>
+        </div>
+      </div>
+      
+      <!-- Tenant Info for ADMIN_TENANT (auto-selected from user) -->
+      <div v-else-if="authStore.user?.role === 'ADMIN_TENANT' && authStore.user?.tenantId" class="bg-white rounded-lg shadow-sm p-4 sm:p-5">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Tenant: <strong class="text-gray-900">{{ authStore.user.tenantName || 'Tenant Anda' }}</strong></span>
         </div>
       </div>
       
@@ -151,7 +161,8 @@ const activeTab = ref<string>('dashboard');
 const showError = ref(false);
 const loading = ref(false);
 
-const tabs = [
+// Filter tabs based on role - ADMIN_TENANT doesn't need Kitchen tab
+const allTabs = [
   { 
     id: 'dashboard', 
     label: 'Dashboard', 
@@ -192,9 +203,21 @@ const tabs = [
     label: 'Kitchen', 
     icon: () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
       h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' })
-    ])
+    ]),
+    roles: ['SUPER_ADMIN'] // Only show for SUPER_ADMIN
   },
 ];
+
+// Filter tabs based on user role
+const tabs = computed(() => {
+  const userRole = authStore.user?.role;
+  if (userRole === 'ADMIN_TENANT') {
+    // ADMIN_TENANT: exclude Kitchen tab
+    return allTabs.filter(tab => tab.id !== 'kitchen');
+  }
+  // SUPER_ADMIN: show all tabs
+  return allTabs;
+});
 
 const selectedTenant = computed(() => {
   if (!selectedTenantId.value) return null;
@@ -249,10 +272,18 @@ watch(selectedTenantId, (newId) => {
 });
 
 onMounted(async () => {
-  await loadTenants();
-  // If there's a previously selected tenant, use it
-  if (authStore.selectedTenantId) {
-    selectedTenantId.value = authStore.selectedTenantId;
+  // For SUPER_ADMIN, load tenants list
+  if (authStore.isSuperAdmin) {
+    await loadTenants();
+    // If there's a previously selected tenant, use it
+    if (authStore.selectedTenantId) {
+      selectedTenantId.value = authStore.selectedTenantId;
+    }
+  } else if (authStore.user?.role === 'ADMIN_TENANT' && authStore.user?.tenantId) {
+    // For ADMIN_TENANT, auto-select their tenant
+    selectedTenantId.value = authStore.user.tenantId;
+    authStore.setSelectedTenant(authStore.user.tenantId);
+    localStorage.setItem('selectedTenantId', authStore.user.tenantId);
   }
 });
 </script>
