@@ -294,6 +294,12 @@ const router = createRouter({
           component: () => import('../views/inventory/RestockSuggestions.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
+        {
+          path: 'inventory/stock-transfers',
+          name: 'stock-transfers',
+          component: () => import('../views/inventory/StockTransfers.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+        },
         // Advanced Reporting
         {
           path: 'reports/advanced',
