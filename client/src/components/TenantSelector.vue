@@ -93,16 +93,33 @@ const selectedTenantName = computed(() => {
 const loadTenants = async () => {
   // Use cached tenants if available
   if (authStore.tenants.length > 0) {
-    tenants.value = authStore.tenants;
+    tenants.value = authStore.tenants.filter((tenant: any) => tenant.name !== 'System');
     return;
   }
   
   loading.value = true;
   try {
-    await authStore.fetchTenants();
-    tenants.value = authStore.tenants;
+    // Load tenants directly from API like TenantSupport.vue
+    const api = (await import('../api')).default;
+    const response = await api.get('/tenants');
+    const tenantList = response.data.data || response.data;
+    // Filter out System tenant
+    const filteredTenants = Array.isArray(tenantList) 
+      ? tenantList.filter((tenant: any) => tenant.name !== 'System')
+      : [];
+    
+    tenants.value = filteredTenants;
+    // Also update authStore for caching
+    authStore.tenants = filteredTenants;
   } catch (error) {
     console.error('Error loading tenants:', error);
+    // Fallback to authStore.fetchTenants if direct API fails
+    try {
+      await authStore.fetchTenants();
+      tenants.value = authStore.tenants.filter((tenant: any) => tenant.name !== 'System');
+    } catch (fallbackError) {
+      console.error('Error loading tenants from authStore:', fallbackError);
+    }
   } finally {
     loading.value = false;
   }
