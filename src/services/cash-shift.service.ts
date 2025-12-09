@@ -249,7 +249,8 @@ export class CashShiftService {
   }
 
   /**
-   * Hitung total penjualan dari transaksi di shift
+   * Hitung total penjualan dari order yang completed di shift
+   * Menggunakan Order.total karena lebih akurat (sudah termasuk discount, dll)
    */
   private async calculateTotalSales(
     tenantId: string,
@@ -257,7 +258,7 @@ export class CashShiftService {
     shiftStart: Date,
     shiftEnd: Date
   ): Promise<number> {
-    const transactions = await prisma.transaction.findMany({
+    const orders = await prisma.order.findMany({
       where: {
         tenantId,
         userId: kasirId,
@@ -268,12 +269,12 @@ export class CashShiftService {
         },
       },
       select: {
-        amount: true,
+        total: true,
       },
     });
 
-    return transactions.reduce((sum, t) => {
-      return sum + parseFloat(t.amount.toString());
+    return orders.reduce((sum, order) => {
+      return sum + parseFloat(order.total.toString());
     }, 0);
   }
 
