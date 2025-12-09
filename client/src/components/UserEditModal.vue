@@ -399,10 +399,17 @@ let loadStoresTimeout: ReturnType<typeof setTimeout> | null = null;
 let isLoadingStores = false; // Prevent concurrent requests
 const currentPassword = ref<string>('');
 const loadingPassword = ref(false);
+const activeAddons = ref<any[]>([]);
 
 const isCashierOrKitchen = computed(() => {
   const role = form.value.role;
   return role === 'CASHIER' || role === 'KITCHEN';
+});
+
+const hasSupervisorRole = computed(() => {
+  return activeAddons.value.some(
+    (addon: any) => addon && (addon.addonType === 'SUPERVISOR_ROLE' || addon.type === 'SUPERVISOR_ROLE') && addon.status === 'active'
+  );
 });
 
 const selectAllStores = computed({
@@ -505,6 +512,13 @@ const loadActiveAddons = async () => {
   }
 };
 
+watch(() => props.show, (isOpen) => {
+  if (isOpen) {
+    // Reload active addons when modal opens
+    loadActiveAddons();
+  }
+});
+
 watch(() => props.user, async (newUser) => {
   if (newUser) {
     // Reset stores cache when user changes
@@ -605,6 +619,8 @@ watch(() => form.value.role, (newRole, oldRole) => {
 });
 
 onMounted(() => {
+  // Load active addons when modal is mounted
+  loadActiveAddons();
   // Stores will be loaded by watch if needed
   // No need to load again here to prevent duplicate requests
 });
