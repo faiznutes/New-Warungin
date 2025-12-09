@@ -128,9 +128,8 @@ class FinanceService {
     const cogs = orders.reduce((sum, order) => {
       return sum + order.items.reduce((itemSum, item) => {
         // Get cost from database, default to 0 if not available or null
-        const productCost = (item.product.cost && item.product.cost > 0) 
-          ? parseFloat(item.product.cost.toString()) 
-          : 0;
+        const costValue = item.product.cost ? parseFloat(item.product.cost.toString()) : 0;
+        const productCost = costValue > 0 ? costValue : 0;
         return itemSum + (productCost * item.quantity);
       }, 0);
     }, 0);
