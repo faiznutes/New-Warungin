@@ -259,14 +259,6 @@ interface FinancialSummary {
   profitMargin: number;
 }
 
-interface ProfitLoss {
-  revenue: number;
-  discount: number;
-  cogs: number;
-  operatingExpenses: number;
-  netProfit: number;
-}
-
 interface BalanceSheet {
   cash: number;
   receivables: number;
