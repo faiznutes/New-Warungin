@@ -177,6 +177,9 @@
 
         <div class="bg-white rounded-lg shadow-md p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Disk Usage</h3>
+          <div v-if="!serverResources.disks || serverResources.disks.length === 0" class="text-sm text-gray-500">
+            Tidak ada data disk
+          </div>
           <div v-for="disk in serverResources.disks" :key="disk.mount" class="mb-4">
             <div class="flex justify-between text-sm mb-1">
               <span class="font-medium">{{ disk.mount }}</span>
@@ -363,6 +366,8 @@ const loadServerResources = async () => {
     serverResources.value = response.data || {};
   } catch (err: any) {
     console.error('Error loading server resources:', err);
+    // Don't show error popup for resources to avoid spam during auto-refresh
+    // Only log to console
   }
 };
 
@@ -372,6 +377,8 @@ const loadHealthChecks = async () => {
     healthChecks.value = response.data.services || [];
   } catch (err: any) {
     console.error('Error loading health checks:', err);
+    // Don't show error popup for health checks to avoid spam during auto-refresh
+    // Only log to console
   }
 };
 

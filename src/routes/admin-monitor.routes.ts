@@ -81,8 +81,13 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
 router.post('/docker/restart/:name', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { name } = req.params;
-    await execAsync(`docker restart ${name}`);
-    res.json({ message: `Container ${name} restarted successfully` });
+    // Escape container name for shell safety
+    const escapedName = name.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!escapedName || escapedName !== name) {
+      return res.status(400).json({ message: 'Invalid container name' });
+    }
+    await execAsync(`docker restart ${escapedName}`);
+    res.json({ message: `Container ${escapedName} restarted successfully` });
   } catch (error: any) {
     console.error('Error restarting container:', error);
     res.status(500).json({ message: 'Failed to restart container', error: error.message });
@@ -96,8 +101,13 @@ router.post('/docker/restart/:name', authGuard, requireSuperAdmin, async (req: R
 router.post('/docker/stop/:name', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { name } = req.params;
-    await execAsync(`docker stop ${name}`);
-    res.json({ message: `Container ${name} stopped successfully` });
+    // Escape container name for shell safety
+    const escapedName = name.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!escapedName || escapedName !== name) {
+      return res.status(400).json({ message: 'Invalid container name' });
+    }
+    await execAsync(`docker stop ${escapedName}`);
+    res.json({ message: `Container ${escapedName} stopped successfully` });
   } catch (error: any) {
     console.error('Error stopping container:', error);
     res.status(500).json({ message: 'Failed to stop container', error: error.message });
@@ -111,8 +121,17 @@ router.post('/docker/stop/:name', authGuard, requireSuperAdmin, async (req: Requ
 router.get('/docker/logs/:name', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     const { name } = req.params;
+    // Escape container name for shell safety
+    const escapedName = name.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!escapedName || escapedName !== name) {
+      return res.status(400).json({ message: 'Invalid container name' });
+    }
     const tail = req.query.tail ? parseInt(req.query.tail as string) : 200;
-    const { stdout } = await execAsync(`docker logs ${name} --tail ${tail} 2>&1`);
+    // Validate tail parameter
+    if (isNaN(tail) || tail < 1 || tail > 10000) {
+      return res.status(400).json({ message: 'Invalid tail parameter (must be 1-10000)' });
+    }
+    const { stdout } = await execAsync(`docker logs ${escapedName} --tail ${tail} 2>&1`);
     res.json({ logs: stdout });
   } catch (error: any) {
     console.error('Error fetching container logs:', error);
