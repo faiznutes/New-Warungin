@@ -110,7 +110,7 @@ export class UserService {
       const tenantAddons = await addonService.getTenantAddons(tenantId);
       const addonsData = Array.isArray(tenantAddons?.data) ? tenantAddons.data : [];
       const hasSupervisorAddon = addonsData.some(
-        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && addon.status === 'ACTIVE'
+        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && (addon.status === 'ACTIVE' || addon.status === 'active')
       );
       if (!hasSupervisorAddon) {
         const error = new Error('Supervisor Role addon is required to create users with SUPERVISOR role. Please subscribe to Supervisor Role addon first.') as Error & { statusCode?: number };
@@ -199,7 +199,7 @@ export class UserService {
       const tenantAddons = await addonService.getTenantAddons(tenantId);
       const addonsData = Array.isArray(tenantAddons?.data) ? tenantAddons.data : [];
       const hasSupervisorAddon = addonsData.some(
-        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && addon.status === 'ACTIVE'
+        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && (addon.status === 'ACTIVE' || addon.status === 'active')
       );
       if (!hasSupervisorAddon) {
         const error = new Error('Supervisor Role addon is required to assign SUPERVISOR role. Please subscribe to Supervisor Role addon first.') as Error & { statusCode?: number };
