@@ -104,15 +104,18 @@ export class UserService {
     };
   }
 
-  async createUser(data: CreateUserInput, tenantId: string) {
-    // Check limit for ADD_USERS addon
-    // Use plan-features service to check total limit (base plan + addons)
-    const planFeaturesService = (await import('./plan-features.service')).default;
-    const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'users');
-    if (!limitCheck.allowed) {
-      const error = new Error(limitCheck.message || `User limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more users.`) as Error & { statusCode?: number };
-      error.statusCode = 400;
-      throw error;
+  async createUser(data: CreateUserInput, tenantId: string, userRole?: string) {
+    // Skip limit check for SUPER_ADMIN
+    if (userRole !== 'SUPER_ADMIN') {
+      // Check limit for ADD_USERS addon
+      // Use plan-features service to check total limit (base plan + addons)
+      const planFeaturesService = (await import('./plan-features.service')).default;
+      const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'users');
+      if (!limitCheck.allowed) {
+        const error = new Error(limitCheck.message || `User limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more users.`) as Error & { statusCode?: number };
+        error.statusCode = 400;
+        throw error;
+      }
     }
 
     // Generate password if not provided

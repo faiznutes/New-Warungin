@@ -158,8 +158,17 @@ router.post(
   validate({ body: createOutletSchema }),
   async (req: Request, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const outlet = await outletService.createOutlet(tenantId, req.body);
+      const userRole = (req as any).user?.role;
+      let tenantId: string;
+      if (userRole === 'SUPER_ADMIN') {
+        tenantId = req.body.tenantId || req.query.tenantId as string;
+        if (!tenantId) {
+          return res.status(400).json({ message: 'tenantId is required for super admin' });
+        }
+      } else {
+        tenantId = requireTenantId(req);
+      }
+      const outlet = await outletService.createOutlet(tenantId, req.body, userRole);
       res.status(201).json({ data: outlet });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'OUTLET');

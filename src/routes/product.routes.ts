@@ -187,8 +187,17 @@ router.post(
   validate({ body: createProductSchema }),
   async (req: AuthRequest, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.createProduct(req.body, tenantId);
+      const userRole = req.role;
+      let tenantId: string;
+      if (userRole === 'SUPER_ADMIN') {
+        tenantId = req.body.tenantId || req.query.tenantId as string;
+        if (!tenantId) {
+          return res.status(400).json({ message: 'tenantId is required for super admin' });
+        }
+      } else {
+        tenantId = requireTenantId(req);
+      }
+      const product = await productService.createProduct(req.body, tenantId, userRole);
       
       // Log audit
       await logAction(req, 'CREATE', 'products', product.id, { name: product.name, price: product.price }, 'SUCCESS');

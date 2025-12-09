@@ -104,13 +104,16 @@ export class ProductService {
     return product;
   }
 
-  async createProduct(data: CreateProductInput, tenantId: string): Promise<Product> {
-    // Check limit using plan-features service (includes base plan + addons)
-    const planFeaturesService = (await import('./plan-features.service')).default;
-    const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'products');
-    
-    if (!limitCheck.allowed) {
-      throw new Error(limitCheck.message || `Product limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more products.`);
+  async createProduct(data: CreateProductInput, tenantId: string, userRole?: string): Promise<Product> {
+    // Skip limit check for SUPER_ADMIN
+    if (userRole !== 'SUPER_ADMIN') {
+      // Check limit using plan-features service (includes base plan + addons)
+      const planFeaturesService = (await import('./plan-features.service')).default;
+      const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'products');
+      
+      if (!limitCheck.allowed) {
+        throw new Error(limitCheck.message || `Product limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more products.`);
+      }
     }
 
     // Validate barcode uniqueness per tenant (if barcode provided)

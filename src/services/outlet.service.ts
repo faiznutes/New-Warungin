@@ -74,44 +74,47 @@ export class OutletService {
     return outlet;
   }
 
-  async createOutlet(tenantId: string, data: CreateOutletInput) {
-    // Check outlet limit based on subscription plan
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: tenantId },
-      include: {
-        addons: {
-          where: {
-            status: 'active',
-            OR: [
-              { expiresAt: { gt: new Date() } },
-              { expiresAt: null },
-            ],
+  async createOutlet(tenantId: string, data: CreateOutletInput, userRole?: string) {
+    // Skip limit check for SUPER_ADMIN
+    if (userRole !== 'SUPER_ADMIN') {
+      // Check outlet limit based on subscription plan
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        include: {
+          addons: {
+            where: {
+              status: 'active',
+              OR: [
+                { expiresAt: { gt: new Date() } },
+                { expiresAt: null },
+              ],
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!tenant) {
-      throw new Error('Tenant tidak ditemukan');
-    }
+      if (!tenant) {
+        throw new Error('Tenant tidak ditemukan');
+      }
 
-    // Get current active outlets count
-    const activeOutletsCount = await prisma.outlet.count({
-      where: {
-        tenantId,
-        isActive: true,
-      },
-    });
+      // Get current active outlets count
+      const activeOutletsCount = await prisma.outlet.count({
+        where: {
+          tenantId,
+          isActive: true,
+        },
+      });
 
-    // Get outlet limit from plan features
-    const { getTenantPlanFeatures } = await import('./plan-features.service');
-    const features = await getTenantPlanFeatures(tenantId);
-    
-    const outletLimit = features.limits.outlets;
-    
-    // Check if limit is reached (unlimited = -1)
-    if (outletLimit !== -1 && activeOutletsCount >= outletLimit) {
-      throw new Error(`Batas outlet telah tercapai. Limit: ${outletLimit}`);
+      // Get outlet limit from plan features
+      const { getTenantPlanFeatures } = await import('./plan-features.service');
+      const features = await getTenantPlanFeatures(tenantId);
+      
+      const outletLimit = features.limits.outlets;
+      
+      // Check if limit is reached (unlimited = -1)
+      if (outletLimit !== -1 && activeOutletsCount >= outletLimit) {
+        throw new Error(`Batas outlet telah tercapai. Limit: ${outletLimit}`);
+      }
     }
 
     const outlet = await prisma.outlet.create({
