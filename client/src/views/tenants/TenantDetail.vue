@@ -1320,7 +1320,6 @@ const showExtendAddonModal = ref(false);
 const showReduceAddonModal = ref(false);
 const showAddAddonModal = ref(false);
 const showEditUserModal = ref(false);
-const showCreateTenantModal = ref(false);
 const showCreateUserModal = ref(false);
 const showCreateStoreModal = ref(false);
 const showDeactivateSubscriptionModal = ref(false);
@@ -1345,13 +1344,6 @@ const outletUsage = ref<{ currentUsage: number; limit: number } | null>(null);
 const selectedUsers = ref<any[]>([]);
 const creatingTenant = ref(false);
 const creatingUser = ref(false);
-const createTenantForm = ref({
-  name: '',
-  email: '',
-  phone: '',
-  address: '',
-  subscriptionPlan: 'BASIC',
-});
 const createUserForm = ref({
   name: '',
   email: '',
@@ -2350,48 +2342,6 @@ const subscribeAddon = async (addon: AvailableAddon) => {
   } catch (error: any) {
     console.error('Error subscribing addon:', error);
     await showError(error.response?.data?.message || 'Gagal menambahkan addon');
-  }
-};
-
-const handleCreateTenant = async () => {
-  if (!createTenantForm.value.name || !createTenantForm.value.email) {
-    await showError('Nama dan email wajib diisi');
-    return;
-  }
-
-  creatingTenant.value = true;
-  try {
-    const response = await api.post('/tenants', {
-      name: createTenantForm.value.name,
-      email: createTenantForm.value.email,
-      phone: createTenantForm.value.phone || undefined,
-      address: createTenantForm.value.address || undefined,
-      subscriptionPlan: createTenantForm.value.subscriptionPlan,
-    });
-
-    const defaultPassword = response.data?.defaultPassword || response.data?.users?.[0]?.password;
-    showCreateTenantModal.value = false;
-    createTenantForm.value = {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-      subscriptionPlan: 'BASIC',
-    };
-
-    if (defaultPassword) {
-      await showSuccess(`Tenant berhasil dibuat! Password default: ${defaultPassword}`);
-    } else {
-      await showSuccess('Tenant berhasil dibuat!');
-    }
-
-    // Reload tenant list atau redirect
-    router.push('/app/tenants');
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.message || 'Gagal membuat tenant';
-    await showError(errorMessage);
-  } finally {
-    creatingTenant.value = false;
   }
 };
 
