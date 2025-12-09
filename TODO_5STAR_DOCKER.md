@@ -237,9 +237,18 @@
 
 #### Addon Gating for SUPERVISOR Role
 - ✅ **Frontend Validation**: UserEditModal.vue menyembunyikan option SUPERVISOR jika addon tidak aktif
+  - `hasSupervisorRole` computed property mengecek `activeAddons` untuk addon dengan `addonType === 'SUPERVISOR_ROLE'` dan `status === 'active'`
+  - `loadActiveAddons()` dipanggil saat modal dibuka (onMounted + watch props.show)
+  - Option SUPERVISOR hanya muncul jika `hasSupervisorRole === true`
 - ✅ **Backend Validation**: user.service.ts memvalidasi addon SUPERVISOR_ROLE sebelum create/update user dengan role SUPERVISOR
+  - `createUser`: Validasi addon sebelum create user dengan role SUPERVISOR
+  - `updateUser`: Validasi addon sebelum update role ke SUPERVISOR (konsisten dengan createUser)
+  - Error message: "Supervisor Role addon is required to create/assign SUPERVISOR role. Please subscribe to Supervisor Role addon first."
 - ✅ **Route Validation**: POST /users dan PUT /users/:id memiliki validasi addon untuk role SPV
+  - Validasi dilakukan di service layer (user.service.ts) untuk konsistensi
 - ✅ **Error Messages**: Error message jelas jika mencoba assign role SUPERVISOR tanpa addon
+  - Frontend: "Supervisor Role addon diperlukan untuk membuat user dengan role Supervisor"
+  - Backend: "Supervisor Role addon is required to create/assign SUPERVISOR role. Please subscribe to Supervisor Role addon first."
 
 #### Button Verification by Role
 - ✅ **Super Admin**: Tenants.vue, TenantDetail.vue, ServerMonitor.vue - semua button OK
