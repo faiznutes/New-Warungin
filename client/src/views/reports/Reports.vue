@@ -607,6 +607,18 @@ const showProductDetailModal = (product: any) => {
 };
 
 const loadReport = async () => {
+  // Check if tenant selection is needed
+  if (needsTenantSelection.value) {
+    return;
+  }
+  
+  // For non-super-admin, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    return;
+  }
+  
   loading.value = true;
   productDetails.value = {}; // Reset product details
   try {
@@ -619,6 +631,11 @@ const loadReport = async () => {
     if (period.value !== 'all') {
       params.startDate = dateRange.value.from;
       params.endDate = dateRange.value.to;
+    }
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
     }
 
     const reportResponse = await api.get('/reports/tenant', { params }).catch(() => ({ data: null }));
@@ -675,10 +692,22 @@ const loadReport = async () => {
 };
 
 const loadAnalytics = async () => {
+  // Check if tenant selection is needed
+  if (needsTenantSelection.value) {
+    return;
+  }
+  
   try {
+    const params: any = { limit: 10 };
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
     const [predictionsRes, topProductsRes] = await Promise.all([
-      api.get('/analytics/predictions').catch(() => ({ data: null })),
-      api.get('/analytics/top-products', { params: { limit: 10 } }).catch(() => ({ data: [] })),
+      api.get('/analytics/predictions', { params: authStore.isSuperAdmin && authStore.selectedTenantId ? { tenantId: authStore.selectedTenantId } : {} }).catch(() => ({ data: null })),
+      api.get('/analytics/top-products', { params }).catch(() => ({ data: [] })),
     ]);
     
     analyticsData.value = {

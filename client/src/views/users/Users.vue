@@ -209,11 +209,23 @@ const loadUsers = async (page = 1) => {
     return; // Don't load if tenant not selected
   }
   
+  // For non-super-admin, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    return;
+  }
+  
   loading.value = true;
   try {
-    const response = await api.get('/users', {
-      params: { page, limit: pagination.value.limit },
-    });
+    const params: any = { page, limit: pagination.value.limit };
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
+    const response = await api.get('/users', { params });
     users.value = response.data.data;
     pagination.value = response.data.pagination;
 
