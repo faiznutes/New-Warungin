@@ -255,9 +255,23 @@ const storeForm = ref({
 });
 
 const loadStores = async () => {
+  // For non-super-admin, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    return;
+  }
+  
   loading.value = true;
   try {
-    const response = await api.get('/outlets');
+    const params: any = {};
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
+    const response = await api.get('/outlets', { params });
     stores.value = response.data.data || [];
     
     // Load outlet limit

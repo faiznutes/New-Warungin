@@ -108,8 +108,10 @@ import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
 import TenantReportExportModal from '../../../components/TenantReportExportModal.vue';
+import { useAuthStore } from '../../../stores/auth';
 
 const { error: showError } = useNotification();
+const authStore = useAuthStore();
 
 interface Props {
   tenantId: string;
@@ -145,13 +147,23 @@ const loadTenants = async () => {
 const loadReports = async () => {
   if (!props.tenantId) return;
   
+  // Ensure tenantId is set in authStore and localStorage for API interceptor
+  authStore.setSelectedTenant(props.tenantId);
+  localStorage.setItem('selectedTenantId', props.tenantId);
+  
   loading.value = true;
   try {
+    // Prepare params for all API calls
+    const baseParams: any = {};
+    if (authStore.isSuperAdmin) {
+      baseParams.tenantId = props.tenantId;
+    }
+    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     const [ordersRes, productsRes, customersRes] = await Promise.all([
-      api.get('/orders'),
-      api.get('/products'),
-      api.get('/customers'),
+      api.get('/orders', { params: baseParams }),
+      api.get('/products', { params: baseParams }),
+      api.get('/customers', { params: baseParams }),
     ]);
 
     const orders = ordersRes.data.data || ordersRes.data || [];

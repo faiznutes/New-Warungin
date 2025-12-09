@@ -121,8 +121,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
+import { useAuthStore } from '../../../stores/auth';
 
 const { error: showError, info: showInfo } = useNotification();
+const authStore = useAuthStore();
 
 interface Props {
   tenantId: string;
@@ -158,6 +160,10 @@ const filteredOrders = computed(() => {
 const loadOrders = async () => {
   if (!props.tenantId) return;
   
+  // Ensure tenantId is set in authStore and localStorage for API interceptor
+  authStore.setSelectedTenant(props.tenantId);
+  localStorage.setItem('selectedTenantId', props.tenantId);
+  
   loading.value = true;
   try {
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
@@ -167,12 +173,17 @@ const loadOrders = async () => {
     let hasMore = true;
     
     while (hasMore) {
-      const response = await api.get('/orders', {
-        params: { 
-          page,
-          limit: 100, // Maximum allowed by validator
-        },
-      });
+      const params: any = { 
+        page,
+        limit: 100, // Maximum allowed by validator
+      };
+      
+      // Explicitly add tenantId for SUPER_ADMIN
+      if (authStore.isSuperAdmin) {
+        params.tenantId = props.tenantId;
+      }
+      
+      const response = await api.get('/orders', { params });
       
       const pageData = response.data.data || response.data;
       if (Array.isArray(pageData)) {
