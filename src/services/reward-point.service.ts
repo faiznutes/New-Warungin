@@ -3,29 +3,29 @@ import subscriptionService from './subscription.service';
 import addonService from './addon.service';
 
 // Point Configuration
-// 1 point = 200 rupiah
-const POINT_PER_RUPIAH = 200;
+// 1 point = 50 rupiah (diubah dari 125 menjadi 50)
+const POINT_PER_RUPIAH = 50;
 
 const POINT_CONFIG = {
   // Point conversion rate
   POINT_PER_RUPIAH,
   
-  // Subscription redemption (calculated from price: price / 200)
-  // BASIC: 200000rp = 1000pts, PRO: 350000rp = 1750pts, ENTERPRISE: 500000rp = 2500pts
+  // Subscription redemption (calculated from price: price / 50)
+  // BASIC: 200000rp = 4000pts, PRO: 350000rp = 7000pts, ENTERPRISE: 500000rp = 10000pts
   SUBSCRIPTION: {
-    '1month_starter': 1000,      // BASIC: 200000rp / 200 = 1000 pts
-    '1month_boost': 1750,        // PRO: 350000rp / 200 = 1750 pts
-    '1month_max': 2500,          // ENTERPRISE: 500000rp / 200 = 2500 pts
+    '1month_starter': 4000,      // BASIC: 200000rp / 50 = 4000 pts
+    '1month_boost': 7000,        // PRO: 350000rp / 50 = 7000 pts
+    '1month_max': 10000,         // ENTERPRISE: 500000rp / 50 = 10000 pts
   },
   
-  // Addon redemption (calculated from price: price / 200)
+  // Addon redemption (calculated from price: price / 50)
   ADDONS: {
-    'add_outlets': 600,          // 120000rp / 200 = 600 pts
-    'add_users': 250,            // 50000rp / 200 = 250 pts
-    'add_products': 150,         // 30000rp / 200 = 150 pts
-    'business_analytics': 1250,  // 250000rp / 200 = 1250 pts
-    'export_reports': 375,       // 75000rp / 200 = 375 pts
-    'receipt_editor': 250,       // 50000rp / 200 = 250 pts
+    'add_outlets': 2400,         // 120000rp / 50 = 2400 pts
+    'add_users': 1000,           // 50000rp / 50 = 1000 pts
+    'add_products': 600,         // 30000rp / 50 = 600 pts
+    'business_analytics': 5000,  // 250000rp / 50 = 5000 pts
+    'export_reports': 1500,      // 75000rp / 50 = 1500 pts
+    'receipt_editor': 1000,      // 50000rp / 50 = 1000 pts
   },
   
   // Point expiration (days) - 6 bulan = 180 hari
@@ -730,7 +730,7 @@ export class RewardPointService {
 
   /**
    * Award points from subscription purchase
-   * 10rb = 5 point (1rb = 0.5 point, rounded down to integer)
+   * Menggunakan POINT_PER_RUPIAH (50 rupiah = 1 point)
    * @param tenantId - Tenant ID
    * @param amount - Subscription amount in rupiah
    * @param plan - Subscription plan
@@ -742,9 +742,9 @@ export class RewardPointService {
     plan: string,
     duration: number
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: 10rb = 5 point, so 1rb = 0.5 point
+    // Calculate points: amount / POINT_PER_RUPIAH (50 rupiah = 1 point)
     // Use Math.floor to ensure integer only
-    const pointsAwarded = Math.floor((amount / 10000) * 5);
+    const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     
     if (pointsAwarded <= 0) {
       return { pointsAwarded: 0, totalPoints: 0 };
@@ -811,7 +811,7 @@ export class RewardPointService {
 
   /**
    * Award points from addon purchase
-   * 10rb = 5 point (1rb = 0.5 point, rounded down to integer)
+   * Menggunakan POINT_PER_RUPIAH (50 rupiah = 1 point)
    * @param tenantId - Tenant ID
    * @param amount - Addon amount in rupiah
    * @param addonName - Addon name
@@ -823,9 +823,9 @@ export class RewardPointService {
     addonName: string,
     addonType: string
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: 10rb = 5 point, so 1rb = 0.5 point
+    // Calculate points: amount / POINT_PER_RUPIAH (50 rupiah = 1 point)
     // Use Math.floor to ensure integer only
-    const pointsAwarded = Math.floor((amount / 10000) * 5);
+    const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     
     if (pointsAwarded <= 0) {
       return { pointsAwarded: 0, totalPoints: 0 };

@@ -252,7 +252,41 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
+        <div v-if="loadingAddons" class="text-center py-12">
+          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-gray-600">Memuat addon...</p>
+        </div>
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
+          <!-- Dynamic Addons from API -->
+          <div
+            v-for="addon in filteredAvailableAddons"
+            :key="addon.id"
+            class="bg-gradient-to-br rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border"
+            :class="addon.comingSoon ? 'from-gray-50 to-gray-100 border-gray-200 opacity-75' : 'from-white to-blue-50 border-blue-100'"
+          >
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ addon.name }}</h3>
+              <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                Coming Soon
+              </span>
+            </div>
+            <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">{{ addon.description }}</p>
+            <div class="flex items-baseline mb-3 sm:mb-4 flex-wrap">
+              <span class="text-2xl sm:text-3xl font-bold text-gray-900">Rp {{ formatAddonPrice(addon.price) }}</span>
+              <span class="text-gray-600 ml-2 text-sm sm:text-base">rb</span>
+              <span class="text-gray-500 text-xs sm:text-sm ml-2">/bulan</span>
+            </div>
+            <ul v-if="addon.details && addon.details.length > 0" class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
+              <li v-for="(detail, idx) in addon.details.slice(0, 3)" :key="idx" class="flex items-start">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="leading-relaxed">{{ detail }}</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Legacy Hardcoded Addons (keep for backward compatibility) -->
           <!-- Add Outlet -->
           <div class="bg-gradient-to-br from-white to-blue-50 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border border-blue-100">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
@@ -542,8 +576,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useSEO } from '../../composables/useSEO';
+import api from '../../api';
+import { formatCurrency } from '../../utils/formatters';
 
 useSEO({
   title: 'Paket Harga Sistem Kasir Warungin - Mulai dari Rp 200rb/bulan | Sistem Kasir UMKM',
@@ -551,12 +587,40 @@ useSEO({
   keywords: 'harga warungin, paket warungin, harga sistem kasir, paket UMKM, sistem kasir murah, aplikasi kasir warung, software toko, sistem kasir online',
 });
 
+const availableAddons = ref<any[]>([]);
+const loadingAddons = ref(false);
+
+const filteredAvailableAddons = computed(() => {
+  // Sort: non-API addons first, API addons (coming soon) at the end
+  return availableAddons.value.sort((a, b) => {
+    const aIsApi = a?.requiresApi === true || a?.comingSoon === true;
+    const bIsApi = b?.requiresApi === true || b?.comingSoon === true;
+    if (aIsApi && !bIsApi) return 1;
+    if (!aIsApi && bIsApi) return -1;
+    return 0;
+  });
+});
+
+const loadAddons = async () => {
+  loadingAddons.value = true;
+  try {
+    const response = await api.get('/addons/available');
+    availableAddons.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading addons:', error);
+    availableAddons.value = [];
+  } finally {
+    loadingAddons.value = false;
+  }
+};
+
 const formatAddonPrice = (price: number) => {
   return (price / 1000).toFixed(0);
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  await loadAddons();
 });
 </script>
 
