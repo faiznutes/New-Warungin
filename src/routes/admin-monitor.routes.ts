@@ -48,14 +48,18 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
         // Get CPU and memory stats (if running)
         if (container.status === 'running') {
           try {
+            // Escape container name for shell safety
+            const escapedName = container.name.replace(/[^a-zA-Z0-9_-]/g, '');
             const { stdout: statsOutput } = await execAsync(
-              `docker stats ${container.name} --no-stream --format "{{.CPUPerc}}|{{.MemUsage}}"`
+              `docker stats ${escapedName} --no-stream --format "{{.CPUPerc}}|{{.MemUsage}}" 2>/dev/null || echo "N/A|N/A"`
             );
             const [cpu, memory] = statsOutput.trim().split('|');
-            container.cpu = cpu || 'N/A';
-            container.memory = memory || 'N/A';
+            container.cpu = cpu && cpu !== 'N/A' ? cpu.trim() : 'N/A';
+            container.memory = memory && memory !== 'N/A' ? memory.trim() : 'N/A';
           } catch {
             // Stats might fail for some containers, ignore
+            container.cpu = 'N/A';
+            container.memory = 'N/A';
           }
         }
       } catch {
@@ -249,6 +253,22 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
         name: 'Nginx',
         status: 'unhealthy',
         message: 'Web server is not ready',
+      });
+    }
+
+    // Check Cloudflared (if exists)
+    try {
+      await execAsync('docker exec warungin-cloudflared cloudflared --version');
+      services.push({
+        name: 'Cloudflared',
+        status: 'healthy',
+        message: 'Tunnel service is ready',
+      });
+    } catch {
+      services.push({
+        name: 'Cloudflared',
+        status: 'unknown',
+        message: 'Tunnel service is not accessible',
       });
     }
 
