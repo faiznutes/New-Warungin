@@ -851,39 +851,10 @@ export const deleteTenant = async (id: string) => {
   }
 
   // Delete tenant and all related data in transaction
+  // IMPORTANT: Order matters due to foreign key constraints
+  // Delete in reverse dependency order: child tables first, then parent tables
   await prisma.$transaction(async (tx) => {
-    // Delete all related data first (due to foreign key constraints)
-    // Delete users
-    await tx.user.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete subscriptions
-    await tx.subscription.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete subscription history
-    await tx.subscriptionHistory.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete tenant addons
-    await tx.tenantAddon.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete receipt templates
-    await tx.receiptTemplate.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete products
-    await tx.product.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete orders and order items
+    // 1. Delete OrderItems first (depends on Order)
     const orders = await tx.order.findMany({
       where: { tenantId: id },
       select: { id: true },
@@ -895,51 +866,97 @@ export const deleteTenant = async (id: string) => {
       });
     }
 
-    await tx.order.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete customers
-    await tx.customer.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete members
-    await tx.member.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete outlets
-    await tx.outlet.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // Delete transactions
+    // 2. Delete Transactions (depends on Order)
     await tx.transaction.deleteMany({
       where: { tenantId: id },
     });
 
-    // Delete payment mappings
+    // 3. Delete Orders (depends on User, Tenant, Customer, Member, Outlet)
+    await tx.order.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 4. Delete ProductAdjustments (depends on User, Product, Tenant)
+    await tx.productAdjustment.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 5. Delete CashShifts (depends on User, Tenant)
+    await tx.cashShift.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 6. Delete PaymentMappings (depends on Order)
     await tx.paymentMapping.deleteMany({
       where: { tenantId: id },
     });
 
-    // Delete reports
+    // 7. Delete Products (depends on Tenant)
+    await tx.product.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 8. Delete Customers (depends on Tenant)
+    await tx.customer.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 9. Delete Members (depends on Tenant)
+    await tx.member.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 10. Delete Outlets (depends on Tenant)
+    await tx.outlet.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 11. Delete Reports (depends on Tenant)
     await tx.report.deleteMany({
       where: { tenantId: id },
     });
 
-    // Delete discounts
+    // 12. Delete Discounts (depends on Tenant)
     await tx.discount.deleteMany({
       where: { tenantId: id },
     });
 
-    // Delete employees
+    // 13. Delete Employees (depends on Tenant)
     await tx.employee.deleteMany({
       where: { tenantId: id },
     });
 
-    // Finally, delete the tenant
+    // 14. Delete Users (depends on Tenant) - NOW SAFE because Orders are deleted
+    await tx.user.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 15. Delete Subscriptions (depends on Tenant)
+    await tx.subscription.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 16. Delete Subscription History (depends on Tenant)
+    await tx.subscriptionHistory.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 17. Delete Tenant Addons (depends on Tenant)
+    await tx.tenantAddon.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 18. Delete Receipt Templates (depends on Tenant)
+    await tx.receiptTemplate.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 19. Delete BackupLogs (depends on Tenant)
+    await tx.backupLog.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 20. Finally, delete the tenant
     await tx.tenant.delete({
       where: { id },
     });
