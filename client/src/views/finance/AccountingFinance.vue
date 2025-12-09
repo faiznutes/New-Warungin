@@ -77,17 +77,10 @@
         <router-link
           to="/app/profit-loss"
           class="px-4 py-2 font-semibold border-b-2 transition"
-          :class="activeTab === 'profit-loss' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          :class="'border-yellow-600 text-yellow-600'"
         >
           Laba Rugi
         </router-link>
-        <button
-          @click="activeTab = 'profit-loss'"
-          class="px-4 py-2 font-semibold border-b-2 transition hidden"
-          :class="activeTab === 'profit-loss' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
-        >
-          Laba Rugi (Legacy)
-        </button>
         <button
           @click="activeTab = 'balance-sheet'"
           class="px-4 py-2 font-semibold border-b-2 transition"
@@ -102,52 +95,6 @@
         >
           Cash Flow
         </button>
-      </div>
-
-      <!-- Profit & Loss -->
-      <div v-if="activeTab === 'profit-loss'" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Pendapatan</h4>
-            <div class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Penjualan</span>
-                <span class="font-semibold">{{ formatCurrency(profitLoss.revenue) }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Diskon</span>
-                <span class="font-semibold text-red-600">-{{ formatCurrency(profitLoss.discount) }}</span>
-              </div>
-              <div class="border-t pt-2 flex justify-between font-semibold">
-                <span>Total Pendapatan</span>
-                <span>{{ formatCurrency(profitLoss.revenue - profitLoss.discount) }}</span>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Biaya</h4>
-            <div class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">HPP (COGS)</span>
-                <span class="font-semibold">{{ formatCurrency(profitLoss.cogs) }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Biaya Operasional</span>
-                <span class="font-semibold">{{ formatCurrency(profitLoss.operatingExpenses) }}</span>
-              </div>
-              <div class="border-t pt-2 flex justify-between font-semibold">
-                <span>Total Biaya</span>
-                <span>{{ formatCurrency(profitLoss.cogs + profitLoss.operatingExpenses) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="border-t-2 pt-4 flex justify-between text-lg font-bold">
-          <span>Laba Bersih</span>
-          <span :class="profitLoss.netProfit >= 0 ? 'text-green-600' : 'text-red-600'">
-            {{ formatCurrency(profitLoss.netProfit) }}
-          </span>
-        </div>
       </div>
 
       <!-- Balance Sheet -->
@@ -337,7 +284,7 @@ interface CashFlow {
   total: number;
 }
 
-const activeTab = ref('profit-loss');
+const activeTab = ref('balance-sheet');
 const loading = ref(false);
 const showPeriodModal = ref(false);
 
@@ -349,13 +296,7 @@ const financialSummary = ref<FinancialSummary>({
   profitMargin: 0,
 });
 
-const profitLoss = ref<ProfitLoss>({
-  revenue: 0,
-  discount: 0,
-  cogs: 0,
-  operatingExpenses: 0,
-  netProfit: 0,
-});
+// ProfitLoss removed - using separate page /app/profit-loss
 
 const balanceSheet = ref<BalanceSheet>({
   cash: 0,
@@ -384,15 +325,13 @@ const loadFinancialData = async () => {
 
   loading.value = true;
   try {
-    const [summaryRes, profitLossRes, balanceRes, cashFlowRes] = await Promise.all([
+    const [summaryRes, balanceRes, cashFlowRes] = await Promise.all([
       api.get('/finance/summary', { params: periodForm.value }).catch(() => ({ data: financialSummary.value })),
-      api.get('/finance/profit-loss', { params: periodForm.value }).catch(() => ({ data: profitLoss.value })),
       api.get('/finance/balance-sheet', { params: periodForm.value }).catch(() => ({ data: balanceSheet.value })),
       api.get('/finance/cash-flow', { params: periodForm.value }).catch(() => ({ data: cashFlow.value })),
     ]);
 
     financialSummary.value = summaryRes.data;
-    profitLoss.value = profitLossRes.data;
     balanceSheet.value = balanceRes.data;
     cashFlow.value = cashFlowRes.data;
     showPeriodModal.value = false;
@@ -407,7 +346,6 @@ const exportFinancialReport = async () => {
   try {
     await generateFinancialReportPDF({
       summary: financialSummary.value,
-      profitLoss: profitLoss.value,
       balanceSheet: balanceSheet.value,
       cashFlow: cashFlow.value,
       startDate: periodForm.value.startDate,

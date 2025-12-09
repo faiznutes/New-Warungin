@@ -11,7 +11,7 @@ export interface LoginInput {
 
 // Register removed - only super admin can create tenants
 
-export const login = async (input: LoginInput) => {
+export const login = async (input: LoginInput, req?: any) => {
   // Email and password are already normalized by Zod validator
   const email = input.email; // Already lowercase and trimmed
   const password = input.password; // Already trimmed
@@ -255,9 +255,33 @@ export const login = async (input: LoginInput) => {
   const familyId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
   await setTokenFamily(user.id, familyId);
 
+  // Create session in Redis (if available)
+  let sessionId: string | null = null;
+  try {
+    const sessionService = (await import('./session.service')).default;
+    const deviceInfo = req?.headers['user-agent'] || 'Unknown Device';
+    const ipAddress = req?.ip || req?.socket?.remoteAddress || 'Unknown IP';
+    const session = await sessionService.createSession(
+      user.id,
+      tenantId || null,
+      deviceInfo,
+      ipAddress,
+      req?.headers['user-agent'] || undefined
+    );
+    sessionId = session.id;
+    logger.info('Session created during login', { userId: user.id, sessionId });
+  } catch (sessionError: any) {
+    // If Redis is not available, continue without session (non-critical)
+    logger.warn('Failed to create session during login (Redis may not be available):', {
+      error: sessionError.message,
+      userId: user.id,
+    });
+  }
+
   const response = {
     token,
     refreshToken,
+    sessionId, // Include sessionId in response
     user: {
       id: user.id,
       email: user.email,

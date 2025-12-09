@@ -117,7 +117,7 @@ router.post('/login', authLimiter, async (req, res, next) => {
     const result = await login({
       email: validated.email,
       password: validated.password,
-    });
+    }, req);
     
     // Log successful login
     if (result.user) {

@@ -326,15 +326,49 @@ class AnalyticsService {
   }
 
   async getCustomReports(tenantId: string): Promise<CustomReport[]> {
-    // In production, fetch from custom_reports table
-    return [];
+    // Fetch from report_templates table with type CUSTOM
+    const templates = await prisma.reportTemplate.findMany({
+      where: {
+        tenantId,
+        type: 'CUSTOM',
+        isActive: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return templates.map(template => ({
+      id: template.id,
+      name: template.name,
+      description: template.description || undefined,
+      dataType: (template.config as any)?.dataType || 'SALES',
+      metrics: (template.config as any)?.metrics || [],
+    }));
   }
 
   async createCustomReport(tenantId: string, data: CreateCustomReportInput): Promise<CustomReport> {
-    // In production, save to custom_reports table
+    // Save to report_templates table with type CUSTOM
+    const template = await prisma.reportTemplate.create({
+      data: {
+        tenantId,
+        name: data.name,
+        description: `Custom report untuk ${data.dataType}`,
+        type: 'CUSTOM',
+        config: {
+          dataType: data.dataType,
+          metrics: data.metrics,
+          startDate: data.startDate,
+          endDate: data.endDate,
+        },
+        isActive: true,
+      },
+    });
+
     return {
-      id: `report-${Date.now()}`,
-      name: data.name,
+      id: template.id,
+      name: template.name,
+      description: template.description || undefined,
       dataType: data.dataType,
       metrics: data.metrics,
     };

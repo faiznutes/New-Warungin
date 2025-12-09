@@ -248,14 +248,6 @@ export class ReportService {
       // Get all subscriptions within date range
       const subscriptions = await readReplica.subscription.findMany({
         where: subscriptionFilter.createdAt ? subscriptionFilter : undefined,
-        include: {
-          tenant: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
         select: {
           id: true,
           tenantId: true,
