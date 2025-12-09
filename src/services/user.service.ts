@@ -105,6 +105,20 @@ export class UserService {
   }
 
   async createUser(data: CreateUserInput, tenantId: string, userRole?: string) {
+    // Check if trying to create SUPERVISOR role - requires SUPERVISOR_ROLE addon
+    if (data.role === 'SUPERVISOR' && userRole !== 'SUPER_ADMIN') {
+      const tenantAddons = await addonService.getTenantAddons(tenantId);
+      const addonsData = Array.isArray(tenantAddons?.data) ? tenantAddons.data : [];
+      const hasSupervisorAddon = addonsData.some(
+        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && addon.status === 'ACTIVE'
+      );
+      if (!hasSupervisorAddon) {
+        const error = new Error('Supervisor Role addon is required to create users with SUPERVISOR role. Please subscribe to Supervisor Role addon first.') as Error & { statusCode?: number };
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+
     // Skip limit check for SUPER_ADMIN
     if (userRole !== 'SUPER_ADMIN') {
       // Check limit for ADD_USERS addon

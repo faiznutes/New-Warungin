@@ -167,11 +167,11 @@
     </div>
   </div>
 
-  <!-- User Edit Modal -->
+  <!-- User Edit/Create Modal -->
   <UserEditModal
-    :show="showEditModal"
+    :show="showEditModal || showCreateModal"
     :user="editingUser"
-    @close="showEditModal = false; editingUser = null"
+    @close="showEditModal = false; showCreateModal = false; editingUser = null"
     @save="handleSaveUser"
   />
 </template>
@@ -272,19 +272,26 @@ const editUser = (user: any) => {
 const handleSaveUser = async (userData: any) => {
   try {
     if (editingUser.value) {
+      // Update existing user
       await api.put(`/users/${editingUser.value.id}`, userData);
+      await showSuccess('Pengguna berhasil diupdate');
+    } else {
+      // Create new user
+      await api.post('/users', userData);
+      await showSuccess('Pengguna berhasil ditambahkan');
     }
     // Close modal first
     showEditModal.value = false;
+    showCreateModal.value = false;
     editingUser.value = null;
-    // Wait a bit for modal to close, then show success
+    // Wait a bit for modal to close, then reload
     await new Promise(resolve => setTimeout(resolve, 100));
-    await showSuccess('Pengguna berhasil diupdate');
     await loadUsers(pagination.value.page);
   } catch (error: any) {
     console.error('Error saving user:', error);
     // Close modal first even on error
     showEditModal.value = false;
+    showCreateModal.value = false;
     editingUser.value = null;
     // Wait a bit for modal to close, then show error
     await new Promise(resolve => setTimeout(resolve, 100));

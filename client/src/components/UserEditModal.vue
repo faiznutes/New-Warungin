@@ -52,10 +52,13 @@
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="ADMIN_TENANT">Admin</option>
-                    <option value="SUPERVISOR">Supervisor</option>
+                    <option v-if="hasSupervisorRole" value="SUPERVISOR">Supervisor</option>
                     <option value="CASHIER">Kasir</option>
                     <option value="KITCHEN">Dapur</option>
                   </select>
+                  <p v-if="!hasSupervisorRole && form.role === 'SUPERVISOR'" class="mt-1 text-xs text-red-600">
+                    Supervisor Role addon diperlukan untuk membuat user dengan role Supervisor
+                  </p>
                 </div>
 
                 <div>
@@ -478,6 +481,27 @@ const handleSelectAllStores = (checked: boolean) => {
   } else {
     // Deselect all
     permissions.value.allowedStoreIds = [];
+  }
+};
+
+// Load active addons on mount
+const loadActiveAddons = async () => {
+  try {
+    const response = await api.get('/addons');
+    if (response.data) {
+      if (Array.isArray(response.data)) {
+        activeAddons.value = response.data;
+      } else if (Array.isArray(response.data.data)) {
+        activeAddons.value = response.data.data;
+      } else if (Array.isArray(response.data.addons)) {
+        activeAddons.value = response.data.addons;
+      } else {
+        activeAddons.value = [];
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load active addons:', error);
+    activeAddons.value = [];
   }
 };
 
