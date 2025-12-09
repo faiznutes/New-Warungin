@@ -318,13 +318,15 @@ const loadMessages = async () => {
     const response = await api.get('/contact', { params });
     // Handle response format - check if data exists
     if (response.data && response.data.data) {
-    messages.value = response.data.data;
+      messages.value = response.data.data;
       pagination.value = response.data.pagination || {
         page: 1,
         limit: 20,
         total: 0,
         totalPages: 0,
       };
+      // Update unread count setelah load messages
+      previousUnreadCount.value = messages.value.filter((m: any) => !m.isRead).length;
     } else {
       messages.value = [];
       pagination.value = {
@@ -333,6 +335,7 @@ const loadMessages = async () => {
         total: 0,
         totalPages: 0,
       };
+      previousUnreadCount.value = 0;
     }
   } catch (error: any) {
     console.error('Error loading messages:', error);
@@ -469,14 +472,44 @@ const formatDate = (date: string | Date) => {
   });
 };
 
-// Auto-refresh untuk pesan baru
+// Auto-refresh untuk pesan baru - hanya refresh jika ada pesan baru
 let refreshInterval: NodeJS.Timeout | null = null;
+let previousUnreadCount = ref(0);
+
+const checkForNewMessages = async () => {
+  try {
+    // Cek jumlah pesan belum dibaca
+    const response = await api.get('/contact', {
+      params: {
+        page: 1,
+        limit: 1,
+        isRead: 'false',
+      },
+    });
+    
+    const currentUnreadCount = response.data?.pagination?.total || 0;
+    
+    // Jika jumlah pesan belum dibaca bertambah, refresh halaman
+    if (currentUnreadCount > previousUnreadCount.value) {
+      await loadMessages();
+      // Tampilkan notifikasi jika ada pesan baru
+      if (currentUnreadCount > previousUnreadCount.value && previousUnreadCount.value > 0) {
+        await showSuccess(`Ada ${currentUnreadCount - previousUnreadCount.value} pesan baru!`);
+      }
+    }
+    
+    previousUnreadCount.value = currentUnreadCount;
+  } catch (error: any) {
+    // Silent fail untuk polling
+    console.error('Error checking for new messages:', error);
+  }
+};
 
 const startAutoRefresh = () => {
-  // Refresh setiap 30 detik untuk mengecek pesan baru
+  // Cek setiap 10 detik untuk pesan baru (lebih efisien)
   refreshInterval = setInterval(() => {
-    loadMessages();
-  }, 30000); // 30 detik
+    checkForNewMessages();
+  }, 10000); // 10 detik
 };
 
 const stopAutoRefresh = () => {
@@ -486,13 +519,14 @@ const stopAutoRefresh = () => {
   }
 };
 
-onMounted(() => {
-  loadMessages();
+onMounted(async () => {
+  await loadMessages();
+  // Set initial unread count
+  previousUnreadCount.value = messages.value.filter((m: any) => !m.isRead).length;
   startAutoRefresh();
 });
 
 // Cleanup interval saat component unmount
-import { onUnmounted } from 'vue';
 onUnmounted(() => {
   stopAutoRefresh();
 });
