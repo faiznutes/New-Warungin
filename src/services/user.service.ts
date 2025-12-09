@@ -110,7 +110,9 @@ export class UserService {
     const planFeaturesService = (await import('./plan-features.service')).default;
     const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'users');
     if (!limitCheck.allowed) {
-      throw new Error(limitCheck.message || `User limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more users.`);
+      const error = new Error(limitCheck.message || `User limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more users.`) as Error & { statusCode?: number };
+      error.statusCode = 400;
+      throw error;
     }
 
     // Generate password if not provided

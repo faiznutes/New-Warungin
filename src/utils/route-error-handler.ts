@@ -157,6 +157,20 @@ export function handleRouteError(
     return;
   }
 
+  // Handle limit/business logic errors (400 Bad Request)
+  if (err.message?.includes('limit') ||
+      err.message?.includes('Limit') ||
+      err.message?.includes('tercapai') ||
+      err.message?.includes('reached') ||
+      err.message?.includes('Upgrade') ||
+      err.message?.includes('addon')) {
+    res.status(400).json({
+      error: 'LIMIT_ERROR',
+      message: err.message || 'Limit has been reached',
+    });
+    return;
+  }
+
   // Handle custom status codes
   if (err.statusCode && err.statusCode >= 400 && err.statusCode < 600) {
     res.status(err.statusCode).json({
