@@ -145,17 +145,29 @@
               <span class="font-medium">Backup Management</span>
             </router-link>
 
-            <router-link
-              to="/app/superadmin/server-monitor"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
-              active-class="bg-blue-700 text-white font-semibold shadow-lg"
-              @click="closeSidebarOnMobile"
-            >
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span class="font-medium">Server Monitor</span>
-            </router-link>
+          <router-link
+            to="/app/superadmin/server-monitor"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
+            active-class="bg-blue-700 text-white font-semibold shadow-lg"
+            @click="closeSidebarOnMobile"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span class="font-medium">Server Monitor</span>
+          </router-link>
+
+          <router-link
+            to="/app/superadmin/system-info"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-blue-100 hover:bg-blue-700 hover:text-white group"
+            active-class="bg-blue-700 text-white font-semibold shadow-lg"
+            @click="closeSidebarOnMobile"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">Informasi Sistem</span>
+          </router-link>
           </div>
 
           <!-- Business Analytics Menu Section (Always visible for Super Admin) -->
@@ -295,6 +307,7 @@ const pageTitle = computed(() => {
     '/app/settings/retention': 'Retention Management',
     '/app/superadmin/backups': 'Backup Management',
     '/app/superadmin/server-monitor': 'Server Monitor',
+    '/app/superadmin/system-info': 'Informasi Sistem',
     '/app/superadmin/contact-messages': 'Kelola Pesan',
     '/app/analytics': 'Advanced Analytics',
     '/app/finance': 'Keuangan',

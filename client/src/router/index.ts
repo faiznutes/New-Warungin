@@ -151,6 +151,12 @@ const router = createRouter({
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {
+          path: 'superadmin/system-info',
+          name: 'system-info',
+          component: () => import('../views/superadmin/SystemInfo.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
           path: 'settings/system',
           name: 'system-settings',
           component: () => import('../views/settings/SystemSettings.vue'),

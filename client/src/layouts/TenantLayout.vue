@@ -809,14 +809,14 @@ const hasInventoryAccess = computed(() => {
   return plan === 'PRO' || plan === 'ENTERPRISE';
 });
 
-// Menu expand/collapse state
+// Menu expand/collapse state - semua tertutup saat login
 const expandedMenus = ref({
-  operasional: true,
-  laporan: true,
+  operasional: false,
+  laporan: false,
   marketing: false,
   inventory: false,
-  manajemen: true,
-  pengaturan: true,
+  manajemen: false,
+  pengaturan: false,
 });
 
 // Toggle menu section - close other menus when opening one
@@ -875,15 +875,8 @@ const autoExpandMenu = () => {
 
 // Load saved menu state from localStorage
 const loadMenuState = () => {
-  const saved = localStorage.getItem('expandedMenus');
-  if (saved) {
-    try {
-      expandedMenus.value = { ...expandedMenus.value, ...JSON.parse(saved) };
-    } catch (e) {
-      console.error('Failed to load menu state:', e);
-    }
-  }
-  // Auto-expand based on current route
+  // Jangan load dari localStorage - selalu mulai dengan semua tertutup
+  // Auto-expand based on current route (hanya untuk menu yang sesuai route)
   autoExpandMenu();
 };
 
