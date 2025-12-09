@@ -340,7 +340,16 @@
               </span>
             </p>
           </div>
-          </div>
+          <button
+            @click="showCreateUserModal = true"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium flex items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+            Tambah Pengguna
+          </button>
+        </div>
         
           <div v-if="loadingUsers" class="flex items-center justify-center py-8">
             <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -465,6 +474,15 @@
               </span>
             </p>
           </div>
+          <button
+            @click="showCreateStoreModal = true"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium flex items-center gap-2"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Buat Toko
+          </button>
         </div>
         
         <!-- Outlet Limit Progress Bar -->
@@ -931,6 +949,63 @@
       </div>
     </div>
 
+    <!-- Create Store Modal -->
+    <div
+      v-if="showCreateStoreModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      @click.self="showCreateStoreModal = false"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Buat Toko Baru</h3>
+        <form @submit.prevent="handleCreateStore" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Toko <span class="text-red-500">*</span></label>
+            <input
+              v-model="createStoreForm.name"
+              type="text"
+              required
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              placeholder="Nama toko"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+            <input
+              v-model="createStoreForm.address"
+              type="text"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              placeholder="Alamat toko"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+            <input
+              v-model="createStoreForm.phone"
+              type="text"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              placeholder="Nomor telepon"
+            />
+          </div>
+          <div class="flex gap-3">
+            <button
+              type="button"
+              @click="showCreateStoreModal = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              :disabled="creatingStore"
+              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ creatingStore ? 'Membuat...' : 'Buat Toko' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Create User Modal -->
     <div
       v-if="showCreateUserModal"
@@ -1267,6 +1342,7 @@ const showAddAddonModal = ref(false);
 const showEditUserModal = ref(false);
 const showCreateTenantModal = ref(false);
 const showCreateUserModal = ref(false);
+const showCreateStoreModal = ref(false);
 const showDeactivateSubscriptionModal = ref(false);
 const deactivatingSubscription = ref(false);
 const loadingUsers = ref(false);
@@ -1309,6 +1385,12 @@ const editUserForm = ref({
   isActive: true,
   password: '',
 });
+const createStoreForm = ref({
+  name: '',
+  address: '',
+  phone: '',
+});
+const creatingStore = ref(false);
 const planForm = ref({
   subscriptionPlan: 'BASIC' as 'BASIC' | 'PRO' | 'ENTERPRISE',
   durationDays: 30, // Default 30 hari
@@ -2375,6 +2457,42 @@ const handleCreateUser = async () => {
     await showError(errorMessage);
   } finally {
     creatingUser.value = false;
+  }
+};
+
+const handleCreateStore = async () => {
+  if (!createStoreForm.value.name) {
+    await showError('Nama toko wajib diisi');
+    return;
+  }
+
+  if (!tenant.value?.id) {
+    await showError('Tenant ID tidak ditemukan');
+    return;
+  }
+
+  creatingStore.value = true;
+  try {
+    await api.post('/outlets', {
+      name: createStoreForm.value.name,
+      address: createStoreForm.value.address || undefined,
+      phone: createStoreForm.value.phone || undefined,
+    });
+
+    showCreateStoreModal.value = false;
+    createStoreForm.value = {
+      name: '',
+      address: '',
+      phone: '',
+    };
+
+    await showSuccess('Toko berhasil dibuat!');
+    await loadStores();
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Gagal membuat toko';
+    await showError(errorMessage);
+  } finally {
+    creatingStore.value = false;
   }
 };
 
