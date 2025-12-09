@@ -211,7 +211,7 @@ router.put(
       }
 
       const subscriptionId = req.params.id;
-      const { plan, amount, status } = req.body;
+      const { plan, amount, status, purchasedBy } = req.body;
       
       // Check if subscription exists
       const subscription = await prisma.subscription.findUnique({
@@ -229,6 +229,7 @@ router.put(
           ...(plan && { plan }),
           ...(amount !== undefined && { amount: Number(amount) }),
           ...(status && { status }),
+          ...(purchasedBy && { purchasedBy }),
         },
       });
 

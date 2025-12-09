@@ -235,7 +235,7 @@ router.put(
       }
 
       const addonId = req.params.id;
-      const { status } = req.body;
+      const { status, purchasedBy } = req.body;
       
       // Check if addon exists
       const addon = await prisma.tenantAddon.findUnique({
@@ -251,6 +251,7 @@ router.put(
         where: { id: addonId },
         data: {
           ...(status && { status }),
+          ...(purchasedBy && { purchasedBy }),
         },
       });
 

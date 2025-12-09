@@ -453,21 +453,14 @@
                 </span>
               </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Dibeli Oleh</label>
-                  <div class="mt-1 flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      :checked="selectedSubscription.purchasedBy === 'ADMIN'"
-                      disabled
-                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span class="text-sm text-gray-900 font-medium">
-                      {{ selectedSubscription.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
-                    </span>
-                  </div>
-                  <p class="mt-1 text-xs text-gray-500 italic">
-                    {{ selectedSubscription.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
-                  </p>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
+                  <select
+                    v-model="selectedSubscriptionPurchasedBy"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="SELF">Dibeli Sendiri</option>
+                    <option value="ADMIN">Dibeli oleh Admin</option>
+                  </select>
                 </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Tanggal Dibuat</label>
@@ -481,12 +474,24 @@
               </div>
             </div>
             
-            <div class="flex justify-end pt-4 border-t">
+            <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showSubscriptionModal = false"
-                class="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
                 Tutup
+              </button>
+              <button
+                @click="saveSubscriptionPurchasedBy"
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+              >
+                Simpan
+              </button>
+              <button
+                @click="deleteSubscription(selectedSubscription)"
+                class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+              >
+                Hapus
               </button>
             </div>
           </div>
@@ -548,21 +553,14 @@
                 <p class="mt-1 text-sm text-gray-500 font-mono">{{ selectedAddon.id }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Dibeli Oleh</label>
-                <div class="mt-1 flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    :checked="selectedAddon.purchasedBy === 'ADMIN'"
-                    disabled
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span class="text-sm text-gray-900 font-medium">
-                    {{ selectedAddon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
-                  </span>
-                </div>
-                <p class="mt-1 text-xs text-gray-500 italic">
-                  {{ selectedAddon.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli sendiri' }}
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
+                <select
+                  v-model="selectedAddonPurchasedBy"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="SELF">Dibeli Sendiri</option>
+                  <option value="ADMIN">Dibeli oleh Admin</option>
+                </select>
               </div>
             </div>
             
@@ -573,36 +571,17 @@
               >
                 Tutup
               </button>
-              <router-link
-                :to="`/app/tenants/${selectedAddon.tenantId}`"
+              <button
+                @click="saveAddonPurchasedBy"
                 class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
-                @click="showAddonModal = false"
               >
-                Lihat Tenant
-              </router-link>
-              <button
-                @click="openEditAddonModal(selectedAddon)"
-                class="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
-              >
-                Edit
-              </button>
-              <button
-                @click="openAddAdminModal(selectedAddon.tenantId)"
-                class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition"
-              >
-                Tambah Admin
-              </button>
-              <button
-                @click="goToTenantPurchase(selectedAddon.tenantId)"
-                class="px-4 py-2 text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition"
-              >
-                Beli Sendiri
+                Simpan
               </button>
               <button
                 @click="deleteAddon(selectedAddon)"
                 class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
               >
-                Hapus Addon
+                Hapus
               </button>
             </div>
           </div>
@@ -1063,9 +1042,29 @@ const bulkDeleteAddons = async () => {
   }
 };
 
+const selectedSubscriptionPurchasedBy = ref<'SELF' | 'ADMIN'>('SELF');
+
 const editSubscription = async (subscription: any) => {
   selectedSubscription.value = subscription;
+  selectedSubscriptionPurchasedBy.value = subscription.purchasedBy || 'SELF';
   showSubscriptionModal.value = true;
+};
+
+const saveSubscriptionPurchasedBy = async () => {
+  if (!selectedSubscription.value) return;
+  
+  try {
+    await api.put(`/subscriptions/${selectedSubscription.value.id}`, {
+      purchasedBy: selectedSubscriptionPurchasedBy.value,
+    });
+    
+    await showSuccess('Dibeli Oleh berhasil diperbarui');
+    await loadReport();
+    showSubscriptionModal.value = false;
+  } catch (error: any) {
+    console.error('Error updating subscription purchasedBy:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui Dibeli Oleh');
+  }
 };
 
 const openEditSubscriptionModal = (subscription: any) => {
@@ -1235,9 +1234,29 @@ const printSubscription = async (subscription: any) => {
   }
 };
 
+const selectedAddonPurchasedBy = ref<'SELF' | 'ADMIN'>('SELF');
+
 const editAddon = async (addon: any) => {
   selectedAddon.value = addon;
+  selectedAddonPurchasedBy.value = addon.purchasedBy || 'SELF';
   showAddonModal.value = true;
+};
+
+const saveAddonPurchasedBy = async () => {
+  if (!selectedAddon.value) return;
+  
+  try {
+    await api.put(`/addons/${selectedAddon.value.id}`, {
+      purchasedBy: selectedAddonPurchasedBy.value,
+    });
+    
+    await showSuccess('Dibeli Oleh berhasil diperbarui');
+    await loadReport();
+    showAddonModal.value = false;
+  } catch (error: any) {
+    console.error('Error updating addon purchasedBy:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui Dibeli Oleh');
+  }
 };
 
 const deleteAddon = async (addon: any) => {
