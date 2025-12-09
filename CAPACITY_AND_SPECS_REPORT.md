@@ -50,30 +50,52 @@ Total System Usage: ~2.3% CPU | ~247 MiB Memory (4.3% of 5.7GB)
 
 ## 💾 Storage Analysis
 
-### Docker Storage Breakdown
+### System Disk Partitions
 ```
-Images:         1.148 GB (6 images, fully reclaimable)
-Containers:     493.1 MB (6 running, 0 reclaimable)
-Volumes:        107.9 MB (3 volumes, 51.26 MB reclaimable)
-Build Cache:    1.525 GB (48 cached builds, 933.9 MB reclaimable)
-
-Total Used:     ~3.3 GB
-Available:      ~13 GB (79% free)
+Partition       Size    Used     Available   Use%    Mount Point
+────────────────────────────────────────────────────────────────
+/dev/sda6       200GB   3.1GB    186GB       2%      /home (DOCKER) ⭐
+/dev/sda2       19GB    5.0GB    13GB        29%     / (ROOT)
+/dev/sda3       6.6GB   5.0GB    1.3GB       81%     /var (⚠️ Monitor)
+/dev/sda5       2.7GB   1.1MB    2.6GB       1%      /tmp
+/dev/sda1       975MB   8.8MB    966MB       1%      /boot/efi
 ```
 
-### Database Storage
-- **Current Size:** 49.2 MB (PostgreSQL data directory)
-- **Projected for 500 users + 50 tenants:**
-  - Assume ~1 MB per tenant + 200 KB per user = 150 MB baseline
-  - With orders/transactions/logs: ~500 MB - 1 GB estimated
-  - Safe allocation: 2-3 GB
-- **Current Disk:** 13 GB available = **✅ SAFE**
+### Docker Storage Details ✅ EXCELLENT
+```
+Location:       /home/docker (on 200GB partition)
+Current Usage:  4.4 GB (2% of 200GB)
+Images:         1.148 GB
+Containers:     493.1 MB
+Volumes:        107.9 MB
+Build Cache:    1.525 GB
+Overlay2 (FS):  ~4.0 GB
 
-### Projected Growth (6 months)
-- **Database:** 49.2 MB → ~2-3 GB
-- **Logs:** Current small | Plan 500 MB/month → 3 GB (6 months)
-- **Backups:** Daily backup strategy needed
-- **Total:** ~5-6 GB | **Headroom:** 7-8 GB remaining ✅
+Available Space: 186 GB (98% free!)
+Status:          ✅ **EXCEPTIONAL - More than enough**
+```
+
+### Storage Scaling Projection (12 months with 500 users)
+```
+Docker Images:       1.1 GB  →  1.5 GB  (minimal growth)
+Containers/Volumes:  0.6 GB  →  2.0 GB  (logging, data)
+Database:            49 MB   →  5 GB    (orders, transactions)
+Build Cache:         1.5 GB  →  2.0 GB  (cleanup regularly)
+Backups (rolling):   0 GB    →  20 GB   (7-day rotation daily)
+─────────────────────────────────────────────────────
+Total Growth:        ~3-5 GB → ~32-35 GB
+Available Space:     186 GB
+Margin:              150+ GB (Still 75%+ free!)
+Status:              ✅ **Can easily scale to 1000+ users**
+```
+
+### Storage Recommendations
+1. ✅ **Docker partition (/home):** 200GB is excellent
+2. ⚠️ **Root partition (/):** 13GB headroom is tight - Monitor /var
+   - Solution: Configure log rotation (keep 7 days max)
+   - Solution: Move logs to /home if space issues
+3. ✅ **No immediate action needed** - Plenty of headroom
+4. 📋 **Long-term:** Plan offsite backup storage for daily backups
 
 ---
 
@@ -129,17 +151,29 @@ Configured connection pool:         200 connections
 Headroom:                          100-150 connections (✅ SAFE)
 ```
 
-#### Memory Consumption
+### Memory Consumption
 ```
 Backend (Node.js):                  ~150-200 MiB (current 122.8 MiB)
 PostgreSQL:                         ~500 MiB - 1 GB (current 62 MiB)
 Redis:                             ~100-200 MiB (current 10.54 MiB)
 Nginx/Frontend:                    ~50-100 MiB (current 23.75 MiB)
 OS + Services:                     ~500 MiB
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 **Total Estimated:** 1.5 - 2.5 GB
 **Available:**       4.0 GB
 **Status:**          ✅ **SAFE WITH 40% HEADROOM**
+```
+
+#### Storage Consumption ✅ EXCELLENT
+```
+Docker Root:    4.4 GB used of 200 GB available
+Database:       49.2 MB current → 5 GB projected
+Logs:           ~100-500 MB/month
+Backups:        ~500 MB daily (7-day rotation = 3.5 GB)
+─────────────────────────────────────────────────────
+**Total at 500 users:** ~15-35 GB (very conservative)
+**Available:**           186 GB (on /home partition)
+**Status:**              ✅ **EXCEPTIONAL - More than sufficient**
 ```
 
 #### CPU Utilization
@@ -172,6 +206,11 @@ System overhead:                    10-20% (0.4-0.8 cores)
    - **Projected Peak:** 2.5 GB (44%)
    - **Safe:** Yes, but minimal buffer (1.2 GB free)
 
+4. **Root Partition (/var):** 6.6 GB total with 1.3 GB free (81% used)
+   - **Risk:** /var contains system logs, potential space issue
+   - **Fix:** Configure log rotation (7-day maximum)
+   - **Alternative:** Move application logs to /home partition
+
 ### ✅ Strengths
 - ✅ Excellent database indexing strategy
 - ✅ Redis caching implemented
@@ -180,6 +219,8 @@ System overhead:                    10-20% (0.4-0.8 cores)
 - ✅ Proper Docker resource limits set for backend/nginx
 - ✅ Health checks on all services
 - ✅ Connection pooling configured
+- ✅ **EXCEPTIONAL Docker storage:** 200GB partition (98% free) ⭐
+- ✅ **Plenty of space for logs, backups, and growth**
 
 ---
 
