@@ -23,6 +23,8 @@ RUN npm install --legacy-peer-deps || \
 # Copy source code
 COPY src ./src
 COPY prisma ./prisma
+# Exclude prisma.config.ts from build (it's only for Prisma CLI, not for TypeScript compilation)
+RUN rm -f prisma/prisma.config.ts || true
 COPY scripts ./scripts
 
 # Generate Prisma client with retry logic
