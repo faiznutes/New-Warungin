@@ -222,6 +222,13 @@ const loadCustomers = async (page = 1) => {
   
   // Debounce API call
   loadCustomersTimeout = setTimeout(async () => {
+    // For non-super-admin, ensure tenantId is available
+    if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+      console.error('Tenant ID not available for non-super-admin user');
+      await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+      return;
+    }
+    
     loading.value = true;
     try {
       const params: any = {

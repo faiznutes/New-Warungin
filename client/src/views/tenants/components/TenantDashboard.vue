@@ -137,8 +137,10 @@ import { ref, onMounted, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
+import { useAuthStore } from '../../../stores/auth';
 
 const { error: showError } = useNotification();
+const authStore = useAuthStore();
 
 interface Props {
   tenantId: string;
@@ -161,14 +163,24 @@ const recentOrders = ref<any[]>([]);
 const loadDashboard = async () => {
   if (!props.tenantId) return;
   
+  // Ensure tenantId is set in authStore and localStorage for API interceptor
+  authStore.setSelectedTenant(props.tenantId);
+  localStorage.setItem('selectedTenantId', props.tenantId);
+  
   loading.value = true;
   try {
+    // Prepare params for all API calls
+    const baseParams: any = {};
+    if (authStore.isSuperAdmin) {
+      baseParams.tenantId = props.tenantId;
+    }
+    
     // Load dashboard stats
     const [statsRes, ordersRes, productsRes, customersRes] = await Promise.all([
-      api.get('/dashboard/stats', { params: { tenantId: props.tenantId } }),
-      api.get('/orders', { params: { limit: 100 } }),
-      api.get('/products'),
-      api.get('/customers'),
+      api.get('/dashboard/stats', { params: { ...baseParams, tenantId: props.tenantId } }),
+      api.get('/orders', { params: { ...baseParams, limit: 100 } }),
+      api.get('/products', { params: baseParams }),
+      api.get('/customers', { params: baseParams }),
     ]);
 
     const orders = ordersRes.data.data || ordersRes.data || [];

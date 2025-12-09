@@ -692,11 +692,24 @@ const loadOrders = async (page = 1) => {
   
   // Debounce API call
   loadOrdersTimeout = setTimeout(async () => {
+    // For non-super-admin, ensure tenantId is available
+    if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+      console.error('Tenant ID not available for non-super-admin user');
+      await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+      return;
+    }
+    
     loading.value = true;
     try {
       const params: any = {
         page,
         limit: pagination.value.limit,
+      };
+      
+      // Ensure tenantId is set in params for SUPER_ADMIN
+      if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+        params.tenantId = authStore.selectedTenantId;
+      }
         ...(filters.value.status && { status: filters.value.status }),
         ...(filters.value.startDate && { startDate: filters.value.startDate }),
         ...(filters.value.endDate && {
