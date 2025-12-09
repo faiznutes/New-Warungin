@@ -47,8 +47,8 @@ RUN npm config set fetch-timeout 300000 && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 120000
 
-# Install dumb-init and wget for proper signal handling and healthcheck
-RUN apk add --no-cache dumb-init wget
+# Install dumb-init, wget, and docker-cli for Docker API access
+RUN apk add --no-cache dumb-init wget docker-cli
 
 # Copy package files
 COPY package*.json ./

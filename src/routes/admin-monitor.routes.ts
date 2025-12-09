@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import logger from '../utils/logger';
 
 const execAsync = promisify(exec);
 const router = Router();
@@ -21,6 +22,7 @@ const requireSuperAdmin = (req: Request, res: Response, next: any) => {
  */
 router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
+    logger.info('Fetching Docker containers list...');
     // Get container list using docker ps
     const { stdout: containersOutput } = await execAsync('docker ps -a --format "{{.ID}}|{{.Names}}|{{.Image}}|{{.Status}}|{{.Ports}}"');
     
@@ -67,9 +69,10 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
       }
     }
 
+    logger.info(`Successfully fetched ${containers.length} containers`);
     res.json({ containers });
   } catch (error: any) {
-    console.error('Error fetching containers:', error);
+    logger.error('Error fetching containers:', error);
     res.status(500).json({ message: 'Failed to fetch containers', error: error.message });
   }
 });
