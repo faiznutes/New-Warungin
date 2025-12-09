@@ -401,7 +401,7 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
 import ExportButton from '../../components/ExportButton.vue';
 import ProductModal from '../../components/ProductModal.vue';
-import ProductAdjustments from '../../components/ProductAdjustments.vue';
+import ProductAdjustments from './ProductAdjustments.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
