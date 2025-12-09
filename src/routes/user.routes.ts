@@ -224,7 +224,6 @@ router.post(
         tenantId = requireTenantId(req);
       }
 
-      const userRole = (req as any).user.role;
       const result = await userService.createUser(req.body, tenantId, userRole);
       
       // Log audit
