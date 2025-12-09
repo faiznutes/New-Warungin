@@ -395,9 +395,9 @@ export class AddonService {
   }
 
   async subscribeAddon(tenantId: string, data: SubscribeAddonInput) {
-    // Check if addon is coming soon
+    // Check if addon is coming soon or requires API
     const addonInfo = AVAILABLE_ADDONS.find(a => a.id === data.addonId);
-    if (addonInfo?.comingSoon) {
+    if (addonInfo && (addonInfo.comingSoon === true || addonInfo.requiresApi === true)) {
       throw new Error('Addon ini belum tersedia. Coming soon!');
     }
     

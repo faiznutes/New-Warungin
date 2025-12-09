@@ -91,6 +91,13 @@ router.post(
         return res.status(403).json({ message: 'Only tenant admin or super admin can subscribe to addons' });
       }
 
+      // Check if addon is API-based (coming soon) - block subscription
+      const { AVAILABLE_ADDONS } = await import('../services/addon.service');
+      const addonInfo = AVAILABLE_ADDONS.find(a => a.id === req.body.addonId);
+      if (addonInfo && (addonInfo.requiresApi === true || addonInfo.comingSoon === true)) {
+        return res.status(400).json({ message: 'Addon ini belum tersedia (Coming Soon)' });
+      }
+
       // For SUPER_ADMIN, addon is activated immediately without payment
       // For ADMIN_TENANT, this endpoint is called after payment webhook (or direct for testing)
       

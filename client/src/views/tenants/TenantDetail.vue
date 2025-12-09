@@ -552,9 +552,15 @@
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
-            class="border-2 border-gray-200 rounded-lg p-4 transition hover:border-blue-300"
+            class="border-2 rounded-lg p-4 transition"
+            :class="addon.comingSoon || addon.requiresApi ? 'border-gray-300 bg-gray-50 opacity-75' : 'border-gray-200 hover:border-blue-300'"
           >
-            <h4 class="font-semibold text-gray-900 mb-2">{{ addon.name }}</h4>
+            <div class="flex items-start justify-between mb-2">
+              <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
+              <span v-if="addon.comingSoon || addon.requiresApi" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+                Coming Soon
+              </span>
+            </div>
             <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
             
             <div class="flex items-center justify-between mb-3">
@@ -567,10 +573,18 @@
               Limit: {{ addon.defaultLimit }}
             </div>
             <button
+              v-if="!addon.comingSoon && !addon.requiresApi"
               @click="subscribeAddon(addon)"
               class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
             >
               Berlangganan
+            </button>
+            <button
+              v-else
+              disabled
+              class="w-full px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed text-sm font-medium"
+            >
+              Coming Soon
             </button>
           </div>
         </div>
@@ -814,16 +828,24 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Addon</h3>
         <div class="space-y-4">
-          <div
+            <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
-            class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition cursor-pointer"
-            :class="{ 'border-blue-500 bg-blue-50': selectedAddonForSubscribe?.id === addon.id }"
-            @click="selectedAddonForSubscribe = addon"
+            class="border-2 rounded-lg p-4 transition"
+            :class="addon.comingSoon || addon.requiresApi 
+              ? 'border-gray-300 bg-gray-50 opacity-75 cursor-not-allowed' 
+              : 'border-gray-200 hover:border-blue-300 cursor-pointer'"
+            :class="{ 'border-blue-500 bg-blue-50': selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon && !addon.requiresApi }"
+            @click="if (!addon.comingSoon && !addon.requiresApi) selectedAddonForSubscribe = addon"
           >
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <h4 class="font-semibold text-gray-900 mb-1">{{ addon.name }}</h4>
+                <div class="flex items-start justify-between mb-1">
+                  <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
+                  <span v-if="addon.comingSoon || addon.requiresApi" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded ml-2">
+                    Coming Soon
+                  </span>
+                </div>
                 <p class="text-sm text-gray-600 mb-2">{{ addon.description }}</p>
                 <div class="flex items-center space-x-2">
                   <span class="text-lg font-bold text-blue-600">{{ formatCurrency(addon.price) }}</span>
@@ -841,10 +863,10 @@
             </button>
             <button
               @click="handleSubscribeAddon"
-              :disabled="!selectedAddonForSubscribe"
+              :disabled="!selectedAddonForSubscribe || selectedAddonForSubscribe?.comingSoon || selectedAddonForSubscribe?.requiresApi"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Berlangganan
+              {{ selectedAddonForSubscribe?.comingSoon || selectedAddonForSubscribe?.requiresApi ? 'Coming Soon' : 'Berlangganan' }}
             </button>
           </div>
         </div>
@@ -1368,9 +1390,10 @@ const hasLimit = (addon: any) => {
 };
 
 // Filter available addons: semua addon selalu ditampilkan (bisa dibeli berkali-kali)
+// Sort: aktif di depan, coming soon di belakang
 const filteredAvailableAddons = computed(() => {
   // All addons are shown (can be purchased multiple times)
-  return safeFilter(availableAddons.value, (addon: any) => {
+  const filtered = safeFilter(availableAddons.value, (addon: any) => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
@@ -1378,6 +1401,15 @@ const filteredAvailableAddons = computed(() => {
     // Addon tanpa limit juga selalu ditampilkan (bisa dibeli berkali-kali untuk extend durasi)
     // Tidak perlu filter - semua addon bisa dibeli berkali-kali
     return true;
+  });
+  
+  // Sort: non-API addons first, API addons (coming soon) at the end
+  return filtered.sort((a, b) => {
+    const aIsApi = a?.requiresApi === true || a?.comingSoon === true;
+    const bIsApi = b?.requiresApi === true || b?.comingSoon === true;
+    if (aIsApi && !bIsApi) return 1;
+    if (!aIsApi && bIsApi) return -1;
+    return 0;
   });
 });
 
@@ -2228,6 +2260,12 @@ const handleReduceAddon = async () => {
 };
 
 const subscribeAddon = async (addon: AvailableAddon) => {
+  // Block subscription for API-based addons (coming soon)
+  if (addon.comingSoon || addon.requiresApi) {
+    await showError('Addon ini belum tersedia (Coming Soon)');
+    return;
+  }
+  
   try {
     // If Super Admin, directly subscribe addon without payment
     if (authStore.isSuperAdmin) {
@@ -2349,6 +2387,12 @@ const handleCreateStore = async () => {
 
 const handleSubscribeAddon = async () => {
   if (!selectedAddonForSubscribe.value) return;
+
+  // Block subscription for API-based addons (coming soon)
+  if (selectedAddonForSubscribe.value.comingSoon || selectedAddonForSubscribe.value.requiresApi) {
+    await showError('Addon ini belum tersedia (Coming Soon)');
+    return;
+  }
 
   try {
     // If Super Admin, directly subscribe addon without payment
