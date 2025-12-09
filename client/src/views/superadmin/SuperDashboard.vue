@@ -36,16 +36,6 @@
           <div class="flex-1">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Selamat Datang, Super Admin! 👋</h2>
             <p class="text-indigo-100 text-lg sm:text-xl mb-4">Kelola penjualan addon dan langganan dengan mudah</p>
-            <div class="flex flex-wrap gap-3 mt-4">
-              <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <p class="text-xs text-indigo-100">Total Pendapatan</p>
-                <p class="text-xl font-bold">{{ formatCurrency(globalReportData?.summary?.totalGlobalRevenue || 0) }}</p>
-              </div>
-              <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
-                <p class="text-xs text-indigo-100">Active Subscriptions</p>
-                <p class="text-xl font-bold">{{ stats?.overview?.activeSubscriptions || 0 }}</p>
-              </div>
-            </div>
           </div>
           <div class="hidden lg:block flex-shrink-0">
             <div class="w-40 h-40 bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
