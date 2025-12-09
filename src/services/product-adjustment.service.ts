@@ -28,7 +28,15 @@ export class ProductAdjustmentService {
   /**
    * Get all product adjustments for a tenant
    */
-  async getAdjustments(tenantId: string, query: { page?: number; limit?: number; productId?: string }) {
+  async getAdjustments(tenantId: string, query: { 
+    page?: number; 
+    limit?: number; 
+    productId?: string;
+    search?: string;
+    type?: string;
+    startDate?: string;
+    endDate?: string;
+  }) {
     const page = query.page || 1;
     const limit = query.limit || 50;
     const skip = (page - 1) * limit;
@@ -36,7 +44,29 @@ export class ProductAdjustmentService {
     const where: any = {
       tenantId,
       ...(query.productId && { productId: query.productId }),
+      ...(query.type && { type: query.type }),
+      ...(query.startDate && query.endDate && {
+        createdAt: {
+          gte: new Date(query.startDate),
+          lte: new Date(query.endDate + 'T23:59:59.999Z'),
+        },
+      }),
     };
+
+    // Handle search filter
+    if (query.search) {
+      where.OR = [
+        { reason: { contains: query.search, mode: 'insensitive' } },
+        {
+          product: {
+            OR: [
+              { name: { contains: query.search, mode: 'insensitive' } },
+              { sku: { contains: query.search, mode: 'insensitive' } },
+            ],
+          },
+        },
+      ];
+    }
 
     const [adjustments, total] = await Promise.all([
       prisma.productAdjustment.findMany({
@@ -64,8 +94,14 @@ export class ProductAdjustmentService {
       prisma.productAdjustment.count({ where }),
     ]);
 
+    // Handle null products (deleted products) - map after query
+    const adjustedData = adjustments.map(adj => ({
+      ...adj,
+      product: adj.product || { id: adj.productId, name: 'Produk Dihapus', sku: null },
+    }));
+
     return {
-      data: adjustments,
+      data: adjustedData,
       pagination: {
         page,
         limit,

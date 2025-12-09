@@ -550,7 +550,11 @@ const loadAdjustments = async (page = 1) => {
     }
 
     const response = await api.get('/products/adjustments', { params });
-    adjustments.value = response.data.data || [];
+    // Handle null products (deleted products)
+    adjustments.value = (response.data.data || []).map((adj: any) => ({
+      ...adj,
+      product: adj.product || { id: adj.productId, name: 'Produk Dihapus', sku: null },
+    }));
     pagination.value = response.data.pagination || pagination.value;
     pagination.value.page = page;
   } catch (error: any) {
