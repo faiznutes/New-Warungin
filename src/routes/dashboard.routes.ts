@@ -395,7 +395,7 @@ async function getSuperAdminStats() {
     // Get tenant stats
     // Exclude super admin users from tenant count
     // Active tenants = tenants with ACTIVE subscription and endDate >= now
-    const now = new Date();
+    const currentDate = new Date();
     const [totalTenants, activeTenantsCount, totalUsers] = await Promise.all([
       prisma.tenant.count({
         where: {
@@ -405,11 +405,13 @@ async function getSuperAdminStats() {
         },
       }),
       // Count tenants with active subscription (not just isActive flag)
-      prisma.subscription.count({
+      // Use groupBy to get distinct tenantIds with active subscriptions
+      prisma.subscription.groupBy({
+        by: ['tenantId'],
         where: {
           status: 'ACTIVE',
           endDate: {
-            gte: now,
+            gte: currentDate,
           },
           tenant: {
             name: {
@@ -417,8 +419,7 @@ async function getSuperAdminStats() {
             },
           },
         },
-        distinct: ['tenantId'],
-      }),
+      }).then(result => result.length),
       prisma.user.count({
         where: {
           role: {
