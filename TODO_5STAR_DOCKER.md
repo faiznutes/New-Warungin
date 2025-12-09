@@ -222,9 +222,11 @@
 - ✅ Cloudflared health check added
 - ✅ Docker socket mount untuk backend container (`/var/run/docker.sock`)
 - ✅ Docker CLI installed di backend container
+- ✅ User permission fix untuk Docker socket access (user: 1001:989)
 - ✅ Enhanced logging untuk debugging (requireSuperAdmin middleware, container fetching)
 - ✅ Error handling dan validasi input (container name escaping, tail parameter validation)
 - ✅ Semua route terverifikasi dan terhubung dengan benar
+- ✅ Monitoring page error "Failed to fetch containers" FIXED ✅
 
 ---
 
