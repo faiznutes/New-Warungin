@@ -83,6 +83,9 @@ services:
     volumes:
       - ./logs:/app/logs
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    # Set user to match docker group GID (989) for Docker socket access
+    # UID 1001 = nodejs user, GID 989 = docker group
+    user: "1001:989"
     deploy:
       resources:
         limits:
