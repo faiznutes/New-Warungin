@@ -443,9 +443,9 @@ const retryLoad = () => {
   loadProducts(1);
 };
 
-// Watch activeTab to prevent Super Admin from accessing adjustments tab
+// Watch activeTab to prevent unauthorized access to adjustments tab
 watch(activeTab, (newTab) => {
-  if (newTab === 'adjustments' && authStore.user?.role !== 'ADMIN_TENANT') {
+  if (newTab === 'adjustments' && authStore.user?.role !== 'ADMIN_TENANT' && authStore.user?.role !== 'SUPER_ADMIN') {
     activeTab.value = 'products';
   }
 });
