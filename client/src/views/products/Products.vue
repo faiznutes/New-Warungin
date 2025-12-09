@@ -23,18 +23,6 @@
           >
             Daftar Produk
           </button>
-          <button
-            v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-            @click="activeTab = 'adjustments'"
-            :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm transition-colors',
-              activeTab === 'adjustments'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
-            Penyesuaian Produk
-          </button>
         </nav>
       </div>
     </div>
@@ -385,10 +373,6 @@
     @save="handleSaveProduct"
   />
 
-    <!-- Adjustments Tab Content (Admin Tenant & Super Admin) -->
-    <div v-if="activeTab === 'adjustments' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')" class="flex-1 overflow-auto px-4 sm:px-6 py-6">
-      <ProductAdjustments />
-    </div>
 </template>
 
 <script setup lang="ts">
@@ -401,7 +385,6 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
 import ExportButton from '../../components/ExportButton.vue';
 import ProductModal from '../../components/ProductModal.vue';
-import ProductAdjustments from './ProductAdjustments.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
@@ -433,7 +416,7 @@ const products = ref<Product[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<Product | null>(null);
-const activeTab = ref<'products' | 'adjustments'>('products');
+const activeTab = ref<'products'>('products');
 const hasError = ref(false);
 const errorMessage = ref<string>('');
 
@@ -443,12 +426,6 @@ const retryLoad = () => {
   loadProducts(1);
 };
 
-// Watch activeTab to prevent unauthorized access to adjustments tab
-watch(activeTab, (newTab) => {
-  if (newTab === 'adjustments' && authStore.user?.role !== 'ADMIN_TENANT' && authStore.user?.role !== 'SUPER_ADMIN') {
-    activeTab.value = 'products';
-  }
-});
 const categories = ref<string[]>([]);
 const productLimit = ref<any>(null);
 const fileInput = ref<HTMLInputElement | null>(null);

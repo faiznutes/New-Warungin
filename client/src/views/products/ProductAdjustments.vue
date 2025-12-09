@@ -8,7 +8,7 @@
       </div>
       <div class="flex gap-2">
         <button
-          @click="showAdjustmentModal = true; adjustmentMode = 'adjustment'"
+          @click="showAdjustmentModal = true"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,21 +16,44 @@
           </svg>
           Tambah Penyesuaian
         </button>
-        <button
-          @click="showAdjustmentModal = true; adjustmentMode = 'transfer'"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
-          Stock Transfer
-        </button>
       </div>
     </div>
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
+          <select
+            v-model="dateFilter"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            @change="applyDateFilter"
+          >
+            <option value="">Semua</option>
+            <option value="today">Hari Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="month">Bulan Ini</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div v-if="dateFilter === 'custom'">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+          <input
+            v-model="filters.startDate"
+            type="date"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            @change="loadAdjustments"
+          />
+        </div>
+        <div v-if="dateFilter === 'custom'">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+          <input
+            v-model="filters.endDate"
+            type="date"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            @change="loadAdjustments"
+          />
+        </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Cari Produk</label>
           <input
@@ -52,24 +75,6 @@
             <option value="INCREASE">Penambahan</option>
             <option value="DECREASE">Pengurangan</option>
           </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
-          <input
-            v-model="filters.startDate"
-            type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            @change="loadAdjustments"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
-          <input
-            v-model="filters.endDate"
-            type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            @change="loadAdjustments"
-          />
         </div>
       </div>
     </div>
@@ -177,9 +182,7 @@
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">
-              {{ adjustmentMode === 'transfer' ? 'Stock Transfer' : 'Tambah Penyesuaian Produk' }}
-            </h3>
+            <h3 class="text-lg font-semibold text-gray-900">Tambah Penyesuaian Produk</h3>
             <button
               @click="closeModal"
               class="text-gray-400 hover:text-gray-600"
@@ -190,38 +193,130 @@
             </button>
           </div>
 
-          <!-- Mode Toggle -->
-          <div class="mb-4 flex gap-2 border-b">
-            <button
-              type="button"
-              @click="adjustmentMode = 'adjustment'"
-              :class="[
-                'px-4 py-2 font-medium transition',
-                adjustmentMode === 'adjustment'
-                  ? 'border-b-2 border-primary-600 text-primary-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              ]"
-            >
-              Penyesuaian
-            </button>
-            <button
-              type="button"
-              @click="adjustmentMode = 'transfer'"
-              :class="[
-                'px-4 py-2 font-medium transition',
-                adjustmentMode === 'transfer'
-                  ? 'border-b-2 border-green-600 text-green-600'
-                  : 'text-gray-500 hover:text-gray-700'
-              ]"
-            >
-              Stock Transfer
-            </button>
-          </div>
-
-          <!-- Adjustment Form -->
-          <form v-if="adjustmentMode === 'adjustment'" @submit.prevent="saveAdjustment" class="space-y-4">
-            <!-- Product Selection -->
+          <form @submit.prevent="saveAdjustment" class="space-y-4">
+            <!-- Alasan Selection -->
             <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan *</label>
+              <select
+                v-model="adjustmentForm.reasonType"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                @change="handleReasonChange"
+              >
+                <option value="">Pilih Alasan</option>
+                <option value="STOCK_OPNAME">Stok opname / Stocktaking</option>
+                <option value="RETUR_SUPPLIER">Retur ke supplier</option>
+                <option value="BARANG_RUSAK">Barang rusak / Expired</option>
+                <option value="PENYESUAIAN_SISTEM">Penyesuaian sistem</option>
+                <option value="KOREKSI_DATA">Koreksi data</option>
+                <option value="BARANG_HILANG">Barang hilang / Theft</option>
+                <option value="SAMPLE_PROMOSI">Sample / Promosi</option>
+                <option value="TRANSFER_STOK">Transfer stok</option>
+                <option value="CUSTOM">Isi sendiri</option>
+              </select>
+            </div>
+
+            <!-- Supplier Selection (for Retur Supplier) -->
+            <div v-if="adjustmentForm.reasonType === 'RETUR_SUPPLIER'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Supplier *</label>
+              <select
+                v-model="adjustmentForm.supplierId"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                @change="handleSupplierChange"
+              >
+                <option value="">Pilih Supplier</option>
+                <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                  {{ supplier.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Transfer Stok Form -->
+            <div v-if="adjustmentForm.reasonType === 'TRANSFER_STOK'" class="space-y-4 border-t pt-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Dari Store *</label>
+                  <select
+                    v-model="transferForm.fromOutletId"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="">Pilih Store</option>
+                    <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                      {{ outlet.name }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Ke Store *</label>
+                  <select
+                    v-model="transferForm.toOutletId"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="">Pilih Store</option>
+                    <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                      {{ outlet.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">Produk & Jumlah *</label>
+                  <button
+                    type="button"
+                    @click="addTransferItem"
+                    class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                  >
+                    + Tambah Produk
+                  </button>
+                </div>
+                <div class="space-y-2">
+                  <div
+                    v-for="(item, index) in transferForm.items"
+                    :key="index"
+                    class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
+                  >
+                    <div class="col-span-8">
+                      <select
+                        v-model="item.productId"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                      >
+                        <option value="">Pilih Produk</option>
+                        <option v-for="product in products" :key="product.id" :value="product.id">
+                          {{ product.name }} (Stok: {{ product.stock }})
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-span-3">
+                      <input
+                        v-model.number="item.quantity"
+                        type="number"
+                        min="1"
+                        required
+                        placeholder="Qty"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                      />
+                    </div>
+                    <div class="col-span-1 flex items-center justify-end">
+                      <button
+                        type="button"
+                        @click="removeTransferItem(index)"
+                        class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Selection (for non-transfer) -->
+            <div v-if="adjustmentForm.reasonType !== 'TRANSFER_STOK' && adjustmentForm.reasonType !== ''">
               <label class="block text-sm font-medium text-gray-700 mb-2">Produk *</label>
               <select
                 v-model="adjustmentForm.productId"
@@ -235,8 +330,8 @@
               </select>
             </div>
 
-            <!-- Adjustment Type -->
-            <div>
+            <!-- Adjustment Type (only for CUSTOM reason) -->
+            <div v-if="adjustmentForm.reasonType === 'CUSTOM'">
               <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Penyesuaian *</label>
               <select
                 v-model="adjustmentForm.type"
@@ -248,8 +343,8 @@
               </select>
             </div>
 
-            <!-- Quantity -->
-            <div>
+            <!-- Quantity (for non-transfer) -->
+            <div v-if="adjustmentForm.reasonType !== 'TRANSFER_STOK' && adjustmentForm.reasonType !== ''">
               <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah *</label>
               <input
                 v-model.number="adjustmentForm.quantity"
@@ -260,37 +355,22 @@
               />
             </div>
 
-            <!-- Reason -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan *</label>
+            <!-- Custom Reason Input (only for CUSTOM) -->
+            <div v-if="adjustmentForm.reasonType === 'CUSTOM'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Detail *</label>
               <textarea
                 v-model="adjustmentForm.reason"
                 required
                 rows="3"
-                placeholder="Contoh: Retur dari supplier, Barang rusak, Stok opname, dll"
+                placeholder="Jelaskan alasan penyesuaian stok secara detail"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               ></textarea>
-              <p class="mt-1 text-xs text-gray-500">Jelaskan alasan penyesuaian stok secara detail</p>
-            </div>
-
-            <!-- Suggestion -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p class="text-xs font-medium text-blue-900 mb-1">💡 Saran Alasan:</p>
-              <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
-                <li>Stok opname / Stocktaking</li>
-                <li>Retur ke supplier</li>
-                <li>Barang rusak / Expired</li>
-                <li>Penyesuaian sistem</li>
-                <li>Koreksi data</li>
-                <li>Barang hilang / Theft</li>
-                <li>Sample / Promosi</li>
-              </ul>
             </div>
 
             <div class="flex space-x-3 pt-4">
               <button
                 type="submit"
-                :disabled="saving"
+                :disabled="saving || !isFormValid"
                 class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
               >
                 {{ saving ? 'Menyimpan...' : 'Simpan' }}
@@ -304,117 +384,6 @@
               </button>
             </div>
           </form>
-
-          <!-- Stock Transfer Form -->
-          <form v-else @submit.prevent="saveTransfer" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Dari Outlet *</label>
-                <select
-                  v-model="transferForm.fromOutletId"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                >
-                  <option value="">Pilih Outlet</option>
-                  <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
-                    {{ outlet.name }}
-                  </option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Ke Outlet *</label>
-                <select
-                  v-model="transferForm.toOutletId"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                >
-                  <option value="">Pilih Outlet</option>
-                  <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
-                    {{ outlet.name }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
-              <textarea
-                v-model="transferForm.reason"
-                rows="2"
-                placeholder="Catatan untuk stock transfer"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <label class="block text-sm font-medium text-gray-700">Produk *</label>
-                <button
-                  type="button"
-                  @click="addTransferItem"
-                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
-                >
-                  + Tambah Produk
-                </button>
-              </div>
-              <div class="space-y-2">
-                <div
-                  v-for="(item, index) in transferForm.items"
-                  :key="index"
-                  class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
-                >
-                  <div class="col-span-8">
-                    <select
-                      v-model="item.productId"
-                      required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                    >
-                      <option value="">Pilih Produk</option>
-                      <option v-for="product in products" :key="product.id" :value="product.id">
-                        {{ product.name }} (Stok: {{ product.stock }})
-                      </option>
-                    </select>
-                  </div>
-                  <div class="col-span-3">
-                    <input
-                      v-model.number="item.quantity"
-                      type="number"
-                      min="1"
-                      required
-                      placeholder="Qty"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                    />
-                  </div>
-                  <div class="col-span-1 flex items-center justify-end">
-                    <button
-                      type="button"
-                      @click="removeTransferItem(index)"
-                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex space-x-3 pt-4">
-              <button
-                type="button"
-                @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving || transferForm.items.length === 0"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {{ saving ? 'Menyimpan...' : 'Buat Transfer' }}
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
@@ -422,7 +391,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
@@ -436,8 +405,9 @@ const saving = ref(false);
 const adjustments = ref<any[]>([]);
 const products = ref<any[]>([]);
 const outlets = ref<any[]>([]);
+const suppliers = ref<any[]>([]);
 const showAdjustmentModal = ref(false);
-const adjustmentMode = ref<'adjustment' | 'transfer'>('adjustment');
+const dateFilter = ref('');
 
 const filters = ref({
   search: '',
@@ -454,8 +424,10 @@ const pagination = ref({
 });
 
 const adjustmentForm = ref({
+  reasonType: '',
   productId: '',
-  type: 'INCREASE' as 'INCREASE' | 'DECREASE',
+  supplierId: '',
+  type: 'DECREASE' as 'INCREASE' | 'DECREASE',
   quantity: 1,
   reason: '',
 });
@@ -463,9 +435,102 @@ const adjustmentForm = ref({
 const transferForm = ref({
   fromOutletId: '',
   toOutletId: '',
-  reason: '',
   items: [{ productId: '', quantity: 1 }],
 });
+
+const reasonMap: Record<string, string> = {
+  'STOCK_OPNAME': 'Stok opname / Stocktaking',
+  'RETUR_SUPPLIER': 'Retur ke supplier',
+  'BARANG_RUSAK': 'Barang rusak / Expired',
+  'PENYESUAIAN_SISTEM': 'Penyesuaian sistem',
+  'KOREKSI_DATA': 'Koreksi data',
+  'BARANG_HILANG': 'Barang hilang / Theft',
+  'SAMPLE_PROMOSI': 'Sample / Promosi',
+  'TRANSFER_STOK': 'Transfer stok',
+  'CUSTOM': '',
+};
+
+const isFormValid = computed(() => {
+  if (!adjustmentForm.value.reasonType) return false;
+  
+  if (adjustmentForm.value.reasonType === 'TRANSFER_STOK') {
+    return transferForm.value.fromOutletId && 
+           transferForm.value.toOutletId && 
+           transferForm.value.items.length > 0 &&
+           transferForm.value.items.every(item => item.productId && item.quantity > 0);
+  }
+  
+  if (adjustmentForm.value.reasonType === 'RETUR_SUPPLIER') {
+    return adjustmentForm.value.supplierId && 
+           adjustmentForm.value.productId && 
+           adjustmentForm.value.quantity > 0;
+  }
+  
+  if (adjustmentForm.value.reasonType === 'CUSTOM') {
+    return adjustmentForm.value.productId && 
+           adjustmentForm.value.quantity > 0 && 
+           adjustmentForm.value.reason.trim() !== '';
+  }
+  
+  return adjustmentForm.value.productId && adjustmentForm.value.quantity > 0;
+});
+
+const applyDateFilter = () => {
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+  
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  
+  switch (dateFilter.value) {
+    case 'today':
+      filters.value.startDate = today.toISOString().split('T')[0];
+      filters.value.endDate = today.toISOString().split('T')[0];
+      break;
+    case 'week':
+      filters.value.startDate = startOfWeek.toISOString().split('T')[0];
+      filters.value.endDate = today.toISOString().split('T')[0];
+      break;
+    case 'month':
+      filters.value.startDate = startOfMonth.toISOString().split('T')[0];
+      filters.value.endDate = today.toISOString().split('T')[0];
+      break;
+    case 'custom':
+      // User will set dates manually
+      break;
+    default:
+      filters.value.startDate = '';
+      filters.value.endDate = '';
+  }
+  loadAdjustments();
+};
+
+const handleReasonChange = () => {
+  // Auto-set type based on reason
+  if (adjustmentForm.value.reasonType === 'BARANG_RUSAK' || 
+      adjustmentForm.value.reasonType === 'BARANG_HILANG' || 
+      adjustmentForm.value.reasonType === 'SAMPLE_PROMOSI') {
+    adjustmentForm.value.type = 'DECREASE';
+  } else if (adjustmentForm.value.reasonType === 'RETUR_SUPPLIER') {
+    adjustmentForm.value.type = 'DECREASE';
+  }
+  
+  // Reset form fields
+  adjustmentForm.value.productId = '';
+  adjustmentForm.value.supplierId = '';
+  adjustmentForm.value.quantity = 1;
+  adjustmentForm.value.reason = '';
+  transferForm.value = {
+    fromOutletId: '',
+    toOutletId: '',
+    items: [{ productId: '', quantity: 1 }],
+  };
+};
+
+const handleSupplierChange = () => {
+  // Load products when supplier is selected (if needed)
+};
 
 const loadAdjustments = async (page = 1) => {
   loading.value = true;
@@ -480,7 +545,6 @@ const loadAdjustments = async (page = 1) => {
     if (filters.value.startDate) params.startDate = filters.value.startDate;
     if (filters.value.endDate) params.endDate = filters.value.endDate;
     
-    // Ensure tenantId is set in params for SUPER_ADMIN
     if (authStore.isSuperAdmin && authStore.selectedTenantId) {
       params.tenantId = authStore.selectedTenantId;
     }
@@ -501,7 +565,6 @@ const loadProducts = async () => {
   try {
     const params: any = { limit: 1000 };
     
-    // Ensure tenantId is set in params for SUPER_ADMIN
     if (authStore.isSuperAdmin && authStore.selectedTenantId) {
       params.tenantId = authStore.selectedTenantId;
     }
@@ -517,7 +580,6 @@ const loadOutlets = async () => {
   try {
     const params: any = { limit: 100 };
     
-    // Ensure tenantId is set in params for SUPER_ADMIN
     if (authStore.isSuperAdmin && authStore.selectedTenantId) {
       params.tenantId = authStore.selectedTenantId;
     }
@@ -529,19 +591,18 @@ const loadOutlets = async () => {
   }
 };
 
-const saveAdjustment = async () => {
-  saving.value = true;
+const loadSuppliers = async () => {
   try {
-    await api.post('/products/adjustments', adjustmentForm.value);
-    await showSuccess('Penyesuaian produk berhasil disimpan');
-    closeModal();
-    await loadAdjustments(pagination.value.page);
-    await loadProducts();
+    const params: any = { limit: 100 };
+    
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
+    const response = await api.get('/suppliers', { params });
+    suppliers.value = response.data.data || [];
   } catch (error: any) {
-    console.error('Error saving adjustment:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan penyesuaian');
-  } finally {
-    saving.value = false;
+    console.error('Error loading suppliers:', error);
   }
 };
 
@@ -553,27 +614,49 @@ const removeTransferItem = (index: number) => {
   transferForm.value.items.splice(index, 1);
 };
 
-const saveTransfer = async () => {
+const saveAdjustment = async () => {
   saving.value = true;
   try {
-    const data = {
-      type: 'TRANSFER',
-      reason: transferForm.value.reason || 'Stock transfer antar outlet',
-      fromOutletId: transferForm.value.fromOutletId,
-      toOutletId: transferForm.value.toOutletId,
-      transferItems: transferForm.value.items.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      })),
-    };
-    await api.post('/products/adjustments', data);
-    await showSuccess('Stock transfer berhasil dibuat');
+    if (adjustmentForm.value.reasonType === 'TRANSFER_STOK') {
+      // Handle stock transfer
+      const data = {
+        type: 'TRANSFER',
+        reason: 'Transfer stok',
+        fromOutletId: transferForm.value.fromOutletId,
+        toOutletId: transferForm.value.toOutletId,
+        transferItems: transferForm.value.items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      };
+      await api.post('/products/adjustments', data);
+      await showSuccess('Stock transfer berhasil dibuat');
+    } else {
+      // Handle regular adjustment
+      let reason = reasonMap[adjustmentForm.value.reasonType] || adjustmentForm.value.reason;
+      
+      if (adjustmentForm.value.reasonType === 'RETUR_SUPPLIER') {
+        const supplier = suppliers.value.find(s => s.id === adjustmentForm.value.supplierId);
+        reason = `Retur ke supplier: ${supplier?.name || ''}`;
+      }
+      
+      const data = {
+        productId: adjustmentForm.value.productId,
+        type: adjustmentForm.value.type,
+        quantity: adjustmentForm.value.quantity,
+        reason: reason,
+      };
+      
+      await api.post('/products/adjustments', data);
+      await showSuccess('Penyesuaian produk berhasil disimpan');
+    }
+    
     closeModal();
     await loadAdjustments(pagination.value.page);
     await loadProducts();
   } catch (error: any) {
-    console.error('Error saving transfer:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan stock transfer');
+    console.error('Error saving adjustment:', error);
+    await showError(error.response?.data?.message || 'Gagal menyimpan penyesuaian');
   } finally {
     saving.value = false;
   }
@@ -582,24 +665,24 @@ const saveTransfer = async () => {
 const closeModal = () => {
   showAdjustmentModal.value = false;
   adjustmentForm.value = {
+    reasonType: '',
     productId: '',
-    type: 'INCREASE',
+    supplierId: '',
+    type: 'DECREASE',
     quantity: 1,
     reason: '',
   };
   transferForm.value = {
     fromOutletId: '',
     toOutletId: '',
-    reason: '',
     items: [{ productId: '', quantity: 1 }],
   };
-  adjustmentMode.value = 'adjustment';
 };
 
 onMounted(() => {
   loadAdjustments();
   loadProducts();
   loadOutlets();
+  loadSuppliers();
 });
 </script>
-
