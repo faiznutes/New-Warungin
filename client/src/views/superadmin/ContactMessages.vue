@@ -82,6 +82,7 @@
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Telepon</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subjek</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -108,6 +109,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-600">{{ message.email }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-600">{{ message.phone || '-' }}</div>
               </td>
               <td class="px-6 py-4">
                 <div class="text-sm text-gray-900 max-w-xs truncate">{{ message.subject }}</div>
@@ -219,6 +223,10 @@
                 <label class="block text-sm font-medium text-gray-700">Email</label>
                 <p class="mt-1 text-sm text-gray-900">{{ selectedMessage.email }}</p>
               </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
+                <p class="mt-1 text-sm text-gray-900">{{ selectedMessage.phone || '-' }}</p>
+              </div>
               <div class="col-span-2">
                 <label class="block text-sm font-medium text-gray-700">Subjek</label>
                 <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedMessage.subject }}</p>
@@ -273,7 +281,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 
@@ -461,7 +469,31 @@ const formatDate = (date: string | Date) => {
   });
 };
 
+// Auto-refresh untuk pesan baru
+let refreshInterval: NodeJS.Timeout | null = null;
+
+const startAutoRefresh = () => {
+  // Refresh setiap 30 detik untuk mengecek pesan baru
+  refreshInterval = setInterval(() => {
+    loadMessages();
+  }, 30000); // 30 detik
+};
+
+const stopAutoRefresh = () => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
+};
+
 onMounted(() => {
   loadMessages();
+  startAutoRefresh();
+});
+
+// Cleanup interval saat component unmount
+import { onUnmounted } from 'vue';
+onUnmounted(() => {
+  stopAutoRefresh();
 });
 </script>

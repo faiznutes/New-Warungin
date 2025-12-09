@@ -10,6 +10,7 @@ const router = Router();
 const contactFormSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
+  phone: z.string().optional(),
   subject: z.string().min(1),
   message: z.string().min(1),
 });
@@ -40,6 +41,7 @@ router.post(
         data: {
           name: req.body.name,
           email: req.body.email,
+          phone: req.body.phone || null,
           subject: req.body.subject,
           message: req.body.message,
         },
@@ -125,6 +127,7 @@ router.get(
         where.OR = [
           { name: { contains: search as string, mode: 'insensitive' } },
           { email: { contains: search as string, mode: 'insensitive' } },
+          { phone: { contains: search as string, mode: 'insensitive' } },
           { subject: { contains: search as string, mode: 'insensitive' } },
           { message: { contains: search as string, mode: 'insensitive' } },
         ];
