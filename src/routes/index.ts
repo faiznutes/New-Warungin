@@ -57,6 +57,7 @@ import restockSuggestionRoutes from './restock-suggestion.routes';
 import priceSuggestionRoutes from './price-suggestion.routes';
 import tenantBackupRoutes from './tenant-backup.routes';
 import cashShiftRoutes from './cash-shift.routes';
+import adminMonitorRoutes from './admin-monitor.routes';
 
 const router = Router();
 
@@ -130,6 +131,7 @@ router.use('/inventory/restock-suggestions', restockSuggestionRoutes);
 router.use('/product/price-suggestion', priceSuggestionRoutes);
 router.use('/tenant/backup', tenantBackupRoutes);
 router.use('/cash-shift', cashShiftRoutes);
+router.use('/admin', adminMonitorRoutes);
 // etc.
 
 export default router;

@@ -222,6 +222,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
+
+const { confirm, success, error } = useNotification();
 
 const loading = ref(true);
 const webhooks = ref<any[]>([]);
@@ -282,9 +285,10 @@ const saveWebhook = async () => {
 
     await loadWebhooks();
     closeModal();
-  } catch (error: any) {
-    console.error('Error saving webhook:', error);
-    alert(error.response?.data?.message || 'Gagal menyimpan webhook');
+    await success('Webhook berhasil disimpan', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error saving webhook:', err);
+    await error(err.response?.data?.message || 'Gagal menyimpan webhook', 'Error');
   } finally {
     saving.value = false;
   }
@@ -303,26 +307,32 @@ const editWebhook = (webhook: any) => {
 };
 
 const deleteWebhook = async (id: string) => {
-  if (!confirm('Apakah Anda yakin ingin menghapus webhook ini?')) {
-    return;
-  }
+  const confirmed = await confirm(
+    'Apakah Anda yakin ingin menghapus webhook ini?',
+    'Konfirmasi Hapus Webhook',
+    'Ya, Hapus',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
 
   try {
     await api.delete(`/webhooks/${id}`);
     await loadWebhooks();
-  } catch (error: any) {
-    console.error('Error deleting webhook:', error);
-    alert(error.response?.data?.message || 'Gagal menghapus webhook');
+    await success('Webhook berhasil dihapus', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error deleting webhook:', err);
+    await error(err.response?.data?.message || 'Gagal menghapus webhook', 'Error');
   }
 };
 
 const testWebhook = async (id: string) => {
   try {
     await api.post(`/webhooks/${id}/test`);
-    alert('Test webhook berhasil dikirim!');
-  } catch (error: any) {
-    console.error('Error testing webhook:', error);
-    alert(error.response?.data?.message || 'Gagal mengirim test webhook');
+    await success('Test webhook berhasil dikirim!', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error testing webhook:', err);
+    await error(err.response?.data?.message || 'Gagal mengirim test webhook', 'Error');
   }
 };
 

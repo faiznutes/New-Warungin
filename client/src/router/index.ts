@@ -145,6 +145,12 @@ const router = createRouter({
           meta: { roles: ['SUPER_ADMIN'] },
         },
         {
+          path: 'superadmin/server-monitor',
+          name: 'server-monitor',
+          component: () => import('../views/superadmin/ServerMonitor.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
           path: 'settings/system',
           name: 'system-settings',
           component: () => import('../views/settings/SystemSettings.vue'),

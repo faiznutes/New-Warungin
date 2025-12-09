@@ -192,6 +192,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
+
+const { success, error } = useNotification();
 
 const loading = ref(true);
 const status = ref({
@@ -260,10 +263,10 @@ const enable2FA = async () => {
     verificationToken.value = '';
     
     // Show success message
-    alert('2FA berhasil diaktifkan!');
-  } catch (error: any) {
-    console.error('Error enabling 2FA:', error);
-    verifyError.value = error.response?.data?.message || 'Token tidak valid';
+    await success('2FA berhasil diaktifkan!', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error enabling 2FA:', err);
+    verifyError.value = err.response?.data?.message || 'Token tidak valid';
   } finally {
     enabling.value = false;
   }
@@ -292,26 +295,26 @@ const disable2FA = async () => {
     disablePassword.value = '';
     
     // Show success message
-    alert('2FA berhasil dinonaktifkan');
-  } catch (error: any) {
-    console.error('Error disabling 2FA:', error);
-    disableError.value = error.response?.data?.message || 'Password tidak valid';
+    await success('2FA berhasil dinonaktifkan', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error disabling 2FA:', err);
+    disableError.value = err.response?.data?.message || 'Password tidak valid';
   } finally {
     disabling.value = false;
   }
 };
 
-const copySecret = () => {
+const copySecret = async () => {
   if (qrData.value) {
     navigator.clipboard.writeText(qrData.value.secret);
-    alert('Secret berhasil disalin!');
+    await success('Secret berhasil disalin!', 'Berhasil');
   }
 };
 
-const copyBackupCodes = () => {
+const copyBackupCodes = async () => {
   if (qrData.value) {
     navigator.clipboard.writeText(qrData.value.backupCodes.join('\n'));
-    alert('Backup codes berhasil disalin!');
+    await success('Backup codes berhasil disalin!', 'Berhasil');
   }
 };
 

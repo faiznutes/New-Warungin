@@ -112,6 +112,9 @@
 import { ref } from 'vue';
 import api from '../../api';
 import { useAuthStore } from '../../stores/auth';
+import { useNotification } from '../../composables/useNotification';
+
+const { confirm, success, error } = useNotification();
 
 const authStore = useAuthStore();
 
@@ -138,10 +141,10 @@ const exportData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    alert('Data berhasil diekspor');
-  } catch (error: any) {
-    console.error('Error exporting data:', error);
-    alert(error.response?.data?.message || 'Gagal mengekspor data');
+    await success('Data berhasil diekspor', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error exporting data:', err);
+    await error(err.response?.data?.message || 'Gagal mengekspor data', 'Error');
   } finally {
     exporting.value = false;
   }
@@ -164,10 +167,10 @@ const exportTenantData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    alert('Data tenant berhasil diekspor');
-  } catch (error: any) {
-    console.error('Error exporting tenant data:', error);
-    alert(error.response?.data?.message || 'Gagal mengekspor data tenant');
+    await success('Data tenant berhasil diekspor', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error exporting tenant data:', err);
+    await error(err.response?.data?.message || 'Gagal mengekspor data tenant', 'Error');
   } finally {
     exportingTenant.value = false;
   }
@@ -178,9 +181,14 @@ const deleteData = async () => {
     return;
   }
 
-  if (!confirm('Apakah Anda yakin ingin menghapus semua data pribadi Anda? Tindakan ini tidak dapat dibatalkan dan akun Anda akan dinonaktifkan.')) {
-    return;
-  }
+  const confirmed = await confirm(
+    'Apakah Anda yakin ingin menghapus semua data pribadi Anda? Tindakan ini tidak dapat dibatalkan dan akun Anda akan dinonaktifkan.',
+    'Konfirmasi Hapus Data',
+    'Ya, Hapus',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
 
   deleting.value = true;
   try {
@@ -188,14 +196,14 @@ const deleteData = async () => {
       confirm: 'DELETE_MY_DATA',
     });
 
-    alert('Data Anda telah dihapus. Anda akan diarahkan ke halaman login.');
+    await success('Data Anda telah dihapus. Anda akan diarahkan ke halaman login.', 'Data Dihapus');
     
     // Clear auth and redirect to login
     authStore.clearAuth();
     window.location.href = '/login';
-  } catch (error: any) {
-    console.error('Error deleting data:', error);
-    alert(error.response?.data?.message || 'Gagal menghapus data');
+  } catch (err: any) {
+    console.error('Error deleting data:', err);
+    await error(err.response?.data?.message || 'Gagal menghapus data', 'Error');
   } finally {
     deleting.value = false;
   }

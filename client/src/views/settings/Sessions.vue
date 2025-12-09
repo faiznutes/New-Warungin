@@ -102,6 +102,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
+
+const { confirm, success, error } = useNotification();
 
 const loading = ref(true);
 const sessions = ref<any[]>([]);
@@ -126,32 +129,42 @@ const loadSessions = async () => {
 };
 
 const revokeSession = async (sessionId: string) => {
-  if (!confirm('Apakah Anda yakin ingin mengakhiri sesi ini?')) {
-    return;
-  }
+  const confirmed = await confirm(
+    'Apakah Anda yakin ingin mengakhiri sesi ini?',
+    'Konfirmasi Akhiri Sesi',
+    'Ya, Akhiri',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
 
   try {
     await api.delete(`/sessions/${sessionId}`);
     await loadSessions();
-    alert('Sesi berhasil diakhiri');
-  } catch (error: any) {
-    console.error('Error revoking session:', error);
-    alert(error.response?.data?.message || 'Gagal mengakhiri sesi');
+    await success('Sesi berhasil diakhiri', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error revoking session:', err);
+    await error(err.response?.data?.message || 'Gagal mengakhiri sesi', 'Error');
   }
 };
 
 const revokeAllSessions = async () => {
-  if (!confirm('Apakah Anda yakin ingin mengakhiri semua sesi lainnya? Anda akan tetap login di perangkat ini.')) {
-    return;
-  }
+  const confirmed = await confirm(
+    'Apakah Anda yakin ingin mengakhiri semua sesi lainnya? Anda akan tetap login di perangkat ini.',
+    'Konfirmasi Akhiri Semua Sesi',
+    'Ya, Akhiri',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
 
   try {
     await api.post('/sessions/revoke-all');
     await loadSessions();
-    alert('Semua sesi lainnya berhasil diakhiri');
-  } catch (error: any) {
-    console.error('Error revoking all sessions:', error);
-    alert(error.response?.data?.message || 'Gagal mengakhiri sesi');
+    await success('Semua sesi lainnya berhasil diakhiri', 'Berhasil');
+  } catch (err: any) {
+    console.error('Error revoking all sessions:', err);
+    await error(err.response?.data?.message || 'Gagal mengakhiri sesi', 'Error');
   }
 };
 
