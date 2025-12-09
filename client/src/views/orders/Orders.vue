@@ -708,6 +708,12 @@ const loadOrders = async (page = 1) => {
           })(),
         }),
       };
+      
+      // Ensure tenantId is set in params for SUPER_ADMIN
+      if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+        params.tenantId = authStore.selectedTenantId;
+      }
+      
       const response = await api.get('/orders', { params });
       orders.value = response.data.data;
       pagination.value = response.data.pagination;

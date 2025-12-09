@@ -210,6 +210,13 @@ const loadCustomers = async (page = 1) => {
     return;
   }
   
+  // For non-super-admin, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    return;
+  }
+  
   // Clear existing timeout
   if (loadCustomersTimeout) clearTimeout(loadCustomersTimeout);
   
@@ -222,6 +229,12 @@ const loadCustomers = async (page = 1) => {
         limit: pagination.value.limit,
         ...(filters.value.search && { search: filters.value.search }),
       };
+      
+      // Ensure tenantId is set in params for SUPER_ADMIN
+      if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+        params.tenantId = authStore.selectedTenantId;
+      }
+      
       const response = await api.get('/customers', { params });
       customers.value = response.data.data;
       pagination.value = response.data.pagination;
