@@ -108,6 +108,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
+import { useAuthStore } from '../../../stores/auth';
 import ProductModal from '../../../components/ProductModal.vue';
 
 interface Props {
@@ -116,6 +117,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const authStore = useAuthStore();
 const { success, error, confirm: confirmDialog } = useNotification();
 const products = ref<any[]>([]);
 const loading = ref(false);
@@ -141,12 +143,15 @@ const filteredProducts = computed(() => {
 const loadProducts = async () => {
   if (!props.tenantId) return;
   
+  // Ensure tenantId is set in authStore and localStorage for API interceptor
+  authStore.setSelectedTenant(props.tenantId);
+  localStorage.setItem('selectedTenantId', props.tenantId);
+  
+  // Wait a bit to ensure localStorage and authStore are updated
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
   loading.value = true;
   try {
-    // Ensure tenantId is set in authStore and localStorage for API interceptor
-    authStore.setSelectedTenant(props.tenantId);
-    localStorage.setItem('selectedTenantId', props.tenantId);
-    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
     let allProducts: any[] = [];
@@ -247,15 +252,15 @@ const handleSaveProduct = async (productData: any) => {
   }
 };
 
-watch(() => props.tenantId, (newTenantId, oldTenantId) => {
+watch(() => props.tenantId, async (newTenantId, oldTenantId) => {
   // Only reload if tenantId actually changed
   if (newTenantId && newTenantId !== oldTenantId) {
-    // Ensure tenantId is set in localStorage for API interceptor
+    // Ensure tenantId is set in authStore and localStorage for API interceptor
+    authStore.setSelectedTenant(newTenantId);
     localStorage.setItem('selectedTenantId', newTenantId);
-    // Small delay to ensure localStorage is updated
-    setTimeout(() => {
-      loadProducts();
-    }, 100);
+    // Small delay to ensure localStorage and authStore are updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await loadProducts();
   }
 }, { immediate: true });
 </script>
