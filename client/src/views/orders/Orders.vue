@@ -704,12 +704,6 @@ const loadOrders = async (page = 1) => {
       const params: any = {
         page,
         limit: pagination.value.limit,
-      };
-      
-      // Ensure tenantId is set in params for SUPER_ADMIN
-      if (authStore.isSuperAdmin && authStore.selectedTenantId) {
-        params.tenantId = authStore.selectedTenantId;
-      }
         ...(filters.value.status && { status: filters.value.status }),
         ...(filters.value.startDate && { startDate: filters.value.startDate }),
         ...(filters.value.endDate && {
