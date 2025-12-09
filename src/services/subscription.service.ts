@@ -442,7 +442,7 @@ export class SubscriptionService {
 
       return { tenant: updatedTenant, subscription };
     }).then(async (result) => {
-      // Award points from subscription purchase (10rb = 5 point)
+      // Award points from subscription purchase (setiap 20rb = 10 point, jadi setiap 2rb = 1 point)
       // Use Math.floor to ensure integer amount
       const amountInt = Math.floor(amount);
       if (amountInt > 0) {

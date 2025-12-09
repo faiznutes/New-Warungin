@@ -479,7 +479,7 @@ export class AddonService {
         data: updateData,
       });
       
-      // Award points from addon purchase (10rb = 5 point) if extending/renewing
+      // Award points from addon purchase (setiap 20rb = 10 point, jadi setiap 2rb = 1 point) if extending/renewing
       // Calculate amount based on addon price and duration
       if (addonInfo && addonInfo.price && data.duration) {
         const amount = Math.floor((addonInfo.price * data.duration) / 30); // Calculate based on duration
@@ -567,7 +567,7 @@ export class AddonService {
       expiresAt: expiresAt?.toISOString(),
     });
     
-    // Award points from addon purchase (10rb = 5 point)
+    // Award points from addon purchase (setiap 20rb = 10 point, jadi setiap 2rb = 1 point)
     // Calculate amount based on addon price and duration
     if (addonInfo && addonInfo.price) {
       const durationDays = data.duration || (tenant.subscriptionEnd ? Math.ceil((tenant.subscriptionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : 30);

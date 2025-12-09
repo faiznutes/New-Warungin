@@ -3,35 +3,38 @@ import subscriptionService from './subscription.service';
 import addonService from './addon.service';
 
 // Point Configuration
-// 1 point = 50 rupiah (diubah dari 125 menjadi 50)
-const POINT_PER_RUPIAH = 50;
+// Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
+// 1 point = 2000 rupiah
+const POINT_PER_RUPIAH = 2000;
 
 const POINT_CONFIG = {
   // Point conversion rate
   POINT_PER_RUPIAH,
   
-  // Subscription redemption (calculated from price: price / 50)
-  // BASIC: 149000rp = 2980pts, PRO: 299000rp = 5980pts, ENTERPRISE: 499000rp = 9980pts
+  // Subscription redemption (calculated from price: price / 2000)
+  // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
+  // BASIC: 149000rp / 2000 = 74.5 = 74 pts, PRO: 299000rp / 2000 = 149.5 = 149 pts, ENTERPRISE: 499000rp / 2000 = 249.5 = 249 pts
   SUBSCRIPTION: {
-    '1month_starter': 2980,      // BASIC: 149000rp / 50 = 2980 pts
-    '1month_boost': 5980,        // PRO: 299000rp / 50 = 5980 pts
-    '1month_max': 9980,         // ENTERPRISE: 499000rp / 50 = 9980 pts
+    '1month_starter': 74,      // BASIC: 149000rp / 2000 = 74 pts
+    '1month_boost': 149,        // PRO: 299000rp / 2000 = 149 pts
+    '1month_max': 249,         // ENTERPRISE: 499000rp / 2000 = 249 pts
   },
   
-  // Addon redemption (calculated from price: price / 50)
+  // Addon redemption (calculated from price: price / 2000)
+  // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
   ADDONS: {
-    'add_outlets': 2400,              // 120000rp / 50 = 2400 pts
-    'add_users': 1000,                // 50000rp / 50 = 1000 pts
-    'add_products': 600,              // 30000rp / 50 = 600 pts
-    'business_analytics': 5000,       // 250000rp / 50 = 5000 pts
-    'export_reports': 1500,           // 75000rp / 50 = 1500 pts
-    'receipt_editor': 1000,           // 50000rp / 50 = 1000 pts
-    'delivery_marketing': 3000,       // 150000rp / 50 = 3000 pts
-    'stock_transfer': 1600,           // 80000rp / 50 = 1600 pts
-    'supervisor_role': 1200,          // 60000rp / 50 = 1200 pts
-    'price_recommendation_plus': 800, // 40000rp / 50 = 800 pts
-    'bulk_import': 2000,               // 100000rp / 50 = 2000 pts
-    'restock_suggestion': 1000,       // 50000rp / 50 = 1000 pts
+    'add_outlets': 60,              // 120000rp / 2000 = 60 pts
+    'add_users': 25,                // 50000rp / 2000 = 25 pts
+    'add_products': 15,              // 30000rp / 2000 = 15 pts
+    'business_analytics': 125,       // 250000rp / 2000 = 125 pts
+    'export_reports': 37,           // 75000rp / 2000 = 37 pts
+    'receipt_editor': 25,           // 50000rp / 2000 = 25 pts
+    'delivery_marketing': 75,       // 150000rp / 2000 = 75 pts
+    'stock_transfer': 40,           // 80000rp / 2000 = 40 pts
+    'supervisor_role': 30,          // 60000rp / 2000 = 30 pts
+    'price_recommendation_plus': 20, // 40000rp / 2000 = 20 pts
+    'bulk_import': 50,               // 100000rp / 2000 = 50 pts
+    'restock_suggestion': 25,       // 50000rp / 2000 = 25 pts
   },
   
   // Point expiration (days) - 6 bulan = 180 hari
@@ -465,6 +468,7 @@ export class RewardPointService {
 
   /**
    * Redeem points untuk subscription
+   * Menggunakan combined balance (tenant-level + user-level)
    */
   async redeemForSubscription(
     tenantId: string,
@@ -472,7 +476,22 @@ export class RewardPointService {
     planId: string,
     pointsRequired: number
   ) {
-    const rewardPoint = await prisma.rewardPoint.findUnique({
+    // Get combined balance (tenant + user level)
+    const balance = await this.getBalance(tenantId, userId);
+    
+    if (balance.currentPoints < pointsRequired) {
+      throw new Error(`Point tidak cukup. Saldo Anda: ${balance.currentPoints} point, diperlukan: ${pointsRequired} point`);
+    }
+
+    // Get or find reward point records (both tenant and user level)
+    const tenantRewardPoint = await prisma.rewardPoint.findFirst({
+      where: {
+        tenantId,
+        userId: null,
+      },
+    });
+
+    const userRewardPoint = await prisma.rewardPoint.findUnique({
       where: {
         tenantId_userId: {
           tenantId,
@@ -481,8 +500,126 @@ export class RewardPointService {
       },
     });
 
-    if (!rewardPoint || rewardPoint.currentPoints < pointsRequired) {
-      throw new Error('Point tidak cukup');
+    // Determine which reward point to use (prioritize user-level, then tenant-level)
+    let rewardPoint = userRewardPoint;
+    let useTenantLevel = false;
+    
+    if (!userRewardPoint || userRewardPoint.currentPoints < pointsRequired) {
+      // If user-level doesn't have enough, use tenant-level
+      if (tenantRewardPoint && tenantRewardPoint.currentPoints >= pointsRequired) {
+        rewardPoint = tenantRewardPoint;
+        useTenantLevel = true;
+      } else if (userRewardPoint && tenantRewardPoint) {
+        // Need to use both user-level and tenant-level points
+        const userPoints = userRewardPoint.currentPoints;
+        const tenantPoints = tenantRewardPoint.currentPoints;
+        const totalAvailable = userPoints + tenantPoints;
+        
+        if (totalAvailable < pointsRequired) {
+          throw new Error(`Point tidak cukup. Saldo Anda: ${totalAvailable} point, diperlukan: ${pointsRequired} point`);
+        }
+        
+        // Use all user points first, then tenant points
+        const pointsFromUser = userPoints;
+        const pointsFromTenant = pointsRequired - pointsFromUser;
+        
+        // Deduct from user-level
+        await prisma.rewardPoint.update({
+          where: { id: userRewardPoint.id },
+          data: {
+            currentPoints: { decrement: pointsFromUser },
+            totalSpent: { increment: pointsFromUser },
+          },
+        });
+        
+        // Deduct from tenant-level
+        await prisma.rewardPoint.update({
+          where: { id: tenantRewardPoint.id },
+          data: {
+            currentPoints: { decrement: pointsFromTenant },
+            totalSpent: { increment: pointsFromTenant },
+          },
+        });
+        
+        // Record transaction for user-level
+        await prisma.rewardPointTransaction.create({
+          data: {
+            rewardPointId: userRewardPoint.id,
+            type: 'SPENT',
+            amount: -pointsFromUser,
+            source: 'SUBSCRIPTION_REDEEM',
+            description: `Tukar ${pointsFromUser} point (user) + ${pointsFromTenant} point (tenant) = ${pointsRequired} point untuk langganan`,
+            metadata: { planId, pointsRequired, pointsFromUser, pointsFromTenant, duration: 30 },
+          },
+        });
+        
+        // Record transaction for tenant-level
+        await prisma.rewardPointTransaction.create({
+          data: {
+            rewardPointId: tenantRewardPoint.id,
+            type: 'SPENT',
+            amount: -pointsFromTenant,
+            source: 'SUBSCRIPTION_REDEEM',
+            description: `Tukar ${pointsFromUser} point (user) + ${pointsFromTenant} point (tenant) = ${pointsRequired} point untuk langganan`,
+            metadata: { planId, pointsRequired, pointsFromUser, pointsFromTenant, duration: 30 },
+          },
+        });
+        
+        // Continue with subscription extension
+        const planMapping: Record<string, 'BASIC' | 'PRO' | 'ENTERPRISE'> = {
+          '1month_starter': 'BASIC',
+          '1month_boost': 'PRO',
+          '1month_max': 'ENTERPRISE',
+        };
+
+        const plan = planMapping[planId];
+        if (!plan) {
+          // Rollback points
+          await prisma.rewardPoint.update({
+            where: { id: userRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromUser },
+              totalSpent: { decrement: pointsFromUser },
+            },
+          });
+          await prisma.rewardPoint.update({
+            where: { id: tenantRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromTenant },
+              totalSpent: { decrement: pointsFromTenant },
+            },
+          });
+          throw new Error('Plan tidak valid');
+        }
+
+        try {
+          await subscriptionService.extendSubscription(tenantId, {
+            plan,
+            duration: 30,
+          });
+          
+          return await this.getBalance(tenantId, userId);
+        } catch (error: any) {
+          // Rollback points
+          await prisma.rewardPoint.update({
+            where: { id: userRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromUser },
+              totalSpent: { decrement: pointsFromUser },
+            },
+          });
+          await prisma.rewardPoint.update({
+            where: { id: tenantRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromTenant },
+              totalSpent: { decrement: pointsFromTenant },
+            },
+          });
+          throw new Error(`Gagal memperpanjang langganan: ${error.message}`);
+        }
+      } else {
+        throw new Error(`Point tidak cukup. Saldo Anda: ${balance.currentPoints} point, diperlukan: ${pointsRequired} point`);
+      }
     }
 
     // Map planId to actual plan
@@ -521,11 +658,12 @@ export class RewardPointService {
           amount: -pointsRequired,
           source: 'SUBSCRIPTION_REDEEM',
           description: `Tukar ${pointsRequired} point untuk langganan ${plan} (1 bulan)`,
-          metadata: { planId, plan, pointsRequired, duration: 30 },
+          metadata: { planId, plan, pointsRequired, duration: 30, useTenantLevel },
         },
       });
 
-      return updated;
+      // Return updated balance
+      return await this.getBalance(tenantId, userId);
     } catch (error: any) {
       // Rollback points if subscription extension fails
       await prisma.rewardPoint.update({
@@ -541,6 +679,7 @@ export class RewardPointService {
 
   /**
    * Redeem points untuk addon
+   * Menggunakan combined balance (tenant-level + user-level)
    */
   async redeemForAddon(
     tenantId: string,
@@ -549,7 +688,22 @@ export class RewardPointService {
     addonName: string,
     pointsRequired: number
   ) {
-    const rewardPoint = await prisma.rewardPoint.findUnique({
+    // Get combined balance (tenant + user level)
+    const balance = await this.getBalance(tenantId, userId);
+    
+    if (balance.currentPoints < pointsRequired) {
+      throw new Error(`Point tidak cukup. Saldo Anda: ${balance.currentPoints} point, diperlukan: ${pointsRequired} point`);
+    }
+
+    // Get or find reward point records (both tenant and user level)
+    const tenantRewardPoint = await prisma.rewardPoint.findFirst({
+      where: {
+        tenantId,
+        userId: null,
+      },
+    });
+
+    const userRewardPoint = await prisma.rewardPoint.findUnique({
       where: {
         tenantId_userId: {
           tenantId,
@@ -558,8 +712,183 @@ export class RewardPointService {
       },
     });
 
-    if (!rewardPoint || rewardPoint.currentPoints < pointsRequired) {
-      throw new Error('Point tidak cukup');
+    // Determine which reward point to use (prioritize user-level, then tenant-level)
+    let rewardPoint = userRewardPoint;
+    let useTenantLevel = false;
+    
+    if (!userRewardPoint || userRewardPoint.currentPoints < pointsRequired) {
+      // If user-level doesn't have enough, use tenant-level
+      if (tenantRewardPoint && tenantRewardPoint.currentPoints >= pointsRequired) {
+        rewardPoint = tenantRewardPoint;
+        useTenantLevel = true;
+      } else if (userRewardPoint && tenantRewardPoint) {
+        // Need to use both user-level and tenant-level points
+        const userPoints = userRewardPoint.currentPoints;
+        const tenantPoints = tenantRewardPoint.currentPoints;
+        const totalAvailable = userPoints + tenantPoints;
+        
+        if (totalAvailable < pointsRequired) {
+          throw new Error(`Point tidak cukup. Saldo Anda: ${totalAvailable} point, diperlukan: ${pointsRequired} point`);
+        }
+        
+        // Use all user points first, then tenant points
+        const pointsFromUser = userPoints;
+        const pointsFromTenant = pointsRequired - pointsFromUser;
+        
+        // Deduct from user-level
+        await prisma.rewardPoint.update({
+          where: { id: userRewardPoint.id },
+          data: {
+            currentPoints: { decrement: pointsFromUser },
+            totalSpent: { increment: pointsFromUser },
+          },
+        });
+        
+        // Deduct from tenant-level
+        await prisma.rewardPoint.update({
+          where: { id: tenantRewardPoint.id },
+          data: {
+            currentPoints: { decrement: pointsFromTenant },
+            totalSpent: { increment: pointsFromTenant },
+          },
+        });
+        
+        // Continue with addon subscription
+        const addonMapping: Record<string, {
+          addonId: string;
+          addonType: string;
+          addonName: string;
+          limit?: number;
+          duration?: number;
+        }> = {
+          'add_users_5': {
+            addonId: 'add_users',
+            addonType: 'ADD_USERS',
+            addonName: 'Tambah Pengguna',
+            limit: 5,
+          },
+          'add_users': {
+            addonId: 'add_users',
+            addonType: 'ADD_USERS',
+            addonName: 'Tambah Pengguna',
+            limit: 5,
+          },
+          'add_products_100': {
+            addonId: 'add_products',
+            addonType: 'ADD_PRODUCTS',
+            addonName: 'Tambah Produk',
+            limit: 100,
+          },
+          'add_products': {
+            addonId: 'add_products',
+            addonType: 'ADD_PRODUCTS',
+            addonName: 'Tambah Produk',
+            limit: 100,
+          },
+          'add_outlet_1': {
+            addonId: 'add_outlets',
+            addonType: 'ADD_OUTLETS',
+            addonName: 'Tambah Outlet',
+            limit: 1,
+          },
+          'add_outlets': {
+            addonId: 'add_outlets',
+            addonType: 'ADD_OUTLETS',
+            addonName: 'Tambah Outlet',
+            limit: 1,
+          },
+          'business_analytics': {
+            addonId: 'business_analytics',
+            addonType: 'BUSINESS_ANALYTICS',
+            addonName: 'Business Analytics & Insight',
+          },
+          'export_reports': {
+            addonId: 'export_reports',
+            addonType: 'EXPORT_REPORTS',
+            addonName: 'Export Laporan',
+          },
+          'receipt_editor': {
+            addonId: 'receipt_editor',
+            addonType: 'RECEIPT_EDITOR',
+            addonName: 'Simple Nota Editor',
+          },
+        };
+
+        const addonConfig = addonMapping[addonId];
+        if (!addonConfig) {
+          // Rollback points
+          await prisma.rewardPoint.update({
+            where: { id: userRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromUser },
+              totalSpent: { decrement: pointsFromUser },
+            },
+          });
+          await prisma.rewardPoint.update({
+            where: { id: tenantRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromTenant },
+              totalSpent: { decrement: pointsFromTenant },
+            },
+          });
+          throw new Error('Addon tidak valid');
+        }
+
+        try {
+          await addonService.subscribeAddon(tenantId, {
+            addonId: addonConfig.addonId,
+            addonName: addonConfig.addonName,
+            addonType: addonConfig.addonType,
+            limit: addonConfig.limit,
+            duration: addonConfig.duration || 30,
+          });
+
+          // Record transaction for user-level
+          await prisma.rewardPointTransaction.create({
+            data: {
+              rewardPointId: userRewardPoint.id,
+              type: 'SPENT',
+              amount: -pointsFromUser,
+              source: 'ADDON_REDEEM',
+              description: `Tukar ${pointsFromUser} point (user) + ${pointsFromTenant} point (tenant) = ${pointsRequired} point untuk addon ${addonConfig.addonName}`,
+              metadata: { addonId, addonName: addonConfig.addonName, pointsRequired, pointsFromUser, pointsFromTenant, addonType: addonConfig.addonType },
+            },
+          });
+
+          // Record transaction for tenant-level
+          await prisma.rewardPointTransaction.create({
+            data: {
+              rewardPointId: tenantRewardPoint.id,
+              type: 'SPENT',
+              amount: -pointsFromTenant,
+              source: 'ADDON_REDEEM',
+              description: `Tukar ${pointsFromUser} point (user) + ${pointsFromTenant} point (tenant) = ${pointsRequired} point untuk addon ${addonConfig.addonName}`,
+              metadata: { addonId, addonName: addonConfig.addonName, pointsRequired, pointsFromUser, pointsFromTenant, addonType: addonConfig.addonType },
+            },
+          });
+
+          return await this.getBalance(tenantId, userId);
+        } catch (error: any) {
+          // Rollback points
+          await prisma.rewardPoint.update({
+            where: { id: userRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromUser },
+              totalSpent: { decrement: pointsFromUser },
+            },
+          });
+          await prisma.rewardPoint.update({
+            where: { id: tenantRewardPoint.id },
+            data: {
+              currentPoints: { increment: pointsFromTenant },
+              totalSpent: { decrement: pointsFromTenant },
+            },
+          });
+          throw new Error(`Gagal mengaktifkan addon: ${error.message}`);
+        }
+      } else {
+        throw new Error(`Point tidak cukup. Saldo Anda: ${balance.currentPoints} point, diperlukan: ${pointsRequired} point`);
+      }
     }
 
     // Map addonId to addon type and config
@@ -656,11 +985,12 @@ export class RewardPointService {
           amount: -pointsRequired,
           source: 'ADDON_REDEEM',
           description: `Tukar ${pointsRequired} point untuk addon ${addonConfig.addonName}`,
-          metadata: { addonId, addonName: addonConfig.addonName, pointsRequired, addonType: addonConfig.addonType },
+          metadata: { addonId, addonName: addonConfig.addonName, pointsRequired, addonType: addonConfig.addonType, useTenantLevel },
         },
       });
 
-      return updated;
+      // Return updated balance
+      return await this.getBalance(tenantId, userId);
     } catch (error: any) {
       // Rollback points if addon subscription fails
       await prisma.rewardPoint.update({
@@ -736,7 +1066,7 @@ export class RewardPointService {
 
   /**
    * Award points from subscription purchase
-   * Menggunakan POINT_PER_RUPIAH (50 rupiah = 1 point)
+   * Setiap 20rb = 10 point, jadi setiap 2rb = 1 point (POINT_PER_RUPIAH = 2000)
    * @param tenantId - Tenant ID
    * @param amount - Subscription amount in rupiah
    * @param plan - Subscription plan
@@ -748,7 +1078,8 @@ export class RewardPointService {
     plan: string,
     duration: number
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: amount / POINT_PER_RUPIAH (50 rupiah = 1 point)
+    // Calculate points: amount / POINT_PER_RUPIAH (2000 rupiah = 1 point)
+    // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
     // Use Math.floor to ensure integer only
     const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     
@@ -817,7 +1148,7 @@ export class RewardPointService {
 
   /**
    * Award points from addon purchase
-   * Menggunakan POINT_PER_RUPIAH (50 rupiah = 1 point)
+   * Setiap 20rb = 10 point, jadi setiap 2rb = 1 point (POINT_PER_RUPIAH = 2000)
    * @param tenantId - Tenant ID
    * @param amount - Addon amount in rupiah
    * @param addonName - Addon name
@@ -829,7 +1160,8 @@ export class RewardPointService {
     addonName: string,
     addonType: string
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: amount / POINT_PER_RUPIAH (50 rupiah = 1 point)
+    // Calculate points: amount / POINT_PER_RUPIAH (2000 rupiah = 1 point)
+    // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
     // Use Math.floor to ensure integer only
     const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     

@@ -257,9 +257,11 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import { useNotification } from '../../composables/useNotification';
 import api from '../../api';
 
 const router = useRouter();
+const { confirm, success, error } = useNotification();
 const activeTab = ref<'earn' | 'redeem' | 'history'>('earn');
 const loading = ref(false);
 const redeeming = ref(false);
@@ -354,11 +356,11 @@ const loadConfig = async () => {
     const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
     console.error('Error message:', errorMessage);
     
-    // Show detailed error message
+    // Show detailed error message using popup
     if (errorMessage.includes('Tenant ID')) {
-      alert('Error: ' + errorMessage + '\n\nPastikan Anda sudah memilih tenant (untuk Super Admin) atau sudah login dengan benar.');
+      await error('Error: ' + errorMessage + '\n\nPastikan Anda sudah memilih tenant (untuk Super Admin) atau sudah login dengan benar.', 'Error Memuat Data');
     } else {
-      alert('Gagal memuat data langganan dan addon.\n\nError: ' + errorMessage + '\n\nSilakan refresh halaman atau hubungi administrator.');
+      await error('Gagal memuat data langganan dan addon.\n\nError: ' + errorMessage + '\n\nSilakan refresh halaman atau hubungi administrator.', 'Error Memuat Data');
     }
   }
 };
@@ -375,7 +377,14 @@ const claimReward = () => {
 };
 
 const redeemSubscription = async (plan: any) => {
-  if (!confirm(`Tukar ${plan.pointsRequired} point untuk ${plan.name}?`)) return;
+  const confirmed = await confirm(
+    `Tukar ${plan.pointsRequired} point untuk ${plan.name}?`,
+    'Konfirmasi Tukar Point',
+    'Ya, Tukar',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
   
   redeeming.value = true;
   try {
@@ -384,18 +393,25 @@ const redeemSubscription = async (plan: any) => {
       pointsRequired: plan.pointsRequired,
     });
     
-    alert('Berhasil! Langganan Anda telah diperpanjang.');
+    await success('Berhasil! Langganan Anda telah diperpanjang.', 'Tukar Point Berhasil');
     await loadBalance();
     await loadTransactions();
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Error menukar point');
+  } catch (err: any) {
+    await error(err.response?.data?.message || 'Error menukar point', 'Gagal Tukar Point');
   } finally {
     redeeming.value = false;
   }
 };
 
 const redeemAddon = async (addon: any) => {
-  if (!confirm(`Tukar ${addon.pointsRequired} point untuk ${addon.name}?`)) return;
+  const confirmed = await confirm(
+    `Tukar ${addon.pointsRequired} point untuk ${addon.name}?`,
+    'Konfirmasi Tukar Point',
+    'Ya, Tukar',
+    'Batal'
+  );
+  
+  if (!confirmed) return;
   
   redeeming.value = true;
   try {
@@ -405,11 +421,11 @@ const redeemAddon = async (addon: any) => {
       pointsRequired: addon.pointsRequired,
     });
     
-    alert('Berhasil! Addon telah diaktifkan.');
+    await success('Berhasil! Addon telah diaktifkan.', 'Tukar Point Berhasil');
     await loadBalance();
     await loadTransactions();
-  } catch (error: any) {
-    alert(error.response?.data?.message || 'Error menukar point');
+  } catch (err: any) {
+    await error(err.response?.data?.message || 'Error menukar point', 'Gagal Tukar Point');
   } finally {
     redeeming.value = false;
   }
