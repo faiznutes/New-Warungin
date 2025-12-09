@@ -97,6 +97,19 @@
             <span class="font-medium">Laporan</span>
           </router-link>
 
+          <router-link
+            to="/app/cashier/cash-shift"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-orange-100 hover:bg-orange-500 hover:text-white group"
+            active-class="bg-orange-500 text-white font-semibold shadow-lg"
+            exact-active-class="bg-orange-500 text-white font-semibold shadow-lg"
+            @click="closeSidebarOnMobile"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">Uang Modal & Rekap</span>
+          </router-link>
+
         </nav>
 
         <!-- User Section -->
