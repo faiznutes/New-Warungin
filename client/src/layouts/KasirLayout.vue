@@ -11,7 +11,7 @@
       <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="p-6 border-b border-orange-500 flex-shrink-0">
-          <router-link to="/" class="flex items-center hover:opacity-90 transition-opacity group">
+          <router-link to="/app/dashboard" class="flex items-center hover:opacity-90 transition-opacity group">
             <span class="text-xl font-bold text-white">Warungin</span>
             <span class="ml-2 px-2 py-1 text-xs bg-orange-500 text-orange-100 rounded-full">Kasir</span>
           </router-link>

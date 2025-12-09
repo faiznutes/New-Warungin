@@ -11,7 +11,7 @@
       <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="p-6 border-b border-gray-200 flex-shrink-0">
-          <router-link to="/" class="flex items-center hover:opacity-90 transition-opacity group">
+          <router-link to="/app/dashboard" class="flex items-center hover:opacity-90 transition-opacity group">
             <span class="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span>
           </router-link>
         </div>
