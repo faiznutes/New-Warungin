@@ -16,26 +16,6 @@
           <p class="text-sm sm:text-base text-gray-600">Detail Tenant & Manajemen Langganan</p>
         </div>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <button
-          @click="showCreateTenantModal = true"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium flex items-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Tambah Tenant
-        </button>
-        <button
-          @click="showCreateUserModal = true"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium flex items-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-          Tambah Pengguna
-        </button>
-      </div>
     </div>
 
     <!-- Error Boundary -->
