@@ -347,8 +347,8 @@ const loadTransfers = async (page: number = 1) => {
       page,
       limit: pagination.value.limit,
     };
-    if (filters.value.fromStore) params.fromStoreId = filters.value.fromStore;
-    if (filters.value.toStore) params.toStoreId = filters.value.toStore;
+    // Note: Backend uses outletId for filtering, we can filter by from or to outlet
+    if (filters.value.fromStore) params.outletId = filters.value.fromStore;
     if (filters.value.status) params.status = filters.value.status;
     if (filters.value.date) params.date = filters.value.date;
 
