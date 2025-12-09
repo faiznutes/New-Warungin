@@ -74,9 +74,12 @@ RUN chmod +x /app/scripts/docker-startup.sh
 # Create logs directory
 RUN mkdir -p /app/logs
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Create non-root user and add to docker group (for Docker socket access)
+# Docker group typically has GID 999 on most systems
+RUN addgroup -g 999 docker 2>/dev/null || true && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G docker || \
+    (adduser -S nodejs -u 1001 && addgroup docker 2>/dev/null && adduser nodejs docker 2>/dev/null || true)
 
 # Change ownership
 RUN chown -R nodejs:nodejs /app
