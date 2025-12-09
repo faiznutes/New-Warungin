@@ -24,7 +24,7 @@
             Daftar Produk
           </button>
           <button
-            v-if="authStore.user?.role === 'ADMIN_TENANT'"
+            v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
             @click="activeTab = 'adjustments'"
             :class="[
               'py-4 px-1 border-b-2 font-medium text-sm transition-colors',
@@ -385,8 +385,8 @@
     @save="handleSaveProduct"
   />
 
-    <!-- Adjustments Tab Content (Admin Tenant Only) -->
-    <div v-if="activeTab === 'adjustments' && authStore.user?.role === 'ADMIN_TENANT'" class="flex-1 overflow-auto px-4 sm:px-6 py-6">
+    <!-- Adjustments Tab Content (Admin Tenant & Super Admin) -->
+    <div v-if="activeTab === 'adjustments' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')" class="flex-1 overflow-auto px-4 sm:px-6 py-6">
       <ProductAdjustments />
     </div>
 </template>
