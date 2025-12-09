@@ -476,6 +476,14 @@ const loadProducts = async (page = 1) => {
     return; // Don't load if tenant not selected
   }
   
+  // For non-super-admin, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    hasError.value = true;
+    errorMessage.value = 'Tenant ID tidak tersedia. Silakan login ulang.';
+    return;
+  }
+  
   loading.value = true;
   hasError.value = false;
   errorMessage.value = '';
@@ -487,6 +495,12 @@ const loadProducts = async (page = 1) => {
       ...(filters.value.category && { category: filters.value.category }),
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
     };
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
     const response = await api.get('/products', { params });
     products.value = Array.isArray(response.data.data) ? response.data.data : [];
     pagination.value = response.data.pagination || { page: 1, limit: 12, total: 0, totalPages: 0 };

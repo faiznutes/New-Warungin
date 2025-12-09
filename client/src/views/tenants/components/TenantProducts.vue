@@ -143,6 +143,10 @@ const loadProducts = async () => {
   
   loading.value = true;
   try {
+    // Ensure tenantId is set in authStore and localStorage for API interceptor
+    authStore.setSelectedTenant(props.tenantId);
+    localStorage.setItem('selectedTenantId', props.tenantId);
+    
     // tenantId will be added automatically by API interceptor for SUPER_ADMIN
     // Use maximum allowed limit (100) and load all pages if needed
     let allProducts: any[] = [];
@@ -150,12 +154,17 @@ const loadProducts = async () => {
     let hasMore = true;
     
     while (hasMore) {
-      const response = await api.get('/products', {
-        params: { 
-          page,
-          limit: 100, // Maximum allowed by validator
-        },
-      });
+      const params: any = { 
+        page,
+        limit: 100, // Maximum allowed by validator
+      };
+      
+      // Explicitly add tenantId for SUPER_ADMIN
+      if (authStore.isSuperAdmin) {
+        params.tenantId = props.tenantId;
+      }
+      
+      const response = await api.get('/products', { params });
       
       const pageData = response.data.data || response.data;
       if (Array.isArray(pageData)) {

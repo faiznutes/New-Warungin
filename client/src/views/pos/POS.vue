@@ -757,6 +757,7 @@ const loadTenantFeatures = async () => {
 };
 
 const loadProducts = async () => {
+  // For SUPER_ADMIN, ensure tenantId is available
   if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
     const selectedTenantId = localStorage.getItem('selectedTenantId');
     if (!selectedTenantId) {
@@ -766,12 +767,23 @@ const loadProducts = async () => {
     authStore.setSelectedTenant(selectedTenantId);
   }
 
+  // For ADMIN_TENANT and other roles, ensure tenantId is available
+  if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
+    console.error('Tenant ID not available for non-super-admin user');
+    showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    return;
+  }
+
   loading.value = true;
   try {
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    const params: any = { isActive: true };
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
     // Try to load from API first
-    const response = await api.get('/products', {
-      params: { isActive: true },
-    });
+    const response = await api.get('/products', { params });
     const productsData = response.data.data || response.data;
     products.value = Array.isArray(productsData) ? productsData : [];
     
@@ -794,6 +806,7 @@ const loadProducts = async () => {
       }
     } else {
       const errorMessage = err.response?.data?.message || 'Gagal memuat produk';
+      console.error('Error loading products:', err);
       showError(errorMessage, 'Terjadi Kesalahan');
     }
   } finally {

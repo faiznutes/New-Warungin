@@ -60,8 +60,11 @@ onMounted(async () => {
     localStorage.setItem('selectedTenantId', props.tenantId);
     authStore.setSelectedTenant(props.tenantId);
     
-    // Wait for next tick to ensure localStorage is updated
+    // Wait for next tick to ensure localStorage and authStore are updated
     await nextTick();
+    
+    // Wait a bit more to ensure POS component can access tenantId
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     if (socket?.connected) {
       socket.emit('join-tenant', props.tenantId);
