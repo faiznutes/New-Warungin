@@ -268,6 +268,8 @@ import { useNotification } from '../../composables/useNotification';
 
 const { needsTenantSelection } = useTenantCheck();
 const { success: showSuccess, error: showError, info: showInfo } = useNotification();
+import { useAuthStore } from '../../stores/auth';
+const authStore = useAuthStore();
 
 interface Prediction {
   nextMonth: number;
@@ -316,7 +318,8 @@ const reportForm = ref({
 const forecastMethod = ref<'moving_average' | 'linear_regression'>('moving_average');
 
 const loadAnalytics = async () => {
-  if (needsTenantSelection.value) return;
+  // Super Admin tidak perlu select tenant - bisa langsung load data platform
+  if (needsTenantSelection.value && !authStore.isSuperAdmin) return;
 
   loading.value = true;
   try {
@@ -325,7 +328,10 @@ const loadAnalytics = async () => {
         params: { method: forecastMethod.value } 
       }).catch(() => ({ data: { nextMonth: 0, trend: 0, accuracy: 85 } })),
       api.get('/analytics/top-products', { params: { limit: 10 } }).catch(() => ({ data: [] })),
-      api.get('/analytics/custom-reports').catch(() => ({ data: { data: [] } })),
+      // Custom reports hanya untuk tenant, bukan platform
+      authStore.isSuperAdmin 
+        ? Promise.resolve({ data: { data: [] } })
+        : api.get('/analytics/custom-reports').catch(() => ({ data: { data: [] } })),
     ]);
 
     predictions.value = predictionsRes.data;

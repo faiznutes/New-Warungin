@@ -170,8 +170,10 @@ import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
+import { useAuthStore } from '../../stores/auth';
 
 const { error: showError, success: showSuccess } = useNotification();
+const authStore = useAuthStore();
 
 interface ProfitLoss {
   revenue: number;

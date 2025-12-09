@@ -313,10 +313,13 @@ const periodForm = ref({
 });
 
 const loadFinancialData = async () => {
-  if (needsTenantSelection.value) return;
+  // Super Admin tidak perlu select tenant - bisa langsung load data platform
+  if (needsTenantSelection.value && !authStore.isSuperAdmin) return;
 
   loading.value = true;
   try {
+    // For Super Admin, use platform data (subscriptions & addons)
+    // For tenant admin, use tenant data
     const [summaryRes, balanceRes, cashFlowRes] = await Promise.all([
       api.get('/finance/summary', { params: periodForm.value }).catch(() => ({ data: financialSummary.value })),
       api.get('/finance/balance-sheet', { params: periodForm.value }).catch(() => ({ data: balanceSheet.value })),

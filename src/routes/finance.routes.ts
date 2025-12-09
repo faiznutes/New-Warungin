@@ -49,6 +49,16 @@ router.get(
   authGuard,
   async (req: Request, res: Response, next) => {
     try {
+      const userRole = (req as any).user?.role;
+      
+      // For Super Admin, return platform financial summary (subscriptions & addons)
+      if (userRole === 'SUPER_ADMIN') {
+        const startDate = req.query.startDate as string;
+        const endDate = req.query.endDate as string;
+        const summary = await financeService.getPlatformFinancialSummary(startDate, endDate);
+        return res.json(summary);
+      }
+      
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
@@ -226,6 +236,16 @@ router.get(
   authGuard,
   async (req: Request, res: Response, next) => {
     try {
+      const userRole = (req as any).user?.role;
+      
+      // For Super Admin, return platform balance sheet (subscriptions & addons)
+      if (userRole === 'SUPER_ADMIN') {
+        const startDate = req.query.startDate as string;
+        const endDate = req.query.endDate as string;
+        const balanceSheet = await financeService.getPlatformBalanceSheet(startDate, endDate);
+        return res.json(balanceSheet);
+      }
+      
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
@@ -282,6 +302,16 @@ router.get(
   authGuard,
   async (req: Request, res: Response, next) => {
     try {
+      const userRole = (req as any).user?.role;
+      
+      // For Super Admin, return platform cash flow (subscriptions & addons)
+      if (userRole === 'SUPER_ADMIN') {
+        const startDate = req.query.startDate as string;
+        const endDate = req.query.endDate as string;
+        const cashFlow = await financeService.getPlatformCashFlow(startDate, endDate);
+        return res.json(cashFlow);
+      }
+      
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;

@@ -407,6 +407,206 @@ class FinanceService {
       netProfitMargin: Math.round(netProfitMargin * 100) / 100,
     };
   }
+
+  // Platform Financial Summary (for Super Admin - subscriptions & addons revenue)
+  async getPlatformFinancialSummary(startDate?: string, endDate?: string): Promise<FinancialSummary> {
+    const dateFilter = this.getDateFilter(startDate, endDate);
+    const lastMonthFilter = this.getLastMonthFilter();
+
+    // Get subscriptions revenue
+    const subscriptions = await prisma.subscription.findMany({
+      where: dateFilter,
+      select: {
+        amount: true,
+        createdAt: true,
+      },
+    });
+
+    // Get addons revenue
+    const addons = await prisma.tenantAddon.findMany({
+      where: dateFilter.createdAt ? { subscribedAt: dateFilter.createdAt } : {},
+      select: {
+        addonId: true,
+        subscribedAt: true,
+        config: true,
+      },
+    });
+
+    const { AVAILABLE_ADDONS } = await import('./addon.service');
+    const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
+
+    // Calculate current period revenue
+    let revenue = 0;
+    subscriptions.forEach((sub) => {
+      revenue += parseFloat(sub.amount.toString());
+    });
+
+    addons.forEach((addon) => {
+      const price = addonPriceMap.get(addon.addonId) || 0;
+      const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+        ? (addon.config as any).originalDuration || 30
+        : 30;
+      revenue += (price * duration) / 30;
+    });
+
+    // Get last month revenue for growth calculation
+    const lastMonthSubscriptions = await prisma.subscription.findMany({
+      where: lastMonthFilter,
+      select: {
+        amount: true,
+      },
+    });
+
+    const lastMonthAddons = await prisma.tenantAddon.findMany({
+      where: {
+        subscribedAt: {
+          gte: lastMonthFilter.createdAt.gte,
+          lte: lastMonthFilter.createdAt.lte,
+        },
+      },
+      select: {
+        addonId: true,
+        config: true,
+      },
+    });
+
+    let lastMonthRevenue = 0;
+    lastMonthSubscriptions.forEach((sub) => {
+      lastMonthRevenue += parseFloat(sub.amount.toString());
+    });
+
+    lastMonthAddons.forEach((addon) => {
+      const price = addonPriceMap.get(addon.addonId) || 0;
+      const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+        ? (addon.config as any).originalDuration || 30
+        : 30;
+      lastMonthRevenue += (price * duration) / 30;
+    });
+
+    const revenueGrowth = lastMonthRevenue > 0 ? ((revenue - lastMonthRevenue) / lastMonthRevenue) * 100 : 0;
+
+    // Expenses - estimated as 30% of revenue (infrastructure, support, etc.)
+    const expenses = revenue * 0.3;
+    const profit = revenue - expenses;
+    const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
+
+    return {
+      revenue: Math.round(revenue * 100) / 100,
+      revenueGrowth: Math.round(revenueGrowth * 100) / 100,
+      expenses: Math.round(expenses * 100) / 100,
+      profit: Math.round(profit * 100) / 100,
+      profitMargin: Math.round(profitMargin * 100) / 100,
+    };
+  }
+
+  // Platform Balance Sheet (for Super Admin)
+  async getPlatformBalanceSheet(startDate?: string, endDate?: string): Promise<BalanceSheet> {
+    // Platform doesn't have traditional balance sheet items
+    // Return simplified version based on subscriptions & addons
+    const dateFilter = this.getDateFilter(startDate, endDate);
+
+    const subscriptions = await prisma.subscription.findMany({
+      where: dateFilter,
+      select: {
+        amount: true,
+      },
+    });
+
+    const addons = await prisma.tenantAddon.findMany({
+      where: dateFilter.createdAt ? { subscribedAt: dateFilter.createdAt } : {},
+      select: {
+        addonId: true,
+        config: true,
+      },
+    });
+
+    const { AVAILABLE_ADDONS } = await import('./addon.service');
+    const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
+
+    let totalRevenue = 0;
+    subscriptions.forEach((sub) => {
+      totalRevenue += parseFloat(sub.amount.toString());
+    });
+
+    addons.forEach((addon) => {
+      const price = addonPriceMap.get(addon.addonId) || 0;
+      const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+        ? (addon.config as any).originalDuration || 30
+        : 30;
+      totalRevenue += (price * duration) / 30;
+    });
+
+    // Simplified balance sheet for platform
+    return {
+      cash: totalRevenue * 0.7, // 70% as cash
+      receivables: totalRevenue * 0.2, // 20% as receivables
+      inventory: 0, // Platform doesn't have inventory
+      totalAssets: totalRevenue * 0.9,
+      liabilities: totalRevenue * 0.1, // 10% as liabilities
+      equity: totalRevenue * 0.8, // 80% as equity
+      totalLiabilities: totalRevenue * 0.1,
+    };
+  }
+
+  // Platform Cash Flow (for Super Admin)
+  async getPlatformCashFlow(startDate?: string, endDate?: string): Promise<CashFlow> {
+    const dateFilter = this.getDateFilter(startDate, endDate);
+
+    const subscriptions = await prisma.subscription.findMany({
+      where: dateFilter,
+      select: {
+        amount: true,
+      },
+    });
+
+    const addons = await prisma.tenantAddon.findMany({
+      where: dateFilter.createdAt ? { subscribedAt: dateFilter.createdAt } : {},
+      select: {
+        addonId: true,
+        config: true,
+      },
+    });
+
+    const { AVAILABLE_ADDONS } = await import('./addon.service');
+    const addonPriceMap = new Map(AVAILABLE_ADDONS.map(a => [a.id, a.price]));
+
+    let totalRevenue = 0;
+    subscriptions.forEach((sub) => {
+      totalRevenue += parseFloat(sub.amount.toString());
+    });
+
+    addons.forEach((addon) => {
+      const price = addonPriceMap.get(addon.addonId) || 0;
+      const duration = addon.config && typeof addon.config === 'object' && 'originalDuration' in addon.config
+        ? (addon.config as any).originalDuration || 30
+        : 30;
+      totalRevenue += (price * duration) / 30;
+    });
+
+    // Simplified cash flow for platform
+    const operatingInflow = totalRevenue;
+    const operatingOutflow = totalRevenue * 0.3; // 30% as expenses
+    const operatingNet = operatingInflow - operatingOutflow;
+
+    return {
+      operating: {
+        inflow: Math.round(operatingInflow * 100) / 100,
+        outflow: Math.round(operatingOutflow * 100) / 100,
+        net: Math.round(operatingNet * 100) / 100,
+      },
+      investing: {
+        inflow: 0,
+        outflow: 0,
+        net: 0,
+      },
+      financing: {
+        inflow: 0,
+        outflow: 0,
+        net: 0,
+      },
+      total: Math.round(operatingNet * 100) / 100,
+    };
+  }
 }
 
 export default new FinanceService();
