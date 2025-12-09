@@ -97,6 +97,15 @@
               <option value="ACTIVE">Aktif</option>
               <option value="EXPIRED">Expired</option>
             </select>
+            <select
+              v-model="subscriptionPurchasedByFilter"
+              @change="subscriptionPage = 1"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua</option>
+              <option value="SELF">Dibeli Sendiri</option>
+              <option value="ADMIN">Dibeli oleh Admin</option>
+            </select>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -156,18 +165,9 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      :checked="sub.purchasedBy === 'ADMIN'"
-                      disabled
-                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      title="Dibeli oleh Admin"
-                    />
-                    <span class="text-xs text-gray-600">
-                      {{ sub.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
-                    </span>
-                  </div>
+                  <span class="text-xs font-medium" :class="sub.purchasedBy === 'ADMIN' ? 'text-purple-600' : 'text-gray-600'">
+                    {{ sub.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli Sendiri' }}
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
@@ -253,6 +253,15 @@
               <option value="active">Aktif</option>
               <option value="expired">Expired</option>
             </select>
+            <select
+              v-model="addonPurchasedByFilter"
+              @change="addonPage = 1"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Semua</option>
+              <option value="SELF">Dibeli Sendiri</option>
+              <option value="ADMIN">Dibeli oleh Admin</option>
+            </select>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -312,18 +321,9 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      :checked="addon.purchasedBy === 'ADMIN'"
-                      disabled
-                      class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      title="Dibeli oleh Admin"
-                    />
-                    <span class="text-xs text-gray-600">
-                      {{ addon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
-                    </span>
-                  </div>
+                  <span class="text-xs font-medium" :class="addon.purchasedBy === 'ADMIN' ? 'text-purple-600' : 'text-gray-600'">
+                    {{ addon.purchasedBy === 'ADMIN' ? 'Dibeli oleh Admin' : 'Dibeli Sendiri' }}
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
@@ -880,11 +880,13 @@ const shouldLoadReport = ref(false);
 // Subscription pagination and filter
 const subscriptionPage = ref(1);
 const subscriptionFilter = ref<'all' | 'ACTIVE' | 'EXPIRED'>('all');
+const subscriptionPurchasedByFilter = ref<'all' | 'SELF' | 'ADMIN'>('all');
 const itemsPerPage = 7;
 
 // Addon pagination and filter
 const addonPage = ref(1);
 const addonFilter = ref<'all' | 'active' | 'expired'>('all');
+const addonPurchasedByFilter = ref<'all' | 'SELF' | 'ADMIN'>('all');
 
 // Set default date range: 2 weeks back and 2 weeks forward
 const now = new Date();
@@ -911,6 +913,14 @@ const filteredSubscriptions = computed(() => {
   
   if (subscriptionFilter.value !== 'all') {
     filtered = safeFilter(filtered, (sub: any) => sub && sub.status === subscriptionFilter.value);
+  }
+  
+  // Filter by purchasedBy
+  if (subscriptionPurchasedByFilter.value !== 'all') {
+    filtered = safeFilter(filtered, (sub: any) => {
+      const purchasedBy = sub.purchasedBy || 'SELF';
+      return purchasedBy === subscriptionPurchasedByFilter.value;
+    });
   }
   
   return filtered;
@@ -942,6 +952,14 @@ const filteredAddons = computed(() => {
   
   if (addonFilter.value !== 'all') {
     filtered = safeFilter(filtered, (addon: any) => addon && addon.status === addonFilter.value);
+  }
+  
+  // Filter by purchasedBy
+  if (addonPurchasedByFilter.value !== 'all') {
+    filtered = safeFilter(filtered, (addon: any) => {
+      const purchasedBy = addon.purchasedBy || 'SELF';
+      return purchasedBy === addonPurchasedByFilter.value;
+    });
   }
   
   return filtered;

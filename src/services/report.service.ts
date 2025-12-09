@@ -225,8 +225,13 @@ export class ReportService {
         addonFilter.subscribedAt = filter;
       }
 
-      // Get all tenants
+      // Get all tenants (exclude System tenant)
       const tenants = await readReplica.tenant.findMany({
+        where: {
+          name: {
+            not: 'System',
+          },
+        },
         include: {
           subscriptions: {
             where: subscriptionFilter.createdAt ? subscriptionFilter : undefined,
@@ -244,6 +249,22 @@ export class ReportService {
       const subscriptions = await readReplica.subscription.findMany({
         where: subscriptionFilter.createdAt ? subscriptionFilter : undefined,
         include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        select: {
+          id: true,
+          tenantId: true,
+          plan: true,
+          amount: true,
+          createdAt: true,
+          status: true,
+          endDate: true,
+          purchasedBy: true,
           tenant: {
             select: {
               id: true,
@@ -317,13 +338,23 @@ export class ReportService {
       // Calculate total global revenue (only from subscription + addon, NOT tenant orders)
       const totalGlobalRevenue = totalSubscriptionRevenue + totalAddonRevenue;
 
+      // Calculate active tenants: tenants with ACTIVE subscription and endDate >= now
+      const currentDate = new Date();
+      const activeTenantsSet = new Set<string>();
+      subscriptions.forEach((sub: any) => {
+        if (sub.status === 'ACTIVE' && sub.endDate && new Date(sub.endDate) >= currentDate) {
+          activeTenantsSet.add(sub.tenantId);
+        }
+      });
+      const activeTenantsCount = activeTenantsSet.size;
+
       const result = {
         summary: {
           totalGlobalRevenue,
           totalSubscriptionRevenue,
           totalAddonRevenue,
-          activeTenants: tenants.filter((t: any) => t.isActive).length,
-        totalTenants: tenants.length,
+          activeTenants: activeTenantsCount,
+          totalTenants: tenants.length,
         },
         subscriptions: subscriptionList,
         addons: addonList,
