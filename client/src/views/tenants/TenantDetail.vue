@@ -851,84 +851,6 @@
       </div>
     </div>
 
-    <!-- Create Tenant Modal -->
-    <div
-      v-if="showCreateTenantModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="showCreateTenantModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Tambah Tenant Baru</h3>
-        <form @submit.prevent="handleCreateTenant" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Tenant <span class="text-red-500">*</span></label>
-            <input
-              v-model="createTenantForm.name"
-              type="text"
-              required
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Nama tenant"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-            <input
-              v-model="createTenantForm.email"
-              type="email"
-              required
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="email@example.com"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
-            <input
-              v-model="createTenantForm.phone"
-              type="text"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="081234567890"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-            <textarea
-              v-model="createTenantForm.address"
-              rows="3"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Alamat tenant"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Paket Langganan</label>
-            <select
-              v-model="createTenantForm.subscriptionPlan"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="BASIC">Starter (BASIC)</option>
-              <option value="PRO">Boost (PRO)</option>
-              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
-            </select>
-          </div>
-          <div class="flex gap-3">
-            <button
-              type="button"
-              @click="showCreateTenantModal = false"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              :disabled="creatingTenant"
-              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ creatingTenant ? 'Membuat...' : 'Buat Tenant' }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <!-- Create Store Modal -->
     <div
       v-if="showCreateStoreModal"
@@ -1342,7 +1264,6 @@ const loadingStores = ref(false);
 const tenantStores = ref<any[]>([]);
 const outletUsage = ref<{ currentUsage: number; limit: number } | null>(null);
 const selectedUsers = ref<any[]>([]);
-const creatingTenant = ref(false);
 const creatingUser = ref(false);
 const createUserForm = ref({
   name: '',
