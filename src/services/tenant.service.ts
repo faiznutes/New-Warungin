@@ -956,7 +956,129 @@ export const deleteTenant = async (id: string) => {
       where: { tenantId: id },
     });
 
-    // 20. Finally, delete the tenant
+    // 20. Delete RewardPoints (depends on Tenant, User)
+    await tx.rewardPoint.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 21. Delete AuditLogs (depends on Tenant, User)
+    await tx.auditLog.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 22. Delete Webhooks (depends on Tenant)
+    await tx.webhook.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 23. Delete EmailTemplates (depends on Tenant)
+    await tx.emailTemplate.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 24. Delete ScheduledEmails (depends on Tenant)
+    await tx.scheduledEmail.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 25. Delete Suppliers (depends on Tenant)
+    await tx.supplier.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 26. Delete PurchaseOrders and PurchaseOrderItems
+    const purchaseOrders = await tx.purchaseOrder.findMany({
+      where: { tenantId: id },
+      select: { id: true },
+    });
+
+    for (const po of purchaseOrders) {
+      await tx.purchaseOrderItem.deleteMany({
+        where: { purchaseOrderId: po.id },
+      });
+    }
+
+    await tx.purchaseOrder.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 27. Delete StockTransfers and StockTransferItems
+    const stockTransfers = await tx.stockTransfer.findMany({
+      where: { tenantId: id },
+      select: { id: true },
+    });
+
+    for (const st of stockTransfers) {
+      await tx.stockTransferItem.deleteMany({
+        where: { stockTransferId: st.id },
+      });
+    }
+
+    await tx.stockTransfer.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 28. Delete StockValuations (depends on Tenant, Product)
+    await tx.stockValuation.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 29. Delete ReportTemplates (depends on Tenant)
+    await tx.reportTemplate.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 30. Delete ScheduledReports (depends on Tenant)
+    await tx.scheduledReport.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 31. Delete DashboardSettings (depends on Tenant, User)
+    await tx.dashboardSettings.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 32. Delete CashFlows (depends on Tenant)
+    await tx.cashFlow.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 33. Delete Expenses (depends on Tenant)
+    await tx.expense.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 34. Delete TaxCalculations (depends on Tenant)
+    await tx.taxCalculation.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 35. Delete FinancialForecasts (depends on Tenant)
+    await tx.financialForecast.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 36. Delete BankReconciliations (depends on Tenant)
+    await tx.bankReconciliation.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 37. Delete CustomerFeedbacks (depends on Tenant, Customer)
+    await tx.customerFeedback.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 38. Delete CustomerReviews (depends on Tenant, Customer, Product)
+    await tx.customerReview.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 39. Delete EmailEvents (depends on Tenant)
+    await tx.emailEvent.deleteMany({
+      where: { tenantId: id },
+    });
+
+    // 40. Finally, delete the tenant
     await tx.tenant.delete({
       where: { id },
     });
