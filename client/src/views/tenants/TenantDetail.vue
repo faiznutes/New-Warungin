@@ -838,7 +838,7 @@
                 : 'border-gray-200 hover:border-blue-300 cursor-pointer',
               selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon && !addon.requiresApi ? 'border-blue-500 bg-blue-50' : ''
             ]"
-            @click="if (!addon.comingSoon && !addon.requiresApi) selectedAddonForSubscribe = addon"
+            @click="handleSelectAddon(addon)"
           >
             <div class="flex items-start justify-between">
               <div class="flex-1">
@@ -2384,6 +2384,12 @@ const handleCreateStore = async () => {
     await showError(errorMessage);
   } finally {
     creatingStore.value = false;
+  }
+};
+
+const handleSelectAddon = (addon: any) => {
+  if (!addon.comingSoon && !addon.requiresApi) {
+    selectedAddonForSubscribe.value = addon;
   }
 };
 
