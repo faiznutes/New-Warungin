@@ -550,16 +550,36 @@ const loadAdjustments = async (page = 1) => {
     }
 
     const response = await api.get('/products/adjustments', { params });
-    // Handle null products (deleted products)
+    
+    // Handle null products (deleted products) and ensure all fields exist
     adjustments.value = (response.data.data || []).map((adj: any) => ({
       ...adj,
-      product: adj.product || { id: adj.productId, name: 'Produk Dihapus', sku: null },
+      product: adj.product || { 
+        id: adj.productId || '', 
+        name: 'Produk Dihapus', 
+        sku: null 
+      },
+      user: adj.user || {
+        id: '',
+        name: 'Unknown',
+        email: ''
+      },
     }));
+    
     pagination.value = response.data.pagination || pagination.value;
     pagination.value.page = page;
   } catch (error: any) {
     console.error('Error loading adjustments:', error);
-    await showError(error.response?.data?.message || 'Gagal memuat data penyesuaian');
+    const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat data penyesuaian';
+    
+    // If it's a 404 or "Product not found" error, still show empty list instead of error
+    if (error.response?.status === 404 || errorMessage.includes('Product not found')) {
+      adjustments.value = [];
+      pagination.value = { page: 1, limit: 20, total: 0, totalPages: 0 };
+      console.warn('Product not found error, showing empty list');
+    } else {
+      await showError(errorMessage);
+    }
   } finally {
     loading.value = false;
   }
@@ -619,6 +639,32 @@ const removeTransferItem = (index: number) => {
 };
 
 const saveAdjustment = async () => {
+  // Validate form before submitting
+  if (!isFormValid.value) {
+    await showError('Mohon lengkapi semua field yang wajib diisi');
+    return;
+  }
+  
+  // Validate product exists before submitting
+  if (adjustmentForm.value.reasonType !== 'TRANSFER_STOK' && adjustmentForm.value.productId) {
+    const productExists = products.value.some(p => p.id === adjustmentForm.value.productId);
+    if (!productExists) {
+      await showError('Produk yang dipilih tidak ditemukan. Silakan pilih produk lain.');
+      return;
+    }
+  }
+  
+  // Validate transfer items
+  if (adjustmentForm.value.reasonType === 'TRANSFER_STOK') {
+    for (const item of transferForm.value.items) {
+      const productExists = products.value.some(p => p.id === item.productId);
+      if (!productExists) {
+        await showError(`Produk dengan ID ${item.productId} tidak ditemukan. Silakan pilih produk lain.`);
+        return;
+      }
+    }
+  }
+  
   saving.value = true;
   try {
     if (adjustmentForm.value.reasonType === 'TRANSFER_STOK') {
@@ -660,7 +706,16 @@ const saveAdjustment = async () => {
     await loadProducts();
   } catch (error: any) {
     console.error('Error saving adjustment:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan penyesuaian');
+    const errorMessage = error.response?.data?.message || error.message || 'Gagal menyimpan penyesuaian';
+    
+    // Better error messages
+    if (errorMessage.includes('Product not found') || errorMessage.includes('not found')) {
+      await showError('Produk tidak ditemukan. Pastikan produk masih ada dan aktif.');
+    } else if (errorMessage.includes('Insufficient stock')) {
+      await showError('Stok tidak mencukupi untuk penyesuaian ini.');
+    } else {
+      await showError(errorMessage);
+    }
   } finally {
     saving.value = false;
   }

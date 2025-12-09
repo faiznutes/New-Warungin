@@ -57,13 +57,19 @@ export class ProductAdjustmentService {
     if (query.search) {
       where.OR = [
         { reason: { contains: query.search, mode: 'insensitive' } },
+        // Only search in product if product exists (handle deleted products)
         {
-          product: {
-            OR: [
-              { name: { contains: query.search, mode: 'insensitive' } },
-              { sku: { contains: query.search, mode: 'insensitive' } },
-            ],
-          },
+          AND: [
+            { product: { isNot: null } },
+            {
+              product: {
+                OR: [
+                  { name: { contains: query.search, mode: 'insensitive' } },
+                  { sku: { contains: query.search, mode: 'insensitive' } },
+                ],
+              },
+            },
+          ],
         },
       ];
     }
