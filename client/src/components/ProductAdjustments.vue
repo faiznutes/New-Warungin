@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="space-y-6">
+  <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>

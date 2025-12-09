@@ -426,7 +426,9 @@ import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
+import { useAuthStore } from '../../stores/auth';
 
+const authStore = useAuthStore();
 const { success: showSuccess, error: showError } = useNotification();
 
 const loading = ref(false);
@@ -477,6 +479,11 @@ const loadAdjustments = async (page = 1) => {
     if (filters.value.type) params.type = filters.value.type;
     if (filters.value.startDate) params.startDate = filters.value.startDate;
     if (filters.value.endDate) params.endDate = filters.value.endDate;
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
 
     const response = await api.get('/products/adjustments', { params });
     adjustments.value = response.data.data || [];
@@ -492,7 +499,14 @@ const loadAdjustments = async (page = 1) => {
 
 const loadProducts = async () => {
   try {
-    const response = await api.get('/products', { params: { limit: 1000 } });
+    const params: any = { limit: 1000 };
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
+    const response = await api.get('/products', { params });
     products.value = response.data.data || [];
   } catch (error: any) {
     console.error('Error loading products:', error);
@@ -501,7 +515,14 @@ const loadProducts = async () => {
 
 const loadOutlets = async () => {
   try {
-    const response = await api.get('/outlets', { params: { limit: 100 } });
+    const params: any = { limit: 100 };
+    
+    // Ensure tenantId is set in params for SUPER_ADMIN
+    if (authStore.isSuperAdmin && authStore.selectedTenantId) {
+      params.tenantId = authStore.selectedTenantId;
+    }
+    
+    const response = await api.get('/outlets', { params });
     outlets.value = response.data.data || response.data || [];
   } catch (error: any) {
     console.error('Error loading outlets:', error);
