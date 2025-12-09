@@ -5,9 +5,9 @@ export const createProductAdjustmentSchema = z.discriminatedUnion('type', [
   // Regular adjustment (INCREASE/DECREASE)
   z.object({
     type: z.enum(['INCREASE', 'DECREASE']),
-    productId: z.string().min(1),
-    quantity: z.number().int().positive(),
-    reason: z.string().min(1),
+  productId: z.string().min(1),
+  quantity: z.number().int().positive(),
+  reason: z.string().min(1),
   }),
   // Stock transfer
   z.object({

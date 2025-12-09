@@ -155,7 +155,7 @@ const loadStores = async () => {
         handleStoreChange({ target: { value: storeId } } as any);
       } else if (stores.value.length === 1) {
         // Auto-select jika hanya 1 store
-        handleStoreChange({ target: { value: stores.value[0].id } } as any);
+      handleStoreChange({ target: { value: stores.value[0].id } } as any);
       }
     }
   } catch (error: any) {
