@@ -330,8 +330,13 @@ const hasLimit = (addon: any) => {
 
 // Filter and sort available addons
 const filteredAvailableAddons = computed(() => {
+  // Remove duplicates based on id first
+  const uniqueAddons = availableAddons.value.filter((addon, index, self) => 
+    index === self.findIndex(a => a && addon && a.id === addon.id)
+  );
+  
   // All addons are shown (can be purchased multiple times)
-  const filtered = safeFilter(availableAddons.value, (addon: any) => {
+  const filtered = safeFilter(uniqueAddons, (addon: any) => {
     // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
     if (hasLimit(addon)) {
       return true;
@@ -341,12 +346,27 @@ const filteredAvailableAddons = computed(() => {
     return true;
   });
   
-  // Sort: non-API addons first, API addons (coming soon) at the end
+  // Sort: 
+  // 1. Unlimited (defaultLimit === null) di atas
+  // 2. Limited (defaultLimit !== null) di tengah
+  // 3. Coming soon (comingSoon === true) di bawah
   return filtered.sort((a, b) => {
-    const aIsApi = a?.requiresApi === true || a?.comingSoon === true;
-    const bIsApi = b?.requiresApi === true || b?.comingSoon === true;
-    if (aIsApi && !bIsApi) return 1;
-    if (!aIsApi && bIsApi) return -1;
+    const aIsComingSoon = a?.comingSoon === true || a?.requiresApi === true;
+    const bIsComingSoon = b?.comingSoon === true || b?.requiresApi === true;
+    const aHasLimit = hasLimit(a);
+    const bHasLimit = hasLimit(b);
+    
+    // Coming soon selalu di bawah
+    if (aIsComingSoon && !bIsComingSoon) return 1;
+    if (!aIsComingSoon && bIsComingSoon) return -1;
+    
+    // Jika keduanya coming soon, urutkan seperti biasa
+    if (aIsComingSoon && bIsComingSoon) return 0;
+    
+    // Unlimited (tanpa limit) di atas, Limited di bawah
+    if (!aHasLimit && bHasLimit) return -1;
+    if (aHasLimit && !bHasLimit) return 1;
+    
     return 0;
   });
 });

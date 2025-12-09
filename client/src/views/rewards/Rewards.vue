@@ -333,7 +333,11 @@ const loadConfig = async () => {
     
     // Format addons
     if (redemptions.addons && Array.isArray(redemptions.addons)) {
-      availableAddons.value = redemptions.addons.map((addon: any) => ({
+      // Remove duplicates based on id
+      const uniqueAddons = redemptions.addons.filter((addon: any, index: number, self: any[]) => 
+        index === self.findIndex(a => a.id === addon.id)
+      );
+      availableAddons.value = uniqueAddons.map((addon: any) => ({
         id: addon.id,
         name: addon.name,
         description: `Aktifkan addon ${addon.name}`,

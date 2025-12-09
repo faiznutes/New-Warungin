@@ -1,0 +1,127 @@
+Database
+
+ Buat tabel cash_shifts
+
+id
+
+tenant_id
+
+kasir_id
+
+shift_start (datetime)
+
+shift_end (nullable)
+
+modal_awal (decimal)
+
+uang_fisik_tutup (decimal nullable)
+
+saldo_seharusnya (decimal nullable)
+
+selisih (decimal nullable)
+
+status (enum: open/closed)
+
+2. Business Rules
+
+ Kasir tidak boleh melakukan transaksi jika belum membuka shift.
+
+ Satu kasir hanya boleh memiliki 1 shift open.
+
+ Modal awal wajib saat membuka shift.
+
+ Saat tutup shift, kasir wajib input jumlah uang fisik.
+
+ System auto-hitungan:
+
+ total penjualan di shift
+
+ saldo seharusnya = modal_awal + total_penjualan
+
+ selisih = uang_fisik_tutup − saldo_seharusnya
+
+3. API / Backend
+Buka Shift
+
+ POST /cash-shift/open
+
+input: modal_awal, catatan(optional)
+
+validasi: tidak ada shift aktif
+
+simpan shift_start + modal_awal
+
+Data Shift Aktif
+
+ GET /cash-shift/current
+
+return:
+
+modal_awal
+
+total_penjualan (auto dari transaksi)
+
+saldo_seharusnya (auto)
+
+Tutup Shift
+
+ POST /cash-shift/close
+
+input: uang_fisik_tutup, catatan(optional)
+
+system hitung saldo_seharusnya
+
+system hitung selisih
+
+set status = closed
+
+4. UI – Kasir
+A. Halaman Buka Shift
+
+ Input modal awal
+
+ Tombol “Buka Shift”
+
+ Lock seluruh transaksi jika shift belum dibuka
+
+B. Halaman Rekap Shift Aktif
+
+ Tampilkan:
+
+modal awal
+
+total penjualan (auto)
+
+saldo seharusnya
+
+C. Halaman Tutup Shift
+
+ Input uang fisik kasir
+
+ Tampilkan:
+
+saldo seharusnya
+
+selisih
+
+ Tombol “Tutup Shift”
+
+5. Middleware / Access
+
+ Kasir hanya bisa mengakses shift miliknya
+
+ Tidak bisa menutup shift kasir lain
+
+ Tidak bisa buka shift baru sebelum shift lama ditutup
+
+6. Testing (Wajib)
+
+ Penolakan transaksi jika shift belum dibuka
+
+ Penolakan buka shift dua kali
+
+ Perhitungan saldo tepat
+
+ Penutupan shift dengan uang fisik wajib diisi
+
+ Selisih dihitung benar

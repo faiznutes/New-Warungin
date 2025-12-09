@@ -12,7 +12,7 @@ interface SEOConfig {
 
 const defaultSEO = {
   title: 'Warungin - Sistem Kasir Modern untuk UMKM | Aplikasi Kasir Warung & Toko',
-  description: 'Kelola warung dan toko Anda dengan mudah menggunakan sistem kasir modern. Mulai dari Rp 200rb/bulan dengan trial gratis 14 hari. Fitur lengkap: transaksi, inventori, laporan, dan multi-outlet.',
+  description: 'Kelola warung dan toko Anda dengan mudah menggunakan sistem kasir modern. Mulai dari Rp 149rb/bulan dengan trial gratis 14 hari. Fitur lengkap: transaksi, inventori, laporan, dan multi-outlet.',
   image: 'https://pos.faiznute.site/og-image.jpg',
   url: 'https://pos.faiznute.site',
   type: 'website',
@@ -119,7 +119,7 @@ export function useSEO(config: SEOConfig = {}) {
       operatingSystem: 'Web',
       offers: {
         '@type': 'Offer',
-        price: '200000',
+        price: '149000',
         priceCurrency: 'IDR',
         availability: 'https://schema.org/InStock',
         priceValidUntil: '2025-12-31',

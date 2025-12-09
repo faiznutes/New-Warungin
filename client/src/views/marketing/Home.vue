@@ -10,7 +10,7 @@
           <strong>Sistem kasir</strong> modern untuk <strong>warung</strong> dan <strong>toko</strong> UMKM. Kelola semua <strong>transaksi</strong>, <strong>produk</strong>, dan <strong>laporan penjualan</strong> dalam satu <strong>aplikasi kasir</strong> yang mudah digunakan. Hemat waktu, tingkatkan penjualan, dan fokus pada bisnis Anda.
         </p>
         <p class="text-sm sm:text-base md:text-lg text-gray-500 mb-6 sm:mb-8 max-w-2xl px-4">
-          ✨ <strong>Mulai dari Rp 200rb/bulan</strong> <span class="text-gray-400 line-through text-base">(dari Rp 250rb)</span> • Trial Gratis 14 Hari • Tanpa Setup Ribet
+          ✨ <strong>Mulai dari Rp 149rb/bulan</strong> • Trial Gratis 14 Hari • Tanpa Setup Ribet
         </p>
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-4">
           <router-link
@@ -115,7 +115,7 @@
           Mulai gratis 14 hari tanpa kartu kredit. Coba semua fitur tanpa batasan.
         </p>
         <p class="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 opacity-80 px-4">
-          Setelah trial, mulai dari <strong>Rp 200rb/bulan</strong> <span class="opacity-70 line-through text-xs sm:text-sm">(dari Rp 250rb)</span> - investasi kecil untuk kemudahan besar!
+          Setelah trial, mulai dari <strong>Rp 149rb/bulan</strong> - investasi kecil untuk kemudahan besar!
         </p>
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
           <router-link
@@ -193,7 +193,7 @@ import { useSEO } from '../../composables/useSEO';
 
 useSEO({
   title: 'Warungin - Sistem Kasir Modern untuk UMKM | Kelola Warung Lebih Mudah',
-  description: 'Kelola warung dan toko Anda dengan mudah menggunakan sistem kasir modern. Mulai dari Rp 200rb/bulan dengan trial gratis 14 hari. Fitur lengkap: transaksi, inventori, laporan, dan multi-outlet.',
+  description: 'Kelola warung dan toko Anda dengan mudah menggunakan sistem kasir modern. Mulai dari Rp 149rb/bulan dengan trial gratis 14 hari. Fitur lengkap: transaksi, inventori, laporan, dan multi-outlet.',
   keywords: 'sistem kasir, warung, toko, UMKM, inventori, laporan penjualan, aplikasi kasir, sistem toko, aplikasi kasir Indonesia',
 });
 

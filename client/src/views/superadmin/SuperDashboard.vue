@@ -451,9 +451,9 @@ const getPlanName = (plan: string) => {
 
 const getPlanPrice = (plan: string) => {
   const prices: Record<string, number> = {
-    BASIC: 200000,
-    PRO: 350000,
-    ENTERPRISE: 500000,
+    BASIC: 149000, // Starter: Rp 149.000
+    PRO: 299000, // Boost: Rp 299.000
+    ENTERPRISE: 499000, // Pro: Rp 499.000
   };
   return prices[plan] || 0;
 };

@@ -48,7 +48,7 @@
           <h3 class="text-2xl font-bold text-gray-900 mb-2">🎟️ BASIC</h3>
           <p class="text-gray-600 mb-4">UMKM Kecil</p>
           <div class="mb-4">
-            <span class="text-3xl font-bold text-gray-900">Rp 200rb</span>
+            <span class="text-3xl font-bold text-gray-900">Rp 149rb</span>
             <span class="text-gray-600">/bulan</span>
           </div>
         </div>
@@ -129,7 +129,7 @@
           <h3 class="text-2xl font-bold text-gray-900 mb-2">⚡ PRO</h3>
           <p class="text-gray-600 mb-4">UMKM Sedang-Besar</p>
           <div class="mb-4">
-            <span class="text-3xl font-bold text-primary-600">Rp 500rb</span>
+            <span class="text-3xl font-bold text-primary-600">Rp 299rb</span>
             <span class="text-gray-600">/bulan</span>
           </div>
         </div>
@@ -320,9 +320,9 @@ const getPlanName = (plan: string) => {
 
 const getPlanPrice = (plan: string) => {
   const prices: Record<string, string> = {
-    BASIC: 'Rp 200rb',
-    PRO: 'Rp 500rb',
-    ENTERPRISE: 'Custom',
+    BASIC: 'Rp 149rb',
+    PRO: 'Rp 299rb',
+    ENTERPRISE: 'Rp 499rb',
   };
   return prices[plan] || '-';
 };

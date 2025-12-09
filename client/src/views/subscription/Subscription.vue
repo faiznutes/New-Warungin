@@ -468,24 +468,20 @@ const subscriptionPlans = [
   {
     id: 'BASIC',
     name: 'Warungin Starter',
-    price: 200000,
-    originalPrice: 250000, // Harga sebelum discount 20%
-    discount: 20,
-    description: '1 Admin + 2 Kasir + 1 Kitchen, 10 Produk',
+    price: 149000, // Rp 149.000
+    description: '1 Outlet, 3-4 User, Limit produk 30, POS dasar, Laporan dasar, Dashboard real-time, Support email',
   },
   {
     id: 'PRO',
     name: 'Warungin Boost',
-    price: 350000,
-    originalPrice: 500000, // Harga sebelum discount 30%
-    discount: 30,
-    description: '1 Admin + 1 Supervisor + 6 Kasir + 2 Kitchen, 2 Outlet, 100 Produk',
+    price: 299000, // Rp 299.000
+    description: '2 Outlet, 10 User, Limit produk 200, Sistem lengkap, E-menu, Member & diskon, Analitik standar, Support prioritas',
   },
   {
     id: 'ENTERPRISE',
-    name: 'Warungin Max',
-    price: 500000,
-    description: 'Custom paket sesuai kebutuhan. Hubungi admin untuk penawaran khusus.',
+    name: 'Warungin Pro',
+    price: 499000, // Rp 499.000
+    description: '3 Outlet, 20 User, Produk 1000, Analitik lengkap, Import massal, Auto-backup, Multi-store tools, API dasar',
   },
 ];
 

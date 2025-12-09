@@ -3,16 +3,16 @@
  * Menghitung diskon bundle untuk paket + addon
  * 
  * Logika:
- * - Paket BASIC (200rb) + Addon tertentu = dapat diskon 150rb
- * - Total lebih murah dari BOOST (275rb) tapi dapat fitur BOOST
+ * - Paket BASIC (149rb) + Addon tertentu = dapat diskon 150rb
+ * - Total lebih murah dari BOOST (299rb) tapi dapat fitur BOOST
  */
 
 import { AVAILABLE_ADDONS } from '../services/addon.service';
 
 const PLAN_PRICES: Record<string, number> = {
-  BASIC: 200000,
-  PRO: 350000,
-  ENTERPRISE: 500000,
+  BASIC: 149000, // Starter: Rp 149.000
+  PRO: 299000, // Boost: Rp 299.000
+  ENTERPRISE: 499000, // Pro: Rp 499.000
 };
 
 const BUNDLE_DISCOUNT_AMOUNT = 150000; // Diskon 150rb untuk bundle
@@ -56,15 +56,15 @@ export function calculateBundleDiscount(
   }
 
   // Calculate bundle price
-  // Logika: Paket BASIC (200rb) + Addon = dapat diskon 150rb
-  // Total lebih murah dari BOOST (350rb) tapi dapat fitur BOOST
-  const planPrice = PLAN_PRICES.BASIC; // 200rb
+  // Logika: Paket BASIC (149rb) + Addon = dapat diskon 150rb
+  // Total lebih murah dari BOOST (299rb) tapi dapat fitur BOOST
+  const planPrice = PLAN_PRICES.BASIC; // 149rb (Starter)
   const originalPrice = planPrice + addonPrice; // Total normal
   const discount = BUNDLE_DISCOUNT_AMOUNT; // 150rb
   const finalPrice = Math.max(0, originalPrice - discount); // Total setelah diskon
 
   // Selalu upgrade ke BOOST jika bundle discount diterapkan
-  // Karena total lebih murah dari BOOST (350rb) tapi dapat fitur BOOST
+  // Karena total lebih murah dari BOOST (299rb) tapi dapat fitur BOOST
   const shouldUpgradeToBoost = true;
 
   return {

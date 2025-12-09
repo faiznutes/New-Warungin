@@ -114,13 +114,13 @@
               </div>
               <div :class="['border-t border-b py-4 mb-4', getTemplateContentStyle(selectedTemplate.templateType)]">
                 <div :class="['flex justify-between text-sm mb-2', getTemplateItemStyle(selectedTemplate.templateType)]">
-                  <span>Paket Pro</span>
-                  <span>Rp 500.000</span>
+                  <span>Paket Boost</span>
+                  <span>Rp 299.000</span>
                 </div>
               </div>
               <div :class="getTemplateTotalStyle(selectedTemplate.templateType)">
                 <span>Total:</span>
-                <span>Rp 500.000</span>
+                <span>Rp 299.000</span>
               </div>
               <div :class="getTemplateFooterStyle(selectedTemplate.templateType)">
                 <p class="font-semibold">Terima Kasih!</p>

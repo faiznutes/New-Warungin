@@ -465,9 +465,9 @@ router.put(
 
       // Calculate amount based on plan price for global report
       const planPrices: Record<string, number> = {
-        BASIC: 200000,
-        PRO: 350000,
-        ENTERPRISE: 500000,
+        BASIC: 149000, // Starter: Rp 149.000
+        PRO: 299000, // Boost: Rp 299.000
+        ENTERPRISE: 499000, // Pro: Rp 499.000
       };
       const planPrice = planPrices[subscriptionPlan] || 0;
       const amount = (planPrice * durationDays) / 30;

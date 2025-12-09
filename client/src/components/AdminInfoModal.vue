@@ -295,9 +295,9 @@
               <div>
                 <h4 class="font-semibold text-gray-900 mb-2">Paket yang Tersedia:</h4>
                 <ul class="list-disc list-inside space-y-1 ml-2">
-                  <li><strong>BASIC</strong> - Rp 200.000/bulan: Fitur dasar untuk UMKM kecil</li>
-                  <li><strong>PRO</strong> - Rp 350.000/bulan: Fitur lengkap untuk bisnis menengah</li>
-                  <li><strong>ENTERPRISE</strong> - Rp 500.000/bulan: Fitur premium untuk bisnis besar</li>
+                  <li><strong>BASIC</strong> - Rp 149.000/bulan: Fitur dasar untuk UMKM kecil</li>
+                  <li><strong>PRO</strong> - Rp 299.000/bulan: Fitur lengkap untuk bisnis menengah</li>
+                  <li><strong>ENTERPRISE</strong> - Rp 499.000/bulan: Fitur premium untuk bisnis besar</li>
                 </ul>
               </div>
               <div>
@@ -356,26 +356,17 @@
             <div class="space-y-3 text-sm text-gray-700">
               <div>
                 <h4 class="font-semibold text-gray-900 mb-2">Addons yang Tersedia:</h4>
-                <ul class="list-disc list-inside space-y-2 ml-2">
-                  <li>
-                    <strong>Tambah Outlet</strong> - Rp 120.000/bulan: Tambah outlet/store tambahan
-                  </li>
-                  <li>
-                    <strong>Tambah Pengguna</strong> - Rp 50.000/5 pengguna/bulan: Tambah user untuk tim Anda
-                  </li>
-                  <li>
-                    <strong>Tambah Produk</strong> - Rp 30.000/100 produk/bulan: Tambah kapasitas produk
-                  </li>
-                  <li>
-                    <strong>Business Analytics & Insight</strong> - Rp 250.000/bulan: Laporan Laba Rugi, Advanced Analytics, dan Quick Insight
-                  </li>
-                  <li>
-                    <strong>Export Laporan</strong> - Rp 75.000/bulan: Ekspor laporan dalam format Excel, PDF, CSV
-                  </li>
-                  <li>
-                    <strong>Simple Nota Editor</strong> - Rp 50.000/bulan: Kustomisasi tampilan nota/struk
+                <div v-if="loadingAddons" class="text-center py-4">
+                  <div class="w-6 h-6 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                </div>
+                <ul v-else-if="availableAddons.length > 0" class="list-disc list-inside space-y-2 ml-2 max-h-60 overflow-y-auto">
+                  <li v-for="addon in availableAddons" :key="addon.id">
+                    <strong>{{ addon.name }}</strong> - Rp {{ formatAddonPrice(addon.price) }}rb/bulan
+                    <span v-if="addon.defaultLimit"> (limit {{ addon.defaultLimit }})</span>
+                    <span v-if="addon.comingSoon" class="text-yellow-600 text-xs ml-1">[Coming Soon]</span>
                   </li>
                 </ul>
+                <p v-else class="text-gray-500 text-sm">Memuat daftar addon...</p>
               </div>
               <div>
                 <h4 class="font-semibold text-gray-900 mb-2">Cara Berlangganan Addon:</h4>
@@ -489,7 +480,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import api from '../api';
 
 const props = defineProps<{
   show: boolean;
@@ -502,12 +494,39 @@ const emit = defineEmits<{
 
 const expandedCard = ref<string | null>(null);
 const dontShowToday = ref(false);
+const availableAddons = ref<any[]>([]);
+const loadingAddons = ref(false);
+
+const formatAddonPrice = (price: number) => {
+  return (price / 1000).toFixed(0);
+};
+
+const loadAddons = async () => {
+  loadingAddons.value = true;
+  try {
+    const response = await api.get('/addons/available');
+    const addons = Array.isArray(response.data) ? response.data : [];
+    // Remove duplicates based on id
+    availableAddons.value = addons.filter((addon, index, self) => 
+      index === self.findIndex(a => a && addon && a.id === addon.id)
+    );
+  } catch (error) {
+    console.error('Error loading addons:', error);
+    availableAddons.value = [];
+  } finally {
+    loadingAddons.value = false;
+  }
+};
 
 const toggleCard = (card: string) => {
   if (expandedCard.value === card) {
     expandedCard.value = null;
   } else {
     expandedCard.value = card;
+    // Load addons when Addons card is expanded
+    if (card === 'addons' && availableAddons.value.length === 0) {
+      loadAddons();
+    }
   }
 };
 
@@ -517,5 +536,12 @@ const close = () => {
   }
   emit('close');
 };
+
+onMounted(() => {
+  // Preload addons when modal is shown
+  if (props.show) {
+    loadAddons();
+  }
+});
 </script>
 

@@ -58,7 +58,7 @@ export const AVAILABLE_ADDONS = [
     price: 30000,
     category: 'limit',
     details: [
-      'Tambahkan 100 produk baru',
+      'Tambahkan 100 produk baru (limit +100)',
       'Bulk import CSV/Excel',
       'Dukungan varian produk (warna, ukuran, rasa)',
       'Kategori dan tag produk',
@@ -304,7 +304,11 @@ export const AVAILABLE_ADDONS = [
 
 export class AddonService {
   async getAvailableAddons() {
-    return AVAILABLE_ADDONS;
+    // Remove duplicates based on id to ensure no duplicate addons
+    const uniqueAddons = AVAILABLE_ADDONS.filter((addon, index, self) => 
+      index === self.findIndex(a => a.id === addon.id)
+    );
+    return uniqueAddons;
   }
 
   async getTenantAddons(tenantId: string, page: number = 1, limit: number = 50) {

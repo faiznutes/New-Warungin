@@ -15,25 +15,25 @@ const PLAN_FEATURES: Record<string, {
 }> = {
   BASIC: {
     tenantsLimit: 1,
-    products: 25,
-    users: 4, // 1 admin + 2 kasir + 1 kitchen
-    outlets: 1, // 1 store (tanpa multi-store)
+    products: 30, // Limit produk 30 (Starter)
+    users: 4, // 3-4 User (1 admin + 2 kasir + 1 kitchen)
+    outlets: 1, // 1 Outlet
     addons: ['receipt-basic'],
     access: ['kasir', 'laporan'],
   },
   PRO: {
     tenantsLimit: 1, // 1 tenant
-    products: 100, // 100 produk
-    users: 10, // 1 admin + 1 supervisor + 6 kasir + 2 kitchen = 10 total
-    outlets: 3, // Maksimal 3 store (sesuai TODO)
+    products: 200, // Limit produk 200 (Boost)
+    users: 10, // 10 User (1 admin + 1 supervisor + 6 kasir + 2 kitchen)
+    outlets: 2, // 2 Outlet
     addons: ['receipt-advanced', 'multi-outlet'],
     access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
   },
   ENTERPRISE: {
-    tenantsLimit: -1, // Unlimited (custom)
-    products: -1, // Unlimited (custom)
-    users: -1, // Unlimited (custom)
-    outlets: -1, // Unlimited (custom)
+    tenantsLimit: 1, // 1 tenant
+    products: 1000, // Produk 1000 (Pro)
+    users: 20, // 20 User
+    outlets: 3, // 3 Outlet
     addons: ['receipt-advanced', 'multi-outlet'],
     access: ['semua'],
   },

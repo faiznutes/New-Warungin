@@ -45,7 +45,7 @@
               <h2 class="text-2xl font-bold text-gray-900">3. Berlangganan & Pembayaran Paket</h2>
             </div>
             <p class="text-gray-700 leading-relaxed mb-3">
-              Layanan kami tersedia dengan berbagai paket berlangganan mulai dari Rp 200rb/bulan <span class="text-gray-400 line-through">(dari Rp 250rb)</span>. 
+              Layanan kami tersedia dengan berbagai paket berlangganan mulai dari Rp 149rb/bulan. 
               Pembayaran dilakukan secara berkala sesuai dengan paket yang Anda pilih.
             </p>
             <p class="text-gray-700 leading-relaxed">

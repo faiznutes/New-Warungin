@@ -11,21 +11,27 @@ const POINT_CONFIG = {
   POINT_PER_RUPIAH,
   
   // Subscription redemption (calculated from price: price / 50)
-  // BASIC: 200000rp = 4000pts, PRO: 350000rp = 7000pts, ENTERPRISE: 500000rp = 10000pts
+  // BASIC: 149000rp = 2980pts, PRO: 299000rp = 5980pts, ENTERPRISE: 499000rp = 9980pts
   SUBSCRIPTION: {
-    '1month_starter': 4000,      // BASIC: 200000rp / 50 = 4000 pts
-    '1month_boost': 7000,        // PRO: 350000rp / 50 = 7000 pts
-    '1month_max': 10000,         // ENTERPRISE: 500000rp / 50 = 10000 pts
+    '1month_starter': 2980,      // BASIC: 149000rp / 50 = 2980 pts
+    '1month_boost': 5980,        // PRO: 299000rp / 50 = 5980 pts
+    '1month_max': 9980,         // ENTERPRISE: 499000rp / 50 = 9980 pts
   },
   
   // Addon redemption (calculated from price: price / 50)
   ADDONS: {
-    'add_outlets': 2400,         // 120000rp / 50 = 2400 pts
-    'add_users': 1000,           // 50000rp / 50 = 1000 pts
-    'add_products': 600,         // 30000rp / 50 = 600 pts
-    'business_analytics': 5000,  // 250000rp / 50 = 5000 pts
-    'export_reports': 1500,      // 75000rp / 50 = 1500 pts
-    'receipt_editor': 1000,      // 50000rp / 50 = 1000 pts
+    'add_outlets': 2400,              // 120000rp / 50 = 2400 pts
+    'add_users': 1000,                // 50000rp / 50 = 1000 pts
+    'add_products': 600,              // 30000rp / 50 = 600 pts
+    'business_analytics': 5000,       // 250000rp / 50 = 5000 pts
+    'export_reports': 1500,           // 75000rp / 50 = 1500 pts
+    'receipt_editor': 1000,           // 50000rp / 50 = 1000 pts
+    'delivery_marketing': 3000,       // 150000rp / 50 = 3000 pts
+    'stock_transfer': 1600,           // 80000rp / 50 = 1600 pts
+    'supervisor_role': 1200,          // 60000rp / 50 = 1200 pts
+    'price_recommendation_plus': 800, // 40000rp / 50 = 800 pts
+    'bulk_import': 2000,               // 100000rp / 50 = 2000 pts
+    'restock_suggestion': 1000,       // 50000rp / 50 = 1000 pts
   },
   
   // Point expiration (days) - 6 bulan = 180 hari

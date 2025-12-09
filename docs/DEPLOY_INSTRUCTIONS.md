@@ -1,112 +1,104 @@
-# Instruksi Deploy Permission Fixes ke SSH Server
+# 🚀 Instruksi Deploy dengan Rebuild Docker
 
-## Metode 1: Menggunakan Script Quick Deploy (RECOMMENDED)
+Karena SSH connection timeout dari Windows/WSL, silakan jalankan perintah berikut **langsung di server VPS**:
 
-1. **Buka WSL atau Git Bash**
+## 📋 Langkah-langkah:
 
-2. **Jalankan script:**
+### 1. SSH ke Server
 ```bash
-cd "f:/Backup W11/Project/New-Warungin"
-bash QUICK_DEPLOY.sh
+# Dari Windows (Git Bash atau PowerShell)
+ssh warungin@192.168.0.101
+# atau
+ssh root@192.168.0.101
 ```
 
-Script akan otomatis:
-- Membuat archive file yang diubah
-- Transfer ke server
-- Extract dan rebuild Docker containers
-
-## Metode 2: Manual dengan WSL atau Git Bash
-
-1. **Buka WSL atau Git Bash**
-
-2. **Masuk ke direktori project:**
+### 2. Masuk ke Root (jika perlu)
 ```bash
-cd "/mnt/f/Backup W11/Project/New-Warungin"
-# atau di Git Bash Windows:
-cd "/f/Backup W11/Project/New-Warungin"
+sudo su -
 ```
 
-3. **Buat archive hanya file yang diubah:**
+### 3. Navigate ke Project Directory
 ```bash
-tar -czf /tmp/warungin-permission-fix.tar.gz \
-    src/middlewares/plan-feature-guard.ts \
-    src/routes/outlet.routes.ts \
-    src/routes/supplier.routes.ts \
-    src/routes/purchase-order.routes.ts \
-    src/routes/stock-transfer.routes.ts \
-    src/routes/stock-alert.routes.ts \
-    src/services/plan-features.service.ts \
-    client/src/layouts/AppLayout.vue \
-    client/src/layouts/TenantLayout.vue \
-    client/src/views/stores/Stores.vue \
-    client/src/router/index.ts \
-    docker-compose.yml
+cd /home/warungin/Warungin
 ```
 
-4. **Transfer ke server (masukkan password: 123):**
+### 4. Pull Latest Changes
 ```bash
-scp -o StrictHostKeyChecking=no /tmp/warungin-permission-fix.tar.gz root@192.168.1.101:/tmp/
+git fetch origin
+git pull origin main
 ```
 
-5. **SSH ke server dan deploy:**
+### 5. Rebuild dan Restart Docker
 ```bash
-ssh root@192.168.1.101
-cd /root/New-Warungin
-tar -xzf /tmp/warungin-permission-fix.tar.gz
-rm /tmp/warungin-permission-fix.tar.gz
+# Stop containers
 docker compose down
+
+# Rebuild images (dengan --no-cache untuk fresh build)
 docker compose build --no-cache
-docker compose up -d
-sleep 5
-docker compose ps
-```
 
-## Metode 2: Menggunakan rsync (jika tersedia)
-
-```bash
-rsync -avz --exclude 'node_modules' --exclude '.git' --exclude 'dist' --exclude 'build' \
-    "f:/Backup W11/Project/New-Warungin/" root@192.168.1.101:/root/New-Warungin/
-```
-
-## Metode 3: Manual Copy dengan SFTP Client
-
-1. Gunakan WinSCP, FileZilla, atau SFTP client lainnya
-2. Connect ke: `root@192.168.1.101` (password: 123)
-3. Navigate ke `/root/New-Warungin`
-4. Upload semua file yang telah diubah (kecuali node_modules, .git, dist, build)
-5. SSH ke server dan rebuild:
-```bash
-ssh root@192.168.1.101
-cd /root/New-Warungin
-docker compose down
-docker compose build --no-cache
+# Start containers
 docker compose up -d
 ```
 
-## File-file yang penting untuk di-deploy:
-
-### Frontend (client/):
-- `client/src/layouts/AppLayout.vue` - Menu stores & addon check
-- `client/src/layouts/TenantLayout.vue` - Inventory menu check & subscription load
-- `client/src/views/stores/Stores.vue` - Permission check
-- `client/src/router/index.ts` - Route permissions
-
-### Backend (src/):
-- `src/middlewares/plan-feature-guard.ts` - **NEW FILE** - Plan feature check
-- `src/routes/outlet.routes.ts` - Role guard
-- `src/routes/supplier.routes.ts` - Plan feature guard
-- `src/routes/purchase-order.routes.ts` - Plan feature guard
-- `src/routes/stock-transfer.routes.ts` - Plan feature guard
-- `src/routes/stock-alert.routes.ts` - Plan feature guard
-- `src/services/plan-features.service.ts` - ENTERPRISE plan fix
-
-Setelah deploy, pastikan semua container running:
+### 6. Check Status
 ```bash
+# Check container status
 docker compose ps
+
+# Check logs jika ada masalah
+docker compose logs -f
 ```
 
-Check logs jika ada error:
+## 🔄 Atau Gunakan Script Otomatis
+
+Jika script sudah ada di server:
+
 ```bash
-docker compose logs backend
-docker compose logs frontend
+cd /home/warungin/Warungin
+bash scripts/deploy-remote-rebuild.sh
 ```
+
+## 📝 Perubahan yang Baru di-Deploy:
+
+1. ✅ **Addons System** - 100% (semua addon spesifik sudah ditambahkan)
+2. ✅ **Paket Langganan** - 100% (MAX plan features sudah lengkap)
+3. ✅ **Test Cases** - 100% (manual checklist, unit tests, integration tests)
+4. ✅ **Addon Expiry Checker** - cron job untuk check expired addons
+5. ✅ **StoreSelectorModal** - untuk multi-store selection
+6. ✅ **Sync Manager** - untuk offline transaction sync
+7. ✅ **Report Export** - PDF/Excel/CSV export untuk PRO/MAX plans
+
+## ⚠️ Catatan Penting:
+
+- Rebuild dengan `--no-cache` akan memakan waktu lebih lama tapi memastikan semua perubahan ter-apply
+- Pastikan `.env` file sudah dikonfigurasi dengan benar
+- Check logs jika ada error setelah rebuild
+- Database migrations akan berjalan otomatis saat container start
+
+## 🐛 Troubleshooting:
+
+Jika ada masalah:
+
+1. **Container tidak start:**
+   ```bash
+   docker compose logs backend
+   docker compose logs frontend
+   ```
+
+2. **Build error:**
+   ```bash
+   docker compose build --no-cache 2>&1 | tee build.log
+   ```
+
+3. **Database connection error:**
+   ```bash
+   docker compose ps postgres
+   docker compose logs postgres
+   ```
+
+4. **Port conflict:**
+   ```bash
+   docker compose down
+   # Edit docker-compose.yml jika perlu
+   docker compose up -d
+   ```
