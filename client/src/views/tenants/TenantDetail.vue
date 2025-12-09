@@ -1386,8 +1386,8 @@ const _isAddonActive = (addonId: string) => {
   );
 };
 
-// Check if addon has limit (can be purchased multiple times)
-const hasLimit = (addon: any) => {
+// Check if addon has defaultLimit (Tambah Outlet, Pengguna, Produk - bisa beli berapapun = Unlimited)
+const hasDefaultLimit = (addon: any) => {
   return addon.defaultLimit !== null && addon.defaultLimit !== undefined;
 };
 
@@ -1403,24 +1403,19 @@ const filteredAvailableAddons = computed(() => {
   
   // All addons are shown (can be purchased multiple times)
   const filtered = safeFilter(uniqueAddons, (addon: any) => {
-    // Addon dengan limit (ADD_OUTLETS, ADD_USERS, ADD_PRODUCTS) selalu ditampilkan (bisa dibeli berkali-kali)
-    if (hasLimit(addon)) {
-      return true;
-    }
-    // Addon tanpa limit juga selalu ditampilkan (bisa dibeli berkali-kali untuk extend durasi)
-    // Tidak perlu filter - semua addon bisa dibeli berkali-kali
+    // Semua addon selalu ditampilkan (bisa dibeli berkali-kali)
     return true;
   });
   
   // Sort: 
-  // 1. Unlimited (defaultLimit === null) di atas
-  // 2. Limited (defaultLimit !== null) di tengah
+  // 1. Unlimited (defaultLimit !== null - Tambah Outlet, Pengguna, Produk) di atas
+  // 2. Limited (defaultLimit === null - Business Analytics, dll) di tengah
   // 3. Coming soon (comingSoon === true) di bawah
   return filtered.sort((a, b) => {
     const aIsComingSoon = a?.comingSoon === true || a?.requiresApi === true;
     const bIsComingSoon = b?.comingSoon === true || b?.requiresApi === true;
-    const aHasLimit = hasLimit(a);
-    const bHasLimit = hasLimit(b);
+    const aHasDefaultLimit = hasDefaultLimit(a);
+    const bHasDefaultLimit = hasDefaultLimit(b);
     
     // Coming soon selalu di bawah
     if (aIsComingSoon && !bIsComingSoon) return 1;
@@ -1429,9 +1424,9 @@ const filteredAvailableAddons = computed(() => {
     // Jika keduanya coming soon, urutkan seperti biasa
     if (aIsComingSoon && bIsComingSoon) return 0;
     
-    // Unlimited (tanpa limit) di atas, Limited di bawah
-    if (!aHasLimit && bHasLimit) return -1;
-    if (aHasLimit && !bHasLimit) return 1;
+    // Unlimited (dengan defaultLimit) di atas, Limited (tanpa defaultLimit) di bawah
+    if (aHasDefaultLimit && !bHasDefaultLimit) return -1;
+    if (!aHasDefaultLimit && bHasDefaultLimit) return 1;
     
     return 0;
   });

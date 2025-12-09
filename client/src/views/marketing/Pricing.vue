@@ -273,7 +273,7 @@
           <p class="text-gray-600">Memuat addon...</p>
         </div>
         <div v-else>
-          <!-- Unlimited Addons (defaultLimit === null) -->
+          <!-- Unlimited Addons (defaultLimit !== null - Tambah Outlet, Pengguna, Produk) -->
           <div v-if="unlimitedAddons.length > 0" class="mb-8">
             <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">Addon Unlimited</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
@@ -303,7 +303,7 @@
             </div>
           </div>
 
-          <!-- Limited Addons (defaultLimit !== null) -->
+          <!-- Limited Addons (defaultLimit === null - Business Analytics, Export Laporan, dll) -->
           <div v-if="limitedAddons.length > 0" class="mb-8">
             <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">Addon dengan Limit</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 max-w-5xl mx-auto">
@@ -432,8 +432,8 @@ useSEO({
 const availableAddons = ref<any[]>([]);
 const loadingAddons = ref(false);
 
-// Check if addon has limit (can be purchased multiple times)
-const hasLimit = (addon: any) => {
+// Check if addon has defaultLimit (Tambah Outlet, Pengguna, Produk - bisa beli berapapun = Unlimited)
+const hasDefaultLimit = (addon: any) => {
   return addon.defaultLimit !== null && addon.defaultLimit !== undefined;
 };
 
@@ -443,12 +443,14 @@ const isComingSoon = (addon: any) => {
 };
 
 // Separate addons into categories
+// SWAPPED: Addon dengan defaultLimit (Tambah Outlet, Pengguna, Produk) = Unlimited (bisa beli berapapun)
+//          Addon tanpa defaultLimit (Business Analytics, dll) = Limited
 const unlimitedAddons = computed(() => {
-  return filteredAvailableAddons.value.filter(addon => !hasLimit(addon) && !isComingSoon(addon));
+  return filteredAvailableAddons.value.filter(addon => hasDefaultLimit(addon) && !isComingSoon(addon));
 });
 
 const limitedAddons = computed(() => {
-  return filteredAvailableAddons.value.filter(addon => hasLimit(addon) && !isComingSoon(addon));
+  return filteredAvailableAddons.value.filter(addon => !hasDefaultLimit(addon) && !isComingSoon(addon));
 });
 
 const comingSoonAddons = computed(() => {
@@ -462,14 +464,14 @@ const filteredAvailableAddons = computed(() => {
   );
   
   // Sort: 
-  // 1. Unlimited (defaultLimit === null) di atas
-  // 2. Limited (defaultLimit !== null) di tengah
+  // 1. Unlimited (defaultLimit !== null - Tambah Outlet, Pengguna, Produk) di atas
+  // 2. Limited (defaultLimit === null - Business Analytics, dll) di tengah
   // 3. Coming soon (comingSoon === true) di bawah
   return uniqueAddons.sort((a, b) => {
     const aIsComingSoon = isComingSoon(a);
     const bIsComingSoon = isComingSoon(b);
-    const aHasLimit = hasLimit(a);
-    const bHasLimit = hasLimit(b);
+    const aHasDefaultLimit = hasDefaultLimit(a);
+    const bHasDefaultLimit = hasDefaultLimit(b);
     
     // Coming soon selalu di bawah
     if (aIsComingSoon && !bIsComingSoon) return 1;
@@ -478,9 +480,9 @@ const filteredAvailableAddons = computed(() => {
     // Jika keduanya coming soon, urutkan seperti biasa
     if (aIsComingSoon && bIsComingSoon) return 0;
     
-    // Unlimited (tanpa limit) di atas, Limited di bawah
-    if (!aHasLimit && bHasLimit) return -1;
-    if (aHasLimit && !bHasLimit) return 1;
+    // Unlimited (dengan defaultLimit) di atas, Limited (tanpa defaultLimit) di bawah
+    if (aHasDefaultLimit && !bHasDefaultLimit) return -1;
+    if (!aHasDefaultLimit && bHasDefaultLimit) return 1;
     
     return 0;
   });
