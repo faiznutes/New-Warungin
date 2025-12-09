@@ -634,6 +634,11 @@ export class RewardPointService {
       throw new Error('Plan tidak valid');
     }
 
+    // Ensure rewardPoint exists
+    if (!rewardPoint) {
+      throw new Error('Reward point tidak ditemukan');
+    }
+
     // Deduct points first
     const updated = await prisma.rewardPoint.update({
       where: { id: rewardPoint.id },
@@ -958,6 +963,11 @@ export class RewardPointService {
       throw new Error('Addon tidak valid');
     }
 
+    // Ensure rewardPoint exists
+    if (!rewardPoint) {
+      throw new Error('Reward point tidak ditemukan');
+    }
+
     // Deduct points first
     const updated = await prisma.rewardPoint.update({
       where: { id: rewardPoint.id },
@@ -993,6 +1003,9 @@ export class RewardPointService {
       return await this.getBalance(tenantId, userId);
     } catch (error: any) {
       // Rollback points if addon subscription fails
+      if (!rewardPoint) {
+        throw new Error('Reward point tidak ditemukan');
+      }
       await prisma.rewardPoint.update({
         where: { id: rewardPoint.id },
         data: {
