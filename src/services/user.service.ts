@@ -194,6 +194,20 @@ export class UserService {
       throw new Error('User not found');
     }
 
+    // Check if trying to update to SUPERVISOR role - requires SUPERVISOR_ROLE addon
+    if (data.role === 'SUPERVISOR' && userRole !== 'SUPER_ADMIN') {
+      const tenantAddons = await addonService.getTenantAddons(tenantId);
+      const addonsData = Array.isArray(tenantAddons?.data) ? tenantAddons.data : [];
+      const hasSupervisorAddon = addonsData.some(
+        (addon: any) => addon && addon.addonType === 'SUPERVISOR_ROLE' && addon.status === 'ACTIVE'
+      );
+      if (!hasSupervisorAddon) {
+        const error = new Error('Supervisor Role addon is required to assign SUPERVISOR role. Please subscribe to Supervisor Role addon first.') as Error & { statusCode?: number };
+        error.statusCode = 403;
+        throw error;
+      }
+    }
+
     const updateData: any = {};
     if (data.name) updateData.name = data.name;
     if (data.email) updateData.email = data.email;
