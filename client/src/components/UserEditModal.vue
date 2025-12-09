@@ -408,7 +408,7 @@ const isCashierOrKitchen = computed(() => {
 
 const hasSupervisorRole = computed(() => {
   return activeAddons.value.some(
-    (addon: any) => addon && (addon.addonType === 'SUPERVISOR_ROLE' || addon.type === 'SUPERVISOR_ROLE') && addon.status === 'active'
+    (addon: any) => addon && (addon.addonType === 'SUPERVISOR_ROLE' || addon.type === 'SUPERVISOR_ROLE') && (addon.status === 'active' || addon.status === 'ACTIVE')
   );
 });
 
