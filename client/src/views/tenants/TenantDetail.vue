@@ -832,10 +832,9 @@
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
             class="border-2 rounded-lg p-4 transition"
-            :class="addon.comingSoon || addon.requiresApi 
+            :class="(addon.comingSoon || addon.requiresApi 
               ? 'border-gray-300 bg-gray-50 opacity-75 cursor-not-allowed' 
-              : 'border-gray-200 hover:border-blue-300 cursor-pointer'"
-            :class="{ 'border-blue-500 bg-blue-50': selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon && !addon.requiresApi }"
+              : 'border-gray-200 hover:border-blue-300 cursor-pointer') + (selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon && !addon.requiresApi ? ' border-blue-500 bg-blue-50' : '')"
             @click="if (!addon.comingSoon && !addon.requiresApi) selectedAddonForSubscribe = addon"
           >
             <div class="flex items-start justify-between">
