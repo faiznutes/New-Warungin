@@ -188,23 +188,37 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Pilih Produk untuk Bundle <span class="text-red-500">*</span>
               </label>
-              <button
-                type="button"
-                @click="showProductSelector = true; productSelectorType = 'BUNDLE'"
-                class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
-              >
-                <span class="text-sm text-gray-700">
-                  <span v-if="discountForm.bundleProducts.length === 0" class="text-gray-400">
-                    Klik untuk memilih produk bundle
+              <div class="space-y-2">
+                <button
+                  type="button"
+                  @click="openProductSelector('BUNDLE')"
+                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                >
+                  <span class="text-sm text-gray-700">
+                    <span v-if="discountForm.bundleProducts.length === 0" class="text-gray-400">
+                      Klik untuk memilih produk bundle
+                    </span>
+                    <span v-else>
+                      {{ discountForm.bundleProducts.length }} produk dipilih
+                    </span>
                   </span>
-                  <span v-else>
-                    {{ discountForm.bundleProducts.length }} produk dipilih
-                  </span>
-                </span>
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <!-- Edit Button if products already selected -->
+                <button
+                  v-if="discountForm.bundleProducts.length > 0"
+                  type="button"
+                  @click="openProductSelector('BUNDLE')"
+                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit Produk yang Dipilih
+                </button>
+              </div>
               <p class="mt-1 text-xs text-gray-500">
                 Semua produk yang dipilih harus dibeli bersama untuk mendapatkan diskon
               </p>
@@ -215,23 +229,37 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Pilih Produk yang Mendapat Diskon <span class="text-red-500">*</span>
               </label>
-              <button
-                type="button"
-                @click="showProductSelector = true; productSelectorType = 'PRODUCT_BASED'"
-                class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
-              >
-                <span class="text-sm text-gray-700">
-                  <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
-                    Klik untuk memilih produk
+              <div class="space-y-2">
+                <button
+                  type="button"
+                  @click="openProductSelector('PRODUCT_BASED')"
+                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                >
+                  <span class="text-sm text-gray-700">
+                    <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
+                      Klik untuk memilih produk
+                    </span>
+                    <span v-else>
+                      {{ discountForm.applicableProducts.length }} produk dipilih
+                    </span>
                   </span>
-                  <span v-else>
-                    {{ discountForm.applicableProducts.length }} produk dipilih
-                  </span>
-                </span>
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <!-- Edit Button if products already selected -->
+                <button
+                  v-if="discountForm.applicableProducts.length > 0"
+                  type="button"
+                  @click="openProductSelector('PRODUCT_BASED')"
+                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit Produk yang Dipilih
+                </button>
+              </div>
               <p class="mt-1 text-xs text-gray-500">
                 Produk yang dipilih akan mendapat diskon saat dibeli (bisa 1 per satu atau bersama)
               </p>
@@ -269,23 +297,37 @@
 
                 <!-- Product Selection Button -->
                 <div v-if="productSelectionType === 'PRODUCTS'">
-                  <button
-                    type="button"
-                    @click="showProductSelector = true; productSelectorType = 'QUANTITY_BASED'"
-                    class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
-                  >
-                    <span class="text-sm text-gray-700">
-                      <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
-                        Klik untuk memilih produk
+                  <div class="space-y-2">
+                    <button
+                      type="button"
+                      @click="openProductSelector('QUANTITY_BASED')"
+                      class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                    >
+                      <span class="text-sm text-gray-700">
+                        <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
+                          Klik untuk memilih produk
+                        </span>
+                        <span v-else>
+                          {{ discountForm.applicableProducts.length }} produk dipilih
+                        </span>
                       </span>
-                      <span v-else>
-                        {{ discountForm.applicableProducts.length }} produk dipilih
-                      </span>
-                    </span>
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    <!-- Edit Button if products already selected -->
+                    <button
+                      v-if="discountForm.applicableProducts.length > 0"
+                      type="button"
+                      @click="openProductSelector('QUANTITY_BASED')"
+                      class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Edit Produk yang Dipilih
+                    </button>
+                  </div>
                 </div>
               </div>
               <p class="mt-1 text-xs text-gray-500">
@@ -450,12 +492,13 @@
 
     <!-- Product Selector Modal -->
     <ProductSelectorModal
+      v-if="showProductSelector"
       :show="showProductSelector"
       :title="getProductSelectorTitle()"
       :subtitle="getProductSelectorSubtitle()"
       :selected-product-ids="getSelectedProductIds()"
       @confirm="handleProductSelectorConfirm"
-      @cancel="showProductSelector = false"
+      @cancel="handleProductSelectorCancel"
     />
   </div>
 </template>
@@ -557,6 +600,12 @@ const getProductName = (productId: string): string => {
   return product ? product.name : productId;
 };
 
+const openProductSelector = (type: 'BUNDLE' | 'PRODUCT_BASED' | 'QUANTITY_BASED') => {
+  productSelectorType.value = type;
+  showProductSelector.value = true;
+  console.log('Opening product selector:', type, 'showProductSelector:', showProductSelector.value);
+};
+
 const handleDiscountTypeChange = () => {
   // Reset product selections when discount type changes
   discountForm.value.applicableProducts = [];
@@ -564,6 +613,7 @@ const handleDiscountTypeChange = () => {
   discountForm.value.bundleDiscountProduct = '';
   productSelectionType.value = 'PRODUCTS';
   selectedCategory.value = '';
+  showProductSelector.value = false;
 };
 
 const getProductSelectorTitle = (): string => {
@@ -619,6 +669,12 @@ const handleProductSelectorConfirm = (productIds: string[]) => {
       break;
   }
   showProductSelector.value = false;
+  console.log('Product selector confirmed:', productIds);
+};
+
+const handleProductSelectorCancel = () => {
+  showProductSelector.value = false;
+  console.log('Product selector cancelled');
 };
 
 const handleProductSelectionTypeChange = () => {

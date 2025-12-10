@@ -1,9 +1,10 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-    @click.self="handleCancel"
-  >
+  <Teleport to="body">
+    <div
+      v-if="show"
+      class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+      @click.self="handleCancel"
+    >
     <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
       <!-- Header -->
       <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
@@ -155,6 +156,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
