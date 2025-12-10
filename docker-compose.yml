@@ -100,7 +100,6 @@ services:
     # Writable directories using tmpfs
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
-      - /app/logs:noexec,nosuid,size=500m
     # Remove unnecessary capabilities
     cap_drop:
       - ALL
