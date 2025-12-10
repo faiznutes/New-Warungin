@@ -1,0 +1,106 @@
+{
+  "common_issues_queries": {
+    "error_logs": {
+      "name": "Error Logs",
+      "query": "{job=\"docker\"} |= \"error\" |= \"ERROR\" |= \"Error\"",
+      "description": "Find all error logs across all containers"
+    },
+    "backend_errors": {
+      "name": "Backend Errors",
+      "query": "{container_name=\"warungin-backend\"} |= \"error\" | json",
+      "description": "Error logs from backend service"
+    },
+    "database_errors": {
+      "name": "Database Errors",
+      "query": "{container_name=\"warungin-postgres\"} |= \"error\" |= \"ERROR\"",
+      "description": "PostgreSQL error logs"
+    },
+    "high_response_time": {
+      "name": "Slow Requests",
+      "query": "{container_name=\"warungin-backend\"} | json | __error__ = \"\" | response_time > 1000",
+      "description": "Requests taking more than 1 second"
+    },
+    "authentication_failures": {
+      "name": "Authentication Failures",
+      "query": "{container_name=\"warungin-backend\"} |= \"authentication\" |= \"unauthorized\" |= \"401\"",
+      "description": "Failed login attempts and authentication errors"
+    },
+    "database_connection_errors": {
+      "name": "Database Connection Errors",
+      "query": "{container_name=\"warungin-backend\"} |= \"database\" |= \"connection\" |= \"ECONNREFUSED\"",
+      "description": "Database connection issues"
+    },
+    "memory_issues": {
+      "name": "Memory Issues",
+      "query": "{job=\"docker\"} |= \"memory\" |= \"OOM\" |= \"out of memory\"",
+      "description": "Memory-related errors and out of memory issues"
+    },
+    "nginx_errors": {
+      "name": "Nginx Errors",
+      "query": "{container_name=\"warungin-nginx\"} |= \"error\"",
+      "description": "Nginx error logs"
+    },
+    "payment_errors": {
+      "name": "Payment Errors",
+      "query": "{container_name=\"warungin-backend\"} |= \"payment\" |= \"midtrans\" |= \"transaction\" | json",
+      "description": "Payment gateway errors"
+    },
+    "api_timeouts": {
+      "name": "API Timeouts",
+      "query": "{container_name=\"warungin-backend\"} |= \"timeout\" |= \"ETIMEDOUT\"",
+      "description": "API timeout errors"
+    }
+  },
+  "performance_queries": {
+    "slow_queries": {
+      "name": "Slow Database Queries",
+      "query": "{container_name=\"warungin-backend\"} |= \"query\" | json | duration > 1000",
+      "description": "Database queries taking more than 1 second"
+    },
+    "high_cpu_usage": {
+      "name": "High CPU Usage Events",
+      "query": "{job=\"docker\"} |= \"cpu\" | json | cpu_usage > 80",
+      "description": "Logs when CPU usage is high"
+    },
+    "disk_io_issues": {
+      "name": "Disk I/O Issues",
+      "query": "{job=\"docker\"} |= \"disk\" |= \"I/O\" |= \"ENOSPC\"",
+      "description": "Disk I/O related errors"
+    }
+  },
+  "security_queries": {
+    "suspicious_activity": {
+      "name": "Suspicious Activity",
+      "query": "{container_name=\"warungin-backend\"} |= \"suspicious\" |= \"brute\" |= \"attack\"",
+      "description": "Potential security threats"
+    },
+    "failed_logins": {
+      "name": "Failed Login Attempts",
+      "query": "{container_name=\"warungin-backend\"} |= \"login\" |= \"failed\" |= \"invalid\"",
+      "description": "Failed authentication attempts"
+    },
+    "unauthorized_access": {
+      "name": "Unauthorized Access",
+      "query": "{container_name=\"warungin-backend\"} |= \"403\" |= \"forbidden\" |= \"unauthorized\"",
+      "description": "Unauthorized access attempts"
+    }
+  },
+  "business_queries": {
+    "order_errors": {
+      "name": "Order Processing Errors",
+      "query": "{container_name=\"warungin-backend\"} |= \"order\" |= \"failed\" | json",
+      "description": "Errors related to order processing"
+    },
+    "payment_failures": {
+      "name": "Payment Failures",
+      "query": "{container_name=\"warungin-backend\"} |= \"payment\" |= \"failed\" | json",
+      "description": "Failed payment transactions"
+    },
+    "subscription_issues": {
+      "name": "Subscription Issues",
+      "query": "{container_name=\"warungin-backend\"} |= \"subscription\" |= \"expired\" | json",
+      "description": "Subscription-related errors"
+    }
+  }
+}
+

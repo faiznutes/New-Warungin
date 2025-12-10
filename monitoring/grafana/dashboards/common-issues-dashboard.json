@@ -1,0 +1,85 @@
+{
+  "dashboard": {
+    "title": "Common Issues Dashboard",
+    "tags": ["issues", "errors", "troubleshooting"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Error Logs (Last 1 Hour)",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{job=\"docker\"} |= \"error\" |= \"ERROR\" |= \"Error\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Backend Errors",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{container_name=\"warungin-backend\"} |= \"error\" | json",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Slow Requests (>1s)",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{container_name=\"warungin-backend\"} | json | __error__ = \"\" | response_time > 1000",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Database Connection Errors",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{container_name=\"warungin-backend\"} |= \"database\" |= \"connection\" |= \"ECONNREFUSED\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Authentication Failures",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{container_name=\"warungin-backend\"} |= \"authentication\" |= \"unauthorized\" |= \"401\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Payment Errors",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "{container_name=\"warungin-backend\"} |= \"payment\" |= \"midtrans\" |= \"transaction\" | json",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1
+  }
+}
+
