@@ -189,6 +189,7 @@ model Order {
   customerId            String?
   memberId              String? // For member orders (temporary customer name stored in memberId as JSON)
   outletId              String?
+  storeShiftId          String?     // Link ke StoreShift (shift global toko)
   total                 Decimal     @db.Decimal(10, 2)
   discount              Decimal     @default(0) @db.Decimal(10, 2)
   subtotal              Decimal     @db.Decimal(10, 2)
@@ -206,6 +207,7 @@ model Order {
   customer    Customer?    @relation(fields: [customerId], references: [id])
   member      Member?      @relation(fields: [memberId], references: [id])
   outlet      Outlet?      @relation(fields: [outletId], references: [id])
+  storeShift  StoreShift?  @relation(fields: [storeShiftId], references: [id], onDelete: SetNull)
   items       OrderItem[]
   transaction Transaction?
 
@@ -216,6 +218,7 @@ model Order {
   @@index([tenantId, status, createdAt(sort: Desc)])
   @@index([tenantId, customerId])
   @@index([tenantId, outletId])
+  @@index([storeShiftId])
   @@map("orders")
 }
 
@@ -401,8 +404,9 @@ model Outlet {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  orders Order[]
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders     Order[]
+  storeShifts StoreShift[]
 
   @@index([tenantId])
   @@map("outlets")
@@ -1204,10 +1208,42 @@ model BackupLog {
   @@map("backup_logs")
 }
 
+// Store Shift Model (Global per Store - Buka Toko)
+model StoreShift {
+  id              String    @id @default(uuid())
+  tenantId        String
+  outletId        String    // Store/Outlet ID
+  shiftType       String    // pagi, siang, sore, malam
+  openedBy        String    // User ID yang membuka shift
+  openedAt        DateTime  @default(now())
+  closedAt        DateTime?
+  status          String    @default("open") // open | closed
+  modalAwal       Decimal?  @db.Decimal(10, 2) // Modal awal shift (optional, untuk kasir)
+  catatan         String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  outlet  Outlet @relation(fields: [outletId], references: [id], onDelete: Cascade)
+  opener  User   @relation("StoreShiftOpener", fields: [openedBy], references: [id], onDelete: Cascade)
+  orders  Order[] // Orders dalam shift ini
+  cashShifts CashShift[] // Cash shifts kasir dalam shift ini
+
+  @@index([tenantId])
+  @@index([outletId])
+  @@index([tenantId, outletId])
+  @@index([tenantId, outletId, status])
+  @@index([tenantId, outletId, shiftType])
+  @@index([tenantId, outletId, shiftType, status])
+  @@map("store_shifts")
+}
+
 // Cash Shift Model (Kasir - Uang Modal & Rekap Fisik)
 model CashShift {
   id              String    @id @default(uuid())
   tenantId        String
+  storeShiftId    String?   // Link ke StoreShift (shift global toko)
   kasirId         String    // User ID dengan role CASHIER
   shiftStart      DateTime  @default(now())
   shiftEnd        DateTime?
@@ -1221,11 +1257,13 @@ model CashShift {
   updatedAt       DateTime  @updatedAt
 
   // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  kasir  User   @relation(fields: [kasirId], references: [id], onDelete: Cascade)
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  storeShift StoreShift? @relation(fields: [storeShiftId], references: [id], onDelete: SetNull)
+  kasir      User        @relation(fields: [kasirId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([kasirId])
+  @@index([storeShiftId])
   @@index([tenantId, kasirId])
   @@index([tenantId, status])
   @@index([tenantId, shiftStart])

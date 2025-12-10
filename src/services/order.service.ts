@@ -397,6 +397,21 @@ export class OrderService {
         })
       );
 
+      // Get current shift for this store (if outletId provided)
+      let storeShiftId: string | null = null;
+      if (data.outletId) {
+        try {
+          const storeShiftService = (await import('./store-shift.service')).default;
+          const currentShift = await storeShiftService.getCurrentShift(tenantId, data.outletId);
+          if (currentShift) {
+            storeShiftId = currentShift.id;
+          }
+        } catch (error: any) {
+          // If error getting shift, continue without shift (for backward compatibility)
+          logger.warn('Failed to get current shift for order:', error.message);
+        }
+      }
+
       // Create order
       const order = await tx.order.create({
         data: {
@@ -407,6 +422,7 @@ export class OrderService {
           memberId: data.memberId,
           temporaryCustomerName: data.temporaryCustomerName,
           outletId: data.outletId,
+          storeShiftId: storeShiftId, // Link to current store shift
           subtotal: subtotal.toString(),
           discount: totalDiscount.toString(),
           total: total.toString(),

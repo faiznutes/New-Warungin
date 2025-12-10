@@ -69,7 +69,18 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      const result = await productService.getProducts(tenantId, req.query as any);
+      const user = (req as any).user;
+      const userRole = user?.role;
+      
+      // Build query with optional store filter for CASHIER/KITCHEN
+      const query: any = { ...req.query };
+      if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && user?.assignedStoreId) {
+        // For cashier/kitchen, filter products by assigned store if needed
+        // Note: Products are tenant-level, not store-level, so we don't filter by store
+        // But we can add store-specific filtering if needed in the future
+      }
+      
+      const result = await productService.getProducts(tenantId, query as any);
       res.json(result);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
