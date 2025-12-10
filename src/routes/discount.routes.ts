@@ -29,20 +29,26 @@ const createDiscountSchema = z.object({
     z.null(),
     z.literal('')
   ]).optional().transform(val => {
-    if (!val || val === '' || (Array.isArray(val) && val.length === 0)) {
+    if (val === null || val === '') {
       return null;
     }
-    return Array.isArray(val) ? val : null;
+    if (Array.isArray(val)) {
+      return val.length === 0 ? null : val;
+    }
+    return null;
   }),
   bundleProducts: z.union([
     z.array(z.string()).min(1),
     z.null(),
     z.literal('')
   ]).optional().transform(val => {
-    if (!val || val === '' || (Array.isArray(val) && val.length === 0)) {
+    if (val === null || val === '') {
       return null;
     }
-    return Array.isArray(val) ? val : null;
+    if (Array.isArray(val)) {
+      return val.length === 0 ? null : val;
+    }
+    return null;
   }),
   bundleDiscountProduct: z.union([z.string(), z.null()]).optional(),
   applicableTo: z.enum(['ALL', 'MEMBER_ONLY']).optional().default('ALL'),
@@ -316,8 +322,8 @@ router.put(
   subscriptionGuard,
   validate({ body: updateDiscountSchema }),
   async (req: Request, res: Response) => {
+    const tenantId = requireTenantId(req);
     try {
-      const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can update discounts
@@ -451,8 +457,8 @@ router.delete(
   authGuard,
   subscriptionGuard,
   async (req: Request, res: Response) => {
+    const tenantId = requireTenantId(req);
     try {
-      const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can delete discounts
