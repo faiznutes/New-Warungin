@@ -3,38 +3,43 @@ import subscriptionService from './subscription.service';
 import addonService from './addon.service';
 
 // Point Configuration
-// Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
-// 1 point = 2000 rupiah
-const POINT_PER_RUPIAH = 2000;
+// Setiap 20rb = 2 point, jadi setiap 10rb = 1 point
+// 1 point = 10000 rupiah (untuk earning)
+// 1 point = 100 rupiah (untuk redemption)
+const POINT_PER_RUPIAH = 10000; // Setiap Rp 10.000 = 1 poin (earning)
+const POINT_REDEMPTION_VALUE = 100; // 1 poin = Rp 100 (redemption)
 
 const POINT_CONFIG = {
-  // Point conversion rate
+  // Point conversion rate (earning)
   POINT_PER_RUPIAH,
   
-  // Subscription redemption (calculated from price: price / 2000)
-  // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
-  // BASIC: 149000rp / 2000 = 74.5 = 74 pts, PRO: 299000rp / 2000 = 149.5 = 149 pts, ENTERPRISE: 499000rp / 2000 = 249.5 = 249 pts
+  // Point redemption value (1 point = Rp 100)
+  POINT_REDEMPTION_VALUE,
+  
+  // Subscription redemption (calculated from price: price / 100)
+  // Setiap 1 poin = Rp 100
+  // BASIC: 149000rp / 100 = 1490 pts, PRO: 299000rp / 100 = 2990 pts, ENTERPRISE: 499000rp / 100 = 4990 pts
   SUBSCRIPTION: {
-    '1month_starter': 74,      // BASIC: 149000rp / 2000 = 74 pts
-    '1month_boost': 149,        // PRO: 299000rp / 2000 = 149 pts
-    '1month_max': 249,         // ENTERPRISE: 499000rp / 2000 = 249 pts
+    '1month_starter': 1490,      // BASIC: 149000rp / 100 = 1490 pts
+    '1month_boost': 2990,        // PRO: 299000rp / 100 = 2990 pts
+    '1month_max': 4990,         // ENTERPRISE: 499000rp / 100 = 4990 pts
   },
   
-  // Addon redemption (calculated from price: price / 2000)
-  // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
+  // Addon redemption (calculated from price: price / 100)
+  // Setiap 1 poin = Rp 100
   ADDONS: {
-    'add_outlets': 60,              // 120000rp / 2000 = 60 pts
-    'add_users': 25,                // 50000rp / 2000 = 25 pts
-    'add_products': 15,              // 30000rp / 2000 = 15 pts
-    'business_analytics': 125,       // 250000rp / 2000 = 125 pts
-    'export_reports': 37,           // 75000rp / 2000 = 37 pts
-    'receipt_editor': 25,           // 50000rp / 2000 = 25 pts
-    'delivery_marketing': 75,       // 150000rp / 2000 = 75 pts
-    'stock_transfer': 40,           // 80000rp / 2000 = 40 pts
-    'supervisor_role': 30,          // 60000rp / 2000 = 30 pts
-    'price_recommendation_plus': 20, // 40000rp / 2000 = 20 pts
-    'bulk_import': 50,               // 100000rp / 2000 = 50 pts
-    'restock_suggestion': 25,       // 50000rp / 2000 = 25 pts
+    'add_outlets': 1200,              // 120000rp / 100 = 1200 pts
+    'add_users': 500,                // 50000rp / 100 = 500 pts
+    'add_products': 300,              // 30000rp / 100 = 300 pts
+    'business_analytics': 2500,       // 250000rp / 100 = 2500 pts
+    'export_reports': 750,           // 75000rp / 100 = 750 pts
+    'receipt_editor': 500,           // 50000rp / 100 = 500 pts
+    'delivery_marketing': 1500,       // 150000rp / 100 = 1500 pts
+    'stock_transfer': 800,           // 80000rp / 100 = 800 pts
+    'supervisor_role': 600,          // 60000rp / 100 = 600 pts
+    'price_recommendation_plus': 400, // 40000rp / 100 = 400 pts
+    'bulk_import': 1000,               // 100000rp / 100 = 1000 pts
+    'restock_suggestion': 500,       // 50000rp / 100 = 500 pts
   },
   
   // Point expiration (days) - 6 bulan = 180 hari
@@ -1079,7 +1084,7 @@ export class RewardPointService {
 
   /**
    * Award points from subscription purchase
-   * Setiap 20rb = 10 point, jadi setiap 2rb = 1 point (POINT_PER_RUPIAH = 2000)
+   * Setiap 20rb = 2 point, jadi setiap 10rb = 1 point (POINT_PER_RUPIAH = 10000)
    * @param tenantId - Tenant ID
    * @param amount - Subscription amount in rupiah
    * @param plan - Subscription plan
@@ -1091,8 +1096,8 @@ export class RewardPointService {
     plan: string,
     duration: number
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: amount / POINT_PER_RUPIAH (2000 rupiah = 1 point)
-    // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
+    // Calculate points: amount / POINT_PER_RUPIAH (10000 rupiah = 1 point)
+    // Setiap 20rb = 2 point, jadi setiap 10rb = 1 point
     // Use Math.floor to ensure integer only
     const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     
@@ -1161,7 +1166,7 @@ export class RewardPointService {
 
   /**
    * Award points from addon purchase
-   * Setiap 20rb = 10 point, jadi setiap 2rb = 1 point (POINT_PER_RUPIAH = 2000)
+   * Setiap 20rb = 2 point, jadi setiap 10rb = 1 point (POINT_PER_RUPIAH = 10000)
    * @param tenantId - Tenant ID
    * @param amount - Addon amount in rupiah
    * @param addonName - Addon name
@@ -1173,8 +1178,8 @@ export class RewardPointService {
     addonName: string,
     addonType: string
   ): Promise<{ pointsAwarded: number; totalPoints: number }> {
-    // Calculate points: amount / POINT_PER_RUPIAH (2000 rupiah = 1 point)
-    // Setiap 20rb = 10 point, jadi setiap 2rb = 1 point
+    // Calculate points: amount / POINT_PER_RUPIAH (10000 rupiah = 1 point)
+    // Setiap 20rb = 2 point, jadi setiap 10rb = 1 point
     // Use Math.floor to ensure integer only
     const pointsAwarded = Math.floor(amount / POINT_CONFIG.POINT_PER_RUPIAH);
     
