@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
@@ -12,6 +12,7 @@ import { requireTenantId, requireUserId } from '../utils/tenant';
 import stockTransferService from '../services/stock-transfer.service';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { logAction } from '../middlewares/audit-logger';
 
 const router = Router();
 

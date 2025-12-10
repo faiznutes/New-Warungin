@@ -52,11 +52,12 @@ export const requireShift = async (
     if (!currentShift) {
       // For CASHIER, redirect to cash-shift page
       if (userRole === 'CASHIER') {
-        return res.status(403).json({
+        res.status(403).json({
           error: 'SHIFT_REQUIRED',
           message: 'Shift belum dibuka. Silakan buka shift terlebih dahulu.',
           redirectTo: '/app/cashier/cash-shift',
         });
+        return;
       }
 
       // For KITCHEN, show error but allow access (they can see orders but can't process)
@@ -113,10 +114,11 @@ export const requireShiftForStore = (outletIdParam: string = 'outletId') => {
       const currentShift = await storeShiftService.getCurrentShift(tenantId, outletId);
 
       if (!currentShift) {
-        return res.status(403).json({
+        res.status(403).json({
           error: 'SHIFT_REQUIRED',
           message: 'Shift belum dibuka untuk store ini.',
         });
+        return;
       }
 
       (req as any).currentShift = currentShift;
