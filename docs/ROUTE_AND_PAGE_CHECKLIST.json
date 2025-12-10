@@ -534,15 +534,15 @@
       "page": "/app/customers",
       "route": "/api/customers",
       "usesTenantCheck": true,
-      "status": "checked",
-      "notes": "Uses needsTenantSelection, should be working"
+      "status": "fixed",
+      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
     },
     "orders": {
       "page": "/app/orders",
       "route": "/api/orders",
       "usesTenantCheck": true,
-      "status": "checked",
-      "notes": "Uses needsTenantSelection, should be working"
+      "status": "fixed",
+      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
     },
     "users": {
       "page": "/app/users",
@@ -555,8 +555,8 @@
       "page": "/app/stores",
       "route": "/api/outlets",
       "usesTenantCheck": false,
-      "status": "needs_check",
-      "notes": "Does not use needsTenantSelection - should check if it needs it"
+      "status": "fixed",
+      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
     },
     "tenantOrders": {
       "page": "/app/tenants/support (Pesanan tab)",
@@ -578,27 +578,6 @@
       "usesTenantCheck": false,
       "status": "fixed",
       "notes": "Fixed - TenantReports now sets tenantId in authStore and localStorage, explicit params for SUPER_ADMIN"
-    },
-    "orders": {
-      "page": "/app/orders",
-      "route": "/api/orders",
-      "usesTenantCheck": true,
-      "status": "fixed",
-      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
-    },
-    "customers": {
-      "page": "/app/customers",
-      "route": "/api/customers",
-      "usesTenantCheck": true,
-      "status": "fixed",
-      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
-    },
-    "stores": {
-      "page": "/app/stores",
-      "route": "/api/outlets",
-      "usesTenantCheck": false,
-      "status": "fixed",
-      "notes": "Fixed - Added tenantId validation and explicit params for SUPER_ADMIN"
     }
   },
   "summary": {

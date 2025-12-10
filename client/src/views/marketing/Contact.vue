@@ -129,7 +129,7 @@
                   </div>
                   <div>
                     <h3 class="font-semibold text-gray-800">Alamat</h3>
-                    <p class="text-gray-600">Jakarta, Indonesia</p>
+                    <p class="text-gray-600">Surabaya, Indonesia</p>
                   </div>
                 </div>
               </div>
