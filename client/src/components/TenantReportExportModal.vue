@@ -157,34 +157,34 @@ const exporting = ref(false);
 
 const templates = [
   {
-    id: 'minimalist',
-    name: 'Minimalist',
+    id: 'clean',
+    name: 'Clean & Simple',
     description: 'Desain bersih dan sederhana dengan fokus pada data',
     tags: ['Clean', 'Simple'],
   },
   {
-    id: 'modern',
-    name: 'Modern',
+    id: 'contemporary',
+    name: 'Contemporary',
     description: 'Desain kontemporer dengan header biru dan styling modern',
     tags: ['Modern', 'Blue'],
   },
   {
-    id: 'classic',
-    name: 'Classic',
-    description: 'Desain klasik dengan border luar dan font tradisional',
-    tags: ['Classic', 'Traditional'],
+    id: 'vibrant',
+    name: 'Vibrant',
+    description: 'Desain berwarna dengan gradient dan cards berwarna',
+    tags: ['Colorful', 'Vibrant'],
   },
   {
-    id: 'colorful',
-    name: 'Colorful',
-    description: 'Desain berwarna dengan striped rows dan header biru',
-    tags: ['Colorful', 'UI Style'],
+    id: 'professional',
+    name: 'Professional',
+    description: 'Desain profesional dengan tema hijau dan tipografi yang rapi',
+    tags: ['Professional', 'Green'],
   },
   {
-    id: 'elegant',
-    name: 'Elegant',
-    description: 'Desain elegan dengan tema hijau dan tipografi yang rapi',
-    tags: ['Elegant', 'Green'],
+    id: 'executive',
+    name: 'Executive',
+    description: 'Desain sangat profesional untuk presentasi eksekutif',
+    tags: ['Executive', 'Premium'],
   },
 ];
 
