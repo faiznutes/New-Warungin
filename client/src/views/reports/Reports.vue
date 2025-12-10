@@ -224,6 +224,37 @@
                     {{ cell }}
                   </td>
                 </tr>
+                <!-- Shift Info Row (only for sales report) -->
+                <tr
+                  v-if="reportType === 'sales' && byDate[index]?.orders && byDate[index].orders.length > 0 && byDate[index].orders[0]?.storeShift"
+                  class="bg-blue-50"
+                >
+                  <td :colspan="reportHeaders.length" class="px-4 sm:px-6 py-3">
+                    <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm">
+                      <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-gray-600">Shift:</span>
+                        <span class="font-semibold text-gray-900 capitalize">{{ byDate[index].orders[0].storeShift.shiftType || 'N/A' }}</span>
+                      </div>
+                      <div v-if="byDate[index].orders[0].storeShift.opener" class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="text-gray-600">Dibuka oleh:</span>
+                        <span class="font-semibold text-gray-900">{{ byDate[index].orders[0].storeShift.opener.name || 'N/A' }}</span>
+                      </div>
+                      <div v-if="byDate[index].orders[0].storeShift.openedAt" class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-gray-600">Dibuka:</span>
+                        <span class="font-semibold text-gray-900">{{ formatDateTime(byDate[index].orders[0].storeShift.openedAt) }}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
                 <!-- Product Details Row (only for sales report and admin tenant) -->
                 <tr
                   v-if="showProductDetails && reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') && productDetails[index]"
@@ -380,7 +411,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatCurrency, formatDate, formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
@@ -642,11 +673,17 @@ const loadReport = async () => {
     reportData.value = reportResponse.data;
     
     // Process product details if available - pisah 1 per 1 (tidak digabung)
+    // Also ensure shift info is preserved
     if (reportData.value?.byDate && Array.isArray(reportData.value.byDate)) {
       reportData.value.byDate.forEach((item: any, index: number) => {
         if (item.orders && Array.isArray(item.orders)) {
           const productsList: any[] = [];
           item.orders.forEach((order: any) => {
+            // Preserve shift info from order
+            if (order.storeShift && !item.storeShift) {
+              item.storeShift = order.storeShift;
+            }
+            
             if (order.items && Array.isArray(order.items)) {
               order.items.forEach((orderItem: any) => {
                 const productId = orderItem.productId || orderItem.product?.id;
@@ -678,6 +715,32 @@ const loadReport = async () => {
           item.products = productsList;
         }
       });
+    }
+    
+    // If byDate doesn't exist but orders exist, we need to process orders to create byDate
+    // This handles the case where backend returns orders array directly
+    if (!reportData.value?.byDate && reportData.value?.orders && Array.isArray(reportData.value.orders)) {
+      // Group orders by date
+      const ordersByDate: Record<string, any> = {};
+      reportData.value.orders.forEach((order: any) => {
+        const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+        if (!ordersByDate[orderDate]) {
+          ordersByDate[orderDate] = {
+            date: orderDate,
+            revenue: 0,
+            count: 0,
+            orders: [],
+          };
+        }
+        ordersByDate[orderDate].revenue += Number(order.total || 0);
+        ordersByDate[orderDate].count += 1;
+        ordersByDate[orderDate].orders.push(order);
+      });
+      
+      // Convert to array and sort by date
+      reportData.value.byDate = Object.values(ordersByDate).sort((a: any, b: any) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
     }
     
     // Don't load analytics here to prevent rate limiting - it's called separately
