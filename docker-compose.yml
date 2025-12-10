@@ -170,6 +170,20 @@ services:
         condition: service_started
     networks:
       - warungin-network
+    # Security hardening: Read-only root filesystem
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+      - /var/cache/nginx:noexec,nosuid,size=200m
+      - /var/run:noexec,nosuid,size=10m
+    # Remove unnecessary capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETGID
+      - SETUID
     deploy:
       resources:
         limits:
