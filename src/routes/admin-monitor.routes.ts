@@ -148,38 +148,133 @@ router.get('/docker/logs/:name', authGuard, requireSuperAdmin, async (req: Reque
  */
 router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
-    // Get CPU usage
-    const { stdout: cpuOutput } = await execAsync("top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'");
-    const cpu = parseFloat(cpuOutput.trim()) || 0;
+    // Get CPU usage - with fallback methods
+    let cpu = 0;
+    try {
+      const { stdout: cpuOutput } = await execAsync("top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'");
+      cpu = parseFloat(cpuOutput.trim()) || 0;
+    } catch {
+      // Fallback: use /proc/stat
+      try {
+        const { stdout: cpuStat } = await execAsync("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$3+$4+$5)} END {print usage}'");
+        cpu = parseFloat(cpuStat.trim()) || 0;
+      } catch {
+        cpu = 0;
+      }
+    }
 
-    // Get Memory usage
-    const { stdout: memOutput } = await execAsync("free | grep Mem | awk '{printf \"%.1f\", $3/$2 * 100.0}'");
-    const memory = parseFloat(memOutput.trim()) || 0;
-    
-    const { stdout: memUsedOutput } = await execAsync("free -h | grep Mem | awk '{print $3}'");
-    const { stdout: memTotalOutput } = await execAsync("free -h | grep Mem | awk '{print $2}'");
-    const memoryUsed = memUsedOutput.trim();
-    const memoryTotal = memTotalOutput.trim();
+    // Get Memory usage - with error handling
+    let memory = 0;
+    let memoryUsed = '0';
+    let memoryTotal = '0';
+    try {
+      const { stdout: memOutput } = await execAsync("free | grep Mem | awk '{printf \"%.1f\", $3/$2 * 100.0}'");
+      memory = parseFloat(memOutput.trim()) || 0;
+      
+      const { stdout: memUsedOutput } = await execAsync("free -h | grep Mem | awk '{print $3}'");
+      const { stdout: memTotalOutput } = await execAsync("free -h | grep Mem | awk '{print $2}'");
+      memoryUsed = memUsedOutput.trim() || '0';
+      memoryTotal = memTotalOutput.trim() || '0';
+    } catch (memError: any) {
+      logger.warn('Error fetching memory usage:', memError.message);
+      // Fallback values
+      memory = 0;
+      memoryUsed = '0';
+      memoryTotal = '0';
+    }
 
-    // Get Disk usage
-    const { stdout: diskOutput } = await execAsync("df -h | grep -E '^/dev/' | awk '{print $6\"|\"$5\"|\"$3\"|\"$2}'");
-    const disks = diskOutput.trim().split('\n').filter(Boolean).map((line) => {
-      const [mount, usage, used, total] = line.split('|');
-      return {
-        mount,
-        usage: usage.replace('%', ''),
-        used,
-        total,
-      };
-    });
+    // Get Disk usage - improved to handle all filesystems
+    let disks: any[] = [];
+    try {
+      // Try to get all mounted filesystems (including Docker volumes)
+      const { stdout: diskOutput } = await execAsync("df -h | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+      const diskLines = diskOutput.trim().split('\n').filter(Boolean);
+      disks = diskLines.map((line) => {
+        const parts = line.split('|');
+        if (parts.length >= 4) {
+          const [mount, usage, used, total, device] = parts;
+          // Only include real filesystems (exclude tmpfs, devtmpfs, etc.)
+          if (mount && mount !== '-' && !mount.startsWith('/sys') && !mount.startsWith('/proc') && !mount.startsWith('/dev')) {
+            return {
+              mount: mount || 'Unknown',
+              usage: usage ? usage.replace('%', '') : '0',
+              used: used || '0',
+              total: total || '0',
+              device: device || 'Unknown',
+            };
+          }
+        }
+        return null;
+      }).filter(Boolean);
+      
+      // If no disks found, try alternative method
+      if (disks.length === 0) {
+        const { stdout: altDiskOutput } = await execAsync("df -h / | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+        const altParts = altDiskOutput.trim().split('|');
+        if (altParts.length >= 4) {
+          disks = [{
+            mount: altParts[0] || '/',
+            usage: altParts[1] ? altParts[1].replace('%', '') : '0',
+            used: altParts[2] || '0',
+            total: altParts[3] || '0',
+            device: altParts[4] || 'Unknown',
+          }];
+        }
+      }
+    } catch (diskError: any) {
+      logger.warn('Error fetching disk usage, using fallback:', diskError.message);
+      // Fallback: return root filesystem info
+      try {
+        const { stdout: rootDisk } = await execAsync("df -h / | awk 'NR==2 {print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+        const parts = rootDisk.trim().split('|');
+        if (parts.length >= 4) {
+          disks = [{
+            mount: parts[0] || '/',
+            usage: parts[1] ? parts[1].replace('%', '') : '0',
+            used: parts[2] || '0',
+            total: parts[3] || '0',
+            device: parts[4] || 'Unknown',
+          }];
+        }
+      } catch {
+        // Last resort: return empty array with message
+        disks = [];
+      }
+    }
 
-    // Get Uptime
-    const { stdout: uptimeOutput } = await execAsync("uptime -p");
-    const uptime = uptimeOutput.trim();
+    // Get Uptime - with fallback
+    let uptime = 'N/A';
+    try {
+      const { stdout: uptimeOutput } = await execAsync("uptime -p");
+      uptime = uptimeOutput.trim() || 'N/A';
+    } catch {
+      try {
+        // Fallback: use /proc/uptime
+        const { stdout: uptimeSec } = await execAsync("cat /proc/uptime | awk '{print int($1)}'");
+        const seconds = parseInt(uptimeSec.trim()) || 0;
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        uptime = `${days} days, ${hours} hours, ${minutes} minutes`;
+      } catch {
+        uptime = 'N/A';
+      }
+    }
 
-    // Get Load Average
-    const { stdout: loadOutput } = await execAsync("uptime | awk -F'load average:' '{print $2}' | awk '{print $1}' | sed 's/,//'");
-    const loadAverage = loadOutput.trim();
+    // Get Load Average - with fallback
+    let loadAverage = 'N/A';
+    try {
+      const { stdout: loadOutput } = await execAsync("uptime | awk -F'load average:' '{print $2}' | awk '{print $1}' | sed 's/,//'");
+      loadAverage = loadOutput.trim() || 'N/A';
+    } catch {
+      try {
+        // Fallback: use /proc/loadavg
+        const { stdout: loadAvg } = await execAsync("cat /proc/loadavg | awk '{print $1}'");
+        loadAverage = loadAvg.trim() || 'N/A';
+      } catch {
+        loadAverage = 'N/A';
+      }
+    }
 
     res.json({
       cpu: cpu.toFixed(1),
