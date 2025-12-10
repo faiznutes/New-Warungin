@@ -285,6 +285,22 @@ export const authGuard = async (
   }
 };
 
+/**
+ * Middleware to require Super Admin role
+ */
+export const requireSuperAdmin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  if (req.role !== 'SUPER_ADMIN') {
+    setCorsHeaders(res, req);
+    res.status(403).json({ error: 'Forbidden: Super Admin access required' });
+    return;
+  }
+  next();
+};
+
 export const roleGuard = (...allowedRoles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.role) {

@@ -238,18 +238,19 @@ export class BusinessMetricsService {
         );
       });
 
-      // Users by tenant and role
+      // Users by tenant and role (only users with tenantId)
       const usersByTenantData = await prisma.user.groupBy({
         by: ['tenantId', 'role'],
-        where: { tenantId: { not: null } },
         _count: { id: true },
       });
 
       usersByTenantData.forEach((item) => {
-        usersByTenant.set(
-          { tenant_id: item.tenantId || 'unknown', role: item.role },
-          item._count?.id || 0
-        );
+        if (item.tenantId) {
+          usersByTenant.set(
+            { tenant_id: item.tenantId, role: item.role },
+            item._count?.id || 0
+          );
+        }
       });
     } catch (error: any) {
       logger.error('Error updating user metrics:', error);
