@@ -335,9 +335,11 @@
               </p>
             </div>
 
-            <!-- Bundle Discount Product Selection (for BUNDLE) -->
+            <!-- Bundle Discount Product Selection (for BUNDLE) - Only show if bundle products are selected -->
             <div v-if="discountForm.discountType === 'BUNDLE' && discountForm.bundleProducts.length > 0">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Produk yang Mendapat Diskon</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Produk yang Mendapat Diskon <span class="text-red-500">*</span>
+              </label>
               <select
                 v-model="discountForm.bundleDiscountProduct"
                 required
@@ -759,6 +761,34 @@ const editDiscount = async (discount: any) => {
 
 const saveDiscount = async () => {
   try {
+    // Validation: For BUNDLE, ensure bundleDiscountProduct is selected if bundleProducts exist
+    if (discountForm.value.discountType === 'BUNDLE') {
+      if (discountForm.value.bundleProducts.length > 0 && !discountForm.value.bundleDiscountProduct) {
+        await showError('Pilih produk yang akan mendapat diskon dari bundle yang dipilih');
+        return;
+      }
+    }
+    
+    // Validation: For PRODUCT_BASED, ensure products are selected
+    if (discountForm.value.discountType === 'PRODUCT_BASED') {
+      if (discountForm.value.applicableProducts.length === 0) {
+        await showError('Pilih minimal satu produk yang akan mendapat diskon');
+        return;
+      }
+    }
+    
+    // Validation: For QUANTITY_BASED, ensure products or category is selected
+    if (discountForm.value.discountType === 'QUANTITY_BASED') {
+      if (productSelectionType.value === 'PRODUCTS' && discountForm.value.applicableProducts.length === 0) {
+        await showError('Pilih minimal satu produk atau pilih kategori');
+        return;
+      }
+      if (productSelectionType.value === 'CATEGORY' && !selectedCategory.value) {
+        await showError('Pilih kategori atau pilih produk tertentu');
+        return;
+      }
+    }
+    
     // Prepare data based on product selection type
     let applicableProductsData: string[] | null = null;
     let bundleProductsData: string[] | null = null;
@@ -785,6 +815,10 @@ const saveDiscount = async () => {
       ...discountForm.value,
       applicableProducts: applicableProductsData,
       bundleProducts: bundleProductsData,
+      // Only include bundleDiscountProduct if bundleProducts exist
+      bundleDiscountProduct: (discountForm.value.discountType === 'BUNDLE' && bundleProductsData && bundleProductsData.length > 0) 
+        ? discountForm.value.bundleDiscountProduct 
+        : null,
       startDate: discountForm.value.startDate || undefined,
       endDate: discountForm.value.endDate || undefined,
     };
