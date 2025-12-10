@@ -11,8 +11,8 @@ const router = Router();
 
 const createTemplateSchema = z.object({
   name: z.string().min(1),
-  templateType: z.enum(['DEFAULT', 'MODERN', 'MINIMAL', 'DETAILED', 'COMPACT']),
-  paperSize: z.enum(['A4', 'THERMAL_58', 'THERMAL_80']),
+  templateType: z.enum(['CLASSIC', 'MODERN', 'MINIMAL', 'PROFESSIONAL']),
+  paperSize: z.enum(['A4', 'THERMAL_50', 'THERMAL_80', 'Bluetooth']),
   header: z.any().optional(),
   footer: z.any().optional(),
   fields: z.any().optional(),

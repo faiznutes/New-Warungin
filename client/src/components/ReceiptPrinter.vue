@@ -109,6 +109,14 @@
                   <span class="text-gray-600">Waktu:</span>
                   <span>{{ formatTime(receiptData.date) }}</span>
                 </div>
+                <div v-if="template?.fields?.showShift && receiptData.shiftType" class="flex justify-between text-xs sm:text-sm">
+                  <span class="text-gray-600">Shift:</span>
+                  <span class="font-semibold capitalize">{{ formatShiftType(receiptData.shiftType) }}</span>
+                </div>
+                <div v-if="template?.fields?.showCashier && (receiptData.cashierName || receiptData.servedBy)" class="flex justify-between text-xs sm:text-sm">
+                  <span class="text-gray-600">Kasir:</span>
+                  <span class="font-semibold">{{ receiptData.cashierName || receiptData.servedBy }}</span>
+                </div>
                 <div v-if="template?.fields?.showCustomer && receiptData.customerName" class="flex justify-between text-xs sm:text-sm">
                   <span class="text-gray-600">Pelanggan:</span>
                   <span>{{ receiptData.customerName }}</span>
@@ -243,13 +251,15 @@ interface ReceiptData {
   date: string;
   customerName?: string;
   memberName?: string;
+  shiftType?: string | null; // Pagi, Siang, Sore, Malam
+  cashierName?: string | null; // Nama kasir yang melayani
   items: ReceiptItem[];
   subtotal: number;
   discount: number;
   total: number;
   paymentMethod: string;
   change?: number;
-  servedBy?: string; // Nama kasir/admin yang melayani
+  servedBy?: string; // Legacy - akan diganti dengan cashierName
 }
 
 interface ReceiptTemplate {
@@ -299,6 +309,17 @@ const formatTime = (date: string) => {
   });
 };
 
+const formatShiftType = (shiftType: string | null | undefined): string => {
+  if (!shiftType) return '';
+  const shiftMap: Record<string, string> = {
+    pagi: 'Pagi',
+    siang: 'Siang',
+    sore: 'Sore',
+    malam: 'Malam',
+  };
+  return shiftMap[shiftType.toLowerCase()] || shiftType;
+};
+
 const getPaymentMethodLabel = (method: string) => {
   const labels: Record<string, string> = {
     CASH: 'Cash',
@@ -315,9 +336,12 @@ const getPaymentMethodLabel = (method: string) => {
 
 const getTemplateFontFamily = (templateType: string, styles?: any): string => {
   const fontMap: Record<string, string> = {
-    DEFAULT: styles?.fontFamily || 'Arial, sans-serif',
+    CLASSIC: styles?.fontFamily || 'Arial, sans-serif',
     MODERN: styles?.fontFamily || 'Inter, sans-serif',
     MINIMAL: styles?.fontFamily || 'Courier New, monospace',
+    PROFESSIONAL: styles?.fontFamily || 'Arial, sans-serif',
+    // Legacy support
+    DEFAULT: styles?.fontFamily || 'Arial, sans-serif',
     DETAILED: styles?.fontFamily || 'Arial, sans-serif',
     COMPACT: styles?.fontFamily || 'Courier New, monospace',
   };

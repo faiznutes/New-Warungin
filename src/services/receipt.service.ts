@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from '../config/database';
 
-// 5 Template Receipt yang Lengkap
+// 4 Template Receipt Optimal - Redesigned
 export const RECEIPT_TEMPLATE_DEFINITIONS = [
   {
-    type: 'DEFAULT',
-    name: 'Struk Standar',
+    type: 'CLASSIC',
+    name: 'Struk Klasik',
     paperSize: 'A4',
-    description: 'Template standar dengan semua informasi lengkap',
+    description: 'Design klasik dengan border dan layout tradisional, responsif untuk semua ukuran kertas',
     header: {
       showLogo: true,
       showName: true,
@@ -23,6 +23,8 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showOrderNumber: true,
       showDate: true,
       showTime: true,
+      showShift: true, // WAJIB - Menampilkan shift (Pagi/Siang/Sore/Malam)
+      showCashier: true, // WAJIB - Menampilkan nama kasir
       showCustomer: true,
       showItems: true,
       showSubtotal: true,
@@ -37,13 +39,15 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       fontFamily: 'Arial, sans-serif',
       headerAlign: 'center',
       showBorders: true,
+      borderStyle: 'thick', // Border tebal untuk classic
     },
+    supportedSizes: ['50mm', '80mm', 'A4', 'Bluetooth'], // Support semua ukuran
   },
   {
     type: 'MODERN',
     name: 'Struk Modern',
     paperSize: 'A4',
-    description: 'Desain modern dengan layout yang rapi dan profesional',
+    description: 'Design modern minimalis dengan tipografi rapi, clean tanpa border tebal',
     header: {
       showLogo: true,
       showName: true,
@@ -61,29 +65,33 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showOrderNumber: true,
       showDate: true,
       showTime: true,
+      showShift: true, // WAJIB
+      showCashier: true, // WAJIB
       showCustomer: true,
       showItems: true,
       showSubtotal: true,
       showDiscount: true,
-      showTax: true,
+      showTax: false,
       showTotal: true,
       showPaymentMethod: true,
       showChange: true,
-      showBarcode: true,
+      showBarcode: false,
     },
     styles: {
       fontSize: '11px',
       fontFamily: 'Inter, sans-serif',
       headerAlign: 'center',
       showBorders: false,
-      useGradient: true,
+      useGradient: true, // Gradient subtle untuk A4
+      useIcons: true, // Icon untuk shift dan kasir (opsional untuk A4)
     },
+    supportedSizes: ['50mm', '80mm', 'A4', 'Bluetooth'],
   },
   {
     type: 'MINIMAL',
     name: 'Struk Minimalis',
-    paperSize: 'THERMAL_58',
-    description: 'Template minimalis untuk thermal printer 58mm',
+    paperSize: 'THERMAL_50',
+    description: 'Design sangat minimalis, fokus pada informasi esensial, optimal untuk thermal 50mm dan 80mm',
     header: {
       showLogo: false,
       showName: true,
@@ -98,7 +106,9 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
     fields: {
       showOrderNumber: true,
       showDate: true,
-      showTime: false,
+      showTime: true,
+      showShift: true, // WAJIB - Compact format
+      showCashier: true, // WAJIB - Compact format
       showCustomer: false,
       showItems: true,
       showSubtotal: false,
@@ -109,48 +119,52 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       showChange: true,
     },
     styles: {
-      fontSize: '10px',
+      fontSize: '9px', // Kecil untuk thermal
       fontFamily: 'Courier New, monospace',
       headerAlign: 'center',
       showBorders: false,
+      spacing: 'minimal', // Spacing minimal
     },
+    supportedSizes: ['50mm', '80mm'], // Utama untuk thermal, A4 opsional
   },
   {
-    type: 'DETAILED',
-    name: 'Struk Detail',
+    type: 'PROFESSIONAL',
+    name: 'Struk Profesional',
     paperSize: 'A4',
-    description: 'Template detail dengan informasi lengkap termasuk pajak dan breakdown',
+    description: 'Design profesional untuk bisnis formal, layout terstruktur dengan section jelas',
     header: {
       showLogo: true,
       showName: true,
       showAddress: true,
       showPhone: true,
       showEmail: true,
-      showTaxId: true,
+      showTaxId: false,
     },
     footer: {
       showThankYou: true,
       showContact: true,
       showSocialMedia: true,
       showWebsite: true,
-      showTerms: true,
+      showTerms: false,
     },
     fields: {
       showOrderNumber: true,
       showDate: true,
       showTime: true,
+      showShift: true, // WAJIB - Dengan section jelas
+      showCashier: true, // WAJIB - Dengan section jelas
       showCustomer: true,
-      showCustomerAddress: true,
+      showCustomerAddress: false,
       showItems: true,
-      showItemDescription: true,
+      showItemDescription: false,
       showSubtotal: true,
       showDiscount: true,
-      showTax: true,
+      showTax: false,
       showServiceCharge: false,
       showTotal: true,
       showPaymentMethod: true,
       showChange: true,
-      showBarcode: true,
+      showBarcode: false,
       showQRCode: false,
     },
     styles: {
@@ -158,43 +172,10 @@ export const RECEIPT_TEMPLATE_DEFINITIONS = [
       fontFamily: 'Arial, sans-serif',
       headerAlign: 'center',
       showBorders: true,
-      showShadows: true,
+      showShadows: false,
+      sectionStyle: 'structured', // Section terstruktur
     },
-  },
-  {
-    type: 'COMPACT',
-    name: 'Struk Kompak',
-    paperSize: 'THERMAL_80',
-    description: 'Template kompak untuk thermal printer 80mm dengan informasi penting',
-    header: {
-      showLogo: true,
-      showName: true,
-      showAddress: true,
-      showPhone: false,
-    },
-    footer: {
-      showThankYou: true,
-      showContact: true,
-      showSocialMedia: false,
-    },
-    fields: {
-      showOrderNumber: true,
-      showDate: true,
-      showTime: true,
-      showCustomer: true,
-      showItems: true,
-      showSubtotal: true,
-      showDiscount: true,
-      showTotal: true,
-      showPaymentMethod: true,
-      showChange: true,
-    },
-    styles: {
-      fontSize: '11px',
-      fontFamily: 'Courier New, monospace',
-      headerAlign: 'center',
-      showBorders: true,
-    },
+    supportedSizes: ['A4', '80mm'], // Utama A4, 80mm opsional
   },
 ];
 
@@ -381,7 +362,26 @@ export class ReceiptService {
         },
         customer: true,
         member: true,
-        user: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        storeShift: {
+          select: {
+            id: true,
+            shiftType: true,
+            openedBy: true,
+            opener: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         tenant: true,
       },
     });
@@ -434,6 +434,8 @@ export class ReceiptService {
         orderNumber: order.orderNumber,
         date: order.createdAt,
         customerName: order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in',
+        shiftType: order.storeShift?.shiftType || null, // Pagi, Siang, Sore, Malam
+        cashierName: order.user?.name || order.storeShift?.opener?.name || 'Kasir', // Nama kasir yang melayani
         items: order.items.map(item => ({
           name: item.product.name,
           quantity: item.quantity,
