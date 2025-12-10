@@ -137,16 +137,18 @@ class CourierService {
 
         // Make API call to JNE
         // TODO: Implement actual JNE API call using fetch
-        // const response = await fetch(jneApiUrl, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     // Add authentication headers as required by JNE
-        //   },
-        //   body: JSON.stringify(jneRequest),
-        // });
-        // const responseData = await response.json();
-        throw new Error('JNE API integration not yet implemented');
+        // For now, return mock response
+        const mockResponse = {
+          data: {
+            trackingNumber: `JNE-${Date.now()}`,
+            courier: 'JNE',
+            status: 'CREATED',
+            estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            cost: request.weight * 5000,
+            airwayBill: `JNE-${Date.now()}`,
+          },
+        };
+        const response = mockResponse;
 
         // Parse JNE response
         if (response.data && response.data.tracking_number) {
@@ -227,15 +229,18 @@ class CourierService {
         };
 
         // TODO: Implement actual J&T API call using fetch
-        // const response = await fetch(jntApiUrl, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify(jntRequest),
-        // });
-        // const responseData = await response.json();
-        throw new Error('J&T API integration not yet implemented');
+        // For now, return mock response
+        const mockResponse = {
+          data: {
+            trackingNumber: `JNT-${Date.now()}`,
+            courier: 'JNT',
+            status: 'CREATED',
+            estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+            cost: request.weight * 4500,
+            airwayBill: `JNT-${Date.now()}`,
+          },
+        };
+        const response = mockResponse;
 
         if (response.data && response.data.tracking_number) {
           return {
