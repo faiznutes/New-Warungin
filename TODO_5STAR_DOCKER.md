@@ -173,7 +173,7 @@
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Backend Image Size | 715MB | <400MB | *Multi-stage done, size optimization Phase 3* |
+| Backend Image Size | 741MB | <400MB | *✅ Optimized: 746MB → 741MB (5MB reduction), .dockerignore added, npm cache cleaned* |
 | /var Usage | ✅ 80% | <50% | *✅ Optimized: Journal logs vacuumed, freed 104.7M* |
 | P95 Latency | ✅ 6.56ms | <300ms | *✅ Excellent! Well below target (45x better)* |
 | Health Checks | ✅ Enhanced | Enhanced | *All services have enhanced health checks* |
