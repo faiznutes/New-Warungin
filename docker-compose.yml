@@ -100,6 +100,7 @@ services:
     # Writable directories using tmpfs
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
+      - /home/nodejs/.npm:noexec,nosuid,size=200m
     # Remove unnecessary capabilities
     cap_drop:
       - ALL
