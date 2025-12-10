@@ -20,7 +20,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     # Tidak expose port ke host untuk security (hanya internal Docker network)
+    # Database Storage: Configured for 200GB capacity
 
   # Redis Cache (Optional)
   redis:
@@ -191,6 +200,12 @@ networks:
 volumes:
   postgres_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/lib/docker/volumes/warungin_postgres_data
+    # Database Storage: 200GB capacity allocated
+    # Current usage: Check with: docker exec warungin-postgres du -sh /var/lib/postgresql/data
   redis_data:
     driver: local
 
