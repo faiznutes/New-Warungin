@@ -70,6 +70,7 @@ model Tenant {
   customerReviews     CustomerReview[]
   backupLogs          BackupLog[]
   cashShifts          CashShift[]
+  storeShifts         StoreShift[]
 
   @@map("tenants")
 }
@@ -104,6 +105,7 @@ model User {
   productAdjustments ProductAdjustment[]
   auditLogs    AuditLog[]
   dashboardSettings DashboardSettings[]
+  storeShifts  StoreShift[] @relation("StoreShiftOpener")
 
   @@unique([tenantId, email])
   @@index([tenantId])
