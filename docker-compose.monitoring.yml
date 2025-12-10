@@ -74,6 +74,38 @@ services:
     command: -config.file=/etc/promtail/promtail-config.yml
     networks:
       - new-warungin_warungin-network
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: warungin-alertmanager
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+      - alertmanager_data:/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+    ports:
+      - "9093:9093"
+    networks:
+      - new-warungin_warungin-network
+    environment:
+      # Slack Configuration (optional)
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+      - SLACK_CHANNEL=${SLACK_CHANNEL:-alerts}
+      - SLACK_CHANNEL_CRITICAL=${SLACK_CHANNEL_CRITICAL:-alerts-critical}
+      # Email Configuration (optional)
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_FROM=${SMTP_FROM:-alerts@warungin.com}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - ALERT_EMAIL_TO=${ALERT_EMAIL_TO:-admin@warungin.com}
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     depends_on:
       - loki
     deploy:
@@ -86,6 +118,7 @@ volumes:
   prometheus_data:
   grafana_data:
   loki_data:
+  alertmanager_data:
 
 networks:
   new-warungin_warungin-network:

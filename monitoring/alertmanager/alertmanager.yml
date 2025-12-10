@@ -1,0 +1,113 @@
+# Alertmanager Configuration
+# Handles alert routing and notifications
+
+global:
+  # Default notification timeout
+  resolve_timeout: 5m
+  
+  # Slack configuration (optional - set via environment variables)
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  
+  # Email configuration (optional - set via environment variables)
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: '${SMTP_FROM}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree for alerts
+route:
+  # Default receiver
+  receiver: 'default'
+  
+  # Group alerts by these labels
+  group_by: ['alertname', 'severity', 'cluster']
+  
+  # Wait time before sending first notification
+  group_wait: 10s
+  
+  # Wait time before sending notification about new alerts in the same group
+  group_interval: 10s
+  
+  # Minimum time between two notifications for the same group
+  repeat_interval: 12h
+  
+  # Routes based on severity
+  routes:
+    # Critical alerts - send to all channels
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+      group_wait: 5s
+      repeat_interval: 1h
+      
+    # Warning alerts - send to slack and email
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      continue: false
+      group_wait: 30s
+      repeat_interval: 6h
+
+# Receivers configuration
+receivers:
+  # Default receiver (fallback)
+  - name: 'default'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        headers:
+          Subject: '{{ .GroupLabels.alertname }} - Warungin Alert'
+        html: '{{ template "email.default.html" . }}'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#${SLACK_CHANNEL}'
+        title: '{{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.default.text" . }}'
+        send_resolved: true
+
+  # Critical alerts receiver
+  - name: 'critical-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        headers:
+          Subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }} - Warungin'
+        html: '{{ template "email.critical.html" . }}'
+        send_resolved: true
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#${SLACK_CHANNEL_CRITICAL}'
+        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.critical.text" . }}'
+        send_resolved: true
+        color: 'danger'
+
+  # Warning alerts receiver
+  - name: 'warning-alerts'
+    email_configs:
+      - to: '${ALERT_EMAIL_TO}'
+        headers:
+          Subject: '⚠️ WARNING: {{ .GroupLabels.alertname }} - Warungin'
+        html: '{{ template "email.warning.html" . }}'
+        send_resolved: true
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#${SLACK_CHANNEL}'
+        title: '⚠️ WARNING: {{ .GroupLabels.alertname }}'
+        text: '{{ template "slack.warning.text" . }}'
+        send_resolved: true
+        color: 'warning'
+
+# Inhibition rules (suppress alerts if other alerts are firing)
+inhibit_rules:
+  # Suppress warning if critical is firing for same container
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['name', 'instance']
+

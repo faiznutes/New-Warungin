@@ -1,0 +1,93 @@
+{{/* Email Notification Templates */}}
+
+{{ define "email.default.html" }}
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .alert { padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .critical { background-color: #fee; border-left: 4px solid #f00; }
+    .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; }
+    .info { background-color: #d1ecf1; border-left: 4px solid #0c5460; }
+    h2 { color: #333; }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Warungin Alert Notification</h2>
+  {{ range .Alerts }}
+  <div class="alert {{ .Labels.severity }}">
+    <h3>{{ .Annotations.summary }}</h3>
+    <p><span class="label">Description:</span> {{ .Annotations.description }}</p>
+    <p><span class="label">Severity:</span> {{ .Labels.severity }}</p>
+    <p><span class="label">Status:</span> {{ .Status }}</p>
+    <p><span class="label">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05" }}</p>
+    {{ if .Labels.name }}
+    <p><span class="label">Container:</span> {{ .Labels.name }}</p>
+    {{ end }}
+  </div>
+  {{ end }}
+</body>
+</html>
+{{ end }}
+
+{{ define "email.critical.html" }}
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .alert { padding: 20px; margin: 10px 0; border-radius: 5px; background-color: #fee; border-left: 4px solid #f00; }
+    h2 { color: #d00; }
+    .label { font-weight: bold; }
+    .urgent { color: #d00; font-size: 18px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>🚨 CRITICAL ALERT - Warungin</h2>
+  <p class="urgent">IMMEDIATE ACTION REQUIRED</p>
+  {{ range .Alerts }}
+  <div class="alert">
+    <h3>{{ .Annotations.summary }}</h3>
+    <p><span class="label">Description:</span> {{ .Annotations.description }}</p>
+    <p><span class="label">Severity:</span> {{ .Labels.severity }}</p>
+    <p><span class="label">Container:</span> {{ .Labels.name }}</p>
+    <p><span class="label">Status:</span> {{ .Status }}</p>
+    <p><span class="label">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05" }}</p>
+    <p><span class="label">Firing for:</span> {{ .StartsAt | humanizeDuration }}</p>
+  </div>
+  {{ end }}
+  <p><strong>Please investigate immediately!</strong></p>
+</body>
+</html>
+{{ end }}
+
+{{ define "email.warning.html" }}
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .alert { padding: 15px; margin: 10px 0; border-radius: 5px; background-color: #fff3cd; border-left: 4px solid #ffc107; }
+    h2 { color: #856404; }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>⚠️ WARNING ALERT - Warungin</h2>
+  {{ range .Alerts }}
+  <div class="alert">
+    <h3>{{ .Annotations.summary }}</h3>
+    <p><span class="label">Description:</span> {{ .Annotations.description }}</p>
+    <p><span class="label">Severity:</span> {{ .Labels.severity }}</p>
+    <p><span class="label">Container:</span> {{ .Labels.name }}</p>
+    <p><span class="label">Status:</span> {{ .Status }}</p>
+    <p><span class="label">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05" }}</p>
+  </div>
+  {{ end }}
+  <p>Please monitor and investigate if this persists.</p>
+</body>
+</html>
+{{ end }}
+

@@ -1,0 +1,41 @@
+{{/* Slack Notification Templates */}}
+
+{{ define "slack.default.text" }}
+{{ range .Alerts }}
+*Alert:* {{ .Annotations.summary }}
+*Description:* {{ .Annotations.description }}
+*Severity:* {{ .Labels.severity }}
+*Status:* {{ .Status }}
+*Started:* {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+{{ end }}
+{{ end }}
+
+{{ define "slack.critical.text" }}
+🚨 *CRITICAL ALERT*
+{{ range .Alerts }}
+*Alert:* {{ .Annotations.summary }}
+*Description:* {{ .Annotations.description }}
+*Severity:* {{ .Labels.severity }}
+*Container:* {{ .Labels.name }}
+*Status:* {{ .Status }}
+*Started:* {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+*Firing for:* {{ .StartsAt | humanizeDuration }}
+{{ end }}
+
+*Action Required:* Please investigate immediately!
+{{ end }}
+
+{{ define "slack.warning.text" }}
+⚠️ *WARNING ALERT*
+{{ range .Alerts }}
+*Alert:* {{ .Annotations.summary }}
+*Description:* {{ .Annotations.description }}
+*Severity:* {{ .Labels.severity }}
+*Container:* {{ .Labels.name }}
+*Status:* {{ .Status }}
+*Started:* {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+{{ end }}
+
+*Action:* Monitor and investigate if persists.
+{{ end }}
+
