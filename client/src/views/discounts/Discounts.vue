@@ -811,17 +811,45 @@ const saveDiscount = async () => {
       }
     }
     
-    const data = {
-      ...discountForm.value,
+    // Prepare data object, ensuring correct types
+    const data: any = {
+      name: discountForm.value.name,
+      discountType: discountForm.value.discountType,
+      discountValue: Number(discountForm.value.discountValue),
+      discountValueType: discountForm.value.discountValueType,
+      applicableTo: discountForm.value.applicableTo || 'ALL',
+      isActive: discountForm.value.isActive !== undefined ? discountForm.value.isActive : true,
       applicableProducts: applicableProductsData,
       bundleProducts: bundleProductsData,
-      // Only include bundleDiscountProduct if bundleProducts exist
-      bundleDiscountProduct: (discountForm.value.discountType === 'BUNDLE' && bundleProductsData && bundleProductsData.length > 0) 
-        ? discountForm.value.bundleDiscountProduct 
-        : null,
-      startDate: discountForm.value.startDate || undefined,
-      endDate: discountForm.value.endDate || undefined,
     };
+    
+    // Only include bundleDiscountProduct if bundleProducts exist and not empty
+    if (discountForm.value.discountType === 'BUNDLE' && bundleProductsData && bundleProductsData.length > 0) {
+      if (discountForm.value.bundleDiscountProduct && discountForm.value.bundleDiscountProduct.trim() !== '') {
+        data.bundleDiscountProduct = discountForm.value.bundleDiscountProduct;
+      } else {
+        // Don't include the field if empty
+        data.bundleDiscountProduct = null;
+      }
+    }
+    
+    // Include minAmount only if provided and valid
+    if (discountForm.value.minAmount !== undefined && discountForm.value.minAmount !== null) {
+      data.minAmount = Number(discountForm.value.minAmount);
+    }
+    
+    // Include minQuantity only if provided and valid
+    if (discountForm.value.minQuantity !== undefined && discountForm.value.minQuantity !== null) {
+      data.minQuantity = Number(discountForm.value.minQuantity);
+    }
+    
+    // Include dates only if provided
+    if (discountForm.value.startDate) {
+      data.startDate = discountForm.value.startDate;
+    }
+    if (discountForm.value.endDate) {
+      data.endDate = discountForm.value.endDate;
+    }
 
     if (editingDiscount.value) {
       await api.put(`/discounts/${editingDiscount.value.id}`, data);

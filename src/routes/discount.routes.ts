@@ -16,15 +16,15 @@ const createDiscountSchema = z.object({
   discountType: z.enum(['AMOUNT_BASED', 'BUNDLE', 'PRODUCT_BASED', 'QUANTITY_BASED']),
   discountValue: z.number().positive(),
   discountValueType: z.enum(['PERCENTAGE', 'FIXED']),
-  minAmount: z.number().optional(),
-  minQuantity: z.number().int().positive().optional(),
+  minAmount: z.number().optional().nullable(),
+  minQuantity: z.number().int().positive().optional().nullable(),
   applicableProducts: z.array(z.string()).optional().nullable(),
   bundleProducts: z.array(z.string()).optional().nullable(),
-  bundleDiscountProduct: z.string().optional(),
+  bundleDiscountProduct: z.string().optional().nullable(),
   applicableTo: z.enum(['ALL', 'MEMBER_ONLY']).optional(),
   isActive: z.boolean().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable(),
 });
 
 const updateDiscountSchema = createDiscountSchema.partial();
@@ -111,14 +111,50 @@ router.post(
         return res.status(403).json({ message: 'Forbidden: Only admin can create discounts' });
       }
 
-      const discountData = {
-        ...req.body,
+      // Prepare discount data with proper type conversions
+      const discountData: any = {
         tenantId,
-        startDate: req.body.startDate ? new Date(req.body.startDate) : null,
-        endDate: req.body.endDate ? new Date(req.body.endDate) : null,
-        applicableProducts: req.body.applicableProducts || null,
-        bundleProducts: req.body.bundleProducts || null,
+        name: req.body.name,
+        discountType: req.body.discountType,
+        discountValue: Number(req.body.discountValue),
+        discountValueType: req.body.discountValueType,
+        applicableTo: req.body.applicableTo || 'ALL',
+        isActive: req.body.isActive !== undefined ? req.body.isActive : true,
       };
+      
+      // Handle optional fields
+      if (req.body.minAmount !== undefined && req.body.minAmount !== null) {
+        discountData.minAmount = Number(req.body.minAmount);
+      }
+      
+      if (req.body.minQuantity !== undefined && req.body.minQuantity !== null) {
+        discountData.minQuantity = Number(req.body.minQuantity);
+      }
+      
+      if (req.body.applicableProducts !== undefined) {
+        discountData.applicableProducts = Array.isArray(req.body.applicableProducts) && req.body.applicableProducts.length > 0
+          ? req.body.applicableProducts
+          : null;
+      }
+      
+      if (req.body.bundleProducts !== undefined) {
+        discountData.bundleProducts = Array.isArray(req.body.bundleProducts) && req.body.bundleProducts.length > 0
+          ? req.body.bundleProducts
+          : null;
+      }
+      
+      // Only include bundleDiscountProduct if bundleProducts exist
+      if (req.body.bundleDiscountProduct && req.body.bundleDiscountProduct.trim() !== '') {
+        discountData.bundleDiscountProduct = req.body.bundleDiscountProduct;
+      }
+      
+      if (req.body.startDate) {
+        discountData.startDate = new Date(req.body.startDate);
+      }
+      
+      if (req.body.endDate) {
+        discountData.endDate = new Date(req.body.endDate);
+      }
 
       const discount = await prisma.discount.create({
         data: discountData,
@@ -169,10 +205,62 @@ router.put(
         return res.status(404).json({ message: 'Discount not found' });
       }
 
-      const updateData: any = { ...req.body };
+      // Prepare update data with proper type conversions
+      const updateData: any = {};
+      
+      if (req.body.name !== undefined) {
+        updateData.name = req.body.name;
+      }
+      if (req.body.discountType !== undefined) {
+        updateData.discountType = req.body.discountType;
+      }
+      if (req.body.discountValue !== undefined) {
+        updateData.discountValue = Number(req.body.discountValue);
+      }
+      if (req.body.discountValueType !== undefined) {
+        updateData.discountValueType = req.body.discountValueType;
+      }
+      if (req.body.applicableTo !== undefined) {
+        updateData.applicableTo = req.body.applicableTo;
+      }
+      if (req.body.isActive !== undefined) {
+        updateData.isActive = req.body.isActive;
+      }
+      
+      // Handle optional fields
+      if (req.body.minAmount !== undefined) {
+        updateData.minAmount = req.body.minAmount !== null ? Number(req.body.minAmount) : null;
+      }
+      
+      if (req.body.minQuantity !== undefined) {
+        updateData.minQuantity = req.body.minQuantity !== null ? Number(req.body.minQuantity) : null;
+      }
+      
+      if (req.body.applicableProducts !== undefined) {
+        updateData.applicableProducts = Array.isArray(req.body.applicableProducts) && req.body.applicableProducts.length > 0
+          ? req.body.applicableProducts
+          : null;
+      }
+      
+      if (req.body.bundleProducts !== undefined) {
+        updateData.bundleProducts = Array.isArray(req.body.bundleProducts) && req.body.bundleProducts.length > 0
+          ? req.body.bundleProducts
+          : null;
+      }
+      
+      // Only include bundleDiscountProduct if provided
+      if (req.body.bundleDiscountProduct !== undefined) {
+        if (req.body.bundleDiscountProduct && req.body.bundleDiscountProduct.trim() !== '') {
+          updateData.bundleDiscountProduct = req.body.bundleDiscountProduct;
+        } else {
+          updateData.bundleDiscountProduct = null;
+        }
+      }
+      
       if (req.body.startDate !== undefined) {
         updateData.startDate = req.body.startDate ? new Date(req.body.startDate) : null;
       }
+      
       if (req.body.endDate !== undefined) {
         updateData.endDate = req.body.endDate ? new Date(req.body.endDate) : null;
       }
