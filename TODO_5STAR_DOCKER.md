@@ -84,8 +84,8 @@
 **Checklist:**
 - [x] Run non-root users in all containers - *Backend: nodejs (1001), others pending*
 - [x] Implement seccomp profiles - *Profile created at `/root/New-Warungin/docker/security/seccomp-profile.json`*
-- [ ] Setup read-only root filesystem - *Pending docker-compose.yml update (complexity: requires tmpfs mounts)*
-- [ ] Remove unnecessary capabilities - *Pending docker-compose.yml update*
+- [x] Setup read-only root filesystem - *✅ Read-only rootfs configured for backend, frontend, and nginx with tmpfs for writable directories (/tmp, /app/logs, /var/cache/nginx, /var/run, /var/log/nginx)*
+- [x] Remove unnecessary capabilities - *✅ cap_drop: ALL and cap_add only required capabilities (NET_BIND_SERVICE, CHOWN, SETGID, SETUID) for backend, frontend, and nginx*
 - [x] Scan images with Trivy (0 high/critical vulns) - *✅ Trivy installed, backend image: 0 HIGH/CRITICAL vulnerabilities*
 
 ### 2.2 Monitoring & Alerting Setup
