@@ -3,7 +3,7 @@
  * Handles integration with various courier APIs (JNE, J&T, POS Indonesia)
  */
 
-import axios from 'axios';
+// import axios from 'axios'; // Removed - using fetch instead
 import logger from '../utils/logger';
 import prisma from '../config/database';
 
@@ -161,7 +161,7 @@ class CourierService {
       } catch (error: any) {
         logger.error('JNE API error:', error);
         // Fallback to mock if API fails (for development)
-        if (process.env.NODE_ENV === 'development') {
+        if ((process as any).env?.NODE_ENV === 'development') {
           logger.warn('Using mock JNE response due to API error');
           return {
             trackingNumber: `JNE-${Date.now()}`,
@@ -243,7 +243,7 @@ class CourierService {
         }
       } catch (error: any) {
         logger.error('J&T API error:', error);
-        if (process.env.NODE_ENV === 'development') {
+        if ((process as any).env?.NODE_ENV === 'development') {
           logger.warn('Using mock J&T response due to API error');
           return {
             trackingNumber: `JNT-${Date.now()}`,
