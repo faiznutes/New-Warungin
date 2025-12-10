@@ -95,6 +95,20 @@ services:
     # Set user to match docker group GID (989) for Docker socket access
     # UID 1001 = nodejs user, GID 989 = docker group
     user: "1001:989"
+    # Security hardening: Read-only root filesystem
+    read_only: true
+    # Writable directories using tmpfs
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /app/logs:noexec,nosuid,size=500m
+    # Remove unnecessary capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE  # Required for binding to port 3000
+      - CHOWN  # Required for file ownership operations
+      - SETGID  # Required for group operations
+      - SETUID  # Required for user operations
     deploy:
       resources:
         limits:
