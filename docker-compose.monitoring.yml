@@ -106,13 +106,6 @@ services:
         limits:
           cpus: "0.5"
           memory: 256M
-    depends_on:
-      - loki
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
 
 volumes:
   prometheus_data:
