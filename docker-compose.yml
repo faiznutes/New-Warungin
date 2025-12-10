@@ -200,10 +200,6 @@ networks:
 volumes:
   postgres_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /var/lib/docker/volumes/warungin_postgres_data
     # Database Storage: 200GB capacity allocated
     # Current usage: Check with: docker exec warungin-postgres du -sh /var/lib/postgresql/data
   redis_data:
