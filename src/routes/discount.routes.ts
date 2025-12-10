@@ -102,8 +102,8 @@ router.post(
   subscriptionGuard,
   validate({ body: createDiscountSchema }),
   async (req: Request, res: Response) => {
+    const tenantId = requireTenantId(req);
     try {
-      const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can create discounts
