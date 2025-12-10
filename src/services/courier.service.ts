@@ -166,7 +166,7 @@ class CourierService {
       } catch (error: any) {
         logger.error('JNE API error:', error);
         // Fallback to mock if API fails (for development)
-        if ((process as any).env?.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
           logger.warn('Using mock JNE response due to API error');
           return {
             trackingNumber: `JNE-${Date.now()}`,
@@ -255,7 +255,7 @@ class CourierService {
         }
       } catch (error: any) {
         logger.error('J&T API error:', error);
-        if ((process as any).env?.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
           logger.warn('Using mock J&T response due to API error');
           return {
             trackingNumber: `JNT-${Date.now()}`,
