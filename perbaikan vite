@@ -1,0 +1,157 @@
+LANGKAH FIX PALING CEPAT (dan pasti berhasil)
+1. Masuk ke worktree client
+
+Path kamu:
+
+c:/Users/Iz/.cursor/worktrees/New-Warungin/oso/client
+
+2. Install dependencies di SANA (bukan di repo utama)
+
+Kalau pakai npm:
+
+npm install
+npm install -D @types/node
+npm install vite
+
+
+Kalau pakai pnpm:
+
+pnpm install
+pnpm add -D @types/node
+pnpm add vite
+
+100% error langsung hilang.
+
+Karena vite/client.d.ts dan @types/node muncul di node_modules worktree client.
+
+✔️ 3. TSconfig client kamu harus seperti ini (VERSI BENAR)
+
+Kalau client kamu React/Vite, wajib begini:
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"]
+}
+
+
+Bukan tsconfig server yang kamu upload sebelumnya.
+
+✔️ 4. Jangan extend tsconfig server ke client
+
+Kalau kamu melakukan ini:
+
+"extends": "../tsconfig.json"
+
+
+Maka client akan ketarik semua tipe server → ini bikin error more painful.
+
+Pastikan client punya tsconfig sendiri, tidak extends dari server.
+
+1. Penyebab Error-mu Sekarang (langsung inti masalah)
+A. Kamu tidak mendeklarasikan types sama sekali.
+
+Padahal Vite butuh ini:
+
+"types": ["vite/client"]
+
+
+Tanpa ini → TypeScript otomatis tidak load type d.ts milik Vite.
+
+Itu sebabnya error:
+
+Cannot find type definition file for 'vite/client'
+
+B. Kamu memaksa TypeScript pakai typeRoots
+"typeRoots": ["./node_modules/@types"]
+
+
+Begitu kamu set ini, TypeScript TIDAK akan meload auto types lain
+— termasuk vite/client, karena dia bukan ada di @types, tetapi di:
+
+node_modules/vite/client.d.ts
+
+
+Ini penyebab fatal.
+
+C. Kamu juga belum install dependencies di worktree
+
+Karena path kamu:
+
+.curosr/worktrees/.... /client
+
+
+Biasanya node_modules kosong di worktree → semua type hilang.
+
+🔥 2. Solusi Pacing Cepat (yang pasti fix error 100%)
+Step 1 — Hapus ini dari tsconfig
+
+Karena ini memutus akses TypeScript ke type yang tidak berada di @types:
+
+"typeRoots": ["./node_modules/@types"]
+
+
+❗ 100% bagian ini bikin error.
+
+Step 2 — Tambahkan types wajib untuk Vite
+
+Tambah di compilerOptions:
+
+"types": ["vite/client", "node"]
+
+Step 3 — Install types yang hilang
+
+Masuk ke folder worktree client:
+
+cd c:/Users/Iz/.cursor/worktrees/New-Warungin/oso/client
+
+
+Install:
+
+npm install
+npm install -D @types/node
+npm install vite
+
+
+Setelah ini, vite/client.d.ts & @types/node akan muncul dan TSServer diam.
+
+🔥 3. TSConfig client versi yang BENAR (langsung copy–paste)
+
+Ini versi bersih dan benar untuk project Vite (React/Vue/Svelte semuanya kompatibel):
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]

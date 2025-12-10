@@ -123,6 +123,32 @@ interface ImportMeta {
 2. Install `@types/node`: `npm install -D @types/node`
 3. Restart TypeScript server di IDE
 
+### ⚠️ Error di Cursor Worktree
+
+Jika error muncul di Cursor worktree (path seperti `/c:/Users/Iz/.cursor/worktrees/...`):
+
+**Penyebab:** Worktree tidak memiliki `node_modules` yang lengkap.
+
+**Solusi Cepat:**
+1. Buka terminal di Cursor
+2. Masuk ke folder worktree client:
+   ```bash
+   cd c:/Users/Iz/.cursor/worktrees/New-Warungin/oso/client
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   npm install -D @types/node
+   npm install vite
+   ```
+4. Restart TypeScript server: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
+
+**Atau gunakan script yang sudah disediakan:**
+- PowerShell: `.\scripts\install-worktree-deps.ps1`
+- Bash: `bash scripts/install-worktree-deps.sh`
+
+**Catatan:** Worktree memiliki `node_modules` terpisah dari repo utama. Dependencies harus diinstall di worktree juga!
+
 ### Error masih muncul setelah perbaikan
 
 **Solusi:**
