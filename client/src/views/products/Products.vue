@@ -345,14 +345,14 @@
       </div>
     </section>
 
-  <!-- Product Modal -->
-  <ProductModal
-    :show="showCreateModal"
-    :product="editingProduct"
-    @close="closeModal"
-    @save="handleSaveProduct"
-  />
-
+    <!-- Product Modal -->
+    <ProductModal
+      :show="showCreateModal"
+      :product="editingProduct"
+      @close="closeModal"
+      @save="handleSaveProduct"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
