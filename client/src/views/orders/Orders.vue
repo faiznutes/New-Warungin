@@ -596,7 +596,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { safeSome, safeFilter, safeMap } from '../../utils/array-helpers';
+import { safeSome, safeFilter, safeMap, safeFindIndex } from '../../utils/array-helpers';
 import api from '../../api';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
