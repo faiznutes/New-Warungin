@@ -72,7 +72,12 @@
           <div
             ref="receiptContent"
             class="bg-white border-2 border-gray-300 rounded-lg p-4 sm:p-6 receipt-print-container"
-            :class="selectedPaperSize === '50mm' ? 'receipt-50mm' : 'receipt-85mm'"
+            :class="{
+              'receipt-50mm': selectedPaperSize === '50mm',
+              'receipt-80mm': selectedPaperSize === '85mm' || selectedPaperSize === '80mm',
+              'receipt-a4': selectedPaperSize === 'A4',
+              'receipt-bluetooth': selectedPaperSize === 'Bluetooth'
+            }"
           >
             <!-- Receipt Content -->
             <div v-if="receiptData && template" 
@@ -297,7 +302,7 @@ const emit = defineEmits<{
 
 const templates = ref<ReceiptTemplate[]>([]);
 const selectedTemplate = ref<string>('');
-const selectedPaperSize = ref<'50mm' | '85mm'>('85mm');
+const selectedPaperSize = ref<'50mm' | '85mm' | 'A4' | 'Bluetooth'>('85mm');
 const template = ref<ReceiptTemplate | null>(null);
 const receiptContent = ref<HTMLElement | null>(null);
 const loading = ref(false);
@@ -475,7 +480,10 @@ const handlePrint = () => {
 const printBrowser = async () => {
   if (!receiptContent.value) return;
 
-  const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 'THERMAL_85';
+  // Support multiple paper sizes: 50mm, 80mm, A4, Bluetooth
+  const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 
+                    selectedPaperSize.value === '80mm' ? 'THERMAL_80' :
+                    selectedPaperSize.value === 'A4' ? 'A4' : 'THERMAL_85';
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     await warning('Popup blocker terdeteksi. Silakan izinkan popup untuk mencetak struk.');
@@ -489,21 +497,41 @@ const printBrowser = async () => {
     switch (paperSize) {
       case 'THERMAL_50':
         return '50mm';
+      case 'THERMAL_80':
       case 'THERMAL_85':
-        return '85mm';
+        return '80mm';
+      case 'A4':
+        return 'A4';
       default:
-        return '85mm';
+        return '80mm';
     }
   };
 
   const getMaxWidth = () => {
     switch (paperSize) {
       case 'THERMAL_50':
-        return '50mm';
+        return '48mm'; // Printable area untuk 50mm
+      case 'THERMAL_80':
       case 'THERMAL_85':
-        return '85mm';
+        return '72mm'; // Printable area untuk 80mm
+      case 'A4':
+        return '170mm'; // Dengan margin 20mm
       default:
-        return '85mm';
+        return '72mm';
+    }
+  };
+
+  const getPadding = () => {
+    switch (paperSize) {
+      case 'THERMAL_50':
+        return '2px';
+      case 'THERMAL_80':
+      case 'THERMAL_85':
+        return '4px';
+      case 'A4':
+        return '15mm';
+      default:
+        return '4px';
     }
   };
 
@@ -512,14 +540,39 @@ const printBrowser = async () => {
     if (template.value?.styles?.fontSize) {
       return template.value.styles.fontSize;
     }
-    switch (paperSize) {
-      case 'THERMAL_50':
-        return '9px';
-      case 'THERMAL_85':
-        return '11px';
-      default:
-        return '11px';
-    }
+    
+    // Template-specific defaults
+    const templateType = template.value?.templateType || 'CLASSIC';
+    const templateSizeMap: Record<string, Record<string, string>> = {
+      CLASSIC: {
+        THERMAL_50: '8px',
+        THERMAL_80: '10px',
+        THERMAL_85: '11px',
+        A4: '12px',
+      },
+      MODERN: {
+        THERMAL_50: '8px',
+        THERMAL_80: '10px',
+        THERMAL_85: '11px',
+        A4: '11px',
+      },
+      MINIMAL: {
+        THERMAL_50: '8px',
+        THERMAL_80: '9px',
+        THERMAL_85: '9px',
+        A4: '10px',
+      },
+      PROFESSIONAL: {
+        THERMAL_50: '8px',
+        THERMAL_80: '10px',
+        THERMAL_85: '11px',
+        A4: '11px',
+      },
+    };
+    
+    return templateSizeMap[templateType]?.[paperSize] || 
+           (paperSize === 'THERMAL_50' ? '9px' : 
+            paperSize === 'A4' ? '11px' : '11px');
   };
 
   const getFontFamily = () => {
@@ -529,13 +582,16 @@ const printBrowser = async () => {
     }
     // Fallback to template type default
     const fontMap: Record<string, string> = {
-      DEFAULT: 'Arial, sans-serif',
+      CLASSIC: 'Arial, sans-serif',
       MODERN: 'Inter, sans-serif',
       MINIMAL: 'Courier New, monospace',
+      PROFESSIONAL: 'Arial, sans-serif',
+      // Legacy support
+      DEFAULT: 'Arial, sans-serif',
       DETAILED: 'Arial, sans-serif',
       COMPACT: 'Courier New, monospace',
     };
-    return fontMap[template.value?.templateType || 'DEFAULT'] || 'Courier New, monospace';
+    return fontMap[template.value?.templateType || 'CLASSIC'] || 'Arial, sans-serif';
   };
 
   const printStyles = `
@@ -561,7 +617,7 @@ const printBrowser = async () => {
           max-width: ${getMaxWidth()};
           width: ${getMaxWidth()};
           margin: 0 auto;
-          padding: 8px;
+          padding: ${getPadding()};
         }
         .receipt-content {
           width: 100%;
@@ -653,15 +709,32 @@ onMounted(() => {
 
 /* Responsive styles for different paper sizes */
 .receipt-50mm {
-  max-width: 50mm;
-  width: 50mm;
-  font-size: 9px;
+  max-width: 48mm;
+  width: 48mm;
+  font-size: 8px;
+  padding: 2px;
 }
 
-.receipt-85mm {
-  max-width: 85mm;
-  width: 85mm;
+.receipt-80mm {
+  max-width: 72mm;
+  width: 72mm;
+  font-size: 10px;
+  padding: 4px;
+}
+
+.receipt-a4 {
+  max-width: 170mm;
+  width: 170mm;
   font-size: 11px;
+  padding: 15mm;
+  margin: 0 auto;
+}
+
+.receipt-bluetooth {
+  max-width: 72mm; /* Default to 80mm, can be adjusted by printer */
+  width: 72mm;
+  font-size: 10px;
+  padding: 4px;
 }
 
 .receipt-content {
@@ -669,11 +742,23 @@ onMounted(() => {
 }
 
 .receipt-50mm .receipt-content {
-  font-size: 9px;
+  font-size: 8px;
+  line-height: 1.2;
 }
 
-.receipt-85mm .receipt-content {
+.receipt-80mm .receipt-content {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.receipt-a4 .receipt-content {
   font-size: 11px;
+  line-height: 1.5;
+}
+
+.receipt-bluetooth .receipt-content {
+  font-size: 10px;
+  line-height: 1.3;
 }
 
 @media print {
