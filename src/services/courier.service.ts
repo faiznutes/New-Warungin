@@ -7,6 +7,14 @@
 import logger from '../utils/logger';
 import prisma from '../config/database';
 
+// Declare process for TypeScript
+declare const process: {
+  env: {
+    NODE_ENV?: string;
+    [key: string]: string | undefined;
+  };
+};
+
 export interface CourierConfig {
   courier: 'JNE' | 'JNT' | 'POS';
   apiKey: string;
