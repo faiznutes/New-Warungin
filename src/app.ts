@@ -15,6 +15,7 @@ import apiRoutes from './routes';
 import { initializeSocket } from './socket/socket';
 import { swaggerSpec } from './config/swagger';
 import prisma from './config/database';
+import businessMetricsService from './services/business-metrics.service';
 
 logger.info('Loading Express app...');
 const app: Express = express();
@@ -248,6 +249,29 @@ setImmediate(() => {
       logger.warn('Scheduler import failed (optional service)', { error: error?.message || error });
     }
   });
+});
+
+// Initialize business metrics update
+// Update metrics on startup and then every 5 minutes
+setImmediate(async () => {
+  try {
+    logger.info('Initializing business metrics...');
+    await businessMetricsService.updateAllMetrics();
+    logger.info('Business metrics initialized successfully');
+    
+    // Update metrics every 5 minutes
+    setInterval(async () => {
+      try {
+        await businessMetricsService.updateAllMetrics();
+      } catch (error: any) {
+        logger.error('Error updating business metrics in interval:', error);
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+  } catch (error: any) {
+    logger.warn('Failed to initialize business metrics (non-critical)', {
+      error: error?.message || error,
+    });
+  }
 });
 
 // Handle unhandled promise rejections

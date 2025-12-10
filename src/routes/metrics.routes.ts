@@ -5,6 +5,9 @@
 
 import { Router, Request, Response } from 'express';
 import { register } from '../utils/metrics';
+import businessMetricsService from '../services/business-metrics.service';
+import { authGuard } from '../middlewares/auth';
+import { requireSuperAdmin } from '../middlewares/auth';
 
 const router = Router();
 
@@ -29,6 +32,25 @@ router.get('/', async (req: Request, res: Response) => {
     res.end(metrics);
   } catch (error: any) {
     res.status(500).json({ message: 'Error generating metrics', error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/metrics/refresh:
+ *   post:
+ *     summary: Refresh business metrics
+ *     tags: [Metrics]
+ *     description: Manually trigger update of all business metrics
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post('/refresh', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
+  try {
+    await businessMetricsService.updateAllMetrics();
+    res.json({ message: 'Business metrics refreshed successfully' });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Error refreshing metrics', error: error.message });
   }
 });
 

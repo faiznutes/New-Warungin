@@ -124,6 +124,122 @@ const errorTotal = new client.Counter({
   registers: client ? [register] : [],
 });
 
+// ============================================
+// CUSTOM BUSINESS METRICS
+// ============================================
+
+// Total Revenue Gauge (all tenants)
+const totalRevenue = new client.Gauge({
+  name: 'warungin_revenue_total',
+  help: 'Total revenue across all tenants',
+  labelNames: ['period'], // 'today', 'week', 'month', 'all_time'
+  registers: client ? [register] : [],
+});
+
+// Revenue by Payment Method
+const revenueByPaymentMethod = new client.Gauge({
+  name: 'warungin_revenue_by_payment_method',
+  help: 'Revenue by payment method',
+  labelNames: ['payment_method', 'period'],
+  registers: client ? [register] : [],
+});
+
+// Total Orders Counter
+const totalOrders = new client.Gauge({
+  name: 'warungin_orders_count',
+  help: 'Total number of orders',
+  labelNames: ['status', 'period'], // status: 'pending', 'completed', 'cancelled', period: 'today', 'week', 'month', 'all_time'
+  registers: client ? [register] : [],
+});
+
+// Orders by Tenant
+const ordersByTenant = new client.Gauge({
+  name: 'warungin_orders_by_tenant',
+  help: 'Number of orders per tenant',
+  labelNames: ['tenant_id', 'status'],
+  registers: client ? [register] : [],
+});
+
+// Total Users Gauge
+const totalUsers = new client.Gauge({
+  name: 'warungin_users_total',
+  help: 'Total number of users',
+  labelNames: ['role', 'status'], // role: 'SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', status: 'active', 'inactive'
+  registers: client ? [register] : [],
+});
+
+// Users by Tenant
+const usersByTenant = new client.Gauge({
+  name: 'warungin_users_by_tenant',
+  help: 'Number of users per tenant',
+  labelNames: ['tenant_id', 'role'],
+  registers: client ? [register] : [],
+});
+
+// Total Products Gauge
+const totalProducts = new client.Gauge({
+  name: 'warungin_products_total',
+  help: 'Total number of products',
+  labelNames: ['status'], // 'active', 'inactive', 'out_of_stock'
+  registers: client ? [register] : [],
+});
+
+// Products by Tenant
+const productsByTenant = new client.Gauge({
+  name: 'warungin_products_by_tenant',
+  help: 'Number of products per tenant',
+  labelNames: ['tenant_id', 'status'],
+  registers: client ? [register] : [],
+});
+
+// Low Stock Products Gauge
+const lowStockProducts = new client.Gauge({
+  name: 'warungin_products_low_stock',
+  help: 'Number of products with low stock',
+  labelNames: ['tenant_id'],
+  registers: client ? [register] : [],
+});
+
+// Total Tenants Gauge
+const totalTenants = new client.Gauge({
+  name: 'warungin_tenants_total',
+  help: 'Total number of tenants',
+  labelNames: ['status'], // 'active', 'inactive', 'trial', 'expired'
+  registers: client ? [register] : [],
+});
+
+// Active Subscriptions Gauge
+const activeSubscriptions = new client.Gauge({
+  name: 'warungin_subscriptions_active',
+  help: 'Number of active subscriptions',
+  labelNames: ['plan_type'], // 'BASIC', 'PRO', 'MAX'
+  registers: client ? [register] : [],
+});
+
+// Active Addons Gauge
+const activeAddons = new client.Gauge({
+  name: 'warungin_addons_active',
+  help: 'Number of active addons',
+  labelNames: ['addon_type'], // 'ADD_USERS', 'ADD_OUTLETS', 'ADD_PRODUCTS', etc.
+  registers: client ? [register] : [],
+});
+
+// Average Order Value Gauge
+const averageOrderValue = new client.Gauge({
+  name: 'warungin_orders_average_value',
+  help: 'Average order value',
+  labelNames: ['period'], // 'today', 'week', 'month'
+  registers: client ? [register] : [],
+});
+
+// Customer Count Gauge
+const totalCustomers = new client.Gauge({
+  name: 'warungin_customers_total',
+  help: 'Total number of customers',
+  labelNames: ['tenant_id'],
+  registers: client ? [register] : [],
+});
+
 export {
   register,
   httpRequestDuration,
@@ -136,4 +252,19 @@ export {
   orderCount,
   transactionAmount,
   errorTotal,
+  // Business Metrics
+  totalRevenue,
+  revenueByPaymentMethod,
+  totalOrders,
+  ordersByTenant,
+  totalUsers,
+  usersByTenant,
+  totalProducts,
+  productsByTenant,
+  lowStockProducts,
+  totalTenants,
+  activeSubscriptions,
+  activeAddons,
+  averageOrderValue,
+  totalCustomers,
 };
