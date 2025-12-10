@@ -430,6 +430,14 @@ const needsTenantSelection = computed(() => {
   return authStore.isSuperAdmin && !authStore.selectedTenantId;
 });
 
+// Computed property untuk byDate (didefinisikan sekali untuk digunakan di template dan computed)
+const byDate = computed(() => {
+  if (!reportData.value || !Array.isArray(reportData.value.byDate)) {
+    return [];
+  }
+  return reportData.value.byDate;
+});
+
 const loading = ref(false);
 const reportData = ref<any>(null);
 const analyticsData = ref<any>(null);
