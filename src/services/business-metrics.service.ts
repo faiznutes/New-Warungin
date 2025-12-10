@@ -135,7 +135,7 @@ export class BusinessMetricsService {
       });
 
       ordersToday.forEach((item) => {
-        totalOrders.set({ status: item.status, period: 'today' }, item._count.id);
+        totalOrders.set({ status: item.status, period: 'today' }, item._count?.id || 0);
       });
 
       // Orders by status - week
@@ -146,7 +146,7 @@ export class BusinessMetricsService {
       });
 
       ordersWeek.forEach((item) => {
-        totalOrders.set({ status: item.status, period: 'week' }, item._count.id);
+        totalOrders.set({ status: item.status, period: 'week' }, item._count?.id || 0);
       });
 
       // Orders by status - month
@@ -157,7 +157,7 @@ export class BusinessMetricsService {
       });
 
       ordersMonth.forEach((item) => {
-        totalOrders.set({ status: item.status, period: 'month' }, item._count.id);
+        totalOrders.set({ status: item.status, period: 'month' }, item._count?.id || 0);
       });
 
       // Orders by status - all time
@@ -167,7 +167,7 @@ export class BusinessMetricsService {
       });
 
       ordersAllTime.forEach((item) => {
-        totalOrders.set({ status: item.status, period: 'all_time' }, item._count.id);
+        totalOrders.set({ status: item.status, period: 'all_time' }, item._count?.id || 0);
       });
 
       // Orders by tenant
@@ -179,7 +179,7 @@ export class BusinessMetricsService {
       ordersByTenantData.forEach((item) => {
         ordersByTenant.set(
           { tenant_id: item.tenantId, status: item.status },
-          item._count.id
+          item._count?.id || 0
         );
       });
 
@@ -360,7 +360,7 @@ export class BusinessMetricsService {
       });
 
       addonsByType.forEach((item) => {
-        activeAddons.set({ addon_type: item.addonType }, item._count.id);
+        activeAddons.set({ addon_type: item.addonType }, item._count?.id || 0);
       });
     } catch (error: any) {
       logger.error('Error updating addon metrics:', error);
