@@ -136,12 +136,17 @@ class CourierService {
         };
 
         // Make API call to JNE
-        const response = await axios.post(jneApiUrl, jneRequest, {
-          headers: {
-            'Content-Type': 'application/json',
-            // Add authentication headers as required by JNE
-          },
-        });
+        // TODO: Implement actual JNE API call using fetch
+        // const response = await fetch(jneApiUrl, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     // Add authentication headers as required by JNE
+        //   },
+        //   body: JSON.stringify(jneRequest),
+        // });
+        // const responseData = await response.json();
+        throw new Error('JNE API integration not yet implemented');
 
         // Parse JNE response
         if (response.data && response.data.tracking_number) {
@@ -221,11 +226,16 @@ class CourierService {
           items: request.items,
         };
 
-        const response = await axios.post(jntApiUrl, jntRequest, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // TODO: Implement actual J&T API call using fetch
+        // const response = await fetch(jntApiUrl, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify(jntRequest),
+        // });
+        // const responseData = await response.json();
+        throw new Error('J&T API integration not yet implemented');
 
         if (response.data && response.data.tracking_number) {
           return {
