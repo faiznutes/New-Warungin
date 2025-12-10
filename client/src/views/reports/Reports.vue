@@ -424,16 +424,23 @@ import { safeMap } from '../../utils/array-helpers';
 const authStore = useAuthStore();
 const { showError } = useNotification();
 const { canViewReports, canEditReports, canExportReports } = usePermissions();
+
+// Computed property for tenant selection check
+const needsTenantSelection = computed(() => {
+  return authStore.isSuperAdmin && !authStore.selectedTenantId;
+});
+
 const loading = ref(false);
 const reportData = ref<any>(null);
 const analyticsData = ref<any>(null);
 const reportType = ref('sales');
-const period = ref('all');
+const period = ref('monthly'); // Changed from 'all' to 'monthly' to prevent infinite loading
 const showExportModal = ref(false);
 const reportViewType = ref('full'); // 'full', 'revenue', 'profit'
 const showProductDetails = ref(false);
 const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
+const isLoadingReport = ref(false); // Flag to prevent concurrent loads
 
 // Margin display format (percentage or amount)
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
@@ -530,7 +537,7 @@ const reportRows = computed(() => {
   
   switch (reportType.value) {
     case 'sales':
-      const salesRows = safeMap(byDate, (item: any, index: number) => {
+      const salesRows = safeMap(byDateArray, (item: any, index: number) => {
         // Calculate revenue based on reportViewType
         let revenue = item?.revenue || 0;
         let costOfGoods = 0;
@@ -569,8 +576,8 @@ const reportRows = computed(() => {
       return salesRows;
     case 'financial':
       // If byDate exists, use it; otherwise show summary
-      if (byDate && byDate.length > 0) {
-        return safeMap(byDate, (item: any) => {
+      if (byDateArray && byDateArray.length > 0) {
+        return safeMap(byDateArray, (item: any) => {
           let revenue = item?.revenue || reportData.value?.revenue || 0;
           let costOfGoods = item?.costOfGoods || reportData.value?.costOfGoods || 0;
           let grossProfit = item?.grossProfit || reportData.value?.grossProfit || 0;
@@ -751,6 +758,7 @@ const loadReport = async () => {
     }
   } finally {
     loading.value = false;
+    isLoadingReport.value = false;
   }
 };
 
@@ -831,8 +839,11 @@ onMounted(() => {
     }
   }
   
-  loadReport();
-  loadAnalytics();
+  // Only load if not already loading and tenant is available
+  if (!isLoadingReport.value && !needsTenantSelection.value) {
+    loadReport();
+    loadAnalytics();
+  }
 });
 </script>
 
