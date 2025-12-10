@@ -930,7 +930,8 @@ const isOrderSelected = (orderId: string) => {
 
 const toggleOrderSelection = (order: Order) => {
   if (!Array.isArray(selectedOrders.value)) selectedOrders.value = [];
-  const index = safeFindIndex(selectedOrders.value, (o: any) => o && o.id === order.id);
+  // Use safeFindIndex with proper type checking
+  const index = safeFindIndex<Order>(selectedOrders.value, (o: Order) => o && o.id === order.id);
   if (index > -1) {
     selectedOrders.value.splice(index, 1);
   } else {
