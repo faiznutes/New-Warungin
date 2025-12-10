@@ -9,16 +9,23 @@ interface ExportData {
   startDate: string;
   endDate: string;
   tenantName?: string;
-  template?: 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant';
+  template?: 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant';
   isGlobal?: boolean;
 }
 
 const TEMPLATES = {
-  minimalist: 'Minimalis',
-  modern: 'Modern',
-  classic: 'Klasik',
-  colorful: 'Berwarna',
-  elegant: 'Elegan',
+  // New template names
+  clean: 'Clean & Simple',
+  contemporary: 'Contemporary',
+  vibrant: 'Vibrant',
+  professional: 'Professional',
+  executive: 'Executive',
+  // Legacy support
+  minimalist: 'Clean & Simple',
+  modern: 'Contemporary',
+  classic: 'Contemporary',
+  colorful: 'Vibrant',
+  elegant: 'Professional',
 };
 
 export async function generateFlexboxExport(data: ExportData) {

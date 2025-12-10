@@ -333,7 +333,7 @@ const exportForm = ref({
   startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
   endDate: new Date().toISOString().split('T')[0],
   format: 'PDF' as 'CSV' | 'PDF',
-  template: 'modern' as 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
+  template: 'contemporary' as 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
 });
 
 const getReportTypeLabel = (type: string) => {
@@ -347,16 +347,22 @@ const getReportTypeLabel = (type: string) => {
   return labels[type] || type;
 };
 
-const getTemplateLabel = (template: string) => {
-  const labels: Record<string, string> = {
-    minimalist: 'Minimalis',
-    modern: 'Modern',
-    classic: 'Klasik',
-    colorful: 'Berwarna',
-    elegant: 'Elegan',
+  const getTemplateLabel = (template: string) => {
+    const labels: Record<string, string> = {
+      clean: 'Clean & Simple',
+      contemporary: 'Contemporary',
+      vibrant: 'Vibrant',
+      professional: 'Professional',
+      executive: 'Executive',
+      // Legacy support
+      minimalist: 'Clean & Simple',
+      modern: 'Contemporary',
+      classic: 'Contemporary',
+      colorful: 'Vibrant',
+      elegant: 'Professional',
+    };
+    return labels[template] || template;
   };
-  return labels[template] || template;
-};
 
 const handleExport = async () => {
   exporting.value = true;
