@@ -182,10 +182,6 @@
                     <span class="font-medium">Kembalian:</span>
                     <span class="font-semibold text-green-600">{{ formatCurrency(receiptData.change) }}</span>
                   </div>
-                  <div v-if="receiptData.servedBy" class="flex justify-between text-xs sm:text-sm mt-2 pt-2 border-t border-dashed border-gray-300">
-                    <span class="font-medium">Dilayani oleh:</span>
-                    <span class="font-semibold">{{ receiptData.servedBy }}</span>
-                  </div>
                 </div>
               </div>
 
