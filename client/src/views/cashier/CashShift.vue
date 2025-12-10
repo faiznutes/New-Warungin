@@ -11,15 +11,107 @@
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <!-- No Active Shift - Show Open Shift Form -->
-    <div v-else-if="!currentShift" class="max-w-2xl mx-auto">
+    <!-- No Active Store Shift - Show Open Store Shift Form -->
+    <div v-else-if="!currentStoreShift" class="max-w-2xl mx-auto">
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-2 border-dashed border-gray-300">
         <div class="text-center mb-6">
           <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Shift Aktif</h2>
-          <p class="text-gray-600">Silakan buka shift untuk memulai transaksi</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Shift Toko Aktif</h2>
+          <p class="text-gray-600">Silakan buka shift toko terlebih dahulu untuk memulai transaksi</p>
+        </div>
+
+        <form @submit.prevent="handleOpenStoreShift" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Shift Type <span class="text-red-500">*</span>
+            </label>
+            <select
+              v-model="openStoreShiftForm.shiftType"
+              required
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+            >
+              <option value="">Pilih Shift</option>
+              <option value="pagi">Pagi (06:00 - 12:00)</option>
+              <option value="siang">Siang (12:00 - 18:00)</option>
+              <option value="sore">Sore (18:00 - 24:00)</option>
+              <option value="malam">Malam (00:00 - 06:00)</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Pilih shift yang akan dibuka untuk toko ini</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Modal Awal (Opsional)
+            </label>
+            <input
+              v-model.number="openStoreShiftForm.modalAwal"
+              type="number"
+              step="0.01"
+              min="0"
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+              placeholder="0"
+            />
+            <p class="text-xs text-gray-500 mt-1">Modal awal shift (opsional, bisa diisi saat buka cash shift kasir)</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Catatan (Opsional)
+            </label>
+            <textarea
+              v-model="openStoreShiftForm.catatan"
+              rows="3"
+              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Catatan tambahan..."
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="openingStoreShift || !openStoreShiftForm.shiftType"
+            class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <svg v-if="openingStoreShift" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>{{ openingStoreShift ? 'Membuka Shift...' : 'Buka Shift Toko' }}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Active Store Shift - Show Store Shift Info and Cash Shift Form -->
+    <div v-else-if="currentStoreShift && !currentShift" class="space-y-6">
+      <!-- Store Shift Info Card -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Shift Toko Aktif</h2>
+            <p class="text-sm text-gray-600">
+              Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
+              Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
+              Dibuka oleh: {{ currentStoreShift.opener.name }}
+            </p>
+          </div>
+          <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
+            {{ currentStoreShift.shiftType }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Cash Shift Form -->
+      <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-2 border-dashed border-gray-300">
+        <div class="text-center mb-6">
+          <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Buka Cash Shift</h2>
+          <p class="text-gray-600">Silakan buka cash shift untuk memulai transaksi</p>
         </div>
 
         <form @submit.prevent="handleOpenShift" class="space-y-4">
@@ -60,7 +152,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>{{ openingShift ? 'Membuka Shift...' : 'Buka Shift' }}</span>
+            <span>{{ openingShift ? 'Membuka Shift...' : 'Buka Cash Shift' }}</span>
           </button>
         </form>
       </div>
@@ -68,11 +160,30 @@
 
     <!-- Active Shift - Show Current Shift Info -->
     <div v-else class="space-y-6">
-      <!-- Current Shift Card -->
+      <!-- Store Shift Info Card -->
+      <div v-if="currentStoreShift" class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 mb-1">Shift Toko</h3>
+            <p class="text-sm text-gray-600">
+              Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
+              Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
+              Dibuka oleh: {{ currentStoreShift.opener.name }}
+            </p>
+          </div>
+          <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
+            {{ currentStoreShift.shiftType }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Current Cash Shift Card -->
       <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Shift Aktif</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Cash Shift Aktif</h2>
             <p class="text-sm text-gray-600">
               Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
             </p>
@@ -297,16 +408,26 @@ import { ref, onMounted } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { formatCurrency } from '../../utils/formatters';
+import { useAuthStore } from '../../stores/auth';
 
 const { success: showSuccess, error: showError } = useNotification();
+const authStore = useAuthStore();
 
 const loading = ref(true);
 const currentShift = ref<any>(null);
+const currentStoreShift = ref<any>(null);
 const openingShift = ref(false);
+const openingStoreShift = ref(false);
 const closingShift = ref(false);
 const showCloseModal = ref(false);
 
 const openShiftForm = ref({
+  modalAwal: 0,
+  catatan: '',
+});
+
+const openStoreShiftForm = ref({
+  shiftType: '',
   modalAwal: 0,
   catatan: '',
 });
@@ -324,6 +445,26 @@ const historyPagination = ref({
   total: 0,
   totalPages: 0,
 });
+
+const loadCurrentStoreShift = async () => {
+  try {
+    const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    if (!selectedStoreId) {
+      currentStoreShift.value = null;
+      return;
+    }
+    const response = await api.get('/store-shift/current', {
+      params: { outletId: selectedStoreId },
+    });
+    currentStoreShift.value = response.data.data;
+  } catch (error: any) {
+    if (error.response?.status === 404 || !error.response?.data?.data) {
+      currentStoreShift.value = null;
+    } else {
+      console.error('Error loading current store shift:', error);
+    }
+  }
+};
 
 const loadCurrentShift = async () => {
   try {
@@ -362,6 +503,38 @@ const loadShiftHistory = async () => {
   }
 };
 
+const handleOpenStoreShift = async () => {
+  if (!openStoreShiftForm.value.shiftType) {
+    await showError('Shift type wajib dipilih');
+    return;
+  }
+
+  const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+  if (!selectedStoreId) {
+    await showError('Store belum dipilih');
+    return;
+  }
+
+  openingStoreShift.value = true;
+  try {
+    await api.post('/store-shift/open', {
+      outletId: selectedStoreId,
+      shiftType: openStoreShiftForm.value.shiftType,
+      modalAwal: openStoreShiftForm.value.modalAwal || undefined,
+      catatan: openStoreShiftForm.value.catatan || undefined,
+    });
+
+    await showSuccess(`Shift ${openStoreShiftForm.value.shiftType} berhasil dibuka`);
+    openStoreShiftForm.value = { shiftType: '', modalAwal: 0, catatan: '' };
+    await loadCurrentStoreShift();
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || 'Gagal membuka shift toko';
+    await showError(errorMessage);
+  } finally {
+    openingStoreShift.value = false;
+  }
+};
+
 const handleOpenShift = async () => {
   if (!openShiftForm.value.modalAwal || openShiftForm.value.modalAwal <= 0) {
     await showError('Modal awal harus lebih besar dari 0');
@@ -375,12 +548,12 @@ const handleOpenShift = async () => {
       catatan: openShiftForm.value.catatan || undefined,
     });
 
-    await showSuccess('Shift berhasil dibuka');
+    await showSuccess('Cash shift berhasil dibuka');
     openShiftForm.value = { modalAwal: 0, catatan: '' };
     await loadCurrentShift();
     await loadShiftHistory();
   } catch (error: any) {
-    const errorMessage = error.response?.data?.message || 'Gagal membuka shift';
+    const errorMessage = error.response?.data?.message || 'Gagal membuka cash shift';
     await showError(errorMessage);
   } finally {
     openingShift.value = false;
@@ -444,7 +617,7 @@ const changeHistoryPage = (page: number) => {
 
 onMounted(async () => {
   loading.value = true;
-  await Promise.all([loadCurrentShift(), loadShiftHistory()]);
+  await Promise.all([loadCurrentStoreShift(), loadCurrentShift(), loadShiftHistory()]);
   loading.value = false;
 });
 </script>

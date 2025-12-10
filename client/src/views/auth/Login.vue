@@ -295,6 +295,54 @@ const handleLogin = async () => {
       router.push(redirect);
     } else {
       const userRole = authStore.user?.role;
+      
+      // Check if cashier needs to open shift
+      if (userRole === 'CASHIER') {
+        try {
+          const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+          if (selectedStoreId) {
+            // Check if store shift is open
+            const storeShiftResponse = await api.get('/store-shift/current', {
+              params: { outletId: selectedStoreId },
+            });
+            const storeShift = storeShiftResponse.data.data;
+            
+            if (!storeShift) {
+              // No store shift open, redirect to cash-shift page
+              router.push({ name: 'cash-shift' });
+              return;
+            }
+            
+            // Check if cashier has active cash shift
+            try {
+              const cashShiftResponse = await api.get('/cash-shift/current');
+              const cashShift = cashShiftResponse.data.data;
+              
+              if (!cashShift) {
+                // Store shift is open but cashier hasn't opened cash shift, redirect to cash-shift page
+                router.push({ name: 'cash-shift' });
+                return;
+              }
+            } catch (cashShiftError: any) {
+              // If error, assume no cash shift, redirect to cash-shift page
+              if (cashShiftError.response?.status === 404 || !cashShiftError.response?.data?.data) {
+                router.push({ name: 'cash-shift' });
+                return;
+              }
+            }
+          } else {
+            // No store selected, redirect to cash-shift page to open store shift
+            router.push({ name: 'cash-shift' });
+            return;
+          }
+        } catch (error: any) {
+          // If error checking shift, redirect to cash-shift page
+          console.error('Error checking shift:', error);
+          router.push({ name: 'cash-shift' });
+          return;
+        }
+      }
+      
       if (userRole === 'SUPER_ADMIN') {
         router.push({ name: 'super-dashboard' });
       } else {
