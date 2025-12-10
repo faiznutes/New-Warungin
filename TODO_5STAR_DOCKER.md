@@ -89,11 +89,11 @@
 - [x] Scan images with Trivy (0 high/critical vulns) - *✅ Trivy installed, backend image: 0 HIGH/CRITICAL vulnerabilities*
 
 ### 2.2 Monitoring & Alerting Setup
-**Status:** 🟡 IN PROGRESS (40%)  
+**Status:** 🟡 IN PROGRESS (60%)  
 **Checklist:**
 - [x] Setup Prometheus metrics collection - *Prometheus container created, config file ready*
 - [x] Configure Grafana dashboards (5+) - *Grafana container created, datasource configured*
-- [ ] Create alert rules (CPU >80%, Memory >80%) - *Pending*
+- [x] Create alert rules (CPU >80%, Memory >80%) - *✅ Alert rules created: CPU, Memory, Disk, Container Down, Backend Health, Database Connections, Response Time, Error Rate*
 - [ ] Setup notification channels (Slack/Email) - *Pending*
 - [ ] Create custom business metrics - *Pending*
 
