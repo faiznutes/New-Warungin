@@ -8,26 +8,80 @@ import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import { Decimal } from '@prisma/client/runtime/library';
 
 const router = Router();
 
 const createDiscountSchema = z.object({
-  name: z.string().min(1),
-  discountType: z.enum(['AMOUNT_BASED', 'BUNDLE', 'PRODUCT_BASED', 'QUANTITY_BASED']),
-  discountValue: z.number().positive(),
-  discountValueType: z.enum(['PERCENTAGE', 'FIXED']),
-  minAmount: z.number().optional().nullable(),
-  minQuantity: z.number().int().positive().optional().nullable(),
-  applicableProducts: z.array(z.string()).optional().nullable(),
-  bundleProducts: z.array(z.string()).optional().nullable(),
-  bundleDiscountProduct: z.string().optional().nullable(),
-  applicableTo: z.enum(['ALL', 'MEMBER_ONLY']).optional(),
-  isActive: z.boolean().optional(),
-  startDate: z.string().optional().nullable(),
-  endDate: z.string().optional().nullable(),
-});
+  name: z.string().min(1, 'Nama diskon harus diisi'),
+  discountType: z.enum(['AMOUNT_BASED', 'BUNDLE', 'PRODUCT_BASED', 'QUANTITY_BASED'], {
+    errorMap: () => ({ message: 'Tipe diskon tidak valid' })
+  }),
+  discountValue: z.number({ errorMap: () => ({ message: 'Nilai diskon harus berupa angka' }) })
+    .positive('Nilai diskon harus lebih dari 0'),
+  discountValueType: z.enum(['PERCENTAGE', 'FIXED'], {
+    errorMap: () => ({ message: 'Jenis nilai diskon tidak valid' })
+  }),
+  minAmount: z.union([z.number().nonnegative(), z.null()]).optional(),
+  minQuantity: z.union([z.number().int().positive(), z.null()]).optional(),
+  applicableProducts: z.union([
+    z.array(z.string()).min(1),
+    z.null(),
+    z.literal('')
+  ]).optional().transform(val => {
+    if (!val || val === '' || (Array.isArray(val) && val.length === 0)) {
+      return null;
+    }
+    return Array.isArray(val) ? val : null;
+  }),
+  bundleProducts: z.union([
+    z.array(z.string()).min(1),
+    z.null(),
+    z.literal('')
+  ]).optional().transform(val => {
+    if (!val || val === '' || (Array.isArray(val) && val.length === 0)) {
+      return null;
+    }
+    return Array.isArray(val) ? val : null;
+  }),
+  bundleDiscountProduct: z.union([z.string(), z.null()]).optional(),
+  applicableTo: z.enum(['ALL', 'MEMBER_ONLY']).optional().default('ALL'),
+  isActive: z.boolean().optional().default(true),
+  startDate: z.union([
+    z.string().min(1).transform(str => {
+      // Accept ISO format, datetime-local format (2024-12-11T10:30), or regular date format
+      try {
+        const date = new Date(str);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date');
+        }
+        return date.toISOString();
+      } catch {
+        throw new Error('Tanggal mulai tidak valid');
+      }
+    }),
+    z.null(),
+    z.literal('')
+  ]).optional().transform(val => val === '' ? null : val),
+  endDate: z.union([
+    z.string().min(1).transform(str => {
+      // Accept ISO format, datetime-local format (2024-12-11T10:30), or regular date format
+      try {
+        const date = new Date(str);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date');
+        }
+        return date.toISOString();
+      } catch {
+        throw new Error('Tanggal berakhir tidak valid');
+      }
+    }),
+    z.null(),
+    z.literal('')
+  ]).optional().transform(val => val === '' ? null : val),
+}).strict();
 
-const updateDiscountSchema = createDiscountSchema.partial();
+const updateDiscountSchema = createDiscountSchema.partial().strict();
 
 /**
  * @swagger
@@ -48,7 +102,15 @@ router.get(
       const discounts = await discountService.getDiscounts(tenantId);
       res.json({ data: discounts });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error fetching discounts', {
+        error: error.message,
+        stack: error.stack,
+        tenantId: req.headers['x-tenant-id'] || 'unknown',
+      });
+      res.status(500).json({
+        error: 'SERVER_ERROR',
+        message: error.message || 'Gagal memuat diskon. Silakan coba lagi.',
+      });
     }
   }
 );
@@ -77,12 +139,23 @@ router.get(
       });
 
       if (!discount) {
-        return res.status(404).json({ message: 'Discount not found' });
+        return res.status(404).json({ 
+          error: 'NOT_FOUND',
+          message: 'Diskon tidak ditemukan' 
+        });
       }
 
-      res.json(discount);
+      res.json({ data: discount });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error fetching discount', {
+        error: error.message,
+        stack: error.stack,
+        discountId: req.params.id,
+      });
+      res.status(500).json({
+        error: 'SERVER_ERROR',
+        message: error.message || 'Gagal memuat diskon. Silakan coba lagi.',
+      });
     }
   }
 );
@@ -123,46 +196,68 @@ router.post(
       // Prepare discount data with proper type conversions
       const discountData: any = {
         tenantId,
-        name: req.body.name,
+        name: String(req.body.name).trim(),
         discountType: req.body.discountType,
-        discountValue: Number(req.body.discountValue),
+        discountValue: new Decimal(req.body.discountValue),
         discountValueType: req.body.discountValueType,
         applicableTo: req.body.applicableTo || 'ALL',
-        isActive: req.body.isActive !== undefined ? req.body.isActive : true,
+        isActive: req.body.isActive !== undefined ? Boolean(req.body.isActive) : true,
       };
       
-      // Handle optional fields
+      // Handle minAmount
       if (req.body.minAmount !== undefined && req.body.minAmount !== null) {
-        discountData.minAmount = Number(req.body.minAmount);
+        discountData.minAmount = new Decimal(req.body.minAmount);
       }
       
+      // Handle minQuantity
       if (req.body.minQuantity !== undefined && req.body.minQuantity !== null) {
         discountData.minQuantity = Number(req.body.minQuantity);
       }
       
+      // Handle applicableProducts - null if not provided or empty
       if (req.body.applicableProducts !== undefined) {
         discountData.applicableProducts = Array.isArray(req.body.applicableProducts) && req.body.applicableProducts.length > 0
           ? req.body.applicableProducts
           : null;
       }
       
+      // Handle bundleProducts - null if not provided or empty
       if (req.body.bundleProducts !== undefined) {
         discountData.bundleProducts = Array.isArray(req.body.bundleProducts) && req.body.bundleProducts.length > 0
           ? req.body.bundleProducts
           : null;
       }
       
-      // Only include bundleDiscountProduct if bundleProducts exist
-      if (req.body.bundleDiscountProduct && req.body.bundleDiscountProduct.trim() !== '') {
-        discountData.bundleDiscountProduct = req.body.bundleDiscountProduct;
+      // Handle bundleDiscountProduct - only if bundleProducts exist and product ID is provided
+      if (req.body.bundleDiscountProduct && typeof req.body.bundleDiscountProduct === 'string' && req.body.bundleDiscountProduct.trim() !== '') {
+        discountData.bundleDiscountProduct = req.body.bundleDiscountProduct.trim();
+      } else {
+        discountData.bundleDiscountProduct = null;
       }
       
-      if (req.body.startDate) {
+      // Handle dates
+      if (req.body.startDate && req.body.startDate !== '') {
         discountData.startDate = new Date(req.body.startDate);
       }
       
-      if (req.body.endDate) {
+      if (req.body.endDate && req.body.endDate !== '') {
         discountData.endDate = new Date(req.body.endDate);
+      }
+
+      // Validate: BUNDLE type requires bundleProducts and bundleDiscountProduct
+      if (discountData.discountType === 'BUNDLE') {
+        if (!discountData.bundleProducts || discountData.bundleProducts.length === 0) {
+          return res.status(400).json({
+            error: 'VALIDATION_ERROR',
+            message: 'Bundle discount memerlukan minimal satu produk bundle yang dipilih',
+          });
+        }
+        if (!discountData.bundleDiscountProduct) {
+          return res.status(400).json({
+            error: 'VALIDATION_ERROR',
+            message: 'Bundle discount memerlukan produk yang akan mendapat diskon',
+          });
+        }
       }
 
       const discount = await prisma.discount.create({
@@ -173,7 +268,7 @@ router.post(
       await invalidateAnalyticsCache(tenantId);
 
       logger.info('Discount created successfully', { discountId: discount.id, tenantId });
-      res.status(201).json(discount);
+      res.status(201).json({ data: discount });
     } catch (error: any) {
       logger.error('Error creating discount', {
         error: error.message,
@@ -185,14 +280,22 @@ router.post(
       // Check if it's a Prisma validation error
       if (error.code === 'P2002') {
         return res.status(400).json({ 
+          error: 'VALIDATION_ERROR',
           message: 'Data tidak valid. Field yang diisi mungkin duplikat atau tidak valid.',
-          error: error.message 
+        });
+      }
+      
+      if (error.code === 'P2003') {
+        return res.status(400).json({
+          error: 'VALIDATION_ERROR', 
+          message: 'Field referensi tidak valid. Pastikan tenant ID dan product ID valid.',
         });
       }
       
       res.status(500).json({ 
+        error: 'SERVER_ERROR',
         message: error.message || 'Gagal membuat diskon. Silakan coba lagi.',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
       });
     }
   }
@@ -237,13 +340,13 @@ router.put(
       const updateData: any = {};
       
       if (req.body.name !== undefined) {
-        updateData.name = req.body.name;
+        updateData.name = String(req.body.name).trim();
       }
       if (req.body.discountType !== undefined) {
         updateData.discountType = req.body.discountType;
       }
       if (req.body.discountValue !== undefined) {
-        updateData.discountValue = Number(req.body.discountValue);
+        updateData.discountValue = new Decimal(req.body.discountValue);
       }
       if (req.body.discountValueType !== undefined) {
         updateData.discountValueType = req.body.discountValueType;
@@ -252,12 +355,12 @@ router.put(
         updateData.applicableTo = req.body.applicableTo;
       }
       if (req.body.isActive !== undefined) {
-        updateData.isActive = req.body.isActive;
+        updateData.isActive = Boolean(req.body.isActive);
       }
       
       // Handle optional fields
       if (req.body.minAmount !== undefined) {
-        updateData.minAmount = req.body.minAmount !== null ? Number(req.body.minAmount) : null;
+        updateData.minAmount = req.body.minAmount !== null ? new Decimal(req.body.minAmount) : null;
       }
       
       if (req.body.minQuantity !== undefined) {
@@ -276,21 +379,21 @@ router.put(
           : null;
       }
       
-      // Only include bundleDiscountProduct if provided
+      // Handle bundleDiscountProduct
       if (req.body.bundleDiscountProduct !== undefined) {
-        if (req.body.bundleDiscountProduct && req.body.bundleDiscountProduct.trim() !== '') {
-          updateData.bundleDiscountProduct = req.body.bundleDiscountProduct;
+        if (req.body.bundleDiscountProduct && typeof req.body.bundleDiscountProduct === 'string' && req.body.bundleDiscountProduct.trim() !== '') {
+          updateData.bundleDiscountProduct = req.body.bundleDiscountProduct.trim();
         } else {
           updateData.bundleDiscountProduct = null;
         }
       }
       
       if (req.body.startDate !== undefined) {
-        updateData.startDate = req.body.startDate ? new Date(req.body.startDate) : null;
+        updateData.startDate = req.body.startDate && req.body.startDate !== '' ? new Date(req.body.startDate) : null;
       }
       
       if (req.body.endDate !== undefined) {
-        updateData.endDate = req.body.endDate ? new Date(req.body.endDate) : null;
+        updateData.endDate = req.body.endDate && req.body.endDate !== '' ? new Date(req.body.endDate) : null;
       }
 
       const discount = await prisma.discount.update({
@@ -301,9 +404,35 @@ router.put(
       // Invalidate analytics cache after discount update
       await invalidateAnalyticsCache(tenantId);
 
-      res.json(discount);
+      logger.info('Discount updated successfully', { discountId: discount.id, tenantId });
+      res.json({ data: discount });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error updating discount', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        discountId: req.params.id,
+      });
+
+      if (error.code === 'P2002') {
+        return res.status(400).json({
+          error: 'VALIDATION_ERROR',
+          message: 'Data tidak valid. Field yang diisi mungkin duplikat atau tidak valid.',
+        });
+      }
+
+      if (error.code === 'P2003') {
+        return res.status(400).json({
+          error: 'VALIDATION_ERROR',
+          message: 'Field referensi tidak valid. Pastikan tenant ID dan product ID valid.',
+        });
+      }
+
+      res.status(500).json({
+        error: 'SERVER_ERROR',
+        message: error.message || 'Gagal mengupdate diskon. Silakan coba lagi.',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      });
     }
   }
 );
@@ -349,9 +478,21 @@ router.delete(
       // Invalidate analytics cache after discount deletion
       await invalidateAnalyticsCache(tenantId);
 
-      res.json({ message: 'Discount deleted successfully' });
+      logger.info('Discount deleted successfully', { discountId: req.params.id, tenantId });
+      res.json({ data: { message: 'Discount deleted successfully' } });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error deleting discount', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        discountId: req.params.id,
+      });
+
+      res.status(500).json({
+        error: 'SERVER_ERROR',
+        message: error.message || 'Gagal menghapus diskon. Silakan coba lagi.',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      });
     }
   }
 );
