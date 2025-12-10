@@ -225,16 +225,16 @@ export class BusinessMetricsService {
    */
   private async updateUserMetrics() {
     try {
-      // Users by role and status
+      // Users by role and active status
       const usersByRoleStatus = await prisma.user.groupBy({
-        by: ['role', 'status'],
+        by: ['role', 'isActive'],
         _count: { id: true },
       });
 
       usersByRoleStatus.forEach((item) => {
         totalUsers.set(
-          { role: item.role, status: item.status || 'active' },
-          item._count.id
+          { role: item.role, status: item.isActive ? 'active' : 'inactive' },
+          item._count?.id || 0
         );
       });
 
@@ -248,7 +248,7 @@ export class BusinessMetricsService {
       usersByTenantData.forEach((item) => {
         usersByTenant.set(
           { tenant_id: item.tenantId || 'unknown', role: item.role },
-          item._count.id
+          item._count?.id || 0
         );
       });
     } catch (error: any) {
