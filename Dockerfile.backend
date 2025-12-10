@@ -29,10 +29,8 @@ RUN npx prisma generate
 # Build TypeScript
 RUN npm run build
 
-# Remove source files and dev dependencies to reduce size
-RUN rm -rf src tsconfig.json node_modules && \
-    npm install --omit=dev --legacy-peer-deps && \
-    npm cache clean --force
+# Clean npm cache after build
+RUN npm cache clean --force
 
 # Production stage
 FROM node:18-alpine
@@ -40,20 +38,22 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Install only runtime dependencies (dumb-init, wget, docker-cli)
-# Remove build dependencies after install to reduce size
-RUN apk add --no-cache --virtual .runtime-deps dumb-init wget docker-cli && \
-    apk del --purge .runtime-deps 2>/dev/null || true
+RUN apk add --no-cache dumb-init wget docker-cli
 
-# Copy package files and install production dependencies from builder
-COPY --from=backend-builder /app/package*.json ./
-COPY --from=backend-builder /app/node_modules ./node_modules
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only and clean cache immediately
+RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
+    npm cache clean --force && \
+    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
+
+# Copy built files from builder stage
 COPY --from=backend-builder /app/dist ./dist
 COPY --from=backend-builder /app/prisma ./prisma
 COPY --from=backend-builder /app/scripts ./scripts
-
-# Clean npm cache and temporary files
-RUN npm cache clean --force && \
-    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
+COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=backend-builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy only necessary startup script
 COPY scripts/docker-startup.sh /app/scripts/docker-startup.sh
