@@ -319,9 +319,30 @@ Saat ini ada 4 template:
 - ✅ Semua components updated (ReportExportModal, TenantReportExportModal, GlobalReportExportModal)
 - ✅ Executive template baru ditambahkan
 
-### Next Phase: Manual Testing Required
-- Test receipt printing untuk semua ukuran kertas
-- Test report export untuk semua format
-- Verify informasi lengkap di receipt
-- Test responsive design di berbagai device
+### Next Phase: Manual Testing Required (16 Tasks)
+**Status**: ⏳ PENDING - Requires physical printer and real data testing
+
+#### Receipt Testing (8 tasks)
+- [ ] Test print untuk thermal 50mm (4 templates: CLASSIC, MODERN, MINIMAL, PROFESSIONAL)
+- [ ] Test print untuk thermal 80mm (4 templates)
+- [ ] Test print untuk A4 (4 templates)
+- [ ] Test print untuk Bluetooth printer
+- [ ] Test dengan data real (order dengan shift dan kasir)
+- [ ] Test dengan berbagai jumlah items
+- [ ] Test dengan diskon dan tanpa diskon
+- [ ] Verify semua informasi wajib muncul (logo/nama toko, tanggal, nomor nota, shift, kasir, produk, total, terima kasih)
+
+#### Report Testing (7 tasks)
+- [ ] Test export PDF untuk semua template (Clean, Contemporary, Vibrant, Professional, Executive)
+- [ ] Test export Excel untuk semua template
+- [ ] Test export CSV untuk semua template
+- [ ] Test print preview untuk semua template
+- [ ] Test dengan data real
+- [ ] Test responsive design di berbagai device
+- [ ] Verify semua informasi lengkap muncul
+
+#### Cross-Browser Testing (1 task)
+- [ ] Test di berbagai browser (Chrome, Firefox, Safari, Edge)
+
+**Note**: Semua testing tasks memerlukan akses ke printer fisik dan data real, tidak dapat diotomatisasi. Lihat `docs/RECEIPT_REDESIGN_PENDING_TASKS.md` untuk detail lengkap.
 
