@@ -811,45 +811,67 @@ const saveDiscount = async () => {
       }
     }
     
-    // Prepare data object, ensuring correct types
+    // Prepare data object, ensuring correct types and no undefined fields
     const data: any = {
-      name: discountForm.value.name,
+      name: String(discountForm.value.name).trim(),
       discountType: discountForm.value.discountType,
       discountValue: Number(discountForm.value.discountValue),
       discountValueType: discountForm.value.discountValueType,
       applicableTo: discountForm.value.applicableTo || 'ALL',
-      isActive: discountForm.value.isActive !== undefined ? discountForm.value.isActive : true,
-      applicableProducts: applicableProductsData,
-      bundleProducts: bundleProductsData,
+      isActive: discountForm.value.isActive !== undefined ? Boolean(discountForm.value.isActive) : true,
     };
+    
+    // Handle applicableProducts - send null if empty array or undefined
+    if (applicableProductsData !== undefined) {
+      data.applicableProducts = Array.isArray(applicableProductsData) && applicableProductsData.length > 0
+        ? applicableProductsData
+        : null;
+    }
+    
+    // Handle bundleProducts - send null if empty array or undefined
+    if (bundleProductsData !== undefined) {
+      data.bundleProducts = Array.isArray(bundleProductsData) && bundleProductsData.length > 0
+        ? bundleProductsData
+        : null;
+    }
     
     // Only include bundleDiscountProduct if bundleProducts exist and not empty
     if (discountForm.value.discountType === 'BUNDLE' && bundleProductsData && bundleProductsData.length > 0) {
       if (discountForm.value.bundleDiscountProduct && discountForm.value.bundleDiscountProduct.trim() !== '') {
-        data.bundleDiscountProduct = discountForm.value.bundleDiscountProduct;
+        data.bundleDiscountProduct = discountForm.value.bundleDiscountProduct.trim();
       } else {
-        // Don't include the field if empty
         data.bundleDiscountProduct = null;
       }
     }
     
-    // Include minAmount only if provided and valid
-    if (discountForm.value.minAmount !== undefined && discountForm.value.minAmount !== null) {
-      data.minAmount = Number(discountForm.value.minAmount);
+    // Include minAmount only if provided and valid (not undefined, can be null)
+    if (discountForm.value.minAmount !== undefined) {
+      if (discountForm.value.minAmount !== null && discountForm.value.minAmount !== '') {
+        data.minAmount = Number(discountForm.value.minAmount);
+      } else {
+        data.minAmount = null;
+      }
     }
     
-    // Include minQuantity only if provided and valid
-    if (discountForm.value.minQuantity !== undefined && discountForm.value.minQuantity !== null) {
-      data.minQuantity = Number(discountForm.value.minQuantity);
+    // Include minQuantity only if provided and valid (not undefined, can be null)
+    if (discountForm.value.minQuantity !== undefined) {
+      if (discountForm.value.minQuantity !== null && discountForm.value.minQuantity !== '') {
+        data.minQuantity = Number(discountForm.value.minQuantity);
+      } else {
+        data.minQuantity = null;
+      }
     }
     
-    // Include dates only if provided
-    if (discountForm.value.startDate) {
-      data.startDate = discountForm.value.startDate;
+    // Include dates only if provided (can be null)
+    if (discountForm.value.startDate !== undefined) {
+      data.startDate = discountForm.value.startDate || null;
     }
-    if (discountForm.value.endDate) {
-      data.endDate = discountForm.value.endDate;
+    if (discountForm.value.endDate !== undefined) {
+      data.endDate = discountForm.value.endDate || null;
     }
+
+    // Log data before sending
+    console.log('Sending discount data:', JSON.stringify(data, null, 2));
 
     if (editingDiscount.value) {
       await api.put(`/discounts/${editingDiscount.value.id}`, data);
@@ -863,7 +885,23 @@ const saveDiscount = async () => {
     await loadDiscounts();
   } catch (error: any) {
     console.error('Error saving discount:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan diskon');
+    console.error('Error response:', error.response?.data);
+    
+    // Show detailed error message
+    let errorMessage = 'Gagal menyimpan diskon';
+    if (error.response?.data) {
+      if (error.response.data.errors && Array.isArray(error.response.data.errors)) {
+        // Show validation errors
+        const errorDetails = error.response.data.errors
+          .map((err: any) => `${err.path}: ${err.message}`)
+          .join('\n');
+        errorMessage = `Data tidak valid:\n${errorDetails}`;
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+    
+    await showError(errorMessage);
   }
 };
 

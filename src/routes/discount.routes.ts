@@ -111,6 +111,15 @@ router.post(
         return res.status(403).json({ message: 'Forbidden: Only admin can create discounts' });
       }
 
+      // Log received data for debugging
+      logger.info('Creating discount', {
+        tenantId,
+        discountType: req.body.discountType,
+        hasApplicableProducts: !!req.body.applicableProducts,
+        hasBundleProducts: !!req.body.bundleProducts,
+        hasBundleDiscountProduct: !!req.body.bundleDiscountProduct,
+      });
+
       // Prepare discount data with proper type conversions
       const discountData: any = {
         tenantId,
@@ -163,9 +172,28 @@ router.post(
       // Invalidate analytics cache after discount creation
       await invalidateAnalyticsCache(tenantId);
 
+      logger.info('Discount created successfully', { discountId: discount.id, tenantId });
       res.status(201).json(discount);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      logger.error('Error creating discount', {
+        error: error.message,
+        stack: error.stack,
+        tenantId,
+        body: req.body,
+      });
+      
+      // Check if it's a Prisma validation error
+      if (error.code === 'P2002') {
+        return res.status(400).json({ 
+          message: 'Data tidak valid. Field yang diisi mungkin duplikat atau tidak valid.',
+          error: error.message 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: error.message || 'Gagal membuat diskon. Silakan coba lagi.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
   }
 );
