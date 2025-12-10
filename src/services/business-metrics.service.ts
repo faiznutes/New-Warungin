@@ -261,26 +261,26 @@ export class BusinessMetricsService {
    */
   private async updateProductMetrics() {
     try {
-      // Products by status
+      // Products by active status
       const productsByStatus = await prisma.product.groupBy({
-        by: ['status'],
+        by: ['isActive'],
         _count: { id: true },
       });
 
       productsByStatus.forEach((item) => {
-        totalProducts.set({ status: item.status || 'active' }, item._count.id);
+        totalProducts.set({ status: item.isActive ? 'active' : 'inactive' }, item._count?.id || 0);
       });
 
-      // Products by tenant and status
+      // Products by tenant and active status
       const productsByTenantData = await prisma.product.groupBy({
-        by: ['tenantId', 'status'],
+        by: ['tenantId', 'isActive'],
         _count: { id: true },
       });
 
       productsByTenantData.forEach((item) => {
         productsByTenant.set(
-          { tenant_id: item.tenantId, status: item.status || 'active' },
-          item._count.id
+          { tenant_id: item.tenantId, status: item.isActive ? 'active' : 'inactive' },
+          item._count?.id || 0
         );
       });
 
@@ -289,13 +289,13 @@ export class BusinessMetricsService {
         by: ['tenantId'],
         where: {
           stock: { lt: 10 },
-          status: 'active',
+          isActive: true,
         },
         _count: { id: true },
       });
 
       lowStockData.forEach((item) => {
-        lowStockProducts.set({ tenant_id: item.tenantId }, item._count.id);
+        lowStockProducts.set({ tenant_id: item.tenantId }, item._count?.id || 0);
       });
     } catch (error: any) {
       logger.error('Error updating product metrics:', error);
@@ -307,14 +307,14 @@ export class BusinessMetricsService {
    */
   private async updateTenantMetrics() {
     try {
-      // Tenants by status
+      // Tenants by active status
       const tenantsByStatus = await prisma.tenant.groupBy({
-        by: ['status'],
+        by: ['isActive'],
         _count: { id: true },
       });
 
       tenantsByStatus.forEach((item) => {
-        totalTenants.set({ status: item.status || 'active' }, item._count.id);
+        totalTenants.set({ status: item.isActive ? 'active' : 'inactive' }, item._count?.id || 0);
       });
     } catch (error: any) {
       logger.error('Error updating tenant metrics:', error);
@@ -328,16 +328,16 @@ export class BusinessMetricsService {
     try {
       // Active subscriptions by plan
       const subscriptionsByPlan = await prisma.subscription.groupBy({
-        by: ['planType'],
+        by: ['plan'],
         where: {
           status: 'ACTIVE',
-          expiresAt: { gte: new Date() },
+          endDate: { gte: new Date() },
         },
         _count: { id: true },
       });
 
       subscriptionsByPlan.forEach((item) => {
-        activeSubscriptions.set({ plan_type: item.planType }, item._count.id);
+        activeSubscriptions.set({ plan_type: item.plan }, item._count?.id || 0);
       });
     } catch (error: any) {
       logger.error('Error updating subscription metrics:', error);
@@ -379,7 +379,7 @@ export class BusinessMetricsService {
       });
 
       customersByTenant.forEach((item) => {
-        totalCustomers.set({ tenant_id: item.tenantId }, item._count.id);
+        totalCustomers.set({ tenant_id: item.tenantId }, item._count?.id || 0);
       });
     } catch (error: any) {
       logger.error('Error updating customer metrics:', error);
