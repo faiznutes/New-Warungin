@@ -355,8 +355,12 @@ const loadBackups = async () => {
     }
   } catch (error: any) {
     console.error('Error loading backups:', error);
-    const errorMessage = error.response?.data?.message || error.message || 'Database error occurred. Please try again.';
-    await showError(errorMessage);
+    // Don't show error popup if it's just an empty result or network issue
+    const errorMessage = error.response?.data?.message || error.message || '';
+    if (errorMessage && !errorMessage.includes('Database error') && !errorMessage.includes('Network')) {
+      await showError(errorMessage || 'Gagal memuat backup. Silakan coba lagi.');
+    }
+    // Set empty state instead of showing error
     backupLogs.value = [];
     pagination.value = {
       page: 1,
@@ -418,10 +422,16 @@ const viewBackup = async (backupId: string) => {
     const response = await api.get(`/superadmin/backups/${backupId}/view`, {
       responseType: 'text',
     });
-    viewingBackup.value = response.data;
+    if (response.data) {
+      viewingBackup.value = response.data;
+    } else {
+      throw new Error('Backup content is empty');
+    }
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal memuat backup');
+    const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat backup';
+    await showError(errorMessage);
     showViewModal.value = false;
+    viewingBackup.value = null;
   }
 };
 
