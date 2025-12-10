@@ -828,7 +828,26 @@ const updateStatus = async (id: string, status: string) => {
     await loadOrders(pagination.value.page);
     await showSuccess('Status pesanan berhasil diupdate');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal mengupdate status');
+    console.error('Error updating order status:', error);
+    let errorMessage = 'Gagal mengupdate status';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 404) {
+        errorMessage = 'Pesanan tidak ditemukan';
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk mengupdate status pesanan';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Status pesanan tidak valid';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -842,7 +861,26 @@ const sendToKitchen = async (id: string) => {
     await loadOrders(pagination.value.page);
     await showSuccess('Pesanan berhasil dikirim ke dapur');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal mengirim ke dapur');
+    console.error('Error sending order to kitchen:', error);
+    let errorMessage = 'Gagal mengirim ke dapur';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 404) {
+        errorMessage = 'Pesanan tidak ditemukan';
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk mengirim pesanan ke dapur';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Pesanan tidak dapat dikirim ke dapur';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -876,7 +914,26 @@ const cancelOrder = async (id: string) => {
     }
     await showSuccess('Pesanan berhasil dibatalkan');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal membatalkan pesanan');
+    console.error('Error cancelling order:', error);
+    let errorMessage = 'Gagal membatalkan pesanan';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 404) {
+        errorMessage = 'Pesanan tidak ditemukan';
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk membatalkan pesanan';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Pesanan tidak dapat dibatalkan';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -892,7 +949,26 @@ const refundOrder = async (id: string) => {
     }
     await showSuccess('Pesanan berhasil direfund');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal melakukan refund');
+    console.error('Error refunding order:', error);
+    let errorMessage = 'Gagal melakukan refund';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 404) {
+        errorMessage = 'Pesanan tidak ditemukan';
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk melakukan refund';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Pesanan tidak dapat direfund. Pastikan status pesanan adalah COMPLETED.';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -908,7 +984,27 @@ const deleteOrder = async (id: string) => {
     }
     await showSuccess('Pesanan berhasil dihapus');
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus pesanan');
+    console.error('Error deleting order:', error);
+    let errorMessage = 'Gagal menghapus pesanan';
+    
+    if (error.response) {
+      // Backend returned an error response
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 404) {
+        errorMessage = 'Pesanan tidak ditemukan';
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk menghapus pesanan ini';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Pesanan tidak dapat dihapus. Pastikan status pesanan adalah CANCELLED atau REFUNDED.';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -966,13 +1062,31 @@ const bulkDelete = async () => {
       await showSuccess(`${response.data.deleted} pesanan berhasil dihapus`);
     }
     if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal dihapus. ${response.data.errors.join(', ')}`);
+      const errorDetails = response.data.errors?.join(', ') || 'Beberapa pesanan gagal dihapus';
+      await showError(`${response.data.failed} pesanan gagal dihapus. ${errorDetails}`);
     }
     
     selectedOrders.value = [];
     await loadOrders(pagination.value.page);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus pesanan');
+    console.error('Error bulk deleting orders:', error);
+    let errorMessage = 'Gagal menghapus pesanan';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk menghapus pesanan';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Beberapa pesanan tidak dapat dihapus. Pastikan status pesanan adalah CANCELLED atau REFUNDED.';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 
@@ -993,13 +1107,31 @@ const bulkRefund = async () => {
       await showSuccess(`${response.data.refunded} pesanan berhasil direfund`);
     }
     if (response.data.failed > 0) {
-      await showError(`${response.data.failed} pesanan gagal direfund. ${response.data.errors.join(', ')}`);
+      const errorDetails = response.data.errors?.join(', ') || 'Beberapa pesanan gagal direfund';
+      await showError(`${response.data.failed} pesanan gagal direfund. ${errorDetails}`);
     }
     
     selectedOrders.value = [];
     await loadOrders(pagination.value.page);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal melakukan refund');
+    console.error('Error bulk refunding orders:', error);
+    let errorMessage = 'Gagal melakukan refund';
+    
+    if (error.response) {
+      if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = `Error: ${error.response.data.error}`;
+      } else if (error.response.status === 403) {
+        errorMessage = 'Anda tidak memiliki izin untuk melakukan refund';
+      } else if (error.response.status === 400) {
+        errorMessage = error.response.data?.message || 'Beberapa pesanan tidak dapat direfund. Pastikan status pesanan adalah COMPLETED.';
+      }
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    await showError(errorMessage);
   }
 };
 

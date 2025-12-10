@@ -468,13 +468,30 @@ router.delete(
       
       // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can delete orders' });
+        return res.status(403).json({ 
+          error: 'FORBIDDEN',
+          message: 'Hanya admin yang dapat menghapus pesanan' 
+        });
       }
 
       await orderService.deleteOrder(req.params.id, tenantId);
       res.status(204).send();
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+      const err = error as Error;
+      // Check if it's a known business logic error
+      if (err.message?.includes('cannot be deleted') || err.message?.includes('Status must be')) {
+        return res.status(400).json({
+          error: 'INVALID_STATUS',
+          message: err.message
+        });
+      }
+      if (err.message?.includes('not found')) {
+        return res.status(404).json({
+          error: 'NOT_FOUND',
+          message: err.message
+        });
+      }
+      handleRouteError(res, error, 'Gagal menghapus pesanan', 'DELETE_ORDER');
     }
   }
 );
