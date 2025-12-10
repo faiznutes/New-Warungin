@@ -240,16 +240,15 @@ class CourierService {
         };
         const response = mockResponse;
 
-        if (response.data && response.data.tracking_number) {
+        // Parse J&T response (mock response uses camelCase)
+        if (response.data && response.data.trackingNumber) {
           return {
-            trackingNumber: response.data.tracking_number,
-            courier: 'JNT',
-            status: 'CREATED',
-            estimatedDelivery: response.data.estimated_delivery 
-              ? new Date(response.data.estimated_delivery) 
-              : undefined,
+            trackingNumber: response.data.trackingNumber,
+            courier: response.data.courier || 'JNT',
+            status: response.data.status || 'CREATED',
+            estimatedDelivery: response.data.estimatedDelivery,
             cost: response.data.cost,
-            airwayBill: response.data.airway_bill || response.data.tracking_number,
+            airwayBill: response.data.airwayBill || response.data.trackingNumber,
           };
         } else {
           throw new Error('Invalid J&T API response');
