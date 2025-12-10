@@ -13,61 +13,49 @@ RUN npm config set fetch-timeout 300000 && \
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-# Skip npm ci (causing issues), use npm install directly with retry logic
-RUN npm install --legacy-peer-deps || \
-    (echo "First attempt failed, retrying..." && sleep 10 && npm install --legacy-peer-deps) || \
-    (echo "Second attempt failed, retrying..." && sleep 20 && npm install --legacy-peer-deps) || \
-    (echo "Third attempt, using npm install without legacy-peer-deps..." && sleep 30 && npm install)
+# Install dependencies and clean cache
+RUN npm install --legacy-peer-deps && \
+    npm cache clean --force
 
 # Copy source code
 COPY src ./src
 COPY prisma ./prisma
 # Exclude prisma.config.ts from build (it's only for Prisma CLI, not for TypeScript compilation)
 RUN rm -f prisma/prisma.config.ts || true
-COPY scripts ./scripts
 
-# Generate Prisma client with retry logic
-RUN npx prisma generate || \
-    (sleep 10 && npx prisma generate) || \
-    (sleep 20 && npx prisma generate) || \
-    (npm cache clean --force && npx prisma generate)
+# Generate Prisma client
+RUN npx prisma generate
 
 # Build TypeScript
 RUN npm run build
+
+# Remove source files and dev dependencies to reduce size
+RUN rm -rf src tsconfig.json node_modules && \
+    npm install --omit=dev --legacy-peer-deps && \
+    npm cache clean --force
 
 # Production stage
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Configure npm for better network handling
-RUN npm config set fetch-timeout 300000 && \
-    npm config set fetch-retries 5 && \
-    npm config set fetch-retry-mintimeout 20000 && \
-    npm config set fetch-retry-maxtimeout 120000
+# Install only runtime dependencies (dumb-init, wget, docker-cli)
+# Remove build dependencies after install to reduce size
+RUN apk add --no-cache --virtual .runtime-deps dumb-init wget docker-cli && \
+    apk del --purge .runtime-deps 2>/dev/null || true
 
-# Install dumb-init, wget, and docker-cli for Docker API access
-RUN apk add --no-cache dumb-init wget docker-cli
-
-# Copy package files
-COPY package*.json ./
-
-# Install production dependencies only
-# Skip npm ci, use npm install directly with retry logic
-RUN npm install --omit=dev --legacy-peer-deps || \
-    (echo "First attempt failed, retrying..." && sleep 10 && npm install --omit=dev --legacy-peer-deps) || \
-    (echo "Second attempt failed, retrying..." && sleep 20 && npm install --omit=dev --legacy-peer-deps) || \
-    (echo "Third attempt, using npm install without legacy-peer-deps..." && sleep 30 && npm install --omit=dev)
-
-# Copy built files
+# Copy package files and install production dependencies from builder
+COPY --from=backend-builder /app/package*.json ./
+COPY --from=backend-builder /app/node_modules ./node_modules
 COPY --from=backend-builder /app/dist ./dist
 COPY --from=backend-builder /app/prisma ./prisma
 COPY --from=backend-builder /app/scripts ./scripts
-COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=backend-builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy startup script and make it executable
+# Clean npm cache and temporary files
+RUN npm cache clean --force && \
+    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
+
+# Copy only necessary startup script
 COPY scripts/docker-startup.sh /app/scripts/docker-startup.sh
 RUN chmod +x /app/scripts/docker-startup.sh
 
@@ -75,14 +63,14 @@ RUN chmod +x /app/scripts/docker-startup.sh
 RUN mkdir -p /app/logs
 
 # Create non-root user and add to docker group (for Docker socket access)
-# Docker group typically has GID 999 on most systems
 RUN addgroup -g 999 docker 2>/dev/null || true && \
     addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 -G docker || \
     (adduser -S nodejs -u 1001 && addgroup docker 2>/dev/null && adduser nodejs docker 2>/dev/null || true)
 
-# Change ownership
-RUN chown -R nodejs:nodejs /app
+# Change ownership and remove unnecessary files
+RUN chown -R nodejs:nodejs /app && \
+    rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
 
 USER nodejs
 
