@@ -164,6 +164,7 @@ model ProductAdjustment {
   tenantId  String
   productId String
   userId    String   // User who made the adjustment
+  storeShiftId String? // Link ke StoreShift (shift global toko)
   type      String   // INCREASE, DECREASE
   quantity  Int      // Amount adjusted
   reason    String   // Reason for adjustment
@@ -175,10 +176,12 @@ model ProductAdjustment {
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id])
+  storeShift StoreShift? @relation(fields: [storeShiftId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([tenantId, productId])
   @@index([tenantId, createdAt])
+  @@index([tenantId, storeShiftId])
   @@map("product_adjustments")
 }
 
@@ -872,6 +875,7 @@ model StockTransfer {
   fromOutletId  String
   toOutletId    String
   transferNumber String  @unique
+  storeShiftId  String? // Link ke StoreShift (shift global toko)
   status        String   @default("PENDING") // PENDING, IN_TRANSIT, COMPLETED, CANCELLED
   transferDate  DateTime @default(now())
   receivedDate  DateTime?
@@ -883,12 +887,14 @@ model StockTransfer {
 
   // Relations
   tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  storeShift    StoreShift?      @relation(fields: [storeShiftId], references: [id], onDelete: SetNull)
   items         StockTransferItem[]
 
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([tenantId, fromOutletId])
   @@index([tenantId, toOutletId])
+  @@index([tenantId, storeShiftId])
   @@index([transferNumber])
   @@map("stock_transfers")
 }
@@ -1231,6 +1237,8 @@ model StoreShift {
   opener  User   @relation("StoreShiftOpener", fields: [openedBy], references: [id], onDelete: Cascade)
   orders  Order[] // Orders dalam shift ini
   cashShifts CashShift[] // Cash shifts kasir dalam shift ini
+  productAdjustments ProductAdjustment[] // Product adjustments dalam shift ini
+  stockTransfers StockTransfer[] // Stock transfers dalam shift ini
 
   @@index([tenantId])
   @@index([outletId])
