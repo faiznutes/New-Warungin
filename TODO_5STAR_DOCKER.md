@@ -95,7 +95,7 @@
 - [x] Configure Grafana dashboards (5+) - *Grafana container created, datasource configured*
 - [x] Create alert rules (CPU >80%, Memory >80%) - *✅ Alert rules created: CPU, Memory, Disk, Container Down, Backend Health, Database Connections, Response Time, Error Rate*
 - [ ] Setup notification channels (Slack/Email) - *Pending*
-- [ ] Create custom business metrics - *Pending*
+- [x] Create custom business metrics - *✅ Business metrics created: Orders, Revenue, Users, Products, Tenants, Subscriptions, Addons, Customers. Metrics update automatically every 5 minutes. Manual refresh endpoint: POST /api/metrics/refresh*
 
 ### 2.3 Centralized Logging
 **Status:** ✅ COMPLETED (100%)  
