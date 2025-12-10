@@ -482,8 +482,9 @@ const printBrowser = async () => {
 
   // Support multiple paper sizes: 50mm, 80mm, A4, Bluetooth
   const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 
-                    selectedPaperSize.value === '80mm' ? 'THERMAL_80' :
-                    selectedPaperSize.value === 'A4' ? 'A4' : 'THERMAL_85';
+                    selectedPaperSize.value === '80mm' || selectedPaperSize.value === '85mm' ? 'THERMAL_80' :
+                    selectedPaperSize.value === 'A4' ? 'A4' :
+                    selectedPaperSize.value === 'Bluetooth' ? 'THERMAL_80' : 'THERMAL_85'; // Bluetooth default to 80mm
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     await warning('Popup blocker terdeteksi. Silakan izinkan popup untuk mencetak struk.');
@@ -503,7 +504,7 @@ const printBrowser = async () => {
       case 'A4':
         return 'A4';
       default:
-        return '80mm';
+        return '80mm'; // Default untuk Bluetooth dan lainnya
     }
   };
 
@@ -570,9 +571,14 @@ const printBrowser = async () => {
       },
     };
     
-    return templateSizeMap[templateType]?.[paperSize] || 
-           (paperSize === 'THERMAL_50' ? '9px' : 
-            paperSize === 'A4' ? '11px' : '11px');
+    // Handle Bluetooth (defaults to THERMAL_80)
+    const effectivePaperSize = (paperSize === 'THERMAL_85' && selectedPaperSize.value === 'Bluetooth') 
+      ? 'THERMAL_80' 
+      : paperSize;
+    
+    return templateSizeMap[templateType]?.[effectivePaperSize] || 
+           (effectivePaperSize === 'THERMAL_50' ? '9px' : 
+            effectivePaperSize === 'A4' ? '11px' : '10px');
   };
 
   const getFontFamily = () => {
