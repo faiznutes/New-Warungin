@@ -183,64 +183,114 @@
               </select>
             </div>
 
-            <!-- Product Selection Type (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED) -->
-            <div v-if="discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Pilihan Produk</label>
-              <select
-                v-model="productSelectionType"
-                @change="handleProductSelectionTypeChange"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="ALL">Semua Produk</option>
-                <option value="CATEGORY">Berdasarkan Kategori</option>
-                <option value="PRODUCTS">Pilih Produk Tertentu</option>
-              </select>
-            </div>
-
-            <!-- Category Selection (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED with CATEGORY) -->
-            <div v-if="(discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED') && productSelectionType === 'CATEGORY'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Kategori</label>
-              <select
-                v-model="selectedCategory"
-                @change="handleCategoryChange"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Pilih Kategori</option>
-                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-            </div>
-
-            <!-- Product Selection with Checkbox (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED with PRODUCTS) -->
-            <div v-if="(discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED') && productSelectionType === 'PRODUCTS'">
+            <!-- Product Selection for BUNDLE - Direct Popup -->
+            <div v-if="discountForm.discountType === 'BUNDLE'">
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                {{ discountForm.discountType === 'BUNDLE' ? 'Pilih Produk untuk Bundle (Checkbox)' : 'Pilih Produk (Checkbox)' }}
+                Pilih Produk untuk Bundle <span class="text-red-500">*</span>
               </label>
-              <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
-                <div v-if="loadingProducts" class="text-center py-4 text-gray-500">Memuat produk...</div>
-                <div v-else-if="availableProducts.length === 0" class="text-center py-4 text-gray-500">Tidak ada produk tersedia</div>
-                <div v-else class="space-y-2">
-                  <label
-                    v-for="product in availableProducts"
-                    :key="product.id"
-                    class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+              <button
+                type="button"
+                @click="showProductSelector = true; productSelectorType = 'BUNDLE'"
+                class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+              >
+                <span class="text-sm text-gray-700">
+                  <span v-if="discountForm.bundleProducts.length === 0" class="text-gray-400">
+                    Klik untuk memilih produk bundle
+                  </span>
+                  <span v-else>
+                    {{ discountForm.bundleProducts.length }} produk dipilih
+                  </span>
+                </span>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <p class="mt-1 text-xs text-gray-500">
+                Semua produk yang dipilih harus dibeli bersama untuk mendapatkan diskon
+              </p>
+            </div>
+
+            <!-- Product Selection for PRODUCT_BASED - Popup -->
+            <div v-if="discountForm.discountType === 'PRODUCT_BASED'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Pilih Produk yang Mendapat Diskon <span class="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                @click="showProductSelector = true; productSelectorType = 'PRODUCT_BASED'"
+                class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+              >
+                <span class="text-sm text-gray-700">
+                  <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
+                    Klik untuk memilih produk
+                  </span>
+                  <span v-else>
+                    {{ discountForm.applicableProducts.length }} produk dipilih
+                  </span>
+                </span>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <p class="mt-1 text-xs text-gray-500">
+                Produk yang dipilih akan mendapat diskon saat dibeli (bisa 1 per satu atau bersama)
+              </p>
+            </div>
+
+            <!-- Product Selection for QUANTITY_BASED - Popup with Category Option -->
+            <div v-if="discountForm.discountType === 'QUANTITY_BASED'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Pilih Produk <span class="text-red-500">*</span>
+              </label>
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-medium text-gray-600 mb-2">Pilihan Produk</label>
+                  <select
+                    v-model="productSelectionType"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <input
-                      type="checkbox"
-                      :value="product.id"
-                      :checked="discountForm.discountType === 'BUNDLE' 
-                        ? discountForm.bundleProducts.includes(product.id)
-                        : discountForm.applicableProducts.includes(product.id)"
-                      @change="handleProductCheckboxChange(product.id, $event)"
-                      class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-                    />
-                    <span class="text-sm text-gray-700 flex-1">
-                      {{ product.name }} 
-                      <span class="text-gray-500">({{ formatCurrency(product.price) }})</span>
-                      <span v-if="product.category" class="text-xs text-gray-400 ml-2">{{ product.category }}</span>
+                    <option value="CATEGORY">Berdasarkan Kategori</option>
+                    <option value="PRODUCTS">Pilih Produk Tertentu</option>
+                  </select>
+                </div>
+
+                <!-- Category Selection -->
+                <div v-if="productSelectionType === 'CATEGORY'">
+                  <label class="block text-xs font-medium text-gray-600 mb-2">Pilih Kategori</label>
+                  <select
+                    v-model="selectedCategory"
+                    @change="handleCategoryChange"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  >
+                    <option value="">Pilih Kategori</option>
+                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                  </select>
+                </div>
+
+                <!-- Product Selection Button -->
+                <div v-if="productSelectionType === 'PRODUCTS'">
+                  <button
+                    type="button"
+                    @click="showProductSelector = true; productSelectorType = 'QUANTITY_BASED'"
+                    class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                  >
+                    <span class="text-sm text-gray-700">
+                      <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
+                        Klik untuk memilih produk
+                      </span>
+                      <span v-else>
+                        {{ discountForm.applicableProducts.length }} produk dipilih
+                      </span>
                     </span>
-                  </label>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
               </div>
+              <p class="mt-1 text-xs text-gray-500">
+                Produk harus dibeli dalam jumlah minimum yang ditentukan untuk mendapatkan diskon
+              </p>
             </div>
 
             <!-- Bundle Discount Product Selection (for BUNDLE) -->
@@ -397,6 +447,16 @@
         </form>
       </div>
     </div>
+
+    <!-- Product Selector Modal -->
+    <ProductSelectorModal
+      :show="showProductSelector"
+      :title="getProductSelectorTitle()"
+      :subtitle="getProductSelectorSubtitle()"
+      :selected-product-ids="getSelectedProductIds()"
+      @confirm="handleProductSelectorConfirm"
+      @cancel="showProductSelector = false"
+    />
   </div>
 </template>
 
@@ -406,6 +466,7 @@ import api from '../../api';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import TenantSelector from '../../components/TenantSelector.vue';
+import ProductSelectorModal from '../../components/ProductSelectorModal.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { useNotification } from '../../composables/useNotification';
 
@@ -437,11 +498,13 @@ const discountForm = ref({
   endDate: '',
 });
 
-const productSelectionType = ref<'ALL' | 'CATEGORY' | 'PRODUCTS'>('ALL');
+const productSelectionType = ref<'CATEGORY' | 'PRODUCTS'>('PRODUCTS');
 const selectedCategory = ref<string>('');
 const categories = ref<string[]>([]);
 const availableProducts = ref<any[]>([]);
 const loadingProducts = ref(false);
+const showProductSelector = ref(false);
+const productSelectorType = ref<'BUNDLE' | 'PRODUCT_BASED' | 'QUANTITY_BASED'>('BUNDLE');
 
 const filteredDiscounts = computed(() => {
   let result = discounts.value;
@@ -499,67 +562,88 @@ const handleDiscountTypeChange = () => {
   discountForm.value.applicableProducts = [];
   discountForm.value.bundleProducts = [];
   discountForm.value.bundleDiscountProduct = '';
-  productSelectionType.value = 'ALL';
+  productSelectionType.value = 'PRODUCTS';
   selectedCategory.value = '';
+};
+
+const getProductSelectorTitle = (): string => {
+  switch (productSelectorType.value) {
+    case 'BUNDLE':
+      return 'Pilih Produk untuk Bundle';
+    case 'PRODUCT_BASED':
+      return 'Pilih Produk yang Mendapat Diskon';
+    case 'QUANTITY_BASED':
+      return 'Pilih Produk untuk Quantity Based';
+    default:
+      return 'Pilih Produk';
+  }
+};
+
+const getProductSelectorSubtitle = (): string => {
+  switch (productSelectorType.value) {
+    case 'BUNDLE':
+      return 'Semua produk yang dipilih harus dibeli bersama untuk mendapatkan diskon';
+    case 'PRODUCT_BASED':
+      return 'Produk yang dipilih akan mendapat diskon saat dibeli (bisa 1 per satu atau bersama)';
+    case 'QUANTITY_BASED':
+      return 'Produk harus dibeli dalam jumlah minimum yang ditentukan untuk mendapatkan diskon';
+    default:
+      return 'Pilih produk yang ingin ditambahkan';
+  }
+};
+
+const getSelectedProductIds = (): string[] => {
+  switch (productSelectorType.value) {
+    case 'BUNDLE':
+      return discountForm.value.bundleProducts;
+    case 'PRODUCT_BASED':
+    case 'QUANTITY_BASED':
+      return discountForm.value.applicableProducts;
+    default:
+      return [];
+  }
+};
+
+const handleProductSelectorConfirm = (productIds: string[]) => {
+  switch (productSelectorType.value) {
+    case 'BUNDLE':
+      discountForm.value.bundleProducts = productIds;
+      // Reset bundle discount product if not in selected products
+      if (discountForm.value.bundleDiscountProduct && !productIds.includes(discountForm.value.bundleDiscountProduct)) {
+        discountForm.value.bundleDiscountProduct = '';
+      }
+      break;
+    case 'PRODUCT_BASED':
+    case 'QUANTITY_BASED':
+      discountForm.value.applicableProducts = productIds;
+      break;
+  }
+  showProductSelector.value = false;
 };
 
 const handleProductSelectionTypeChange = () => {
   // Reset selections when selection type changes
-  discountForm.value.applicableProducts = [];
-  discountForm.value.bundleProducts = [];
-  discountForm.value.bundleDiscountProduct = '';
-  selectedCategory.value = '';
-  
-  // Load products if needed
-  if (productSelectionType.value === 'PRODUCTS' && availableProducts.value.length === 0) {
-    loadProducts();
+  if (productSelectionType.value === 'CATEGORY') {
+    discountForm.value.applicableProducts = [];
+    selectedCategory.value = '';
   }
 };
 
 const handleCategoryChange = () => {
-  // Filter products by category and update applicableProducts/bundleProducts
-  if (selectedCategory.value) {
-    const categoryProducts = availableProducts.value
-      .filter((p: any) => p.category === selectedCategory.value)
-      .map((p: any) => p.id);
-    
-    if (discountForm.value.discountType === 'BUNDLE') {
-      discountForm.value.bundleProducts = categoryProducts;
-    } else {
+  // For QUANTITY_BASED with category, load products and filter by category
+  if (selectedCategory.value && discountForm.value.discountType === 'QUANTITY_BASED') {
+    if (availableProducts.value.length === 0) {
+      loadProducts();
+    }
+    // Wait for products to load, then filter
+    setTimeout(() => {
+      const categoryProducts = availableProducts.value
+        .filter((p: any) => p.category === selectedCategory.value)
+        .map((p: any) => p.id);
       discountForm.value.applicableProducts = categoryProducts;
-    }
-  } else {
-    if (discountForm.value.discountType === 'BUNDLE') {
-      discountForm.value.bundleProducts = [];
-    } else {
-      discountForm.value.applicableProducts = [];
-    }
-  }
-};
-
-const handleProductCheckboxChange = (productId: string, event: Event) => {
-  const checked = (event.target as HTMLInputElement).checked;
-  
-  if (discountForm.value.discountType === 'BUNDLE') {
-    if (checked) {
-      if (!discountForm.value.bundleProducts.includes(productId)) {
-        discountForm.value.bundleProducts.push(productId);
-      }
-    } else {
-      discountForm.value.bundleProducts = discountForm.value.bundleProducts.filter(id => id !== productId);
-      // Reset bundleDiscountProduct if it was the removed product
-      if (discountForm.value.bundleDiscountProduct === productId) {
-        discountForm.value.bundleDiscountProduct = '';
-      }
-    }
-  } else {
-    if (checked) {
-      if (!discountForm.value.applicableProducts.includes(productId)) {
-        discountForm.value.applicableProducts.push(productId);
-      }
-    } else {
-      discountForm.value.applicableProducts = discountForm.value.applicableProducts.filter(id => id !== productId);
-    }
+    }, 100);
+  } else if (!selectedCategory.value) {
+    discountForm.value.applicableProducts = [];
   }
 };
 

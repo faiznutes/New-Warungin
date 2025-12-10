@@ -139,8 +139,11 @@
                     <div class="flex justify-between items-start mb-1">
                       <div class="flex-1">
                         <div class="font-semibold text-sm">{{ item.name }}</div>
-                        <div v-if="item.discount && item.discount > 0" class="text-xs text-red-600 mt-0.5">
-                          Diskon: -{{ formatCurrency(item.discount) }}
+                        <div v-if="item.discount && item.discount > 0" class="text-xs text-red-600 mt-0.5 font-medium">
+                          ✓ Diskon: -{{ formatCurrency(item.discount) }}
+                        </div>
+                        <div v-else-if="isProductDiscounted(item.productId)" class="text-xs text-gray-500 mt-0.5 italic">
+                          (Tidak memenuhi syarat diskon)
                         </div>
                       </div>
                       <div class="text-right ml-2">
@@ -245,6 +248,13 @@ interface ReceiptItem {
   price: number;
   subtotal: number;
   discount?: number;
+  productId?: string; // For discount tracking
+}
+
+interface DiscountDetail {
+  discountName: string;
+  discountAmount: number;
+  appliedTo: string[]; // Product IDs yang mendapat diskon
 }
 
 interface ReceiptData {
@@ -261,6 +271,7 @@ interface ReceiptData {
   paymentMethod: string;
   change?: number;
   servedBy?: string; // Legacy - akan diganti dengan cashierName
+  discountDetails?: DiscountDetail[]; // Discount details with appliedTo
 }
 
 interface ReceiptTemplate {
@@ -308,6 +319,13 @@ const formatTime = (date: string) => {
     hour: '2-digit', 
     minute: '2-digit' 
   });
+};
+
+const isProductDiscounted = (productId: string | undefined): boolean => {
+  if (!productId || !receiptData.value?.discountDetails) return false;
+  return receiptData.value.discountDetails.some(d => 
+    d.appliedTo && Array.isArray(d.appliedTo) && d.appliedTo.includes(productId)
+  );
 };
 
 const formatShiftType = (shiftType: string | null | undefined): string => {

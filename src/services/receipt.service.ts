@@ -390,6 +390,38 @@ export class ReceiptService {
       throw new Error('Order not found');
     }
 
+    // Parse discount details from notes
+    let discountDetails: any[] = [];
+    let actualNotes = order.notes || '';
+    if (order.notes && order.notes.includes('__DISCOUNT_DETAILS__:')) {
+      const parts = order.notes.split('__DISCOUNT_DETAILS__:');
+      actualNotes = parts[0].trim();
+      if (parts[1]) {
+        try {
+          const discountData = JSON.parse(parts[1]);
+          discountDetails = discountData.discountDetails || [];
+        } catch (e) {
+          // If parsing fails, ignore
+        }
+      }
+    }
+
+    // Calculate discount per item based on discountDetails
+    const itemDiscountMap = new Map<string, number>(); // productId -> discount amount
+    if (discountDetails.length > 0) {
+      // Create a map of productId to total discount amount
+      for (const discountDetail of discountDetails) {
+        if (discountDetail.appliedTo && Array.isArray(discountDetail.appliedTo)) {
+          // Distribute discount amount evenly among applied products
+          const discountPerProduct = discountDetail.discountAmount / discountDetail.appliedTo.length;
+          for (const productId of discountDetail.appliedTo) {
+            const currentDiscount = itemDiscountMap.get(productId) || 0;
+            itemDiscountMap.set(productId, currentDiscount + discountPerProduct);
+          }
+        }
+      }
+    }
+
     // Get transaction separately
     const transaction = await prisma.transaction.findFirst({
       where: { orderId: order.id },
@@ -436,11 +468,21 @@ export class ReceiptService {
         customerName: order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in',
         shiftType: order.storeShift?.shiftType || null, // Pagi, Siang, Sore, Malam
         cashierName: order.user?.name || order.storeShift?.opener?.name || 'Kasir', // Nama kasir yang melayani
-        items: order.items.map(item => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          price: Number(item.price),
-          subtotal: Number(item.subtotal),
+        items: order.items.map(item => {
+          const itemDiscount = itemDiscountMap.get(item.productId) || 0;
+          return {
+            name: item.product.name,
+            quantity: item.quantity,
+            price: Number(item.price),
+            subtotal: Number(item.subtotal),
+            discount: itemDiscount,
+            productId: item.productId, // Include productId for discount display
+          };
+        }),
+        discountDetails: discountDetails.map(d => ({
+          discountName: d.discountName,
+          discountAmount: d.discountAmount,
+          appliedTo: d.appliedTo, // Product IDs yang mendapat diskon
         })),
         subtotal: Number(order.subtotal),
         discount: Number(order.discount),

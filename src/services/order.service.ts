@@ -195,6 +195,7 @@ export class OrderService {
 
     // Apply automatic discounts (from discount rules)
     let autoDiscount = 0;
+    let discountDetails: any[] = [];
     try {
       const discountService = (await import('./discount.service')).default;
       const autoDiscountResult = await discountService.applyDiscounts(
@@ -207,10 +208,12 @@ export class OrderService {
         subtotal
       );
       autoDiscount = autoDiscountResult.discountAmount;
+      discountDetails = autoDiscountResult.discountDetails || [];
     } catch (error: any) {
       // If discount service fails (e.g., table doesn't exist yet), continue without auto discount
       logger.warn('Failed to apply automatic discounts:', error.message);
       autoDiscount = 0;
+      discountDetails = [];
     }
 
     // Calculate subtotal after auto discount
@@ -427,6 +430,23 @@ export class OrderService {
         }
       }
 
+      // Prepare notes with discount details
+      let orderNotes = data.notes || '';
+      if (discountDetails.length > 0) {
+        const discountInfo = JSON.stringify({
+          discountDetails: discountDetails.map(d => ({
+            discountId: d.discountId,
+            discountName: d.discountName,
+            discountAmount: d.discountAmount,
+            appliedTo: d.appliedTo, // Product IDs yang mendapat diskon
+          })),
+        }));
+        // Store discount details in notes with special marker
+        orderNotes = orderNotes 
+          ? `${orderNotes}\n\n__DISCOUNT_DETAILS__:${discountInfo}`
+          : `__DISCOUNT_DETAILS__:${discountInfo}`;
+      }
+
       // Create order
       const order = await tx.order.create({
         data: {
@@ -444,7 +464,7 @@ export class OrderService {
           status: 'PENDING',
           sendToKitchen: data.sendToKitchen || false,
           kitchenStatus: data.sendToKitchen ? 'PENDING' : null,
-          notes: data.notes,
+          notes: orderNotes,
           items: {
             create: orderItemsData,
           },
