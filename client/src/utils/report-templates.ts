@@ -9,34 +9,63 @@ interface ReportData {
 import { downloadPDFFromHTMLIframe } from './pdf-download';
 
 export async function generateReportPDF(data: ReportData) {
-  const templateFunctions: Record<string, (data: ReportData) => string> = {
-    minimalist: generateMinimalistTemplate,
-    modern: generateModernTemplate,
-    colorful: generateColorfulTemplate,
-    elegant: generateElegantTemplate,
+  // Support both old and new template names for backward compatibility
+  const templateMap: Record<string, string> = {
+    'minimalist': 'clean',
+    'modern': 'contemporary',
+    'colorful': 'vibrant',
+    'elegant': 'professional',
+    'classic': 'contemporary', // Map classic to contemporary
+    'clean': 'clean',
+    'contemporary': 'contemporary',
+    'vibrant': 'vibrant',
+    'professional': 'professional',
+    'executive': 'executive',
   };
 
-  const templateFunction = templateFunctions[data.template];
+  const normalizedTemplate = templateMap[data.template] || 'contemporary';
+
+  const templateFunctions: Record<string, (data: ReportData) => string> = {
+    clean: generateCleanTemplate,
+    contemporary: generateContemporaryTemplate,
+    vibrant: generateVibrantTemplate,
+    professional: generateProfessionalTemplate,
+    executive: generateExecutiveTemplate,
+    // Legacy support
+    minimalist: generateCleanTemplate,
+    modern: generateContemporaryTemplate,
+    colorful: generateVibrantTemplate,
+    elegant: generateProfessionalTemplate,
+  };
+
+  const templateFunction = templateFunctions[normalizedTemplate];
   if (!templateFunction) {
-    throw new Error('Template tidak ditemukan');
+    throw new Error(`Template tidak ditemukan: ${data.template}`);
   }
 
   const html = templateFunction(data);
   
   // Generate filename
-  const { startDate, endDate, template } = data;
-  const templateLabel = template === 'minimalist' ? 'Minimalis' :
-                        template === 'modern' ? 'Modern' :
-                        template === 'classic' ? 'Klasik' :
-                        template === 'colorful' ? 'Berwarna' :
-                        template === 'elegant' ? 'Elegan' : 'Laporan';
+  const { startDate, endDate } = data;
+  const templateLabelMap: Record<string, string> = {
+    clean: 'Clean',
+    contemporary: 'Contemporary',
+    vibrant: 'Vibrant',
+    professional: 'Professional',
+    executive: 'Executive',
+    minimalist: 'Clean',
+    modern: 'Contemporary',
+    colorful: 'Vibrant',
+    elegant: 'Professional',
+  };
+  const templateLabel = templateLabelMap[normalizedTemplate] || 'Laporan';
   const filename = `Laporan_${templateLabel}_${startDate}_${endDate}.pdf`;
   
   await downloadPDFFromHTMLIframe(html, filename);
 }
 
-// Template 1: Minimalist
-function generateMinimalistTemplate(data: ReportData): string {
+// Template 1: Clean & Simple (formerly Minimalist)
+function generateCleanTemplate(data: ReportData): string {
   const { tenants, stats, startDate, endDate } = data;
   const date = new Date().toLocaleDateString('id-ID', { 
     year: 'numeric', 
@@ -154,8 +183,8 @@ function generateMinimalistTemplate(data: ReportData): string {
   `;
 }
 
-// Template 2: Modern
-function generateModernTemplate(data: ReportData): string {
+// Template 2: Contemporary (formerly Modern)
+function generateContemporaryTemplate(data: ReportData): string {
   const { tenants, stats, startDate, endDate } = data;
   const date = new Date().toLocaleDateString('id-ID', { 
     year: 'numeric', 
@@ -283,8 +312,8 @@ function generateModernTemplate(data: ReportData): string {
   `;
 }
 
-// Template 3: Colorful
-function generateColorfulTemplate(data: ReportData): string {
+// Template 3: Vibrant (formerly Colorful)
+function generateVibrantTemplate(data: ReportData): string {
   const { tenants, stats, startDate, endDate } = data;
   const date = new Date().toLocaleDateString('id-ID', { 
     year: 'numeric', 
@@ -420,8 +449,8 @@ function generateColorfulTemplate(data: ReportData): string {
   `;
 }
 
-// Template 5: Elegant
-function generateElegantTemplate(data: ReportData): string {
+// Template 4: Professional (formerly Elegant)
+function generateProfessionalTemplate(data: ReportData): string {
   const { tenants, stats, startDate, endDate } = data;
   const date = new Date().toLocaleDateString('id-ID', { 
     year: 'numeric', 
@@ -446,62 +475,60 @@ function generateElegantTemplate(data: ReportData): string {
       box-sizing: border-box;
     }
     body {
-      font-family: 'Playfair Display', 'Georgia', serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 11pt;
-      line-height: 1.8;
-      color: #2d3748;
-      background: #fafafa;
+      line-height: 1.6;
+      color: #1f2937;
+      background: #ffffff;
     }
     .container {
       background: #fff;
-      padding: 50px;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+      padding: 40px;
+      border: 1px solid #e5e7eb;
     }
     .header {
       text-align: center;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 30px;
-      margin-bottom: 40px;
+      border-bottom: 2px solid #059669;
+      padding-bottom: 25px;
+      margin-bottom: 35px;
     }
     .title {
-      font-size: 36pt;
-      font-weight: 400;
-      color: #1a202c;
-      margin-bottom: 10px;
-      letter-spacing: 2px;
+      font-size: 28pt;
+      font-weight: 600;
+      color: #059669;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
     }
     .subtitle {
-      font-size: 11pt;
-      color: #718096;
-      font-style: italic;
-      letter-spacing: 1px;
+      font-size: 10pt;
+      color: #6b7280;
+      font-weight: 400;
     }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 30px;
-      margin-bottom: 40px;
+      gap: 25px;
+      margin-bottom: 35px;
     }
     .stat-card {
       text-align: center;
-      padding: 35px 25px;
-      border: 1px solid #e2e8f0;
-      background: #fff;
-      transition: all 0.3s;
+      padding: 30px 20px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      border-radius: 8px;
     }
     .stat-label {
-      font-size: 10pt;
-      color: #718096;
-      margin-bottom: 15px;
-      font-weight: 400;
+      font-size: 9pt;
+      color: #6b7280;
+      margin-bottom: 12px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 0.5px;
     }
     .stat-value {
-      font-size: 32pt;
-      font-weight: 300;
-      color: #1a202c;
-      font-family: 'Playfair Display', serif;
+      font-size: 26pt;
+      font-weight: 700;
+      color: #059669;
     }
     .footer {
       position: fixed;
@@ -511,6 +538,148 @@ function generateElegantTemplate(data: ReportData): string {
       color: #a0aec0;
       background: transparent;
       font-style: italic;
+    }
+    .content {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="title">Laporan Tenant</h1>
+      <p class="subtitle">Periode: ${formatDate(startDate)} - ${formatDate(endDate)} | ${date}</p>
+    </div>
+    
+    <div class="content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Penjualan</div>
+          <div class="stat-value">${formatCurrency(stats.totalSales || 0)}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Pesanan</div>
+          <div class="stat-value">${stats.totalOrders || 0}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Produk</div>
+          <div class="stat-value">${stats.totalProducts || 0}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Pelanggan</div>
+          <div class="stat-value">${stats.totalCustomers || 0}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>Dibuat oleh Warungin | ${date}</p>
+  </div>
+</body>
+</html>
+  `;
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(amount);
+}
+
+// Template 5: Executive (NEW)
+function generateExecutiveTemplate(data: ReportData): string {
+  const { tenants, stats, startDate, endDate } = data;
+  const date = new Date().toLocaleDateString('id-ID', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Tenant</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 25mm 20mm;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 11pt;
+      line-height: 1.7;
+      color: #1a202c;
+      background: #ffffff;
+    }
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border: 2px solid #1a202c;
+    }
+    .header {
+      border-bottom: 3px solid #F59E0B;
+      padding-bottom: 25px;
+      margin-bottom: 35px;
+    }
+    .title {
+      font-size: 32pt;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      font-family: 'Georgia', serif;
+    }
+    .subtitle {
+      font-size: 10pt;
+      color: #4b5563;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      margin-bottom: 35px;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      border: 1px solid #e5e7eb;
+      border-left: 4px solid #F59E0B;
+      padding: 25px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .stat-label {
+      font-size: 9pt;
+      color: #6b7280;
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stat-value {
+      font-size: 28pt;
+      font-weight: 700;
+      color: #1a202c;
+      font-family: 'Georgia', serif;
+    }
+    .footer {
+      position: fixed;
+      bottom: 10mm;
+      left: 20mm;
+      font-size: 9pt;
+      color: #9ca3af;
+      background: transparent;
     }
     .content {
       margin-bottom: 30px;
