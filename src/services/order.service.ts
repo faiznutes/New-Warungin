@@ -115,6 +115,21 @@ export class OrderService {
           customer: true,
           member: true,
           outlet: true,
+          storeShift: {
+            select: {
+              id: true,
+              shiftType: true,
+              openedAt: true,
+              openedBy: true,
+              opener: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          },
           user: {
             select: {
               id: true,

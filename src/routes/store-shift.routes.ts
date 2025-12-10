@@ -240,5 +240,92 @@ router.get(
   }
 );
 
+/**
+ * @swagger
+ * /api/store-shift/today:
+ *   get:
+ *     summary: Get today's shifts for a store
+ *     tags: [StoreShift]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/today',
+  authGuard,
+  subscriptionGuard,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const outletId = req.query.outletId as string;
+
+      if (!outletId) {
+        return res.status(400).json({ message: 'Outlet ID is required' });
+      }
+
+      const shifts = await storeShiftService.getTodayShifts(tenantId, outletId);
+
+      res.json({
+        success: true,
+        data: shifts,
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Gagal memuat shift hari ini', 'STORE_SHIFT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/store-shift/{id}/details:
+ *   get:
+ *     summary: Get shift details with filters
+ *     tags: [StoreShift]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: includeOrders
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: includeStockTransfers
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: includeProductAdjustments
+ *         schema:
+ *           type: boolean
+ */
+router.get(
+  '/:id/details',
+  authGuard,
+  subscriptionGuard,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const shiftId = req.params.id;
+      const filters = {
+        includeOrders: req.query.includeOrders !== 'false',
+        includeStockTransfers: req.query.includeStockTransfers !== 'false',
+        includeProductAdjustments: req.query.includeProductAdjustments !== 'false',
+      };
+
+      const details = await storeShiftService.getShiftDetails(tenantId, shiftId, filters);
+
+      res.json({
+        success: true,
+        data: details,
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Gagal memuat detail shift', 'STORE_SHIFT');
+    }
+  }
+);
+
 export default router;
 

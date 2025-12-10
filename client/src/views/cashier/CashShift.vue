@@ -158,155 +158,467 @@
       </div>
     </div>
 
-    <!-- Active Shift - Show Current Shift Info -->
+    <!-- Active Shift - Show Current Shift Info with Tabs -->
     <div v-else class="space-y-6">
-      <!-- Store Shift Info Card -->
-      <div v-if="currentStoreShift" class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-lg font-bold text-gray-900 mb-1">Shift Toko</h3>
-            <p class="text-sm text-gray-600">
-              Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
-              Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
-            </p>
-            <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
-              Dibuka oleh: {{ currentStoreShift.opener.name }}
-            </p>
-          </div>
-          <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
-            {{ currentStoreShift.shiftType }}
-          </span>
+      <!-- Tabs Navigation -->
+      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+        <div class="border-b border-gray-200">
+          <nav class="flex -mb-px">
+            <button
+              @click="activeTab = 'today'"
+              :class="[
+                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                activeTab === 'today'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ]"
+            >
+              Shift Hari Ini
+            </button>
+            <button
+              @click="activeTab = 'history'"
+              :class="[
+                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                activeTab === 'history'
+                  ? 'border-primary-600 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ]"
+            >
+              Riwayat Shift
+            </button>
+          </nav>
         </div>
       </div>
 
-      <!-- Current Cash Shift Card -->
-      <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
+      <!-- Tab Content: Shift Hari Ini -->
+      <div v-if="activeTab === 'today'" class="space-y-6">
+        <!-- Store Shift Info Card -->
+        <div v-if="currentStoreShift" class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Shift Toko Aktif</h3>
+              <p class="text-sm text-gray-600">
+                Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
+                Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
+              </p>
+              <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
+                Dibuka oleh: {{ currentStoreShift.opener.name }}
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button
+                @click="viewShiftDetails(currentStoreShift.id)"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
+              >
+                Lihat Detail
+              </button>
+              <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
+                {{ currentStoreShift.shiftType }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Shifts List -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Shift Hari Ini</h3>
+          <div v-if="todayShiftsLoading" class="text-center py-8">
+            <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </div>
+          <div v-else-if="todayShifts.length === 0" class="text-center py-8 text-gray-500">
+            Belum ada shift hari ini
+          </div>
+          <div v-else class="space-y-3">
+            <div
+              v-for="shift in todayShifts"
+              :key="shift.id"
+              class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer"
+              @click="viewShiftDetails(shift.id)"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold capitalize">
+                      {{ shift.shiftType }}
+                    </span>
+                    <span
+                      :class="[
+                        'px-3 py-1 rounded-full text-xs font-semibold',
+                        shift.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      ]"
+                    >
+                      {{ shift.status === 'open' ? 'Buka' : 'Tutup' }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-600">
+                    Dibuka: {{ formatDateTime(shift.openedAt) }}
+                    <span v-if="shift.closedAt"> | Ditutup: {{ formatDateTime(shift.closedAt) }}</span>
+                  </p>
+                  <p class="text-xs text-gray-500 mt-1" v-if="shift.opener">
+                    Dibuka oleh: {{ shift.opener.name }}
+                  </p>
+                </div>
+                <button
+                  @click.stop="viewShiftDetails(shift.id)"
+                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-semibold"
+                >
+                  Detail
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Riwayat Shift -->
+      <div v-if="activeTab === 'history'" class="space-y-6">
+        <!-- Current Cash Shift Card (if active) -->
+        <div v-if="currentShift" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Cash Shift Aktif</h2>
+              <p class="text-sm text-gray-600">
+                Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
+              </p>
+            </div>
+            <span class="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold">
+              BUKA
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <p class="text-sm text-gray-600 mb-1">Modal Awal</p>
+              <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(currentShift.modalAwal) }}</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <p class="text-sm text-gray-600 mb-1">Total Penjualan</p>
+              <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+              <p class="text-sm text-gray-600 mb-1">Saldo Seharusnya</p>
+              <p class="text-2xl font-bold text-green-600">
+                {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              @click="showCloseModal = true"
+              class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Tutup Shift
+            </button>
+            <button
+              @click="loadCurrentShift"
+              class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Store Shift History -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Riwayat Shift Toko</h3>
+          <div v-if="storeShiftHistoryLoading" class="text-center py-8">
+            <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </div>
+          <div v-else-if="storeShiftHistory.length === 0" class="text-center py-8 text-gray-500">
+            Belum ada riwayat shift
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shift</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibuka</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ditutup</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibuka Oleh</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr
+                  v-for="shift in storeShiftHistory"
+                  :key="shift.id"
+                  class="hover:bg-gray-50"
+                >
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold capitalize">
+                      {{ shift.shiftType }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatDateTime(shift.openedAt) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {{ shift.closedAt ? formatDateTime(shift.closedAt) : '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {{ shift.opener?.name || '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold rounded-full',
+                        shift.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      ]"
+                    >
+                      {{ shift.status === 'open' ? 'Buka' : 'Tutup' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button
+                      @click="viewShiftDetails(shift.id)"
+                      class="px-3 py-1 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-xs font-semibold"
+                    >
+                      Detail
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div v-if="storeShiftHistoryPagination.totalPages > 1" class="mt-4 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+              Halaman {{ storeShiftHistoryPagination.page }} dari {{ storeShiftHistoryPagination.totalPages }}
+            </div>
+            <div class="flex gap-2">
+              <button
+                @click="changeStoreShiftHistoryPage(storeShiftHistoryPagination.page - 1)"
+                :disabled="storeShiftHistoryPagination.page === 1"
+                class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Sebelumnya
+              </button>
+              <button
+                @click="changeStoreShiftHistoryPage(storeShiftHistoryPagination.page + 1)"
+                :disabled="storeShiftHistoryPagination.page === storeShiftHistoryPagination.totalPages"
+                class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Selanjutnya
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shift Detail Modal -->
+    <div
+      v-if="showShiftDetailModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto"
+      @click.self="showShiftDetailModal = false"
+    >
+      <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full p-6 my-8">
         <div class="flex items-center justify-between mb-6">
-          <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Cash Shift Aktif</h2>
-            <p class="text-sm text-gray-600">
-              Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
-            </p>
-          </div>
-          <span class="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold">
-            BUKA
-          </span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-sm text-gray-600 mb-1">Modal Awal</p>
-            <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(currentShift.modalAwal) }}</p>
-          </div>
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-sm text-gray-600 mb-1">Total Penjualan</p>
-            <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
-          </div>
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-sm text-gray-600 mb-1">Saldo Seharusnya</p>
-            <p class="text-2xl font-bold text-green-600">
-              {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
-            </p>
-          </div>
-        </div>
-
-        <div class="flex gap-3">
+          <h3 class="text-2xl font-bold text-gray-900">Detail Shift</h3>
           <button
-            @click="showCloseModal = true"
-            class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center justify-center gap-2"
+            @click="showShiftDetailModal = false"
+            class="text-gray-400 hover:text-gray-600"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            Tutup Shift
-          </button>
-          <button
-            @click="loadCurrentShift"
-            class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold"
-          >
-            Refresh
           </button>
         </div>
-      </div>
 
-      <!-- Shift History -->
-      <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Riwayat Shift</h3>
-        <div v-if="historyLoading" class="text-center py-8">
-          <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <!-- Shift Info -->
+        <div v-if="shiftDetail" class="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Shift Type</p>
+              <p class="text-sm font-semibold text-gray-900 capitalize">{{ shiftDetail.shift.shiftType }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Dibuka</p>
+              <p class="text-sm font-semibold text-gray-900">{{ formatDateTime(shiftDetail.shift.openedAt) }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Ditutup</p>
+              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.closedAt ? formatDateTime(shiftDetail.shift.closedAt) : 'Masih Buka' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600 mb-1">Dibuka Oleh</p>
+              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.opener?.name || '-' }}</p>
+            </div>
+          </div>
         </div>
-        <div v-else-if="shiftHistory.length === 0" class="text-center py-8 text-gray-500">
-          Belum ada riwayat shift
+
+        <!-- Filters -->
+        <div class="mb-6 bg-gray-50 rounded-lg p-4">
+          <p class="text-sm font-semibold text-gray-700 mb-3">Filter Detail:</p>
+          <div class="flex flex-wrap gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="shiftDetailFilters.includeOrders"
+                @change="loadShiftDetails(selectedShiftId)"
+                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span class="text-sm text-gray-700">Penjualan</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="shiftDetailFilters.includeStockTransfers"
+                @change="loadShiftDetails(selectedShiftId)"
+                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span class="text-sm text-gray-700">Transfer Stok</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="shiftDetailFilters.includeProductAdjustments"
+                @change="loadShiftDetails(selectedShiftId)"
+                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span class="text-sm text-gray-700">Update Stok</span>
+            </label>
+          </div>
         </div>
-        <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Modal Awal</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penjualan</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Uang Fisik</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Selisih</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="shift in shiftHistory"
-                :key="shift.id"
-                class="hover:bg-gray-50"
-              >
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatDateTime(shift.shiftStart) }}
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(shift.modalAwal) }}
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(shift.totalPenjualan || 0) }}
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                  {{ shift.uangFisikTutup ? formatCurrency(shift.uangFisikTutup) : '-' }}
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold" :class="getSelisihClass(shift.selisih)">
-                  {{ shift.selisih !== null ? formatCurrency(shift.selisih) : '-' }}
-                </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <span
-                    :class="[
+
+        <!-- Summary -->
+        <div v-if="shiftDetail" class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <p class="text-xs text-gray-600 mb-1">Total Pendapatan</p>
+            <p class="text-lg font-bold text-green-600">{{ formatCurrency(shiftDetail.summary.totalRevenue) }}</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <p class="text-xs text-gray-600 mb-1">Total Pesanan</p>
+            <p class="text-lg font-bold text-blue-600">{{ shiftDetail.summary.totalOrders }}</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <p class="text-xs text-gray-600 mb-1">Transfer Stok</p>
+            <p class="text-lg font-bold text-purple-600">{{ shiftDetail.summary.totalStockTransfers }}</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-gray-200">
+            <p class="text-xs text-gray-600 mb-1">Update Stok</p>
+            <p class="text-lg font-bold text-orange-600">{{ shiftDetail.summary.totalProductAdjustments }}</p>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="shiftDetailLoading" class="text-center py-12">
+          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+
+        <!-- Orders -->
+        <div v-else-if="shiftDetail && shiftDetailFilters.includeOrders && shiftDetail.orders.length > 0" class="mb-6">
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Penjualan ({{ shiftDetail.orders.length }})</h4>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kasir</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="order in shiftDetail.orders" :key="order.id" class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.orderNumber }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.customer?.name || 'Pelanggan Umum' }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.user?.name || '-' }}</td>
+                  <td class="px-4 py-3 text-sm font-semibold text-gray-900">{{ formatCurrency(order.total) }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(order.createdAt) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Stock Transfers -->
+        <div v-if="shiftDetail && shiftDetailFilters.includeStockTransfers && shiftDetail.stockTransfers.length > 0" class="mb-6">
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Transfer Stok ({{ shiftDetail.stockTransfers.length }})</h4>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Transfer #</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dari</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ke</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="transfer in shiftDetail.stockTransfers" :key="transfer.id" class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.transferNumber }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.fromOutletId }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.toOutletId }}</td>
+                  <td class="px-4 py-3 text-sm">
+                    <span :class="[
                       'px-2 py-1 text-xs font-semibold rounded-full',
-                      shift.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    ]"
-                  >
-                    {{ shift.status === 'open' ? 'Buka' : 'Tutup' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      transfer.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    ]">
+                      {{ transfer.status }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(transfer.createdAt) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Pagination -->
-        <div v-if="historyPagination.totalPages > 1" class="mt-4 flex items-center justify-between">
-          <div class="text-sm text-gray-700">
-            Halaman {{ historyPagination.page }} dari {{ historyPagination.totalPages }}
+        <!-- Product Adjustments -->
+        <div v-if="shiftDetail && shiftDetailFilters.includeProductAdjustments && shiftDetail.productAdjustments.length > 0" class="mb-6">
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Update Stok ({{ shiftDetail.productAdjustments.length }})</h4>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sebelum</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sesudah</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oleh</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="adjustment in shiftDetail.productAdjustments" :key="adjustment.id" class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.product?.name || '-' }}</td>
+                  <td class="px-4 py-3 text-sm">
+                    <span :class="[
+                      'px-2 py-1 text-xs font-semibold rounded-full',
+                      adjustment.type === 'INCREASE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    ]">
+                      {{ adjustment.type === 'INCREASE' ? 'Tambah' : 'Kurang' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.quantity }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.stockBefore }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.stockAfter }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.user?.name || '-' }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(adjustment.createdAt) }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="flex gap-2">
-            <button
-              @click="changeHistoryPage(historyPagination.page - 1)"
-              :disabled="historyPagination.page === 1"
-              class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Sebelumnya
-            </button>
-            <button
-              @click="changeHistoryPage(historyPagination.page + 1)"
-              :disabled="historyPagination.page === historyPagination.totalPages"
-              class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            >
-              Selanjutnya
-            </button>
-          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="shiftDetail && !shiftDetailLoading && 
+          (!shiftDetailFilters.includeOrders || shiftDetail.orders.length === 0) &&
+          (!shiftDetailFilters.includeStockTransfers || shiftDetail.stockTransfers.length === 0) &&
+          (!shiftDetailFilters.includeProductAdjustments || shiftDetail.productAdjustments.length === 0)"
+          class="text-center py-12 text-gray-500"
+        >
+          Tidak ada data untuk filter yang dipilih
         </div>
       </div>
     </div>
@@ -404,7 +716,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { formatCurrency } from '../../utils/formatters';
@@ -420,6 +732,26 @@ const openingShift = ref(false);
 const openingStoreShift = ref(false);
 const closingShift = ref(false);
 const showCloseModal = ref(false);
+const activeTab = ref<'today' | 'history'>('today');
+const todayShifts = ref<any[]>([]);
+const todayShiftsLoading = ref(false);
+const storeShiftHistory = ref<any[]>([]);
+const storeShiftHistoryLoading = ref(false);
+const storeShiftHistoryPagination = ref({
+  page: 1,
+  limit: 20,
+  total: 0,
+  totalPages: 0,
+});
+const showShiftDetailModal = ref(false);
+const shiftDetail = ref<any>(null);
+const shiftDetailLoading = ref(false);
+const selectedShiftId = ref<string>('');
+const shiftDetailFilters = ref({
+  includeOrders: true,
+  includeStockTransfers: true,
+  includeProductAdjustments: true,
+});
 
 const openShiftForm = ref({
   modalAwal: 0,
@@ -615,9 +947,103 @@ const changeHistoryPage = (page: number) => {
   loadShiftHistory();
 };
 
+const loadTodayShifts = async () => {
+  todayShiftsLoading.value = true;
+  try {
+    const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    if (!selectedStoreId) {
+      todayShifts.value = [];
+      return;
+    }
+    const response = await api.get('/store-shift/today', {
+      params: { outletId: selectedStoreId },
+    });
+    todayShifts.value = response.data.data || [];
+  } catch (error: any) {
+    console.error('Error loading today shifts:', error);
+    todayShifts.value = [];
+  } finally {
+    todayShiftsLoading.value = false;
+  }
+};
+
+const loadStoreShiftHistory = async () => {
+  storeShiftHistoryLoading.value = true;
+  try {
+    const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
+    if (!selectedStoreId) {
+      storeShiftHistory.value = [];
+      return;
+    }
+    const response = await api.get('/store-shift/history', {
+      params: {
+        outletId: selectedStoreId,
+        page: storeShiftHistoryPagination.value.page,
+        limit: storeShiftHistoryPagination.value.limit,
+      },
+    });
+    storeShiftHistory.value = response.data.data || [];
+    storeShiftHistoryPagination.value = response.data.pagination || {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    };
+  } catch (error: any) {
+    console.error('Error loading store shift history:', error);
+    storeShiftHistory.value = [];
+  } finally {
+    storeShiftHistoryLoading.value = false;
+  }
+};
+
+const changeStoreShiftHistoryPage = (page: number) => {
+  storeShiftHistoryPagination.value.page = page;
+  loadStoreShiftHistory();
+};
+
+const viewShiftDetails = async (shiftId: string) => {
+  selectedShiftId.value = shiftId;
+  showShiftDetailModal.value = true;
+  await loadShiftDetails(shiftId);
+};
+
+const loadShiftDetails = async (shiftId: string) => {
+  shiftDetailLoading.value = true;
+  try {
+    const response = await api.get(`/store-shift/${shiftId}/details`, {
+      params: {
+        includeOrders: shiftDetailFilters.value.includeOrders,
+        includeStockTransfers: shiftDetailFilters.value.includeStockTransfers,
+        includeProductAdjustments: shiftDetailFilters.value.includeProductAdjustments,
+      },
+    });
+    shiftDetail.value = response.data.data;
+  } catch (error: any) {
+    console.error('Error loading shift details:', error);
+    await showError('Gagal memuat detail shift');
+  } finally {
+    shiftDetailLoading.value = false;
+  }
+};
+
+// Watch activeTab to load data when tab changes
+watch(activeTab, (newTab) => {
+  if (newTab === 'today') {
+    loadTodayShifts();
+  } else if (newTab === 'history') {
+    loadStoreShiftHistory();
+  }
+});
+
 onMounted(async () => {
   loading.value = true;
-  await Promise.all([loadCurrentStoreShift(), loadCurrentShift(), loadShiftHistory()]);
+  await Promise.all([
+    loadCurrentStoreShift(),
+    loadCurrentShift(),
+    loadShiftHistory(),
+    loadTodayShifts(),
+  ]);
   loading.value = false;
 });
 </script>

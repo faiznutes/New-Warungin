@@ -387,6 +387,281 @@ class StoreShiftService {
   }
 
   /**
+   * Get shift details with filters (orders, stock transfers, product adjustments)
+   */
+  async getShiftDetails(
+    tenantId: string,
+    shiftId: string,
+    filters?: {
+      includeOrders?: boolean;
+      includeStockTransfers?: boolean;
+      includeProductAdjustments?: boolean;
+    }
+  ) {
+    try {
+      const shift = await prisma.storeShift.findFirst({
+        where: {
+          id: shiftId,
+          tenantId,
+        },
+        include: {
+          opener: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+          outlet: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (!shift) {
+        throw new Error('Shift tidak ditemukan');
+      }
+
+      const defaultFilters = {
+        includeOrders: true,
+        includeStockTransfers: true,
+        includeProductAdjustments: true,
+        ...filters,
+      };
+
+      const [orders, stockTransfers, productAdjustments] = await Promise.all([
+        defaultFilters.includeOrders
+          ? prisma.order.findMany({
+              where: {
+                tenantId,
+                storeShiftId: shiftId,
+              },
+              include: {
+                items: {
+                  include: {
+                    product: {
+                      select: {
+                        id: true,
+                        name: true,
+                        sku: true,
+                      },
+                    },
+                  },
+                },
+                customer: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                  },
+                },
+                transaction: {
+                  select: {
+                    id: true,
+                    paymentMethod: true,
+                    amount: true,
+                    status: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            })
+          : Promise.resolve([]),
+        defaultFilters.includeStockTransfers
+          ? prisma.stockTransfer.findMany({
+              where: {
+                tenantId,
+                createdAt: {
+                  gte: shift.openedAt,
+                  lte: shift.closedAt || new Date(),
+                },
+                OR: [
+                  {
+                    fromOutletId: shift.outletId,
+                  },
+                  {
+                    toOutletId: shift.outletId,
+                  },
+                ],
+              },
+              include: {
+                items: {
+                  include: {
+                    product: {
+                      select: {
+                        id: true,
+                        name: true,
+                        sku: true,
+                      },
+                    },
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            })
+          : Promise.resolve([]),
+        defaultFilters.includeProductAdjustments
+          ? prisma.productAdjustment.findMany({
+              where: {
+                tenantId,
+                createdAt: {
+                  gte: shift.openedAt,
+                  lte: shift.closedAt || new Date(),
+                },
+              },
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    name: true,
+                    sku: true,
+                  },
+                },
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: 'desc',
+              },
+            })
+          : Promise.resolve([]),
+      ]);
+
+      // Calculate summary
+      const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+      const totalOrders = orders.length;
+      const totalStockTransfers = stockTransfers.length;
+      const totalProductAdjustments = productAdjustments.length;
+
+      return {
+        shift: this.formatStoreShift(shift),
+        summary: {
+          totalRevenue,
+          totalOrders,
+          totalStockTransfers,
+          totalProductAdjustments,
+        },
+        orders: orders.map(order => ({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          total: Number(order.total),
+          subtotal: Number(order.subtotal),
+          discount: Number(order.discount),
+          status: order.status,
+          createdAt: order.createdAt,
+          customer: order.customer,
+          user: order.user,
+          items: order.items.map(item => ({
+            id: item.id,
+            product: item.product,
+            quantity: item.quantity,
+            price: Number(item.price),
+            subtotal: Number(item.subtotal),
+          })),
+          transaction: order.transaction,
+        })),
+        stockTransfers: stockTransfers.map(transfer => ({
+          id: transfer.id,
+          transferNumber: transfer.transferNumber,
+          fromOutletId: transfer.fromOutletId,
+          toOutletId: transfer.toOutletId,
+          status: transfer.status,
+          createdAt: transfer.createdAt,
+          items: transfer.items.map(item => ({
+            id: item.id,
+            product: item.product,
+            quantity: item.quantity,
+            receivedQuantity: item.receivedQuantity,
+          })),
+        })),
+        productAdjustments: productAdjustments.map(adjustment => ({
+          id: adjustment.id,
+          product: adjustment.product,
+          type: adjustment.type,
+          quantity: adjustment.quantity,
+          reason: adjustment.reason,
+          stockBefore: adjustment.stockBefore,
+          stockAfter: adjustment.stockAfter,
+          createdAt: adjustment.createdAt,
+          user: adjustment.user,
+        })),
+      };
+    } catch (error: any) {
+      logger.error('Error getting shift details:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get today's shifts for a store
+   */
+  async getTodayShifts(tenantId: string, outletId: string) {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const shifts = await prisma.storeShift.findMany({
+        where: {
+          tenantId,
+          outletId,
+          openedAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+        include: {
+          opener: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+          outlet: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          openedAt: 'desc',
+        },
+      });
+
+      return shifts.map(shift => this.formatStoreShift(shift));
+    } catch (error: any) {
+      logger.error('Error getting today shifts:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Format store shift data
    */
   private formatStoreShift(shift: any): StoreShiftData {

@@ -157,8 +157,33 @@ router.post(
         userId,
         req.body
       );
+      
+      // Log audit for SPV actions
+      await logAction(
+        req as AuthRequest,
+        'CREATE',
+        'stock_transfers',
+        transfer.id,
+        {
+          transferNumber: transfer.transferNumber,
+          fromOutletId: transfer.fromOutletId,
+          toOutletId: transfer.toOutletId,
+          itemsCount: transfer.items?.length || 0,
+        },
+        'SUCCESS'
+      );
+      
       res.status(201).json(transfer);
     } catch (error: unknown) {
+      await logAction(
+        req as AuthRequest,
+        'CREATE',
+        'stock_transfers',
+        null,
+        { error: (error as Error).message },
+        'FAILED',
+        (error as Error).message
+      );
       handleRouteError(res, error, 'Failed to create stock transfer', 'CREATE_STOCK_TRANSFER');
     }
   }
@@ -205,8 +230,31 @@ router.post(
         userId,
         receivedDate
       );
+      
+      // Log audit for SPV actions
+      await logAction(
+        req as AuthRequest,
+        'RECEIVE',
+        'stock_transfers',
+        transfer.id,
+        {
+          transferNumber: transfer.transferNumber,
+          receivedDate: receivedDate?.toISOString(),
+        },
+        'SUCCESS'
+      );
+      
       res.json(transfer);
     } catch (error: unknown) {
+      await logAction(
+        req as AuthRequest,
+        'RECEIVE',
+        'stock_transfers',
+        req.params.id,
+        { error: (error as Error).message },
+        'FAILED',
+        (error as Error).message
+      );
       handleRouteError(res, error, 'Failed to receive stock transfer', 'RECEIVE_STOCK_TRANSFER');
     }
   }
@@ -239,8 +287,30 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const transfer = await stockTransferService.cancelStockTransfer(req.params.id, tenantId);
+      
+      // Log audit for SPV actions
+      await logAction(
+        req as AuthRequest,
+        'CANCEL',
+        'stock_transfers',
+        transfer.id,
+        {
+          transferNumber: transfer.transferNumber,
+        },
+        'SUCCESS'
+      );
+      
       res.json(transfer);
     } catch (error: unknown) {
+      await logAction(
+        req as AuthRequest,
+        'CANCEL',
+        'stock_transfers',
+        req.params.id,
+        { error: (error as Error).message },
+        'FAILED',
+        (error as Error).message
+      );
       handleRouteError(res, error, 'Failed to cancel stock transfer', 'CANCEL_STOCK_TRANSFER');
     }
   }

@@ -107,6 +107,22 @@
           <p class="text-sm font-semibold text-gray-900">{{ order.customerName || order.temporaryCustomerName || 'Pelanggan Umum' }}</p>
         </div>
 
+        <!-- Shift Info -->
+        <div v-if="order.storeShift" class="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+          <p class="text-xs font-medium text-blue-700 mb-1.5 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Shift {{ order.storeShift.shiftType?.charAt(0).toUpperCase() + order.storeShift.shiftType?.slice(1) }}
+          </p>
+          <p class="text-xs text-blue-600">
+            Dibuka oleh: {{ order.storeShift.opener?.name || 'Tidak diketahui' }}
+          </p>
+          <p class="text-xs text-blue-600">
+            Waktu: {{ formatDateTime(order.storeShift.openedAt) }}
+          </p>
+        </div>
+
         <div class="mb-4">
           <p class="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
