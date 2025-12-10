@@ -349,7 +349,21 @@ const getTemplateFontFamily = (templateType: string, styles?: any): string => {
 };
 
 const getTemplateFontSize = (templateType: string, styles?: any): string => {
-  return styles?.fontSize || '12px';
+  // Use template-specific default if no style provided
+  if (styles?.fontSize) return styles.fontSize;
+  
+  const sizeMap: Record<string, string> = {
+    CLASSIC: '12px',
+    MODERN: '11px',
+    MINIMAL: '9px',
+    PROFESSIONAL: '11px',
+    // Legacy support
+    DEFAULT: '12px',
+    DETAILED: '11px',
+    COMPACT: '11px',
+  };
+  
+  return sizeMap[templateType] || '12px';
 };
 
 const loadTemplates = async () => {
