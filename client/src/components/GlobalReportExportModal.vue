@@ -91,60 +91,60 @@
           <!-- Template Selection -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Template</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               <button
                 type="button"
-                @click="exportForm.template = 'minimalist'"
+                @click="exportForm.template = 'clean'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'minimalist' 
+                :class="exportForm.template === 'clean' || exportForm.template === 'minimalist'
                   ? 'border-gray-800 bg-gray-900 text-white font-semibold' 
                   : 'border-gray-300 hover:border-gray-400 bg-white'"
               >
-                <span class="font-medium">Minimalis</span>
+                <span class="font-medium">Clean</span>
                 <span class="text-xs opacity-75">Sederhana</span>
               </button>
               <button
                 type="button"
-                @click="exportForm.template = 'modern'"
+                @click="exportForm.template = 'contemporary'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'modern' 
+                :class="exportForm.template === 'contemporary' || exportForm.template === 'modern' || exportForm.template === 'classic'
                   ? 'border-blue-600 bg-blue-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-blue-300 bg-white'"
               >
-                <span class="font-medium">Modern</span>
-                <span class="text-xs opacity-75">Kontemporer</span>
+                <span class="font-medium">Contemporary</span>
+                <span class="text-xs opacity-75">Modern</span>
               </button>
               <button
                 type="button"
-                @click="exportForm.template = 'classic'"
+                @click="exportForm.template = 'vibrant'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'classic' 
-                  ? 'border-amber-800 bg-amber-800 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-amber-400 bg-white'"
-              >
-                <span class="font-medium">Klasik</span>
-                <span class="text-xs opacity-75">Tradisional</span>
-              </button>
-              <button
-                type="button"
-                @click="exportForm.template = 'colorful'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'colorful' 
+                :class="exportForm.template === 'vibrant' || exportForm.template === 'colorful'
                   ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-pink-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-purple-300 bg-white'"
               >
-                <span class="font-medium">Berwarna</span>
-                <span class="text-xs opacity-75">Vibrant</span>
+                <span class="font-medium">Vibrant</span>
+                <span class="text-xs opacity-75">Berwarna</span>
               </button>
               <button
                 type="button"
-                @click="exportForm.template = 'elegant'"
+                @click="exportForm.template = 'professional'"
                 class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'elegant' 
+                :class="exportForm.template === 'professional' || exportForm.template === 'elegant'
                   ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold' 
                   : 'border-gray-300 hover:border-emerald-300 bg-white'"
               >
-                <span class="font-medium">Elegan</span>
+                <span class="font-medium">Professional</span>
+                <span class="text-xs opacity-75">Hijau</span>
+              </button>
+              <button
+                type="button"
+                @click="exportForm.template = 'executive'"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                :class="exportForm.template === 'executive'
+                  ? 'border-amber-600 bg-amber-50 text-amber-900 font-semibold' 
+                  : 'border-gray-300 hover:border-amber-300 bg-white'"
+              >
+                <span class="font-medium">Executive</span>
                 <span class="text-xs opacity-75">Premium</span>
               </button>
             </div>
@@ -228,16 +228,22 @@ const exportForm = ref({
   period: 'custom' as 'daily' | 'weekly' | 'monthly' | 'custom',
   startDate: props.defaultStartDate || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
   endDate: props.defaultEndDate || new Date().toISOString().split('T')[0],
-  template: 'modern' as 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
+  template: 'contemporary' as 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
 });
 
 const getTemplateLabel = (template: string) => {
   const labels: Record<string, string> = {
-    minimalist: 'Minimalis',
-    modern: 'Modern',
-    classic: 'Klasik',
-    colorful: 'Berwarna',
-    elegant: 'Elegan',
+    clean: 'Clean & Simple',
+    contemporary: 'Contemporary',
+    vibrant: 'Vibrant',
+    professional: 'Professional',
+    executive: 'Executive',
+    // Legacy support
+    minimalist: 'Clean & Simple',
+    modern: 'Contemporary',
+    classic: 'Contemporary',
+    colorful: 'Vibrant',
+    elegant: 'Professional',
   };
   return labels[template] || template;
 };
