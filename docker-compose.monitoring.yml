@@ -1,0 +1,92 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: warungin-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "9090:9090"
+    networks:
+      - new-warungin_warungin-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: warungin-grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3001:3000"
+    networks:
+      - new-warungin_warungin-network
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  loki:
+    image: grafana/loki:latest
+    container_name: warungin-loki
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki:/etc/loki
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    ports:
+      - "3100:3100"
+    networks:
+      - new-warungin_warungin-network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: warungin-promtail
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/promtail:/etc/promtail
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs:/var/log/app:ro
+      - ./nginx/logs:/var/log/nginx:ro
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - new-warungin_warungin-network
+    depends_on:
+      - loki
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+
+networks:
+  new-warungin_warungin-network:
+    external: true
