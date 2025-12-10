@@ -25,6 +25,43 @@ SMTP_PASSWORD=your-app-password
 ALERT_EMAIL_TO=admin@warungin.com
 ```
 
+## Quick Setup
+
+### Option 1: Manual Configuration (Recommended)
+
+1. Copy template to config:
+   ```bash
+   cp monitoring/alertmanager/alertmanager.yml.template monitoring/alertmanager/alertmanager.yml
+   ```
+
+2. Edit `monitoring/alertmanager/alertmanager.yml` and uncomment/configure:
+   - Slack webhook URL and channel
+   - SMTP settings for email
+   - Alert recipient email addresses
+
+### Option 2: Automatic Configuration (Using Script)
+
+1. Set environment variables in `.env`:
+   ```bash
+   SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+   SLACK_CHANNEL=alerts
+   SLACK_CHANNEL_CRITICAL=alerts-critical
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_FROM=alerts@warungin.com
+   SMTP_USERNAME=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password
+   ALERT_EMAIL_TO=admin@warungin.com
+   ```
+
+2. Run generation script:
+   ```bash
+   chmod +x scripts/generate-alertmanager-config.sh
+   ./scripts/generate-alertmanager-config.sh
+   ```
+
+3. Review generated `monitoring/alertmanager/alertmanager.yml`
+
 ## Setup Instructions
 
 ### 1. Slack Setup
