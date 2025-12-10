@@ -13,14 +13,15 @@ const router = Router();
 
 const createDiscountSchema = z.object({
   name: z.string().min(1),
-  discountType: z.enum(['AMOUNT_BASED', 'BUNDLE', 'PRODUCT_BASED']),
+  discountType: z.enum(['AMOUNT_BASED', 'BUNDLE', 'PRODUCT_BASED', 'QUANTITY_BASED']),
   discountValue: z.number().positive(),
   discountValueType: z.enum(['PERCENTAGE', 'FIXED']),
   minAmount: z.number().optional(),
   minQuantity: z.number().int().positive().optional(),
-  applicableProducts: z.array(z.string()).optional(),
-  bundleProducts: z.array(z.string()).optional(),
+  applicableProducts: z.array(z.string()).optional().nullable(),
+  bundleProducts: z.array(z.string()).optional().nullable(),
   bundleDiscountProduct: z.string().optional(),
+  applicableTo: z.enum(['ALL', 'MEMBER_ONLY']).optional(),
   isActive: z.boolean().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),

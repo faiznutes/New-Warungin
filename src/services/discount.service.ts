@@ -105,7 +105,7 @@ export class DiscountService {
           : [];
 
         for (const item of items) {
-          if (applicableProductIds.includes(item.productId)) {
+          if (applicableProductIds.length === 0 || applicableProductIds.includes(item.productId)) {
             const itemSubtotal = item.price * item.quantity;
             
             if (discount.discountValueType === 'PERCENTAGE') {
@@ -115,6 +115,31 @@ export class DiscountService {
             }
             
             appliedTo.push(item.productId);
+          }
+        }
+      } else if (discount.discountType === 'QUANTITY_BASED') {
+        // Diskon berdasarkan jumlah item (contoh: beli 3 item dapat diskon)
+        const minQuantity = discount.minQuantity || 1;
+        const applicableProductIds = discount.applicableProducts 
+          ? (discount.applicableProducts as string[])
+          : [];
+
+        // Check if any item meets the minimum quantity requirement
+        for (const item of items) {
+          // If applicableProducts is empty/null, apply to all products
+          if (applicableProductIds.length === 0 || applicableProductIds.includes(item.productId)) {
+            if (item.quantity >= minQuantity) {
+              const itemSubtotal = item.price * item.quantity;
+              
+              if (discount.discountValueType === 'PERCENTAGE') {
+                discountAmount += (itemSubtotal * Number(discount.discountValue)) / 100;
+              } else {
+                // For FIXED, apply discount per item that meets quantity requirement
+                discountAmount += Number(discount.discountValue) * item.quantity;
+              }
+              
+              appliedTo.push(item.productId);
+            }
           }
         }
       }

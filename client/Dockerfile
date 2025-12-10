@@ -51,11 +51,16 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Change ownership of nginx files
 RUN chown -R nginx-user:nginx-user /usr/share/nginx/html /etc/nginx/conf.d
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 # Switch to non-root user
 USER nginx-user
 
 # Expose port
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Use entrypoint script to create directories before nginx starts
+ENTRYPOINT ["/docker-entrypoint.sh"]
 

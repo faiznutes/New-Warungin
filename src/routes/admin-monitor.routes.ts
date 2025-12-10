@@ -23,16 +23,30 @@ const requireSuperAdmin = (req: Request, res: Response, next: any) => {
 router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Request, res: Response) => {
   try {
     logger.info('Fetching Docker containers list...');
-    // Get container list using docker ps
-    const { stdout: containersOutput } = await execAsync('docker ps -a --format "{{.ID}}|{{.Names}}|{{.Image}}|{{.Status}}|{{.Ports}}"');
+    // Get container list using docker ps with better error handling
+    let containersOutput = '';
+    try {
+      const result = await execAsync('docker ps -a --format "{{.ID}}|{{.Names}}|{{.Image}}|{{.Status}}|{{.Ports}}"', {
+        timeout: 10000,
+      });
+      containersOutput = result.stdout;
+    } catch (execError: any) {
+      logger.error('Error executing docker ps:', execError);
+      // Return empty array instead of error
+      return res.json({ containers: [] });
+    }
+    
+    if (!containersOutput || !containersOutput.trim()) {
+      return res.json({ containers: [] });
+    }
     
     const containers = containersOutput.trim().split('\n').filter(Boolean).map((line) => {
       const [id, name, image, status, ports] = line.split('|');
       return {
-        id: id.substring(0, 12),
-        name,
-        image,
-        status: status.includes('Up') ? 'running' : status.includes('Restarting') ? 'restarting' : 'stopped',
+        id: id ? id.substring(0, 12) : 'unknown',
+        name: name || 'unknown',
+        image: image || 'unknown',
+        status: status && status.includes('Up') ? 'running' : status && status.includes('Restarting') ? 'restarting' : 'stopped',
         ports: ports || '-',
         health: 'unknown', // Will be updated below
         cpu: 'N/A',
@@ -40,12 +54,19 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
       };
     });
 
-    // Get health status and stats for each container
+    // Get health status and stats for each container (with timeout per container)
     for (const container of containers) {
       try {
-        // Get health status
-        const { stdout: inspectOutput } = await execAsync(`docker inspect ${container.name} --format "{{.State.Health.Status}}"`);
-        container.health = inspectOutput.trim() || 'no-healthcheck';
+        // Get health status with timeout
+        try {
+          const { stdout: inspectOutput } = await execAsync(
+            `docker inspect ${container.name} --format "{{.State.Health.Status}}" 2>/dev/null || echo "no-healthcheck"`,
+            { timeout: 3000 }
+          );
+          container.health = inspectOutput.trim() || 'no-healthcheck';
+        } catch {
+          container.health = 'no-healthcheck';
+        }
 
         // Get CPU and memory stats (if running)
         if (container.status === 'running') {
@@ -53,11 +74,12 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
             // Escape container name for shell safety
             const escapedName = container.name.replace(/[^a-zA-Z0-9_-]/g, '');
             const { stdout: statsOutput } = await execAsync(
-              `docker stats ${escapedName} --no-stream --format "{{.CPUPerc}}|{{.MemUsage}}" 2>/dev/null || echo "N/A|N/A"`
+              `timeout 3 docker stats ${escapedName} --no-stream --format "{{.CPUPerc}}|{{.MemUsage}}" 2>/dev/null || echo "N/A|N/A"`,
+              { timeout: 5000 }
             );
             const [cpu, memory] = statsOutput.trim().split('|');
-            container.cpu = cpu && cpu !== 'N/A' ? cpu.trim() : 'N/A';
-            container.memory = memory && memory !== 'N/A' ? memory.trim() : 'N/A';
+            container.cpu = cpu && cpu !== 'N/A' && cpu.trim() ? cpu.trim() : 'N/A';
+            container.memory = memory && memory !== 'N/A' && memory.trim() ? memory.trim() : 'N/A';
           } catch {
             // Stats might fail for some containers, ignore
             container.cpu = 'N/A';
@@ -66,6 +88,7 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
         }
       } catch {
         // Container might not exist or be accessible, skip
+        container.health = container.health || 'unknown';
       }
     }
 
@@ -73,7 +96,8 @@ router.get('/docker/containers', authGuard, requireSuperAdmin, async (req: Reque
     res.json({ containers });
   } catch (error: any) {
     logger.error('Error fetching containers:', error);
-    res.status(500).json({ message: 'Failed to fetch containers', error: error.message });
+    // Return empty array instead of error to prevent frontend crash
+    res.json({ containers: [] });
   }
 });
 
@@ -151,12 +175,12 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
     // Get CPU usage - with fallback methods
     let cpu = 0;
     try {
-      const { stdout: cpuOutput } = await execAsync("top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'");
+      const { stdout: cpuOutput } = await execAsync("top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' | awk '{print 100 - $1}'", { timeout: 5000 });
       cpu = parseFloat(cpuOutput.trim()) || 0;
     } catch {
       // Fallback: use /proc/stat
       try {
-        const { stdout: cpuStat } = await execAsync("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$3+$4+$5)} END {print usage}'");
+        const { stdout: cpuStat } = await execAsync("grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$3+$4+$5)} END {print usage}'", { timeout: 3000 });
         cpu = parseFloat(cpuStat.trim()) || 0;
       } catch {
         cpu = 0;
@@ -168,11 +192,11 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
     let memoryUsed = '0';
     let memoryTotal = '0';
     try {
-      const { stdout: memOutput } = await execAsync("free | grep Mem | awk '{printf \"%.1f\", $3/$2 * 100.0}'");
+      const { stdout: memOutput } = await execAsync("free | grep Mem | awk '{printf \"%.1f\", $3/$2 * 100.0}'", { timeout: 3000 });
       memory = parseFloat(memOutput.trim()) || 0;
       
-      const { stdout: memUsedOutput } = await execAsync("free -h | grep Mem | awk '{print $3}'");
-      const { stdout: memTotalOutput } = await execAsync("free -h | grep Mem | awk '{print $2}'");
+      const { stdout: memUsedOutput } = await execAsync("free -h | grep Mem | awk '{print $3}'", { timeout: 3000 });
+      const { stdout: memTotalOutput } = await execAsync("free -h | grep Mem | awk '{print $2}'", { timeout: 3000 });
       memoryUsed = memUsedOutput.trim() || '0';
       memoryTotal = memTotalOutput.trim() || '0';
     } catch (memError: any) {
@@ -187,7 +211,7 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
     let disks: any[] = [];
     try {
       // Try to get all mounted filesystems (including Docker volumes)
-      const { stdout: diskOutput } = await execAsync("df -h | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+      const { stdout: diskOutput } = await execAsync("df -h | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'", { timeout: 5000 });
       const diskLines = diskOutput.trim().split('\n').filter(Boolean);
       disks = diskLines.map((line) => {
         const parts = line.split('|');
@@ -209,7 +233,7 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
       
       // If no disks found, try alternative method
       if (disks.length === 0) {
-        const { stdout: altDiskOutput } = await execAsync("df -h / | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+        const { stdout: altDiskOutput } = await execAsync("df -h / | tail -n +2 | awk '{print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'", { timeout: 3000 });
         const altParts = altDiskOutput.trim().split('|');
         if (altParts.length >= 4) {
           disks = [{
@@ -225,7 +249,7 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
       logger.warn('Error fetching disk usage, using fallback:', diskError.message);
       // Fallback: return root filesystem info
       try {
-        const { stdout: rootDisk } = await execAsync("df -h / | awk 'NR==2 {print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'");
+        const { stdout: rootDisk } = await execAsync("df -h / | awk 'NR==2 {print $6\"|\"$5\"|\"$3\"|\"$2\"|\"$1}'", { timeout: 3000 });
         const parts = rootDisk.trim().split('|');
         if (parts.length >= 4) {
           disks = [{
@@ -237,7 +261,7 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
           }];
         }
       } catch {
-        // Last resort: return empty array with message
+        // Last resort: return empty array
         disks = [];
       }
     }
@@ -245,12 +269,12 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
     // Get Uptime - with fallback
     let uptime = 'N/A';
     try {
-      const { stdout: uptimeOutput } = await execAsync("uptime -p");
+      const { stdout: uptimeOutput } = await execAsync("uptime -p", { timeout: 3000 });
       uptime = uptimeOutput.trim() || 'N/A';
     } catch {
       try {
         // Fallback: use /proc/uptime
-        const { stdout: uptimeSec } = await execAsync("cat /proc/uptime | awk '{print int($1)}'");
+        const { stdout: uptimeSec } = await execAsync("cat /proc/uptime | awk '{print int($1)}'", { timeout: 2000 });
         const seconds = parseInt(uptimeSec.trim()) || 0;
         const days = Math.floor(seconds / 86400);
         const hours = Math.floor((seconds % 86400) / 3600);
@@ -264,12 +288,12 @@ router.get('/server/resources', authGuard, requireSuperAdmin, async (req: Reques
     // Get Load Average - with fallback
     let loadAverage = 'N/A';
     try {
-      const { stdout: loadOutput } = await execAsync("uptime | awk -F'load average:' '{print $2}' | awk '{print $1}' | sed 's/,//'");
+      const { stdout: loadOutput } = await execAsync("uptime | awk -F'load average:' '{print $2}' | awk '{print $1}' | sed 's/,//'", { timeout: 3000 });
       loadAverage = loadOutput.trim() || 'N/A';
     } catch {
       try {
         // Fallback: use /proc/loadavg
-        const { stdout: loadAvg } = await execAsync("cat /proc/loadavg | awk '{print $1}'");
+        const { stdout: loadAvg } = await execAsync("cat /proc/loadavg | awk '{print $1}'", { timeout: 2000 });
         loadAverage = loadAvg.trim() || 'N/A';
       } catch {
         loadAverage = 'N/A';
@@ -304,10 +328,14 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
       const http = require('http');
       const response = await new Promise((resolve, reject) => {
         const req = http.get('http://localhost:3000/health', (res: any) => {
-          resolve({ ok: res.statusCode === 200 });
+          let data = '';
+          res.on('data', (chunk: any) => { data += chunk; });
+          res.on('end', () => {
+            resolve({ ok: res.statusCode === 200, data });
+          });
         });
         req.on('error', reject);
-        req.setTimeout(2000, () => {
+        req.setTimeout(3000, () => {
           req.destroy();
           reject(new Error('Timeout'));
         });
@@ -317,59 +345,71 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
         status: (response as any).ok ? 'healthy' : 'unhealthy',
         message: (response as any).ok ? 'API is responding' : 'API is not responding',
       });
-    } catch {
+    } catch (err: any) {
+      logger.warn('Backend health check failed:', err.message);
       services.push({
         name: 'Backend API',
         status: 'unhealthy',
-        message: 'API is not accessible',
+        message: `API is not accessible: ${err.message}`,
       });
     }
 
     // Check PostgreSQL
     try {
-      await execAsync('docker exec warungin-postgres pg_isready -U postgres');
+      await execAsync('docker exec warungin-postgres pg_isready -U postgres', { timeout: 3000 });
       services.push({
         name: 'PostgreSQL',
         status: 'healthy',
         message: 'Database is ready',
       });
-    } catch {
+    } catch (err: any) {
+      logger.warn('PostgreSQL health check failed:', err.message);
       services.push({
         name: 'PostgreSQL',
         status: 'unhealthy',
-        message: 'Database is not ready',
+        message: `Database is not ready: ${err.message}`,
       });
     }
 
     // Check Redis
     try {
-      await execAsync('docker exec warungin-redis redis-cli ping');
-      services.push({
-        name: 'Redis',
-        status: 'healthy',
-        message: 'Cache is ready',
-      });
-    } catch {
+      const { stdout } = await execAsync('docker exec warungin-redis redis-cli ping', { timeout: 3000 });
+      if (stdout.trim() === 'PONG') {
+        services.push({
+          name: 'Redis',
+          status: 'healthy',
+          message: 'Cache is ready',
+        });
+      } else {
+        services.push({
+          name: 'Redis',
+          status: 'unhealthy',
+          message: 'Cache is not responding correctly',
+        });
+      }
+    } catch (err: any) {
+      logger.warn('Redis health check failed:', err.message);
       services.push({
         name: 'Redis',
         status: 'unhealthy',
-        message: 'Cache is not ready',
+        message: `Cache is not ready: ${err.message}`,
       });
     }
 
     // Check Nginx
     try {
-      await execAsync('docker exec warungin-nginx nginx -t');
+      await execAsync('docker exec warungin-nginx nginx -t', { timeout: 3000 });
       services.push({
         name: 'Nginx',
         status: 'healthy',
         message: 'Web server is ready',
       });
-    } catch {
+    } catch (err: any) {
+      logger.warn('Nginx health check failed:', err.message);
       services.push({
         name: 'Nginx',
         status: 'unhealthy',
-        message: 'Web server is not ready',
+        message: `Web server is not ready: ${err.message}`,
       });
     }
 

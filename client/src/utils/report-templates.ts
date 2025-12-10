@@ -119,20 +119,28 @@ function generateCleanTemplate(data: ReportData): string {
     }
     .stat-card {
       border: 1px solid #e5e7eb;
-      padding: 20px;
-      border-radius: 4px;
+      padding: 24px 20px;
+      border-radius: 8px;
+      background: #ffffff;
+      transition: box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stat-card:hover {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     .stat-label {
       font-size: 9pt;
       color: #6b7280;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      font-weight: 600;
     }
     .stat-value {
-      font-size: 20pt;
-      font-weight: 400;
+      font-size: 22pt;
+      font-weight: 600;
       color: #111827;
+      line-height: 1.2;
     }
     .footer {
       position: fixed;
@@ -241,25 +249,32 @@ function generateContemporaryTemplate(data: ReportData): string {
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
+      gap: 24px;
+      margin-bottom: 35px;
     }
     .stat-card {
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      padding: 25px;
+      padding: 28px 25px;
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
     .stat-label {
       font-size: 10pt;
       color: #4b5563;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-weight: 600;
+      letter-spacing: 0.3px;
     }
     .stat-value {
-      font-size: 24pt;
+      font-size: 26pt;
       font-weight: 700;
       color: #1f2937;
+      line-height: 1.2;
     }
     .footer {
       position: fixed;
@@ -580,14 +595,6 @@ function generateProfessionalTemplate(data: ReportData): string {
 </body>
 </html>
   `;
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(amount);
 }
 
 // Template 5: Executive (NEW)

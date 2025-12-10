@@ -289,17 +289,23 @@ const viewingBackup = ref<string | null>(null);
 
 const loadTenants = async () => {
   try {
-    const response = await api.get('/tenants', { params: { limit: 1000 } });
-    tenants.value = response.data.data || [];
+    const response = await api.get('/tenants', { 
+      params: { limit: 1000 },
+      timeout: 5000, // 5 second timeout
+    });
+    tenants.value = response.data?.data || [];
   } catch (error: any) {
     console.error('Error loading tenants:', error);
+    tenants.value = []; // Set empty array on error
   }
 };
 
 const loadCriticalTenants = async () => {
   try {
-    const response = await api.get('/superadmin/backups/critical');
-    const critical = response.data.criticalTenants || [];
+    const response = await api.get('/superadmin/backups/critical', {
+      timeout: 5000, // 5 second timeout
+    });
+    const critical = response.data?.criticalTenants || [];
     criticalTenants.value = new Set(critical.map((t: any) => t.tenantId));
     
     if (critical.length > 0) {
@@ -310,6 +316,7 @@ const loadCriticalTenants = async () => {
     }
   } catch (error: any) {
     console.error('Error loading critical tenants:', error);
+    criticalTenants.value = new Set(); // Set empty set on error
   }
 };
 
@@ -334,10 +341,14 @@ const loadBackups = async () => {
       params.endDate = filters.value.endDate;
     }
 
-    const response = await api.get('/superadmin/backups', { params });
+    const response = await api.get('/superadmin/backups', { 
+      params,
+      timeout: 10000, // 10 second timeout
+    });
+    
     // Handle response format
     if (response.data && response.data.data) {
-    backupLogs.value = response.data.data || [];
+      backupLogs.value = response.data.data || [];
       pagination.value = response.data.pagination || {
         page: 1,
         limit: 20,
@@ -355,12 +366,25 @@ const loadBackups = async () => {
     }
   } catch (error: any) {
     console.error('Error loading backups:', error);
-    // Don't show error popup if it's just an empty result or network issue
-    const errorMessage = error.response?.data?.message || error.message || '';
-    if (errorMessage && !errorMessage.includes('Database error') && !errorMessage.includes('Network')) {
-      await showError(errorMessage || 'Gagal memuat backup. Silakan coba lagi.');
+    
+    // Handle different error types
+    const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat backup';
+    const errorCode = error.response?.data?.error || '';
+    
+    // Only show error if it's not a database connection error or empty result
+    if (errorCode === 'DATABASE_CONNECTION_ERROR') {
+      await showError('Koneksi database gagal. Silakan coba lagi nanti.', 'Koneksi Error');
+    } else if (errorCode === 'DATABASE_ERROR') {
+      await showError('Terjadi kesalahan pada database. Silakan hubungi administrator.', 'Database Error');
+    } else if (error.response?.status === 403) {
+      await showError('Anda tidak memiliki akses untuk melihat backup logs.', 'Akses Ditolak');
+    } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      await showError('Request timeout. Silakan coba lagi.', 'Timeout');
+    } else if (error.response?.status !== 404 && !errorMessage.includes('Network')) {
+      await showError(errorMessage || 'Gagal memuat backup. Silakan coba lagi.', 'Error');
     }
-    // Set empty state instead of showing error
+    
+    // Set empty state
     backupLogs.value = [];
     pagination.value = {
       page: 1,
@@ -494,7 +518,21 @@ const regenerateBackup = async (tenantId: string) => {
 };
 
 onMounted(async () => {
-  await Promise.all([loadTenants(), loadBackups(), loadCriticalTenants()]);
+  // Load data independently with timeout to prevent hanging
+  // Don't wait for all to complete - load them in parallel but independently
+  loadTenants().catch(err => {
+    console.error('Failed to load tenants:', err);
+  });
+  
+  loadBackups().catch(err => {
+    console.error('Failed to load backups:', err);
+    // Ensure loading is reset even on error
+    loading.value = false;
+  });
+  
+  loadCriticalTenants().catch(err => {
+    console.error('Failed to load critical tenants:', err);
+  });
 });
 </script>
 

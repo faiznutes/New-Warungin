@@ -8,29 +8,10 @@
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
 
-    <!-- Tabs Navigation -->
-    <div class="px-4 sm:px-6 pt-4 sm:pt-6">
-      <div class="border-b border-gray-200">
-        <nav class="flex -mb-px space-x-8">
-          <button
-            @click="activeTab = 'products'"
-            :class="[
-              'py-4 px-1 border-b-2 font-medium text-sm transition-colors',
-              activeTab === 'products'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            ]"
-          >
-            Daftar Produk
-          </button>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Products Tab Content -->
-    <div v-if="activeTab === 'products'" class="flex flex-col h-full">
-    <!-- Error Boundary -->
-    <div v-if="hasError" class="flex flex-col items-center justify-center py-16 px-4">
+    <!-- Main Content Section -->
+    <section class="flex flex-col flex-1 overflow-hidden px-4 sm:px-6 pt-4 sm:pt-6">
+      <!-- Error Boundary -->
+      <div v-if="hasError" class="flex flex-col items-center justify-center py-16">
       <svg class="w-20 h-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
@@ -44,10 +25,10 @@
       </button>
     </div>
 
-    <!-- Main Content -->
-    <div v-else class="flex flex-col h-full">
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
+      <!-- Main Content -->
+      <div v-else class="flex flex-col flex-1">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6">
       <div class="flex flex-col gap-2">
         <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Produk</h2>
         <p class="text-sm sm:text-base text-gray-600">Kelola produk dan stok</p>
@@ -123,8 +104,8 @@
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6">
       <!-- Search Bar -->
       <div class="mb-4">
         <div class="relative">
@@ -208,8 +189,8 @@
       </div>
     </div>
 
-    <!-- Product Limit Info with Progress Bar -->
-    <div v-if="productLimit && productLimit.limit !== undefined && productLimit.limit !== -1" class="mb-4 sm:mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+        <!-- Product Limit Info with Progress Bar -->
+        <div v-if="productLimit && productLimit.limit !== undefined && productLimit.limit !== -1" class="mb-4 sm:mb-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
       <div class="flex items-center justify-between mb-2">
         <div>
           <p class="font-semibold text-blue-900">Limit Produk</p>
@@ -230,8 +211,8 @@
       </div>
     </div>
 
-      <!-- Tenant Selection Message -->
-      <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300 mx-4 sm:mx-6">
+        <!-- Tenant Selection Message -->
+        <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
         <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
@@ -239,22 +220,22 @@
         <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat produk</p>
       </div>
 
-      <!-- Products Grid -->
-      <div v-else-if="loading" class="flex items-center justify-center py-12">
+        <!-- Products Grid -->
+        <div v-else-if="loading" class="flex items-center justify-center py-12">
         <div class="flex flex-col items-center">
           <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
           <div class="text-gray-600 font-medium">Memuat produk...</div>
         </div>
       </div>
 
-      <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
+        <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
         <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
         <p class="text-gray-500">Belum ada produk</p>
       </div>
 
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-2 sm:px-0">
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       <div
         v-for="product in products"
         :key="product.id"
@@ -341,8 +322,8 @@
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
+        <!-- Pagination -->
+        <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
       <button
         @click="loadProducts(pagination.page - 1)"
         :disabled="pagination.page === 1"
@@ -360,10 +341,9 @@
       >
         Selanjutnya
       </button>
-    </div>
+        </div>
       </div>
-    </div>
-    </div>
+    </section>
 
   <!-- Product Modal -->
   <ProductModal
@@ -416,7 +396,6 @@ const products = ref<Product[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<Product | null>(null);
-const activeTab = ref<'products'>('products');
 const hasError = ref(false);
 const errorMessage = ref<string>('');
 

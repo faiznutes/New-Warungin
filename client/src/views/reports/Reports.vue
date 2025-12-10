@@ -545,7 +545,7 @@ const reportRows = computed(() => {
   
   switch (reportType.value) {
     case 'sales':
-      const salesRows = safeMap(byDateArray, (item: any, index: number) => {
+      const salesRows = safeMap(byDate, (item: any, index: number) => {
         // Calculate revenue based on reportViewType
         let revenue = item?.revenue || 0;
         let costOfGoods = 0;
@@ -584,8 +584,8 @@ const reportRows = computed(() => {
       return salesRows;
     case 'financial':
       // If byDate exists, use it; otherwise show summary
-      if (byDateArray && byDateArray.length > 0) {
-        return safeMap(byDateArray, (item: any) => {
+      if (byDate && byDate.length > 0) {
+        return safeMap(byDate, (item: any) => {
           let revenue = item?.revenue || reportData.value?.revenue || 0;
           let costOfGoods = item?.costOfGoods || reportData.value?.costOfGoods || 0;
           let grossProfit = item?.grossProfit || reportData.value?.grossProfit || 0;

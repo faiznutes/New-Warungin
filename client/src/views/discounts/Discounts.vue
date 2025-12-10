@@ -173,12 +173,112 @@
               <select
                 v-model="discountForm.discountType"
                 required
+                @change="handleDiscountTypeChange"
                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="AMOUNT_BASED">Berdasarkan Total Pembelian</option>
                 <option value="BUNDLE">Bundle (Beli Bersama)</option>
                 <option value="PRODUCT_BASED">Berdasarkan Produk Tertentu</option>
+                <option value="QUANTITY_BASED">Berdasarkan Jumlah Item (Beli X dapat diskon)</option>
               </select>
+            </div>
+
+            <!-- Product Selection Type (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED) -->
+            <div v-if="discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Pilihan Produk</label>
+              <select
+                v-model="productSelectionType"
+                @change="handleProductSelectionTypeChange"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="ALL">Semua Produk</option>
+                <option value="CATEGORY">Berdasarkan Kategori</option>
+                <option value="PRODUCTS">Pilih Produk Tertentu</option>
+              </select>
+            </div>
+
+            <!-- Category Selection (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED with CATEGORY) -->
+            <div v-if="(discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED') && productSelectionType === 'CATEGORY'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Kategori</label>
+              <select
+                v-model="selectedCategory"
+                @change="handleCategoryChange"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Pilih Kategori</option>
+                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+              </select>
+            </div>
+
+            <!-- Product Selection with Checkbox (for PRODUCT_BASED, BUNDLE, QUANTITY_BASED with PRODUCTS) -->
+            <div v-if="(discountForm.discountType === 'PRODUCT_BASED' || discountForm.discountType === 'BUNDLE' || discountForm.discountType === 'QUANTITY_BASED') && productSelectionType === 'PRODUCTS'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                {{ discountForm.discountType === 'BUNDLE' ? 'Pilih Produk untuk Bundle (Checkbox)' : 'Pilih Produk (Checkbox)' }}
+              </label>
+              <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-lg p-3 bg-white">
+                <div v-if="loadingProducts" class="text-center py-4 text-gray-500">Memuat produk...</div>
+                <div v-else-if="availableProducts.length === 0" class="text-center py-4 text-gray-500">Tidak ada produk tersedia</div>
+                <div v-else class="space-y-2">
+                  <label
+                    v-for="product in availableProducts"
+                    :key="product.id"
+                    class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      :value="product.id"
+                      :checked="discountForm.discountType === 'BUNDLE' 
+                        ? discountForm.bundleProducts.includes(product.id)
+                        : discountForm.applicableProducts.includes(product.id)"
+                      @change="handleProductCheckboxChange(product.id, $event)"
+                      class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span class="text-sm text-gray-700 flex-1">
+                      {{ product.name }} 
+                      <span class="text-gray-500">({{ formatCurrency(product.price) }})</span>
+                      <span v-if="product.category" class="text-xs text-gray-400 ml-2">{{ product.category }}</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bundle Discount Product Selection (for BUNDLE) -->
+            <div v-if="discountForm.discountType === 'BUNDLE' && discountForm.bundleProducts.length > 0">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Produk yang Mendapat Diskon</label>
+              <select
+                v-model="discountForm.bundleDiscountProduct"
+                required
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Pilih Produk</option>
+                <option
+                  v-for="productId in discountForm.bundleProducts"
+                  :key="productId"
+                  :value="productId"
+                >
+                  {{ getProductName(productId) }}
+                </option>
+              </select>
+              <p class="mt-1 text-xs text-gray-500">
+                Pilih produk yang akan mendapat diskon ketika semua produk bundle dibeli bersama
+              </p>
+            </div>
+
+            <!-- Quantity Based Settings (for QUANTITY_BASED) -->
+            <div v-if="discountForm.discountType === 'QUANTITY_BASED'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Jumlah Item yang Harus Dibeli</label>
+              <input
+                v-model.number="discountForm.minQuantity"
+                type="number"
+                required
+                min="1"
+                placeholder="Contoh: 3 (beli 3 item dapat diskon)"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+              <p class="mt-1 text-xs text-gray-500">
+                Contoh: Beli 3 item ayam (20rb) = 60rb, dapat diskon sesuai nilai diskon yang diatur
+              </p>
             </div>
 
             <!-- Discount Value Type -->
@@ -323,7 +423,7 @@ const filters = ref({
 
 const discountForm = ref({
   name: '',
-  discountType: 'AMOUNT_BASED' as 'AMOUNT_BASED' | 'BUNDLE' | 'PRODUCT_BASED',
+  discountType: 'AMOUNT_BASED' as 'AMOUNT_BASED' | 'BUNDLE' | 'PRODUCT_BASED' | 'QUANTITY_BASED',
   discountValue: 0,
   discountValueType: 'PERCENTAGE' as 'PERCENTAGE' | 'FIXED',
   minAmount: undefined as number | undefined,
@@ -336,6 +436,12 @@ const discountForm = ref({
   startDate: '',
   endDate: '',
 });
+
+const productSelectionType = ref<'ALL' | 'CATEGORY' | 'PRODUCTS'>('ALL');
+const selectedCategory = ref<string>('');
+const categories = ref<string[]>([]);
+const availableProducts = ref<any[]>([]);
+const loadingProducts = ref(false);
 
 const filteredDiscounts = computed(() => {
   let result = discounts.value;
@@ -354,8 +460,107 @@ const getDiscountTypeLabel = (type: string) => {
     AMOUNT_BASED: 'Berdasarkan Total',
     BUNDLE: 'Bundle',
     PRODUCT_BASED: 'Berdasarkan Produk',
+    QUANTITY_BASED: 'Berdasarkan Jumlah Item',
   };
   return labels[type] || type;
+};
+
+const loadProducts = async () => {
+  if (needsTenantSelection.value) {
+    return;
+  }
+
+  loadingProducts.value = true;
+  try {
+    const response = await api.get('/products', { params: { limit: 1000 } });
+    const productsData = response.data.data || response.data;
+    availableProducts.value = Array.isArray(productsData) ? productsData : [];
+    
+    // Extract unique categories
+    const uniqueCategories = new Set<string>();
+    availableProducts.value.forEach((p: any) => {
+      if (p.category) uniqueCategories.add(p.category);
+    });
+    categories.value = Array.from(uniqueCategories);
+  } catch (error: any) {
+    console.error('Error loading products:', error);
+  } finally {
+    loadingProducts.value = false;
+  }
+};
+
+const getProductName = (productId: string): string => {
+  const product = availableProducts.value.find((p: any) => p.id === productId);
+  return product ? product.name : productId;
+};
+
+const handleDiscountTypeChange = () => {
+  // Reset product selections when discount type changes
+  discountForm.value.applicableProducts = [];
+  discountForm.value.bundleProducts = [];
+  discountForm.value.bundleDiscountProduct = '';
+  productSelectionType.value = 'ALL';
+  selectedCategory.value = '';
+};
+
+const handleProductSelectionTypeChange = () => {
+  // Reset selections when selection type changes
+  discountForm.value.applicableProducts = [];
+  discountForm.value.bundleProducts = [];
+  discountForm.value.bundleDiscountProduct = '';
+  selectedCategory.value = '';
+  
+  // Load products if needed
+  if (productSelectionType.value === 'PRODUCTS' && availableProducts.value.length === 0) {
+    loadProducts();
+  }
+};
+
+const handleCategoryChange = () => {
+  // Filter products by category and update applicableProducts/bundleProducts
+  if (selectedCategory.value) {
+    const categoryProducts = availableProducts.value
+      .filter((p: any) => p.category === selectedCategory.value)
+      .map((p: any) => p.id);
+    
+    if (discountForm.value.discountType === 'BUNDLE') {
+      discountForm.value.bundleProducts = categoryProducts;
+    } else {
+      discountForm.value.applicableProducts = categoryProducts;
+    }
+  } else {
+    if (discountForm.value.discountType === 'BUNDLE') {
+      discountForm.value.bundleProducts = [];
+    } else {
+      discountForm.value.applicableProducts = [];
+    }
+  }
+};
+
+const handleProductCheckboxChange = (productId: string, event: Event) => {
+  const checked = (event.target as HTMLInputElement).checked;
+  
+  if (discountForm.value.discountType === 'BUNDLE') {
+    if (checked) {
+      if (!discountForm.value.bundleProducts.includes(productId)) {
+        discountForm.value.bundleProducts.push(productId);
+      }
+    } else {
+      discountForm.value.bundleProducts = discountForm.value.bundleProducts.filter(id => id !== productId);
+      // Reset bundleDiscountProduct if it was the removed product
+      if (discountForm.value.bundleDiscountProduct === productId) {
+        discountForm.value.bundleDiscountProduct = '';
+      }
+    }
+  } else {
+    if (checked) {
+      if (!discountForm.value.applicableProducts.includes(productId)) {
+        discountForm.value.applicableProducts.push(productId);
+      }
+    } else {
+      discountForm.value.applicableProducts = discountForm.value.applicableProducts.filter(id => id !== productId);
+    }
+  }
 };
 
 const loadDiscounts = async () => {
@@ -375,7 +580,7 @@ const loadDiscounts = async () => {
   }
 };
 
-const editDiscount = (discount: any) => {
+const editDiscount = async (discount: any) => {
   editingDiscount.value = discount;
   discountForm.value = {
     name: discount.name,
@@ -384,21 +589,62 @@ const editDiscount = (discount: any) => {
     discountValueType: discount.discountValueType,
     minAmount: discount.minAmount ? Number(discount.minAmount) : undefined,
     minQuantity: discount.minQuantity || undefined,
-    applicableProducts: discount.applicableProducts || [],
-    bundleProducts: discount.bundleProducts || [],
+    applicableProducts: Array.isArray(discount.applicableProducts) ? discount.applicableProducts : [],
+    bundleProducts: Array.isArray(discount.bundleProducts) ? discount.bundleProducts : [],
     bundleDiscountProduct: discount.bundleDiscountProduct || '',
     applicableTo: discount.applicableTo || 'ALL',
     isActive: discount.isActive,
     startDate: discount.startDate ? new Date(discount.startDate).toISOString().slice(0, 16) : '',
     endDate: discount.endDate ? new Date(discount.endDate).toISOString().slice(0, 16) : '',
   };
+  
+  // Determine product selection type based on existing data
+  if (discount.discountType === 'BUNDLE' || discount.discountType === 'PRODUCT_BASED' || discount.discountType === 'QUANTITY_BASED') {
+    if (discount.discountType === 'BUNDLE' && discount.bundleProducts && discount.bundleProducts.length > 0) {
+      productSelectionType.value = 'PRODUCTS';
+    } else if (discount.applicableProducts && discount.applicableProducts.length > 0) {
+      productSelectionType.value = 'PRODUCTS';
+    } else {
+      productSelectionType.value = 'ALL';
+    }
+  }
+  
+  // Load products if needed for editing
+  if (productSelectionType.value === 'PRODUCTS' && availableProducts.value.length === 0) {
+    await loadProducts();
+  }
+  
   showCreateModal.value = true;
 };
 
 const saveDiscount = async () => {
   try {
+    // Prepare data based on product selection type
+    let applicableProductsData: string[] | null = null;
+    let bundleProductsData: string[] | null = null;
+    
+    if (discountForm.value.discountType === 'BUNDLE') {
+      if (productSelectionType.value === 'ALL') {
+        bundleProductsData = null; // All products
+      } else if (productSelectionType.value === 'CATEGORY' && selectedCategory.value) {
+        bundleProductsData = discountForm.value.bundleProducts;
+      } else if (productSelectionType.value === 'PRODUCTS') {
+        bundleProductsData = discountForm.value.bundleProducts.length > 0 ? discountForm.value.bundleProducts : null;
+      }
+    } else if (discountForm.value.discountType === 'PRODUCT_BASED' || discountForm.value.discountType === 'QUANTITY_BASED') {
+      if (productSelectionType.value === 'ALL') {
+        applicableProductsData = null; // All products
+      } else if (productSelectionType.value === 'CATEGORY' && selectedCategory.value) {
+        applicableProductsData = discountForm.value.applicableProducts;
+      } else if (productSelectionType.value === 'PRODUCTS') {
+        applicableProductsData = discountForm.value.applicableProducts.length > 0 ? discountForm.value.applicableProducts : null;
+      }
+    }
+    
     const data = {
       ...discountForm.value,
+      applicableProducts: applicableProductsData,
+      bundleProducts: bundleProductsData,
       startDate: discountForm.value.startDate || undefined,
       endDate: discountForm.value.endDate || undefined,
     };
@@ -450,6 +696,8 @@ const closeModal = () => {
     startDate: '',
     endDate: '',
   };
+  productSelectionType.value = 'ALL';
+  selectedCategory.value = '';
 };
 
 const handleTenantChange = (tenantId: string | null) => {
@@ -466,7 +714,7 @@ const handleSearchInput = () => {
   // Search is handled by computed property
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
   // For super admin, ensure selectedTenantId is synced with localStorage
@@ -478,7 +726,9 @@ onMounted(() => {
   }
   
   if (!needsTenantSelection.value) {
-    loadDiscounts();
+    await loadDiscounts();
+    // Preload products for discount form
+    await loadProducts();
   }
 });
 </script>

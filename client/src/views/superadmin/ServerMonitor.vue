@@ -360,20 +360,43 @@ let refreshInterval: any = null;
 
 const loadContainers = async () => {
   try {
-    const response = await api.get('/admin/docker/containers');
-    containers.value = response.data.containers || [];
+    const response = await api.get('/admin/docker/containers', { timeout: 15000 });
+    containers.value = response.data?.containers || [];
   } catch (err: any) {
     console.error('Error loading containers:', err);
-    await error(err.response?.data?.message || 'Gagal memuat containers', 'Error');
+    // Set empty array to prevent display issues
+    containers.value = [];
+    // Only show error if it's not a timeout or network error
+    if (err.code !== 'ECONNABORTED' && !err.message?.includes('timeout')) {
+      await error(err.response?.data?.message || 'Gagal memuat containers', 'Error');
+    }
   }
 };
 
 const loadServerResources = async () => {
   try {
-    const response = await api.get('/admin/server/resources');
-    serverResources.value = response.data || {};
+    const response = await api.get('/admin/server/resources', { timeout: 10000 });
+    serverResources.value = response.data || {
+      cpu: '0',
+      memory: '0',
+      memoryUsed: '0',
+      memoryTotal: '0',
+      disks: [],
+      uptime: 'N/A',
+      loadAverage: 'N/A',
+    };
   } catch (err: any) {
     console.error('Error loading server resources:', err);
+    // Set default values to prevent N/A display issues
+    serverResources.value = {
+      cpu: '0',
+      memory: '0',
+      memoryUsed: '0',
+      memoryTotal: '0',
+      disks: [],
+      uptime: 'N/A',
+      loadAverage: 'N/A',
+    };
     // Don't show error popup for resources to avoid spam during auto-refresh
     // Only log to console
   }
@@ -381,10 +404,12 @@ const loadServerResources = async () => {
 
 const loadHealthChecks = async () => {
   try {
-    const response = await api.get('/admin/health');
-    healthChecks.value = response.data.services || [];
+    const response = await api.get('/admin/health', { timeout: 10000 });
+    healthChecks.value = response.data?.services || [];
   } catch (err: any) {
     console.error('Error loading health checks:', err);
+    // Set empty array to prevent display issues
+    healthChecks.value = [];
     // Don't show error popup for health checks to avoid spam during auto-refresh
     // Only log to console
   }

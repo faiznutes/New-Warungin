@@ -67,9 +67,34 @@ router.get(
   '/',
   authGuard,
   async (req: AuthRequest, res: Response): Promise<void> => {
+    const startTime = Date.now();
+    logger.info('Backup route called', { 
+      role: req.role,
+      query: req.query,
+    });
+
+    // Set response timeout (12 seconds total - shorter than frontend timeout)
+    const responseTimeout = setTimeout(() => {
+      if (!res.headersSent) {
+        logger.error('Backup route timeout - response not sent in time', {
+          elapsed: Date.now() - startTime,
+        });
+        try {
+          res.status(504).json({ 
+            error: 'TIMEOUT',
+            message: 'Request timeout. Please try again.',
+          });
+        } catch (e) {
+          logger.error('Failed to send timeout response:', e);
+        }
+      }
+    }, 12000);
+
     try {
       // Only SUPER_ADMIN can access
       if (req.role !== 'SUPER_ADMIN') {
+        clearTimeout(responseTimeout);
+        logger.warn('Unauthorized access attempt to backup route', { role: req.role });
         res.status(403).json({ message: 'Only super admin can access backup logs' });
         return;
       }
@@ -109,42 +134,83 @@ router.get(
         }
       }
 
-      const [backupLogs, total] = await Promise.all([
-        prisma.backupLog.findMany({
-          where,
-          include: {
-            tenant: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
+      let backupLogs: any[] = [];
+      let total = 0;
+
+      // Add timeout wrapper for database queries (10 seconds)
+      const queryTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Database query timeout')), 10000);
+      });
+
+      try {
+        const dbQuery = Promise.all([
+          prisma.backupLog.findMany({
+            where,
+            include: {
+              tenant: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
               },
             },
-          },
-          orderBy: { generatedAt: 'desc' },
-          skip,
-          take: limitNum,
-        }).catch((error) => {
-          logger.error('Error fetching backup logs:', { error: error.message, stack: error.stack });
-          throw error;
-        }),
-        prisma.backupLog.count({ where }).catch((error) => {
-          logger.error('Error counting backup logs:', { error: error.message, stack: error.stack });
-          throw error;
-        }),
-      ]);
+            orderBy: { generatedAt: 'desc' },
+            skip,
+            take: limitNum,
+          }),
+          prisma.backupLog.count({ where }),
+        ]);
 
-      res.json({
-        data: backupLogs,
-        pagination: {
-          page: pageNum,
-          limit: limitNum,
-          total,
-          totalPages: Math.ceil(total / limitNum),
-        },
+        // Race between query and timeout
+        [backupLogs, total] = await Promise.race([dbQuery, queryTimeout]) as [any[], number];
+      } catch (dbError: any) {
+        logger.error('Database error fetching backup logs:', {
+          error: dbError.message,
+          code: dbError.code,
+          stack: dbError.stack,
+          timeout: dbError.message?.includes('timeout'),
+        });
+        
+        // Return empty result instead of throwing error
+        backupLogs = [];
+        total = 0;
+      }
+
+      // Ensure response is always sent
+      clearTimeout(responseTimeout);
+      const elapsed = Date.now() - startTime;
+      logger.info('Backup route completed', { 
+        elapsed: `${elapsed}ms`,
+        count: backupLogs.length,
+        total,
       });
+      
+      if (!res.headersSent) {
+        res.json({
+          data: backupLogs || [],
+          pagination: {
+            page: pageNum,
+            limit: limitNum,
+            total: total || 0,
+            totalPages: Math.ceil((total || 0) / limitNum),
+          },
+        });
+      } else {
+        logger.warn('Response already sent, skipping backup data response');
+      }
     } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to fetch backup logs', 'BACKUP');
+      clearTimeout(responseTimeout);
+      const elapsed = Date.now() - startTime;
+      logger.error('Error in backup route:', {
+        error,
+        elapsed: `${elapsed}ms`,
+      });
+      if (!res.headersSent) {
+        handleRouteError(res, error, 'Failed to fetch backup logs', 'BACKUP');
+      } else {
+        logger.warn('Response already sent, cannot send error response');
+      }
     }
   }
 );
