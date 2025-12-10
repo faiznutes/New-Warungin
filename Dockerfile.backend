@@ -22,8 +22,8 @@ COPY src ./src
 COPY prisma ./prisma
 # Exclude prisma.config.ts from build (it's only for Prisma CLI, not for TypeScript compilation)
 RUN rm -f prisma/prisma.config.ts || true
-# Copy scripts if they exist
-COPY scripts ./scripts 2>/dev/null || true
+# Copy scripts directory
+COPY scripts ./scripts
 
 # Generate Prisma client
 RUN npx prisma generate
