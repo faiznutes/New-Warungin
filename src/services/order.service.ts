@@ -434,13 +434,13 @@ export class OrderService {
       let orderNotes = data.notes || '';
       if (discountDetails.length > 0) {
         const discountInfo = JSON.stringify({
-          discountDetails: discountDetails.map(d => ({
+          discountDetails: discountDetails.map((d: any) => ({
             discountId: d.discountId,
             discountName: d.discountName,
             discountAmount: d.discountAmount,
             appliedTo: d.appliedTo, // Product IDs yang mendapat diskon
           })),
-        }));
+        });
         // Store discount details in notes with special marker
         orderNotes = orderNotes 
           ? `${orderNotes}\n\n__DISCOUNT_DETAILS__:${discountInfo}`
