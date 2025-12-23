@@ -17,6 +17,109 @@ const router = Router();
 
 /**
  * @swagger
+ * /api/superadmin/backups/critical:
+ *   get:
+ *     summary: Get tenants with critical backup failures (3+ consecutive days)
+ *     tags: [SuperAdmin]
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  '/critical',
+  authGuard,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      // Only SUPER_ADMIN can access
+      if (req.role !== 'SUPER_ADMIN') {
+        res.status(403).json({ message: 'Only super admin can access critical backups' });
+        return;
+      }
+
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      threeDaysAgo.setHours(0, 0, 0, 0);
+
+      // Get all failed backups in last 3 days
+      const failedBackups = await prisma.backupLog.findMany({
+        where: {
+          status: { in: ['failed', 'email_failed'] },
+          generatedAt: { gte: threeDaysAgo },
+        },
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { generatedAt: 'desc' },
+      });
+
+      // Group by tenant and count consecutive failures
+      const tenantFailures: Record<string, {
+        tenant: any;
+        failures: number;
+        lastFailure: Date;
+        consecutiveDays: number;
+      }> = {};
+
+      for (const backup of failedBackups) {
+        if (!tenantFailures[backup.tenantId]) {
+          tenantFailures[backup.tenantId] = {
+            tenant: backup.tenant,
+            failures: 0,
+            lastFailure: backup.generatedAt,
+            consecutiveDays: 0,
+          };
+        }
+        tenantFailures[backup.tenantId].failures++;
+        if (backup.generatedAt > tenantFailures[backup.tenantId].lastFailure) {
+          tenantFailures[backup.tenantId].lastFailure = backup.generatedAt;
+        }
+      }
+
+      // Calculate consecutive days for each tenant
+      for (const tenantId in tenantFailures) {
+        const tf = tenantFailures[tenantId];
+        const last3Days = await prisma.backupLog.findMany({
+          where: {
+            tenantId,
+            generatedAt: { gte: threeDaysAgo },
+            status: { in: ['failed', 'email_failed'] },
+          },
+          orderBy: { generatedAt: 'desc' },
+        });
+
+        // Count unique days with failures
+        const failureDays = new Set(
+          last3Days.map(b => b.generatedAt.toISOString().split('T')[0])
+        );
+        tf.consecutiveDays = failureDays.size;
+      }
+
+      // Filter tenants with 3+ consecutive days
+      const criticalTenants = Object.values(tenantFailures)
+        .filter(tf => tf.consecutiveDays >= 3)
+        .map(tf => ({
+          tenantId: tf.tenant.id,
+          tenantName: tf.tenant.name,
+          tenantEmail: tf.tenant.email,
+          failures: tf.failures,
+          consecutiveDays: tf.consecutiveDays,
+          lastFailure: tf.lastFailure,
+        }));
+
+      res.json({ criticalTenants });
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to get critical backups', 'BACKUP');
+    }
+  }
+);
+
+/**
+ * @swagger
  * /api/superadmin/backups:
  *   get:
  *     summary: Get all backup logs with filters
@@ -387,109 +490,6 @@ router.get(
       res.send(htmlContent);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to view backup', 'BACKUP');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/superadmin/backups/critical:
- *   get:
- *     summary: Get tenants with critical backup failures (3+ consecutive days)
- *     tags: [SuperAdmin]
- *     security:
- *       - bearerAuth: []
- */
-router.get(
-  '/critical',
-  authGuard,
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      // Only SUPER_ADMIN can access
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can access critical backups' });
-        return;
-      }
-
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      threeDaysAgo.setHours(0, 0, 0, 0);
-
-      // Get all failed backups in last 3 days
-      const failedBackups = await prisma.backupLog.findMany({
-        where: {
-          status: { in: ['failed', 'email_failed'] },
-          generatedAt: { gte: threeDaysAgo },
-        },
-        include: {
-          tenant: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: { generatedAt: 'desc' },
-      });
-
-      // Group by tenant and count consecutive failures
-      const tenantFailures: Record<string, {
-        tenant: any;
-        failures: number;
-        lastFailure: Date;
-        consecutiveDays: number;
-      }> = {};
-
-      for (const backup of failedBackups) {
-        if (!tenantFailures[backup.tenantId]) {
-          tenantFailures[backup.tenantId] = {
-            tenant: backup.tenant,
-            failures: 0,
-            lastFailure: backup.generatedAt,
-            consecutiveDays: 0,
-          };
-        }
-        tenantFailures[backup.tenantId].failures++;
-        if (backup.generatedAt > tenantFailures[backup.tenantId].lastFailure) {
-          tenantFailures[backup.tenantId].lastFailure = backup.generatedAt;
-        }
-      }
-
-      // Calculate consecutive days for each tenant
-      for (const tenantId in tenantFailures) {
-        const tf = tenantFailures[tenantId];
-        const last3Days = await prisma.backupLog.findMany({
-          where: {
-            tenantId,
-            generatedAt: { gte: threeDaysAgo },
-            status: { in: ['failed', 'email_failed'] },
-          },
-          orderBy: { generatedAt: 'desc' },
-        });
-
-        // Count unique days with failures
-        const failureDays = new Set(
-          last3Days.map(b => b.generatedAt.toISOString().split('T')[0])
-        );
-        tf.consecutiveDays = failureDays.size;
-      }
-
-      // Filter tenants with 3+ consecutive days
-      const criticalTenants = Object.values(tenantFailures)
-        .filter(tf => tf.consecutiveDays >= 3)
-        .map(tf => ({
-          tenantId: tf.tenant.id,
-          tenantName: tf.tenant.name,
-          tenantEmail: tf.tenant.email,
-          failures: tf.failures,
-          consecutiveDays: tf.consecutiveDays,
-          lastFailure: tf.lastFailure,
-        }));
-
-      res.json({ criticalTenants });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get critical backups', 'BACKUP');
     }
   }
 );
