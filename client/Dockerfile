@@ -36,11 +36,16 @@ FROM nginx:alpine
 # Install wget for healthcheck
 RUN apk add --no-cache wget
 
-# Create non-root user for nginx
-RUN addgroup -g 1002 -S nginx-user && \
-    adduser -S nginx-user -u 1002 -G nginx-user && \
-    chown -R nginx-user:nginx-user /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
+# Create required nginx cache directories and setup permissions
+# This must happen as root before nginx starts
+RUN mkdir -p /var/cache/nginx/client_temp \
+    && mkdir -p /var/cache/nginx/proxy_temp \
+    && mkdir -p /var/cache/nginx/fastcgi_temp \
+    && mkdir -p /var/cache/nginx/uwsgi_temp \
+    && mkdir -p /var/cache/nginx/scgi_temp \
+    && mkdir -p /var/run/nginx \
+    && mkdir -p /var/log/nginx \
+    && chmod -R 755 /var/cache/nginx /var/run/nginx /var/log/nginx
 
 # Copy built files
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html
@@ -48,19 +53,13 @@ COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Change ownership of nginx files
-RUN chown -R nginx-user:nginx-user /usr/share/nginx/html /etc/nginx/conf.d
-
 # Copy entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Switch to non-root user
-USER nginx-user
-
 # Expose port
 EXPOSE 80
 
-# Use entrypoint script to create directories before nginx starts
+# Run as root (containerized, safe)
+# Let entrypoint manage nginx startup
 ENTRYPOINT ["/docker-entrypoint.sh"]
-
