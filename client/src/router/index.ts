@@ -429,6 +429,13 @@ const router = createRouter({
           component: () => import('../views/pos/POS.vue'),
           meta: { roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
         },
+        // Failed Sync Review (for offline orders that failed to sync)
+        {
+          path: 'pos/failed-syncs',
+          name: 'failed-sync-review',
+          component: () => import('../views/pos/FailedSyncReview.vue'),
+          meta: { roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+        },
         // Kitchen only
         {
           path: 'orders/kitchen',

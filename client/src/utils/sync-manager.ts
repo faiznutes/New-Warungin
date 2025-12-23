@@ -128,7 +128,8 @@ class SyncManager {
       // Sync orders one by one
       for (const order of unsyncedOrders) {
         try {
-          // Create order
+          // CRITICAL FIX: Backend will validate stock availability
+          // If stock is insufficient, backend will throw error and we'll handle it
           const orderResponse = await api.post('/orders', order.orderData);
           const serverOrder = orderResponse.data;
 
@@ -149,7 +150,27 @@ class SyncManager {
 
           console.log(`✅ Synced order ${order.id} → ${serverOrder.id}`);
         } catch (error: any) {
-          console.error(`❌ Failed to sync order ${order.id}:`, error);
+          const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+          
+          // CRITICAL FIX: Handle different error types
+          if (errorMessage.includes('Insufficient stock') || errorMessage.includes('stock')) {
+            // Stock validation failed - mark for manual review
+            console.error(`❌ Stock validation failed for order ${order.id}:`, errorMessage);
+            // Store error reason for manual review (could add to offlineStorage)
+            await offlineStorage.markOrderSyncFailed(order.id, errorMessage);
+          } else if (errorMessage.includes('Transaction amount') || errorMessage.includes('does not match')) {
+            // Transaction amount mismatch - mark for manual review
+            console.error(`❌ Transaction validation failed for order ${order.id}:`, errorMessage);
+            await offlineStorage.markOrderSyncFailed(order.id, errorMessage);
+          } else if (error.response?.status === 429 || error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+            // Transient error - will retry on next sync
+            console.warn(`⚠️ Transient error for order ${order.id}, will retry:`, errorMessage);
+            // Don't mark as failed, will retry
+          } else {
+            // Other errors - mark for manual review
+            console.error(`❌ Failed to sync order ${order.id}:`, errorMessage);
+            await offlineStorage.markOrderSyncFailed(order.id, errorMessage);
+          }
           // Continue with next order even if one fails
         }
       }

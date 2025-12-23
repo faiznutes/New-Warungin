@@ -18,6 +18,9 @@ interface OfflineOrder {
   timestamp: number;
   synced: boolean;
   serverOrderId?: string; // ID dari server setelah sync
+  syncFailed?: boolean; // Mark if sync failed
+  syncError?: string; // Error message if sync failed
+  retryCount?: number; // Number of retry attempts
 }
 
 interface OfflineProduct {
@@ -358,6 +361,61 @@ class OfflineStorage {
       const request = store.delete(orderId);
 
       request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Mark order sync as failed with error reason
+   * CRITICAL FIX: Track failed syncs for manual review
+   */
+  async markOrderSyncFailed(orderId: string, errorMessage: string): Promise<void> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readwrite');
+      const store = transaction.objectStore('orders');
+      const getRequest = store.get(orderId);
+
+      getRequest.onsuccess = () => {
+        const order = getRequest.result;
+        if (order) {
+          order.syncFailed = true;
+          order.syncError = errorMessage;
+          order.retryCount = (order.retryCount || 0) + 1;
+          const updateRequest = store.put(order);
+          updateRequest.onsuccess = () => resolve();
+          updateRequest.onerror = () => reject(updateRequest.error);
+        } else {
+          resolve();
+        }
+      };
+
+      getRequest.onerror = () => reject(getRequest.error);
+    });
+  }
+
+  /**
+   * Get all failed sync orders (for manual review)
+   */
+  async getFailedSyncOrders(): Promise<OfflineOrder[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['orders'], 'readonly');
+      const store = transaction.objectStore('orders');
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const orders = request.result || [];
+        const failedOrders = orders.filter((order: OfflineOrder) => order.syncFailed === true);
+        resolve(failedOrders);
+      };
+
       request.onerror = () => reject(request.error);
     });
   }

@@ -43,6 +43,10 @@ const envSchema = z.object({
 
   // Internal API Key (for n8n integration)
   INTERNAL_API_KEY: z.string().optional().default('change-me-in-production'),
+
+  // Timeouts (in seconds)
+  STOCK_LOCK_TIMEOUT: z.string().transform(Number).optional().default('10'),
+  ORDER_TRANSACTION_TIMEOUT: z.string().transform(Number).optional().default('30'),
 });
 
 type Env = z.infer<typeof envSchema>;

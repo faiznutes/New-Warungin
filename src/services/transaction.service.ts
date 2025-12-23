@@ -33,13 +33,41 @@ export class TransactionService {
         throw new Error('Order not found');
       }
 
-      // Check if transaction already exists
+      // CRITICAL FIX: Validate transaction amount matches order total
+      const orderTotal = Number(order.total);
+      const transactionAmount = data.amount;
+      const tolerance = 0.01; // Allow 1 cent tolerance for floating point precision
+      
+      if (Math.abs(orderTotal - transactionAmount) > tolerance) {
+        throw new Error(
+          `Transaction amount (${transactionAmount}) does not match order total (${orderTotal}). ` +
+          `Difference: ${Math.abs(orderTotal - transactionAmount).toFixed(2)}`
+        );
+      }
+
+      // CRITICAL FIX: Check if transaction already exists with better error handling
       const existingTransaction = await tx.transaction.findUnique({
         where: { orderId: data.orderId },
+        include: {
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              status: true,
+            },
+          },
+        },
       });
 
       if (existingTransaction) {
-        throw new Error('Transaction already exists for this order');
+        // Return existing transaction instead of throwing error (idempotency)
+        // This allows retry of failed requests without creating duplicate transactions
+        logger.info('Transaction already exists for order', {
+          orderId: data.orderId,
+          transactionId: existingTransaction.id,
+          orderNumber: existingTransaction.order?.orderNumber,
+        });
+        return existingTransaction;
       }
 
       // Get user name for servedBy if not provided
@@ -51,6 +79,17 @@ export class TransactionService {
         });
         servedByName = user?.name || 'Unknown';
       }
+
+      // CRITICAL FIX: Add structured logging for transaction creation
+      const logger = (await import('../utils/logger')).default;
+      logger.info('Creating transaction', {
+        tenantId,
+        userId,
+        orderId: data.orderId,
+        amount: data.amount,
+        paymentMethod: data.paymentMethod,
+        status: data.status || 'COMPLETED',
+      });
 
       // Create transaction
       const transaction = await tx.transaction.create({
@@ -86,7 +125,17 @@ export class TransactionService {
           where: { id: data.orderId },
           data: { status: 'COMPLETED' },
         });
+        logger.info('Order status updated to COMPLETED', {
+          orderId: data.orderId,
+          transactionId: transaction.id,
+        });
       }
+
+      logger.info('Transaction created successfully', {
+        transactionId: transaction.id,
+        orderId: data.orderId,
+        amount: data.amount,
+      });
 
       return transaction;
     }, {

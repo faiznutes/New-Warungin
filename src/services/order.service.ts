@@ -4,6 +4,11 @@ import prisma from '../config/database';
 import productService from './product.service';
 import { getRedisClient } from '../config/redis';
 import logger from '../utils/logger';
+import env from '../config/env';
+import {
+  stockRollbackTotal,
+  stockRollbackDuration,
+} from '../utils/metrics';
 
 export class OrderService {
   async getOrders(tenantId: string, query: GetOrdersQuery, userRole?: string, userPermissions?: any) {
@@ -187,8 +192,30 @@ export class OrderService {
       }
     }
 
-    // Calculate subtotal from items (before any discounts)
+    // CRITICAL FIX: Validate order items
     const itemsArray = Array.isArray(data.items) ? data.items : [];
+    if (itemsArray.length === 0) {
+      throw new Error('Order must have at least one item');
+    }
+
+    // Validate each item
+    for (let i = 0; i < itemsArray.length; i++) {
+      const item = itemsArray[i];
+      if (!item) {
+        throw new Error(`Item at index ${i} is null or undefined`);
+      }
+      if (!item.productId || typeof item.productId !== 'string' || item.productId.trim() === '') {
+        throw new Error(`Item at index ${i} must have a valid productId`);
+      }
+      if (!item.quantity || typeof item.quantity !== 'number' || item.quantity <= 0) {
+        throw new Error(`Item at index ${i} must have quantity greater than 0`);
+      }
+      if (item.price === undefined || item.price === null || typeof item.price !== 'number' || item.price < 0) {
+        throw new Error(`Item at index ${i} must have price greater than or equal to 0`);
+      }
+    }
+
+    // Calculate subtotal from items (before any discounts)
     const subtotal = itemsArray.reduce((sum: number, item: any) => {
       return sum + ((item?.price || 0) * (item?.quantity || 0));
     }, 0);
@@ -240,8 +267,23 @@ export class OrderService {
     // Calculate final total
     const total = subtotalAfterAutoDiscount - memberDiscount - manualDiscount;
     
-    // Total discount for order record
+    // CRITICAL FIX: Validate that total is not negative after discounts
+    if (total < 0) {
+      throw new Error(
+        `Total cannot be negative after discounts. ` +
+        `Subtotal: ${subtotal}, Auto Discount: ${autoDiscount}, ` +
+        `Member Discount: ${memberDiscount}, Manual Discount: ${manualDiscount}, ` +
+        `Final Total: ${total}`
+      );
+    }
+    
+    // Validate that total discount doesn't exceed subtotal
     const totalDiscount = autoDiscount + memberDiscount + manualDiscount;
+    if (totalDiscount > subtotal) {
+      throw new Error(
+        `Total discount (${totalDiscount}) cannot exceed subtotal (${subtotal})`
+      );
+    }
 
     // Check idempotency key if provided (prevent double order)
     if (idempotencyKey) {
@@ -479,6 +521,18 @@ export class OrderService {
       });
 
       // Update product stock within transaction (CRITICAL: must be in same transaction)
+      // CRITICAL FIX: Add structured logging for stock operations
+      logger.info('Creating order with stock updates', {
+        tenantId,
+        userId,
+        orderNumber,
+        itemsCount: data.items.length,
+        items: data.items.map((item: any) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      });
+
       for (const item of data.items) {
         // Get current product stock
         const product = await tx.product.findFirst({
@@ -486,11 +540,24 @@ export class OrderService {
         });
 
         if (!product) {
+          logger.error('Product not found during order creation', {
+            productId: item.productId,
+            tenantId,
+            orderNumber,
+          });
           throw new Error(`Product ${item.productId} not found`);
         }
 
         // Verify stock is sufficient
         if (product.stock < item.quantity) {
+          logger.error('Insufficient stock during order creation', {
+            productId: item.productId,
+            productName: product.name,
+            availableStock: product.stock,
+            requiredQuantity: item.quantity,
+            tenantId,
+            orderNumber,
+          });
           throw new Error(`Insufficient stock for product ${product.name}. Available: ${product.stock}, Required: ${item.quantity}`);
         }
 
@@ -503,11 +570,17 @@ export class OrderService {
             },
           },
         });
+
+        logger.debug('Stock decremented for order', {
+          productId: item.productId,
+          quantity: item.quantity,
+          orderNumber,
+        });
       }
 
       return order;
     }, {
-      timeout: 30000, // 30 seconds timeout for order creation with stock updates
+      timeout: (env.ORDER_TRANSACTION_TIMEOUT * 1000), // Configurable timeout (default 30 seconds)
       isolationLevel: 'ReadCommitted',
     });
 
@@ -752,17 +825,69 @@ export class OrderService {
     });
 
     // If cancelling or refunding, restore product stock
+    // CRITICAL FIX: Use atomic transaction to restore all stock at once
     if ((data.status === 'CANCELLED' || data.status === 'REFUNDED') && order.status !== 'CANCELLED' && order.status !== 'REFUNDED') {
-      if (orderWithItems?.items) {
-        for (const item of orderWithItems.items) {
-          const updatedProduct = await productService.updateStock(item.productId, item.quantity, tenantId, 'add');
-          
-          // Emit stock update via socket
-          const { emitToTenant } = await import('../socket/socket');
-          emitToTenant(tenantId, 'product:stock-update', {
-            productId: item.productId,
-            stock: updatedProduct.stock,
+      if (orderWithItems?.items && orderWithItems.items.length > 0) {
+        const rollbackStartTime = Date.now();
+        
+        try {
+          // Restore stock atomically within a transaction
+          await prisma.$transaction(async (tx) => {
+            const stockUpdates: Array<{ productId: string; newStock: number }> = [];
+            
+            for (const item of orderWithItems.items) {
+              if (!item?.productId || !item?.quantity) continue;
+              
+              // Get current product stock
+              const product = await tx.product.findFirst({
+                where: { id: item.productId, tenantId },
+                select: { id: true, stock: true },
+              });
+              
+              if (!product) {
+                logger.warn(`Product ${item.productId} not found when restoring stock for order ${id}`);
+                continue;
+              }
+              
+              // Calculate new stock (add back the quantity)
+              const newStock = product.stock + item.quantity;
+              
+              // Update stock atomically
+              await tx.product.update({
+                where: { id: item.productId, tenantId },
+                data: { stock: newStock },
+              });
+              
+              stockUpdates.push({ productId: item.productId, newStock });
+            }
+            
+            // Emit socket events after transaction completes (outside transaction for better performance)
+            if (stockUpdates.length > 0) {
+              const { emitToTenant } = await import('../socket/socket');
+              for (const update of stockUpdates) {
+                emitToTenant(tenantId, 'product:stock-update', {
+                  productId: update.productId,
+                  stock: update.newStock,
+                });
+              }
+            }
+          }, {
+            timeout: (env.ORDER_TRANSACTION_TIMEOUT * 1000) / 2, // Half of order timeout for stock restore
+            isolationLevel: 'ReadCommitted',
           });
+          
+          // Track successful rollback
+          const rollbackDuration = (Date.now() - rollbackStartTime) / 1000;
+          stockRollbackDuration.observe({ tenant_id: tenantId }, rollbackDuration);
+          stockRollbackTotal.inc({ status: 'success', tenant_id: tenantId });
+        } catch (error: any) {
+          // Track failed rollback
+          const rollbackDuration = (Date.now() - rollbackStartTime) / 1000;
+          stockRollbackDuration.observe({ tenant_id: tenantId }, rollbackDuration);
+          stockRollbackTotal.inc({ status: 'failure', tenant_id: tenantId });
+          
+          logger.error(`Failed to restore stock for order ${id}:`, error);
+          throw error; // Re-throw to prevent order status update if stock restore fails
         }
       }
     }

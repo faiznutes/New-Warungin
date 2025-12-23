@@ -3,6 +3,13 @@ import { CreateProductInput, UpdateProductInput, GetProductsQuery } from '../val
 import prisma from '../config/database';
 import CacheService from '../utils/cache';
 import logger from '../utils/logger';
+import env from '../config/env';
+import {
+  stockUpdateDuration,
+  stockUpdateTotal,
+  stockUpdateFailures,
+  stockRetryAttempts,
+} from '../utils/metrics';
 
 export class ProductService {
   async getProducts(tenantId: string, query: GetProductsQuery, useCache: boolean = true) {
@@ -217,62 +224,165 @@ export class ProductService {
     await this.invalidateProductCache(tenantId);
   }
 
+  /**
+   * Retry helper with exponential backoff
+   */
+  private async retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    maxRetries: number = 3,
+    initialDelay: number = 100,
+    context?: { productId?: string; tenantId?: string }
+  ): Promise<T> {
+    let lastError: Error | null = null;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await fn();
+      } catch (error: any) {
+        lastError = error;
+        
+        // Track retry attempts
+        if (attempt < maxRetries - 1 && context?.tenantId) {
+          stockRetryAttempts.inc({ tenant_id: context.tenantId });
+        }
+        
+        // Don't retry on non-transient errors (validation errors, not found, etc.)
+        if (
+          error.message?.includes('not found') ||
+          error.message?.includes('cannot') ||
+          error.message?.includes('must be') ||
+          error.message?.includes('Insufficient stock') ||
+          error.code === 'P2002' // Unique constraint violation
+        ) {
+          throw error;
+        }
+        
+        // If this is the last attempt, throw the error
+        if (attempt === maxRetries - 1) {
+          throw error;
+        }
+        
+        // Calculate delay with exponential backoff
+        const delay = initialDelay * Math.pow(2, attempt);
+        logger.warn(`Stock update attempt ${attempt + 1} failed, retrying in ${delay}ms`, {
+          error: error.message,
+          ...context,
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    
+    throw lastError || new Error('Stock update failed after retries');
+  }
+
   async updateStock(id: string, quantity: number, tenantId: string, operation: 'add' | 'subtract' | 'set' = 'set', emitSocketEvent: boolean = false): Promise<Product> {
+    const startTime = Date.now();
+    const operationLabel = operation;
+    
     // Use distributed lock to prevent race conditions
     const { withLock } = await import('../utils/distributed-lock');
     const lockKey = `stock:${tenantId}:${id}`;
     
-    return withLock(lockKey, async () => {
-      const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
-      if (!product) {
-        throw new Error('Product not found');
-      }
+    try {
+      const result = await withLock(lockKey, async () => {
+        // CRITICAL FIX: Add retry mechanism for transient errors
+        return await this.retryWithBackoff(async () => {
+          const product = await this.getProductById(id, tenantId, false); // Don't use cache for verification
+          if (!product) {
+            stockUpdateFailures.inc({ reason: 'product_not_found', tenant_id: tenantId });
+            throw new Error('Product not found');
+          }
 
-      let newStock: number;
-      switch (operation) {
-        case 'add':
-          newStock = product.stock + quantity;
-          break;
-        case 'subtract':
-          newStock = Math.max(0, product.stock - quantity);
-          break;
-        case 'set':
-        default:
-          newStock = quantity;
-          break;
-      }
+          let newStock: number;
+          switch (operation) {
+            case 'add':
+              newStock = product.stock + quantity;
+              break;
+            case 'subtract':
+              // CRITICAL: Validate stock is sufficient before subtracting
+              if (product.stock < quantity) {
+                stockUpdateFailures.inc({ reason: 'insufficient_stock', tenant_id: tenantId });
+                throw new Error(
+                  `Insufficient stock for product ${product.name}. ` +
+                  `Available: ${product.stock}, Required: ${quantity}`
+                );
+              }
+              newStock = product.stock - quantity;
+              break;
+            case 'set':
+            default:
+              newStock = quantity;
+              break;
+          }
 
-      const updatedProduct = await prisma.product.update({
-        where: { id, tenantId }, // Ensure tenantId is in where clause for security
-        data: { stock: newStock },
-      });
+          // Validate stock is not negative
+          if (newStock < 0) {
+            stockUpdateFailures.inc({ reason: 'validation_error', tenant_id: tenantId });
+            throw new Error(`Stock cannot be negative. Calculated stock: ${newStock}`);
+          }
 
-      // Invalidate cache for this product and products list
-      await this.invalidateProductCache(tenantId);
-      
-      // Also invalidate analytics cache that depends on products
-      try {
-        await CacheService.delete(`analytics:top-products:${tenantId}`);
-      } catch (error) {
-        logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error) });
-      }
-
-      // Emit socket event if requested (usually from order service, not from direct product update)
-      if (emitSocketEvent) {
-        try {
-          const { emitToTenant } = await import('../socket/socket');
-          emitToTenant(tenantId, 'product:stock-update', {
-            productId: id,
-            stock: updatedProduct.stock,
+          const updatedProduct = await prisma.product.update({
+            where: { id, tenantId }, // Ensure tenantId is in where clause for security
+            data: { stock: newStock },
           });
-        } catch (error) {
-          // Ignore socket errors
-          logger.warn('Failed to emit stock update socket event:', error);
-        }
-      }
 
-      return updatedProduct;
-    }, 10); // 10 seconds lock timeout for stock operations
+          // Invalidate cache for this product and products list
+          await this.invalidateProductCache(tenantId);
+          
+          // Also invalidate analytics cache that depends on products
+          try {
+            await CacheService.delete(`analytics:top-products:${tenantId}`);
+          } catch (error) {
+            logger.warn('Failed to invalidate analytics cache', { error: error instanceof Error ? error.message : String(error) });
+          }
+
+          // Emit socket event if requested (usually from order service, not from direct product update)
+          if (emitSocketEvent) {
+            try {
+              const { emitToTenant } = await import('../socket/socket');
+              emitToTenant(tenantId, 'product:stock-update', {
+                productId: id,
+                stock: updatedProduct.stock,
+              });
+            } catch (error) {
+              // Ignore socket errors
+              logger.warn('Failed to emit stock update socket event:', error);
+            }
+          }
+
+          return updatedProduct;
+        }, 3, 100, { productId: id, tenantId }); // 3 retries with 100ms initial delay
+      }, env.STOCK_LOCK_TIMEOUT * 1000); // Configurable lock timeout (default 10 seconds)
+      
+      // Track successful operation
+      const duration = (Date.now() - startTime) / 1000;
+      stockUpdateDuration.observe({ operation: operationLabel, tenant_id: tenantId }, duration);
+      stockUpdateTotal.inc({ operation: operationLabel, status: 'success', tenant_id: tenantId });
+      
+      return result;
+    } catch (error: any) {
+      // Track failed operation
+      const duration = (Date.now() - startTime) / 1000;
+      stockUpdateDuration.observe({ operation: operationLabel, tenant_id: tenantId }, duration);
+      stockUpdateTotal.inc({ operation: operationLabel, status: 'failure', tenant_id: tenantId });
+      
+      // Track failure reason
+      let reason = 'other';
+      if (error.message?.includes('not found')) {
+        reason = 'product_not_found';
+      } else if (error.message?.includes('Insufficient stock')) {
+        reason = 'insufficient_stock';
+      } else if (error.message?.includes('cannot') || error.message?.includes('must be')) {
+        reason = 'validation_error';
+      } else if (error.message?.includes('timeout') || error.message?.includes('lock')) {
+        reason = 'lock_timeout';
+      }
+      
+      stockUpdateFailures.inc({ reason, tenant_id: tenantId });
+      
+      throw error;
+    }
   }
 
   async getLowStockProducts(tenantId: string): Promise<Product[]> {

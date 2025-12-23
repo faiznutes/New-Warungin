@@ -255,12 +255,20 @@
     </div>
     <div
       v-else-if="pendingSyncCount > 0"
-      class="p-3 bg-green-100 border-l-4 border-green-500 rounded-lg m-4 flex items-center gap-2"
+      class="p-3 bg-green-100 border-l-4 border-green-500 rounded-lg m-4 flex items-center justify-between gap-2"
     >
-      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span class="text-sm font-semibold text-green-800">Sync berhasil! ({{ pendingSyncCount }} menunggu sync)</span>
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-sm font-semibold text-green-800">Sync berhasil! ({{ pendingSyncCount }} menunggu sync)</span>
+      </div>
+      <RouterLink
+        to="/app/pos/failed-syncs"
+        class="px-3 py-1 bg-yellow-500 text-white rounded text-sm font-medium hover:bg-yellow-600 transition whitespace-nowrap"
+      >
+        Lihat Gagal Sync
+      </RouterLink>
     </div>
     <!-- Store Selector (Hanya untuk SUPERVISOR) -->
     <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">

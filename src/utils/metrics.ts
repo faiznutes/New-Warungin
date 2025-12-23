@@ -240,6 +240,60 @@ const totalCustomers = new client.Gauge({
   registers: client ? [register] : [],
 });
 
+// ============================================
+// STOCK OPERATION METRICS
+// ============================================
+
+// Stock Update Duration Histogram
+const stockUpdateDuration = new client.Histogram({
+  name: 'warungin_stock_update_duration_seconds',
+  help: 'Duration of stock update operations in seconds',
+  labelNames: ['operation', 'tenant_id'], // operation: 'add', 'subtract', 'set'
+  buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2],
+  registers: client ? [register] : [],
+});
+
+// Stock Update Total Counter
+const stockUpdateTotal = new client.Counter({
+  name: 'warungin_stock_updates_total',
+  help: 'Total number of stock update operations',
+  labelNames: ['operation', 'status', 'tenant_id'], // status: 'success', 'failure'
+  registers: client ? [register] : [],
+});
+
+// Stock Update Failures Counter
+const stockUpdateFailures = new client.Counter({
+  name: 'warungin_stock_update_failures_total',
+  help: 'Total number of stock update failures',
+  labelNames: ['reason', 'tenant_id'], // reason: 'insufficient_stock', 'product_not_found', 'validation_error', 'lock_timeout', 'other'
+  registers: client ? [register] : [],
+});
+
+// Stock Retry Attempts Counter
+const stockRetryAttempts = new client.Counter({
+  name: 'warungin_stock_retry_attempts_total',
+  help: 'Total number of stock update retry attempts',
+  labelNames: ['tenant_id'],
+  registers: client ? [register] : [],
+});
+
+// Stock Rollback Operations Counter
+const stockRollbackTotal = new client.Counter({
+  name: 'warungin_stock_rollback_total',
+  help: 'Total number of stock rollback operations (order cancellation/refund)',
+  labelNames: ['status', 'tenant_id'], // status: 'success', 'failure'
+  registers: client ? [register] : [],
+});
+
+// Stock Rollback Duration Histogram
+const stockRollbackDuration = new client.Histogram({
+  name: 'warungin_stock_rollback_duration_seconds',
+  help: 'Duration of stock rollback operations in seconds',
+  labelNames: ['tenant_id'],
+  buckets: [0.01, 0.05, 0.1, 0.5, 1, 2, 5],
+  registers: client ? [register] : [],
+});
+
 export {
   register,
   httpRequestDuration,
@@ -267,4 +321,11 @@ export {
   activeAddons,
   averageOrderValue,
   totalCustomers,
+  // Stock Operation Metrics
+  stockUpdateDuration,
+  stockUpdateTotal,
+  stockUpdateFailures,
+  stockRetryAttempts,
+  stockRollbackTotal,
+  stockRollbackDuration,
 };

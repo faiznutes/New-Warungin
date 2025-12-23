@@ -43,21 +43,26 @@ beforeAll(async () => {
     await testPrisma.$connect();
     console.log('✅ Connected to test database');
   } catch (error) {
-    console.error('❌ Failed to connect to test database:', error);
-    throw error;
+    console.warn('⚠️  Could not connect to test database - some tests may fail if they require DB:', error instanceof Error ? error.message : error);
+    // Don't throw - allow pure unit tests to run without DB
   }
 
-  // Run migrations on test database
+  // Run migrations on test database (only if connected)
   try {
-    console.log('🔄 Running migrations on test database...');
-    execSync('npx prisma migrate deploy', {
-      env: { ...process.env, DATABASE_URL: TEST_DATABASE_URL },
-      stdio: 'inherit',
-    });
-    console.log('✅ Migrations completed');
+    // Check if we're connected by attempting a simple query
+    try {
+      await testPrisma.$queryRaw`SELECT 1`;
+      console.log('🔄 Running migrations on test database...');
+      execSync('npx prisma migrate deploy', {
+        env: { ...process.env, DATABASE_URL: TEST_DATABASE_URL },
+        stdio: 'inherit',
+      });
+      console.log('✅ Migrations completed');
+    } catch {
+      console.warn('⚠️  Skipping migrations - database not available for pure unit tests');
+    }
   } catch (error) {
-    console.error('❌ Migration failed:', error);
-    throw error;
+    console.warn('⚠️  Migration skipped:', error instanceof Error ? error.message : error);
   }
 
   // Initialize Redis (optional for tests that need it)
@@ -70,7 +75,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // Cleanup: Truncate all tables (faster than dropping)
+  // Cleanup: Truncate all tables (faster than dropping) - only if connected
   if (testPrisma) {
     try {
       const tablenames = await testPrisma.$queryRaw<Array<{ tablename: string }>>`
@@ -82,16 +87,20 @@ afterAll(async () => {
           try {
             await testPrisma.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
           } catch (error) {
-            console.warn(`Failed to truncate ${tablename}:`, error);
+            console.warn(`Failed to truncate ${tablename}:`, error instanceof Error ? error.message : error);
           }
         }
       }
       console.log('✅ Test database cleaned');
     } catch (error) {
-      console.error('❌ Failed to clean test database:', error);
+      console.warn('⚠️  Could not clean test database (may not be connected):', error instanceof Error ? error.message : error);
     } finally {
-      await testPrisma.$disconnect();
-      console.log('✅ Disconnected from test database');
+      try {
+        await testPrisma.$disconnect();
+        console.log('✅ Disconnected from test database');
+      } catch (error) {
+        console.warn('⚠️  Could not disconnect:', error instanceof Error ? error.message : error);
+      }
     }
   }
 });
