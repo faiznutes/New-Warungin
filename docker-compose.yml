@@ -178,10 +178,10 @@ services:
     # Security hardening: Read-only root filesystem
     read_only: true
     tmpfs:
-      - /tmp:noexec,nosuid,size=50m
-      - /var/cache/nginx:noexec,nosuid,size=200m
-      - /var/run:noexec,nosuid,size=10m
-      - /var/log/nginx:noexec,nosuid,size=50m
+      - /tmp:noexec,nosuid,size=50m,mode=1777
+      - /var/cache/nginx:noexec,nosuid,size=200m,mode=0755,uid=101,gid=101
+      - /var/run:noexec,nosuid,size=10m,mode=0755,uid=101,gid=101
+      - /var/log/nginx:noexec,nosuid,size=50m,mode=0755,uid=101,gid=101
     # Remove unnecessary capabilities
     cap_drop:
       - ALL
