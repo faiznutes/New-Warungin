@@ -45,6 +45,9 @@ RUN apk add --no-cache dumb-init wget docker-cli
 # Copy package files
 COPY package*.json ./
 
+# Copy prisma schema first (needed for Prisma client generation)
+COPY prisma ./prisma
+
 # Install production dependencies only and clean cache immediately
 RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
     npm cache clean --force && \
@@ -52,10 +55,10 @@ RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
 
 # Copy built files from builder stage
 COPY --from=backend-builder /app/dist ./dist
-COPY --from=backend-builder /app/prisma ./prisma
 COPY --from=backend-builder /app/scripts ./scripts
-COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=backend-builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Regenerate Prisma client with production dependencies (critical!)
+RUN npx prisma generate
 
 # Copy only necessary startup script
 COPY scripts/docker-startup.sh /app/scripts/docker-startup.sh
