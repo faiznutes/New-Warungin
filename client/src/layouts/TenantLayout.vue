@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex w-full">
-    <!-- Sidebar - Green theme for Tenant -->
+  <div class="min-h-screen bg-green-50/50 dark:bg-slate-900 flex w-full">
+    <!-- Sidebar - Main Tenant -->
     <aside
-      class="w-64 bg-gradient-to-b from-green-700 to-green-600 shadow-2xl fixed h-full z-50 transition-transform duration-300 ease-in-out"
+      class="w-64 bg-gradient-to-b from-green-700 to-green-600 border-r border-green-600 shadow-xl fixed h-full z-50 transition-transform duration-300 ease-in-out"
       :class="{ 
         '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
         'translate-x-0': sidebarOpen || windowWidth >= 1024
@@ -10,10 +10,10 @@
     >
       <div class="flex flex-col h-full">
         <!-- Logo -->
-        <div class="p-6 border-b border-green-600 flex-shrink-0">
+        <div class="p-6 border-b border-green-600/50 flex-shrink-0">
           <router-link to="/app/dashboard" class="flex items-center hover:opacity-90 transition-opacity group">
             <span class="text-xl font-bold text-white">Warungin</span>
-            <span class="ml-2 px-2 py-1 text-xs bg-green-600 text-green-100 rounded-full">Owner</span>
+            <span class="ml-2 px-2 py-1 text-xs bg-green-800 text-green-100 rounded-full border border-green-500">Owner</span>
           </router-link>
         </div>
 
@@ -23,7 +23,7 @@
           <div class="mb-2">
             <button
               @click="toggleMenu('operasional')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Operasional</span>
               <svg
@@ -42,9 +42,9 @@
             >
             <router-link
               to="/app/dashboard"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
-              exact-active-class="bg-green-600 text-white font-semibold shadow-lg"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
+              exact-active-class="bg-white/20 text-white font-semibold shadow-inner"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,8 +55,8 @@
 
             <router-link
               to="/app/products"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,10 +66,23 @@
             </router-link>
 
             <router-link
+              to="/app/dashboard-new"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
+              exact-active-class="bg-white/20 text-white font-semibold shadow-inner"
+              @click="closeSidebarOnMobile"
+            >
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+              <span class="font-medium">Dashboard (New)</span>
+            </router-link>
+
+            <router-link
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               to="/app/products/adjustments"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,8 +93,8 @@
 
             <router-link
               to="/app/orders"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,8 +105,8 @@
 
             <router-link
               to="/app/customers"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-              active-class="bg-green-600 text-white font-semibold shadow-lg"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+              active-class="bg-white/20 text-white font-semibold shadow-inner"
               @click="closeSidebarOnMobile"
             >
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,10 +118,10 @@
           </div>
 
           <!-- Laporan & Analitik Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600/50">
             <button
               @click="toggleMenu('laporan')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Laporan & Analitik</span>
               <svg
@@ -127,8 +140,8 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,8 +154,8 @@
               <div v-if="hasBusinessAnalytics" class="ml-4 mt-1 space-y-1">
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                  active-class="bg-white/20 text-white font-semibold shadow-inner"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,8 +166,8 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                  active-class="bg-white/20 text-white font-semibold shadow-inner"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,8 +178,8 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                  active-class="bg-white/20 text-white font-semibold shadow-inner"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,8 +190,8 @@
 
                 <router-link
                   to="/app/reports/advanced"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                  active-class="bg-white/20 text-white font-semibold shadow-inner"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,8 +202,8 @@
 
                 <router-link
                   to="/app/finance/management"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                  active-class="bg-green-600 text-white font-semibold shadow-lg"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                  active-class="bg-white/20 text-white font-semibold shadow-inner"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,10 +216,10 @@
           </div>
 
           <!-- Marketing & Delivery Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasDeliveryMarketing" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasDeliveryMarketing" class="pt-4 mt-4 border-t border-green-600/50">
             <button
               @click="toggleMenu('marketing')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Marketing & Delivery</span>
               <svg
@@ -225,8 +238,8 @@
             >
               <router-link
                 to="/app/marketing"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,8 +250,8 @@
 
               <router-link
                 to="/app/marketing/email-templates"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,8 +262,8 @@
 
               <router-link
                 to="/app/marketing/email-analytics"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,8 +274,8 @@
 
               <router-link
                 to="/app/marketing/email-scheduler"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,8 +286,8 @@
 
               <router-link
                 to="/app/marketing/customer-engagement"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,8 +298,8 @@
 
               <router-link
                 to="/app/delivery"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,10 +311,10 @@
           </div>
 
           <!-- Inventory Management Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="pt-4 mt-4 border-t border-green-600/50">
             <button
               @click="toggleMenu('inventory')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Inventory</span>
               <svg
@@ -320,8 +333,8 @@
             >
               <router-link
                 to="/app/inventory/suppliers"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,8 +345,8 @@
 
               <router-link
                 to="/app/inventory/purchase-orders"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,8 +357,8 @@
 
               <router-link
                 to="/app/inventory/stock-transfers"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,8 +369,8 @@
 
               <router-link
                 to="/app/inventory/stock-alerts"
-                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group text-sm"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group text-sm"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,10 +382,10 @@
           </div>
 
           <!-- Manajemen Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600/50">
             <button
               @click="toggleMenu('manajemen')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Manajemen</span>
               <svg
@@ -391,8 +404,8 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -403,8 +416,8 @@
 
               <router-link
                 to="/app/stores"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -415,8 +428,8 @@
 
               <router-link
                 to="/app/discounts"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,10 +441,10 @@
           </div>
 
           <!-- Pengaturan Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600">
+          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="pt-4 mt-4 border-t border-green-600/50">
             <button
               @click="toggleMenu('pengaturan')"
-              class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-green-300 uppercase tracking-wider hover:text-green-200 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-wider text-green-100/70 hover:text-white transition-colors"
             >
               <span>Pengaturan</span>
               <svg
@@ -450,8 +463,8 @@
             >
               <router-link
                 to="/app/subscription"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,8 +475,8 @@
 
               <router-link
                 to="/app/addons"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -474,8 +487,8 @@
 
               <router-link
                 to="/app/rewards"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,8 +499,8 @@
 
               <router-link
                 to="/app/settings/store"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -499,8 +512,8 @@
 
               <router-link
                 to="/app/receipts/templates"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -512,8 +525,8 @@
               <router-link
                 v-if="authStore.user?.role === 'SUPER_ADMIN'"
                 to="/app/settings/archive"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -525,8 +538,8 @@
               <router-link
                 v-if="authStore.user?.role === 'SUPER_ADMIN'"
                 to="/app/settings/retention"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-green-600 hover:text-white group"
-                active-class="bg-green-600 text-white font-semibold shadow-lg"
+                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-green-100 hover:bg-white/10 hover:text-white group"
+                active-class="bg-white/20 text-white font-semibold shadow-inner"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -539,19 +552,19 @@
         </nav>
 
         <!-- User Section -->
-        <div class="p-4 border-t border-green-600 flex-shrink-0">
+        <div class="p-4 border-t border-green-600/50 flex-shrink-0">
           <div class="flex items-center space-x-3 mb-3">
-            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <div class="w-10 h-10 bg-green-800 rounded-full border border-green-500 flex items-center justify-center flex-shrink-0 shadow-sm">
               <span class="text-green-100 font-semibold text-sm">{{ userInitials }}</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-white truncate">{{ userName }}</p>
-              <p class="text-xs text-green-200 truncate">{{ tenantName }}</p>
+              <p class="text-sm font-bold text-white truncate">{{ userName }}</p>
+              <p class="text-xs text-green-200/80 truncate">{{ tenantName }}</p>
             </div>
           </div>
           <button
             @click="handleLogout"
-            class="w-full px-4 py-2 text-sm text-green-100 hover:bg-green-600 rounded-lg transition-all duration-200 font-medium flex items-center justify-center space-x-2"
+            class="w-full px-4 py-2 text-sm text-green-100 bg-green-800/50 hover:bg-green-800 rounded-lg transition-all duration-200 font-medium flex items-center justify-center space-x-2 border border-green-600/50 hover:border-green-500"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

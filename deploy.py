@@ -32,7 +32,7 @@ def run_cmd(cmd, description="", shell=False):
         return None
 
 def main():
-    os.chdir("/mnt/f/Backup W11/Project/New-Warungin")
+    # os.chdir("/mnt/f/Backup W11/Project/New-Warungin") # Commented out for Windows compatibility
     
     print("=" * 60)
     print("Backup Route Fix Deployment")
@@ -40,11 +40,11 @@ def main():
     
     # Step 1: Commit changes locally
     print("\n[1/3] Committing changes locally...")
-    run_cmd("git add src/routes/superadmin-backup.routes.ts", "Adding file to git")
+    run_cmd("git add .", "Adding all changes to git")
     status = run_cmd("git status --short", "Checking git status")
-    if status and "superadmin-backup.routes.ts" in status:
+    if status:
         run_cmd(
-            "git commit -m 'fix: move /critical route before main GET / route to prevent routing conflicts'",
+            "git commit -m 'feat: reskin UI (Products, POS, Adjustments) and standardize language'",
             "Committing changes"
         )
         print("  ✓ Changes committed")

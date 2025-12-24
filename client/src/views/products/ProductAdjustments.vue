@@ -1,146 +1,163 @@
 <template>
   <div class="flex flex-col h-full">
     <!-- Header -->
-    <div class="mb-6 flex items-center justify-between">
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Product Adjustments</h1>
-        <p class="text-gray-600">Riwayat penyesuaian stok produk</p>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Product Adjustments</h1>
+        <p class="text-slate-500 mt-1">Track and manage inventory stock adjustments</p>
       </div>
       <div class="flex gap-2">
         <button
           @click="showAdjustmentModal = true"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
+          class="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium flex items-center gap-2"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Tambah Penyesuaian
+          <span class="material-symbols-outlined text-[20px]">add_circle</span>
+          <span>New Adjustment</span>
         </button>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+    <div class="bg-white rounded-2xl shadow-card border border-slate-100 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
-          <select
-            v-model="dateFilter"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            @change="applyDateFilter"
-          >
-            <option value="">Semua</option>
-            <option value="today">Hari Ini</option>
-            <option value="week">Minggu Ini</option>
-            <option value="month">Bulan Ini</option>
-            <option value="custom">Custom</option>
-          </select>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Period</label>
+          <div class="relative">
+             <select
+              v-model="dateFilter"
+              class="appearance-none block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+              @change="applyDateFilter"
+            >
+              <option value="">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom">Custom Range</option>
+            </select>
+             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
         <div v-if="dateFilter === 'custom'">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">From Date</label>
           <input
             v-model="filters.startDate"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            class="block w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
             @change="loadAdjustments"
           />
         </div>
         <div v-if="dateFilter === 'custom'">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">To Date</label>
           <input
             v-model="filters.endDate"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            class="block w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
             @change="loadAdjustments"
           />
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Cari Produk</label>
-          <input
-            v-model="filters.search"
-            type="text"
-            placeholder="Nama produk atau SKU"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            @input="loadAdjustments"
-          />
+        <div class="lg:col-span-2">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Search Product</label>
+          <div class="relative">
+             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">search</span>
+            <input
+              v-model="filters.search"
+              type="text"
+              placeholder="Search by product name or SKU..."
+              class="block w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+              @input="loadAdjustments"
+            />
+          </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tipe</label>
-          <select
-            v-model="filters.type"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-            @change="loadAdjustments"
-          >
-            <option value="">Semua</option>
-            <option value="INCREASE">Penambahan</option>
-            <option value="DECREASE">Pengurangan</option>
-          </select>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Type</label>
+          <div class="relative">
+            <select
+              v-model="filters.type"
+              class="appearance-none block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+              @change="loadAdjustments"
+            >
+              <option value="">All Types</option>
+              <option value="INCREASE">Increase (+)</option>
+              <option value="DECREASE">Decrease (-)</option>
+            </select>
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex items-center justify-center py-20">
+      <div class="flex flex-col items-center">
+         <div class="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+         <span class="text-slate-500 font-medium">Loading adjustments...</span>
+      </div>
     </div>
 
     <!-- Adjustments List -->
-    <div v-else class="bg-white rounded-lg shadow-md overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+    <div v-else class="bg-white rounded-2xl shadow-card border border-slate-100 overflow-hidden flex flex-col flex-1">
+      <div class="overflow-x-auto flex-1">
+        <table class="min-w-full divide-y divide-slate-100">
+          <thead class="bg-slate-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produk</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Oleh</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Product</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Quantity</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Stock Change</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Reason</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="adjustment in adjustments" :key="adjustment.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          <tbody class="bg-white divide-y divide-slate-100">
+            <tr v-for="adjustment in adjustments" :key="adjustment.id" class="hover:bg-slate-50/80 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
                 {{ formatDateTime(adjustment.createdAt) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <div class="flex flex-col">
-                  <span class="font-medium">{{ adjustment.product?.name || 'N/A' }}</span>
-                  <span v-if="adjustment.product?.sku" class="text-xs text-gray-500">{{ adjustment.product.sku }}</span>
+                  <span class="font-bold text-slate-900">{{ adjustment.product?.name || 'Unknown Product' }}</span>
+                  <span v-if="adjustment.product?.sku" class="text-xs text-slate-400 font-mono mt-0.5">{{ adjustment.product.sku }}</span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
+                  class="px-2.5 py-1 text-xs font-bold rounded-full border shadow-sm"
                   :class="[
-                    'px-2 py-1 text-xs font-medium rounded-full',
                     adjustment.type === 'INCREASE'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-green-50 text-green-700 border-green-100'
+                      : 'bg-red-50 text-red-700 border-red-100'
                   ]"
                 >
-                  {{ adjustment.type === 'INCREASE' ? 'Penambahan' : 'Pengurangan' }}
+                  {{ adjustment.type === 'INCREASE' ? 'Increase' : 'Decrease' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" :class="adjustment.type === 'INCREASE' ? 'text-green-600' : 'text-red-600'">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold" :class="adjustment.type === 'INCREASE' ? 'text-green-600' : 'text-red-600'">
                 {{ adjustment.type === 'INCREASE' ? '+' : '-' }}{{ adjustment.quantity }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <div class="flex flex-col">
-                  <span class="text-xs text-gray-500">Sebelum: {{ adjustment.stockBefore }}</span>
-                  <span class="font-medium">→ Sesudah: {{ adjustment.stockAfter }}</span>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-400">{{ adjustment.stockBefore }}</span>
+                  <span class="material-symbols-outlined text-[14px] text-slate-300">arrow_forward</span>
+                  <span class="font-bold text-slate-900">{{ adjustment.stockAfter }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" :title="adjustment.reason">
+              <td class="px-6 py-4 text-sm text-slate-600 max-w-xs truncate" :title="adjustment.reason">
                 {{ adjustment.reason }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ adjustment.user?.name || 'N/A' }}
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                 <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">
+                      {{ (adjustment.user?.name || 'U').charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="text-slate-600">{{ adjustment.user?.name || 'Unknown' }}</span>
+                 </div>
               </td>
             </tr>
             <tr v-if="adjustments.length === 0">
-              <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
-                Belum ada penyesuaian produk
+              <td colspan="7" class="px-6 py-12 text-center text-slate-500 flex flex-col items-center justify-center">
+                 <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">history</span>
+                 <p>No adjustment history found</p>
               </td>
             </tr>
           </tbody>
@@ -148,24 +165,24 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.totalPages > 1" class="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-        <div class="text-sm text-gray-700">
-          Menampilkan {{ (pagination.page - 1) * pagination.limit + 1 }} sampai
-          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} dari
-          {{ pagination.total }} hasil
+      <div v-if="pagination.totalPages > 1" class="bg-white px-6 py-4 flex items-center justify-between border-t border-slate-100">
+        <div class="text-sm text-slate-500">
+          Showing <span class="font-medium text-slate-900">{{ (pagination.page - 1) * pagination.limit + 1 }}</span> to
+          <span class="font-medium text-slate-900">{{ Math.min(pagination.page * pagination.limit, pagination.total) }}</span> of
+          <span class="font-medium text-slate-900">{{ pagination.total }}</span> results
         </div>
         <div class="flex space-x-2">
           <button
             @click="loadAdjustments(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-primary transition-colors flex items-center gap-2 font-medium bg-white"
           >
             Previous
           </button>
           <button
             @click="loadAdjustments(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-primary transition-colors flex items-center gap-2 font-medium bg-white"
           >
             Next
           </button>
@@ -176,138 +193,150 @@
     <!-- Adjustment Modal -->
     <div
       v-if="showAdjustmentModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity"
       @click.self="showAdjustmentModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-100 transform transition-all scale-100">
         <div class="p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Tambah Penyesuaian Produk</h3>
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-900">New Stock Adjustment</h3>
             <button
               @click="closeModal"
-              class="text-gray-400 hover:text-gray-600"
+              class="text-slate-400 hover:text-slate-600 transition-colors"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
 
-          <form @submit.prevent="saveAdjustment" class="space-y-4">
+          <form @submit.prevent="saveAdjustment" class="space-y-5">
             <!-- Alasan Selection -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan *</label>
-              <select
-                v-model="adjustmentForm.reasonType"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                @change="handleReasonChange"
-              >
-                <option value="">Pilih Alasan</option>
-                <option value="STOCK_OPNAME">Stok opname / Stocktaking</option>
-                <option value="RETUR_SUPPLIER">Retur ke supplier</option>
-                <option value="BARANG_RUSAK">Barang rusak / Expired</option>
-                <option value="PENYESUAIAN_SISTEM">Penyesuaian sistem</option>
-                <option value="KOREKSI_DATA">Koreksi data</option>
-                <option value="BARANG_HILANG">Barang hilang / Theft</option>
-                <option value="SAMPLE_PROMOSI">Sample / Promosi</option>
-                <option value="TRANSFER_STOK">Transfer stok</option>
-                <option value="CUSTOM">Isi sendiri</option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Reason for Adjustment *</label>
+              <div class="relative">
+                <select
+                  v-model="adjustmentForm.reasonType"
+                  required
+                  class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                  @change="handleReasonChange"
+                >
+                  <option value="">Select Reason</option>
+                  <option value="STOCK_OPNAME">Stock Opname / Stocktaking</option>
+                  <option value="RETUR_SUPPLIER">Return to Supplier</option>
+                  <option value="BARANG_RUSAK">Damaged / Expired Goods</option>
+                  <option value="PENYESUAIAN_SISTEM">System Adjustment</option>
+                  <option value="KOREKSI_DATA">Data Correction</option>
+                  <option value="BARANG_HILANG">Lost / Theft</option>
+                  <option value="SAMPLE_PROMOSI">Sample / Promotion</option>
+                  <option value="TRANSFER_STOK">Stock Transfer</option>
+                  <option value="CUSTOM">Custom Reason</option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+              </div>
             </div>
 
             <!-- Supplier Selection (for Retur Supplier) -->
             <div v-if="adjustmentForm.reasonType === 'RETUR_SUPPLIER'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Supplier *</label>
-              <select
-                v-model="adjustmentForm.supplierId"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                @change="handleSupplierChange"
-              >
-                <option value="">Pilih Supplier</option>
-                <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-                  {{ supplier.name }}
-                </option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Supplier *</label>
+              <div class="relative">
+                <select
+                  v-model="adjustmentForm.supplierId"
+                  required
+                  class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                  @change="handleSupplierChange"
+                >
+                  <option value="">Select Supplier</option>
+                  <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                    {{ supplier.name }}
+                  </option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+               </div>
             </div>
 
             <!-- Transfer Stok Form -->
-            <div v-if="adjustmentForm.reasonType === 'TRANSFER_STOK'" class="space-y-4 border-t pt-4">
+            <div v-if="adjustmentForm.reasonType === 'TRANSFER_STOK'" class="space-y-4 border-t border-slate-100 pt-6">
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Dari Store *</label>
-                  <select
-                    v-model="transferForm.fromOutletId"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Pilih Store</option>
-                    <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
-                      {{ outlet.name }}
-                    </option>
-                  </select>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">From Store *</label>
+                  <div class="relative">
+                    <select
+                      v-model="transferForm.fromOutletId"
+                      required
+                      class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                    >
+                      <option value="">Select Store</option>
+                      <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                        {{ outlet.name }}
+                      </option>
+                    </select>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+                  </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Ke Store *</label>
-                  <select
-                    v-model="transferForm.toOutletId"
-                    required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Pilih Store</option>
-                    <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
-                      {{ outlet.name }}
-                    </option>
-                  </select>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">To Store *</label>
+                  <div class="relative">
+                    <select
+                      v-model="transferForm.toOutletId"
+                      required
+                      class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                    >
+                      <option value="">Select Store</option>
+                      <option v-for="outlet in outlets" :key="outlet.id" :value="outlet.id">
+                        {{ outlet.name }}
+                      </option>
+                    </select>
+                     <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+                  </div>
                 </div>
               </div>
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <label class="block text-sm font-medium text-gray-700">Produk & Jumlah *</label>
+                  <label class="block text-sm font-bold text-slate-700">Products & Quantity *</label>
                   <button
                     type="button"
                     @click="addTransferItem"
-                    class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                    class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition"
                   >
-                    + Tambah Produk
+                    + Add Product
                   </button>
                 </div>
                 <div class="space-y-2">
                   <div
                     v-for="(item, index) in transferForm.items"
                     :key="index"
-                    class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
+                    class="grid grid-cols-12 gap-3 items-end p-3 bg-slate-50 rounded-xl border border-slate-100"
                   >
                     <div class="col-span-8">
+                       <label class="block text-xs font-semibold text-slate-500 mb-1">Product</label>
                       <select
                         v-model="item.productId"
                         required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                        class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
                       >
-                        <option value="">Pilih Produk</option>
+                        <option value="">Select Product</option>
                         <option v-for="product in products" :key="product.id" :value="product.id">
-                          {{ product.name }} (Stok: {{ product.stock }})
+                          {{ product.name }} (Stock: {{ product.stock }})
                         </option>
                       </select>
                     </div>
                     <div class="col-span-3">
+                       <label class="block text-xs font-semibold text-slate-500 mb-1">Qty</label>
                       <input
                         v-model.number="item.quantity"
                         type="number"
                         min="1"
                         required
                         placeholder="Qty"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                        class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
                       />
                     </div>
-                    <div class="col-span-1 flex items-center justify-end">
+                    <div class="col-span-1 flex items-center justify-end pb-1">
                       <button
                         type="button"
                         @click="removeTransferItem(index)"
-                        class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                        class="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-lg transition"
                       >
-                        ×
+                        <span class="material-symbols-outlined text-[18px]">close</span>
                       </button>
                     </div>
                   </div>
@@ -317,70 +346,76 @@
 
             <!-- Product Selection (for non-transfer) -->
             <div v-if="adjustmentForm.reasonType !== 'TRANSFER_STOK' && adjustmentForm.reasonType !== ''">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Produk *</label>
-              <select
-                v-model="adjustmentForm.productId"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Pilih Produk</option>
-                <option v-for="product in products" :key="product.id" :value="product.id">
-                  {{ product.name }} (Stok: {{ product.stock }})
-                </option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Product *</label>
+              <div class="relative">
+                <select
+                  v-model="adjustmentForm.productId"
+                  required
+                  class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                >
+                  <option value="">Select Product</option>
+                  <option v-for="product in products" :key="product.id" :value="product.id">
+                    {{ product.name }} (Stock: {{ product.stock }})
+                  </option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+              </div>
             </div>
 
             <!-- Adjustment Type (only for CUSTOM reason) -->
             <div v-if="adjustmentForm.reasonType === 'CUSTOM'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Penyesuaian *</label>
-              <select
-                v-model="adjustmentForm.type"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="INCREASE">Penambahan Stok</option>
-                <option value="DECREASE">Pengurangan Stok</option>
-              </select>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Adjustment Type *</label>
+              <div class="relative">
+                <select
+                  v-model="adjustmentForm.type"
+                  required
+                  class="appearance-none w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                >
+                  <option value="INCREASE">Increase Stock (+)</option>
+                  <option value="DECREASE">Decrease Stock (-)</option>
+                </select>
+                 <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 pointer-events-none">expand_more</span>
+              </div>
             </div>
 
             <!-- Quantity (for non-transfer) -->
             <div v-if="adjustmentForm.reasonType !== 'TRANSFER_STOK' && adjustmentForm.reasonType !== ''">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah *</label>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Quantity *</label>
               <input
                 v-model.number="adjustmentForm.quantity"
                 type="number"
                 required
                 min="1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
               />
             </div>
 
             <!-- Custom Reason Input (only for CUSTOM) -->
             <div v-if="adjustmentForm.reasonType === 'CUSTOM'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alasan Detail *</label>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Detailed Reason *</label>
               <textarea
                 v-model="adjustmentForm.reason"
                 required
                 rows="3"
-                placeholder="Jelaskan alasan penyesuaian stok secara detail"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Explain the reason for stock adjustment..."
+                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all resize-none"
               ></textarea>
             </div>
 
-            <div class="flex space-x-3 pt-4">
-              <button
-                type="submit"
-                :disabled="saving || !isFormValid"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
-              </button>
+            <div class="flex gap-3 pt-6">
               <button
                 type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                class="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition font-bold"
               >
-                Batal
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="saving || !isFormValid"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
+              >
+                {{ saving ? 'Saving...' : 'Save Adjustment' }}
               </button>
             </div>
           </form>
@@ -439,14 +474,14 @@ const transferForm = ref({
 });
 
 const reasonMap: Record<string, string> = {
-  'STOCK_OPNAME': 'Stok opname / Stocktaking',
-  'RETUR_SUPPLIER': 'Retur ke supplier',
-  'BARANG_RUSAK': 'Barang rusak / Expired',
-  'PENYESUAIAN_SISTEM': 'Penyesuaian sistem',
-  'KOREKSI_DATA': 'Koreksi data',
-  'BARANG_HILANG': 'Barang hilang / Theft',
-  'SAMPLE_PROMOSI': 'Sample / Promosi',
-  'TRANSFER_STOK': 'Transfer stok',
+  'STOCK_OPNAME': 'Stock Opname / Stocktaking',
+  'RETUR_SUPPLIER': 'Return to Supplier',
+  'BARANG_RUSAK': 'Damaged / Expired Goods',
+  'PENYESUAIAN_SISTEM': 'System Adjustment',
+  'KOREKSI_DATA': 'Data Correction',
+  'BARANG_HILANG': 'Lost / Theft',
+  'SAMPLE_PROMOSI': 'Sample / Promotion',
+  'TRANSFER_STOK': 'Stock Transfer',
   'CUSTOM': '',
 };
 
@@ -556,7 +591,7 @@ const loadAdjustments = async (page = 1) => {
       ...adj,
       product: adj.product || { 
         id: adj.productId || '', 
-        name: 'Produk Dihapus', 
+        name: 'Product Deleted', 
         sku: null 
       },
       user: adj.user || {
@@ -570,7 +605,7 @@ const loadAdjustments = async (page = 1) => {
     pagination.value.page = page;
   } catch (error: any) {
     console.error('Error loading adjustments:', error);
-    const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat data penyesuaian';
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to load adjustments';
     
     // If it's a 404 or "Product not found" error, still show empty list instead of error
     if (error.response?.status === 404 || errorMessage.includes('Product not found')) {
@@ -641,7 +676,7 @@ const removeTransferItem = (index: number) => {
 const saveAdjustment = async () => {
   // Validate form before submitting
   if (!isFormValid.value) {
-    await showError('Mohon lengkapi semua field yang wajib diisi');
+    await showError('Please complete all required fields');
     return;
   }
   
@@ -649,7 +684,7 @@ const saveAdjustment = async () => {
   if (adjustmentForm.value.reasonType !== 'TRANSFER_STOK' && adjustmentForm.value.productId) {
     const productExists = products.value.some(p => p.id === adjustmentForm.value.productId);
     if (!productExists) {
-      await showError('Produk yang dipilih tidak ditemukan. Silakan pilih produk lain.');
+      await showError('Selected product not found. Please select another product.');
       return;
     }
   }
@@ -659,7 +694,7 @@ const saveAdjustment = async () => {
     for (const item of transferForm.value.items) {
       const productExists = products.value.some(p => p.id === item.productId);
       if (!productExists) {
-        await showError(`Produk dengan ID ${item.productId} tidak ditemukan. Silakan pilih produk lain.`);
+        await showError(`Product with ID ${item.productId} not found.`);
         return;
       }
     }
@@ -671,7 +706,7 @@ const saveAdjustment = async () => {
       // Handle stock transfer
       const data = {
         type: 'TRANSFER',
-        reason: 'Transfer stok',
+        reason: 'Stock Transfer',
         fromOutletId: transferForm.value.fromOutletId,
         toOutletId: transferForm.value.toOutletId,
         transferItems: transferForm.value.items.map(item => ({
@@ -680,14 +715,14 @@ const saveAdjustment = async () => {
         })),
       };
       await api.post('/products/adjustments', data);
-      await showSuccess('Stock transfer berhasil dibuat');
+      await showSuccess('Stock transfer created successfully');
     } else {
       // Handle regular adjustment
       let reason = reasonMap[adjustmentForm.value.reasonType] || adjustmentForm.value.reason;
       
       if (adjustmentForm.value.reasonType === 'RETUR_SUPPLIER') {
         const supplier = suppliers.value.find(s => s.id === adjustmentForm.value.supplierId);
-        reason = `Retur ke supplier: ${supplier?.name || ''}`;
+        reason = `Return to Supplier: ${supplier?.name || ''}`;
       }
       
       const data = {
@@ -698,7 +733,7 @@ const saveAdjustment = async () => {
       };
       
       await api.post('/products/adjustments', data);
-      await showSuccess('Penyesuaian produk berhasil disimpan');
+      await showSuccess('Product adjustment saved successfully');
     }
     
     closeModal();
@@ -706,13 +741,13 @@ const saveAdjustment = async () => {
     await loadProducts();
   } catch (error: any) {
     console.error('Error saving adjustment:', error);
-    const errorMessage = error.response?.data?.message || error.message || 'Gagal menyimpan penyesuaian';
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to save adjustment';
     
     // Better error messages
     if (errorMessage.includes('Product not found') || errorMessage.includes('not found')) {
-      await showError('Produk tidak ditemukan. Pastikan produk masih ada dan aktif.');
+      await showError('Product not found. Please ensure the product is active.');
     } else if (errorMessage.includes('Insufficient stock')) {
-      await showError('Stok tidak mencukupi untuk penyesuaian ini.');
+      await showError('Insufficient stock for this adjustment.');
     } else {
       await showError(errorMessage);
     }

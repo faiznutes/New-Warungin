@@ -102,6 +102,12 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
         },
         {
+          path: 'dashboard-new',
+          name: 'dashboard-new',
+          component: () => import('../views/dashboard/DashboardNew.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
+        },
+        {
           path: 'cashier/cash-shift',
           name: 'cash-shift',
           component: () => import('../views/cashier/CashShift.vue'),
@@ -167,7 +173,7 @@ const router = createRouter({
           path: 'products',
           name: 'products',
           component: () => import('../views/products/Products.vue'),
-          meta: { 
+          meta: {
             roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
             requiresPermission: { role: 'CASHIER', permission: 'canManageProducts' }
           },
@@ -182,7 +188,7 @@ const router = createRouter({
           path: 'customers',
           name: 'customers',
           component: () => import('../views/customers/Customers.vue'),
-          meta: { 
+          meta: {
             roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
             requiresPermission: { role: 'CASHIER', permission: 'canManageCustomers' }
           },
@@ -191,7 +197,7 @@ const router = createRouter({
           path: 'reports',
           name: 'reports',
           component: () => import('../views/reports/Reports.vue'),
-          meta: { 
+          meta: {
             roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'SUPER_ADMIN'],
             requiresPermission: { role: 'CASHIER', permission: 'canViewReports' }
           },
@@ -462,10 +468,10 @@ const router = createRouter({
 // Role-based route guard
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-  
+
   // Check token first (synchronous) to avoid flash during logout
   const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
-  
+
   // If going to login page, skip all checks to avoid flash
   if (to.name === 'login') {
     // If already authenticated, redirect to appropriate dashboard
@@ -485,7 +491,7 @@ router.beforeEach(async (to, from, next) => {
       if (authStore.isSuperAdmin) {
         next({ name: 'super-dashboard' });
       } else {
-      next({ name: 'dashboard' });
+        next({ name: 'dashboard' });
       }
       return;
     }
@@ -493,7 +499,7 @@ router.beforeEach(async (to, from, next) => {
     next();
     return;
   }
-  
+
   // IMPORTANT: Load user data if not available before checking role-based redirects
   // This ensures isSuperAdmin is correctly determined
   if (to.meta.requiresAuth && hasToken && !authStore.user) {
@@ -510,7 +516,7 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   }
-  
+
   // Redirect /app to appropriate dashboard based on role
   // IMPORTANT: Check user role AFTER authentication is confirmed
   if (to.path === '/app' || to.path === '/app/') {
@@ -525,7 +531,7 @@ router.beforeEach(async (to, from, next) => {
         return;
       }
     }
-    
+
     // Now check role after user data is loaded
     if (authStore.user && authStore.isSuperAdmin) {
       next({ name: 'super-dashboard' });
@@ -539,14 +545,14 @@ router.beforeEach(async (to, from, next) => {
       return;
     }
   }
-  
+
   // If route requires auth but no token, redirect immediately without async operations
   if (to.meta.requiresAuth && !hasToken) {
     authStore.clearAuth();
     next({ name: 'login', query: { redirect: to.fullPath } });
     return;
   }
-  
+
   // If route requires auth and has token, check authentication
   if (to.meta.requiresAuth && hasToken) {
     // If user object is missing, try to restore session (only if not already clearing)
@@ -562,14 +568,14 @@ router.beforeEach(async (to, from, next) => {
         return;
       }
     }
-    
+
     // Final check: if still not authenticated after restore, redirect
     if (!authStore.isAuthenticated) {
       authStore.clearAuth();
       next({ name: 'login', query: { redirect: to.fullPath } });
       return;
     }
-    
+
     // IMPORTANT: After authentication is confirmed, check if Super Admin is trying to access dashboard
     // This must be done AFTER user data is loaded
     if (authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
@@ -577,27 +583,27 @@ router.beforeEach(async (to, from, next) => {
       return;
     }
   }
-  
+
   // Redirect super admin from dashboard to super-dashboard
   // IMPORTANT: Check after user data is loaded and authentication is confirmed
   if (hasToken && authStore.user && authStore.isSuperAdmin && to.name === 'dashboard') {
     next({ name: 'super-dashboard' });
     return;
   }
-  
+
   // Redirect non-super admin from super-dashboard to dashboard
   if (hasToken && authStore.user && !authStore.isSuperAdmin && to.name === 'super-dashboard') {
     next({ name: 'dashboard' });
     return;
   }
-  
+
   // Check store requirement for CASHIER, SUPERVISOR, KITCHEN (NOT ADMIN_TENANT)
   if (hasToken && authStore.user && authStore.isAuthenticated) {
     const userRole = authStore.user.role;
     // ADMIN_TENANT tidak perlu toko - skip check
     const requiresStore = ['CASHIER', 'SUPERVISOR', 'KITCHEN'].includes(userRole);
     const hasStore = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
-    
+
     if (requiresStore && !hasStore && to.name !== 'login' && to.name !== 'unauthorized') {
       // Check if user has any stores available
       try {
@@ -605,27 +611,27 @@ router.beforeEach(async (to, from, next) => {
         const outletsData = outletsResponse.data?.data || outletsResponse.data || [];
         // NORMALISASI: Pastikan outlets selalu array
         const outlets = Array.isArray(outletsData) ? outletsData : [];
-        
+
         // LOGGING: Log untuk debugging
         console.log('[Router] Checking outlets for role guard:', {
           outletsType: typeof outlets,
           outletsIsArray: Array.isArray(outlets),
           outletsLength: outlets.length
         });
-        
+
         // GUARD CLAUSE: Safe filter dengan check
-        const activeOutlets = Array.isArray(outlets) 
+        const activeOutlets = Array.isArray(outlets)
           ? outlets.filter((o: any) => o && o.isActive !== false)
           : [];
-        
+
         if (!Array.isArray(activeOutlets) || activeOutlets.length === 0) {
           // No stores available - show warning for SPV/kasir/dapur
           const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
-            next({ 
-              name: 'unauthorized', 
-              query: { message: warning } 
-            });
-            return;
+          next({
+            name: 'unauthorized',
+            query: { message: warning }
+          });
+          return;
         } else {
           // Has stores but not selected - redirect to login to show store selector
           next({ name: 'login', query: { redirect: to.fullPath } });
@@ -635,95 +641,95 @@ router.beforeEach(async (to, from, next) => {
         console.error('Error checking stores:', error);
         // If error, show warning and continue
         const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
-        next({ 
-          name: 'unauthorized', 
-          query: { message: warning } 
+        next({
+          name: 'unauthorized',
+          query: { message: warning }
         });
         return;
       }
     }
   }
-  
+
   // Role-based access control
   if (to.meta.roles && authStore.user) {
     const userRole = authStore.user.role;
     const allowedRoles = to.meta.roles as string[];
-    
+
     if (!Array.isArray(allowedRoles) || !allowedRoles.includes(userRole)) {
       // Redirect to appropriate dashboard based on role instead of unauthorized for better UX
       // Supervisor should not see unauthorized page
       if (authStore.isSuperAdmin) {
         next({ name: 'super-dashboard' });
       } else {
-      next({ name: 'dashboard' });
+        next({ name: 'dashboard' });
       }
       return;
     }
-    
+
     // Permission-based access control for specific roles (e.g., CASHIER)
     if (to.meta.requiresPermission && authStore.user) {
       const { role: requiredRole, permission: requiredPermission } = to.meta.requiresPermission as { role: string; permission: string };
-      
+
       // Only check permission if user role matches required role
       if (userRole === requiredRole) {
         const userPermissions = (authStore.user as any).permissions || {};
         const hasPermission = userPermissions[requiredPermission] === true;
-        
+
         if (!hasPermission) {
           // Redirect to appropriate dashboard based on role if permission not granted
           if (authStore.isSuperAdmin) {
             next({ name: 'super-dashboard' });
           } else {
-          next({ name: 'dashboard' });
+            next({ name: 'dashboard' });
           }
           return;
         }
       }
     }
   }
-  
+
   // Legacy admin check (for backward compatibility)
   if (to.meta.requiresAdmin && authStore.user?.role !== 'ADMIN_TENANT' && authStore.user?.role !== 'SUPER_ADMIN') {
     // Redirect to appropriate dashboard based on role
     if (authStore.isSuperAdmin) {
       next({ name: 'super-dashboard' });
     } else {
-    next({ name: 'dashboard' });
+      next({ name: 'dashboard' });
     }
     return;
   }
-  
+
   // Addon-based access control
   // Super Admin and Admin Tenant bypass addon check for basic analytics
   if (to.meta.requiresAddon && authStore.isAuthenticated) {
     const userRole = authStore.user?.role;
     const requiredAddon = to.meta.requiresAddon as string;
-    
+
     // Super Admin bypass all addon checks
     if (userRole === 'SUPER_ADMIN') {
       next();
       return;
     }
-    
+
     // Admin Tenant bypass addon check for BUSINESS_ANALYTICS (basic analytics access)
     if (userRole === 'ADMIN_TENANT' && requiredAddon === 'BUSINESS_ANALYTICS') {
       next();
       return;
     }
-    
+
     // For other roles or addons, check if addon is active
     try {
       const { default: api } = await import('../api');
       const response = await api.get('/addons');
       const addonsData = response.data?.data || response.data || [];
       const activeAddons = Array.isArray(addonsData) ? addonsData : [];
-      
+
       // Double-check before using array methods
       if (!Array.isArray(activeAddons) || activeAddons.length === 0) {
         next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
         return;
       }
-      
+
       // Safe .some() call with try-catch and logging
       let hasAddon = false;
       try {
@@ -734,7 +740,7 @@ router.beforeEach(async (to, from, next) => {
           activeAddonsIsArray: Array.isArray(activeAddons),
           activeAddonsLength: Array.isArray(activeAddons) ? activeAddons.length : 0
         });
-        
+
         // GUARD CLAUSE: Double-check sebelum .some()
         if (!Array.isArray(activeAddons)) {
           console.warn('[Router] activeAddons is not array in addon guard, setting to empty array');
@@ -748,7 +754,7 @@ router.beforeEach(async (to, from, next) => {
         console.error('[Router] Error checking addon in router guard:', error);
         hasAddon = false;
       }
-      
+
       if (!hasAddon) {
         next({ name: 'unauthorized', query: { reason: 'addon', addon: requiredAddon } });
         return;
@@ -758,12 +764,12 @@ router.beforeEach(async (to, from, next) => {
       console.error('Error checking addon:', error);
     }
   }
-  
+
   // Store previous route for navigation tracking
   if (from.path) {
     sessionStorage.setItem('previousRoute', from.path);
   }
-  
+
   next();
 });
 
