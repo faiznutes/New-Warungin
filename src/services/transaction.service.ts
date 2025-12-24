@@ -19,6 +19,9 @@ export class TransactionService {
     userId: string,
     tenantId: string
   ) {
+    // CRITICAL FIX: Add structured logging for transaction creation
+    const logger = (await import('../utils/logger')).default;
+    
     // Use transaction to ensure data consistency
     return await prisma.$transaction(async (tx) => {
       // Verify order exists and belongs to tenant
@@ -80,8 +83,7 @@ export class TransactionService {
         servedByName = user?.name || 'Unknown';
       }
 
-      // CRITICAL FIX: Add structured logging for transaction creation
-      const logger = (await import('../utils/logger')).default;
+      // Log transaction creation
       logger.info('Creating transaction', {
         tenantId,
         userId,
