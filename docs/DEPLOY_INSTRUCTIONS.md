@@ -1,104 +1,113 @@
-# 🚀 Instruksi Deploy dengan Rebuild Docker
+# 🚀 Instruksi Deploy Perbaikan Server Monitor & Backup
 
-Karena SSH connection timeout dari Windows/WSL, silakan jalankan perintah berikut **langsung di server VPS**:
+## ⚠️ Masalah WSL
+WSL mengalami masalah resource (`Insufficient system resources`), sehingga tidak bisa menjalankan SSH command secara otomatis.
 
-## 📋 Langkah-langkah:
+## ✅ Solusi: Jalankan Manual di Server
 
-### 1. SSH ke Server
-```bash
-# Dari Windows (Git Bash atau PowerShell)
-ssh warungin@192.168.0.101
-# atau
-ssh root@192.168.0.101
-```
+### Opsi 1: Menggunakan Script Deployment (Recommended)
 
-### 2. Masuk ke Root (jika perlu)
-```bash
-sudo su -
-```
-
-### 3. Navigate ke Project Directory
-```bash
-cd /home/warungin/Warungin
-```
-
-### 4. Pull Latest Changes
-```bash
-git fetch origin
-git pull origin main
-```
-
-### 5. Rebuild dan Restart Docker
-```bash
-# Stop containers
-docker compose down
-
-# Rebuild images (dengan --no-cache untuk fresh build)
-docker compose build --no-cache
-
-# Start containers
-docker compose up -d
-```
-
-### 6. Check Status
-```bash
-# Check container status
-docker compose ps
-
-# Check logs jika ada masalah
-docker compose logs -f
-```
-
-## 🔄 Atau Gunakan Script Otomatis
-
-Jika script sudah ada di server:
-
-```bash
-cd /home/warungin/Warungin
-bash scripts/deploy-remote-rebuild.sh
-```
-
-## 📝 Perubahan yang Baru di-Deploy:
-
-1. ✅ **Addons System** - 100% (semua addon spesifik sudah ditambahkan)
-2. ✅ **Paket Langganan** - 100% (MAX plan features sudah lengkap)
-3. ✅ **Test Cases** - 100% (manual checklist, unit tests, integration tests)
-4. ✅ **Addon Expiry Checker** - cron job untuk check expired addons
-5. ✅ **StoreSelectorModal** - untuk multi-store selection
-6. ✅ **Sync Manager** - untuk offline transaction sync
-7. ✅ **Report Export** - PDF/Excel/CSV export untuk PRO/MAX plans
-
-## ⚠️ Catatan Penting:
-
-- Rebuild dengan `--no-cache` akan memakan waktu lebih lama tapi memastikan semua perubahan ter-apply
-- Pastikan `.env` file sudah dikonfigurasi dengan benar
-- Check logs jika ada error setelah rebuild
-- Database migrations akan berjalan otomatis saat container start
-
-## 🐛 Troubleshooting:
-
-Jika ada masalah:
-
-1. **Container tidak start:**
+1. **SSH ke server:**
    ```bash
-   docker compose logs backend
-   docker compose logs frontend
+   ssh faiz@192.168.1.101
+   # Password: 123
    ```
 
-2. **Build error:**
+2. **Jalankan script deployment:**
    ```bash
-   docker compose build --no-cache 2>&1 | tee build.log
+   cd ~/New-Warungin
+   git pull
+   bash scripts/deploy-monitor-fixes.sh
    ```
 
-3. **Database connection error:**
+### Opsi 2: Manual Commands
+
+1. **SSH ke server:**
    ```bash
-   docker compose ps postgres
-   docker compose logs postgres
+   ssh faiz@192.168.1.101
+   # Password: 123
    ```
 
-4. **Port conflict:**
+2. **Pull perubahan:**
    ```bash
-   docker compose down
-   # Edit docker-compose.yml jika perlu
-   docker compose up -d
+   cd ~/New-Warungin
+   git pull
    ```
+
+3. **Restart backend:**
+   ```bash
+   echo "123" | sudo -S docker compose restart backend
+   ```
+
+4. **Tunggu 60 detik, lalu cek status:**
+   ```bash
+   sleep 60
+   sudo docker compose ps backend
+   ```
+
+5. **Verifikasi health check:**
+   ```bash
+   sudo docker compose exec backend wget --quiet --tries=1 --spider http://localhost:3000/health && echo "✅ Backend healthy" || echo "❌ Backend unhealthy"
+   ```
+
+6. **Cek semua services:**
+   ```bash
+   sudo docker compose ps
+   ```
+
+## 📋 Perubahan yang Sudah Di-Deploy
+
+### Backend (`src/routes/admin-monitor.routes.ts`)
+- ✅ Fallback methods untuk disk usage (mendukung berbagai filesystem)
+- ✅ Fallback untuk CPU menggunakan `/proc/stat` jika `top` tidak tersedia
+- ✅ Error handling yang lebih baik untuk memory usage
+- ✅ Fallback untuk uptime menggunakan `/proc/uptime`
+- ✅ Fallback untuk load average menggunakan `/proc/loadavg`
+
+### Frontend (`client/src/views/superadmin/ServerMonitor.vue`)
+- ✅ Disk usage menampilkan loading state (bukan "Tidak ada data disk")
+- ✅ Menampilkan semua disk dengan fallback untuk field kosong
+
+### Frontend (`client/src/views/superadmin/BackupManagement.vue`)
+- ✅ Error handling yang lebih baik untuk load backup
+- ✅ Error handling yang lebih baik untuk view backup
+
+## ✅ Verifikasi Setelah Deploy
+
+1. **Server Monitor - Disk Usage:**
+   - Buka: https://pos.faiznute.site/app/superadmin/server-monitor
+   - Tab: "Server Resources"
+   - Verifikasi: Disk usage menampilkan data (tidak ada "Tidak ada data disk")
+
+2. **Server Monitor - CPU, Memory, Uptime:**
+   - Tab: "Server Resources"
+   - Verifikasi: Semua data ter-load dengan benar (tidak ada N/A)
+
+3. **Backup Management:**
+   - Buka: https://pos.faiznute.site/app/superadmin/backups
+   - Verifikasi: Backup logs ter-load tanpa error
+   - Verifikasi: View backup berfungsi dengan baik
+
+## 🔧 Troubleshooting
+
+Jika backend tidak healthy setelah restart:
+```bash
+# Cek logs
+sudo docker compose logs --tail=50 backend
+
+# Cek apakah ada error
+sudo docker compose logs backend | grep -i error | tail -20
+```
+
+Jika disk usage masih tidak muncul:
+```bash
+# Test command di backend container
+sudo docker compose exec backend df -h
+```
+
+## 📝 Catatan
+
+- Semua perubahan sudah di-commit dan push ke Git
+- Script deployment sudah tersedia di `scripts/deploy-monitor-fixes.sh`
+- Backend perlu di-restart untuk menerapkan perubahan
+

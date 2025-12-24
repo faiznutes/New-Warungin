@@ -13,8 +13,6 @@ RUN npm config set fetch-timeout 300000 && \
 COPY package*.json ./
 
 # Install dependencies
-# Use npm install to handle lock file sync issues, fallback to legacy-peer-deps if needed
-# Add retry logic for network issues
 RUN npm install --legacy-peer-deps || \
     npm install || \
     (sleep 10 && npm install --legacy-peer-deps) || \
@@ -36,8 +34,8 @@ FROM nginx:alpine
 # Install wget for healthcheck
 RUN apk add --no-cache wget
 
-# Create required nginx cache directories and setup permissions
-# This must happen as root before nginx starts
+# CRITICAL FIX: Pre-create nginx cache directories with proper permissions
+# This must happen BEFORE nginx tries to create them
 RUN mkdir -p /var/cache/nginx/client_temp \
     && mkdir -p /var/cache/nginx/proxy_temp \
     && mkdir -p /var/cache/nginx/fastcgi_temp \
@@ -45,7 +43,12 @@ RUN mkdir -p /var/cache/nginx/client_temp \
     && mkdir -p /var/cache/nginx/scgi_temp \
     && mkdir -p /var/run/nginx \
     && mkdir -p /var/log/nginx \
-    && chmod -R 755 /var/cache/nginx /var/run/nginx /var/log/nginx
+    && chmod -R 755 /var/cache/nginx /var/run/nginx /var/log/nginx \
+    && chown -R root:root /var/cache/nginx /var/run/nginx /var/log/nginx
+
+# CRITICAL FIX: Remove user directive from base nginx.conf
+# The "user nginx" causes permission issues when running as root in container
+RUN sed -i 's/^user nginx;/# user nginx;  # removed for containerized deployment/' /etc/nginx/nginx.conf
 
 # Copy built files
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html
@@ -60,6 +63,6 @@ RUN chmod +x /docker-entrypoint.sh
 # Expose port
 EXPOSE 80
 
-# Run as root (containerized, safe)
-# Let entrypoint manage nginx startup
+# Run as root in container (safe due to containerization)
+# Don't switch user - let nginx run with root privileges
 ENTRYPOINT ["/docker-entrypoint.sh"]
