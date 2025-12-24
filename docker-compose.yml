@@ -102,7 +102,7 @@ services:
     tmpfs:
       - /tmp:noexec,nosuid,size=500m,mode=1777
       - /app/storage/backups:noexec,nosuid,size=100m,mode=0755,uid=1001,gid=1001
-      - /app/node_modules/.prisma:noexec,nosuid,size=100m,mode=0755,uid=1001,gid=1001
+      - /app/logs:noexec,nosuid,size=200m,mode=0755,uid=1001,gid=1001
     # Remove unnecessary capabilities
     cap_drop:
       - ALL
