@@ -1,113 +1,123 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Webhooks</h1>
-        <p class="text-gray-600">Kelola webhook untuk integrasi dengan sistem eksternal</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Webhooks</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage webhooks for external integrations.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        + Buat Webhook
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Create Webhook</span>
       </button>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Webhooks List -->
     <div v-else class="space-y-4">
-      <div v-if="webhooks.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
-        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-        </svg>
-        <p class="text-gray-600 mb-4">Belum ada webhook yang dibuat</p>
+      <!-- Empty State -->
+      <div v-if="webhooks.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
+        <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">webhook</span>
+        <p class="text-slate-500 mb-4">No webhooks created yet</p>
         <button
           @click="showCreateModal = true"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+          class="flex items-center gap-2 mx-auto bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
-          Buat Webhook Pertama
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Create First Webhook
         </button>
       </div>
 
+      <!-- Webhook Cards -->
       <div
         v-for="webhook in webhooks"
         :key="webhook.id"
-        class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-lg transition group"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">
-            <div class="flex items-center space-x-3 mb-2">
-              <h3 class="text-lg font-semibold text-gray-900">{{ webhook.url }}</h3>
-              <span
-                :class="[
-                  'px-2 py-1 rounded text-xs font-semibold',
-                  webhook.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
-                ]"
-              >
-                {{ webhook.isActive ? 'Aktif' : 'Tidak Aktif' }}
-              </span>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                <span class="material-symbols-outlined">webhook</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white break-all">{{ webhook.url }}</h3>
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1"
+                  :class="webhook.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" :class="webhook.isActive ? 'bg-green-500' : 'bg-slate-400'"></span>
+                  {{ webhook.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
             </div>
 
-            <div class="space-y-2 text-sm text-gray-600">
+            <div class="space-y-3 text-sm">
               <div>
-                <strong>Events:</strong>
-                <div class="flex flex-wrap gap-2 mt-1">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Events</p>
+                <div class="flex flex-wrap gap-1.5">
                   <span
                     v-for="event in webhook.events"
                     :key="event"
-                    class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs"
+                    class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium"
                   >
                     {{ event }}
                   </span>
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4 mt-3">
-                <div>
-                  <strong>Retry Count:</strong> {{ webhook.retryCount || 3 }}
-                </div>
-                <div>
-                  <strong>Timeout:</strong> {{ webhook.timeout || 5000 }}ms
-                </div>
+              <div class="flex gap-4 text-slate-500 text-xs">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">replay</span>
+                  Retries: {{ webhook.retryCount || 3 }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">timer</span>
+                  Timeout: {{ webhook.timeout || 5000 }}ms
+                </span>
               </div>
 
-              <div v-if="webhook.lastDeliveryAt" class="text-xs text-gray-500 mt-2">
+              <p v-if="webhook.lastDeliveryAt" class="text-xs text-slate-400">
                 Last delivery: {{ formatDate(webhook.lastDeliveryAt) }}
-              </div>
+              </p>
             </div>
           </div>
 
-          <div class="flex space-x-2 ml-4">
+          <div class="flex flex-wrap gap-2 ml-4">
             <router-link
               :to="`/app/settings/webhooks/tester?webhookId=${webhook.id}`"
-              class="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition text-sm"
+              class="px-3 py-1.5 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition text-xs font-medium flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">science</span>
               Tester
             </router-link>
             <button
               @click="testWebhook(webhook.id)"
-              class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
+              class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition text-xs font-medium flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">send</span>
               Test
             </button>
             <button
               @click="editWebhook(webhook)"
-              class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition text-sm"
+              class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-xs font-medium flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">edit</span>
               Edit
             </button>
             <button
               @click="deleteWebhook(webhook.id)"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm"
+              class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-xs font-medium flex items-center gap-1"
             >
-              Hapus
+              <span class="material-symbols-outlined text-[16px]">delete</span>
+              Delete
             </button>
           </div>
         </div>
@@ -115,107 +125,113 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div
-      v-if="showCreateModal || editingWebhook"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="closeModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            {{ editingWebhook ? 'Edit Webhook' : 'Buat Webhook Baru' }}
-          </h3>
-
-          <form @submit.prevent="saveWebhook" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">URL *</label>
-              <input
-                v-model="webhookForm.url"
-                type="url"
-                required
-                placeholder="https://example.com/webhook"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
+    <Teleport to="body">
+      <div
+        v-if="showCreateModal || editingWebhook"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click.self="closeModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div class="p-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                <span class="material-symbols-outlined">webhook</span>
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+                {{ editingWebhook ? 'Edit Webhook' : 'Create New Webhook' }}
+              </h3>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Events *</label>
-              <div class="grid grid-cols-2 gap-2">
-                <label
-                  v-for="event in availableEvents"
-                  :key="event"
-                  class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer"
-                >
+            <form @submit.prevent="saveWebhook" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">URL *</label>
+                <input
+                  v-model="webhookForm.url"
+                  type="url"
+                  required
+                  placeholder="https://example.com/webhook"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Events *</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label
+                    v-for="event in availableEvents"
+                    :key="event"
+                    class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer transition"
+                  >
+                    <input
+                      type="checkbox"
+                      :value="event"
+                      v-model="webhookForm.events"
+                      class="rounded border-slate-300 text-primary focus:ring-primary"
+                    />
+                    <span class="text-sm text-slate-700 dark:text-slate-300">{{ event }}</span>
+                  </label>
+                </div>
+                <p v-if="webhookForm.events.length === 0" class="text-sm text-red-600 mt-1">
+                  Select at least 1 event
+                </p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Retry Count</label>
                   <input
-                    type="checkbox"
-                    :value="event"
-                    v-model="webhookForm.events"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    v-model.number="webhookForm.retryCount"
+                    type="number"
+                    min="1"
+                    max="10"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
-                  <span class="text-sm text-gray-700">{{ event }}</span>
-                </label>
-              </div>
-              <p v-if="webhookForm.events.length === 0" class="text-sm text-red-600 mt-1">
-                Minimal pilih 1 event
-              </p>
-            </div>
+                </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Retry Count</label>
-                <input
-                  v-model.number="webhookForm.retryCount"
-                  type="number"
-                  min="1"
-                  max="10"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Timeout (ms)</label>
+                  <input
+                    v-model.number="webhookForm.timeout"
+                    type="number"
+                    min="1000"
+                    max="30000"
+                    step="1000"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Timeout (ms)</label>
-                <input
-                  v-model.number="webhookForm.timeout"
-                  type="number"
-                  min="1000"
-                  max="30000"
-                  step="1000"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label class="flex items-center space-x-2">
+              <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
                 <input
                   type="checkbox"
                   v-model="webhookForm.isActive"
-                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  id="isActive"
+                  class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
                 />
-                <span class="text-sm text-gray-700">Aktif</span>
-              </label>
-            </div>
+                <label for="isActive" class="text-sm font-medium text-slate-700 dark:text-slate-300">Active</label>
+              </div>
 
-            <div class="flex space-x-3 pt-4">
-              <button
-                type="button"
-                @click="closeModal"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving || webhookForm.events.length === 0"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
-              </button>
-            </div>
-          </form>
+              <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button
+                  type="button"
+                  @click="closeModal"
+                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  :disabled="saving || webhookForm.events.length === 0"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
+                >
+                  {{ saving ? 'Saving...' : 'Save' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -285,10 +301,10 @@ const saveWebhook = async () => {
 
     await loadWebhooks();
     closeModal();
-    await success('Webhook berhasil disimpan', 'Berhasil');
+    await success('Webhook saved successfully', 'Success');
   } catch (err: any) {
     console.error('Error saving webhook:', err);
-    await error(err.response?.data?.message || 'Gagal menyimpan webhook', 'Error');
+    await error(err.response?.data?.message || 'Failed to save webhook', 'Error');
   } finally {
     saving.value = false;
   }
@@ -308,10 +324,10 @@ const editWebhook = (webhook: any) => {
 
 const deleteWebhook = async (id: string) => {
   const confirmed = await confirm(
-    'Apakah Anda yakin ingin menghapus webhook ini?',
-    'Konfirmasi Hapus Webhook',
-    'Ya, Hapus',
-    'Batal'
+    'Are you sure you want to delete this webhook?',
+    'Delete Webhook',
+    'Yes, Delete',
+    'Cancel'
   );
   
   if (!confirmed) return;
@@ -319,20 +335,20 @@ const deleteWebhook = async (id: string) => {
   try {
     await api.delete(`/webhooks/${id}`);
     await loadWebhooks();
-    await success('Webhook berhasil dihapus', 'Berhasil');
+    await success('Webhook deleted successfully', 'Success');
   } catch (err: any) {
     console.error('Error deleting webhook:', err);
-    await error(err.response?.data?.message || 'Gagal menghapus webhook', 'Error');
+    await error(err.response?.data?.message || 'Failed to delete webhook', 'Error');
   }
 };
 
 const testWebhook = async (id: string) => {
   try {
     await api.post(`/webhooks/${id}/test`);
-    await success('Test webhook berhasil dikirim!', 'Berhasil');
+    await success('Test webhook sent successfully!', 'Success');
   } catch (err: any) {
     console.error('Error testing webhook:', err);
-    await error(err.response?.data?.message || 'Gagal mengirim test webhook', 'Error');
+    await error(err.response?.data?.message || 'Failed to send test webhook', 'Error');
   }
 };
 
@@ -350,7 +366,7 @@ const closeModal = () => {
 
 const formatDate = (date: string) => {
   const d = new Date(date);
-  return d.toLocaleString('id-ID', {
+  return d.toLocaleString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -363,4 +379,3 @@ onMounted(() => {
   loadWebhooks();
 });
 </script>
-

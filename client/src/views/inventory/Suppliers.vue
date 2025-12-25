@@ -1,239 +1,275 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Suppliers</h2>
-        <p class="text-gray-600">Kelola supplier untuk purchase order</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Suppliers</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage suppliers for purchase orders.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Tambah Supplier</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Supplier</span>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="mb-4 flex items-center space-x-4">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search suppliers..."
-        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-        @input="loadSuppliers"
-      />
-      <select
-        v-model="isActiveFilter"
-        @change="loadSuppliers"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-      >
-        <option value="">All Status</option>
-        <option value="true">Active</option>
-        <option value="false">Inactive</option>
-      </select>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1 relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search suppliers..."
+            class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            @input="loadSuppliers"
+          />
+        </div>
+        <select
+          v-model="isActiveFilter"
+          @change="loadSuppliers"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="">All Status</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </div>
     </div>
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="suppliers.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-      <p class="text-gray-500">Belum ada supplier</p>
+    <div v-else-if="suppliers.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">local_shipping</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Suppliers Yet</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Add your first supplier to start creating purchase orders.</p>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Add First Supplier
+      </button>
     </div>
 
     <!-- Suppliers Table -->
-    <div v-else class="bg-white rounded-lg shadow-lg overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="supplier in suppliers" :key="supplier.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-medium text-gray-900">{{ supplier.name }}</div>
-              <div v-if="supplier.contactPerson" class="text-xs text-gray-500">{{ supplier.contactPerson }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div v-if="supplier.email" class="text-sm text-gray-900">{{ supplier.email }}</div>
-              <div v-if="supplier.phone" class="text-sm text-gray-500">{{ supplier.phone }}</div>
-            </td>
-            <td class="px-6 py-4">
-              <div class="text-sm text-gray-900">{{ supplier.address || '-' }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                class="px-2 py-1 text-xs font-semibold rounded-full"
-                :class="supplier.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
-              >
-                {{ supplier.isActive ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button
-                @click="editSupplier(supplier)"
-                class="text-blue-600 hover:text-blue-900 mr-4"
-              >
-                Edit
-              </button>
-              <button
-                @click="deleteSupplier(supplier)"
-                class="text-red-600 hover:text-red-900"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-900/50">
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Contact</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Address</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="supplier in suppliers" :key="supplier.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium text-slate-900 dark:text-white">{{ supplier.name }}</div>
+                    <div v-if="supplier.contactPerson" class="text-xs text-slate-500">{{ supplier.contactPerson }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div v-if="supplier.email" class="text-sm text-slate-900 dark:text-white flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-slate-400">mail</span>
+                  {{ supplier.email }}
+                </div>
+                <div v-if="supplier.phone" class="text-sm text-slate-500 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-slate-400">phone</span>
+                  {{ supplier.phone }}
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-slate-900 dark:text-white max-w-[200px] truncate">{{ supplier.address || '-' }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
+                  :class="supplier.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" :class="supplier.isActive ? 'bg-green-500' : 'bg-slate-400'"></span>
+                  {{ supplier.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    @click="editSupplier(supplier)"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                    Edit
+                  </button>
+                  <button
+                    @click="deleteSupplier(supplier)"
+                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-700">
+      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-sm text-slate-500">
           Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of {{ pagination.total }} results
         </div>
-        <div class="flex space-x-2">
+        <div class="flex gap-2">
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
           >
+            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
             Previous
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
           >
             Next
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Create/Edit Modal -->
-    <div
-      v-if="showCreateModal || editingSupplier"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">
-              {{ editingSupplier ? 'Edit Supplier' : 'Tambah Supplier' }}
-            </h3>
-            <button
-              @click="closeModal"
-              class="text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form @submit.prevent="saveSupplier" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-              <input
-                v-model="supplierForm.name"
-                type="text"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  v-model="supplierForm.email"
-                  type="email"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
+    <Teleport to="body">
+      <div
+        v-if="showCreateModal || editingSupplier"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="closeModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                  <span class="material-symbols-outlined">local_shipping</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+                  {{ editingSupplier ? 'Edit Supplier' : 'Add Supplier' }}
+                </h3>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                  v-model="supplierForm.phone"
-                  type="text"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
-              <input
-                v-model="supplierForm.contactPerson"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <textarea
-                v-model="supplierForm.address"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-              <textarea
-                v-model="supplierForm.notes"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
-
-            <div v-if="editingSupplier" class="flex items-center">
-              <input
-                v-model="supplierForm.isActive"
-                type="checkbox"
-                id="isActive"
-                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-              />
-              <label for="isActive" class="ml-2 text-sm text-gray-700">Active</label>
-            </div>
-
-            <div class="flex space-x-3 pt-4 border-t">
               <button
-                type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition"
               >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {{ saving ? 'Menyimpan...' : editingSupplier ? 'Update' : 'Simpan' }}
+                <span class="material-symbols-outlined">close</span>
               </button>
             </div>
-          </form>
+
+            <form @submit.prevent="saveSupplier" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Name *</label>
+                <input
+                  v-model="supplierForm.name"
+                  type="text"
+                  required
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+                  <input
+                    v-model="supplierForm.email"
+                    type="email"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone</label>
+                  <input
+                    v-model="supplierForm.phone"
+                    type="text"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Contact Person</label>
+                <input
+                  v-model="supplierForm.contactPerson"
+                  type="text"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Address</label>
+                <textarea
+                  v-model="supplierForm.address"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</label>
+                <textarea
+                  v-model="supplierForm.notes"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                ></textarea>
+              </div>
+
+              <div v-if="editingSupplier" class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <input
+                  v-model="supplierForm.isActive"
+                  type="checkbox"
+                  id="isActive"
+                  class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
+                />
+                <label for="isActive" class="text-sm font-medium text-slate-700 dark:text-slate-300">Active</label>
+              </div>
+
+              <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button
+                  type="button"
+                  @click="closeModal"
+                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  :disabled="saving"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
+                >
+                  {{ saving ? 'Saving...' : editingSupplier ? 'Update' : 'Save' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -297,7 +333,7 @@ const loadSuppliers = async () => {
     pagination.value = response.data.pagination;
   } catch (error: any) {
     console.error('Error loading suppliers:', error);
-    await showError('Gagal memuat suppliers');
+    await showError('Failed to load suppliers');
   } finally {
     loading.value = false;
   }
@@ -313,16 +349,16 @@ const saveSupplier = async () => {
   try {
     if (editingSupplier.value) {
       await api.put(`/suppliers/${editingSupplier.value.id}`, supplierForm.value);
-      await showSuccess('Supplier berhasil diupdate');
+      await showSuccess('Supplier updated successfully');
     } else {
       await api.post('/suppliers', supplierForm.value);
-      await showSuccess('Supplier berhasil dibuat');
+      await showSuccess('Supplier created successfully');
     }
     closeModal();
     await loadSuppliers();
   } catch (error: any) {
     console.error('Error saving supplier:', error);
-    await showError('Gagal menyimpan supplier');
+    await showError('Failed to save supplier');
   } finally {
     saving.value = false;
   }
@@ -344,18 +380,18 @@ const editSupplier = (supplier: Supplier) => {
 
 const deleteSupplier = async (supplier: Supplier) => {
   const confirmed = await showConfirm(
-    'Hapus Supplier',
-    `Apakah Anda yakin ingin menghapus supplier "${supplier.name}"?`
+    'Delete Supplier',
+    `Are you sure you want to delete supplier "${supplier.name}"?`
   );
   if (!confirmed) return;
 
   try {
     await api.delete(`/suppliers/${supplier.id}`);
-    await showSuccess('Supplier berhasil dihapus');
+    await showSuccess('Supplier deleted successfully');
     await loadSuppliers();
   } catch (error: any) {
     console.error('Error deleting supplier:', error);
-    await showError(error.response?.data?.message || 'Gagal menghapus supplier');
+    await showError(error.response?.data?.message || 'Failed to delete supplier');
   }
 };
 
@@ -377,4 +413,3 @@ onMounted(() => {
   loadSuppliers();
 });
 </script>
-

@@ -2,27 +2,27 @@
   <div class="flex flex-col gap-8">
     <!-- Welcome Section -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-[#4c739a] font-medium">Loading data...</div>
+      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium">Loading data...</div>
     </div>
 
     <template v-else>
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 class="text-[#0d141b] dark:text-white text-3xl font-bold leading-tight tracking-tight">Welcome back, {{ authStore.user?.name || 'Admin' }} 👋</h1>
-          <p class="text-[#4c739a] dark:text-slate-400 mt-2">Here's what's happening with your platform today.</p>
+          <h1 class="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Welcome back, {{ authStore.user?.name || 'Admin' }} 👋</h1>
+          <p class="text-slate-500 dark:text-slate-400 mt-2">Here's what's happening with your platform today.</p>
         </div>
         <div class="flex gap-3">
           <router-link
             to="/app/reports/global"
-            class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0d141b] dark:text-white flex items-center gap-2 transition-colors"
+            class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white flex items-center gap-2 transition-colors"
           >
             <span class="material-symbols-outlined text-[18px]">download</span>
             Export Report
           </router-link>
           <router-link
             to="/app/tenants"
-            class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-blue-500/30 flex items-center gap-2 transition-colors"
+            class="px-4 py-2 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 flex items-center gap-2 transition-colors"
           >
             <span class="material-symbols-outlined text-[18px]">add</span>
             New Tenant
@@ -33,18 +33,18 @@
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <!-- Stat 1 -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-card border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between gap-4 hover:shadow-lg transition-shadow">
           <div class="flex justify-between items-start">
             <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <span class="material-symbols-outlined text-[#137fec]">payments</span>
+              <span class="material-symbols-outlined text-primary">payments</span>
             </div>
-            <span class="flex items-center text-[#078838] bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded text-xs font-semibold">
+            <span class="flex items-center text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded text-xs font-semibold">
               <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span> 12%
             </span>
           </div>
           <div>
-            <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Pendapatan</p>
-            <p class="text-[#0d141b] dark:text-white text-xl font-bold mt-1">
+            <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Revenue</p>
+            <p class="text-slate-900 dark:text-white text-xl font-bold mt-1">
               {{ formatCurrency(globalReportData?.summary?.totalGlobalRevenue || stats?.overview?.totalRevenue || 0) }}
             </p>
           </div>

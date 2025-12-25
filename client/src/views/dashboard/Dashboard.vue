@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p class="text-sm sm:text-base text-gray-600">Ringkasan bisnis Anda dalam satu tempat</p>
+        <p class="text-sm sm:text-base text-gray-600">Your business summary in one place</p>
       </div>
       <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">
         <select
@@ -12,17 +12,17 @@
           @change="loadStats"
           class="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm hover:shadow-md transition"
         >
-          <option value="today">Hari Ini</option>
-          <option value="week">Minggu Ini</option>
-          <option value="month">Bulan Ini</option>
-          <option value="year">Tahun Ini</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="year">This Year</option>
         </select>
       </div>
     </div>
 
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
       <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat data...</div>
+      <div class="text-gray-600 font-medium">Loading data...</div>
     </div>
 
     <!-- Kasir Dashboard -->
@@ -31,8 +31,8 @@
       <div class="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-xl shadow-xl p-6 sm:p-8 text-white">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex-1">
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, Kasir!</h2>
-            <p class="text-primary-100 text-base sm:text-lg">Mulai transaksi baru untuk melayani pelanggan</p>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Welcome, Cashier!</h2>
+            <p class="text-primary-100 text-base sm:text-lg">Start a new transaction to serve customers</p>
           </div>
           <div class="hidden md:block flex-shrink-0">
             <svg class="w-24 h-24 sm:w-32 sm:h-32 text-primary-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         <div class="bg-gradient-to-br from-white to-orange-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-orange-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Transaksi Hari Ini</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Today's Transactions</span>
             <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -54,12 +54,12 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ cashierStats?.todayTransactions || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Total transaksi hari ini</p>
+          <p class="text-xs sm:text-sm text-gray-600">Total transactions today</p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pendapatan Hari Ini</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Today's Revenue</span>
             <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -67,12 +67,12 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ formatCurrency(cashierStats?.todayRevenue || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Total pendapatan hari ini</p>
+          <p class="text-xs sm:text-sm text-gray-600">Total revenue today</p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-blue-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Rata-rata per Transaksi</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Average per Transaction</span>
             <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -80,13 +80,13 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ formatCurrency(cashierStats?.averageTransaction || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Rata-rata nilai transaksi</p>
+          <p class="text-xs sm:text-sm text-gray-600">Average transaction value</p>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200">
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Aksi Cepat</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Quick Actions</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <router-link
             to="/app/pos"
@@ -98,8 +98,8 @@
               </svg>
             </div>
             <div>
-              <span class="font-bold text-gray-900 block text-base">Buka Kasir</span>
-              <span class="text-xs sm:text-sm text-gray-600">Buat transaksi baru</span>
+              <span class="font-bold text-gray-900 block text-base">Open Cashier</span>
+              <span class="text-xs sm:text-sm text-gray-600">Create new transaction</span>
             </div>
           </router-link>
           <router-link
@@ -112,8 +112,8 @@
               </svg>
             </div>
             <div>
-              <span class="font-bold text-gray-900 block text-base">Uang Modal & Rekap</span>
-              <span class="text-xs sm:text-sm text-gray-600">Kelola shift dan rekap fisik</span>
+              <span class="font-bold text-gray-900 block text-base">Cash & Recap</span>
+              <span class="text-xs sm:text-sm text-gray-600">Manage shift and cash recap</span>
             </div>
           </router-link>
         </div>
@@ -126,8 +126,8 @@
       <div class="bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-xl shadow-xl p-6 sm:p-8 text-white">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex-1">
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, Kitchen!</h2>
-            <p class="text-red-100 text-base sm:text-lg">Kelola pesanan yang masuk dari kasir</p>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Welcome, Kitchen!</h2>
+            <p class="text-red-100 text-base sm:text-lg">Manage incoming orders from cashier</p>
           </div>
           <div class="hidden md:block flex-shrink-0">
             <svg class="w-24 h-24 sm:w-32 sm:h-32 text-red-300 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         <div class="bg-gradient-to-br from-white to-yellow-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-yellow-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pesanan Pending</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pending Orders</span>
             <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -149,12 +149,12 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.pendingOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Menunggu diproses</p>
+          <p class="text-xs sm:text-sm text-gray-600">Waiting to be processed</p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-orange-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-orange-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Sedang Dimasak</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Being Cooked</span>
             <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -163,12 +163,12 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.cookingOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Sedang dalam proses</p>
+          <p class="text-xs sm:text-sm text-gray-600">Currently in progress</p>
         </div>
 
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pesanan Siap</span>
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Orders Ready</span>
             <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -176,13 +176,13 @@
             </div>
           </div>
           <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ kitchenStats?.readyOrders || 0 }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Siap untuk dikirim</p>
+          <p class="text-xs sm:text-sm text-gray-600">Ready to serve</p>
         </div>
       </div>
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200">
-        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Aksi Cepat</h3>
+        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5">Quick Actions</h3>
         <router-link
           to="/app/orders/kitchen"
           class="flex items-center p-5 bg-gradient-to-br from-red-50 to-red-100 rounded-xl hover:from-red-100 hover:to-red-200 transition-all duration-200 border-2 border-red-200 hover:border-red-400 hover:shadow-lg group"
@@ -193,8 +193,8 @@
             </svg>
           </div>
           <div>
-            <span class="font-bold text-gray-900 block text-base">Lihat Pesanan Masuk</span>
-            <span class="text-xs sm:text-sm text-gray-600">Kelola pesanan dari kasir</span>
+            <span class="font-bold text-gray-900 block text-base">View Incoming Orders</span>
+            <span class="text-xs sm:text-sm text-gray-600">Manage orders from cashier</span>
           </div>
         </router-link>
       </div>
@@ -209,7 +209,7 @@
         <div class="relative z-10 flex items-center justify-center py-8">
           <div class="flex flex-col items-center gap-4">
             <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-primary-100 text-lg">Memuat informasi langganan...</p>
+            <p class="text-primary-100 text-lg">Loading subscription info...</p>
           </div>
         </div>
       </div>
@@ -222,17 +222,17 @@
         <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-4">
-              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">Dashboard Bisnis Anda</h2>
+              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">Your Business Dashboard</h2>
               <span
                 class="px-4 py-1.5 text-sm font-bold rounded-full backdrop-blur-sm"
                 :class="currentSubscription?.isExpired ? 'bg-red-500 bg-opacity-80 text-white' : 'bg-green-500 bg-opacity-80 text-white'"
               >
-                {{ currentSubscription?.isExpired ? 'Kedaluwarsa' : 'Aktif' }}
+                {{ currentSubscription?.isExpired ? 'Expired' : 'Active' }}
               </span>
             </div>
             <div class="mb-4">
-              <p class="text-emerald-100 text-lg sm:text-xl mb-2">Paket: <span class="font-bold text-white">{{ getPlanName(currentSubscription?.plan || 'BASIC') }}</span></p>
-              <p class="text-emerald-100 text-sm sm:text-base">Berakhir: {{ formatDate(currentSubscription?.subscription?.endDate) }}</p>
+              <p class="text-emerald-100 text-lg sm:text-xl mb-2">Plan: <span class="font-bold text-white">{{ getPlanName(currentSubscription?.plan || 'BASIC') }}</span></p>
+              <p class="text-emerald-100 text-sm sm:text-base">Expires: {{ formatDate(currentSubscription?.subscription?.endDate) }}</p>
               <p v-if="currentSubscription?.daysRemaining !== undefined" class="text-white font-bold text-lg mt-2">
                 {{ currentSubscription.daysRemaining > 0 || (currentSubscription.hoursRemaining && currentSubscription.hoursRemaining > 0) 
                   ? `${formatRemainingTime(
@@ -240,8 +240,8 @@
                       currentSubscription.hoursRemaining,
                       currentSubscription.minutesRemaining,
                       currentSubscription.secondsRemaining
-                    )} tersisa` 
-                  : 'Langganan telah kedaluwarsa' }}
+                    )} remaining` 
+                  : 'Subscription has expired' }}
               </p>
             </div>
           </div>
@@ -254,7 +254,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span>Upgrade/Perpanjang</span>
+                <span>Upgrade/Renew</span>
               </div>
             </router-link>
           </div>
@@ -266,8 +266,8 @@
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
         <div class="relative z-10">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Selamat Datang! 👋</h2>
-          <p class="text-primary-100 text-lg sm:text-xl">Kelola bisnis Anda dengan mudah dari satu tempat</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Welcome! 👋</h2>
+          <p class="text-primary-100 text-lg sm:text-xl">Manage your business easily from one place</p>
         </div>
       </div>
 
@@ -280,7 +280,7 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-green-100 uppercase tracking-wide">Total Pendapatan</span>
+              <span class="text-sm font-semibold text-green-100 uppercase tracking-wide">Total Revenue</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -298,7 +298,7 @@
                 </svg>
                 {{ stats?.overview?.revenueGrowth >= 0 ? '+' : '' }}{{ stats?.overview?.revenueGrowth?.toFixed(1) || 0 }}%
               </span>
-              <span class="text-xs text-green-100 ml-2">vs periode lalu</span>
+              <span class="text-xs text-green-100 ml-2">vs last period</span>
             </div>
           </div>
         </router-link>
@@ -310,7 +310,7 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-blue-100 uppercase tracking-wide">Total Pesanan</span>
+              <span class="text-sm font-semibold text-blue-100 uppercase tracking-wide">Total Orders</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -319,7 +319,7 @@
             </div>
             <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalOrders || 0 }}</p>
             <p class="text-sm text-blue-100">
-              <span class="font-bold text-white">{{ stats?.overview?.todayOrders || 0 }}</span> pesanan hari ini
+              <span class="font-bold text-white">{{ stats?.overview?.todayOrders || 0 }}</span> orders today
             </p>
           </div>
         </router-link>
@@ -331,7 +331,7 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-purple-100 uppercase tracking-wide">Total Produk</span>
+              <span class="text-sm font-semibold text-purple-100 uppercase tracking-wide">Total Products</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -340,7 +340,7 @@
             </div>
             <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalProducts || 0 }}</p>
             <p class="text-sm text-purple-100">
-              <span class="font-bold text-white">{{ stats?.alerts?.lowStockProducts || 0 }}</span> produk stok rendah
+              <span class="font-bold text-white">{{ stats?.alerts?.lowStockProducts || 0 }}</span> low stock products
             </p>
           </div>
         </router-link>
@@ -352,7 +352,7 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
           <div class="relative z-10">
             <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-indigo-100 uppercase tracking-wide">Total Pelanggan</span>
+              <span class="text-sm font-semibold text-indigo-100 uppercase tracking-wide">Total Customers</span>
               <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -361,7 +361,7 @@
             </div>
             <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalCustomers || 0 }}</p>
             <p class="text-sm text-indigo-100">
-              <span class="font-bold text-white">{{ stats?.overview?.totalMembers || 0 }}</span> member aktif
+              <span class="font-bold text-white">{{ stats?.overview?.totalMembers || 0 }}</span> active members
             </p>
           </div>
         </router-link>
@@ -372,7 +372,7 @@
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Aksi Cepat</h3>
+        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <router-link
             to="/app/pos"
@@ -395,7 +395,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Produk</span>
+            <span class="font-semibold text-gray-900 text-sm text-center">Products</span>
           </router-link>
 
           <router-link
@@ -407,7 +407,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Pesanan</span>
+            <span class="font-semibold text-gray-900 text-sm text-center">Orders</span>
           </router-link>
 
           <router-link
@@ -419,7 +419,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Pelanggan</span>
+            <span class="font-semibold text-gray-900 text-sm text-center">Customers</span>
           </router-link>
 
           <router-link
@@ -431,7 +431,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Laporan</span>
+            <span class="font-semibold text-gray-900 text-sm text-center">Reports</span>
           </router-link>
         </div>
       </div>
@@ -442,9 +442,9 @@
         <!-- Top Products -->
         <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Produk Terlaris</h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Top Products</h3>
             <router-link to="/app/products" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
-              Lihat Semua
+              View All
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
@@ -454,7 +454,7 @@
             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
-            <p>Belum ada data produk</p>
+            <p>No product data yet</p>
           </div>
           <div v-else class="space-y-3">
             <div
@@ -468,7 +468,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="font-bold text-gray-900 text-base truncate">{{ item.product?.name || 'Unknown' }}</p>
-                  <p class="text-sm text-gray-600">{{ item.totalQuantity }} terjual</p>
+                  <p class="text-sm text-gray-600">{{ item.totalQuantity }} sold</p>
                 </div>
               </div>
               <div class="text-right ml-4">
@@ -481,9 +481,9 @@
         <!-- Sales by Status -->
         <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Pesanan Berdasarkan Status</h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Orders by Status</h3>
             <router-link to="/app/orders" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
-              Lihat Semua
+              View All
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
@@ -493,7 +493,7 @@
             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            <p>Belum ada data pesanan</p>
+            <p>No order data yet</p>
           </div>
           <div v-else class="space-y-4">
             <div

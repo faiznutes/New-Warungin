@@ -1,42 +1,40 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-card p-8 text-center">
       <!-- Success State -->
       <div v-if="status === 'success'" class="space-y-4">
         <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
+          <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Pembayaran Berhasil!</h1>
-        <p class="text-gray-600">
-          Pembayaran Anda telah berhasil diproses. Addon atau langganan Anda akan segera diaktifkan.
+        <h1 class="text-2xl font-bold text-slate-900">Payment Successful!</h1>
+        <p class="text-slate-600">
+          Your payment has been successfully processed. Your addon or subscription will be activated shortly.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p class="text-sm text-gray-500">Order ID:</p>
-          <p class="text-sm font-mono text-gray-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
+          <p class="text-sm text-slate-500">Order ID:</p>
+          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
         </div>
         <div v-if="activationStatus === 'checking'" class="mt-4 p-3 bg-blue-50 rounded-lg">
           <div class="flex items-center justify-center gap-2">
             <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-sm text-blue-600">Memverifikasi dan mengaktifkan addon/langganan...</p>
+            <p class="text-sm text-blue-600">Verifying and activating addon/subscription...</p>
           </div>
         </div>
         <div v-else-if="activationStatus === 'success'" class="mt-4 p-3 bg-green-50 rounded-lg">
-          <p class="text-sm text-green-600">✅ Addon/langganan berhasil diaktifkan!</p>
+          <p class="text-sm text-green-600">✅ Addon/subscription activated successfully!</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
           >
-            {{ isSubscriptionPayment ? 'Kembali ke Berlangganan' : 'Kembali ke Addons' }}
+            {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
           >
-            Ke Dashboard
+            Go to Dashboard
           </button>
         </div>
       </div>
@@ -44,30 +42,28 @@
       <!-- Error State -->
       <div v-else-if="status === 'error'" class="space-y-4">
         <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <span class="material-symbols-outlined text-red-600 text-3xl">cancel</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Pembayaran Gagal</h1>
-        <p class="text-gray-600">
-          Maaf, pembayaran Anda gagal diproses. Silakan coba lagi atau hubungi support jika masalah berlanjut.
+        <h1 class="text-2xl font-bold text-slate-900">Payment Failed</h1>
+        <p class="text-slate-600">
+          Sorry, your payment could not be processed. Please try again or contact support if the problem persists.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p class="text-sm text-gray-500">Order ID:</p>
-          <p class="text-sm font-mono text-gray-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
+          <p class="text-sm text-slate-500">Order ID:</p>
+          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
           >
-            Coba Lagi
+            Try Again
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
           >
-            Ke Dashboard
+            Go to Dashboard
           </button>
         </div>
       </div>
@@ -75,30 +71,28 @@
       <!-- Pending State -->
       <div v-else-if="status === 'pending'" class="space-y-4">
         <div class="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-yellow-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+          <span class="material-symbols-outlined text-yellow-600 text-3xl animate-spin">sync</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">Pembayaran Tertunda</h1>
-        <p class="text-gray-600">
-          Pembayaran Anda sedang diproses. Kami akan mengirimkan notifikasi setelah pembayaran dikonfirmasi.
+        <h1 class="text-2xl font-bold text-slate-900">Payment Pending</h1>
+        <p class="text-slate-600">
+          Your payment is being processed. We will send a notification once the payment is confirmed.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p class="text-sm text-gray-500">Order ID:</p>
-          <p class="text-sm font-mono text-gray-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
+          <p class="text-sm text-slate-500">Order ID:</p>
+          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
           >
-            {{ isSubscriptionPayment ? 'Kembali ke Berlangganan' : 'Kembali ke Addons' }}
+            {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
           >
-            Ke Dashboard
+            Go to Dashboard
           </button>
         </div>
       </div>

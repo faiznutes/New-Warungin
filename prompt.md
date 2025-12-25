@@ -224,7 +224,7 @@ END OF RESKIN EXECUTION GUIDE
 
 
 
-
+ini code admin tenant dashboard
 <!DOCTYPE html>
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>

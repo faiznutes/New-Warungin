@@ -54,15 +54,92 @@
         </router-link>
 
         <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
+        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">Business</p>
+
+        <router-link 
+          to="/app/finance" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/finance') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">payments</span>
+          <p class="text-sm font-medium leading-normal">Finance</p>
+        </router-link>
+
+        <router-link 
+          to="/app/analytics" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/analytics') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">analytics</span>
+          <p class="text-sm font-medium leading-normal">Analytics</p>
+        </router-link>
+
+        <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
+        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">System</p>
+        
+        <router-link 
+          to="/app/superadmin/server-monitor" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/superadmin/server-monitor') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">dns</span>
+          <p class="text-sm font-medium leading-normal">Monitor</p>
+        </router-link>
+
+        <router-link 
+          to="/app/superadmin/system-info" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/superadmin/system-info') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">info</span>
+          <p class="text-sm font-medium leading-normal">System Info</p>
+        </router-link>
 
         <router-link 
           to="/app/settings/system" 
           class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
           active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/settings') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          :class="[$route.path === '/app/settings/system' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
         >
           <span class="material-symbols-outlined">settings</span>
           <p class="text-sm font-medium leading-normal">Settings</p>
+        </router-link>
+
+        <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
+        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">Maintenance</p>
+
+        <router-link 
+          to="/app/superadmin/backups" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/superadmin/backups') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">backup</span>
+          <p class="text-sm font-medium leading-normal">Backups</p>
+        </router-link>
+        
+        <router-link 
+          to="/app/settings/archive" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/settings/archive') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">inventory_2</span>
+          <p class="text-sm font-medium leading-normal">Archives</p>
+        </router-link>
+
+        <router-link 
+          to="/app/settings/retention" 
+          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
+          active-class="bg-[#137fec]/10 text-[#137fec]"
+          :class="[$route.path.startsWith('/app/settings/retention') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+        >
+          <span class="material-symbols-outlined">delete_sweep</span>
+          <p class="text-sm font-medium leading-normal">Retention</p>
         </router-link>
 
         <button 
@@ -77,8 +154,7 @@
       <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700">
         <div class="flex items-center gap-3">
           <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#4c739a]">
-             <span v-if="!user?.avatar" class="material-symbols-outlined">person</span>
-             <img v-else :src="user.avatar" class="w-full h-full rounded-full object-cover" alt="Profile" />
+             <span class="material-symbols-outlined">person</span>
           </div>
           <div class="flex flex-col">
             <p class="text-sm font-bold text-[#0d141b] dark:text-white">{{ user?.name || 'Admin User' }}</p>
@@ -133,14 +209,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
-const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
 const user = computed(() => authStore.user);

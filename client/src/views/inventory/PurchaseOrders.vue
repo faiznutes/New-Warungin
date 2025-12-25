@@ -1,51 +1,65 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Purchase Orders</h2>
-        <p class="text-gray-600">Kelola purchase order untuk restock produk</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Purchase Orders</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage purchase orders for product restocking.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Buat Purchase Order</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Create Purchase Order</span>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="mb-4 flex items-center space-x-4">
-      <select
-        v-model="statusFilter"
-        @change="loadPurchaseOrders"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-      >
-        <option value="">All Status</option>
-        <option value="PENDING">Pending</option>
-        <option value="APPROVED">Approved</option>
-        <option value="ORDERED">Ordered</option>
-        <option value="RECEIVED">Received</option>
-        <option value="CANCELLED">Cancelled</option>
-      </select>
-      <select
-        v-model="supplierFilter"
-        @change="loadPurchaseOrders"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-      >
-        <option value="">All Suppliers</option>
-        <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-          {{ supplier.name }}
-        </option>
-      </select>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <select
+          v-model="statusFilter"
+          @change="loadPurchaseOrders"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="ORDERED">Ordered</option>
+          <option value="RECEIVED">Received</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+        <select
+          v-model="supplierFilter"
+          @change="loadPurchaseOrders"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        >
+          <option value="">All Suppliers</option>
+          <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+            {{ supplier.name }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="purchaseOrders.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">receipt_long</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Purchase Orders</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Create your first purchase order to start restocking products.</p>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Create First PO
+      </button>
     </div>
 
     <!-- Purchase Orders List -->
@@ -53,84 +67,89 @@
       <div
         v-for="po in purchaseOrders"
         :key="po.id"
-        class="bg-white rounded-lg shadow-lg p-6 border-l-4"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-l-4 hover:shadow-lg transition"
         :class="getStatusBorderClass(po.status)"
       >
-        <div class="flex items-start justify-between">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div class="flex-1">
-            <div class="flex items-center space-x-3 mb-2">
-              <h3 class="text-lg font-semibold text-gray-900">{{ po.orderNumber }}</h3>
+            <div class="flex items-center gap-3 mb-3">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ po.orderNumber }}</h3>
               <span
-                class="px-2 py-1 text-xs font-semibold rounded-full"
+                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
                 :class="getStatusClass(po.status)"
               >
                 {{ po.status }}
               </span>
             </div>
-            <p class="text-sm text-gray-600 mb-4">
-              Supplier: <span class="font-semibold">{{ po.supplier.name }}</span>
+            <p class="text-sm text-slate-500 mb-4 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+              Supplier: <span class="font-semibold text-slate-900 dark:text-white ml-1">{{ po.supplier.name }}</span>
             </p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-              <div>
-                <p class="text-gray-500">Order Date</p>
-                <p class="font-semibold text-gray-900">{{ formatDate(po.orderDate) }}</p>
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Order Date</p>
+                <p class="font-semibold text-slate-900 dark:text-white">{{ formatDate(po.orderDate) }}</p>
               </div>
-              <div>
-                <p class="text-gray-500">Expected Date</p>
-                <p class="font-semibold text-gray-900">{{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}</p>
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Expected Date</p>
+                <p class="font-semibold text-slate-900 dark:text-white">{{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}</p>
               </div>
-              <div>
-                <p class="text-gray-500">Total Amount</p>
-                <p class="font-semibold text-gray-900">Rp {{ formatCurrency(po.totalAmount) }}</p>
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Amount</p>
+                <p class="font-semibold text-primary">Rp {{ formatCurrency(po.totalAmount) }}</p>
               </div>
-              <div>
-                <p class="text-gray-500">Items</p>
-                <p class="font-semibold text-gray-900">{{ po.items.length }} items</p>
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Items</p>
+                <p class="font-semibold text-slate-900 dark:text-white">{{ po.items.length }} items</p>
               </div>
             </div>
-            <div class="border-t pt-4">
-              <p class="text-sm font-semibold text-gray-700 mb-2">Items:</p>
+            <div class="border-t border-slate-100 dark:border-slate-700 pt-4">
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Items:</p>
               <div class="space-y-2">
                 <div
                   v-for="item in po.items"
                   :key="item.id"
-                  class="flex items-center justify-between text-sm bg-gray-50 p-2 rounded"
+                  class="flex items-center justify-between text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded-lg"
                 >
                   <div>
-                    <span class="font-medium">{{ item.product.name }}</span>
-                    <span class="text-gray-500 ml-2">({{ item.quantity }}x @ Rp {{ formatCurrency(item.unitPrice) }})</span>
+                    <span class="font-medium text-slate-900 dark:text-white">{{ item.product.name }}</span>
+                    <span class="text-slate-500 ml-2">({{ item.quantity }}x @ Rp {{ formatCurrency(item.unitPrice) }})</span>
                   </div>
-                  <span class="font-semibold">Rp {{ formatCurrency(item.totalPrice) }}</span>
+                  <span class="font-bold text-slate-900 dark:text-white">Rp {{ formatCurrency(item.totalPrice) }}</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="flex flex-col items-end space-y-2 ml-4">
+          <div class="flex lg:flex-col items-center gap-2">
             <button
               v-if="po.status === 'PENDING'"
               @click="approvePurchaseOrder(po)"
-              class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded transition"
+              class="px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/40 transition flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">check</span>
               Approve
             </button>
             <button
               v-if="po.status === 'ORDERED' || po.status === 'APPROVED'"
               @click="receivePurchaseOrder(po)"
-              class="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition"
+              class="px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/40 transition flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">inventory</span>
               Receive
             </button>
             <button
               v-if="po.status !== 'RECEIVED' && po.status !== 'CANCELLED'"
               @click="cancelPurchaseOrder(po)"
-              class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition"
+              class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">close</span>
               Cancel
             </button>
             <button
               @click="viewPurchaseOrder(po)"
-              class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-50 rounded transition"
+              class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">visibility</span>
               View
             </button>
           </div>
@@ -139,145 +158,152 @@
     </div>
 
     <!-- Create Modal -->
-    <div
-      v-if="showCreateModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Buat Purchase Order</h3>
-            <button
-              @click="closeModal"
-              class="text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form @submit.prevent="savePurchaseOrder" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Supplier *</label>
-                <select
-                  v-model="poForm.supplierId"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                >
-                  <option value="">Pilih Supplier</option>
-                  <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
-                    {{ supplier.name }}
-                  </option>
-                </select>
+    <Teleport to="body">
+      <div
+        v-if="showCreateModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="closeModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                  <span class="material-symbols-outlined">receipt_long</span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create Purchase Order</h3>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Expected Date</label>
-                <input
-                  v-model="poForm.expectedDate"
-                  type="date"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
+              <button
+                @click="closeModal"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-              <textarea
-                v-model="poForm.notes"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <label class="block text-sm font-medium text-gray-700">Items *</label>
-                <button
-                  type="button"
-                  @click="addItem"
-                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
-                >
-                  + Add Item
-                </button>
+            <form @submit.prevent="savePurchaseOrder" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Supplier *</label>
+                  <select
+                    v-model="poForm.supplierId"
+                    required
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="">Select Supplier</option>
+                    <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
+                      {{ supplier.name }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Expected Date</label>
+                  <input
+                    v-model="poForm.expectedDate"
+                    type="date"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
               </div>
-              <div class="space-y-2">
-                <div
-                  v-for="(item, index) in poForm.items"
-                  :key="index"
-                  class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
-                >
-                  <div class="col-span-5">
-                    <select
-                      v-model="item.productId"
-                      required
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                    >
-                      <option value="">Pilih Product</option>
-                      <option v-for="product in products" :key="product.id" :value="product.id">
-                        {{ product.name }} (Stock: {{ product.stock }})
-                      </option>
-                    </select>
-                  </div>
-                  <div class="col-span-2">
-                    <input
-                      v-model.number="item.quantity"
-                      type="number"
-                      min="1"
-                      required
-                      placeholder="Qty"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                    />
-                  </div>
-                  <div class="col-span-3">
-                    <input
-                      v-model.number="item.unitPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      required
-                      placeholder="Unit Price"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                    />
-                  </div>
-                  <div class="col-span-2 flex items-center justify-end">
-                    <button
-                      type="button"
-                      @click="removeItem(index)"
-                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
-                    >
-                      Remove
-                    </button>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</label>
+                <textarea
+                  v-model="poForm.notes"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                ></textarea>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Items *</label>
+                  <button
+                    type="button"
+                    @click="addItem"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">add</span>
+                    Add Item
+                  </button>
+                </div>
+                <div class="space-y-2">
+                  <div
+                    v-for="(item, index) in poForm.items"
+                    :key="index"
+                    class="grid grid-cols-12 gap-2 items-end p-3 bg-slate-50 dark:bg-slate-900 rounded-lg"
+                  >
+                    <div class="col-span-5">
+                      <select
+                        v-model="item.productId"
+                        required
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        <option value="">Select Product</option>
+                        <option v-for="product in products" :key="product.id" :value="product.id">
+                          {{ product.name }} (Stock: {{ product.stock }})
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-span-2">
+                      <input
+                        v-model.number="item.quantity"
+                        type="number"
+                        min="1"
+                        required
+                        placeholder="Qty"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div class="col-span-3">
+                      <input
+                        v-model.number="item.unitPrice"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                        placeholder="Unit Price"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      />
+                    </div>
+                    <div class="col-span-2 flex items-center justify-end">
+                      <button
+                        type="button"
+                        @click="removeItem(index)"
+                        class="px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="flex items-center justify-between pt-4 border-t">
-              <span class="text-lg font-semibold text-gray-900">Total: Rp {{ formatCurrency(calculateTotal) }}</span>
-              <div class="flex space-x-3">
-                <button
-                  type="button"
-                  @click="closeModal"
-                  class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  :disabled="saving || poForm.items.length === 0"
-                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-                >
-                  {{ saving ? 'Menyimpan...' : 'Buat PO' }}
-                </button>
+              <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+                <span class="text-lg font-bold text-slate-900 dark:text-white">Total: Rp {{ formatCurrency(calculateTotal) }}</span>
+                <div class="flex gap-3">
+                  <button
+                    type="button"
+                    @click="closeModal"
+                    class="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    :disabled="saving || poForm.items.length === 0"
+                    class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
+                  >
+                    {{ saving ? 'Saving...' : 'Create PO' }}
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -337,7 +363,7 @@ const loadPurchaseOrders = async () => {
     purchaseOrders.value = response.data.data;
   } catch (error: any) {
     console.error('Error loading purchase orders:', error);
-    await showError('Gagal memuat purchase orders');
+    await showError('Failed to load purchase orders');
   } finally {
     loading.value = false;
   }
@@ -383,12 +409,12 @@ const savePurchaseOrder = async () => {
       })),
     };
     await api.post('/purchase-orders', data);
-    await showSuccess('Purchase order berhasil dibuat');
+    await showSuccess('Purchase order created successfully');
     closeModal();
     await loadPurchaseOrders();
   } catch (error: any) {
     console.error('Error saving purchase order:', error);
-    await showError('Gagal menyimpan purchase order');
+    await showError('Failed to save purchase order');
   } finally {
     saving.value = false;
   }
@@ -397,45 +423,45 @@ const savePurchaseOrder = async () => {
 const approvePurchaseOrder = async (po: PurchaseOrder) => {
   try {
     await api.put(`/purchase-orders/${po.id}`, { status: 'APPROVED' });
-    await showSuccess('Purchase order berhasil diapprove');
+    await showSuccess('Purchase order approved successfully');
     await loadPurchaseOrders();
   } catch (error: any) {
     console.error('Error approving purchase order:', error);
-    await showError('Gagal approve purchase order');
+    await showError('Failed to approve purchase order');
   }
 };
 
 const receivePurchaseOrder = async (po: PurchaseOrder) => {
   const confirmed = await showConfirm(
     'Receive Purchase Order',
-    'Apakah Anda yakin ingin receive purchase order ini? Stock akan diupdate.'
+    'Are you sure you want to receive this purchase order? Stock will be updated.'
   );
   if (!confirmed) return;
 
   try {
     await api.post(`/purchase-orders/${po.id}/receive`);
-    await showSuccess('Purchase order berhasil di-receive, stock telah diupdate');
+    await showSuccess('Purchase order received and stock updated');
     await loadPurchaseOrders();
   } catch (error: any) {
     console.error('Error receiving purchase order:', error);
-    await showError('Gagal receive purchase order');
+    await showError('Failed to receive purchase order');
   }
 };
 
 const cancelPurchaseOrder = async (po: PurchaseOrder) => {
   const confirmed = await showConfirm(
     'Cancel Purchase Order',
-    'Apakah Anda yakin ingin membatalkan purchase order ini?'
+    'Are you sure you want to cancel this purchase order?'
   );
   if (!confirmed) return;
 
   try {
     await api.post(`/purchase-orders/${po.id}/cancel`);
-    await showSuccess('Purchase order berhasil dibatalkan');
+    await showSuccess('Purchase order cancelled');
     await loadPurchaseOrders();
   } catch (error: any) {
     console.error('Error cancelling purchase order:', error);
-    await showError('Gagal membatalkan purchase order');
+    await showError('Failed to cancel purchase order');
   }
 };
 
@@ -446,13 +472,13 @@ const viewPurchaseOrder = (po: PurchaseOrder) => {
 
 const getStatusClass = (status: string): string => {
   const classes: Record<string, string> = {
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    APPROVED: 'bg-blue-100 text-blue-800',
-    ORDERED: 'bg-purple-100 text-purple-800',
-    RECEIVED: 'bg-green-100 text-green-800',
-    CANCELLED: 'bg-gray-100 text-gray-800',
+    PENDING: 'bg-yellow-100 text-yellow-700',
+    APPROVED: 'bg-blue-100 text-blue-700',
+    ORDERED: 'bg-purple-100 text-purple-700',
+    RECEIVED: 'bg-green-100 text-green-700',
+    CANCELLED: 'bg-slate-100 text-slate-600',
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-slate-100 text-slate-600';
 };
 
 const getStatusBorderClass = (status: string): string => {
@@ -461,13 +487,13 @@ const getStatusBorderClass = (status: string): string => {
     APPROVED: 'border-blue-500',
     ORDERED: 'border-purple-500',
     RECEIVED: 'border-green-500',
-    CANCELLED: 'border-gray-500',
+    CANCELLED: 'border-slate-500',
   };
-  return classes[status] || 'border-gray-500';
+  return classes[status] || 'border-slate-500';
 };
 
 const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('id-ID');
+  return new Date(dateString).toLocaleDateString('en-US');
 };
 
 const formatCurrency = (value: number): string => {
@@ -490,4 +516,3 @@ onMounted(() => {
   loadProducts();
 });
 </script>
-

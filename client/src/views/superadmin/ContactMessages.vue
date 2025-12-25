@@ -1,66 +1,81 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Kelola Pesan Kontak</h2>
-        <p class="text-sm text-gray-600 mt-1">Kelola semua pesan dari formulir kontak Warungin</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Contact Messages</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage messages and inquiries from users.</p>
       </div>
-      <div class="flex items-center gap-3">
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="relative w-full sm:w-80">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">search</span>
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Cari pesan..."
-          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Search messages..."
+          class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white placeholder:text-slate-400"
           @input="loadMessages"
         />
-        <select
-          v-model="filterRead"
-          @change="loadMessages"
-          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Semua Status</option>
-          <option value="false">Belum Dibaca</option>
-          <option value="true">Sudah Dibaca</option>
-        </select>
       </div>
+      <select
+        v-model="filterRead"
+        @change="loadMessages"
+        class="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white"
+      >
+        <option value="">All Status</option>
+        <option value="false">Unread</option>
+        <option value="true">Read</option>
+      </select>
     </div>
 
-    <div v-if="loading" class="flex items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+       <div class="text-slate-500 font-medium text-sm">Loading messages...</div>
     </div>
 
-    <div v-else-if="messages.length === 0" class="text-center py-20">
-      <p class="text-gray-500">Tidak ada pesan kontak</p>
+    <div v-else-if="messages.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+       <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-full mb-3">
+          <span class="material-symbols-outlined text-slate-400 text-3xl">inbox</span>
+       </div>
+       <p class="text-slate-900 dark:text-white font-bold">No Contact Messages</p>
+       <p class="text-slate-500 text-sm">No incoming messages found.</p>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-lg overflow-hidden">
-      <!-- Bulk Actions -->
-      <div v-if="selectedMessages.length > 0" class="px-6 py-3 bg-blue-50 border-b border-gray-200 flex items-center justify-between">
-        <div class="text-sm font-medium text-gray-700">
-          {{ selectedMessages.length }} pesan dipilih
+    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col min-h-0">
+      <!-- Bulk Actions Bar -->
+      <div v-if="selectedMessages.length > 0" class="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-sm font-bold text-primary">
+          <span class="material-symbols-outlined text-[20px]">check_circle</span>
+          {{ selectedMessages.length }} messages selected
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <button
             @click="bulkMarkAsRead"
-            class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
           >
-            Tandai Dibaca
+            <span class="material-symbols-outlined text-[16px]">mark_email_read</span>
+            Mark as Read
           </button>
           <button
             @click="bulkMarkAsUnread"
-            class="px-4 py-2 text-sm bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+            class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
           >
+           <span class="material-symbols-outlined text-[16px]">mark_email_unread</span>
             Tandai Belum Dibaca
           </button>
           <button
             @click="bulkDelete"
-            class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
           >
-            Hapus Terpilih
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            Hapus
           </button>
           <button
             @click="selectedMessages = []"
-            class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            class="px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-[#4c739a] rounded-lg text-xs font-medium transition"
           >
             Batal
           </button>
@@ -69,98 +84,88 @@
 
       <!-- Messages Table -->
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead class="bg-slate-50 dark:bg-slate-900/50">
             <tr>
-              <th class="px-6 py-3 text-left">
+              <th class="px-6 py-4 text-left w-10">
                 <input
                   type="checkbox"
                   :checked="selectedMessages.length === messages.length && messages.length > 0"
                   @change="toggleSelectAll"
-                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  class="rounded border-slate-300 text-[#137fec] focus:ring-[#137fec]"
                 />
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Telepon</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subjek</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Pengirim</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Subjek</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Tanggal</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-right text-xs font-bold text-[#4c739a] uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
             <tr
               v-for="message in messages"
               :key="message.id"
-              class="hover:bg-gray-50"
-              :class="{ 'bg-blue-50': !message.isRead }"
+              class="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group cursor-pointer"
+              :class="{ 'bg-blue-50/30 dark:bg-blue-900/10': !message.isRead }"
+              @click.stop="viewMessage(message)"
             >
-              <td class="px-6 py-4">
+              <td class="px-6 py-4" @click.stop>
                 <input
                   type="checkbox"
                   :value="message.id"
                   v-model="selectedMessages"
-                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  class="rounded border-slate-300 text-[#137fec] focus:ring-[#137fec]"
                 />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ message.name }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ message.email }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ message.phone || '-' }}</div>
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                   <div class="text-sm font-bold text-[#0d141b] dark:text-white">{{ message.name }}</div>
+                   <div class="text-xs text-[#4c739a]">{{ message.email }}</div>
+                </div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm text-gray-900 max-w-xs truncate">{{ message.subject }}</div>
+                <div class="text-sm text-[#0d141b] dark:text-gray-300 max-w-sm truncate font-medium">
+                   {{ message.subject }}
+                </div>
+                <!-- Preview message content slightly - optional -->
+                 <p class="text-xs text-[#4c739a] truncate max-w-xs mt-0.5">{{ message.message }}</p>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ formatDate(message.createdAt) }}</div>
+                <div class="text-xs font-medium text-[#4c739a]">{{ formatDate(message.createdAt) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  :class="[
-                    'px-2 py-1 text-xs font-semibold rounded-full',
-                    message.isRead ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                  ]"
+                  class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border"
+                  :class="message.isRead 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                    : 'bg-amber-50 text-amber-700 border-amber-100'"
                 >
                   {{ message.isRead ? 'Sudah Dibaca' : 'Belum Dibaca' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
+              <td class="px-6 py-4 whitespace-nowrap text-right" @click.stop>
+                <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     @click="viewMessage(message)"
-                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-lg transition"
                     title="Lihat Detail"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
                   </button>
                   <button
                     @click="toggleReadStatus(message)"
-                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
                     :title="message.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca'"
                   >
-                    <svg v-if="!message.isRead" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <span class="material-symbols-outlined text-[20px]">{{ message.isRead ? 'mark_email_unread' : 'mark_email_read' }}</span>
                   </button>
                   <button
                     @click="deleteMessage(message)"
-                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                     title="Hapus"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </div>
               </td>
@@ -170,22 +175,22 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          Menampilkan {{ (pagination.page - 1) * pagination.limit + 1 }} - {{ Math.min(pagination.page * pagination.limit, pagination.total) }} dari {{ pagination.total }}
+      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <div class="text-sm text-[#4c739a]">
+          Menampilkan <span class="font-bold text-[#0d141b] dark:text-white">{{ (pagination.page - 1) * pagination.limit + 1 }}</span> - <span class="font-bold text-[#0d141b] dark:text-white">{{ Math.min(pagination.page * pagination.limit, pagination.total) }}</span> dari <span class="font-bold text-[#0d141b] dark:text-white">{{ pagination.total }}</span>
         </div>
         <div class="flex gap-2">
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Sebelumnya
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Selanjutnya
           </button>
@@ -194,89 +199,101 @@
     </div>
 
     <!-- Message Detail Modal -->
-    <div
-      v-if="showDetailModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="showDetailModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-2xl font-bold text-gray-900">Detail Pesan</h3>
+    <Teleport to="body">
+      <div
+        v-if="showDetailModal"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
+        @click.self="showDetailModal = false"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Detail Pesan</h3>
             <button
               @click="showDetailModal = false"
-              class="text-gray-400 hover:text-gray-600 transition"
+              class="text-[#4c739a] hover:text-[#0d141b] transition-colors"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
           
-          <div v-if="selectedMessage" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Nama</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedMessage.name }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Email</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedMessage.email }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">No. Telepon</label>
-                <p class="mt-1 text-sm text-gray-900">{{ selectedMessage.phone || '-' }}</p>
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-medium text-gray-700">Subjek</label>
-                <p class="mt-1 text-sm text-gray-900 font-semibold">{{ selectedMessage.subject }}</p>
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-medium text-gray-700">Pesan</label>
-                <p class="mt-1 text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">{{ selectedMessage.message }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Tanggal</label>
-                <p class="mt-1 text-sm text-gray-900">{{ formatDate(selectedMessage.createdAt) }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Status</label>
-                <span
-                  :class="[
-                    'mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                    selectedMessage.isRead ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                  ]"
-                >
-                  {{ selectedMessage.isRead ? 'Sudah Dibaca' : 'Belum Dibaca' }}
-                </span>
-              </div>
+          <div v-if="selectedMessage" class="p-6 overflow-y-auto space-y-6">
+            <!-- Header Info -->
+            <div class="flex items-start justify-between gap-4">
+               <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-full bg-[#137fec]/10 flex items-center justify-center text-[#137fec] text-xl font-bold uppercase">
+                     {{ selectedMessage.name.charAt(0) }}
+                  </div>
+                  <div>
+                     <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ selectedMessage.name }}</h4>
+                     <p class="text-sm text-[#4c739a]">{{ selectedMessage.email }}</p>
+                  </div>
+               </div>
+               <div class="text-right">
+                  <p class="text-xs font-bold text-[#4c739a] mb-1">Diterima pada</p>
+                  <p class="text-sm font-medium text-[#0d141b] dark:text-white">{{ formatDate(selectedMessage.createdAt) }}</p>
+               </div>
             </div>
-            
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-              <button
-                @click="toggleReadStatus(selectedMessage)"
-                class="px-4 py-2 text-white rounded-lg transition"
-                :class="selectedMessage.isRead ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'"
-              >
-                {{ selectedMessage.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca' }}
-              </button>
-              <button
-                @click="deleteMessage(selectedMessage)"
-                class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
-              >
-                Hapus
-              </button>
-              <button
-                @click="showDetailModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
-              >
-                Tutup
-              </button>
+
+            <!-- Subject & Content -->
+            <div class="space-y-2">
+               <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">Subjek</label>
+               <div class="text-base font-bold text-[#0d141b] dark:text-white">{{ selectedMessage.subject }}</div>
             </div>
+
+            <div class="space-y-2">
+               <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">Pesan</label>
+               <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-700 text-[#0d141b] dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                  {{ selectedMessage.message }}
+               </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+               <div>
+                  <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">No. Telepon</label>
+                  <p class="text-sm font-medium text-[#0d141b] dark:text-white mt-1">{{ selectedMessage.phone || '-' }}</p>
+               </div>
+               <div>
+                  <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</label>
+                  <div class="mt-1">
+                     <span
+                        class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border inline-block"
+                        :class="selectedMessage.isRead 
+                           ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                           : 'bg-amber-50 text-amber-700 border-amber-100'"
+                     >
+                        {{ selectedMessage.isRead ? 'Sudah Dibaca' : 'Belum Dibaca' }}
+                     </span>
+                  </div>
+               </div>
+            </div>
+          </div>
+          
+          <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-900/10">
+            <button
+              @click="toggleReadStatus(selectedMessage)"
+              class="px-4 py-2 border border-slate-300 hover:bg-white text-[#4c739a] hover:text-[#137fec] rounded-xl text-sm font-bold transition flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[18px]">{{ selectedMessage.isRead ? 'mark_email_unread' : 'mark_email_read' }}</span>
+              <span>{{ selectedMessage.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca' }}</span>
+            </button>
+            <button
+              @click="deleteMessage(selectedMessage)"
+              class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl text-sm font-bold transition flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+              <span>Hapus</span>
+            </button>
+            <button
+              @click="showDetailModal = false"
+              class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+            >
+              Tutup
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 

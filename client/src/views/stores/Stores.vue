@@ -1,121 +1,114 @@
 <template>
-  <div class="flex flex-col h-full">
-
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Kelola Store</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola store/outlet untuk bisnis Anda</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Store Management</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your stores and outlets.</p>
       </div>
       <button
         v-if="canManageStores"
         @click="showCreateModal = true"
-        class="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Tambah Store</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Store</span>
       </button>
     </div>
 
     <!-- Outlet Limit Info with Progress Bar -->
-    <div v-if="outletLimit && outletLimit.limit !== undefined && outletLimit.limit !== -1" class="mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-      <div class="flex items-center justify-between mb-2">
-        <div>
-          <p class="font-semibold text-blue-900">Limit Outlet/Store</p>
-          <p class="text-sm text-blue-700">
-            {{ outletLimit.currentUsage || 0 }} / {{ outletLimit.limit }} outlet
-            <span class="font-semibold" :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'text-red-600' : 'text-green-600'">
-              ({{ outletLimit.limit - (outletLimit.currentUsage || 0) }} tersedia)
-            </span>
-          </p>
+    <div v-if="outletLimit && outletLimit.limit !== undefined && outletLimit.limit !== -1" class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <span class="material-symbols-outlined">storefront</span>
+          </div>
+          <div>
+            <p class="font-bold text-slate-900 dark:text-white">Outlet Limit</p>
+            <p class="text-sm text-slate-500">
+              {{ outletLimit.currentUsage || 0 }} / {{ outletLimit.limit }} outlets
+              <span class="font-semibold" :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'text-red-600' : 'text-green-600'">
+                ({{ outletLimit.limit - (outletLimit.currentUsage || 0) }} available)
+              </span>
+            </p>
+          </div>
         </div>
       </div>
-      <div class="w-full bg-blue-200 rounded-full h-3">
+      <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
         <div
-          class="h-3 rounded-full transition-all"
-          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
+          class="h-2 rounded-full transition-all"
+          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-primary'"
           :style="{ width: `${Math.min(100, ((outletLimit.currentUsage || 0) / outletLimit.limit) * 100)}%` }"
         ></div>
       </div>
     </div>
 
-    <!-- Stores List -->
+    <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
       <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat data store...</div>
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div class="text-slate-500 font-medium">Loading stores...</div>
       </div>
     </div>
 
-    <div v-else-if="stores.length === 0" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300 mx-4 sm:mx-6">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Belum Ada Store</h3>
-      <p class="text-gray-600 text-center max-w-md mb-4">Mulai dengan menambahkan store pertama Anda</p>
+    <!-- Empty State -->
+    <div v-else-if="stores.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[80px] text-slate-300 mb-4">store</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Stores Yet</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Start by adding your first store.</p>
       <button
         v-if="canManageStores"
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
       >
-        Tambah Store Pertama
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Add First Store
       </button>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6">
+    <!-- Store Cards Grid -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="store in stores"
         :key="store.id"
-        class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border border-gray-200 hover:shadow-xl transition-shadow"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-lg transition-shadow group"
       >
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1">
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-1">{{ store.name }}</h3>
-            <div class="flex items-center gap-2 mb-2">
-              <span
-                class="px-2 py-1 text-xs font-semibold rounded-full"
-                :class="store.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-              >
-                {{ store.isActive ? 'Aktif' : 'Nonaktif' }}
-              </span>
-            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ store.name }}</h3>
+            <span
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+              :class="store.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+            >
+              <span class="w-1.5 h-1.5 rounded-full" :class="store.isActive ? 'bg-green-500' : 'bg-red-500'"></span>
+              {{ store.isActive ? 'Active' : 'Inactive' }}
+            </span>
           </div>
-          <div v-if="canManageStores" class="flex items-center gap-2">
+          <div v-if="canManageStores" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               @click="editStore(store)"
-              class="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition"
+              class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition"
               title="Edit Store"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <span class="material-symbols-outlined text-[20px]">edit</span>
             </button>
             <button
               @click="deleteStore(store)"
-              class="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-              title="Hapus Store"
+              class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+              title="Delete Store"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <span class="material-symbols-outlined text-[20px]">delete</span>
             </button>
           </div>
         </div>
         
-        <div class="space-y-2 text-sm text-gray-600">
+        <div class="space-y-2 text-sm text-slate-500">
           <div v-if="store.address" class="flex items-start gap-2">
-            <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <span class="material-symbols-outlined text-[18px] text-slate-400 mt-0.5">location_on</span>
             <span class="flex-1">{{ store.address }}</span>
           </div>
           <div v-if="store.phone" class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
+            <span class="material-symbols-outlined text-[18px] text-slate-400">call</span>
             <span>{{ store.phone }}</span>
           </div>
         </div>
@@ -123,97 +116,97 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div
-      v-if="showCreateModal || editingStore"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-900">
-              {{ editingStore ? 'Edit Store' : 'Tambah Store Baru' }}
-            </h3>
-            <button
-              @click="closeModal"
-              class="text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form @submit.prevent="handleSubmit" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nama Store <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="storeForm.name"
-                type="text"
-                required
-                placeholder="Contoh: Store Cabang A"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Alamat
-              </label>
-              <textarea
-                v-model="storeForm.address"
-                rows="3"
-                placeholder="Alamat lengkap store"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              ></textarea>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nomor Telepon
-              </label>
-              <input
-                v-model="storeForm.phone"
-                type="tel"
-                placeholder="081234567890"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <div v-if="editingStore" class="flex items-center gap-2">
-              <input
-                v-model="storeForm.isActive"
-                type="checkbox"
-                id="isActive"
-                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-              />
-              <label for="isActive" class="text-sm font-medium text-gray-700">
-                Store Aktif
-              </label>
-            </div>
-
-            <div class="flex space-x-3 pt-4 border-t">
+    <Teleport to="body">
+      <div
+        v-if="showCreateModal || editingStore"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="closeModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+                {{ editingStore ? 'Edit Store' : 'Add New Store' }}
+              </h3>
               <button
-                type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
               >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="processing"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ processing ? 'Menyimpan...' : editingStore ? 'Update' : 'Simpan' }}
+                <span class="material-symbols-outlined">close</span>
               </button>
             </div>
-          </form>
+
+            <form @submit.prevent="handleSubmit" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Store Name <span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model="storeForm.name"
+                  type="text"
+                  required
+                  placeholder="e.g. Branch A"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Address
+                </label>
+                <textarea
+                  v-model="storeForm.address"
+                  rows="3"
+                  placeholder="Full store address"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Phone Number
+                </label>
+                <input
+                  v-model="storeForm.phone"
+                  type="tel"
+                  placeholder="081234567890"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+
+              <div v-if="editingStore" class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <input
+                  v-model="storeForm.isActive"
+                  type="checkbox"
+                  id="isActive"
+                  class="w-5 h-5 text-primary border-slate-300 rounded focus:ring-primary"
+                />
+                <label for="isActive" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Store is Active
+                </label>
+              </div>
+
+              <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                <button
+                  type="button"
+                  @click="closeModal"
+                  class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  :disabled="processing"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-primary/30"
+                >
+                  {{ processing ? 'Saving...' : editingStore ? 'Update' : 'Save' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -258,7 +251,7 @@ const loadStores = async () => {
   // For non-super-admin, ensure tenantId is available
   if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
     console.error('Tenant ID not available for non-super-admin user');
-    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    await showError('Tenant ID not available. Please login again.');
     return;
   }
   
@@ -283,7 +276,7 @@ const loadStores = async () => {
       outletLimit.value = null;
     }
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal memuat data store');
+    await showError(error.response?.data?.message || 'Failed to load stores');
   } finally {
     loading.value = false;
   }
@@ -294,15 +287,15 @@ const handleSubmit = async () => {
   try {
     if (editingStore.value) {
       await api.put(`/outlets/${editingStore.value.id}`, storeForm.value);
-      await showSuccess('Store berhasil diupdate');
+      await showSuccess('Store updated successfully');
     } else {
       await api.post('/outlets', storeForm.value);
-      await showSuccess('Store berhasil ditambahkan');
+      await showSuccess('Store added successfully');
     }
     closeModal();
     await loadStores();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menyimpan store');
+    await showError(error.response?.data?.message || 'Failed to save store');
   } finally {
     processing.value = false;
   }
@@ -321,18 +314,18 @@ const editStore = (store: Store) => {
 
 const deleteStore = async (store: Store) => {
   const confirmed = await showConfirm(
-    `Hapus store "${store.name}"?`,
-    'Tindakan ini tidak dapat dibatalkan. Store akan dinonaktifkan jika memiliki pesanan.'
+    `Delete store "${store.name}"?`,
+    'This action cannot be undone. The store will be deactivated if it has orders.'
   );
   
   if (!confirmed) return;
 
   try {
     await api.delete(`/outlets/${store.id}`);
-    await showSuccess('Store berhasil dihapus');
+    await showSuccess('Store deleted successfully');
     await loadStores();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus store');
+    await showError(error.response?.data?.message || 'Failed to delete store');
   }
 };
 
@@ -361,4 +354,3 @@ onMounted(() => {
   loadStores();
 });
 </script>
-

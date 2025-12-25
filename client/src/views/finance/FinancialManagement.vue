@@ -1,111 +1,107 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Financial Management</h2>
-        <p class="text-gray-600">Cash flow, expenses, tax, forecasting, dan bank reconciliation</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Financial Management</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage cash flow, expenses, taxes, and bank reconciliation.</p>
       </div>
-      <div class="flex space-x-3">
+      <div class="flex items-center gap-3">
         <button
           @click="showCashFlowModal = true"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+          class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
+          <span class="material-symbols-outlined text-[20px]">add</span>
           <span>Record Cash Flow</span>
         </button>
         <button
           @click="showExpenseModal = true"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+          class="flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-rose-500/30 transition-all"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
+          <span class="material-symbols-outlined text-[20px]">remove</span>
           <span>Record Expense</span>
         </button>
       </div>
     </div>
 
     <!-- Tabs -->
-    <div class="mb-6 border-b border-gray-200">
-      <nav class="flex space-x-8">
-        <button
-          @click="activeTab = 'cashflow'"
-          class="py-4 px-1 border-b-2 font-medium text-sm"
-          :class="activeTab === 'cashflow' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-        >
-          Cash Flow
-        </button>
-        <button
-          @click="activeTab = 'expenses'"
-          class="py-4 px-1 border-b-2 font-medium text-sm"
-          :class="activeTab === 'expenses' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-        >
-          Expenses
-        </button>
-        <button
-          @click="activeTab = 'tax'"
-          class="py-4 px-1 border-b-2 font-medium text-sm"
-          :class="activeTab === 'tax' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-        >
-          Tax
-        </button>
-        <button
-          @click="activeTab = 'forecast'"
-          class="py-4 px-1 border-b-2 font-medium text-sm"
-          :class="activeTab === 'forecast' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-        >
-          Forecast
-        </button>
-        <button
-          @click="activeTab = 'reconciliation'"
-          class="py-4 px-1 border-b-2 font-medium text-sm"
-          :class="activeTab === 'reconciliation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-        >
-          Bank Reconciliation
-        </button>
-      </nav>
+    <div class="flex items-center border-b border-slate-200 dark:border-slate-700 overflow-x-auto">
+      <button
+        v-for="tab in ['cashflow', 'expenses', 'tax', 'forecast', 'reconciliation']"
+        :key="tab"
+        @click="activeTab = tab"
+        class="px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap capitalize"
+        :class="activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'"
+      >
+        {{ tab.replace(/([A-Z])/g, ' $1').trim() }}
+      </button>
     </div>
 
     <!-- Cash Flow Tab -->
-    <div v-if="activeTab === 'cashflow'" class="space-y-6">
+    <div v-if="activeTab === 'cashflow'" class="space-y-6 animate-fade-in">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
-          <p class="text-sm text-gray-600 mb-1">Total Income</p>
-          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Income</p>
+               <p class="text-[10px] text-slate-400">Incoming funds</p>
+             </div>
+             <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">trending_up</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
-          <p class="text-sm text-gray-600 mb-1">Total Expenses</p>
-          <p class="text-3xl font-bold text-gray-900">Rp {{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Expenses</p>
+               <p class="text-[10px] text-slate-400">Pengeluaran</p>
+             </div>
+             <div class="bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">trending_down</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-600 mb-1">Net Cash Flow</p>
-          <p class="text-3xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-green-600' : 'text-red-600'">
-            Rp {{ formatCurrency(cashFlowSummary.netCashFlow) }}
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Cash Flow</p>
+               <p class="text-[10px] text-slate-400">Selisih</p>
+             </div>
+             <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-600'">
+            {{ formatCurrency(cashFlowSummary.netCashFlow) }}
           </p>
         </div>
       </div>
 
       <!-- Date Range Filter -->
-      <div class="bg-white rounded-lg shadow-lg p-4">
-        <div class="flex items-center space-x-4">
-          <input
-            v-model="dateRange.startDate"
-            type="date"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          />
-          <span class="text-gray-500">to</span>
-          <input
-            v-model="dateRange.endDate"
-            type="date"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          />
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+             <input
+              v-model="dateRange.startDate"
+              type="date"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+            />
+            <span class="text-[#4c739a] dark:text-slate-400 text-sm">s/d</span>
+            <input
+              v-model="dateRange.endDate"
+              type="date"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+            />
+          </div>
           <button
             @click="loadCashFlowSummary"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            class="w-full sm:w-auto px-6 py-2 bg-[#137fec] text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
           >
             Filter
           </button>
@@ -113,83 +109,88 @@
       </div>
 
       <!-- Category Breakdown -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">By Category</h3>
-        <div class="space-y-2">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">By Category</h3>
+        <div class="space-y-3">
           <div
             v-for="(amount, category) in cashFlowSummary.byCategory"
             :key="category"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-[#137fec]/30 transition-all"
           >
-            <span class="font-medium text-gray-900">{{ category }}</span>
-            <span class="text-gray-600">Rp {{ formatCurrency(amount) }}</span>
+            <span class="font-bold text-[#0d141b] dark:text-white">{{ category }}</span>
+            <span class="text-[#4c739a] font-mono">{{ formatCurrency(amount) }}</span>
+          </div>
+          <div v-if="Object.keys(cashFlowSummary.byCategory).length === 0" class="text-center py-8 text-slate-400 text-sm">
+             Tidak ada data kategori untuk periode ini.
           </div>
         </div>
       </div>
     </div>
 
     <!-- Expenses Tab -->
-    <div v-if="activeTab === 'expenses'" class="space-y-6">
-      <!-- Expenses by Category -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Expenses by Category</h3>
-        <div class="space-y-2">
+    <div v-if="activeTab === 'expenses'" class="space-y-6 animate-fade-in">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Expenses by Category</h3>
+        <div class="space-y-3">
           <div
             v-for="(amount, category) in expensesByCategory"
             :key="category"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-red-500/30 transition-all"
           >
-            <span class="font-medium text-gray-900">{{ category }}</span>
-            <span class="text-gray-600">Rp {{ formatCurrency(amount) }}</span>
+            <span class="font-bold text-[#0d141b] dark:text-white">{{ category }}</span>
+            <span class="text-red-600 font-mono font-medium">{{ formatCurrency(amount) }}</span>
+          </div>
+          <div v-if="Object.keys(expensesByCategory).length === 0" class="text-center py-8 text-slate-400 text-sm">
+             Tidak ada expense tercatat.
           </div>
         </div>
       </div>
     </div>
 
     <!-- Tax Tab -->
-    <div v-if="activeTab === 'tax'" class="space-y-6">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculate Tax</h3>
-        <div class="grid grid-cols-2 gap-4 mb-4">
+    <div v-if="activeTab === 'tax'" class="space-y-6 animate-fade-in">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 max-w-2xl mx-auto">
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6">Calculate Tax</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Period (YYYY-MM)</label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Period (YYYY-MM)</label>
             <input
               v-model="taxPeriod"
               type="month"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div class="flex items-end">
             <button
               @click="calculateTax"
-              class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              class="w-full px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               Calculate
             </button>
           </div>
         </div>
 
-        <div v-if="taxCalculation" class="border-t pt-4 space-y-3">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm text-gray-600">Total Revenue</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalRevenue) }}</p>
+        <div v-if="taxCalculation" class="border-t border-slate-100 dark:border-slate-700 pt-6 space-y-4">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+              <p class="text-xs text-[#4c739a] mb-1">Total Revenue</p>
+              <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.totalRevenue) }}</p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Total Expenses</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.totalExpenses) }}</p>
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+              <p class="text-xs text-[#4c739a] mb-1">Total Expenses</p>
+              <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.totalExpenses) }}</p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Taxable Income</p>
-              <p class="text-lg font-semibold text-gray-900">Rp {{ formatCurrency(taxCalculation.taxableIncome) }}</p>
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+              <p class="text-xs text-[#4c739a] mb-1">Taxable Income</p>
+              <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.taxableIncome) }}</p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Tax Rate</p>
-              <p class="text-lg font-semibold text-gray-900">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
+            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+              <p class="text-xs text-[#4c739a] mb-1">Tax Rate</p>
+              <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
             </div>
-            <div class="col-span-2">
-              <p class="text-sm text-gray-600">Tax Amount</p>
-              <p class="text-2xl font-bold text-red-600">Rp {{ formatCurrency(taxCalculation.taxAmount) }}</p>
+            <div class="col-span-2 p-4 bg-[#137fec]/10 border border-[#137fec]/20 rounded-xl flex justify-between items-center">
+              <p class="text-sm font-bold text-[#0d141b] dark:text-white">Estimasi Pajak</p>
+              <p class="text-2xl font-bold text-red-600">{{ formatCurrency(taxCalculation.taxAmount) }}</p>
             </div>
           </div>
         </div>
@@ -197,50 +198,53 @@
     </div>
 
     <!-- Forecast Tab -->
-    <div v-if="activeTab === 'forecast'" class="space-y-6">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Forecast</h3>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Months to Forecast</label>
-          <input
-            v-model.number="forecastMonths"
-            type="number"
-            min="1"
-            max="12"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-          />
+    <div v-if="activeTab === 'forecast'" class="space-y-6 animate-fade-in">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Financial Forecast</h3>
+        <div class="flex items-end gap-4 mb-8">
+          <div class="flex-1 max-w-xs">
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Months to Forecast</label>
+            <input
+              v-model.number="forecastMonths"
+              type="number"
+              min="1"
+              max="12"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+            />
+          </div>
+          <button
+            @click="loadForecast"
+            class="px-6 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+          >
+            Generate Forecast
+          </button>
         </div>
-        <button
-          @click="loadForecast"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
-        >
-          Generate Forecast
-        </button>
 
-        <div v-if="forecast.length > 0" class="space-y-4">
+        <div v-if="forecast.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="item in forecast"
             :key="item.month"
-            class="border-l-4 border-blue-500 bg-gray-50 p-4 rounded"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ item.month }}</h4>
-              <span class="text-xs text-gray-500">Confidence: {{ (item.confidence * 100).toFixed(0) }}%</span>
+            class="relative border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm hover:border-indigo-400 transition-colors"
+          > 
+            <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500 rounded-l-xl"></div>
+            <div class="flex items-center justify-between mb-3 pl-2">
+              <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ item.month }}</h4>
+              <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-lg">Conf: {{ (item.confidence * 100).toFixed(0) }}%</span>
             </div>
-            <div class="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <p class="text-gray-600">Revenue</p>
-                <p class="font-semibold text-green-600">Rp {{ formatCurrency(item.projectedRevenue) }}</p>
+            <div class="grid grid-cols-1 gap-2 pl-2">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-[#4c739a]">Revenue</span>
+                <span class="font-bold text-emerald-600">{{ formatCurrency(item.projectedRevenue) }}</span>
               </div>
-              <div>
-                <p class="text-gray-600">Expenses</p>
-                <p class="font-semibold text-red-600">Rp {{ formatCurrency(item.projectedExpenses) }}</p>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-[#4c739a]">Expenses</span>
+                <span class="font-bold text-red-600">{{ formatCurrency(item.projectedExpenses) }}</span>
               </div>
-              <div>
-                <p class="text-gray-600">Profit</p>
-                <p class="font-semibold" :class="item.projectedProfit >= 0 ? 'text-green-600' : 'text-red-600'">
-                  Rp {{ formatCurrency(item.projectedProfit) }}
-                </p>
+              <div class="flex justify-between items-center text-sm pt-2 border-t border-slate-100 dark:border-slate-700 mt-1">
+                <span class="font-bold text-[#0d141b] dark:text-white">Profit</span>
+                <span class="font-bold" :class="item.projectedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                  {{ formatCurrency(item.projectedProfit) }}
+                </span>
               </div>
             </div>
           </div>
@@ -249,390 +253,378 @@
     </div>
 
     <!-- Bank Reconciliation Tab -->
-    <div v-if="activeTab === 'reconciliation'" class="space-y-6">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Bank Reconciliation</h3>
-        <button
-          @click="showReconciliationModal = true"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition mb-6"
-        >
-          New Reconciliation
-        </button>
+    <div v-if="activeTab === 'reconciliation'" class="space-y-6 animate-fade-in">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Bank Reconciliation</h3>
+            <button
+              @click="showReconciliationModal = true"
+              class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+            >
+              New Reconciliation
+            </button>
+        </div>
 
         <div v-if="reconciliations.length > 0" class="space-y-4">
           <div
             v-for="recon in reconciliations"
             :key="recon.id"
-            class="border-l-4 rounded p-4"
-            :class="recon.reconciled ? 'border-green-500 bg-green-50' : 'border-yellow-500 bg-yellow-50'"
+            class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors relative overflow-hidden"
           >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ recon.bankAccount }}</h4>
+            <div class="absolute left-0 top-0 bottom-0 w-1" :class="recon.reconciled ? 'bg-emerald-500' : 'bg-amber-500'"></div>
+            <div class="flex items-center justify-between mb-4 pl-2">
+              <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ recon.bankAccount }}</h4>
               <span
-                class="px-2 py-1 text-xs font-semibold rounded-full"
-                :class="recon.reconciled ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                class="px-2.5 py-1 text-xs font-bold rounded-lg uppercase tracking-wider"
+                :class="recon.reconciled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
               >
                 {{ recon.reconciled ? 'Reconciled' : 'Pending' }}
               </span>
             </div>
-            <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="grid grid-cols-3 gap-4 text-sm pl-2">
               <div>
-                <p class="text-gray-600">Statement Balance</p>
-                <p class="font-semibold">Rp {{ formatCurrency(recon.statementBalance) }}</p>
+                <p class="text-[#4c739a] text-xs mb-1">Statement Balance</p>
+                <p class="font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(recon.statementBalance) }}</p>
               </div>
               <div>
-                <p class="text-gray-600">Book Balance</p>
-                <p class="font-semibold">Rp {{ formatCurrency(recon.bookBalance) }}</p>
+                <p class="text-[#4c739a] text-xs mb-1">Book Balance</p>
+                <p class="font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(recon.bookBalance) }}</p>
               </div>
-              <div class="col-span-2">
-                <p class="text-gray-600">Difference</p>
-                <p class="font-semibold" :class="Math.abs(recon.difference) < 0.01 ? 'text-green-600' : 'text-red-600'">
-                  Rp {{ formatCurrency(recon.difference) }}
+              <div>
+                <p class="text-[#4c739a] text-xs mb-1">Difference</p>
+                <p class="font-bold" :class="Math.abs(recon.difference) < 0.01 ? 'text-emerald-600' : 'text-red-600'">
+                  {{ formatCurrency(recon.difference) }}
                 </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Cash Flow Modal -->
-    <div
-      v-if="showCashFlowModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeCashFlowModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Record Cash Flow</h3>
-            <button @click="closeCashFlowModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form @submit.prevent="saveCashFlow" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Type *</label>
-              <select
-                v-model="cashFlowForm.type"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="">Pilih Type</option>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expense</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-              <input
-                v-model="cashFlowForm.category"
-                type="text"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Amount *</label>
-              <input
-                v-model.number="cashFlowForm.amount"
-                type="number"
-                min="0"
-                step="0.01"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-              <textarea
-                v-model="cashFlowForm.description"
-                rows="3"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                <input
-                  v-model="cashFlowForm.date"
-                  type="date"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
-                <input
-                  v-model="cashFlowForm.paymentMethod"
-                  type="text"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-            </div>
-
-            <div class="flex space-x-3 pt-4 border-t">
-              <button
-                type="button"
-                @click="closeCashFlowModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
-              </button>
-            </div>
-          </form>
+        <div v-else class="text-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+             <div class="bg-white dark:bg-slate-800 p-3 rounded-full shadow-sm mb-3 inline-block">
+                <span class="material-symbols-outlined text-slate-400 text-2xl">account_balance</span>
+             </div>
+             <p class="text-sm font-medium text-[#0d141b] dark:text-white">No reconciliation yet</p>
+             <p class="text-xs text-[#4c739a]">Start bank reconciliation to match book balances.</p>
         </div>
       </div>
     </div>
 
-    <!-- Expense Modal -->
-    <div
-      v-if="showExpenseModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeExpenseModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Record Expense</h3>
-            <button @click="closeExpenseModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+    <!-- Modals (Re-styled) -->
+    <Teleport to="body">
+       <!-- Cash Flow Modal -->
+      <div
+        v-if="showCashFlowModal"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
+        @click.self="closeCashFlowModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Record Cash Flow</h3>
+            <button @click="closeCashFlowModal" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
+          
+          <div class="p-6 overflow-y-auto">
+             <form @submit.prevent="saveCashFlow" class="flex flex-col gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Type *</label>
+                  <select
+                    v-model="cashFlowForm.type"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  >
+                    <option value="">Pilih Type</option>
+                    <option value="INCOME">Income</option>
+                    <option value="EXPENSE">Expense</option>
+                  </select>
+                </div>
 
-          <form @submit.prevent="saveExpense" class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-              <input
-                v-model="expenseForm.category"
-                type="text"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Category *</label>
+                  <input
+                    v-model="cashFlowForm.category"
+                    type="text"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  />
+                </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Amount *</label>
-              <input
-                v-model.number="expenseForm.amount"
-                type="number"
-                min="0"
-                step="0.01"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Amount *</label>
+                  <input
+                    v-model.number="cashFlowForm.amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  />
+                </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-              <textarea
-                v-model="expenseForm.description"
-                rows="3"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              ></textarea>
-            </div>
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Description *</label>
+                  <textarea
+                    v-model="cashFlowForm.description"
+                    rows="3"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  ></textarea>
+                </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
-                <input
-                  v-model="expenseForm.date"
-                  type="date"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
-                <input
-                  v-model="expenseForm.vendor"
-                  type="text"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-            </div>
-
-            <div class="flex items-center">
-              <input
-                v-model="expenseForm.isTaxDeductible"
-                type="checkbox"
-                id="taxDeductible"
-                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-              />
-              <label for="taxDeductible" class="ml-2 text-sm text-gray-700">Tax Deductible</label>
-            </div>
-
-            <div class="flex space-x-3 pt-4 border-t">
-              <button
-                type="button"
-                @click="closeExpenseModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reconciliation Modal -->
-    <div
-      v-if="showReconciliationModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      @click.self="closeReconciliationModal"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-gray-900">Bank Reconciliation</h3>
-            <button @click="closeReconciliationModal" class="text-gray-400 hover:text-gray-600 transition">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form @submit.prevent="saveReconciliation" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Bank Account *</label>
-                <input
-                  v-model="reconciliationForm.bankAccount"
-                  type="text"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Statement Date *</label>
-                <input
-                  v-model="reconciliationForm.statementDate"
-                  type="date"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Statement Balance *</label>
-              <input
-                v-model.number="reconciliationForm.statementBalance"
-                type="number"
-                step="0.01"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Transactions</label>
-              <div class="space-y-2">
-                <div
-                  v-for="(tx, index) in reconciliationForm.transactions"
-                  :key="index"
-                  class="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded"
-                >
-                  <div class="col-span-3">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Date *</label>
                     <input
-                      v-model="tx.date"
+                      v-model="cashFlowForm.date"
                       type="date"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      required
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
-                  <div class="col-span-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Payment Method *</label>
                     <input
-                      v-model="tx.description"
+                      v-model="cashFlowForm.paymentMethod"
                       type="text"
-                      placeholder="Description"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      required
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
-                  <div class="col-span-2">
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                  <button
+                    type="button"
+                    @click="closeCashFlowModal"
+                    class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    :disabled="saving"
+                    class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition disabled:opacity-50"
+                  >
+                    {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                  </button>
+                </div>
+             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expense Modal -->
+      <div
+        v-if="showExpenseModal"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
+        @click.self="closeExpenseModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Record Expense</h3>
+            <button @click="closeExpenseModal" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          <div class="p-6 overflow-y-auto">
+             <form @submit.prevent="saveExpense" class="flex flex-col gap-4">
+               <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Category *</label>
+                  <input
+                    v-model="expenseForm.category"
+                    type="text"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Amount *</label>
+                  <input
+                    v-model.number="expenseForm.amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Description *</label>
+                  <textarea
+                    v-model="expenseForm.description"
+                    rows="3"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  ></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Date *</label>
                     <input
-                      v-model.number="tx.amount"
-                      type="number"
-                      step="0.01"
-                      placeholder="Amount"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      v-model="expenseForm.date"
+                      type="date"
+                      required
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
-                  <div class="col-span-2">
-                    <select
-                      v-model="tx.type"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                    >
-                      <option value="DEPOSIT">Deposit</option>
-                      <option value="WITHDRAWAL">Withdrawal</option>
-                    </select>
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Vendor</label>
+                    <input
+                      v-model="expenseForm.vendor"
+                      type="text"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    />
                   </div>
-                  <div class="col-span-1">
+                </div>
+
+                <div class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                  <input
+                    v-model="expenseForm.isTaxDeductible"
+                    type="checkbox"
+                    id="taxDeductible"
+                    class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]"
+                  />
+                  <label for="taxDeductible" class="text-sm font-medium text-[#0d141b] dark:text-white cursor-pointer">Tax Deductible</label>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                  <button
+                    type="button"
+                    @click="closeExpenseModal"
+                    class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    :disabled="saving"
+                    class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 transition disabled:opacity-50"
+                  >
+                    {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                  </button>
+                </div>
+             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reconciliation Modal -->
+      <div
+        v-if="showReconciliationModal"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
+        @click.self="closeReconciliationModal"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full flex flex-col max-h-[90vh]">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Bank Reconciliation</h3>
+            <button @click="closeReconciliationModal" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          <div class="p-6 overflow-y-auto">
+             <form @submit.prevent="saveReconciliation" class="flex flex-col gap-6">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Bank Account *</label>
+                    <input
+                      v-model="reconciliationForm.bankAccount"
+                      type="text"
+                      required
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Statement Date *</label>
+                    <input
+                      v-model="reconciliationForm.statementDate"
+                      type="date"
+                      required
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Statement Balance *</label>
+                  <input
+                    v-model.number="reconciliationForm.statementBalance"
+                    type="number"
+                    step="0.01"
+                    required
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Transactions</label>
+                  <div class="space-y-2">
+                    <div
+                      v-for="(tx, index) in reconciliationForm.transactions"
+                      :key="index"
+                      class="grid grid-cols-12 gap-3 items-end p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700"
+                    >
+                       <div class="col-span-3">
+                        <label class="text-[10px] text-slate-400 mb-1 block">Date</label>
+                        <input v-model="tx.date" type="date" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                       </div>
+                       <div class="col-span-4">
+                        <label class="text-[10px] text-slate-400 mb-1 block">Desc</label>
+                        <input v-model="tx.description" type="text" placeholder="Description" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                       </div>
+                       <div class="col-span-2">
+                        <label class="text-[10px] text-slate-400 mb-1 block">Amount</label>
+                        <input v-model.number="tx.amount" type="number" step="0.01" placeholder="Amount" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                       </div>
+                       <div class="col-span-2">
+                        <label class="text-[10px] text-slate-400 mb-1 block">Type</label>
+                        <select v-model="tx.type" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                           <option value="DEPOSIT">Deposit</option>
+                           <option value="WITHDRAWAL">Withdrawal</option>
+                        </select>
+                       </div>
+                       <div class="col-span-1 text-right">
+                         <button type="button" @click="removeTransaction(index)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                           <span class="material-symbols-outlined text-[16px]">close</span>
+                         </button>
+                       </div>
+                    </div>
                     <button
                       type="button"
-                      @click="removeTransaction(index)"
-                      class="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                      @click="addTransaction"
+                      class="px-4 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition"
                     >
-                      ×
+                      + Add Transaction
                     </button>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  @click="addTransaction"
-                  class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
-                >
-                  + Add Transaction
-                </button>
-              </div>
-            </div>
 
-            <div class="flex space-x-3 pt-4 border-t">
-              <button
-                type="button"
-                @click="closeReconciliationModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="submit"
-                :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
-              >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
-              </button>
-            </div>
-          </form>
+                <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                  <button
+                    type="button"
+                    @click="closeReconciliationModal"
+                    class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    :disabled="saving"
+                    class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition disabled:opacity-50"
+                  >
+                    {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                  </button>
+                </div>
+             </form>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -870,4 +862,3 @@ onMounted(() => {
   loadExpensesByCategory();
 });
 </script>
-

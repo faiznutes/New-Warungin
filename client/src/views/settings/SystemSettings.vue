@@ -1,176 +1,225 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">System Settings</h2>
-      <p class="text-gray-600">Konfigurasi sistem dan pengaturan global</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">System Settings</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Configure global system and security preferences.</p>
+      </div>
+      <button
+        @click="saveSettings"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">save</span>
+        <span>Save Changes</span>
+      </button>
     </div>
 
-    <div class="space-y-6">
-      <!-- General Settings -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Pengaturan Umum</h3>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Sistem</label>
-            <input
-              v-model="settings.systemName"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column: Forms -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- General Settings -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                <span class="material-symbols-outlined">tune</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">General Settings</h3>
+                <p class="text-xs text-slate-500">Basic system application information</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email Support</label>
-            <input
-              v-model="settings.supportEmail"
-              type="email"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
-            <select
-              v-model="settings.timezone"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-              <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-              <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subscription Receipt Template Management -->
-      <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-          <div>
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Template Struk Langganan</h3>
-            <p class="text-sm text-gray-600">Kelola template struk untuk langganan tenant</p>
-          </div>
-          <button
-            @click="showTemplateManager = true"
-            class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
-          >
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            <span>Kelola Template</span>
-          </button>
-        </div>
-        <div class="text-sm text-gray-600">
-          <p>• Pilih template untuk A4, Thermal 58mm, atau Thermal 80mm</p>
-          <p>• Sesuaikan header, footer, dan field yang ditampilkan</p>
-          <p>• Template ini digunakan untuk struk langganan tenant</p>
-        </div>
-      </div>
-
-      <!-- Security Settings -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Pengaturan Keamanan</h3>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+          
+          <div class="space-y-5">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Require Strong Password</label>
-              <p class="text-xs text-gray-500">Wajibkan password yang kuat untuk semua user</p>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">System Name</label>
+              <input
+                v-model="settings.systemName"
+                type="text"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="Enter system name"
+              />
             </div>
-            <input
-              v-model="settings.requireStrongPassword"
-              type="checkbox"
-              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-          </div>
-          <div class="flex items-center justify-between">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Two-Factor Authentication</label>
-              <p class="text-xs text-gray-500">Aktifkan 2FA untuk Super Admin</p>
-            </div>
-            <input
-              v-model="settings.enable2FA"
-              type="checkbox"
-              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        
-        <!-- Quick Links -->
-        <div class="mt-6 pt-6 border-t border-gray-200">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <router-link
-              to="/app/settings/2fa"
-              class="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition"
-            >
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <div>
-                <p class="font-semibold text-gray-900">Two-Factor Authentication</p>
-                <p class="text-sm text-gray-600">Kelola 2FA untuk akun Anda</p>
-              </div>
-            </router-link>
             
-            <router-link
-              to="/app/settings/webhooks"
-              class="flex items-center space-x-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition"
-            >
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-              <div>
-                <p class="font-semibold text-gray-900">Webhooks</p>
-                <p class="text-sm text-gray-600">Kelola webhook untuk integrasi</p>
-              </div>
-            </router-link>
-
-            <router-link
-              to="/app/settings/sessions"
-              class="flex items-center space-x-3 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition"
-            >
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <div>
-                <p class="font-semibold text-gray-900">Active Sessions</p>
-                <p class="text-sm text-gray-600">Kelola sesi aktif Anda</p>
-              </div>
-            </router-link>
-
-            <router-link
-              to="/app/settings/password"
-              class="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition"
-            >
-              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
-              <div>
-                <p class="font-semibold text-gray-900">Password Settings</p>
-                <p class="text-sm text-gray-600">Ubah password Anda</p>
-              </div>
-            </router-link>
-
-            <router-link
-              to="/app/settings/gdpr"
-              class="flex items-center space-x-3 p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition"
-            >
-              <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <div>
-                <p class="font-semibold text-gray-900">GDPR Compliance</p>
-                <p class="text-sm text-gray-600">Ekspor atau hapus data Anda</p>
-              </div>
-            </router-link>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+               <div>
+                 <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Email Support</label>
+                 <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#94a3b8] text-[20px]">mail</span>
+                    <input
+                      v-model="settings.supportEmail"
+                      type="email"
+                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white placeholder:text-[#94a3b8] transition-all"
+                      placeholder="support@example.com"
+                    />
+                 </div>
+               </div>
+               <div>
+                 <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Timezone</label>
+                 <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#94a3b8] text-[20px]">schedule</span>
+                    <select
+                      v-model="settings.timezone"
+                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
+                    >
+                      <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
+                      <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
+                      <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#94a3b8]">
+                       <span class="material-symbols-outlined">expand_more</span>
+                    </div>
+                 </div>
+               </div>
+            </div>
           </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+                <span class="material-symbols-outlined">security</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Security</h3>
+                <p class="text-xs text-slate-500">Password and authentication policies</p>
+             </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+              <div class="flex items-center gap-3">
+                 <span class="material-symbols-outlined text-slate-400">lock_clock</span>
+                 <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-white">Require Strong Password</label>
+                    <p class="text-xs text-slate-500">Require combination of letters, numbers, and symbols</p>
+                 </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="settings.requireStrongPassword" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+              <div class="flex items-center gap-3">
+                 <span class="material-symbols-outlined text-slate-400">phonelink_lock</span>
+                 <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-white">Two-Factor Authentication (2FA)</label>
+                    <p class="text-xs text-slate-500">Enable global 2FA for Super Admin</p>
+                 </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="settings.enable2FA" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subscription Receipt Template -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                 <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                 </div>
+                 <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Subscription Receipt Template</h3>
+                    <p class="text-sm text-slate-500">Manage tenant payment receipt design and layout.</p>
+                 </div>
+              </div>
+              <button
+                @click="showTemplateManager = true"
+                class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+              >
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span>Manage Template</span>
+              </button>
+           </div>
+           <div class="mt-4 text-sm text-slate-500 space-y-1 pl-11">
+              <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Supports A4 & Thermal (58mm/80mm) formats</p>
+              <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Customize header & footer</p>
+           </div>
         </div>
       </div>
 
-      <!-- Save Button -->
-      <div class="flex justify-end">
-        <button
-          @click="saveSettings"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          Simpan Pengaturan
-        </button>
+      <!-- Right Column: Quick Links -->
+      <div class="space-y-6">
+         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+            <h3 class="font-bold text-[#0d141b] dark:text-white mb-4 flex items-center gap-2">
+               <span class="material-symbols-outlined text-[#4c739a]">link</span>
+               Quick Actions
+            </h3>
+            
+            <div class="space-y-3">
+               <router-link
+                 to="/app/settings/2fa"
+                 class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
+               >
+                 <div class="bg-violet-50 dark:bg-violet-900/30 text-violet-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">verified_user</span>
+                 </div>
+                 <div>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">My 2FA</h4>
+                    <p class="text-xs text-[#4c739a]">Kelola otentikasi 2 faktor Anda</p>
+                 </div>
+               </router-link>
+
+               <router-link
+                 to="/app/settings/webhooks"
+                 class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
+               >
+                 <div class="bg-amber-50 dark:bg-amber-900/30 text-amber-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">webhook</span>
+                 </div>
+                 <div>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Webhooks</h4>
+                    <p class="text-xs text-[#4c739a]">Integrasi pihak ketiga</p>
+                 </div>
+               </router-link>
+
+               <router-link
+                 to="/app/settings/sessions"
+                 class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
+               >
+                 <div class="bg-pink-50 dark:bg-pink-900/30 text-pink-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">devices</span>
+                 </div>
+                 <div>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Active Sessions</h4>
+                    <p class="text-xs text-[#4c739a]">Monitor login aktif</p>
+                 </div>
+               </router-link>
+
+               <router-link
+                 to="/app/settings/password"
+                 class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
+               >
+                 <div class="bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">password</span>
+                 </div>
+                 <div>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Change Password</h4>
+                    <p class="text-xs text-[#4c739a]">Update kata sandi akun</p>
+                 </div>
+               </router-link>
+               
+               <router-link
+                 to="/app/settings/gdpr"
+                 class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
+               >
+                 <div class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">policy</span>
+                 </div>
+                 <div>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">GDPR / Data</h4>
+                    <p class="text-xs text-[#4c739a]">Ekspor dan privasi data</p>
+                 </div>
+               </router-link>
+            </div>
+         </div>
       </div>
     </div>
 
@@ -224,4 +273,3 @@ onMounted(() => {
   loadSettings();
 });
 </script>
-

@@ -1,159 +1,200 @@
 <template>
-  <div class="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Laporan Laba Rugi</h2>
-        <p class="text-sm sm:text-base text-gray-600">Analisis keuangan bisnis Anda secara detail</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Profit & Loss Report</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Analyze your business finances in detail.</p>
       </div>
-      <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">
-        <input
-          type="date"
-          v-model="startDate"
-          @change="loadProfitLoss"
-          class="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm"
-        />
-        <span class="text-gray-600 font-medium">s/d</span>
-        <input
-          type="date"
-          v-model="endDate"
-          @change="loadProfitLoss"
-          class="px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm"
-        />
+      <div class="flex flex-col sm:flex-row items-center gap-3">
+        <div class="flex items-center gap-2 p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+          <input
+            type="date"
+            v-model="startDate"
+            @change="loadProfitLoss"
+            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+          />
+          <span class="text-slate-500 text-xs font-medium px-1">to</span>
+          <input
+            type="date"
+            v-model="endDate"
+            @change="loadProfitLoss"
+            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+          />
+        </div>
         <button
           @click="exportReport"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/30 hover:bg-primary-hover transition"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Export
+          <span class="material-symbols-outlined text-[20px]">download</span>
+          <span>Export PDF</span>
         </button>
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat laporan...</div>
+    <!-- Loading State -->
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium text-sm">Loading report...</div>
     </div>
 
-    <div v-else-if="error" class="px-4 sm:px-6">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div class="flex items-start">
-          <svg class="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <div class="flex-1">
-            <p class="text-red-800 font-medium">{{ error }}</p>
-            <router-link 
-              v-if="error.includes('addon')" 
-              to="/app/addons" 
-              class="text-red-600 hover:text-red-800 text-sm underline mt-2 inline-block"
-            >
-              Berlangganan Business Analytics & Insight
-            </router-link>
-          </div>
+    <!-- Error State -->
+    <div v-else-if="error" class="p-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-2xl">
+      <div class="flex items-start gap-4">
+        <span class="material-symbols-outlined text-red-500 text-3xl">error_outline</span>
+        <div>
+          <h3 class="font-bold text-red-700 dark:text-red-400">An Error Occurred</h3>
+          <p class="text-sm text-red-600 dark:text-red-300 mt-1">{{ error }}</p>
+          <router-link 
+            v-if="error.includes('addon')" 
+            to="/app/addons" 
+            class="inline-block mt-3 text-sm font-bold text-red-700 underline hover:no-underline"
+          >
+            Subscribe to Business Analytics & Insight
+          </router-link>
         </div>
       </div>
     </div>
 
-    <div v-else-if="profitLoss" class="px-4 sm:px-6 pb-6 space-y-6">
+    <!-- Content -->
+    <div v-else-if="profitLoss" class="space-y-6 animate-fade-in">
       <!-- Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-green-100 mb-2">Revenue</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.revenue) }}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Revenue</p>
+               <p class="text-[10px] text-slate-400">Total Income</p>
+             </div>
+             <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">payments</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(profitLoss.revenue) }}</p>
         </div>
-        <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-red-100 mb-2">COGS</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.cogs) }}</p>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">COGS</p>
+               <p class="text-[10px] text-slate-400">Harga Pokok Penjualan</p>
+             </div>
+             <div class="bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">inventory_2</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.cogs) }}</p>
         </div>
-        <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-blue-100 mb-2">Gross Profit</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.grossProfit) }}</p>
-          <p class="text-sm text-blue-100 mt-2">Margin: {{ profitLoss.grossProfitMargin.toFixed(1) }}%</p>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Gross Profit</p>
+               <p class="text-[10px] text-slate-400">Laba Kotor</p>
+             </div>
+             <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">insert_chart</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.grossProfit) }}</p>
+          <div class="mt-2 flex items-center gap-1 text-xs text-[#4c739a]">
+            <span>Margin:</span>
+            <span class="font-bold text-[#137fec]">{{ profitLoss.grossProfitMargin.toFixed(1) }}%</span>
+          </div>
         </div>
-        <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
-          <p class="text-sm font-semibold text-purple-100 mb-2">Net Profit</p>
-          <p class="text-3xl font-bold">{{ formatCurrency(profitLoss.netProfit) }}</p>
-          <p class="text-sm text-purple-100 mt-2">Margin: {{ profitLoss.netProfitMargin.toFixed(1) }}%</p>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-violet-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-4">
+             <div>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Profit</p>
+               <p class="text-[10px] text-slate-400">Laba Bersih</p>
+             </div>
+             <div class="bg-violet-50 dark:bg-violet-900/30 p-2 rounded-xl text-violet-600 dark:text-violet-400 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-[24px]">monetization_on</span>
+             </div>
+          </div>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.netProfit) }}</p>
+          <div class="mt-2 flex items-center gap-1 text-xs text-[#4c739a]">
+            <span>Margin:</span>
+            <span class="font-bold text-violet-600">{{ profitLoss.netProfitMargin.toFixed(1) }}%</span>
+          </div>
         </div>
       </div>
 
       <!-- Detailed Report -->
-      <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Detail Laporan Laba Rugi</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Detail Laporan Laba Rugi</h3>
+        </div>
         
-        <div class="space-y-4">
+        <div class="p-6 space-y-6">
           <!-- Revenue Section -->
-          <div class="border-b pb-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-lg font-semibold text-gray-900">Revenue</span>
-              <span class="text-lg font-bold text-gray-900">{{ formatCurrency(profitLoss.revenue) }}</span>
+          <div class="pb-6 border-b border-slate-100 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-base font-bold text-[#0d141b] dark:text-white">Revenue</span>
+              <span class="text-base font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.revenue) }}</span>
             </div>
-            <div class="flex justify-between items-center text-sm text-gray-600 ml-4">
-              <span>Penjualan</span>
-              <span>{{ formatCurrency(profitLoss.revenue) }}</span>
+            <div class="pl-4 space-y-2">
+               <div class="flex justify-between items-center text-sm">
+                <span class="text-[#4c739a]">Penjualan</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.revenue) }}</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-[#4c739a]">Diskon</span>
+                <span class="font-bold text-red-500">-{{ formatCurrency(profitLoss.discount) }}</span>
+              </div>
             </div>
-            <div class="flex justify-between items-center text-sm text-gray-600 ml-4">
-              <span>Diskon</span>
-              <span class="text-red-600">-{{ formatCurrency(profitLoss.discount) }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm font-semibold text-gray-700 mt-2 pt-2 border-t">
-              <span>Net Revenue</span>
+            <div class="flex justify-between items-center text-sm font-bold text-[#0d141b] dark:text-white mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+              <span class="pl-4">Net Revenue</span>
               <span>{{ formatCurrency(profitLoss.revenue - profitLoss.discount) }}</span>
             </div>
           </div>
 
           <!-- COGS Section -->
-          <div class="border-b pb-4">
+          <div class="pb-6 border-b border-slate-100 dark:border-slate-700">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-lg font-semibold text-gray-900">Cost of Goods Sold (COGS)</span>
-              <span class="text-lg font-bold text-red-600">{{ formatCurrency(profitLoss.cogs) }}</span>
+              <span class="text-base font-bold text-[#0d141b] dark:text-white">Cost of Goods Sold (COGS)</span>
+              <span class="text-base font-bold text-red-600">({{ formatCurrency(profitLoss.cogs) }})</span>
             </div>
-            <div class="text-sm text-gray-600 ml-4">
-              <p>Biaya produk yang terjual</p>
-            </div>
+            <p class="text-xs text-[#4c739a] pl-4">Biaya produk yang terjual</p>
           </div>
 
           <!-- Gross Profit -->
-          <div class="border-b pb-4 bg-green-50 p-4 rounded-lg">
-            <div class="flex justify-between items-center">
-              <span class="text-lg font-bold text-gray-900">Gross Profit</span>
-              <span class="text-lg font-bold text-green-600">{{ formatCurrency(profitLoss.grossProfit) }}</span>
+          <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-base font-extrabold text-[#0d141b] dark:text-white">Gross Profit</span>
+              <span class="text-lg font-extrabold text-[#137fec]">{{ formatCurrency(profitLoss.grossProfit) }}</span>
             </div>
-            <div class="text-sm text-gray-600 mt-1">
-              Gross Profit Margin: <span class="font-semibold">{{ profitLoss.grossProfitMargin.toFixed(2) }}%</span>
+            <div class="text-xs text-[#4c739a]">
+              Gross Profit Margin: <span class="font-bold text-[#0d141b] dark:text-white">{{ profitLoss.grossProfitMargin.toFixed(2) }}%</span>
             </div>
           </div>
 
           <!-- Operating Expenses -->
-          <div class="border-b pb-4">
+          <div class="py-4 pb-6 border-b border-slate-100 dark:border-slate-700">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-lg font-semibold text-gray-900">Operating Expenses</span>
-              <span class="text-lg font-bold text-orange-600">{{ formatCurrency(profitLoss.operatingExpenses) }}</span>
+              <span class="text-base font-bold text-[#0d141b] dark:text-white">Operating Expenses</span>
+              <span class="text-base font-bold text-red-600">({{ formatCurrency(profitLoss.operatingExpenses) }})</span>
             </div>
-            <div class="text-sm text-gray-600 ml-4">
-              <p>Biaya operasional (estimasi 15% dari revenue)</p>
-            </div>
+            <p class="text-xs text-[#4c739a] pl-4">Biaya operasional & overhead</p>
           </div>
 
           <!-- Net Profit -->
-          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg border-2 border-purple-200">
+          <div class="p-6 bg-[#137fec]/5 dark:bg-[#137fec]/10 rounded-2xl border-2 border-[#137fec]/20">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-xl font-bold text-gray-900">Net Profit</span>
+              <span class="text-xl font-extrabold text-[#0d141b] dark:text-white">Net Profit</span>
               <span 
-                :class="profitLoss.netProfit >= 0 ? 'text-green-600' : 'text-red-600'"
-                class="text-2xl font-bold"
+                :class="profitLoss.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'"
+                class="text-2xl font-extrabold"
               >
                 {{ formatCurrency(profitLoss.netProfit) }}
               </span>
             </div>
-            <div class="text-sm text-gray-600 mt-1">
+            <div class="text-sm text-[#4c739a]">
               Net Profit Margin: 
               <span 
-                :class="profitLoss.netProfitMargin >= 0 ? 'text-green-600' : 'text-red-600'"
-                class="font-semibold"
+                class="font-bold"
+                :class="profitLoss.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'"
               >
                 {{ profitLoss.netProfitMargin.toFixed(2) }}%
               </span>
@@ -252,4 +293,3 @@ onMounted(() => {
   loadProfitLoss();
 });
 </script>
-

@@ -1,55 +1,56 @@
 <template>
-  <div class="flex flex-col h-full p-4 sm:p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Paket Langganan</h1>
-      <p class="text-gray-600">Pilih paket yang sesuai dengan kebutuhan bisnis Anda</p>
+    <div class="flex flex-col">
+      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Subscription Plans</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Choose the plan that fits your business needs</p>
     </div>
 
     <!-- Current Plan Banner -->
     <div
       v-if="currentPlan"
-      class="mb-6 p-4 rounded-lg border-l-4"
+      class="p-5 rounded-2xl border-l-4"
       :class="getPlanBannerClass(currentPlan.plan)"
     >
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 class="font-bold text-lg mb-1">Paket Saat Ini: {{ getPlanName(currentPlan.plan) }}</h3>
+          <h3 class="font-bold text-lg mb-1">Current Plan: {{ getPlanName(currentPlan.plan) }}</h3>
           <p class="text-sm" v-if="currentPlan.daysRemaining > 0">
-            Berlaku hingga {{ formatDate(currentPlan.subscriptionEnd) }} 
-            ({{ currentPlan.daysRemaining }} hari tersisa)
+            Valid until {{ formatDate(currentPlan.subscriptionEnd) }} 
+            ({{ currentPlan.daysRemaining }} days remaining)
           </p>
           <p class="text-sm text-red-600 font-semibold" v-else>
-            Paket telah berakhir. Silakan perpanjang atau upgrade.
+            Plan has expired. Please renew or upgrade.
           </p>
         </div>
         <div class="text-right">
           <p class="text-2xl font-bold" :class="getPlanTextClass(currentPlan.plan)">
             {{ getPlanPrice(currentPlan.plan) }}
           </p>
-          <p class="text-sm text-gray-600">per bulan</p>
+          <p class="text-sm text-slate-500">per month</p>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-slate-500">Loading plans...</p>
     </div>
 
     <!-- Plans Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- BASIC Plan -->
       <div
-        class="bg-white rounded-lg shadow-lg border-2 p-6"
-        :class="currentPlan?.plan === 'BASIC' ? 'border-primary-500 ring-2 ring-primary-200' : 'border-gray-200'"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6"
+        :class="currentPlan?.plan === 'BASIC' ? 'border-primary ring-2 ring-primary/20' : 'border-slate-100 dark:border-slate-700'"
       >
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">🎟️ BASIC</h3>
-          <p class="text-gray-600 mb-4">UMKM Kecil</p>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🎟️ BASIC</h3>
+          <p class="text-slate-500 mb-4">Small Business</p>
           <div class="mb-4">
-            <span class="text-3xl font-bold text-gray-900">Rp 149rb</span>
-            <span class="text-gray-600">/bulan</span>
+            <span class="text-3xl font-bold text-slate-900 dark:text-white">Rp 149k</span>
+            <span class="text-slate-500">/month</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -105,32 +106,33 @@
         <button
           @click="handleUpgrade('BASIC')"
           :disabled="currentPlan?.plan === 'BASIC' || upgrading"
-          class="w-full px-4 py-2 rounded-lg font-semibold transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
           :class="currentPlan?.plan === 'BASIC' 
-            ? 'bg-gray-200 text-gray-600 cursor-not-allowed' 
-            : 'bg-gray-600 text-white hover:bg-gray-700'"
+            ? 'bg-slate-100 text-slate-500 cursor-not-allowed' 
+            : 'bg-slate-600 text-white hover:bg-slate-700'"
         >
-          {{ currentPlan?.plan === 'BASIC' ? 'Paket Saat Ini' : 'Pilih BASIC' }}
+          <span class="material-symbols-outlined text-[20px]">check_circle</span>
+          {{ currentPlan?.plan === 'BASIC' ? 'Current Plan' : 'Choose BASIC' }}
         </button>
       </div>
 
       <!-- PRO Plan -->
       <div
-        class="bg-white rounded-lg shadow-lg border-2 p-6 relative"
-        :class="currentPlan?.plan === 'PRO' ? 'border-primary-500 ring-2 ring-primary-200' : 'border-primary-300'"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6 relative"
+        :class="currentPlan?.plan === 'PRO' ? 'border-primary ring-2 ring-primary/20' : 'border-primary/30'"
       >
         <div
           v-if="currentPlan?.plan !== 'PRO'"
-          class="absolute top-0 right-0 bg-primary-600 text-white px-3 py-1 rounded-bl-lg text-xs font-bold"
+          class="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl-lg rounded-tr-2xl text-xs font-bold"
         >
-          POPULER
+          POPULAR
         </div>
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">⚡ PRO</h3>
-          <p class="text-gray-600 mb-4">UMKM Sedang-Besar</p>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">⚡ PRO</h3>
+          <p class="text-slate-500 mb-4">Medium-Large Business</p>
           <div class="mb-4">
-            <span class="text-3xl font-bold text-primary-600">Rp 299rb</span>
-            <span class="text-gray-600">/bulan</span>
+            <span class="text-3xl font-bold text-primary">Rp 299k</span>
+            <span class="text-slate-500">/month</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -186,26 +188,27 @@
         <button
           @click="handleUpgrade('PRO')"
           :disabled="currentPlan?.plan === 'PRO' || upgrading"
-          class="w-full px-4 py-2 rounded-lg font-semibold transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
           :class="currentPlan?.plan === 'PRO' 
-            ? 'bg-primary-200 text-primary-800 cursor-not-allowed' 
-            : 'bg-primary-600 text-white hover:bg-primary-700'"
+            ? 'bg-primary/20 text-primary cursor-not-allowed' 
+            : 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/30'"
         >
-          {{ currentPlan?.plan === 'PRO' ? 'Paket Saat Ini' : 'Pilih PRO' }}
+          <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+          {{ currentPlan?.plan === 'PRO' ? 'Current Plan' : 'Choose PRO' }}
         </button>
       </div>
 
       <!-- MAX Plan -->
       <div
-        class="bg-white rounded-lg shadow-lg border-2 p-6"
-        :class="currentPlan?.plan === 'ENTERPRISE' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-gray-200'"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6"
+        :class="currentPlan?.plan === 'ENTERPRISE' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-100 dark:border-slate-700'"
       >
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-gray-900 mb-2">🔴 MAX</h3>
-          <p class="text-gray-600 mb-4">UMKM Besar / Semi Enterprise</p>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🔴 MAX</h3>
+          <p class="text-slate-500 mb-4">Large Business / Semi Enterprise</p>
           <div class="mb-4">
             <span class="text-3xl font-bold text-purple-600">Custom</span>
-            <span class="text-gray-600 block text-sm mt-1">Hubungi sales</span>
+            <span class="text-slate-500 block text-sm mt-1">Contact sales</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -261,12 +264,13 @@
         <button
           @click="handleUpgrade('ENTERPRISE')"
           :disabled="currentPlan?.plan === 'ENTERPRISE' || upgrading"
-          class="w-full px-4 py-2 rounded-lg font-semibold transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
           :class="currentPlan?.plan === 'ENTERPRISE' 
-            ? 'bg-purple-200 text-purple-800 cursor-not-allowed' 
-            : 'bg-purple-600 text-white hover:bg-purple-700'"
+            ? 'bg-purple-100 text-purple-700 cursor-not-allowed' 
+            : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-500/30'"
         >
-          {{ currentPlan?.plan === 'ENTERPRISE' ? 'Paket Saat Ini' : 'Hubungi Sales' }}
+          <span class="material-symbols-outlined text-[20px]">support_agent</span>
+          {{ currentPlan?.plan === 'ENTERPRISE' ? 'Current Plan' : 'Contact Sales' }}
         </button>
       </div>
     </div>
@@ -274,20 +278,18 @@
     <!-- Limit Warning Banner -->
     <div
       v-if="limitWarning"
-      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg mb-6"
+      class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-5 rounded-2xl"
     >
-      <div class="flex items-start">
-        <svg class="w-5 h-5 text-yellow-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-amber-600">warning</span>
         <div class="flex-1">
-          <h3 class="font-semibold text-yellow-800 mb-1">Limit Hampir Tercapai</h3>
-          <p class="text-sm text-yellow-700">{{ limitWarning }}</p>
+          <h3 class="font-bold text-amber-800 dark:text-amber-200 mb-1">Limit Almost Reached</h3>
+          <p class="text-sm text-amber-700 dark:text-amber-300">{{ limitWarning }}</p>
           <button
             @click="$router.push('/app/settings/subscription')"
-            class="mt-2 text-sm text-yellow-800 underline hover:text-yellow-900"
+            class="mt-2 text-sm text-amber-800 dark:text-amber-200 underline hover:text-amber-900 dark:hover:text-amber-100 font-medium"
           >
-            Upgrade paket sekarang →
+            Upgrade now →
           </button>
         </div>
       </div>

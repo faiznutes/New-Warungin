@@ -1,57 +1,58 @@
 <template>
-  <div class="max-w-7xl mx-auto space-y-6">
-    <div class="bg-white rounded-lg shadow-sm p-6">
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">Informasi Sistem</h1>
+  <div class="max-w-7xl mx-auto flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">System Information</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Technical details about the platform, running services, and feature specifications.</p>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 md:p-8">
       
       <!-- Accordion Groups -->
       <div class="space-y-4">
         <!-- Frontend & Backend Info -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-primary/30">
           <button
             @click="toggleAccordion('tech')"
-            class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+            class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
-            <span class="font-semibold text-gray-900">Teknologi yang Terinstall</span>
-            <svg
-              class="w-5 h-5 transition-transform duration-200"
-              :class="{ 'rotate-180': openAccordion === 'tech' }"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <div class="flex items-center gap-3">
+               <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">code</span>
+               <span class="font-bold text-slate-900 dark:text-white">Installed Technologies</span>
+            </div>
+            <span class="material-symbols-outlined text-slate-500 transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'tech' }">expand_more</span>
           </button>
-          <div v-show="openAccordion === 'tech'" class="px-6 py-4 border-t border-gray-200">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-show="openAccordion === 'tech'" class="px-6 py-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 class="font-semibold text-gray-800 mb-3">Frontend</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li><strong>Framework:</strong> Vue.js 3.3.4</li>
-                  <li><strong>Router:</strong> Vue Router 4.2.5</li>
-                  <li><strong>State Management:</strong> Pinia 2.1.7</li>
-                  <li><strong>UI Components:</strong> Headless UI, Heroicons</li>
-                  <li><strong>Charts:</strong> Chart.js 4.4.0, Vue Chart.js</li>
-                  <li><strong>Build Tool:</strong> Vite 6.4.1</li>
-                  <li><strong>Styling:</strong> Tailwind CSS 3.4.0</li>
-                  <li><strong>PDF:</strong> jsPDF 3.0.3</li>
-                  <li><strong>Date:</strong> date-fns 3.0.6</li>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                   <div class="size-2 rounded-full bg-blue-500"></div> Frontend
+                </h3>
+                <ul class="space-y-3 text-sm text-slate-500 dark:text-slate-400">
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Framework</span> <span class="font-medium text-slate-700 dark:text-slate-300">Vue.js 3.3.4</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Router</span> <span class="font-medium text-slate-700 dark:text-slate-300">Vue Router 4.2.5</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>State Management</span> <span class="font-medium text-slate-700 dark:text-slate-300">Pinia 2.1.7</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>UI Components</span> <span class="font-medium text-slate-700 dark:text-slate-300">Headless UI, Heroicons</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Charts</span> <span class="font-medium text-slate-700 dark:text-slate-300">Chart.js 4.4.0</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Build Tool</span> <span class="font-medium text-slate-700 dark:text-slate-300">Vite 6.4.1</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Styling</span> <span class="font-medium text-slate-700 dark:text-slate-300">Tailwind CSS 3.4.0</span></li>
                 </ul>
               </div>
               <div>
-                <h3 class="font-semibold text-gray-800 mb-3">Backend</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li><strong>Runtime:</strong> Node.js 18</li>
-                  <li><strong>Framework:</strong> Express.js 4.18.2</li>
-                  <li><strong>Database:</strong> PostgreSQL 15 (Prisma ORM 6.19.0)</li>
-                  <li><strong>Cache:</strong> Redis 7</li>
-                  <li><strong>Authentication:</strong> JWT (jsonwebtoken 9.0.2)</li>
-                  <li><strong>Validation:</strong> Zod 3.22.4, Express Validator</li>
-                  <li><strong>Payment:</strong> Midtrans Client 1.4.3</li>
-                  <li><strong>Email:</strong> Nodemailer 6.9.7</li>
-                  <li><strong>Queue:</strong> BullMQ 5.0.0</li>
-                  <li><strong>WebSocket:</strong> Socket.io 4.8.1</li>
-                  <li><strong>Monitoring:</strong> Prometheus Client 15.1.0</li>
+                <h3 class="font-bold text-[#0d141b] dark:text-white mb-4 flex items-center gap-2">
+                   <div class="size-2 rounded-full bg-green-500"></div> Backend
+                </h3>
+                <ul class="space-y-3 text-sm text-[#4c739a] dark:text-slate-400">
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Runtime</span> <span class="font-medium text-slate-700 dark:text-slate-300">Node.js 18</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Framework</span> <span class="font-medium text-slate-700 dark:text-slate-300">Express.js 4.18.2</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Database</span> <span class="font-medium text-slate-700 dark:text-slate-300">PostgreSQL 15</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>ORM</span> <span class="font-medium text-slate-700 dark:text-slate-300">Prisma 6.19.0</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Cache</span> <span class="font-medium text-slate-700 dark:text-slate-300">Redis 7</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Payment</span> <span class="font-medium text-slate-700 dark:text-slate-300">Midtrans Client</span></li>
+                  <li class="flex justify-between border-b border-dashed border-slate-100 dark:border-slate-700 pb-1"><span>Queue</span> <span class="font-medium text-slate-700 dark:text-slate-300">BullMQ 5.0.0</span></li>
                 </ul>
               </div>
             </div>
@@ -59,148 +60,80 @@
         </div>
 
         <!-- Docker Services -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
           <button
             @click="toggleAccordion('docker')"
-            class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+            class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
-            <span class="font-semibold text-gray-900">Docker Services & Penggunaan</span>
-            <svg
-              class="w-5 h-5 transition-transform duration-200"
-              :class="{ 'rotate-180': openAccordion === 'docker' }"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <div v-show="openAccordion === 'docker'" class="px-6 py-4 border-t border-gray-200">
-            <div class="space-y-4">
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">PostgreSQL Database</h3>
-                <p class="text-sm text-gray-600">Database utama untuk menyimpan semua data aplikasi. Menggunakan Prisma ORM untuk manajemen schema dan migrasi.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Redis Cache</h3>
-                <p class="text-sm text-gray-600">Cache layer untuk meningkatkan performa. Digunakan untuk session management, rate limiting, dan caching data yang sering diakses.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Backend Service</h3>
-                <p class="text-sm text-gray-600">API server yang menangani semua logika bisnis. Resource limit: 4 CPU, 4GB RAM. Health check setiap 10 detik.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Frontend Service</h3>
-                <p class="text-sm text-gray-600">Web application yang di-build dengan Vite dan di-serve menggunakan Nginx. Health check setiap 30 detik.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Nginx Reverse Proxy</h3>
-                <p class="text-sm text-gray-600">Reverse proxy dan load balancer. Menangani routing, SSL termination, dan static file serving. Resource limit: 2 CPU, 1GB RAM.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Cloudflared Tunnel</h3>
-                <p class="text-sm text-gray-600">Cloudflare Tunnel untuk public access tanpa expose port langsung. Menggunakan Cloudflare Zero Trust untuk security.</p>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-2">Monitoring Services (Optional)</h3>
-                <p class="text-sm text-gray-600">Prometheus untuk metrics collection, Grafana untuk visualization, Loki untuk log aggregation, dan Promtail untuk log shipping.</p>
-              </div>
+            <div class="flex items-center gap-3">
+               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">dns</span>
+               <span class="font-bold text-[#0d141b] dark:text-white">Docker Services & Penggunaan</span>
             </div>
+            <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'docker' }">expand_more</span>
+          </button>
+          <div v-show="openAccordion === 'docker'" class="px-6 py-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-[#0d141b] dark:text-white mb-2 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#137fec] text-[18px]">database</span> PostgreSQL Database
+                  </h3>
+                  <p class="text-xs text-[#4c739a]">Database utama untuk menyimpan semua data aplikasi. Menggunakan Prisma ORM untuk manajemen schema dan migrasi.</p>
+               </div>
+               <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-[#0d141b] dark:text-white mb-2 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-500 text-[18px]">bolt</span> Redis Cache
+                  </h3>
+                  <p class="text-xs text-[#4c739a]">Cache layer untuk session, rate limiting, dan data frequent. Meningkatkan throughput aplikasi.</p>
+               </div>
+               <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-[#0d141b] dark:text-white mb-2 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-green-500 text-[18px]">api</span> Backend Service
+                  </h3>
+                  <p class="text-xs text-[#4c739a]">Node.js API server. Limit: 4 CPU, 4GB RAM. Menangani semua business logic dan background jobs.</p>
+               </div>
+               <div class="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700">
+                  <h3 class="font-bold text-[#0d141b] dark:text-white mb-2 text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-purple-500 text-[18px]">web</span> Nginx & Frontend
+                  </h3>
+                  <p class="text-xs text-[#4c739a]">Reverse proxy dengan Nginx, melayani static files Vue.js. SSL termination dan load balancing.</p>
+               </div>
+             </div>
           </div>
         </div>
 
         <!-- Features by Role -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
           <button
             @click="toggleAccordion('features')"
-            class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+            class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
-            <span class="font-semibold text-gray-900">Fitur per Role</span>
-            <svg
-              class="w-5 h-5 transition-transform duration-200"
-              :class="{ 'rotate-180': openAccordion === 'features' }"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <div class="flex items-center gap-3">
+               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">admin_panel_settings</span>
+               <span class="font-bold text-[#0d141b] dark:text-white">Fitur per Role</span>
+            </div>
+            <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'features' }">expand_more</span>
           </button>
-          <div v-show="openAccordion === 'features'" class="px-6 py-4 border-t border-gray-200">
+          <div v-show="openAccordion === 'features'" class="px-6 py-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
             <div class="space-y-6">
               <div>
-                <h3 class="font-semibold text-blue-800 mb-3">Super Admin</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• Dashboard Super Admin dengan statistik global</li>
-                  <li>• Manajemen Tenant (tambah, edit, hapus, aktivasi)</li>
-                  <li>• Manajemen Addon untuk semua tenant</li>
-                  <li>• Laporan Global semua tenant</li>
-                  <li>• Kelola Pesan dari contact form</li>
-                  <li>• System Settings (konfigurasi aplikasi)</li>
-                  <li>• Archive Management (arsip data)</li>
-                  <li>• Retention Management (retensi data)</li>
-                  <li>• Backup Management (backup database)</li>
-                  <li>• Server Monitor (monitoring Docker containers & resources)</li>
-                  <li>• Advanced Analytics (untuk semua tenant)</li>
-                  <li>• Financial Management (untuk semua tenant)</li>
+                <h3 class="font-bold text-blue-700 mb-3 bg-blue-50 px-3 py-1 rounded-lg w-fit text-sm">Super Admin</h3>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-[#4c739a]">
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Dashboard Super Admin</li>
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Manajemen Tenant</li>
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Manajemen Addon Global</li>
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Laporan Global</li>
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> System Settings & Logs</li>
+                  <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Server Monitor</li>
                 </ul>
               </div>
-              <div>
-                <h3 class="font-semibold text-green-800 mb-3">Admin Tenant</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• Dashboard dengan statistik toko</li>
-                  <li>• Manajemen Produk (tambah, edit, hapus, import massal)</li>
-                  <li>• Manajemen Pesanan (lihat, edit, cancel, complete)</li>
-                  <li>• Manajemen Pelanggan</li>
-                  <li>• Manajemen Pengguna (tambah, edit, hapus user)</li>
-                  <li>• Manajemen Store/Outlet</li>
-                  <li>• Manajemen Diskon</li>
-                  <li>• Laporan Penjualan & Stok</li>
-                  <li>• Berlangganan & Addon Management</li>
-                  <li>• Point Gratis (reward points)</li>
-                  <li>• Pengaturan Toko</li>
-                  <li>• Template Struk</li>
-                  <li>• Inventory Management (PRO/ENTERPRISE): Suppliers, Purchase Orders, Stock Transfers, Stock Alerts</li>
-                  <li>• Marketing & Delivery (dengan addon): Campaigns, Email Templates, Email Analytics, Email Scheduler, Customer Engagement, Delivery Orders</li>
-                  <li>• Business Analytics (dengan addon): Advanced Analytics, Financial Management, Profit & Loss Report</li>
-                  <li>• Advanced Reporting (dengan addon)</li>
-                  <li>• Export Reports (dengan addon): PDF, Excel, CSV</li>
-                  <li>• Receipt Editor (dengan addon): Custom nota</li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold text-purple-800 mb-3">Supervisor</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• Dashboard dengan statistik cabang yang ditugaskan</li>
-                  <li>• Lihat Produk (hanya cabang yang ditugaskan)</li>
-                  <li>• Lihat Pesanan (hanya cabang yang ditugaskan)</li>
-                  <li>• Lihat Pelanggan</li>
-                  <li>• Laporan (hanya cabang yang ditugaskan)</li>
-                  <li>• Point Gratis (reward points)</li>
-                  <li>• Business Analytics (dengan addon): Advanced Analytics, Financial Management</li>
-                  <li>• Advanced Reporting (dengan addon)</li>
-                  <li>• Marketing & Delivery (dengan addon): Delivery Orders</li>
-                  <li><strong>Catatan:</strong> Supervisor memerlukan addon SUPERVISOR_ROLE untuk dapat dibuat/ditugaskan</li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold text-orange-800 mb-3">Kasir</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• Dashboard dengan statistik penjualan</li>
-                  <li>• Point of Sale (POS) - transaksi penjualan</li>
-                  <li>• Cash Shift Management</li>
-                  <li>• Lihat Pesanan (sesuai permission)</li>
-                  <li>• Lihat Produk (sesuai permission)</li>
-                  <li>• Lihat Pelanggan (sesuai permission)</li>
-                  <li>• Lihat Laporan (sesuai permission)</li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold text-red-800 mb-3">Dapur</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• Kitchen Orders - manajemen pesanan dapur</li>
-                  <li>• Update status pesanan (preparing, ready, completed)</li>
-                  <li>• Lihat detail pesanan</li>
+              <div class="border-t border-dashed border-slate-100 dark:border-slate-700 pt-4">
+                <h3 class="font-bold text-green-700 mb-3 bg-green-50 px-3 py-1 rounded-lg w-fit text-sm">Admin Tenant</h3>
+                 <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-[#4c739a]">
+                  <li class="flex items-start gap-2"><span class="text-green-500">•</span> Dashboard Toko</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">•</span> Manajemen Produk & Stok</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">•</span> POS & Transaksi</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">•</span> Laporan Penjualan</li>
+                   <li class="flex items-start gap-2"><span class="text-green-500">•</span> Manajemen User & Role</li>
                 </ul>
               </div>
             </div>
@@ -208,151 +141,51 @@
         </div>
 
         <!-- Subscription Plans -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
           <button
             @click="toggleAccordion('plans')"
-            class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
+             class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
-            <span class="font-semibold text-gray-900">Paket Subscription</span>
-            <svg
-              class="w-5 h-5 transition-transform duration-200"
-              :class="{ 'rotate-180': openAccordion === 'plans' }"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <div class="flex items-center gap-3">
+               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">card_membership</span>
+               <span class="font-bold text-[#0d141b] dark:text-white">Paket Subscription</span>
+            </div>
+            <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'plans' }">expand_more</span>
           </button>
-          <div v-show="openAccordion === 'plans'" class="px-6 py-4 border-t border-gray-200">
-            <div class="space-y-6">
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">BASIC (Starter)</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• <strong>Produk:</strong> 30 produk</li>
-                  <li>• <strong>User:</strong> 4 user (1 admin + 2 kasir + 1 kitchen)</li>
-                  <li>• <strong>Outlet:</strong> 1 outlet</li>
-                  <li>• <strong>Akses:</strong> Kasir, Laporan</li>
-                  <li>• <strong>Addon Included:</strong> Receipt Basic</li>
-                </ul>
+          <div v-show="openAccordion === 'plans'" class="px-6 py-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="border border-slate-100 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition-shadow">
+                <h3 class="font-bold text-slate-800 dark:text-white mb-2">BASIC (Starter)</h3>
+                <div class="text-xs text-[#4c739a] space-y-2">
+                   <p><strong>30</strong> Produk</p>
+                   <p><strong>4</strong> User</p>
+                   <p><strong>1</strong> Outlet</p>
+                   <p class="text-green-600 font-medium">+ Receipt Basic</p>
+                </div>
               </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">PRO (Boost)</h3>
-                <ul class="space-y-2 text-sm text-gray-600">
-                  <li>• <strong>Produk:</strong> 200 produk</li>
-                  <li>• <strong>User:</strong> 10 user (1 admin + 1 supervisor + 6 kasir + 2 kitchen)</li>
-                  <li>• <strong>Outlet:</strong> 2 outlet</li>
-                  <li>• <strong>Akses:</strong> Kasir, Laporan, Manajemen Stok, Addon Management</li>
-                  <li>• <strong>Addon Included:</strong> Receipt Advanced, Multi-Outlet</li>
-                </ul>
+              <div class="border-2 border-[#137fec] rounded-xl p-5 shadow-lg shadow-[#137fec]/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-[#137fec] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>
+                <h3 class="font-bold text-[#137fec] mb-2">PRO (Boost)</h3>
+                <div class="text-xs text-slate-600 dark:text-slate-300 space-y-2">
+                   <p><strong>200</strong> Produk</p>
+                   <p><strong>10</strong> User</p>
+                   <p><strong>2</strong> Outlet</p>
+                   <p class="text-[#137fec] font-medium">+ Multi-Outlet & Stock</p>
+                </div>
               </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">ENTERPRISE (Pro)</h3>
-                <ul class="space-y-2 text-gray-600">
-                  <li>• <strong>Produk:</strong> 1000 produk</li>
-                  <li>• <strong>User:</strong> 20 user</li>
-                  <li>• <strong>Outlet:</strong> 3 outlet</li>
-                  <li>• <strong>Akses:</strong> Semua fitur</li>
-                  <li>• <strong>Addon Included:</strong> Receipt Advanced, Multi-Outlet</li>
-                </ul>
+              <div class="border border-slate-100 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition-shadow bg-purple-50 dark:bg-purple-900/10">
+                <h3 class="font-bold text-purple-700 dark:text-purple-300 mb-2">ENTERPRISE</h3>
+                <div class="text-xs text-slate-600 dark:text-slate-300 space-y-2">
+                   <p><strong>1000</strong> Produk</p>
+                   <p><strong>20</strong> User</p>
+                   <p><strong>3</strong> Outlet</p>
+                   <p class="text-purple-600 font-medium">+ All Features</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Addons -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden">
-          <button
-            @click="toggleAccordion('addons')"
-            class="w-full px-6 py-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between"
-          >
-            <span class="font-semibold text-gray-900">Addons yang Tersedia</span>
-            <svg
-              class="w-5 h-5 transition-transform duration-200"
-              :class="{ 'rotate-180': openAccordion === 'addons' }"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <div v-show="openAccordion === 'addons'" class="px-6 py-4 border-t border-gray-200">
-            <div class="space-y-6">
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">Addon dengan Limit (Unlimited Purchase)</h3>
-                <ul class="space-y-3 text-sm text-gray-600">
-                  <li>
-                    <strong>Tambah Outlet</strong> - Rp 120.000<br>
-                    Tambahkan 1 outlet/cabang baru. Dapat dibeli berulang kali.
-                  </li>
-                  <li>
-                    <strong>Tambah Pengguna</strong> - Rp 50.000<br>
-                    Tambahkan 5 pengguna baru. Dapat dibeli berulang kali.
-                  </li>
-                  <li>
-                    <strong>Tambah Produk</strong> - Rp 30.000<br>
-                    Tambahkan 100 produk baru. Dapat dibeli berulang kali.
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">Addon Feature (Limited Purchase)</h3>
-                <ul class="space-y-3 text-sm text-gray-600">
-                  <li>
-                    <strong>Business Analytics & Insight</strong> - Rp 250.000<br>
-                    Laporan Laba Rugi, Prediksi Penjualan, Advanced Analytics, Financial Management
-                  </li>
-                  <li>
-                    <strong>Export Laporan</strong> - Rp 75.000<br>
-                    Export laporan ke Excel, PDF, CSV dengan tanda tangan digital
-                  </li>
-                  <li>
-                    <strong>Simple Nota Editor</strong> - Rp 50.000<br>
-                    Kustomisasi tampilan nota dengan logo dan pesan custom
-                  </li>
-                  <li>
-                    <strong>Delivery & Marketing</strong> - Rp 150.000<br>
-                    Manajemen pesanan delivery, kampanye email, SMS marketing, customer engagement
-                  </li>
-                  <li>
-                    <strong>Restock Suggestion</strong> - Rp 50.000<br>
-                    Saran restock otomatis berdasarkan pola penjualan
-                  </li>
-                  <li>
-                    <strong>Transfer Stok Antar Store</strong> - Rp 80.000<br>
-                    Transfer stok antar store dengan validasi otomatis
-                  </li>
-                  <li>
-                    <strong>Supervisor Role</strong> - Rp 60.000<br>
-                    Role khusus supervisor cabang dengan akses terbatas
-                  </li>
-                  <li>
-                    <strong>Price Recommendation Plus</strong> - Rp 40.000<br>
-                    Rekomendasi harga dengan margin custom
-                  </li>
-                  <li>
-                    <strong>Import Massal</strong> - Rp 100.000<br>
-                    Import massal produk, stok, dan pelanggan dari Excel/CSV
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 class="font-semibold text-gray-800 mb-3">Addon API (Coming Soon)</h3>
-                <ul class="space-y-3 text-sm text-gray-600">
-                  <li>
-                    <strong>Integrasi E-commerce</strong> - Rp 200.000<br>
-                    Integrasi dengan Shopee, Tokopedia, Bukalapak (Coming Soon)
-                  </li>
-                  <li>
-                    <strong>Integrasi Payment & Accounting</strong> - Rp 250.000<br>
-                    Integrasi payment gateway (OVO, DANA, LinkAja) dan software akuntansi (Coming Soon)
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

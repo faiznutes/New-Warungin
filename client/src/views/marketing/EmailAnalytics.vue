@@ -1,26 +1,26 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Email Analytics</h2>
-        <p class="text-gray-600">Analisis performa email campaign</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Email Analytics</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Analyze email campaign performance</p>
       </div>
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center gap-4 p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
         <input
           v-model="dateRange.start"
           type="date"
-          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
         />
-        <span class="text-gray-600">to</span>
+        <span class="text-slate-500 text-xs font-medium px-1">to</span>
         <input
           v-model="dateRange.end"
           type="date"
-          class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
         />
         <button
           @click="loadAnalytics"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white transition"
         >
           Filter
         </button>
@@ -29,23 +29,21 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Overall Stats -->
     <div v-else class="space-y-6">
       <!-- Overall Analytics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-l-4 border-blue-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Sent</p>
-              <p class="text-3xl font-bold text-gray-900">{{ overallAnalytics.sent || 0 }}</p>
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Sent</p>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ overallAnalytics.sent || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-blue-600">mail</span>
             </div>
           </div>
         </div>
@@ -142,16 +140,18 @@
           </div>
         </div>
 
-        <div v-else class="text-center py-12 text-gray-500">
-          <p>Pilih campaign untuk melihat detail analytics</p>
+        <div v-else class="text-center py-12 text-slate-500">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">analytics</span>
+          <p>Select a campaign to view detailed analytics</p>
         </div>
       </div>
 
       <!-- Event Timeline -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Events</h3>
-        <div v-if="recentEvents.length === 0" class="text-center py-12 text-gray-500">
-          <p>Belum ada events</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Recent Events</h3>
+        <div v-if="recentEvents.length === 0" class="text-center py-12">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">event_note</span>
+          <p class="text-slate-500">No events yet</p>
         </div>
         <div v-else class="space-y-4">
           <div

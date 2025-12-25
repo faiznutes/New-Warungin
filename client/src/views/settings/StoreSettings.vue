@@ -1,121 +1,139 @@
 <template>
-  <div class="flex flex-col h-full">
-
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Pengaturan Toko</h2>
-      <p class="text-gray-600">Kelola informasi dan pengaturan toko Anda</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col">
+      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Store Settings</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your store information and settings.</p>
     </div>
 
-    <div class="space-y-6">
-      <!-- Store Information -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Informasi Toko</h3>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Toko</label>
-            <input
-              v-model="storeInfo.name"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-            <textarea
-              v-model="storeInfo.address"
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
-            <input
-              v-model="storeInfo.phone"
-              type="tel"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input
-              v-model="storeInfo.email"
-              type="email"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-            />
-          </div>
+    <!-- Store Information Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 bg-primary/10 text-primary rounded-lg">
+          <span class="material-symbols-outlined">store</span>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Store Information</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Store Name</label>
+          <input
+            v-model="storeInfo.name"
+            type="text"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone</label>
+          <input
+            v-model="storeInfo.phone"
+            type="tel"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+          <input
+            v-model="storeInfo.email"
+            type="email"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Address</label>
+          <textarea
+            v-model="storeInfo.address"
+            rows="3"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          ></textarea>
         </div>
       </div>
+    </div>
 
-      <!-- Feature Toggles -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Fitur Tambahan</h3>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+    <!-- Feature Toggles Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+          <span class="material-symbols-outlined">toggle_on</span>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Additional Features</h3>
+      </div>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-slate-400">touch_app</span>
             <div>
-              <label class="text-sm font-medium text-gray-700">Mode Kasir Sederhana</label>
-              <p class="text-xs text-gray-500">Aktifkan mode kasir dengan tombol besar dan UI sederhana</p>
+              <label class="text-sm font-medium text-slate-900 dark:text-white">Simple POS Mode</label>
+              <p class="text-xs text-slate-500">Enable simplified cashier mode with large buttons</p>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input
-                v-model="features.simplePosMode"
-                type="checkbox"
-                class="sr-only peer"
-                @change="updateFeatures"
-              />
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-            </label>
           </div>
-          <div class="flex items-center justify-between">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input
+              v-model="features.simplePosMode"
+              type="checkbox"
+              class="sr-only peer"
+              @change="updateFeatures"
+            />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-slate-400">mail</span>
             <div>
-              <label class="text-sm font-medium text-gray-700">Email Backup Harian</label>
-              <p class="text-xs text-gray-500">Kirim laporan harian otomatis ke email setiap hari</p>
+              <label class="text-sm font-medium text-slate-900 dark:text-white">Daily Email Backup</label>
+              <p class="text-xs text-slate-500">Send daily reports automatically via email</p>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input
-                v-model="features.email_backup_enabled"
-                type="checkbox"
-                class="sr-only peer"
-                @change="updateFeatures"
-              />
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-            </label>
           </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input
+              v-model="features.email_backup_enabled"
+              type="checkbox"
+              class="sr-only peer"
+              @change="updateFeatures"
+            />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
         </div>
       </div>
+    </div>
 
-      <!-- Receipt Template Management -->
-      <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+    <!-- Receipt Template Management Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </div>
           <div>
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Template Struk</h3>
-            <p class="text-sm text-gray-600">Kelola template struk untuk berbagai ukuran kertas</p>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Receipt Templates</h3>
+            <p class="text-sm text-slate-500">Manage receipt templates for different paper sizes</p>
           </div>
-          <button
-            @click="showTemplateManager = true"
-            class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
-          >
-            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            <span>Kelola Template</span>
-          </button>
         </div>
-        <div class="text-sm text-gray-600">
-          <p>• Pilih template untuk A4, Thermal 58mm, atau Thermal 80mm</p>
-          <p>• Sesuaikan header, footer, dan field yang ditampilkan</p>
-          <p>• Support print via Browser, Thermal, dan Bluetooth</p>
-        </div>
-      </div>
-
-      <!-- Save Button -->
-      <div class="flex justify-end">
         <button
-          @click="saveSettings"
-          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          @click="showTemplateManager = true"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
-          Simpan Pengaturan
+          <span class="material-symbols-outlined text-[20px]">settings</span>
+          <span>Manage Templates</span>
         </button>
       </div>
+      <div class="text-sm text-slate-500 space-y-1 pl-11">
+        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Templates for A4, Thermal 58mm, or Thermal 80mm</p>
+        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Customize header, footer, and displayed fields</p>
+        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Support for Browser, Thermal, and Bluetooth printing</p>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex justify-end">
+      <button
+        @click="saveSettings"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
+      >
+        <span class="material-symbols-outlined text-[20px]">save</span>
+        Save Settings
+      </button>
     </div>
 
     <!-- Receipt Template Manager -->
@@ -183,7 +201,7 @@ const loadSettings = async () => {
     }
     console.error('Error loading settings:', error);
     if (authStore.isAuthenticated && error.response?.status !== 404) {
-      await showError('Gagal memuat pengaturan toko');
+      await showError('Failed to load store settings');
     }
   }
 };
@@ -195,13 +213,13 @@ const updateFeatures = async () => {
     await api.put('/tenant/profile', {
       features: features.value,
     });
-    await showSuccess('Fitur berhasil diperbarui');
+    await showSuccess('Features updated successfully');
   } catch (error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
     console.error('Error updating features:', error);
-    const errorMessage = error.response?.data?.message || 'Gagal memperbarui fitur';
+    const errorMessage = error.response?.data?.message || 'Failed to update features';
     await showError(errorMessage);
     // Revert on error
     await loadSettings();
@@ -218,7 +236,7 @@ const saveSettings = async () => {
       receiptFooter: receiptSettings.value.footer,
       features: features.value,
     });
-    await showSuccess('Pengaturan berhasil disimpan');
+    await showSuccess('Settings saved successfully');
     // Reload settings to get updated data
     await loadSettings();
   } catch (error: any) {
@@ -227,7 +245,7 @@ const saveSettings = async () => {
       return;
     }
     console.error('Error saving settings:', error);
-    const errorMessage = error.response?.data?.message || 'Gagal menyimpan pengaturan';
+    const errorMessage = error.response?.data?.message || 'Failed to save settings';
     await showError(errorMessage);
   }
 };
@@ -237,4 +255,3 @@ onMounted(() => {
   loadSettings();
 });
 </script>
-

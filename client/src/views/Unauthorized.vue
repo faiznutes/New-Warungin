@@ -1,36 +1,48 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-[#f6f7f8] px-4">
     <div class="text-center max-w-2xl">
+      <!-- Icon -->
       <div class="mb-6">
-        <svg class="w-24 h-24 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+        <div class="w-24 h-24 mx-auto bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-red-500 text-[48px]">block</span>
+        </div>
       </div>
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">Akses Ditolak</h1>
+
+      <h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-4">Access Denied</h1>
+
+      <!-- Addon Required -->
       <div v-if="reason === 'addon'" class="mb-8">
-        <p class="text-lg text-gray-700 mb-4">
-          Fitur ini memerlukan addon <strong>{{ getAddonName(addonType) }}</strong> yang aktif.
-        </p>
-        <p class="text-gray-600 mb-6">
-          Silakan berlangganan addon terlebih dahulu untuk mengakses fitur ini.
-        </p>
-        <router-link
-          to="/app/addons"
-          class="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-        >
-          Lihat Addon Tersedia
-        </router-link>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
+          <p class="text-lg text-slate-700 dark:text-slate-300 mb-4">
+            This feature requires the <strong class="text-primary">{{ getAddonName(addonType) }}</strong> add-on to be active.
+          </p>
+          <p class="text-slate-500 mb-6">
+            Please subscribe to the add-on first to access this feature.
+          </p>
+          <router-link
+            to="/app/addons"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+          >
+            <span class="material-symbols-outlined text-[20px]">extension</span>
+            View Available Add-ons
+          </router-link>
+        </div>
       </div>
+
+      <!-- General Access Denied -->
       <div v-else class="mb-8">
-        <p class="text-lg text-gray-600 mb-8">
-          {{ route.query.message || 'Anda tidak memiliki izin untuk mengakses halaman ini.' }}
-        </p>
-        <router-link
-          to="/app"
-          class="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-        >
-          Kembali ke Dashboard
-        </router-link>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
+          <p class="text-lg text-slate-600 dark:text-slate-400 mb-6">
+            {{ route.query.message || 'You do not have permission to access this page.' }}
+          </p>
+          <router-link
+            to="/app"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+          >
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            Back to Dashboard
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -48,16 +60,15 @@ const addonType = computed(() => route.query.addon as string);
 const getAddonName = (type: string | undefined) => {
   const addonNames: Record<string, string> = {
     'BUSINESS_ANALYTICS': 'Business Analytics & Insight',
-    'EXPORT_REPORTS': 'Export Laporan',
+    'EXPORT_REPORTS': 'Export Reports',
     'RESTOCK_SUGGESTION': 'Restock Suggestion',
-    'STOCK_TRANSFER': 'Transfer Stok Antar Store',
+    'STOCK_TRANSFER': 'Stock Transfer Between Stores',
     'SUPERVISOR_ROLE': 'Supervisor Role',
     'PRICE_RECOMMENDATION_PLUS': 'Price Recommendation Plus',
-    'BULK_IMPORT': 'Import Massal',
-    'RECEIPT_EDITOR': 'Simple Nota Editor',
+    'BULK_IMPORT': 'Bulk Import',
+    'RECEIPT_EDITOR': 'Simple Receipt Editor',
     'DELIVERY_MARKETING': 'Delivery & Marketing',
   };
-  return addonNames[type || ''] || type || 'Addon';
+  return addonNames[type || ''] || type || 'Add-on';
 };
 </script>
-

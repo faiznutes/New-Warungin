@@ -1,184 +1,240 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Accounting & Finance</h2>
-        <p class="text-gray-600">Laporan keuangan lengkap: Neraca, Cash Flow</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Accounting & Finance</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Complete financial reports: Balance Sheet, Cash Flow and analysis.</p>
       </div>
-      <div class="flex space-x-2">
+      <div class="flex items-center gap-3">
         <button
           @click="showPeriodModal = true"
-          class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+          class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary text-slate-600 dark:text-slate-400 rounded-lg text-sm font-medium transition-all bg-white dark:bg-slate-800"
         >
-          Pilih Periode
+          <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+          <span>Select Period</span>
         </button>
         <button
           @click="exportFinancialReport"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
         >
-          Export Laporan
+          <span class="material-symbols-outlined text-[20px]">file_download</span>
+          <span>Export Report</span>
         </button>
       </div>
     </div>
 
     <!-- Financial Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Total Revenue</span>
-          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Revenue -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Revenue</p>
+             <p class="text-[10px] text-slate-400">Total income</p>
+          </div>
+          <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">payments</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(financialSummary.revenue) }}</div>
-        <div class="text-sm text-green-600 mt-1">+{{ financialSummary.revenueGrowth }}% vs bulan lalu</div>
+        <div class="flex flex-col gap-1">
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(financialSummary.revenue) }}</h3>
+          <div class="flex items-center gap-1">
+             <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded flex items-center">
+               <span class="material-symbols-outlined text-[10px]">arrow_upward</span>
+               {{ financialSummary.revenueGrowth }}%
+             </span>
+             <span class="text-[10px] text-slate-400">vs last month</span>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Total Expenses</span>
-          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
+      <!-- Total Expenses -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Expenses</p>
+             <p class="text-[10px] text-slate-400">Operating costs</p>
+          </div>
+          <div class="bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(financialSummary.expenses) }}</div>
-        <div class="text-sm text-gray-500 mt-1">Biaya operasional</div>
+        <div class="flex flex-col gap-1">
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(financialSummary.expenses) }}</h3>
+          <div class="h-4"></div> <!-- Spacer to align with growth indicator -->
+        </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Net Profit</span>
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
+      <!-- Net Profit -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Profit</p>
+             <p class="text-[10px] text-slate-400">Net income</p>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold" :class="financialSummary.profit >= 0 ? 'text-green-600' : 'text-red-600'">
-          {{ formatCurrency(financialSummary.profit) }}
+        <div class="flex flex-col gap-1">
+          <h3 class="text-2xl font-bold" :class="financialSummary.profit >= 0 ? 'text-slate-900 dark:text-white' : 'text-red-600'">{{ formatCurrency(financialSummary.profit) }}</h3>
+          <div class="h-4"></div>
         </div>
-        <div class="text-sm text-gray-500 mt-1">Laba bersih</div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Profit Margin</span>
-          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
+      <!-- Profit Margin -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Profit Margin</p>
+             <p class="text-[10px] text-slate-400">Margin percentage</p>
+          </div>
+          <div class="bg-purple-50 dark:bg-purple-900/30 p-2 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">pie_chart</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ financialSummary.profitMargin }}%</div>
-        <div class="text-sm text-gray-500 mt-1">Margin keuntungan</div>
+        <div class="flex flex-col gap-1">
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ financialSummary.profitMargin }}%</h3>
+          <div class="h-4"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Financial Reports Tabs -->
-    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <div class="flex space-x-4 border-b border-gray-200 mb-6">
+    <!-- Financial Reports Tabs & Content -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden flex-1 flex flex-col">
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-100 dark:border-slate-700 px-6 pt-4 gap-6">
         <button
           @click="activeTab = 'balance-sheet'"
-          class="px-4 py-2 font-semibold border-b-2 transition"
-          :class="activeTab === 'balance-sheet' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
+          :class="activeTab === 'balance-sheet' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
-          Neraca
+          Balance Sheet
         </button>
         <button
           @click="activeTab = 'cash-flow'"
-          class="px-4 py-2 font-semibold border-b-2 transition"
-          :class="activeTab === 'cash-flow' ? 'border-yellow-600 text-yellow-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
+          class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
+          :class="activeTab === 'cash-flow' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900'"
         >
           Cash Flow
         </button>
       </div>
 
-      <!-- Balance Sheet -->
-      <div v-if="activeTab === 'balance-sheet'" class="space-y-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Aktiva</h4>
-            <div class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Kas</span>
-                <span class="font-semibold">{{ formatCurrency(balanceSheet.cash) }}</span>
+      <!-- Content Container -->
+      <div class="p-6 flex-1 overflow-y-auto">
+        <!-- Balance Sheet -->
+        <div v-if="activeTab === 'balance-sheet'" class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+          <!-- Assets -->
+          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
+            <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-4 flex items-center gap-2">
+               <span class="material-symbols-outlined text-emerald-500">account_balance</span>
+               Assets
+            </h4>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
+                <span class="text-slate-500 dark:text-slate-400">Cash & Bank</span>
+                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.cash) }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Piutang</span>
-                <span class="font-semibold">{{ formatCurrency(balanceSheet.receivables) }}</span>
+              <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
+                <span class="text-slate-500 dark:text-slate-400">Accounts Receivable</span>
+                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.receivables) }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Persediaan</span>
-                <span class="font-semibold">{{ formatCurrency(balanceSheet.inventory) }}</span>
+              <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
+                <span class="text-slate-500 dark:text-slate-400">Inventory</span>
+                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.inventory) }}</span>
               </div>
-              <div class="border-t pt-2 flex justify-between font-semibold">
-                <span>Total Aktiva</span>
-                <span>{{ formatCurrency(balanceSheet.totalAssets) }}</span>
+              <div class="flex justify-between items-center pt-3 mt-2">
+                <span class="font-bold text-slate-900 dark:text-white">Total Assets</span>
+                <span class="font-bold text-primary text-lg">{{ formatCurrency(balanceSheet.totalAssets) }}</span>
               </div>
             </div>
           </div>
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-3">Pasiva</h4>
-            <div class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Hutang</span>
-                <span class="font-semibold">{{ formatCurrency(balanceSheet.liabilities) }}</span>
+          
+          <!-- Pasiva -->
+          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
+            <h4 class="font-bold text-[#0d141b] dark:text-white text-lg mb-4 flex items-center gap-2">
+               <span class="material-symbols-outlined text-orange-500">account_balance_wallet</span>
+               Pasiva (Liabilities & Equity)
+            </h4>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
+                <span class="text-[#4c739a] dark:text-slate-400">Hutang Usaha</span>
+                <span class="font-semibold text-[#0d141b] dark:text-white">{{ formatCurrency(balanceSheet.liabilities) }}</span>
               </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Modal</span>
-                <span class="font-semibold">{{ formatCurrency(balanceSheet.equity) }}</span>
+              <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
+                <span class="text-[#4c739a] dark:text-slate-400">Modal (Equity)</span>
+                <span class="font-semibold text-[#0d141b] dark:text-white">{{ formatCurrency(balanceSheet.equity) }}</span>
               </div>
-              <div class="border-t pt-2 flex justify-between font-semibold">
-                <span>Total Pasiva</span>
-                <span>{{ formatCurrency(balanceSheet.totalLiabilities) }}</span>
+              <div class="flex justify-between items-center pt-3 mt-2">
+                <span class="font-bold text-[#0d141b] dark:text-white">Total Pasiva</span>
+                <span class="font-bold text-[#137fec] text-lg">{{ formatCurrency(balanceSheet.totalLiabilities) }}</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Cash Flow -->
-      <div v-if="activeTab === 'cash-flow'" class="space-y-4">
-        <div class="space-y-3">
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Operasi</h4>
-            <div class="space-y-2 pl-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Penerimaan dari pelanggan</span>
-                <span class="font-semibold text-green-600">{{ formatCurrency(cashFlow.operating.inflow) }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Pembayaran ke supplier</span>
-                <span class="font-semibold text-red-600">-{{ formatCurrency(cashFlow.operating.outflow) }}</span>
-              </div>
-              <div class="border-t pt-2 flex justify-between font-semibold">
-                <span>Net Cash from Operations</span>
-                <span :class="cashFlow.operating.net >= 0 ? 'text-green-600' : 'text-red-600'">
-                  {{ formatCurrency(cashFlow.operating.net) }}
-                </span>
-              </div>
-            </div>
+        <!-- Cash Flow -->
+        <div v-if="activeTab === 'cash-flow'" class="space-y-6 animate-fade-in max-w-4xl mx-auto">
+          <!-- Operasi -->
+          <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+               <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
+                 <span class="material-symbols-outlined text-blue-500">work</span>
+                 Aktivitas Operasi
+               </h4>
+               <span class="font-bold text-[#137fec]">{{ formatCurrency(cashFlow.operating.net) }}</span>
+             </div>
+             <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
+                <div class="flex justify-between items-center text-sm ml-8">
+                  <span class="text-[#4c739a]">Penerimaan dari pelanggan</span>
+                  <span class="font-mono text-emerald-600 font-medium">+{{ formatCurrency(cashFlow.operating.inflow) }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm ml-8">
+                  <span class="text-[#4c739a]">Pembayaran ke supplier & beban</span>
+                  <span class="font-mono text-red-600 font-medium">-{{ formatCurrency(cashFlow.operating.outflow) }}</span>
+                </div>
+             </div>
           </div>
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Investasi</h4>
-            <div class="space-y-2 pl-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Pembelian aset</span>
-                <span class="font-semibold text-red-600">-{{ formatCurrency(cashFlow.investing.outflow) }}</span>
-              </div>
-            </div>
+
+          <!-- Investasi -->
+          <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+               <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
+                 <span class="material-symbols-outlined text-purple-500">trending_up</span>
+                 Aktivitas Investasi
+               </h4>
+               <span class="font-bold" :class="cashFlow.investing.net >= 0 ? 'text-[#137fec]' : 'text-slate-500'">{{ formatCurrency(cashFlow.investing.net) }}</span>
+             </div>
+             <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
+                <div class="flex justify-between items-center text-sm ml-8">
+                  <span class="text-[#4c739a]">Pembelian aset tetap</span>
+                  <span class="font-mono text-red-600 font-medium">-{{ formatCurrency(cashFlow.investing.outflow) }}</span>
+                </div>
+             </div>
           </div>
-          <div>
-            <h4 class="font-semibold text-gray-900 mb-2">Aktivitas Pendanaan</h4>
-            <div class="space-y-2 pl-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Modal tambahan</span>
-                <span class="font-semibold text-green-600">{{ formatCurrency(cashFlow.financing.inflow) }}</span>
-              </div>
-            </div>
+
+          <!-- Pendanaan -->
+          <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+               <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
+                 <span class="material-symbols-outlined text-orange-500">attach_money</span>
+                 Aktivitas Pendanaan
+               </h4>
+               <span class="font-bold text-[#137fec]">{{ formatCurrency(cashFlow.financing.net) }}</span>
+             </div>
+             <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
+               <div class="flex justify-between items-center text-sm ml-8">
+                  <span class="text-[#4c739a]">Penerimaan modal / pinjaman</span>
+                  <span class="font-mono text-emerald-600 font-medium">+{{ formatCurrency(cashFlow.financing.inflow) }}</span>
+                </div>
+             </div>
           </div>
-          <div class="border-t-2 pt-4 flex justify-between text-lg font-bold">
-            <span>Net Cash Flow</span>
-            <span :class="cashFlow.total >= 0 ? 'text-green-600' : 'text-red-600'">
-              {{ formatCurrency(cashFlow.total) }}
-            </span>
+
+          <!-- Total -->
+          <div class="bg-[#137fec]/10 border border-[#137fec]/20 rounded-xl p-5 flex justify-between items-center">
+             <span class="font-bold text-[#0d141b] dark:text-white text-lg">Net Cash Flow</span>
+             <span class="font-bold text-2xl" :class="cashFlow.total >= 0 ? 'text-[#137fec]' : 'text-red-500'">{{ formatCurrency(cashFlow.total) }}</span>
           </div>
         </div>
       </div>
@@ -188,40 +244,47 @@
     <Teleport to="body">
       <div
         v-if="showPeriodModal"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
         @click.self="showPeriodModal = false"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Pilih Periode Laporan</h3>
-          <div class="space-y-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full overflow-hidden flex flex-col">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Pilih Periode</h3>
+            <button @click="showPeriodModal = false" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          <div class="p-6 space-y-5">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+              <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Dari Tanggal</label>
               <input
                 v-model="periodForm.startDate"
                 type="date"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+              <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Sampai Tanggal</label>
               <input
                 v-model="periodForm.endDate"
                 type="date"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
               />
             </div>
-            <div class="flex space-x-3">
+            
+            <div class="flex gap-3 pt-2">
               <button
                 @click="showPeriodModal = false"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
               >
                 Batal
               </button>
               <button
                 @click="loadFinancialData"
-                class="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+                class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
               >
-                Load Data
+                Terapkan
               </button>
             </div>
           </div>

@@ -10,9 +10,9 @@
           @change="loadInsight"
           class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white"
         >
-          <option value="daily">Hari</option>
-          <option value="weekly">Minggu</option>
-          <option value="monthly">Bulan</option>
+          <option value="daily">Day</option>
+          <option value="weekly">Week</option>
+          <option value="monthly">Month</option>
         </select>
         <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@
       <!-- Today's Summary -->
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-          <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Transaksi</p>
+          <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Transactions</p>
           <p class="text-2xl font-bold text-gray-900">{{ insight.today.transactions }}</p>
           <div class="flex items-center mt-2">
             <span 
@@ -66,7 +66,7 @@
         </div>
 
         <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
-          <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Pendapatan</p>
+          <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Revenue</p>
           <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(insight.today.revenue) }}</p>
           <div class="flex items-center mt-2">
             <span 
@@ -100,9 +100,9 @@
 
       <!-- Top Products -->
       <div class="border-t pt-4">
-        <p class="text-sm font-semibold text-gray-700 mb-3">Produk Terlaris {{ periodLabel }}</p>
+        <p class="text-sm font-semibold text-gray-700 mb-3">Top Products {{ periodLabel }}</p>
         <div v-if="insight.today.topProducts.length === 0" class="text-center py-4 text-gray-500 text-sm">
-          Belum ada produk terjual {{ periodLabel.toLowerCase() }}
+          No products sold {{ periodLabel.toLowerCase() }}
         </div>
         <div v-else class="space-y-2">
           <div 
@@ -169,19 +169,19 @@ const selectedPeriod = ref<'daily' | 'weekly' | 'monthly'>(getDefaultPeriod());
 
 const periodLabel = computed(() => {
   switch (selectedPeriod.value) {
-    case 'daily': return 'Hari Ini';
-    case 'weekly': return 'Minggu Ini';
-    case 'monthly': return 'Bulan Ini';
-    default: return 'Hari Ini';
+    case 'daily': return 'Today';
+    case 'weekly': return 'This Week';
+    case 'monthly': return 'This Month';
+    default: return 'Today';
   }
 });
 
 const previousPeriodLabel = computed(() => {
   switch (selectedPeriod.value) {
-    case 'daily': return 'kemarin';
-    case 'weekly': return 'minggu lalu';
-    case 'monthly': return 'bulan lalu';
-    default: return 'kemarin';
+    case 'daily': return 'yesterday';
+    case 'weekly': return 'last week';
+    case 'monthly': return 'last month';
+    default: return 'yesterday';
   }
 });
 
@@ -207,7 +207,7 @@ const loadInsight = async () => {
       error.value = null;
       insight.value = null;
     } else {
-      error.value = err.response?.data?.message || 'Gagal memuat Quick Insight';
+      error.value = err.response?.data?.message || 'Failed to load Quick Insight';
     }
   } finally {
     loading.value = false;

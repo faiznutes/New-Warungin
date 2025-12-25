@@ -1,30 +1,28 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Email Templates</h2>
-        <p class="text-gray-600">Kelola template email untuk campaign</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Email Templates</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage email templates for campaigns</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Tambah Template</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Template</span>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="mb-4 flex items-center space-x-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
       <select
         v-model="selectedCategory"
         @change="loadTemplates"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
       >
-        <option value="">Semua Kategori</option>
+        <option value="">All Categories</option>
         <option value="PROMOTION">Promotion</option>
         <option value="NOTIFICATION">Notification</option>
         <option value="TRANSACTIONAL">Transactional</option>
@@ -33,15 +31,21 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="templates.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-      <p class="text-gray-500">Belum ada template</p>
+    <div v-else-if="templates.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">mail</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Templates Yet</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Create your first email template to start campaigns.</p>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Add First Template
+      </button>
     </div>
 
     <!-- Templates Grid -->
@@ -49,8 +53,8 @@
       <div
         v-for="template in templates"
         :key="template.id"
-        class="bg-white rounded-lg shadow-lg p-6 border-2"
-        :class="template.isActive ? 'border-green-500' : 'border-gray-200 opacity-60'"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
+        :class="template.isActive ? 'border-emerald-300 dark:border-emerald-800' : 'border-slate-100 dark:border-slate-700 opacity-60'"
       >
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1">

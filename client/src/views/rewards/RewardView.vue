@@ -1,57 +1,62 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
+  <div class="min-h-screen bg-[#f6f7f8] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card max-w-2xl w-full p-8 border border-slate-100 dark:border-slate-700/50">
       <!-- Header -->
       <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Tonton Iklan untuk Mendapat Point</h1>
-        <p class="text-gray-600">Tonton iklan hingga selesai untuk mendapatkan point</p>
+        <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined text-amber-600 text-[32px]">play_circle</span>
+        </div>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Watch Ad to Earn Points</h1>
+        <p class="text-slate-500 dark:text-slate-400">Watch the ad to completion to earn your points.</p>
       </div>
 
       <!-- Loading State (Initializing) -->
       <div v-if="initializing" class="text-center py-12">
-        <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-600">Memuat iklan...</p>
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-slate-500">Loading ad...</p>
       </div>
 
       <!-- Ad Container -->
       <div v-else-if="!adShown && !completed" class="mb-6">
-        <div class="bg-gray-50 rounded-lg p-6 min-h-[300px] flex flex-col items-center justify-center">
+        <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 min-h-[300px] flex flex-col items-center justify-center">
           <div v-if="!isAdAvailable" class="text-center">
-            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <p class="text-gray-600 mb-4" v-if="!ironSourceError">Iklan sedang dimuat...</p>
+            <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">videocam</span>
+            <p class="text-slate-600 dark:text-slate-400 mb-4" v-if="!ironSourceError">Loading ad...</p>
             <p class="text-red-600 mb-4 font-semibold" v-else>{{ ironSourceError }}</p>
-            <div v-if="ironSourceError" class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-              <p class="font-semibold mb-1">Tips:</p>
+            <div v-if="ironSourceError" class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
+              <p class="font-bold mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+                Tips:
+              </p>
               <ul class="list-disc list-inside text-left space-y-1">
-                <li v-if="trackingPreventionBlocked">Nonaktifkan Tracking Prevention di pengaturan browser (Edge: Settings → Privacy → Tracking Prevention → Balanced/Off)</li>
-                <li>Nonaktifkan ad blocker untuk halaman ini</li>
-                <li>Refresh halaman setelah mengubah pengaturan</li>
-                <li>Pastikan koneksi internet stabil</li>
+                <li v-if="trackingPreventionBlocked">Disable Tracking Prevention in browser settings (Edge: Settings → Privacy → Tracking Prevention → Balanced/Off)</li>
+                <li>Disable ad blocker for this page</li>
+                <li>Refresh page after changing settings</li>
+                <li>Ensure stable internet connection</li>
               </ul>
             </div>
             <button
               @click="checkAdAvailability"
               :disabled="ironSourceLoading"
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed flex items-center gap-2 mx-auto shadow-lg shadow-primary/30"
             >
-              {{ ironSourceLoading ? 'Memeriksa...' : 'Cek Ketersediaan Iklan' }}
+              <span class="material-symbols-outlined text-[20px]" v-if="!ironSourceLoading">refresh</span>
+              <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              {{ ironSourceLoading ? 'Checking...' : 'Check Ad Availability' }}
             </button>
           </div>
 
           <div v-else class="text-center">
-            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p class="text-gray-700 font-semibold mb-4">Iklan siap ditampilkan!</p>
+            <span class="material-symbols-outlined text-[64px] text-green-500 mb-4">play_circle</span>
+            <p class="text-slate-700 dark:text-slate-300 font-semibold mb-4">Ad ready to show!</p>
             <button
               @click="showAd"
               :disabled="loading"
-              class="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition shadow-lg shadow-primary/30 flex items-center gap-2 mx-auto"
             >
-              {{ loading ? 'Memuat...' : 'Tonton Iklan' }}
+              <span class="material-symbols-outlined text-[20px]" v-if="!loading">play_arrow</span>
+              <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              {{ loading ? 'Loading...' : 'Watch Ad' }}
             </button>
           </div>
         </div>
@@ -59,10 +64,10 @@
 
       <!-- Ad Playing Indicator -->
       <div v-if="adShown && !completed" class="mb-6">
-        <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
           <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-blue-800 font-semibold">Iklan sedang diputar...</p>
-          <p class="text-blue-600 text-sm mt-2">Tunggu hingga iklan selesai untuk mendapatkan point</p>
+          <p class="text-blue-800 dark:text-blue-200 font-semibold">Ad is playing...</p>
+          <p class="text-blue-600 dark:text-blue-300 text-sm mt-2">Wait for the ad to finish to earn points</p>
         </div>
       </div>
 
@@ -70,29 +75,33 @@
       <div v-if="statusMessage" class="mb-6">
         <div
           :class="[
-            'rounded-lg p-4 text-center',
-            statusMessage.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' :
-            statusMessage.type === 'error' ? 'bg-red-50 text-red-800 border border-red-200' :
-            'bg-blue-50 text-blue-800 border border-blue-200'
+            'rounded-xl p-4 text-center flex items-center justify-center gap-2',
+            statusMessage.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' :
+            statusMessage.type === 'error' ? 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800' :
+            'bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800'
           ]"
         >
-          <p class="font-semibold">{{ statusMessage.text }}</p>
+          <span class="material-symbols-outlined text-[20px]">
+            {{ statusMessage.type === 'success' ? 'check_circle' : statusMessage.type === 'error' ? 'error' : 'info' }}
+          </span>
+          <p class="font-medium">{{ statusMessage.text }}</p>
         </div>
       </div>
 
       <!-- Loading State (Processing Points) -->
-      <div v-if="loading && !adShown" class="text-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-600">Memproses point Anda...</p>
+      <div v-if="loading && !adShown" class="text-center py-8">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-slate-500">Processing your points...</p>
       </div>
 
       <!-- Back Button -->
       <div v-if="completed" class="text-center">
         <button
           @click="goBack"
-          class="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition"
+          class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-hover transition shadow-lg shadow-primary/30 flex items-center gap-2 mx-auto"
         >
-          Kembali ke Halaman Reward
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+          Back to Rewards Page
         </button>
       </div>
     </div>
@@ -100,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { useIronSource } from '../../composables/useIronSource';
@@ -116,70 +125,59 @@ const loading = ref(false);
 const completed = ref(false);
 const statusMessage = ref<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
-/**
- * Check ad availability
- */
 const checkAdAvailability = async () => {
   try {
     loading.value = true;
     statusMessage.value = {
       type: 'info',
-      text: 'Memeriksa ketersediaan iklan...',
+      text: 'Checking ad availability...',
     };
     
-    // Initialize if not already initialized
     if (!ironSourceLoading.value) {
       await initialize();
     }
     
-    // Force check availability
     const available = await forceCheckAvailability();
     
     if (available) {
       statusMessage.value = {
         type: 'success',
-        text: 'Iklan tersedia! Klik tombol "Tonton Iklan" untuk menonton.',
+        text: 'Ad available! Click "Watch Ad" to watch.',
       };
     } else {
       statusMessage.value = {
         type: 'error',
-        text: 'Iklan belum tersedia saat ini. Silakan coba lagi dalam beberapa saat atau pastikan ad blocker dinonaktifkan.',
+        text: 'No ads available. Try again later or ensure ad blocker is disabled.',
       };
     }
   } catch (error: any) {
     console.error('Error checking ad availability:', error);
     statusMessage.value = {
       type: 'error',
-      text: error.message || 'Gagal memuat iklan. Pastikan ad blocker dinonaktifkan dan coba refresh halaman.',
+      text: error.message || 'Failed to load ad. Disable ad blocker and refresh page.',
     };
   } finally {
     loading.value = false;
   }
 };
 
-/**
- * Show IronSource ad
- */
 const showAd = async () => {
   try {
     loading.value = true;
     adShown.value = true;
     statusMessage.value = {
       type: 'info',
-      text: 'Iklan sedang dimuat...',
+      text: 'Loading ad...',
     };
 
-    // Show ad
     const result = await showIronSourceAd();
 
     if (result.success && result.rewarded) {
-      // Ad completed and user was rewarded
       await awardPoints();
     } else if (result.success) {
-      // Ad closed but not rewarded (user skipped)
       statusMessage.value = {
         type: 'error',
-        text: 'Iklan ditutup sebelum selesai. Point tidak diberikan.',
+        text: 'Ad closed before completion. Points not awarded.',
       };
       adShown.value = false;
       loading.value = false;
@@ -188,21 +186,18 @@ const showAd = async () => {
     console.error('Error showing ad:', error);
     statusMessage.value = {
       type: 'error',
-      text: error.message || 'Gagal menampilkan iklan. Silakan coba lagi.',
+      text: error.message || 'Failed to show ad. Please try again.',
     };
     adShown.value = false;
     loading.value = false;
   }
 };
 
-/**
- * Award points after ad completion
- */
 const awardPoints = async () => {
   loading.value = true;
   statusMessage.value = {
     type: 'info',
-    text: 'Iklan selesai! Memproses point Anda...',
+    text: 'Ad completed! Processing your points...',
   };
 
   try {
@@ -219,20 +214,20 @@ const awardPoints = async () => {
     if (response.data.success) {
       statusMessage.value = {
         type: 'success',
-        text: `Selamat! Anda mendapat ${response.data.pointsEarned} point. Total point Anda sekarang: ${response.data.totalPoints}`,
+        text: `Congratulations! You earned ${response.data.pointsEarned} points. Total points: ${response.data.totalPoints}`,
       };
       completed.value = true;
     } else {
       statusMessage.value = {
         type: 'error',
-        text: response.data.message || 'Gagal mendapatkan point',
+        text: response.data.message || 'Failed to earn points',
       };
     }
   } catch (error: any) {
     console.error('Error awarding points:', error);
     statusMessage.value = {
       type: 'error',
-      text: error.response?.data?.message || 'Terjadi kesalahan saat memproses point',
+      text: error.response?.data?.message || 'Error processing points',
     };
   } finally {
     loading.value = false;
@@ -246,11 +241,9 @@ const goBack = () => {
 
 onMounted(async () => {
   try {
-    // Initialize IronSource
     initializing.value = true;
     await initialize();
     
-    // Check ad availability
     setTimeout(() => {
       checkAdAvailability();
       initializing.value = false;
@@ -259,7 +252,7 @@ onMounted(async () => {
     console.error('Error initializing IronSource:', error);
     statusMessage.value = {
       type: 'error',
-      text: 'Gagal menginisialisasi iklan. Silakan refresh halaman.',
+      text: 'Failed to initialize ad. Please refresh page.',
     };
     initializing.value = false;
   }

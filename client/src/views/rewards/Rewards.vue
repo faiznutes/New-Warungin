@@ -1,133 +1,135 @@
 <template>
-  <div class="flex flex-col h-full p-6">
-    <!-- Header dengan Balance -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Point Gratis</h1>
-      <p class="text-gray-600">Tukarkan point dengan langganan atau addon</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div>
+      <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">Free Points</h1>
+      <p class="text-slate-500 dark:text-slate-400">Redeem points for subscriptions or add-ons.</p>
     </div>
 
     <!-- Balance Card -->
-    <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 mb-6 text-white shadow-lg">
-      <div class="flex items-center justify-between">
+    <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
+      <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16"></div>
+      <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <p class="text-yellow-100 text-sm mb-1">Total Point Anda</p>
-          <p class="text-4xl font-bold">{{ balance.currentPoints || 0 }}</p>
-          <p class="text-yellow-100 text-sm mt-2">
-            Total diperoleh: {{ balance.totalEarned || 0 }} • Digunakan: {{ balance.totalSpent || 0 }}
+          <p class="text-amber-100 text-sm mb-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[18px]">stars</span>
+            Your Total Points
           </p>
-          <p v-if="balance.expirationDays" class="text-yellow-100 text-xs mt-1">
-            ⏰ Point berlaku selama {{ balance.expirationDays }} hari (6 bulan)
+          <p class="text-4xl font-bold">{{ balance.currentPoints || 0 }}</p>
+          <p class="text-amber-100 text-sm mt-2">
+            Total earned: {{ balance.totalEarned || 0 }} • Used: {{ balance.totalSpent || 0 }}
+          </p>
+          <p v-if="balance.expirationDays" class="text-amber-100 text-xs mt-1 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">schedule</span>
+            Points valid for {{ balance.expirationDays }} days (6 months)
           </p>
         </div>
-        <div class="text-right space-y-2">
-          <div class="bg-white/20 rounded-lg px-4 py-2">
-            <p class="text-xs text-yellow-100">Sisa hari ini</p>
+        <div class="flex flex-col gap-3">
+          <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3">
+            <p class="text-xs text-amber-100">Remaining today</p>
             <p class="text-2xl font-bold">{{ dailyLimit.remaining || 0 }}/5</p>
           </div>
-          <div v-if="balance.expiringSoon > 0" class="bg-red-500/80 rounded-lg px-4 py-2">
-            <p class="text-xs text-white">Akan kadaluarsa</p>
+          <div v-if="balance.expiringSoon > 0" class="bg-red-500/80 backdrop-blur-sm rounded-xl px-4 py-3">
+            <p class="text-xs text-white">Expiring soon</p>
             <p class="text-xl font-bold">{{ balance.expiringSoon }} pts</p>
-            <p class="text-xs text-white">(dalam 30 hari)</p>
+            <p class="text-xs text-white">(within 30 days)</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Expiration Warning -->
-    <div v-if="balance.expiringSoon > 0" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-yellow-700">
-            <strong>Peringatan:</strong> Anda memiliki {{ balance.expiringSoon }} point yang akan kadaluarsa dalam 30 hari ke depan. 
-            Gunakan point Anda sebelum kadaluarsa!
-          </p>
-        </div>
+    <div v-if="balance.expiringSoon > 0" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 flex items-start gap-3">
+      <span class="material-symbols-outlined text-yellow-600 text-[24px] flex-shrink-0">warning</span>
+      <div>
+        <p class="text-sm text-yellow-800 dark:text-yellow-200">
+          <strong>Warning:</strong> You have {{ balance.expiringSoon }} points expiring in the next 30 days. Use them before they expire!
+        </p>
       </div>
     </div>
 
     <!-- Tabs -->
-    <div class="mb-6 border-b border-gray-200">
-      <div class="flex space-x-4">
+    <div class="border-b border-slate-200 dark:border-slate-700">
+      <div class="flex gap-6">
         <button
           @click="activeTab = 'earn'"
           :class="[
-            'pb-3 px-1 border-b-2 font-medium transition',
+            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
             activeTab === 'earn'
-              ? 'border-primary-600 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           ]"
         >
-          Dapatkan Point
+          <span class="material-symbols-outlined text-[20px]">add_circle</span>
+          Earn Points
         </button>
         <button
           @click="activeTab = 'redeem'"
           :class="[
-            'pb-3 px-1 border-b-2 font-medium transition',
+            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
             activeTab === 'redeem'
-              ? 'border-primary-600 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           ]"
         >
-          Tukar Point
+          <span class="material-symbols-outlined text-[20px]">redeem</span>
+          Redeem Points
         </button>
         <button
           @click="activeTab = 'history'"
           :class="[
-            'pb-3 px-1 border-b-2 font-medium transition',
+            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
             activeTab === 'history'
-              ? 'border-primary-600 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
           ]"
         >
-          Riwayat
+          <span class="material-symbols-outlined text-[20px]">history</span>
+          History
         </button>
       </div>
     </div>
 
     <!-- Tab: Earn Points -->
     <div v-if="activeTab === 'earn'" class="space-y-6">
-      <!-- Ad View Section -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tonton Iklan untuk Mendapat Point</h2>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 rounded-lg">
+            <span class="material-symbols-outlined">videocam</span>
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Watch Ads to Earn Points</h2>
+        </div>
         
         <div v-if="dailyLimit.remaining > 0" class="space-y-4">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p class="text-sm text-blue-800 mb-2">
-              <strong>Info:</strong> Anda bisa menonton maksimal 5 iklan per hari.
-              Setiap iklan memberikan point secara acak.
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+            <p class="text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">info</span>
+              <strong>Info:</strong> You can watch up to 5 ads per day. Each ad gives random points.
             </p>
           </div>
 
-          <!-- Info: Iklan akan muncul di halaman reward-view -->
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-            <svg class="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <p class="text-blue-800 font-medium mb-1">Klik tombol "Claim Reward" untuk menonton iklan</p>
-            <p class="text-sm text-blue-600">Iklan IronSource akan muncul di halaman khusus</p>
+          <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 text-center">
+            <span class="material-symbols-outlined text-[48px] text-primary mb-3">play_circle</span>
+            <p class="text-slate-900 dark:text-white font-medium mb-1">Click "Claim Reward" to watch an ad</p>
+            <p class="text-sm text-slate-500">IronSource ad will appear on a dedicated page</p>
           </div>
 
           <button
             @click="claimReward"
             :disabled="loading || dailyLimit.remaining === 0"
-            class="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 shadow-lg shadow-primary/30"
           >
-            <svg v-if="loading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 8 0 4.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>{{ loading ? 'Memproses...' : `Claim Reward (${dailyLimit.remaining} tersisa)` }}</span>
+            <div v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span class="material-symbols-outlined text-[20px]" v-else>play_arrow</span>
+            {{ loading ? 'Processing...' : `Claim Reward (${dailyLimit.remaining} remaining)` }}
           </button>
         </div>
 
-        <div v-else class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-          <p class="text-yellow-800 font-semibold">
-            ⏰ Batas harian sudah tercapai. Kembali besok untuk menonton iklan lagi!
+        <div v-else class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 text-center">
+          <span class="material-symbols-outlined text-[48px] text-yellow-600 mb-3">schedule</span>
+          <p class="text-yellow-800 dark:text-yellow-200 font-semibold">
+            Daily limit reached. Come back tomorrow to watch more ads!
           </p>
         </div>
       </div>
@@ -136,35 +138,41 @@
     <!-- Tab: Redeem Points -->
     <div v-if="activeTab === 'redeem'" class="space-y-6">
       <!-- Subscription Redeem -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tukar Point untuk Langganan</h2>
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat data...</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+            <span class="material-symbols-outlined">card_membership</span>
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Subscription</h2>
         </div>
-        <div v-else-if="subscriptionPlans.length === 0" class="text-center py-8 text-gray-500">
-          <p>Tidak ada paket langganan tersedia saat ini.</p>
+        <div v-if="loading" class="text-center py-8">
+          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-slate-500">Loading data...</p>
+        </div>
+        <div v-else-if="subscriptionPlans.length === 0" class="text-center py-8">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">inventory_2</span>
+          <p class="text-slate-500">No subscription packages available at this time.</p>
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div
             v-for="plan in subscriptionPlans"
             :key="plan.id"
-            class="border-2 rounded-lg p-4 hover:border-primary-500 transition"
+            class="rounded-xl p-4 border-2 hover:shadow-lg transition"
             :class="{
-              'border-primary-500': balance.currentPoints >= plan.pointsRequired,
-              'border-gray-200 opacity-50': balance.currentPoints < plan.pointsRequired
+              'border-primary bg-primary/5': balance.currentPoints >= plan.pointsRequired,
+              'border-slate-200 dark:border-slate-700 opacity-60': balance.currentPoints < plan.pointsRequired
             }"
           >
-            <h3 class="font-bold text-lg mb-2">{{ plan.name }}</h3>
-            <p class="text-gray-600 text-sm mb-4">{{ plan.description }}</p>
+            <h3 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">{{ plan.name }}</h3>
+            <p class="text-slate-500 text-sm mb-4">{{ plan.description }}</p>
             <div class="flex items-center justify-between">
-              <span class="text-2xl font-bold text-primary-600">{{ plan.pointsRequired }} pts</span>
+              <span class="text-2xl font-bold text-primary">{{ plan.pointsRequired }} pts</span>
               <button
                 @click="redeemSubscription(plan)"
                 :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
-                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-semibold transition"
+                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
               >
-                {{ redeeming ? 'Memproses...' : 'Tukar' }}
+                {{ redeeming ? 'Processing...' : 'Redeem' }}
               </button>
             </div>
           </div>
@@ -172,35 +180,41 @@
       </div>
 
       <!-- Addon Redeem -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tukar Point untuk Addon</h2>
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat data...</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-lg">
+            <span class="material-symbols-outlined">extension</span>
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Add-ons</h2>
         </div>
-        <div v-else-if="availableAddons.length === 0" class="text-center py-8 text-gray-500">
-          <p>Tidak ada addon tersedia saat ini.</p>
+        <div v-if="loading" class="text-center py-8">
+          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-slate-500">Loading data...</p>
+        </div>
+        <div v-else-if="availableAddons.length === 0" class="text-center py-8">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">extension_off</span>
+          <p class="text-slate-500">No add-ons available at this time.</p>
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="addon in availableAddons"
             :key="addon.id"
-            class="border-2 rounded-lg p-4 hover:border-primary-500 transition"
+            class="rounded-xl p-4 border-2 hover:shadow-lg transition"
             :class="{
-              'border-primary-500': balance.currentPoints >= addon.pointsRequired,
-              'border-gray-200 opacity-50': balance.currentPoints < addon.pointsRequired
+              'border-green-500 bg-green-50 dark:bg-green-900/10': balance.currentPoints >= addon.pointsRequired,
+              'border-slate-200 dark:border-slate-700 opacity-60': balance.currentPoints < addon.pointsRequired
             }"
           >
-            <h3 class="font-bold text-lg mb-2">{{ addon.name }}</h3>
-            <p class="text-gray-600 text-sm mb-4">{{ addon.description }}</p>
+            <h3 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">{{ addon.name }}</h3>
+            <p class="text-slate-500 text-sm mb-4">{{ addon.description }}</p>
             <div class="flex items-center justify-between">
-              <span class="text-xl font-bold text-primary-600">{{ addon.pointsRequired }} pts</span>
+              <span class="text-xl font-bold text-green-600">{{ addon.pointsRequired }} pts</span>
               <button
                 @click="redeemAddon(addon)"
                 :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
-                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-semibold transition"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
               >
-                {{ redeeming ? 'Memproses...' : 'Tukar' }}
+                {{ redeeming ? 'Processing...' : 'Redeem' }}
               </button>
             </div>
           </div>
@@ -210,42 +224,54 @@
 
     <!-- Tab: History -->
     <div v-if="activeTab === 'history'">
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Riwayat Transaksi Point</h2>
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Memuat riwayat...</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-lg">
+              <span class="material-symbols-outlined">history</span>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Points Transaction History</h2>
+          </div>
         </div>
-        <div v-else-if="transactions.length === 0" class="text-center py-8 text-gray-500">
-          Belum ada transaksi
+        <div v-if="loading" class="text-center py-12">
+          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-slate-500">Loading history...</p>
         </div>
-        <div v-else class="space-y-3">
+        <div v-else-if="transactions.length === 0" class="text-center py-16">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">receipt_long</span>
+          <p class="text-slate-500">No transactions yet</p>
+        </div>
+        <div v-else class="divide-y divide-slate-100 dark:divide-slate-700">
           <div
             v-for="transaction in transactions"
             :key="transaction.id"
-            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+            class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition"
           >
-            <div class="flex-1">
-              <p class="font-semibold text-gray-900">{{ transaction.description }}</p>
-              <p class="text-sm text-gray-500">{{ formatDate(transaction.createdAt) }}</p>
-              <p v-if="transaction.type === 'EARNED' && transaction.metadata?.expirationDate" class="text-xs text-gray-400 mt-1">
-                ⏰ Kadaluarsa: {{ formatDate(transaction.metadata.expirationDate) }}
-                <span v-if="getDaysUntilExpiration(transaction.metadata.expirationDate) <= 30" class="text-yellow-600 font-semibold">
-                  ({{ getDaysUntilExpiration(transaction.metadata.expirationDate) }} hari lagi)
-                </span>
-              </p>
-              <p v-if="transaction.type === 'EXPIRED'" class="text-xs text-red-500 mt-1">
-                ⚠️ Point telah kadaluarsa
-              </p>
+            <div class="flex items-center justify-between">
+              <div class="flex-1">
+                <p class="font-semibold text-slate-900 dark:text-white">{{ transaction.description }}</p>
+                <p class="text-sm text-slate-500">{{ formatDate(transaction.createdAt) }}</p>
+                <p v-if="transaction.type === 'EARNED' && transaction.metadata?.expirationDate" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">schedule</span>
+                  Expires: {{ formatDate(transaction.metadata.expirationDate) }}
+                  <span v-if="getDaysUntilExpiration(transaction.metadata.expirationDate) <= 30" class="text-yellow-600 font-semibold ml-1">
+                    ({{ getDaysUntilExpiration(transaction.metadata.expirationDate) }} days left)
+                  </span>
+                </p>
+                <p v-if="transaction.type === 'EXPIRED'" class="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">warning</span>
+                  Points have expired
+                </p>
+              </div>
+              <span
+                :class="[
+                  'font-bold text-lg',
+                  transaction.amount > 0 ? 'text-green-600' : transaction.type === 'EXPIRED' ? 'text-red-600' : 'text-red-600'
+                ]"
+              >
+                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }} pts
+              </span>
             </div>
-            <span
-              :class="[
-                'font-bold text-lg',
-                transaction.amount > 0 ? 'text-green-600' : transaction.type === 'EXPIRED' ? 'text-red-600' : 'text-red-600'
-              ]"
-            >
-              {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }} pts
-            </span>
           </div>
         </div>
       </div>
@@ -324,7 +350,7 @@ const loadConfig = async () => {
       subscriptionPlans.value = redemptions.subscriptions.map((sub: any) => ({
         id: sub.id,
         name: sub.name,
-        description: `Paket ${sub.name} selama 1 bulan`,
+        description: `${sub.name} package for 1 month`,
         pointsRequired: sub.pointsRequired,
       }));
       console.log('Loaded subscription plans:', subscriptionPlans.value);
@@ -342,7 +368,7 @@ const loadConfig = async () => {
       availableAddons.value = uniqueAddons.map((addon: any) => ({
         id: addon.id,
         name: addon.name,
-        description: `Aktifkan addon ${addon.name}`,
+        description: `Activate ${addon.name} add-on`,
         pointsRequired: addon.pointsRequired,
       }));
       console.log('Loaded addons:', availableAddons.value);
@@ -350,17 +376,17 @@ const loadConfig = async () => {
       console.warn('No addons in redemptions');
       availableAddons.value = [];
     }
-  } catch (error: any) {
-    console.error('Error loading config:', error);
-    console.error('Error details:', error.response?.data);
-    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+  } catch (err: any) {
+    console.error('Error loading config:', err);
+    console.error('Error details:', err.response?.data);
+    const errorMessage = err.response?.data?.message || err.message || 'Unknown error';
     console.error('Error message:', errorMessage);
     
     // Show detailed error message using popup
     if (errorMessage.includes('Tenant ID')) {
-      await error('Error: ' + errorMessage + '\n\nPastikan Anda sudah memilih tenant (untuk Super Admin) atau sudah login dengan benar.', 'Error Memuat Data');
+      await error('Error: ' + errorMessage + '\n\nMake sure you have selected a tenant (for Super Admin) or are logged in correctly.', 'Error Loading Data');
     } else {
-      await error('Gagal memuat data langganan dan addon.\n\nError: ' + errorMessage + '\n\nSilakan refresh halaman atau hubungi administrator.', 'Error Memuat Data');
+      await error('Failed to load subscription and add-on data.\n\nError: ' + errorMessage + '\n\nPlease refresh the page or contact administrator.', 'Error Loading Data');
     }
   }
 };
@@ -378,10 +404,10 @@ const claimReward = () => {
 
 const redeemSubscription = async (plan: any) => {
   const confirmed = await confirm(
-    `Tukar ${plan.pointsRequired} point untuk ${plan.name}?`,
-    'Konfirmasi Tukar Point',
-    'Ya, Tukar',
-    'Batal'
+    `Redeem ${plan.pointsRequired} points for ${plan.name}?`,
+    'Confirm Redemption',
+    'Yes, Redeem',
+    'Cancel'
   );
   
   if (!confirmed) return;
@@ -393,11 +419,11 @@ const redeemSubscription = async (plan: any) => {
       pointsRequired: plan.pointsRequired,
     });
     
-    await success('Berhasil! Langganan Anda telah diperpanjang.', 'Tukar Point Berhasil');
+    await success('Success! Your subscription has been extended.', 'Redemption Successful');
     await loadBalance();
     await loadTransactions();
   } catch (err: any) {
-    await error(err.response?.data?.message || 'Error menukar point', 'Gagal Tukar Point');
+    await error(err.response?.data?.message || 'Error redeeming points', 'Redemption Failed');
   } finally {
     redeeming.value = false;
   }
@@ -405,10 +431,10 @@ const redeemSubscription = async (plan: any) => {
 
 const redeemAddon = async (addon: any) => {
   const confirmed = await confirm(
-    `Tukar ${addon.pointsRequired} point untuk ${addon.name}?`,
-    'Konfirmasi Tukar Point',
-    'Ya, Tukar',
-    'Batal'
+    `Redeem ${addon.pointsRequired} points for ${addon.name}?`,
+    'Confirm Redemption',
+    'Yes, Redeem',
+    'Cancel'
   );
   
   if (!confirmed) return;
@@ -421,18 +447,18 @@ const redeemAddon = async (addon: any) => {
       pointsRequired: addon.pointsRequired,
     });
     
-    await success('Berhasil! Addon telah diaktifkan.', 'Tukar Point Berhasil');
+    await success('Success! Add-on has been activated.', 'Redemption Successful');
     await loadBalance();
     await loadTransactions();
   } catch (err: any) {
-    await error(err.response?.data?.message || 'Error menukar point', 'Gagal Tukar Point');
+    await error(err.response?.data?.message || 'Error redeeming points', 'Redemption Failed');
   } finally {
     redeeming.value = false;
   }
 };
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('id-ID', {
+  return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -460,4 +486,3 @@ onMounted(async () => {
   loading.value = false;
 });
 </script>
-

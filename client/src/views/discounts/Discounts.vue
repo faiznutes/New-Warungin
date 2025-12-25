@@ -1,128 +1,129 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Diskon</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola diskon dan promo</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Discounts</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage discounts and promotions.</p>
       </div>
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span class="hidden sm:inline">Tambah Diskon</span>
-        <span class="sm:hidden">Tambah</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Discount</span>
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
         </div>
         <input
           v-model="filters.search"
           @focus="handleSearchFocus"
           @input="handleSearchInput"
           type="text"
-          placeholder="Cari diskon..."
-          class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+          placeholder="Search discounts..."
+          class="block w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         />
       </div>
     </div>
 
     <!-- Discounts Table -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="text-gray-500">Memuat...</div>
+    <div v-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading discounts...</p>
+      </div>
     </div>
 
-    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <p class="text-gray-500">Belum ada diskon</p>
+    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">percent</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Discounts Yet</h3>
+      <p class="text-slate-500 text-center max-w-md">Create your first discount to start offering promotions.</p>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6">
+    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nama Diskon
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-900/50">
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Discount Name
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tipe
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Type
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nilai Diskon
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Value
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Periode
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Period
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Status
               </th>
-              <th class="px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
+              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">
+                Actions
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="discount in filteredDiscounts" :key="discount.id" class="hover:bg-gray-50">
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ discount.name }}</div>
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="discount in filteredDiscounts" :key="discount.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ discount.name }}</div>
               </td>
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ getDiscountTypeLabel(discount.discountType) }}</div>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  {{ getDiscountTypeLabel(discount.discountType) }}
+                </span>
               </td>
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-bold text-primary">
                   {{ discount.discountValueType === 'PERCENTAGE' 
                     ? `${discount.discountValue}%` 
                     : formatCurrency(Number(discount.discountValue)) }}
                 </div>
               </td>
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-slate-500">
                   <div v-if="discount.startDate || discount.endDate">
                     {{ discount.startDate ? formatDate(discount.startDate) : '-' }} - 
-                    {{ discount.endDate ? formatDate(discount.endDate) : 'Tidak terbatas' }}
+                    {{ discount.endDate ? formatDate(discount.endDate) : 'No limit' }}
                   </div>
-                  <div v-else class="text-gray-400">Tidak terbatas</div>
+                  <div v-else class="text-slate-400">No limit</div>
                 </div>
               </td>
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
+              <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
-                  :class="discount.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
+                  :class="discount.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
                 >
-                  {{ discount.isActive ? 'Aktif' : 'Tidak Aktif' }}
+                  {{ discount.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-2">
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="flex items-center justify-end gap-2">
                   <button
                     @click="editDiscount(discount)"
-                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded"
+                    class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-lg transition"
+                    title="Edit"
                   >
-                    Edit
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
                   </button>
                   <button
                     @click="deleteDiscount(discount.id)"
-                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
+                    class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                    title="Delete"
                   >
-                    Hapus
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
                   </button>
                 </div>
               </td>

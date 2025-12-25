@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Produk Tenant</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Tenant Products</h3>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
           <div class="relative">
@@ -13,7 +13,7 @@
             <input
               v-model="filters.search"
               type="text"
-              placeholder="Cari produk..."
+              placeholder="Search products..."
               class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             />
           </div>
@@ -25,7 +25,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Tambah Produk</span>
+          <span>Add Product</span>
         </button>
       </div>
     </div>
@@ -38,7 +38,7 @@
       <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
-      <p class="text-gray-500">Belum ada produk</p>
+      <p class="text-gray-500">No products yet</p>
     </div>
 
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -66,12 +66,12 @@
           <p class="text-sm text-gray-600 mb-2">{{ product.category }}</p>
           <p class="text-lg font-bold text-primary-600 mb-2">{{ formatCurrency(product.price) }}</p>
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-600">Stok: {{ product.stock }}</span>
+            <span class="text-sm text-gray-600">Stock: {{ product.stock }}</span>
             <span
               class="px-2 py-1 text-xs rounded-full"
               :class="product.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
             >
-              {{ product.isActive ? 'Aktif' : 'Tidak Aktif' }}
+              {{ product.isActive ? 'Active' : 'Inactive' }}
             </span>
           </div>
           <div class="mt-3 flex gap-2">
@@ -85,7 +85,7 @@
               @click="deleteProduct(product.id)"
               class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
             >
-              Hapus
+              Delete
             </button>
           </div>
         </div>
@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';

@@ -1,55 +1,54 @@
 <template>
-  <div class="max-w-7xl mx-auto space-y-6">
-    <div class="bg-white rounded-lg shadow-sm p-6">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Transfer Stok Antar Store</h1>
-          <p class="text-sm text-gray-600 mt-1">Kelola transfer stok antar store/cabang</p>
-        </div>
-        <button
-          @click="showTransferModal = true"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center space-x-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Tambah Transfer</span>
-        </button>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Stock Transfers</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage stock transfers between stores/branches.</p>
       </div>
+      <button
+        @click="showTransferModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Transfer</span>
+      </button>
+    </div>
 
-      <!-- Filters -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <!-- Filters -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Store Asal</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Source Store</label>
           <select
             v-model="filters.fromStore"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Semua Store</option>
+            <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
               {{ store.name }}
             </option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Store Tujuan</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination Store</label>
           <select
             v-model="filters.toStore"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Semua Store</option>
+            <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
               {{ store.name }}
             </option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
           <select
             v-model="filters.status"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Semua Status</option>
+            <option value="">All Status</option>
             <option value="PENDING">Pending</option>
             <option value="APPROVED">Approved</option>
             <option value="COMPLETED">Completed</option>
@@ -57,103 +56,97 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date</label>
           <input
             v-model="filters.date"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
       </div>
+    </div>
 
-      <!-- Transfers Table -->
+    <!-- Transfers Table -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID Transfer
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Store Asal
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Store Tujuan
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Produk
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Jumlah
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tanggal
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-900/50">
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Transfer ID</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Source Store</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Destination Store</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Product</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Quantity</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
             <tr v-if="loading">
-              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                Memuat data...
+              <td colspan="8" class="px-6 py-12 text-center">
+                <div class="flex items-center justify-center gap-3">
+                  <div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span class="text-slate-500">Loading data...</span>
+                </div>
               </td>
             </tr>
             <tr v-else-if="transfers.length === 0">
-              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                Tidak ada data transfer
+              <td colspan="8" class="px-6 py-16 text-center">
+                <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">swap_horiz</span>
+                <p class="text-slate-500">No transfer data</p>
               </td>
             </tr>
-            <tr v-else v-for="transfer in transfers" :key="transfer.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ transfer.id.substring(0, 8) }}
+            <tr v-else v-for="transfer in transfers" :key="transfer.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm font-mono font-bold text-slate-900 dark:text-white">{{ transfer.id.substring(0, 8) }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ transfer.fromStore?.name || 'N/A' }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-slate-900 dark:text-white">{{ transfer.fromStore?.name || 'N/A' }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ transfer.toStore?.name || 'N/A' }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-slate-900 dark:text-white">{{ transfer.toStore?.name || 'N/A' }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ transfer.product?.name || 'N/A' }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-slate-900 dark:text-white">{{ transfer.product?.name || 'N/A' }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ transfer.quantity }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm font-bold text-slate-900 dark:text-white">{{ transfer.quantity }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
                   :class="{
-                    'bg-yellow-100 text-yellow-800': transfer.status === 'PENDING',
-                    'bg-blue-100 text-blue-800': transfer.status === 'APPROVED',
-                    'bg-green-100 text-green-800': transfer.status === 'COMPLETED',
-                    'bg-red-100 text-red-800': transfer.status === 'CANCELLED',
+                    'bg-yellow-100 text-yellow-700': transfer.status === 'PENDING',
+                    'bg-blue-100 text-blue-700': transfer.status === 'APPROVED',
+                    'bg-green-100 text-green-700': transfer.status === 'COMPLETED',
+                    'bg-red-100 text-red-700': transfer.status === 'CANCELLED',
                   }"
                 >
                   {{ getStatusLabel(transfer.status) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(transfer.createdAt) }}
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm text-slate-500">{{ formatDate(transfer.createdAt) }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  @click="viewTransfer(transfer)"
-                  class="text-primary-600 hover:text-primary-900 mr-3"
-                >
-                  Detail
-                </button>
-                <button
-                  v-if="transfer.status === 'PENDING'"
-                  @click="cancelTransfer(transfer.id)"
-                  class="text-red-600 hover:text-red-900"
-                >
-                  Batal
-                </button>
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button
+                    @click="viewTransfer(transfer)"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">visibility</span>
+                    Details
+                  </button>
+                  <button
+                    v-if="transfer.status === 'PENDING'"
+                    @click="cancelTransfer(transfer.id)"
+                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                    Cancel
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -161,115 +154,122 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.totalPages > 1" class="mt-6 flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          Menampilkan {{ (pagination.page - 1) * pagination.limit + 1 }} sampai
-          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} dari
-          {{ pagination.total }} transfer
+      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <div class="text-sm text-slate-500">
+          Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to
+          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of
+          {{ pagination.total }} transfers
         </div>
-        <div class="flex space-x-2">
+        <div class="flex gap-2">
           <button
             @click="loadTransfers(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
           >
-            Sebelumnya
+            Previous
           </button>
           <button
             @click="loadTransfers(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
           >
-            Selanjutnya
+            Next
           </button>
         </div>
       </div>
     </div>
 
     <!-- Transfer Modal -->
-    <div
-      v-if="showTransferModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="showTransferModal = false"
-    >
-      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Tambah Transfer Stok</h2>
-        <form @submit.prevent="createTransfer" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Store Asal</label>
-            <select
-              v-model="transferForm.fromStoreId"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">Pilih Store Asal</option>
-              <option v-for="store in stores" :key="store.id" :value="store.id">
-                {{ store.name }}
-              </option>
-            </select>
+    <Teleport to="body">
+      <div
+        v-if="showTransferModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="showTransferModal = false"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2 bg-primary/10 text-primary rounded-lg">
+              <span class="material-symbols-outlined">swap_horiz</span>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Add Stock Transfer</h2>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Store Tujuan</label>
-            <select
-              v-model="transferForm.toStoreId"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">Pilih Store Tujuan</option>
-              <option v-for="store in stores" :key="store.id" :value="store.id">
-                {{ store.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Produk</label>
-            <select
-              v-model="transferForm.productId"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">Pilih Produk</option>
-              <option v-for="product in products" :key="product.id" :value="product.id">
-                {{ product.name }} (Stok: {{ product.stock }})
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
-            <input
-              v-model.number="transferForm.quantity"
-              type="number"
-              min="1"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
-            <textarea
-              v-model="transferForm.notes"
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            ></textarea>
-          </div>
-          <div class="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              @click="showTransferModal = false"
-              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            >
-              Simpan
-            </button>
-          </div>
-        </form>
+          <form @submit.prevent="createTransfer" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Source Store</label>
+              <select
+                v-model="transferForm.fromStoreId"
+                required
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              >
+                <option value="">Select Source Store</option>
+                <option v-for="store in stores" :key="store.id" :value="store.id">
+                  {{ store.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination Store</label>
+              <select
+                v-model="transferForm.toStoreId"
+                required
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              >
+                <option value="">Select Destination Store</option>
+                <option v-for="store in stores" :key="store.id" :value="store.id">
+                  {{ store.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Product</label>
+              <select
+                v-model="transferForm.productId"
+                required
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              >
+                <option value="">Select Product</option>
+                <option v-for="product in products" :key="product.id" :value="product.id">
+                  {{ product.name }} (Stock: {{ product.stock }})
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Quantity</label>
+              <input
+                v-model.number="transferForm.quantity"
+                type="number"
+                min="1"
+                required
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</label>
+              <textarea
+                v-model="transferForm.notes"
+                rows="3"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+              ></textarea>
+            </div>
+            <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+              <button
+                type="button"
+                @click="showTransferModal = false"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -310,9 +310,9 @@ const transferForm = ref({
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
     PENDING: 'Pending',
-    APPROVED: 'Disetujui',
-    COMPLETED: 'Selesai',
-    CANCELLED: 'Dibatalkan',
+    APPROVED: 'Approved',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled',
   };
   return labels[status] || status;
 };
@@ -364,7 +364,7 @@ const loadTransfers = async (page: number = 1) => {
     }
   } catch (err: any) {
     console.error('Failed to load transfers:', err);
-    await error(err.response?.data?.message || 'Gagal memuat data transfer');
+    await error(err.response?.data?.message || 'Failed to load transfer data');
   } finally {
     loading.value = false;
   }
@@ -373,7 +373,7 @@ const loadTransfers = async (page: number = 1) => {
 const createTransfer = async () => {
   try {
     await api.post('/stock-transfers', transferForm.value);
-    await success('Transfer stok berhasil dibuat');
+    await success('Stock transfer created successfully');
     showTransferModal.value = false;
     transferForm.value = {
       fromOutletId: '',
@@ -384,18 +384,18 @@ const createTransfer = async () => {
     await loadTransfers(pagination.value.page);
   } catch (err: any) {
     console.error('Failed to create transfer:', err);
-    await error(err.response?.data?.message || 'Gagal membuat transfer stok');
+    await error(err.response?.data?.message || 'Failed to create stock transfer');
   }
 };
 
 const cancelTransfer = async (id: string) => {
   try {
     await api.put(`/stock-transfers/${id}/cancel`);
-    await success('Transfer stok berhasil dibatalkan');
+    await success('Stock transfer cancelled successfully');
     await loadTransfers(pagination.value.page);
   } catch (err: any) {
     console.error('Failed to cancel transfer:', err);
-    await error(err.response?.data?.message || 'Gagal membatalkan transfer stok');
+    await error(err.response?.data?.message || 'Failed to cancel stock transfer');
   }
 };
 
@@ -410,4 +410,3 @@ onMounted(async () => {
   await loadTransfers();
 });
 </script>
-

@@ -1,106 +1,134 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">GDPR Compliance</h1>
-      <p class="text-gray-600">Kelola data pribadi Anda sesuai dengan GDPR</p>
+    <div class="flex flex-col">
+      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">GDPR Compliance</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your personal data in accordance with GDPR</p>
     </div>
 
     <div class="space-y-6">
       <!-- Data Export -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Ekspor Data (Right to Data Portability)</h2>
-        <p class="text-gray-600 mb-4">
-          Unduh semua data pribadi Anda dalam format JSON. Data ini termasuk semua informasi yang terkait dengan akun Anda.
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+            <span class="material-symbols-outlined">download</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Export Data (Right to Data Portability)</h3>
+            <p class="text-sm text-slate-500">Download all your personal data in JSON format.</p>
+          </div>
+        </div>
+        <p class="text-slate-600 dark:text-slate-300 mb-4 text-sm">
+          This data includes all information associated with your account. You have the right to obtain a copy of your personal data in a structured, machine-readable format.
         </p>
         <button
           @click="exportData"
           :disabled="exporting"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-semibold"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
         >
-          {{ exporting ? 'Mengekspor...' : 'Ekspor Data Saya' }}
+          <span class="material-symbols-outlined text-[20px]">download</span>
+          {{ exporting ? 'Exporting...' : 'Export My Data' }}
         </button>
       </div>
 
       <!-- Data Deletion -->
-      <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Hapus Data (Right to be Forgotten)</h2>
-        <p class="text-gray-600 mb-4">
-          <strong class="text-red-600">Peringatan:</strong> Tindakan ini akan menghapus semua data pribadi Anda dan menonaktifkan akun Anda. Tindakan ini tidak dapat dibatalkan.
-        </p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-l-4 border-l-red-500 border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+            <span class="material-symbols-outlined">delete_forever</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Delete Data (Right to be Forgotten)</h3>
+            <p class="text-sm text-slate-500">Permanently delete all your personal data.</p>
+          </div>
+        </div>
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-4">
+          <p class="text-sm text-red-800 dark:text-red-200">
+            <strong class="text-red-600">Warning:</strong> This action will delete all your personal data and deactivate your account. This action cannot be undone.
+          </p>
+        </div>
         
         <div v-if="!showDeleteConfirm" class="space-y-4">
           <button
             @click="showDeleteConfirm = true"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
+            class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg transition-all font-medium"
           >
-            Hapus Data Saya
+            <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+            Delete My Data
           </button>
         </div>
 
         <div v-else class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800 mb-2">
-              <strong>Konfirmasi Penghapusan:</strong>
+          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+            <p class="text-sm text-red-800 dark:text-red-200 mb-2">
+              <strong>Confirm Deletion:</strong>
             </p>
-            <p class="text-sm text-red-700 mb-4">
-              Ketik <strong>"DELETE_MY_DATA"</strong> di bawah ini untuk mengonfirmasi penghapusan data Anda.
+            <p class="text-sm text-red-700 dark:text-red-300 mb-4">
+              Type <strong>"DELETE_MY_DATA"</strong> below to confirm deletion of your data.
             </p>
             <input
               v-model="deleteConfirmText"
               type="text"
-              placeholder="Ketik DELETE_MY_DATA"
-              class="w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="Type DELETE_MY_DATA"
+              class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-red-300 dark:border-red-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
             />
           </div>
-          <div class="flex space-x-2">
+          <div class="flex gap-3">
             <button
               @click="deleteData"
               :disabled="deleteConfirmText !== 'DELETE_MY_DATA' || deleting"
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-semibold"
+              class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg transition-all font-medium disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
-              {{ deleting ? 'Menghapus...' : 'Konfirmasi Hapus Data' }}
+              <span class="material-symbols-outlined text-[20px]">delete_forever</span>
+              {{ deleting ? 'Deleting...' : 'Confirm Delete Data' }}
             </button>
             <button
               @click="showDeleteConfirm = false; deleteConfirmText = ''"
-              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold"
+              class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all font-medium"
             >
-              Batal
+              Cancel
             </button>
           </div>
         </div>
       </div>
 
       <!-- Tenant Data Export (Admin Only) -->
-      <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Ekspor Data Tenant</h2>
-        <p class="text-gray-600 mb-4">
-          Sebagai admin tenant, Anda dapat mengekspor semua data tenant termasuk produk, pesanan, transaksi, dan pelanggan.
-        </p>
+      <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+            <span class="material-symbols-outlined">folder_zip</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Export Tenant Data</h3>
+            <p class="text-sm text-slate-500">Export all tenant data including products, orders, transactions, and customers.</p>
+          </div>
+        </div>
         <button
           @click="exportTenantData"
           :disabled="exportingTenant"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-semibold"
+          class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg shadow-lg shadow-purple-500/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
         >
-          {{ exportingTenant ? 'Mengekspor...' : 'Ekspor Data Tenant' }}
+          <span class="material-symbols-outlined text-[20px]">folder_zip</span>
+          {{ exportingTenant ? 'Exporting...' : 'Export Tenant Data' }}
         </button>
       </div>
 
       <!-- Info -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-blue-900 mb-3">Tentang GDPR</h3>
-        <ul class="space-y-2 text-sm text-blue-800">
-          <li class="flex items-start space-x-2">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span><strong>Right to Data Portability:</strong> Anda berhak untuk mendapatkan salinan data pribadi Anda dalam format yang terstruktur dan dapat dibaca mesin.</span>
+      <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+            <span class="material-symbols-outlined">info</span>
+          </div>
+          <h3 class="text-lg font-bold text-blue-900 dark:text-blue-100">About GDPR</h3>
+        </div>
+        <ul class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
+          <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-blue-600 text-[20px] shrink-0 mt-0.5">check_circle</span>
+            <span><strong>Right to Data Portability:</strong> You have the right to obtain a copy of your personal data in a structured, machine-readable format.</span>
           </li>
-          <li class="flex items-start space-x-2">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span><strong>Right to be Forgotten:</strong> Anda berhak untuk meminta penghapusan data pribadi Anda, dengan beberapa pengecualian untuk kepentingan hukum atau bisnis yang sah.</span>
+          <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-blue-600 text-[20px] shrink-0 mt-0.5">check_circle</span>
+            <span><strong>Right to be Forgotten:</strong> You have the right to request deletion of your personal data, with some exceptions for legitimate legal or business purposes.</span>
           </li>
         </ul>
       </div>
@@ -141,10 +169,10 @@ const exportData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    await success('Data berhasil diekspor', 'Berhasil');
+    await success('Data exported successfully', 'Success');
   } catch (err: any) {
     console.error('Error exporting data:', err);
-    await error(err.response?.data?.message || 'Gagal mengekspor data', 'Error');
+    await error(err.response?.data?.message || 'Failed to export data', 'Error');
   } finally {
     exporting.value = false;
   }
@@ -167,10 +195,10 @@ const exportTenantData = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    await success('Data tenant berhasil diekspor', 'Berhasil');
+    await success('Tenant data exported successfully', 'Success');
   } catch (err: any) {
     console.error('Error exporting tenant data:', err);
-    await error(err.response?.data?.message || 'Gagal mengekspor data tenant', 'Error');
+    await error(err.response?.data?.message || 'Failed to export tenant data', 'Error');
   } finally {
     exportingTenant.value = false;
   }
@@ -182,10 +210,10 @@ const deleteData = async () => {
   }
 
   const confirmed = await confirm(
-    'Apakah Anda yakin ingin menghapus semua data pribadi Anda? Tindakan ini tidak dapat dibatalkan dan akun Anda akan dinonaktifkan.',
-    'Konfirmasi Hapus Data',
-    'Ya, Hapus',
-    'Batal'
+    'Are you sure you want to delete all your personal data? This action cannot be undone and your account will be deactivated.',
+    'Confirm Data Deletion',
+    'Yes, Delete',
+    'Cancel'
   );
   
   if (!confirmed) return;
@@ -196,14 +224,14 @@ const deleteData = async () => {
       confirm: 'DELETE_MY_DATA',
     });
 
-    await success('Data Anda telah dihapus. Anda akan diarahkan ke halaman login.', 'Data Dihapus');
+    await success('Your data has been deleted. You will be redirected to the login page.', 'Data Deleted');
     
     // Clear auth and redirect to login
     authStore.clearAuth();
     window.location.href = '/login';
   } catch (err: any) {
     console.error('Error deleting data:', err);
-    await error(err.response?.data?.message || 'Gagal menghapus data', 'Error');
+    await error(err.response?.data?.message || 'Failed to delete data', 'Error');
   } finally {
     deleting.value = false;
   }

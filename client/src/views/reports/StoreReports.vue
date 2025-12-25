@@ -1,105 +1,121 @@
 <template>
-  <div class="flex flex-col h-full p-4 sm:p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Laporan Cabang</h1>
-      <p class="text-gray-600">Laporan penjualan dan stok per cabang</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Store Reports</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Sales and stock reports per store/branch.</p>
+      </div>
     </div>
 
     <!-- Date Filter -->
-    <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start Date</label>
           <input
             v-model="startDate"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">End Date</label>
           <input
             v-model="endDate"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div class="flex items-end">
           <button
             @click="loadReport"
             :disabled="loading"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm disabled:opacity-50"
           >
-            {{ loading ? 'Memuat...' : 'Tampilkan Laporan' }}
+            <span class="material-symbols-outlined text-[20px]" v-if="!loading">bar_chart</span>
+            <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            {{ loading ? 'Loading...' : 'Generate Report' }}
           </button>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading report...</p>
+      </div>
     </div>
 
     <!-- Report Content -->
     <div v-else-if="report" class="space-y-6">
       <!-- Combined Summary -->
-      <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Ringkasan Gabungan Semua Cabang</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg p-4 shadow-sm">
-            <p class="text-sm text-gray-600 mb-1">Total Pendapatan</p>
-            <p class="text-2xl font-bold text-primary-600">{{ formatCurrency(report.combined.revenue) }}</p>
+      <div class="bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-2xl shadow-card border border-primary/20 p-6">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">analytics</span>
+          Combined Summary - All Stores
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+            <p class="text-sm text-slate-500 mb-1">Total Revenue</p>
+            <p class="text-2xl font-bold text-primary">{{ formatCurrency(report.combined.revenue) }}</p>
           </div>
-          <div class="bg-white rounded-lg p-4 shadow-sm">
-            <p class="text-sm text-gray-600 mb-1">Total Pesanan</p>
-            <p class="text-2xl font-bold text-gray-900">{{ report.combined.orders }}</p>
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+            <p class="text-sm text-slate-500 mb-1">Total Orders</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ report.combined.orders }}</p>
           </div>
-          <div class="bg-white rounded-lg p-4 shadow-sm">
-            <p class="text-sm text-gray-600 mb-1">Total Item Terjual</p>
-            <p class="text-2xl font-bold text-gray-900">{{ report.combined.items }}</p>
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm">
+            <p class="text-sm text-slate-500 mb-1">Total Items Sold</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ report.combined.items }}</p>
           </div>
         </div>
       </div>
 
       <!-- Sales Per Store -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Penjualan Per Cabang</h2>
-        <div v-if="report.salesByOutlet.length === 0" class="text-center py-8 text-gray-500">
-          <p>Tidak ada data penjualan untuk periode ini</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">attach_money</span>
+            Sales Per Store
+          </h3>
+        </div>
+        <div v-if="report.salesByOutlet.length === 0" class="text-center py-12">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">trending_flat</span>
+          <p class="text-slate-500">No sales data for this period</p>
         </div>
         <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cabang</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pendapatan</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pesanan</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Terjual</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rata-rata per Pesanan</th>
+          <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-900/50">
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Store</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Revenue</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Orders</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Items Sold</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Avg per Order</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
               <tr
                 v-for="store in report.salesByOutlet"
                 :key="store.outlet.id"
-                class="hover:bg-gray-50"
+                class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition"
               >
-                <td class="px-4 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ store.outlet.name }}</div>
-                  <div v-if="store.outlet.address" class="text-xs text-gray-500">{{ store.outlet.address }}</div>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-slate-900 dark:text-white">{{ store.outlet.name }}</div>
+                  <div v-if="store.outlet.address" class="text-xs text-slate-500">{{ store.outlet.address }}</div>
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm font-semibold text-primary-600">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-primary">
                   {{ formatCurrency(store.revenue) }}
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
                   {{ store.orders }}
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
                   {{ store.items }}
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                   {{ formatCurrency(store.orders > 0 ? store.revenue / store.orders : 0) }}
                 </td>
               </tr>
@@ -109,34 +125,44 @@
       </div>
 
       <!-- Stock Per Store -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Stok Per Cabang</h2>
-        <div v-if="report.stockByOutlet.length === 0" class="text-center py-8 text-gray-500">
-          <p>Tidak ada data stok</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">inventory_2</span>
+            Stock Per Store
+          </h3>
         </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-if="report.stockByOutlet.length === 0" class="text-center py-12">
+          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">inventory</span>
+          <p class="text-slate-500">No stock data available</p>
+        </div>
+        <div v-else class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="store in report.stockByOutlet"
             :key="store.outlet.id"
-            class="border-2 rounded-lg p-4"
-            :class="store.lowStockCount > 0 ? 'border-yellow-300 bg-yellow-50' : 'border-gray-200 bg-white'"
+            class="border-2 rounded-xl p-4"
+            :class="store.lowStockCount > 0 ? 'border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'"
           >
-            <h3 class="font-bold text-gray-900 mb-3">{{ store.outlet.name }}</h3>
+            <h4 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">store</span>
+              {{ store.outlet.name }}
+            </h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600">Total Produk:</span>
-                <span class="font-semibold text-gray-900">{{ store.totalProducts }}</span>
+                <span class="text-slate-500">Total Products:</span>
+                <span class="font-semibold text-slate-900 dark:text-white">{{ store.totalProducts }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Total Stok:</span>
-                <span class="font-semibold text-gray-900">{{ store.totalStock }}</span>
+                <span class="text-slate-500">Total Stock:</span>
+                <span class="font-semibold text-slate-900 dark:text-white">{{ store.totalStock }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">Stok Rendah:</span>
+                <span class="text-slate-500">Low Stock:</span>
                 <span
-                  class="font-semibold"
+                  class="font-semibold flex items-center gap-1"
                   :class="store.lowStockCount > 0 ? 'text-yellow-600' : 'text-green-600'"
                 >
+                  <span v-if="store.lowStockCount > 0" class="material-symbols-outlined text-[16px]">warning</span>
                   {{ store.lowStockCount }}
                 </span>
               </div>
@@ -147,12 +173,10 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <p class="text-gray-600 mb-2">Belum ada laporan</p>
-      <p class="text-sm text-gray-500">Pilih tanggal dan klik "Tampilkan Laporan"</p>
+    <div v-else class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">bar_chart</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Report Yet</h3>
+      <p class="text-slate-500 text-center max-w-md">Select dates and click "Generate Report" to view data.</p>
     </div>
   </div>
 </template>
@@ -172,7 +196,7 @@ const endDate = ref('');
 
 const loadReport = async () => {
   if (!startDate.value || !endDate.value) {
-    showError('Harap pilih tanggal mulai dan tanggal akhir');
+    showError('Please select start and end dates');
     return;
   }
 
@@ -186,14 +210,13 @@ const loadReport = async () => {
     });
     report.value = response.data;
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal memuat laporan');
+    showError(error.response?.data?.message || 'Failed to load report');
   } finally {
     loading.value = false;
   }
 };
 
 onMounted(() => {
-  // Set default dates (last 30 days)
   const end = new Date();
   const start = new Date();
   start.setDate(start.getDate() - 30);
@@ -201,7 +224,6 @@ onMounted(() => {
   endDate.value = end.toISOString().split('T')[0];
   startDate.value = start.toISOString().split('T')[0];
 
-  // Auto load report
   loadReport();
 });
 </script>

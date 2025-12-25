@@ -1,78 +1,78 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
-    <!-- Store Selector (Hanya untuk SUPERVISOR) -->
-    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <!-- Store Selector (Only for SUPERVISOR) -->
+    <div v-if="authStore.user?.role === 'SUPERVISOR'">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
 
     <!-- Header -->
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-            <div class="flex flex-col gap-2">
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pesanan & Transaksi</h2>
-              <p class="text-sm sm:text-base text-gray-600">Kelola pesanan dan riwayat transaksi</p>
-            </div>
-            <button
-              v-if="canDeleteOrders && deletableOrdersCount > 0"
-              @click="deleteAllOrders"
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium whitespace-nowrap"
-            >
-              Hapus Semua ({{ deletableOrdersCount }})
-            </button>
-          </div>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Orders & Transactions</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage orders and transaction history.</p>
+      </div>
+      <button
+        v-if="canDeleteOrders && deletableOrdersCount > 0"
+        @click="deleteAllOrders"
+        class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+        <span>Delete All ({{ deletableOrdersCount }})</span>
+      </button>
+    </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
-      <!-- All Filters in 1 row -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="flex flex-col xl:flex-row gap-4 items-end">
         <!-- Status Filter -->
         <div class="flex-1 w-full xl:w-auto">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Status</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
           <div class="flex flex-wrap gap-2">
             <button
               @click="filters.status = ''"
               :class="!filters.status 
-                ? 'bg-primary-600 text-white border-primary-600' 
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+                ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             >
-              Semua
+              All
             </button>
             <button
               @click="filters.status = 'PENDING'"
               :class="filters.status === 'PENDING' 
-                ? 'bg-yellow-600 text-white border-yellow-600' 
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+                ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             >
               Pending
             </button>
             <button
               @click="filters.status = 'PROCESSING'"
               :class="filters.status === 'PROCESSING' 
-                ? 'bg-blue-600 text-white border-blue-600' 
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             >
               Processing
             </button>
             <button
               @click="filters.status = 'COMPLETED'"
               :class="filters.status === 'COMPLETED' 
-                ? 'bg-green-600 text-white border-green-600' 
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+                ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             >
               Completed
             </button>
             <button
               @click="filters.status = 'CANCELLED'"
               :class="filters.status === 'CANCELLED' 
-                ? 'bg-red-600 text-white border-red-600' 
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' 
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
             >
               Cancelled
             </button>
@@ -81,50 +81,48 @@
 
         <!-- Month Filter -->
         <div class="flex-none w-full xl:w-40">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Bulan</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Month</label>
           <input
             v-model="filters.month"
             type="month"
             @change="handleMonthChange"
-            class="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
 
         <!-- Date Range Filter -->
         <div class="flex-none w-full xl:w-56 min-w-0">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Rentang Tanggal</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Range</label>
           <div class="flex gap-2">
             <input
               v-model="filters.startDate"
               type="date"
               @change="loadOrders(1)"
-              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="flex-1 min-w-0 px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <input
               v-model="filters.endDate"
               type="date"
               @change="loadOrders(1)"
-              class="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="flex-1 min-w-0 px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
 
         <!-- Search Bar -->
         <div class="flex-none w-full xl:w-48 min-w-0">
-          <label class="block text-xs font-medium text-gray-700 mb-2">Cari Pesanan</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Search Order</label>
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="material-symbols-outlined text-slate-400 text-[18px]">search</span>
             </div>
             <input
               v-model="filters.search"
               @focus="handleSearchFocus"
               @input="handleSearchInput"
               type="text"
-              placeholder="Cari nomor pesanan..."
-              class="block w-full pl-8 pr-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              placeholder="Order number..."
+              class="block w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
@@ -132,15 +130,17 @@
     </div>
 
     <!-- Orders Table -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="text-gray-500">Memuat...</div>
+    <div v-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading orders...</p>
+      </div>
     </div>
 
-    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-      </svg>
-      <p class="text-gray-500">Belum ada pesanan</p>
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">shopping_bag</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Orders Yet</h3>
+      <p class="text-slate-500 text-center max-w-md">Orders will appear here when customers make purchases.</p>
     </div>
 
     <!-- Orders List (Mobile & Desktop) -->

@@ -1,47 +1,45 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Laporan Global</h2>
-        <p class="text-gray-600">Analisis keseluruhan semua tenant</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Global Reports</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Comprehensive analysis across all tenants.</p>
       </div>
-      <div class="flex space-x-2">
-        <button
-          @click="showExportModal = true"
-          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center space-x-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <span>Export Laporan</span>
-        </button>
-      </div>
+      <button
+        @click="showExportModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">download</span>
+        <span>Export Report</span>
+      </button>
     </div>
 
     <!-- Date Range Filter -->
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">From Date</label>
           <input
             v-model="dateRange.from"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">To Date</label>
           <input
             v-model="dateRange.to"
             type="date"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div class="flex items-end">
           <button
             @click="shouldLoadReport = true; loadReport()"
-            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-lg transition-all font-medium text-sm"
           >
+            <span class="material-symbols-outlined text-[20px]">{{ reportData ? 'refresh' : 'play_arrow' }}</span>
             {{ reportData ? 'Refresh' : 'Generate' }}
           </button>
         </div>
@@ -49,37 +47,38 @@
     </div>
 
     <!-- Report Content -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Generating report...</p>
+      </div>
     </div>
 
-    <div v-else-if="!reportData" class="flex flex-col items-center justify-center py-12">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-      <p class="text-gray-600 text-lg mb-2">Belum ada laporan</p>
-      <p class="text-gray-500 text-sm">Pilih rentang tanggal dan klik Generate untuk membuat laporan</p>
+    <div v-else-if="!reportData" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">analytics</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Report Generated</h3>
+      <p class="text-slate-500 text-center max-w-md">Select a date range and click Generate to create a report.</p>
     </div>
 
     <div v-else-if="reportData" class="space-y-6">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Total Pendapatan Global</p>
-          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}</p>
-          <p class="text-xs text-gray-500 mt-1">Subscription + Addons</p>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Global Revenue</p>
+          <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}</p>
+          <p class="text-xs text-slate-500 mt-1">Subscription + Addons</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Pendapatan Subscription</p>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Subscription Revenue</p>
           <p class="text-3xl font-bold text-green-600">{{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Pendapatan Addons</p>
-          <p class="text-3xl font-bold text-blue-600">{{ formatCurrency(reportData.summary?.totalAddonRevenue || 0) }}</p>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Addon Revenue</p>
+          <p class="text-3xl font-bold text-primary">{{ formatCurrency(reportData.summary?.totalAddonRevenue || 0) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <p class="text-sm text-gray-600 mb-2">Total Tenant Aktif</p>
-          <p class="text-3xl font-bold text-gray-900">{{ reportData.summary?.activeTenants || 0 }}</p>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Active Tenants</p>
+          <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ reportData.summary?.activeTenants || 0 }}</p>
         </div>
       </div>
 

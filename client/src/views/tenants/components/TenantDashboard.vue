@@ -2,8 +2,8 @@
   <div class="flex flex-col h-full">
     <div class="mb-6 px-4 sm:px-6">
       <div class="flex flex-col gap-2">
-        <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Dashboard Tenant</h3>
-        <p class="text-sm text-gray-600">Ringkasan performa tenant</p>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Tenant Dashboard</h3>
+        <p class="text-sm text-gray-600">Tenant performance summary</p>
       </div>
     </div>
 
@@ -17,7 +17,7 @@
         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Penjualan</p>
+              <p class="text-sm text-gray-600 mb-1">Total Sales</p>
               <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(stats.totalSales) }}</p>
             </div>
             <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
@@ -31,7 +31,7 @@
         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Pesanan</p>
+              <p class="text-sm text-gray-600 mb-1">Total Orders</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.totalOrders }}</p>
             </div>
             <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
@@ -45,7 +45,7 @@
         <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Produk</p>
+              <p class="text-sm text-gray-600 mb-1">Total Products</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.totalProducts }}</p>
             </div>
             <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
@@ -59,7 +59,7 @@
         <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Pelanggan</p>
+              <p class="text-sm text-gray-600 mb-1">Total Customers</p>
               <p class="text-2xl font-bold text-gray-900">{{ stats.totalCustomers }}</p>
             </div>
             <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
@@ -74,11 +74,11 @@
       <!-- Today Stats -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-          <p class="text-sm text-gray-600 mb-2">Penjualan Hari Ini</p>
+          <p class="text-sm text-gray-600 mb-2">Today's Sales</p>
           <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(stats.todaySales) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-          <p class="text-sm text-gray-600 mb-2">Pesanan Hari Ini</p>
+          <p class="text-sm text-gray-600 mb-2">Today's Orders</p>
           <p class="text-2xl font-bold text-gray-900">{{ stats.todayOrders }}</p>
         </div>
       </div>
@@ -92,22 +92,22 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h3 class="text-lg font-bold text-yellow-900">Peringatan Stok Rendah</h3>
+            <h3 class="text-lg font-bold text-yellow-900">Low Stock Warning</h3>
           </div>
         </div>
         <p class="text-yellow-800 mb-4 font-medium">
-          Ada <strong class="text-yellow-900 text-xl">{{ stats.lowStockProducts }}</strong> produk dengan stok menipis yang perlu segera diisi ulang
+          There are <strong class="text-yellow-900 text-xl">{{ stats.lowStockProducts }}</strong> products with low stock that need to be restocked
         </p>
       </div>
 
       <!-- Recent Orders -->
       <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-900">Pesanan Terkini</h3>
+          <h3 class="text-xl font-bold text-gray-900">Recent Orders</h3>
           <div class="w-2 h-2 bg-primary-600 rounded-full animate-pulse"></div>
         </div>
         <div v-if="recentOrders.length === 0" class="text-center py-8 text-gray-500">
-          Belum ada pesanan
+          No orders yet
         </div>
         <div v-else class="space-y-3">
           <div
@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 import api from '../../../api';
 import { formatCurrency } from '../../../utils/formatters';
 import { useNotification } from '../../../composables/useNotification';
@@ -176,7 +176,7 @@ const loadDashboard = async () => {
     }
     
     // Load dashboard stats
-    const [statsRes, ordersRes, productsRes, customersRes] = await Promise.all([
+    const [, ordersRes, productsRes, customersRes] = await Promise.all([
       api.get('/dashboard/stats', { params: { ...baseParams, tenantId: props.tenantId } }),
       api.get('/orders', { params: { ...baseParams, limit: 100 } }),
       api.get('/products', { params: baseParams }),
@@ -205,7 +205,7 @@ const loadDashboard = async () => {
       .slice(0, 5);
   } catch (error: any) {
     console.error('Error loading dashboard:', error);
-    const errorMessage = error.response?.data?.message || error.message || 'Gagal memuat dashboard';
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to load dashboard';
     await showError(errorMessage);
   } finally {
     loading.value = false;

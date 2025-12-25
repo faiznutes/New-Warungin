@@ -1,74 +1,71 @@
 <template>
-  <div class="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white">
+  <div class="flex flex-col gap-8">
     <!-- Store Selector (only for Admin/Supervisor) -->
-    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'" class="px-4 sm:px-6 pt-4 sm:pt-6">
+    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
     
     <!-- Header Section -->
-    <div class="mb-6 px-4 sm:px-6">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex flex-col gap-2">
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Pesanan Masuk</h2>
-          <p class="text-sm sm:text-base text-gray-600">Kelola pesanan yang dikirim dari kasir</p>
-        </div>
-        <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white rounded-xl shadow-md border border-gray-200 p-3 sm:p-4">
-          <span class="text-sm font-medium bg-primary-100 text-primary-700 px-3 py-1.5 rounded-lg">
-            {{ selectedOrders.length }} pesanan dipilih
-          </span>
-          <select
-            v-model="bulkStatus"
-            class="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium"
-          >
-            <option value="">Pilih Status</option>
-            <option value="COOKING">Sedang Dimasak</option>
-            <option value="READY">Siap</option>
-            <option value="SERVED">Sudah Dikirim</option>
-          </select>
-          <button
-            @click="bulkUpdateStatus"
-            :disabled="!bulkStatus || bulkUpdating"
-            class="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition shadow-md hover:shadow-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <svg v-if="!bulkUpdating" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            {{ bulkUpdating ? 'Memproses...' : 'Update Semua' }}
-          </button>
-          <button
-            @click="clearSelection"
-            class="px-3 py-2 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition text-sm font-medium"
-          >
-            Batal
-          </button>
-        </div>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Kitchen Orders</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage orders sent from the cashier.</p>
+      </div>
+      <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-card">
+        <span class="text-sm font-medium bg-primary/10 text-primary px-3 py-1.5 rounded-lg">
+          {{ selectedOrders.length }} orders selected
+        </span>
+        <select
+          v-model="bulkStatus"
+          class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium"
+        >
+          <option value="">Select Status</option>
+          <option value="COOKING">Cooking</option>
+          <option value="READY">Ready</option>
+          <option value="SERVED">Served</option>
+        </select>
+        <button
+          @click="bulkUpdateStatus"
+          :disabled="!bulkStatus || bulkUpdating"
+          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition shadow-lg shadow-primary/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          <span v-if="!bulkUpdating" class="material-symbols-outlined text-[18px]">check</span>
+          <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          {{ bulkUpdating ? 'Processing...' : 'Update All' }}
+        </button>
+        <button
+          @click="clearSelection"
+          class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20 px-4 sm:px-6">
-      <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Memuat pesanan...</div>
+    <!-- Loading -->
+    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium">Loading orders...</div>
     </div>
 
-    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20 px-4 sm:px-6">
-      <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-        <svg class="w-24 h-24 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <p class="text-gray-600 text-lg font-medium">Tidak ada pesanan masuk</p>
-        <p class="text-gray-500 text-sm mt-2">Pesanan dari kasir akan muncul di sini</p>
+    <!-- Empty State -->
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
+        <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">receipt_long</span>
+        <p class="text-lg font-medium text-slate-900 dark:text-white mb-2">No incoming orders</p>
+        <p class="text-slate-500 text-sm">Orders from the cashier will appear here.</p>
       </div>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6 pb-4 sm:pb-6">
+    <!-- Orders Grid -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="order in orders"
         :key="order.id"
-        class="bg-white rounded-xl shadow-lg p-5 sm:p-6 border-2 transition-all hover:shadow-xl"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
         :class="[
           getStatusClass(order.kitchenStatus),
-          selectedOrders.includes(order.id) ? 'ring-2 ring-primary-500 ring-offset-2 scale-[1.02]' : ''
+          selectedOrders.includes(order.id) ? 'ring-2 ring-primary ring-offset-2 scale-[1.02]' : ''
         ]"
       >
         <div class="flex items-start justify-between mb-4">
@@ -77,75 +74,68 @@
               type="checkbox"
               :checked="selectedOrders.includes(order.id)"
               @change="toggleOrderSelection(order.id)"
-              class="mt-1.5 w-5 h-5 text-primary-600 border-2 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+              class="mt-1.5 w-5 h-5 text-primary border-2 border-slate-300 rounded focus:ring-primary cursor-pointer"
             />
             <div class="flex-1">
-              <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-1">Pesanan #{{ order.orderNumber }}</h3>
-              <p class="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Order #{{ order.orderNumber }}</h3>
+              <p class="text-xs text-slate-500 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">schedule</span>
                 {{ formatDateTime(order.createdAt) }}
               </p>
             </div>
           </div>
           <span
-            class="px-3 py-1.5 text-xs font-bold rounded-full shadow-sm"
+            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-full"
             :class="getStatusBadgeClass(order.kitchenStatus)"
           >
+            <span class="material-symbols-outlined text-[14px]">{{ getStatusIcon(order.kitchenStatus) }}</span>
             {{ getStatusLabel(order.kitchenStatus) }}
           </span>
         </div>
 
-        <div class="mb-4 p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200">
-          <p class="text-xs font-medium text-gray-600 mb-1.5 flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Pelanggan
+        <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">person</span>
+            Customer
           </p>
-          <p class="text-sm font-semibold text-gray-900">{{ order.customerName || order.temporaryCustomerName || 'Pelanggan Umum' }}</p>
+          <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.customerName || order.temporaryCustomerName || 'Walk-in Customer' }}</p>
         </div>
 
         <!-- Shift Info -->
-        <div v-if="order.storeShift" class="mb-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-          <p class="text-xs font-medium text-blue-700 mb-1.5 flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <div v-if="order.storeShift" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1.5 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">schedule</span>
             Shift {{ order.storeShift.shiftType?.charAt(0).toUpperCase() + order.storeShift.shiftType?.slice(1) }}
           </p>
-          <p class="text-xs text-blue-600">
-            Dibuka oleh: {{ order.storeShift.opener?.name || 'Tidak diketahui' }}
+          <p class="text-xs text-blue-600 dark:text-blue-400">
+            Opened by: {{ order.storeShift.opener?.name || 'Unknown' }}
           </p>
-          <p class="text-xs text-blue-600">
-            Waktu: {{ formatDateTime(order.storeShift.openedAt) }}
+          <p class="text-xs text-blue-600 dark:text-blue-400">
+            Time: {{ formatDateTime(order.storeShift.openedAt) }}
           </p>
         </div>
 
         <div class="mb-4">
-          <p class="text-xs font-medium text-gray-600 mb-2 flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[14px]">receipt</span>
             Items
           </p>
           <div class="space-y-2">
             <div
               v-for="item in order.items"
               :key="item.id"
-              class="flex justify-between items-center p-2 bg-gray-50 rounded-lg"
+              class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900 rounded-lg"
             >
-              <span class="text-sm text-gray-700 font-medium">{{ item.product?.name || item.productName }} × {{ item.quantity }}</span>
-              <span class="text-sm text-gray-900 font-semibold">{{ formatCurrency(Number(item.price || item.subtotal) * item.quantity) }}</span>
+              <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">{{ item.product?.name || item.productName }} × {{ item.quantity }}</span>
+              <span class="text-sm text-slate-900 dark:text-white font-bold">{{ formatCurrency(Number(item.price || item.subtotal) * item.quantity) }}</span>
             </div>
           </div>
         </div>
 
-        <div class="mb-4 p-3 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg border-2 border-primary-200">
+        <div class="mb-4 p-3 bg-primary/10 rounded-xl">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-semibold text-gray-700">Total:</span>
-            <span class="text-lg font-bold text-primary-600">{{ formatCurrency(order.total) }}</span>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Total:</span>
+            <span class="text-lg font-bold text-primary">{{ formatCurrency(order.total) }}</span>
           </div>
         </div>
 
@@ -153,33 +143,26 @@
           <button
             v-if="order.kitchenStatus === 'PENDING'"
             @click="updateStatus(order.id, 'COOKING')"
-            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition shadow-lg shadow-orange-500/30 font-semibold text-sm flex items-center justify-center gap-2"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Mulai Masak
+            <span class="material-symbols-outlined text-[18px]">skillet</span>
+            Start Cooking
           </button>
           <button
             v-if="order.kitchenStatus === 'COOKING'"
             @click="updateStatus(order.id, 'READY')"
-            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-500/30 font-semibold text-sm flex items-center justify-center gap-2"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Selesai
+            <span class="material-symbols-outlined text-[18px]">check</span>
+            Ready
           </button>
           <button
             v-if="order.kitchenStatus === 'READY'"
             @click="updateStatus(order.id, 'SERVED')"
-            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition shadow-md hover:shadow-lg font-semibold text-sm flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 font-semibold text-sm flex items-center justify-center gap-2"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Dikirim
+            <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+            Served
           </button>
         </div>
       </div>
@@ -207,32 +190,42 @@ const bulkUpdating = ref(false);
 
 const getStatusClass = (status: string) => {
   const classes: Record<string, string> = {
-    PENDING: 'border-red-300 bg-red-50',
-    COOKING: 'border-orange-300 bg-orange-50',
-    READY: 'border-green-300 bg-green-50',
-    SERVED: 'border-blue-300 bg-blue-50',
+    PENDING: 'border-red-300 dark:border-red-800',
+    COOKING: 'border-orange-300 dark:border-orange-800',
+    READY: 'border-green-300 dark:border-green-800',
+    SERVED: 'border-blue-300 dark:border-blue-800',
   };
-  return classes[status] || 'border-gray-300';
+  return classes[status] || 'border-slate-200 dark:border-slate-700';
 };
 
 const getStatusBadgeClass = (status: string) => {
   const classes: Record<string, string> = {
-    PENDING: 'bg-red-100 text-red-800',
-    COOKING: 'bg-orange-100 text-orange-800',
-    READY: 'bg-green-100 text-green-800',
-    SERVED: 'bg-blue-100 text-blue-800',
+    PENDING: 'bg-red-100 text-red-700',
+    COOKING: 'bg-orange-100 text-orange-700',
+    READY: 'bg-green-100 text-green-700',
+    SERVED: 'bg-blue-100 text-blue-700',
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-slate-100 text-slate-700';
 };
 
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    PENDING: 'Menunggu',
-    COOKING: 'Sedang Dimasak',
-    READY: 'Siap',
-    SERVED: 'Sudah Dikirim',
+    PENDING: 'Pending',
+    COOKING: 'Cooking',
+    READY: 'Ready',
+    SERVED: 'Served',
   };
   return labels[status] || status;
+};
+
+const getStatusIcon = (status: string) => {
+  const icons: Record<string, string> = {
+    PENDING: 'pending',
+    COOKING: 'local_fire_department',
+    READY: 'check_circle',
+    SERVED: 'local_shipping',
+  };
+  return icons[status] || 'help';
 };
 
 const handleStoreChange = () => {
@@ -247,8 +240,8 @@ const loadOrders = async () => {
   try {
     const response = await api.get('/orders', {
       params: {
-        sendToKitchen: true, // Hanya ambil yang dikirim dari POS
-        kitchenStatus: ['PENDING', 'COOKING', 'READY'], // Hanya yang belum selesai
+        sendToKitchen: true, // Only get orders sent from POS
+        kitchenStatus: ['PENDING', 'COOKING', 'READY'], // Only incomplete orders
       },
     });
     orders.value = response.data.data || response.data;
@@ -261,7 +254,7 @@ const loadOrders = async () => {
     }
     console.error('Error loading orders:', err);
     if (authStore.isAuthenticated) {
-      error('Gagal memuat pesanan', 'Terjadi Kesalahan');
+      error('Failed to load orders', 'Error');
     }
   } finally {
     loading.value = false;
@@ -278,10 +271,10 @@ const updateStatus = async (orderId: string, status: string) => {
       socket.emit('order:update', { orderId, status });
     }
     
-    success(`Status pesanan berhasil diubah menjadi "${getStatusLabel(status)}"`, 'Berhasil');
+    success(`Order status updated to "${getStatusLabel(status)}"`, 'Success');
   } catch (err: any) {
     console.error('Error updating status:', err);
-    error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
+    error(err.response?.data?.message || 'Failed to update status', 'Error');
   }
 };
 
@@ -305,10 +298,10 @@ const bulkUpdateStatus = async () => {
   }
 
   const confirmed = await confirmDialog(
-    `Apakah Anda yakin ingin mengubah status ${selectedOrders.value.length} pesanan menjadi "${getStatusLabel(bulkStatus.value)}"?`,
-    'Konfirmasi Update Status',
-    'Ya, Update',
-    'Batal'
+    `Are you sure you want to update ${selectedOrders.value.length} orders to "${getStatusLabel(bulkStatus.value)}"?`,
+    'Confirm Status Update',
+    'Yes, Update',
+    'Cancel'
   );
 
   if (!confirmed) {
@@ -323,8 +316,8 @@ const bulkUpdateStatus = async () => {
     });
 
     success(
-      `Berhasil mengupdate ${response.data.updated} pesanan menjadi "${getStatusLabel(bulkStatus.value)}"`,
-      'Update Berhasil'
+      `Successfully updated ${response.data.updated} orders to "${getStatusLabel(bulkStatus.value)}"`,
+      'Update Successful'
     );
     clearSelection();
     await loadOrders();
@@ -337,7 +330,7 @@ const bulkUpdateStatus = async () => {
     }
   } catch (err: any) {
     console.error('Error bulk updating status:', err);
-    error(err.response?.data?.message || 'Gagal mengupdate status', 'Terjadi Kesalahan');
+    error(err.response?.data?.message || 'Failed to update status', 'Error');
   } finally {
     bulkUpdating.value = false;
   }

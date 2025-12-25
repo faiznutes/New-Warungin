@@ -1,109 +1,107 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Pengguna</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola pengguna dan akses</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Users</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage users and access permissions.</p>
       </div>
-      <div class="flex gap-2">
-        <button
-          @click="showCreateModal = true"
-          class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Tambah Pengguna</span>
-        </button>
-      </div>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">person_add</span>
+        <span>Add User</span>
+      </button>
     </div>
 
     <!-- User Limit Info with Progress Bar -->
-    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="mb-6 mx-4 sm:mx-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-      <div class="flex items-center justify-between mb-2">
+    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-3">
         <div>
-          <p class="font-semibold text-blue-900">Limit Pengguna</p>
-          <p class="text-sm text-blue-700">
-            {{ userLimit.currentUsage || 0 }} / {{ userLimit.limit }} pengguna aktif
-            <span class="font-semibold" :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'text-red-600' : 'text-green-600'">
-              ({{ userLimit.limit - (userLimit.currentUsage || 0) }} tersedia)
+          <p class="font-bold text-blue-900 dark:text-blue-200 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">group</span>
+            User Limit
+          </p>
+          <p class="text-sm text-blue-700 dark:text-blue-300">
+            {{ userLimit.currentUsage || 0 }} / {{ userLimit.limit }} active users
+            <span class="font-bold" :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'text-red-600' : 'text-green-600'">
+              ({{ userLimit.limit - (userLimit.currentUsage || 0) }} available)
             </span>
           </p>
         </div>
       </div>
-      <div class="w-full bg-blue-200 rounded-full h-3">
-            <div
-          class="h-3 rounded-full transition-all"
+      <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+        <div
+          class="h-2 rounded-full transition-all"
           :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'bg-red-500' : (userLimit.currentUsage || 0) >= (userLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-blue-600'"
           :style="{ width: `${Math.min(100, ((userLimit.currentUsage || 0) / userLimit.limit) * 100)}%` }"
-            ></div>
+        ></div>
       </div>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">{{ tenantMessage }}</p>
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">apartment</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Select a Tenant First</h3>
+      <p class="text-slate-500 text-center max-w-md">{{ tenantMessage }}</p>
     </div>
 
-    <!-- Users Table -->
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat pengguna...</div>
+    <!-- Loading -->
+    <div v-else-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading users...</p>
       </div>
     </div>
 
-    <div v-else-if="users.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-      <p class="text-gray-500">Belum ada pengguna</p>
+    <!-- Empty State -->
+    <div v-else-if="users.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">group</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Users Yet</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Add your first user to get started.</p>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">person_add</span>
+        Add First User
+      </button>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <!-- Users Table -->
+    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nama
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Last Login
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Aksi
-              </th>
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-900/50">
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Last Login</th>
+              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="user in users" :key="user.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                  </div>
+                  <span class="text-sm font-medium text-slate-900 dark:text-white">{{ user.name }}</span>
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ user.email }}</div>
+                <span class="text-sm text-slate-500">{{ user.email }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
                   :class="getRoleClass(user.role)"
                 >
                   {{ getRoleLabel(user.role) }}
@@ -111,31 +109,33 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
-                  :class="user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
+                  :class="user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
                 >
-                  {{ user.isActive ? 'Aktif' : 'Tidak Aktif' }}
+                  {{ user.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">
-                  {{ user.lastLogin ? formatDateTime(user.lastLogin) : 'Belum pernah' }}
-                </div>
+                <span class="text-sm text-slate-500">
+                  {{ user.lastLogin ? formatDateTime(user.lastLogin) : 'Never' }}
+                </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-2">
+              <td class="px-6 py-4 whitespace-nowrap text-right">
+                <div class="flex items-center justify-end gap-2">
                   <button
                     @click="editUser(user)"
-                    class="px-3 py-1 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                   >
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
                     Edit
                   </button>
                   <button
                     v-if="user.role !== 'ADMIN_TENANT'"
                     @click="deleteUser(user.id)"
-                    class="px-3 py-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
+                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
                   >
-                    Hapus
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                    Delete
                   </button>
                 </div>
               </td>
@@ -143,27 +143,29 @@
           </tbody>
         </table>
       </div>
-    </div>
 
-    <!-- Pagination -->
-    <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-6">
-      <button
-        @click="loadUsers(pagination.page - 1)"
-        :disabled="pagination.page === 1"
-        class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-      >
-        Sebelumnya
-      </button>
-      <span class="px-4 py-2 text-gray-700">
-        Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
-      </span>
-      <button
-        @click="loadUsers(pagination.page + 1)"
-        :disabled="pagination.page === pagination.totalPages"
-        class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-      >
-        Selanjutnya
-      </button>
+      <!-- Pagination -->
+      <div v-if="pagination.totalPages > 1" class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+        <span class="text-sm text-slate-500">
+          Page {{ pagination.page }} of {{ pagination.totalPages }}
+        </span>
+        <div class="flex gap-2">
+          <button
+            @click="loadUsers(pagination.page - 1)"
+            :disabled="pagination.page === 1"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+          >
+            Previous
+          </button>
+          <button
+            @click="loadUsers(pagination.page + 1)"
+            :disabled="pagination.page === pagination.totalPages"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -189,7 +191,7 @@ import { useNotification } from '../../composables/useNotification';
 const authStore = useAuthStore();
 const userRole = authStore.user?.role || '';
 const { needsTenantSelection, tenantMessage } = useTenantCheck();
-const { error: showError, success: showSuccess, info: showInfo, confirm: showConfirm } = useNotification();
+const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 
 const users = ref<any[]>([]);
 const loading = ref(false);
@@ -206,13 +208,12 @@ const pagination = ref({
 
 const loadUsers = async (page = 1) => {
   if (needsTenantSelection.value) {
-    return; // Don't load if tenant not selected
+    return;
   }
   
-  // For non-super-admin, ensure tenantId is available
   if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
     console.error('Tenant ID not available for non-super-admin user');
-    await showError('Tenant ID tidak tersedia. Silakan login ulang.');
+    await showError('Tenant ID not available. Please login again.');
     return;
   }
   
@@ -220,7 +221,6 @@ const loadUsers = async (page = 1) => {
   try {
     const params: any = { page, limit: pagination.value.limit };
     
-    // Ensure tenantId is set in params for SUPER_ADMIN
     if (authStore.isSuperAdmin && authStore.selectedTenantId) {
       params.tenantId = authStore.selectedTenantId;
     }
@@ -229,7 +229,6 @@ const loadUsers = async (page = 1) => {
     users.value = response.data.data;
     pagination.value = response.data.pagination;
 
-    // Load user limit
     try {
       const limitRes = await api.get('/addons/check-limit/ADD_USERS');
       userLimit.value = limitRes.data;
@@ -238,7 +237,7 @@ const loadUsers = async (page = 1) => {
     }
   } catch (error: any) {
     console.error('Error loading users:', error);
-    await showError(error.response?.data?.message || 'Gagal memuat pengguna');
+    await showError(error.response?.data?.message || 'Failed to load users');
   } finally {
     loading.value = false;
   }
@@ -246,20 +245,20 @@ const loadUsers = async (page = 1) => {
 
 const getRoleClass = (role: string) => {
   const classes: Record<string, string> = {
-    ADMIN_TENANT: 'bg-purple-100 text-purple-800',
-    SUPERVISOR: 'bg-blue-100 text-blue-800',
-    CASHIER: 'bg-green-100 text-green-800',
-    KITCHEN: 'bg-orange-100 text-orange-800',
+    ADMIN_TENANT: 'bg-purple-100 text-purple-700',
+    SUPERVISOR: 'bg-blue-100 text-blue-700',
+    CASHIER: 'bg-green-100 text-green-700',
+    KITCHEN: 'bg-orange-100 text-orange-700',
   };
-  return classes[role] || 'bg-gray-100 text-gray-800';
+  return classes[role] || 'bg-slate-100 text-slate-600';
 };
 
 const getRoleLabel = (role: string) => {
   const labels: Record<string, string> = {
     ADMIN_TENANT: 'Admin',
     SUPERVISOR: 'Supervisor',
-    CASHIER: 'Kasir',
-    KITCHEN: 'Dapur',
+    CASHIER: 'Cashier',
+    KITCHEN: 'Kitchen',
   };
   return labels[role] || role;
 };
@@ -272,46 +271,39 @@ const editUser = (user: any) => {
 const handleSaveUser = async (userData: any) => {
   try {
     if (editingUser.value) {
-      // Update existing user
       await api.put(`/users/${editingUser.value.id}`, userData);
-      await showSuccess('Pengguna berhasil diupdate');
+      await showSuccess('User updated successfully');
     } else {
-      // Create new user
       await api.post('/users', userData);
-      await showSuccess('Pengguna berhasil ditambahkan');
+      await showSuccess('User added successfully');
     }
-    // Close modal first
     showEditModal.value = false;
     showCreateModal.value = false;
     editingUser.value = null;
-    // Wait a bit for modal to close, then reload
     await new Promise(resolve => setTimeout(resolve, 100));
     await loadUsers(pagination.value.page);
   } catch (error: any) {
     console.error('Error saving user:', error);
-    // Close modal first even on error
     showEditModal.value = false;
     showCreateModal.value = false;
     editingUser.value = null;
-    // Wait a bit for modal to close, then show error
     await new Promise(resolve => setTimeout(resolve, 100));
-    await showError(error.response?.data?.message || 'Gagal menyimpan pengguna');
+    await showError(error.response?.data?.message || 'Failed to save user');
   }
 };
 
 const deleteUser = async (id: string) => {
-  const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus pengguna ini?');
+  const confirmed = await showConfirm('Are you sure you want to delete this user?');
   if (!confirmed) return;
   try {
     await api.delete(`/users/${id}`);
     await loadUsers(pagination.value.page);
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menghapus pengguna');
+    await showError(error.response?.data?.message || 'Failed to delete user');
   }
 };
 
 const handleTenantChange = (tenantId: string | null) => {
-  // Auto-refetch users when tenant changes
   if (tenantId && !needsTenantSelection.value) {
     if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
       loadUsers();
@@ -319,7 +311,6 @@ const handleTenantChange = (tenantId: string | null) => {
   }
 };
 
-// Watch for tenant changes and auto-refetch
 watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
   if (newTenantId && newTenantId !== oldTenantId && !needsTenantSelection.value) {
     if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
@@ -331,7 +322,6 @@ watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // For super admin, ensure selectedTenantId is synced with localStorage
   if (authStore.isSuperAdmin) {
     const storedTenantId = localStorage.getItem('selectedTenantId');
     if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
@@ -346,4 +336,3 @@ onMounted(() => {
   }
 });
 </script>
-

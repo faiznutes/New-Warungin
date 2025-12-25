@@ -1,143 +1,162 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Two-Factor Authentication (2FA)</h1>
-      <p class="text-gray-600">Tingkatkan keamanan akun Anda dengan 2FA</p>
+    <div class="flex flex-col">
+      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Two-Factor Authentication</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Enhance your account security with 2FA.</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- 2FA Status Card -->
     <div v-else class="space-y-6">
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-xl font-bold text-gray-900">Status 2FA</h2>
-            <p class="text-sm text-gray-600 mt-1">Status autentikasi dua faktor Anda</p>
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg" :class="status.enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'">
+              <span class="material-symbols-outlined">{{ status.enabled ? 'verified_user' : 'security' }}</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">2FA Status</h3>
+              <p class="text-sm text-slate-500">Your two-factor authentication status</p>
+            </div>
           </div>
-          <div
-            :class="[
-              'px-4 py-2 rounded-lg font-semibold',
-              status.enabled
-                ? 'bg-green-100 text-green-800'
-                : 'bg-gray-100 text-gray-800'
-            ]"
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+            :class="status.enabled ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
           >
-            {{ status.enabled ? 'Aktif' : 'Tidak Aktif' }}
-          </div>
+            <span class="w-1.5 h-1.5 rounded-full" :class="status.enabled ? 'bg-green-500' : 'bg-slate-400'"></span>
+            {{ status.enabled ? 'Enabled' : 'Disabled' }}
+          </span>
         </div>
 
         <div v-if="status.enabled" class="mt-4 space-y-4">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p class="text-sm text-blue-800">
-              <strong>Backup Codes Tersisa:</strong> {{ status.remainingBackupCodes }}
-            </p>
-            <p class="text-xs text-blue-600 mt-1">
-              Simpan backup codes di tempat yang aman. Gunakan jika Anda kehilangan akses ke aplikasi authenticator.
-            </p>
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-blue-600 text-[20px]">key</span>
+              <div>
+                <p class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                  Backup Codes Remaining: {{ status.remainingBackupCodes }}
+                </p>
+                <p class="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                  Keep backup codes safe. Use them if you lose access to your authenticator app.
+                </p>
+              </div>
+            </div>
           </div>
 
           <button
             @click="showDisableModal = true"
-            class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
+            class="w-full px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
           >
-            Nonaktifkan 2FA
+            <span class="material-symbols-outlined text-[20px]">shield_off</span>
+            Disable 2FA
           </button>
         </div>
 
         <div v-else class="mt-4">
           <button
             @click="startSetup"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
           >
-            Aktifkan 2FA
+            <span class="material-symbols-outlined text-[20px]">shield</span>
+            Enable 2FA
           </button>
         </div>
       </div>
 
       <!-- Setup Flow -->
-      <div v-if="setupStep === 'generate'" class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Langkah 1: Scan QR Code</h2>
-        <p class="text-gray-600 mb-4">
-          Scan QR code di bawah ini menggunakan aplikasi authenticator seperti Google Authenticator atau Authy.
-        </p>
+      <div v-if="setupStep === 'generate'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+            <span class="material-symbols-outlined">qr_code_scanner</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Step 1: Scan QR Code</h3>
+            <p class="text-sm text-slate-500">Scan with Google Authenticator or Authy</p>
+          </div>
+        </div>
 
         <div v-if="generating" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-gray-600">Membuat QR code...</p>
+          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p class="text-slate-500">Generating QR code...</p>
         </div>
 
         <div v-else-if="qrData" class="space-y-4">
           <!-- QR Code -->
           <div class="flex justify-center">
-            <img :src="qrData.qrCode" alt="2FA QR Code" class="border-2 border-gray-200 rounded-lg p-4 bg-white" />
+            <img :src="qrData.qrCode" alt="2FA QR Code" class="border-2 border-slate-200 dark:border-slate-600 rounded-xl p-4 bg-white" />
           </div>
 
           <!-- Manual Entry -->
-          <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-sm font-semibold text-gray-700 mb-2">Atau masukkan secara manual:</p>
-            <div class="flex items-center space-x-2">
-              <code class="flex-1 bg-white px-3 py-2 rounded border border-gray-300 text-sm font-mono">{{ qrData.secret }}</code>
+          <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Or enter manually:</p>
+            <div class="flex items-center gap-2">
+              <code class="flex-1 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-mono text-slate-900 dark:text-white">{{ qrData.secret }}</code>
               <button
                 @click="copySecret"
-                class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition text-sm"
+                class="px-3 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition text-sm font-medium flex items-center gap-1"
               >
-                Salin
+                <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                Copy
               </button>
             </div>
           </div>
 
           <!-- Backup Codes -->
-          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p class="text-sm font-semibold text-yellow-800 mb-2">⚠️ Backup Codes (Simpan di tempat aman!):</p>
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-yellow-600 text-[20px]">warning</span>
+              <p class="text-sm font-bold text-yellow-800 dark:text-yellow-200">Backup Codes (Save these!)</p>
+            </div>
             <div class="grid grid-cols-2 gap-2 mb-3">
               <code
                 v-for="(code, index) in qrData.backupCodes"
                 :key="index"
-                class="bg-white px-2 py-1 rounded text-xs font-mono text-center"
+                class="bg-white dark:bg-slate-800 px-2 py-1.5 rounded-lg text-xs font-mono text-center border border-yellow-200 dark:border-yellow-800"
               >
                 {{ code }}
               </code>
             </div>
             <button
               @click="copyBackupCodes"
-              class="w-full px-3 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition text-sm"
+              class="w-full px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm font-medium flex items-center justify-center gap-2"
             >
-              Salin Semua Backup Codes
+              <span class="material-symbols-outlined text-[18px]">content_copy</span>
+              Copy All Backup Codes
             </button>
           </div>
 
           <!-- Verify Token -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">Masukkan kode 6 digit dari aplikasi authenticator:</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Enter 6-digit code from authenticator:</label>
             <input
               v-model="verificationToken"
               type="text"
               maxlength="6"
               placeholder="000000"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-center text-2xl tracking-widest font-mono"
               @input="verificationToken = verificationToken.replace(/\D/g, '')"
             />
             <p v-if="verifyError" class="text-sm text-red-600">{{ verifyError }}</p>
           </div>
 
-          <div class="flex space-x-3">
+          <div class="flex gap-3">
             <button
               @click="cancelSetup"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
             >
-              Batal
+              Cancel
             </button>
             <button
               @click="enable2FA"
               :disabled="verificationToken.length !== 6 || enabling"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
             >
-              {{ enabling ? 'Mengaktifkan...' : 'Aktifkan 2FA' }}
+              {{ enabling ? 'Enabling...' : 'Enable 2FA' }}
             </button>
           </div>
         </div>
@@ -145,47 +164,54 @@
     </div>
 
     <!-- Disable Modal -->
-    <div
-      v-if="showDisableModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click.self="showDisableModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Nonaktifkan 2FA</h3>
-        <p class="text-gray-600 mb-4">
-          Untuk menonaktifkan 2FA, Anda perlu memasukkan password Anda.
-        </p>
-
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <input
-              v-model="disablePassword"
-              type="password"
-              placeholder="Masukkan password Anda"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-            <p v-if="disableError" class="text-sm text-red-600 mt-1">{{ disableError }}</p>
+    <Teleport to="body">
+      <div
+        v-if="showDisableModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click.self="showDisableModal = false"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+              <span class="material-symbols-outlined">shield_off</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Disable 2FA</h3>
           </div>
+          <p class="text-slate-500 mb-4">
+            To disable 2FA, please enter your password.
+          </p>
 
-          <div class="flex space-x-3">
-            <button
-              @click="showDisableModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Batal
-            </button>
-            <button
-              @click="disable2FA"
-              :disabled="!disablePassword || disabling"
-              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ disabling ? 'Menonaktifkan...' : 'Nonaktifkan' }}
-            </button>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+              <input
+                v-model="disablePassword"
+                type="password"
+                placeholder="Enter your password"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              />
+              <p v-if="disableError" class="text-sm text-red-600 mt-1">{{ disableError }}</p>
+            </div>
+
+            <div class="flex gap-3">
+              <button
+                @click="showDisableModal = false"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                @click="disable2FA"
+                :disabled="!disablePassword || disabling"
+                class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium"
+              >
+                {{ disabling ? 'Disabling...' : 'Disable' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -240,7 +266,7 @@ const startSetup = async () => {
     qrData.value = response.data;
   } catch (error: any) {
     console.error('Error generating 2FA secret:', error);
-    verifyError.value = error.response?.data?.message || 'Gagal membuat QR code';
+    verifyError.value = error.response?.data?.message || 'Failed to generate QR code';
   } finally {
     generating.value = false;
   }
@@ -248,7 +274,7 @@ const startSetup = async () => {
 
 const enable2FA = async () => {
   if (verificationToken.value.length !== 6) {
-    verifyError.value = 'Token harus 6 digit';
+    verifyError.value = 'Token must be 6 digits';
     return;
   }
 
@@ -262,11 +288,10 @@ const enable2FA = async () => {
     qrData.value = null;
     verificationToken.value = '';
     
-    // Show success message
-    await success('2FA berhasil diaktifkan!', 'Berhasil');
+    await success('2FA enabled successfully!', 'Success');
   } catch (err: any) {
     console.error('Error enabling 2FA:', err);
-    verifyError.value = err.response?.data?.message || 'Token tidak valid';
+    verifyError.value = err.response?.data?.message || 'Invalid token';
   } finally {
     enabling.value = false;
   }
@@ -281,7 +306,7 @@ const cancelSetup = () => {
 
 const disable2FA = async () => {
   if (!disablePassword.value) {
-    disableError.value = 'Password wajib diisi';
+    disableError.value = 'Password is required';
     return;
   }
 
@@ -294,11 +319,10 @@ const disable2FA = async () => {
     showDisableModal.value = false;
     disablePassword.value = '';
     
-    // Show success message
-    await success('2FA berhasil dinonaktifkan', 'Berhasil');
+    await success('2FA disabled successfully', 'Success');
   } catch (err: any) {
     console.error('Error disabling 2FA:', err);
-    disableError.value = err.response?.data?.message || 'Password tidak valid';
+    disableError.value = err.response?.data?.message || 'Invalid password';
   } finally {
     disabling.value = false;
   }
@@ -307,14 +331,14 @@ const disable2FA = async () => {
 const copySecret = async () => {
   if (qrData.value) {
     navigator.clipboard.writeText(qrData.value.secret);
-    await success('Secret berhasil disalin!', 'Berhasil');
+    await success('Secret copied!', 'Success');
   }
 };
 
 const copyBackupCodes = async () => {
   if (qrData.value) {
     navigator.clipboard.writeText(qrData.value.backupCodes.join('\n'));
-    await success('Backup codes berhasil disalin!', 'Berhasil');
+    await success('Backup codes copied!', 'Success');
   }
 };
 
@@ -322,4 +346,3 @@ onMounted(() => {
   loadStatus();
 });
 </script>
-

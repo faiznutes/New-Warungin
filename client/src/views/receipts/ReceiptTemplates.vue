@@ -1,39 +1,40 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Receipt Templates</h1>
-        <p class="text-gray-600">Kelola template struk untuk berbagai ukuran kertas</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Receipt Templates</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage receipt templates for various paper sizes.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Tambah Template
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Template</span>
       </button>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading" class="flex items-center justify-center py-16">
+      <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading templates...</p>
+      </div>
     </div>
 
     <!-- Templates List -->
     <div v-else class="space-y-6">
-      <div v-if="templates.length === 0" class="bg-white rounded-lg shadow-md p-12 text-center">
-        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <p class="text-gray-600 mb-4">Belum ada template yang dibuat</p>
+      <div v-if="templates.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+        <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">receipt_long</span>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Templates Yet</h3>
+        <p class="text-slate-500 text-center max-w-md mb-4">Create your first receipt template to customize how receipts look.</p>
         <button
           @click="showCreateModal = true"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
-          Buat Template Pertama
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Create First Template
         </button>
       </div>
 
@@ -41,62 +42,62 @@
         <div
           v-for="template in templates"
           :key="template.id"
-          class="bg-white rounded-lg shadow-md p-6 border-2 transition"
-          :class="template.isDefault ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-primary-300 hover:shadow-lg'"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6 transition hover:shadow-lg"
+          :class="template.isDefault ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-slate-100 dark:border-slate-700 hover:border-primary/50'"
         >
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ template.name }}</h3>
-              <p class="text-sm text-gray-500 mb-2">{{ template.templateType }}</p>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">{{ template.name }}</h3>
+              <p class="text-sm text-slate-500 mb-2">{{ template.templateType }}</p>
               <div class="flex flex-wrap gap-2">
                 <span
-                  class="inline-block px-2 py-1 text-xs rounded"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
                   :class="template.paperSize === 'A4' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'"
                 >
+                  <span class="material-symbols-outlined text-[14px]">description</span>
                   {{ template.paperSize }}
                 </span>
                 <span
                   v-if="template.isDefault"
-                  class="inline-block px-2 py-1 text-xs bg-primary-600 text-white rounded"
+                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold bg-primary text-white rounded-full"
                 >
+                  <span class="material-symbols-outlined text-[14px]">check_circle</span>
                   Default
                 </span>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center space-x-2 mt-4">
+          <div class="flex items-center gap-2 mt-4">
             <button
               @click="previewTemplate(template)"
-              class="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+              class="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">visibility</span>
               Preview
             </button>
             <button
               @click="editTemplate(template)"
-              class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
+              class="flex-1 px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center justify-center gap-1"
             >
+              <span class="material-symbols-outlined text-[16px]">edit</span>
               Edit
             </button>
             <button
               v-if="!template.isDefault"
               @click="setAsDefault(template.id)"
-              class="px-3 py-2 text-sm bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition"
+              class="px-3 py-2 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition"
               title="Set as Default"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <span class="material-symbols-outlined text-[18px]">check</span>
             </button>
             <button
               v-if="!template.isDefault"
               @click="deleteTemplate(template.id)"
-              class="px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
+              class="px-3 py-2 text-sm bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition"
               title="Delete"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>
           </div>
         </div>
@@ -106,34 +107,42 @@
     <!-- Create/Edit Modal -->
     <div
       v-if="showCreateModal || editingTemplate"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            {{ editingTemplate ? 'Edit Template' : 'Buat Template Baru' }}
-          </h3>
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+              {{ editingTemplate ? 'Edit Template' : 'Create New Template' }}
+            </h3>
+            <button
+              @click="closeModal"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
+            >
+              <span class="material-symbols-outlined text-slate-500">close</span>
+            </button>
+          </div>
 
-          <form @submit.prevent="saveTemplate" class="space-y-4">
+          <form @submit.prevent="saveTemplate" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Template *</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Template Name *</label>
                 <input
                   v-model="templateForm.name"
                   type="text"
                   required
-                  placeholder="Contoh: Struk Thermal 58mm"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  placeholder="e.g. Thermal 58mm Receipt"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Template *</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Template Type *</label>
                 <select
                   v-model="templateForm.templateType"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="DEFAULT">Default</option>
                   <option value="MODERN">Modern</option>
@@ -144,11 +153,11 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Ukuran Kertas *</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Paper Size *</label>
                 <select
                   v-model="templateForm.paperSize"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="A4">A4</option>
                   <option value="THERMAL_58">Thermal 58mm</option>
@@ -157,158 +166,120 @@
               </div>
             </div>
 
-            <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">Header Settings</h4>
-              <div class="grid grid-cols-2 gap-3">
-                <label class="flex items-center space-x-2">
+            <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+              <h4 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">format_align_center</span>
+                Header Settings
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <label class="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     v-model="templateForm.header.showName"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
                   />
-                  <span class="text-sm text-gray-700">Tampilkan Nama Toko</span>
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Show Store Name</span>
                 </label>
-                <label class="flex items-center space-x-2">
+                <label class="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     v-model="templateForm.header.showAddress"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
                   />
-                  <span class="text-sm text-gray-700">Tampilkan Alamat</span>
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Show Address</span>
                 </label>
-                <label class="flex items-center space-x-2">
+                <label class="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     v-model="templateForm.header.showPhone"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
                   />
-                  <span class="text-sm text-gray-700">Tampilkan Telepon</span>
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Show Phone</span>
                 </label>
               </div>
             </div>
 
-            <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">Fields Settings</h4>
-              <div class="grid grid-cols-2 gap-3">
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showOrderNumber"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Nomor Order</span>
+            <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+              <h4 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">list</span>
+                Field Settings
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showOrderNumber" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Order Number</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showDate"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Tanggal</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showDate" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Date</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showTime"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Waktu</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showTime" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Time</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showCustomer"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Customer</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showCustomer" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Customer</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showItems"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Items</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showItems" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Items</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showSubtotal"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Subtotal</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showSubtotal" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Subtotal</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showDiscount"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Discount</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showDiscount" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Discount</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showTotal"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Total</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showTotal" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Total</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showPaymentMethod"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Payment Method</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showPaymentMethod" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Payment Method</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.fields.showChange"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Change</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.fields.showChange" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Change</span>
                 </label>
               </div>
             </div>
 
-            <div class="border-t pt-4">
-              <h4 class="font-semibold text-gray-900 mb-3">Footer Settings</h4>
-              <div class="grid grid-cols-2 gap-3">
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.footer.showThankYou"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Thank You Message</span>
+            <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+              <h4 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">format_align_justify</span>
+                Footer Settings
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.footer.showThankYou" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Thank You Message</span>
                 </label>
-                <label class="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    v-model="templateForm.footer.showContact"
-                    class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span class="text-sm text-gray-700">Contact Info</span>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="templateForm.footer.showContact" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                  <span class="text-sm text-slate-700 dark:text-slate-300">Contact Info</span>
                 </label>
               </div>
             </div>
 
-            <div class="flex space-x-3 pt-4 border-t">
+            <div class="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
               <button
                 type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
               >
-                Batal
+                Cancel
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
               >
-                {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                {{ saving ? 'Saving...' : 'Save Template' }}
               </button>
             </div>
           </form>
@@ -319,26 +290,30 @@
     <!-- Preview Modal -->
     <div
       v-if="previewingTemplate"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="previewingTemplate = null"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">Preview Template: {{ previewingTemplate.name }}</h3>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">visibility</span>
+              Preview: {{ previewingTemplate.name }}
+            </h3>
             <button
               @click="previewingTemplate = null"
-              class="text-gray-400 hover:text-gray-600"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <span class="material-symbols-outlined text-slate-500">close</span>
             </button>
           </div>
-          <div class="bg-gray-50 rounded-lg p-6">
-            <div class="bg-white rounded p-4 max-w-md mx-auto border-2 border-dashed border-gray-300">
-              <p class="text-center text-gray-500 text-sm">Preview akan ditampilkan di sini</p>
-              <p class="text-center text-gray-400 text-xs mt-2">Template: {{ previewingTemplate.templateType }} - {{ previewingTemplate.paperSize }}</p>
+          <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-6">
+            <div class="bg-white dark:bg-slate-800 rounded-lg p-4 max-w-md mx-auto border-2 border-dashed border-slate-300 dark:border-slate-600">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <span class="material-symbols-outlined text-[48px] text-slate-300">receipt_long</span>
+                <p class="text-slate-500 text-sm">Preview will be displayed here</p>
+                <p class="text-slate-400 text-xs">Template: {{ previewingTemplate.templateType }} - {{ previewingTemplate.paperSize }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -395,7 +370,7 @@ const loadTemplates = async () => {
     templates.value = response.data;
   } catch (error: any) {
     console.error('Error loading templates:', error);
-    await showError('Gagal memuat template');
+    await showError('Failed to load templates');
   } finally {
     loading.value = false;
   }
@@ -406,16 +381,16 @@ const saveTemplate = async () => {
   try {
     if (editingTemplate.value) {
       await api.put(`/receipts/templates/${editingTemplate.value.id}`, templateForm.value);
-      await showSuccess('Template berhasil diupdate');
+      await showSuccess('Template updated successfully');
     } else {
       await api.post('/receipts/templates', templateForm.value);
-      await showSuccess('Template berhasil ditambahkan');
+      await showSuccess('Template added successfully');
     }
     closeModal();
     await loadTemplates();
   } catch (error: any) {
     console.error('Error saving template:', error);
-    await showError(error.response?.data?.message || 'Gagal menyimpan template');
+    await showError(error.response?.data?.message || 'Failed to save template');
   } finally {
     saving.value = false;
   }
@@ -460,30 +435,24 @@ const setAsDefault = async (id: string) => {
   try {
     await api.post(`/receipts/templates/${id}/set-default`);
     await loadTemplates();
-    await showSuccess('Template berhasil dijadikan default');
+    await showSuccess('Template set as default');
   } catch (error: any) {
     console.error('Error setting default:', error);
-    await showError('Gagal mengatur template default');
+    await showError('Failed to set default template');
   }
 };
 
 const deleteTemplate = async (id: string) => {
-  const confirmed = await showConfirm(
-    'Hapus Template',
-    'Apakah Anda yakin ingin menghapus template ini?',
-    'Hapus',
-    'Batal'
-  );
-  
+  const confirmed = await showConfirm('Are you sure you want to delete this template?');
   if (!confirmed) return;
 
   try {
     await api.delete(`/receipts/templates/${id}`);
     await loadTemplates();
-    await showSuccess('Template berhasil dihapus');
+    await showSuccess('Template deleted successfully');
   } catch (error: any) {
     console.error('Error deleting template:', error);
-    await showError(error.response?.data?.message || 'Gagal menghapus template');
+    await showError(error.response?.data?.message || 'Failed to delete template');
   }
 };
 
@@ -522,4 +491,3 @@ onMounted(() => {
   loadTemplates();
 });
 </script>
-

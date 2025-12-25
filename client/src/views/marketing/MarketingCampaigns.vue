@@ -1,75 +1,90 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Marketing Campaigns</h2>
-        <p class="text-gray-600">Kelola campaign SMS, Email, dan Promo</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Marketing Campaigns</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage SMS, Email, and Promo campaigns.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
-        Buat Campaign
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Create Campaign</span>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="campaigns.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">campaign</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Campaigns Yet</h3>
+      <p class="text-slate-500 text-center max-w-md mb-4">Create your first marketing campaign to engage with customers.</p>
+      <button
+        @click="showCreateModal = true"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+      >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Create First Campaign
       </button>
     </div>
 
     <!-- Campaigns Grid -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
-    <div v-else-if="campaigns.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-      </svg>
-      <p class="text-gray-500">Belum ada campaign</p>
-    </div>
-
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="campaign in campaigns"
         :key="campaign.id"
-        class="bg-white rounded-lg shadow-lg p-6 border-2"
-        :class="campaign.status === 'ACTIVE' ? 'border-green-500' : 'border-gray-200'"
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
+        :class="campaign.status === 'ACTIVE' ? 'border-green-300 dark:border-green-800' : 'border-slate-100 dark:border-slate-700'"
       >
         <div class="flex items-start justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">{{ campaign.name }}</h3>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ campaign.name }}</h3>
           <span
-            class="px-2 py-1 text-xs font-semibold rounded-full"
-            :class="campaign.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+            class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
+            :class="campaign.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
           >
+            <span class="w-1.5 h-1.5 rounded-full" :class="campaign.status === 'ACTIVE' ? 'bg-green-500' : 'bg-slate-400'"></span>
             {{ campaign.status }}
           </span>
         </div>
-        <p class="text-sm text-gray-600 mb-4">{{ campaign.description }}</p>
+        <p class="text-sm text-slate-500 mb-4">{{ campaign.description }}</p>
         <div class="space-y-2 mb-4">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">Tipe:</span>
-            <span class="font-semibold">{{ campaign.type }}</span>
+            <span class="text-slate-500">Type:</span>
+            <span class="font-medium text-slate-900 dark:text-white flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">{{ getTypeIcon(campaign.type) }}</span>
+              {{ campaign.type }}
+            </span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">Target:</span>
-            <span class="font-semibold">{{ campaign.targetCount }} penerima</span>
+            <span class="text-slate-500">Target:</span>
+            <span class="font-medium text-slate-900 dark:text-white">{{ campaign.targetCount }} recipients</span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-600">Terikirim:</span>
-            <span class="font-semibold">{{ campaign.sentCount || 0 }}</span>
+            <span class="text-slate-500">Sent:</span>
+            <span class="font-medium text-slate-900 dark:text-white">{{ campaign.sentCount || 0 }}</span>
           </div>
         </div>
-        <div class="flex space-x-2">
+        <div class="flex gap-2">
           <button
             @click="viewCampaign(campaign)"
-            class="flex-1 px-3 py-2 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition"
+            class="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium flex items-center justify-center gap-1"
           >
-            Detail
+            <span class="material-symbols-outlined text-[18px]">visibility</span>
+            Details
           </button>
           <button
             v-if="campaign.status === 'DRAFT'"
             @click="sendCampaign(campaign.id)"
-            class="flex-1 px-3 py-2 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition"
+            class="flex-1 px-3 py-2 text-sm bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/40 transition font-medium flex items-center justify-center gap-1"
           >
-            Kirim
+            <span class="material-symbols-outlined text-[18px]">send</span>
+            Send
           </button>
         </div>
       </div>
@@ -79,26 +94,31 @@
     <Teleport to="body">
       <div
         v-if="showCreateModal"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         @click.self="showCreateModal = false"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Buat Campaign Baru</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2 bg-primary/10 text-primary rounded-lg">
+              <span class="material-symbols-outlined">campaign</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create New Campaign</h3>
+          </div>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nama Campaign</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Campaign Name</label>
               <input
                 v-model="campaignForm.name"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                placeholder="Contoh: Promo Lebaran 2025"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                placeholder="e.g. Holiday Sale 2025"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Campaign</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Campaign Type</label>
               <select
                 v-model="campaignForm.type"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="SMS">SMS</option>
                 <option value="EMAIL">Email</option>
@@ -107,47 +127,47 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Audience</label>
               <select
                 v-model="campaignForm.target"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
-                <option value="ALL">Semua Customer</option>
-                <option value="MEMBERS">Member Saja</option>
-                <option value="ACTIVE">Customer Aktif</option>
-                <option value="INACTIVE">Customer Tidak Aktif</option>
+                <option value="ALL">All Customers</option>
+                <option value="MEMBERS">Members Only</option>
+                <option value="ACTIVE">Active Customers</option>
+                <option value="INACTIVE">Inactive Customers</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Pesan/Content</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Message/Content</label>
               <textarea
                 v-model="campaignForm.content"
                 rows="4"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                placeholder="Masukkan pesan campaign..."
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                placeholder="Enter campaign message..."
               ></textarea>
             </div>
             <div v-if="campaignForm.type === 'PROMO'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Kode Promo</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Promo Code</label>
               <input
                 v-model="campaignForm.promoCode"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                placeholder="LEBARAN20"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono uppercase"
+                placeholder="HOLIDAY20"
               />
             </div>
-            <div class="flex space-x-3">
+            <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button
                 @click="showCreateModal = false"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
               >
-                Batal
+                Cancel
               </button>
               <button
                 @click="saveCampaign"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
               >
-                Simpan
+                Save
               </button>
             </div>
           </div>
@@ -173,7 +193,7 @@ import { useTenantCheck } from '../../composables/useTenantCheck';
 import { useNotification } from '../../composables/useNotification';
 
 const { needsTenantSelection } = useTenantCheck();
-const { success: showSuccess, error: showError, info: showInfo, confirm: showConfirm } = useNotification();
+const { success: showSuccess, error: showError, confirm: showConfirm } = useNotification();
 
 interface Campaign {
   id: string;
@@ -202,6 +222,16 @@ const campaignForm = ref({
   content: '',
   promoCode: '',
 });
+
+const getTypeIcon = (type?: string): string => {
+  const icons: Record<string, string> = {
+    SMS: 'sms',
+    EMAIL: 'mail',
+    WHATSAPP: 'chat',
+    PROMO: 'sell',
+  };
+  return icons[type || ''] || 'campaign';
+};
 
 const loadCampaigns = async () => {
   if (needsTenantSelection.value) return;
@@ -232,22 +262,22 @@ const handleSendFromDetail = async (campaignId: string) => {
 };
 
 const sendCampaign = async (campaignId: string) => {
-  const confirmed = await showConfirm('Kirim campaign ini sekarang?');
+  const confirmed = await showConfirm('Send this campaign now?');
   if (!confirmed) return;
   try {
     await api.post(`/marketing/campaigns/${campaignId}/send`);
     await loadCampaigns();
-    await showSuccess('Campaign berhasil dikirim');
+    await showSuccess('Campaign sent successfully');
   } catch (error: any) {
     console.error('Error sending campaign:', error);
-    await showError(error.response?.data?.message || 'Gagal mengirim campaign');
+    await showError(error.response?.data?.message || 'Failed to send campaign');
   }
 };
 
 const saveCampaign = async () => {
   try {
     await api.post('/marketing/campaigns', campaignForm.value);
-    await showSuccess('Campaign berhasil dibuat');
+    await showSuccess('Campaign created successfully');
     showCreateModal.value = false;
     campaignForm.value = {
       name: '',
@@ -259,7 +289,7 @@ const saveCampaign = async () => {
     await loadCampaigns();
   } catch (error: any) {
     console.error('Error saving campaign:', error);
-    await showError(error.response?.data?.message || 'Gagal membuat campaign');
+    await showError(error.response?.data?.message || 'Failed to create campaign');
   }
 };
 
@@ -268,4 +298,3 @@ onMounted(() => {
   loadCampaigns();
 });
 </script>
-

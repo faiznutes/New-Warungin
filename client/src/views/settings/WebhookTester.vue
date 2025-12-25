@@ -1,16 +1,17 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Webhook Tester</h1>
-        <p class="text-gray-600">Test, preview, dan replay webhook deliveries</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Webhook Tester</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Test, preview, and replay webhook deliveries</p>
       </div>
       <router-link
         to="/app/settings/webhooks"
-        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+        class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition font-medium"
       >
-        ← Kembali ke Webhooks
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Back to Webhooks
       </router-link>
     </div>
 
@@ -18,35 +19,35 @@
       <!-- Left: Webhook Selection & Testing -->
       <div class="space-y-6">
         <!-- Webhook Selection -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">Pilih Webhook</h2>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Select Webhook</h3>
           <select
             v-model="selectedWebhookId"
             @change="loadWebhookDetails"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Pilih Webhook</option>
+            <option value="">Select Webhook</option>
             <option v-for="webhook in webhooks" :key="webhook.id" :value="webhook.id">
               {{ webhook.url }} ({{ webhook.events.length }} events)
             </option>
           </select>
 
-          <div v-if="selectedWebhook" class="mt-4 space-y-2 text-sm">
+          <div v-if="selectedWebhook" class="mt-4 space-y-3 text-sm">
             <div class="flex items-center justify-between">
-              <span class="text-gray-600">URL:</span>
-              <span class="font-medium text-gray-900">{{ selectedWebhook.url }}</span>
+              <span class="text-slate-500">URL:</span>
+              <span class="font-medium text-slate-900 dark:text-white">{{ selectedWebhook.url }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-gray-600">Status:</span>
+              <span class="text-slate-500">Status:</span>
               <span
                 :class="[
-                  'px-2 py-1 rounded text-xs font-semibold',
+                  'px-2.5 py-1 rounded-lg text-xs font-bold',
                   selectedWebhook.isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-slate-100 text-slate-600'
                 ]"
               >
-                {{ selectedWebhook.isActive ? 'Aktif' : 'Tidak Aktif' }}
+                {{ selectedWebhook.isActive ? 'Active' : 'Inactive' }}
               </span>
             </div>
             <div class="flex items-center justify-between">
@@ -65,8 +66,8 @@
         </div>
 
         <!-- Test Webhook -->
-        <div v-if="selectedWebhook" class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">Test Webhook</h2>
+        <div v-if="selectedWebhook" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Test Webhook</h3>
           
           <div class="space-y-4">
             <div>
@@ -87,21 +88,22 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Custom Payload (JSON)</label>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Custom Payload (JSON)</label>
               <textarea
                 v-model="testForm.payload"
                 rows="8"
                 placeholder='{"test": true, "message": "Custom test payload"}'
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 font-mono text-sm"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
               ></textarea>
-              <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menggunakan default test payload</p>
+              <p class="text-xs text-slate-500 mt-1.5">Leave empty to use default test payload</p>
             </div>
 
             <button
               @click="testWebhook"
               :disabled="testing"
-              class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
             >
+              <span class="material-symbols-outlined text-[20px]">send</span>
               {{ testing ? 'Testing...' : 'Test Webhook' }}
             </button>
           </div>
@@ -136,8 +138,9 @@
             </button>
           </div>
 
-          <div v-if="!selectedWebhookId" class="text-center py-12 text-gray-500">
-            <p>Pilih webhook untuk melihat delivery history</p>
+          <div v-if="!selectedWebhookId" class="flex flex-col items-center justify-center py-16 text-center">
+            <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">webhook</span>
+            <p class="text-slate-500">Select a webhook to view delivery history</p>
           </div>
 
           <div v-else>
@@ -226,8 +229,9 @@
                 </details>
               </div>
 
-              <div v-if="deliveries.length === 0" class="text-center py-8 text-gray-500">
-                <p>Belum ada delivery history</p>
+              <div v-if="deliveries.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
+                <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">inbox</span>
+                <p class="text-slate-500">No delivery history yet</p>
               </div>
             </div>
 
@@ -265,9 +269,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useNotification } from '../../composables/useNotification';
+
+const route = useRoute();
 
 const { success: showSuccess, error: showError } = useNotification();
 

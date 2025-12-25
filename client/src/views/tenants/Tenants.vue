@@ -1,233 +1,250 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Tenant Management</h2>
-        <p class="text-sm sm:text-base text-gray-600">Kelola semua tenant yang terdaftar</p>
+  <div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Tenant Management</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage all registered tenants and their subscription status.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Tambah Tenant</span>
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        <span>Add Tenant</span>
       </button>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4 sm:mb-6 mx-4 sm:mx-6">
-      <!-- Search Bar -->
-      <div class="mb-4">
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
+    <!-- Filters & Search -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-5">
+      <div class="flex flex-col md:flex-row gap-4">
+        <!-- Search -->
+        <div class="flex-1 relative">
+           <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">search</span>
+           <input
             v-model="filters.search"
             @focus="handleSearchFocus"
             type="text"
-            placeholder="Cari tenant..."
-            class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            placeholder="Search tenants by name or email..."
+            class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white placeholder:text-slate-400"
           />
         </div>
-      </div>
-
-      <!-- Status Filter -->
-      <div>
-        <label class="block text-xs font-medium text-gray-700 mb-2">Status</label>
-        <div class="flex flex-wrap gap-2">
-          <button
+        <!-- Status Filter Buttons -->
+        <div class="flex items-center gap-2">
+           <button
             @click="filters.isActive = ''"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
             :class="filters.isActive === '' 
-              ? 'bg-blue-600 text-white border-blue-600' 
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-            class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+              ? 'bg-primary/10 text-primary border-primary/20' 
+              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
           >
-            Semua
+            All
           </button>
           <button
             @click="filters.isActive = 'true'"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
             :class="filters.isActive === 'true' 
-              ? 'bg-green-600 text-white border-green-600' 
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-            class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+              ? 'bg-green-50 text-green-700 border-green-200' 
+              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
           >
-            Aktif
+            Active
           </button>
           <button
             @click="filters.isActive = 'false'"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
             :class="filters.isActive === 'false' 
-              ? 'bg-red-600 text-white border-red-600' 
-              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-            class="px-3 py-1.5 text-sm font-medium border rounded-lg transition-all"
+              ? 'bg-red-50 text-red-700 border-red-200' 
+              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
           >
-            Tidak Aktif
+            Inactive
           </button>
         </div>
       </div>
     </div>
 
     <!-- Tenants Table -->
-    <div v-if="loading" class="flex items-center justify-center py-12 mx-4 sm:mx-6">
-      <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm flex-1 overflow-hidden flex flex-col">
+       <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+         <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+         <p class="text-[#4c739a] text-sm font-medium">Memuat data tenant...</p>
+       </div>
 
-    <div v-else-if="filteredTenants.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg mx-4 sm:mx-6">
-      <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <p class="text-gray-500">Belum ada tenant</p>
-    </div>
+       <div v-else-if="filteredTenants.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-full mb-4">
+            <span class="material-symbols-outlined text-4xl text-[#94a3b8]">store_mall_directory</span>
+          </div>
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">No tenants yet</h3>
+          <p class="text-[#4c739a] text-sm mt-1 max-w-sm mx-auto">No tenants found with the current filter.</p>
+       </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden mx-4 sm:mx-6">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+       <div v-else class="overflow-x-auto flex-1">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Daftar</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+              <th class="px-6 py-4 text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Nama Tenant</th>
+              <th class="px-6 py-4 text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Kontak</th>
+              <th class="px-6 py-4 text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Status</th>
+              <th class="px-6 py-4 text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Paket</th>
+              <th class="px-6 py-4 text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Terdaftar</th>
+              <th class="px-6 py-4 text-right text-[#4c739a] dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="tenant in filteredTenants" :key="tenant.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <button
-                  @click="viewTenantDetail(tenant.id)"
-                  class="text-sm font-medium text-blue-600 hover:text-blue-900 hover:underline"
-                >
-                  {{ tenant.name }}
-                </button>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ tenant.email || '-' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  class="px-2 py-1 text-xs font-semibold rounded-full"
-                  :class="tenant.isActive !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                >
-                  {{ tenant.isActive !== false ? 'Aktif' : 'Tidak Aktif' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <span 
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getPlanBadgeClass(tenant.subscriptionPlan || 'BASIC')"
-                  >
-                    {{ getPlanName(tenant.subscriptionPlan || 'BASIC') }}
-                  </span>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="tenant in filteredTenants" :key="tenant.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="size-10 rounded-lg bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-[#137fec] font-bold text-sm">
+                    {{ tenant.name?.charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <button @click="viewTenantDetail(tenant.id)" class="text-sm font-bold text-[#0d141b] dark:text-white hover:text-[#137fec] transition-colors text-left">
+                      {{ tenant.name }}
+                    </button>
+                    <p class="text-xs text-[#4c739a] dark:text-slate-500 line-clamp-1">{{ tenant.address || 'Alamat tidak tersedia' }}</p>
+                  </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ formatDate(tenant.createdAt) }}</div>
+              <td class="px-6 py-4">
+                 <div class="flex flex-col">
+                   <span class="text-sm text-[#0d141b] dark:text-white font-medium">{{ tenant.email || '-' }}</span>
+                   <span class="text-xs text-[#4c739a]">{{ tenant.phone || '-' }}</span>
+                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end gap-2">
-                  <button
-                    @click="editTenant(tenant)"
-                    class="px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition"
-                  >
-                    Edit
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border"
+                  :class="tenant.isActive !== false ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'"
+                >
+                  <span class="size-1.5 rounded-full" :class="tenant.isActive !== false ? 'bg-green-500' : 'bg-red-500'"></span>
+                  {{ tenant.isActive !== false ? 'Aktif' : 'Nonaktif' }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                 <span class="px-2.5 py-1 rounded-lg text-xs font-bold border"
+                  :class="getPlanBadgeClass(tenant.subscriptionPlan || 'BASIC')"
+                 >
+                   {{ getPlanName(tenant.subscriptionPlan || 'BASIC') }}
+                 </span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-[#4c739a]">{{ formatDate(tenant.createdAt) }}</span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button @click="editTenant(tenant)" class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors" title="Edit Tenant">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
                   </button>
-                  <button
-                    @click="deleteTenant(tenant.id)"
-                    class="px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition"
-                  >
-                    Hapus
+                  <button @click="deleteTenant(tenant.id)" class="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors" title="Hapus Tenant">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
+       </div>
     </div>
 
     <!-- Create/Edit Modal -->
     <div
       v-if="showCreateModal || editingTenant"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">
-          {{ editingTenant ? 'Edit Tenant' : 'Tambah Tenant' }}
-        </h3>
-        <form @submit.prevent="saveTenant" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Tenant</label>
-            <input
-              v-model="tenantForm.name"
-              type="text"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Contoh: Nasi Padang Barokah"
-            />
-            <p v-if="!editingTenant" class="text-xs text-gray-500 mt-1">Email dan password akan di-generate otomatis</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">No. Telepon</label>
-            <input
-              v-model="tenantForm.phone"
-              type="tel"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="081234567890"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-            <textarea
-              v-model="tenantForm.address"
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Alamat lengkap tenant"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Paket</label>
-            <select
-              v-model="tenantForm.subscriptionPlan"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
-            >
-              <option value="BASIC">Starter (BASIC)</option>
-              <option value="PRO">Boost (PRO)</option>
-              <option value="ENTERPRISE">Max (ENTERPRISE)</option>
-            </select>
-          </div>
-          <div v-if="editingTenant" class="flex items-center space-x-2">
-            <input
-              v-model="tenantForm.isActive"
-              type="checkbox"
-              id="isActive"
-              class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-            />
-            <label for="isActive" class="text-sm text-gray-700">Aktif</label>
-          </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              type="submit"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              {{ editingTenant ? 'Update' : 'Simpan' }}
-            </button>
-            <button
-              type="button"
-              @click="closeModal"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">
+            {{ editingTenant ? 'Edit Tenant' : 'Tambah Tenant Baru' }}
+          </h3>
+          <button @click="closeModal" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+          <form @submit.prevent="saveTenant" class="flex flex-col gap-5">
+            <div>
+              <label class="block text-sm font-semibold text-[#0d141b] dark:text-white mb-2">Nama Tenant <span class="text-red-500">*</span></label>
+              <input
+                v-model="tenantForm.name"
+                type="text"
+                required
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                placeholder="Contoh: Warung Makan Bahari"
+              />
+              <p v-if="!editingTenant" class="text-xs text-[#4c739a] mt-1 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">info</span>
+                Email & password admin akan digenerate otomatis
+              </p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+               <div>
+                <label class="block text-sm font-semibold text-[#0d141b] dark:text-white mb-2">No. Telepon</label>
+                <input
+                  v-model="tenantForm.phone"
+                  type="tel"
+                  class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                  placeholder="0812..."
+                />
+               </div>
+               <div>
+                  <label class="block text-sm font-semibold text-[#0d141b] dark:text-white mb-2">Paket Langganan</label>
+                  <div class="relative">
+                    <select
+                      v-model="tenantForm.subscriptionPlan"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 appearance-none"
+                    >
+                      <option value="BASIC">Starter (BASIC)</option>
+                      <option value="PRO">Boost (PRO)</option>
+                      <option value="ENTERPRISE">Max (ENTERPRISE)</option>
+                    </select>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c739a] pointer-events-none text-[20px]">expand_more</span>
+                  </div>
+               </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-[#0d141b] dark:text-white mb-2">Alamat Lengkap</label>
+              <textarea
+                v-model="tenantForm.address"
+                rows="3"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 resize-none"
+                placeholder="Jl. Contoh No. 123, Kota..."
+              ></textarea>
+            </div>
+
+            <div v-if="editingTenant" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg border border-slate-100 dark:border-slate-700">
+              <div class="flex items-center h-5">
+                <input
+                  v-model="tenantForm.isActive"
+                  type="checkbox"
+                  id="isActive"
+                  class="w-4 h-4 text-[#137fec] border-gray-300 rounded focus:ring-[#137fec]"
+                />
+              </div>
+              <div class="ml-2 text-sm">
+                <label for="isActive" class="font-medium text-[#0d141b] dark:text-white">Status Aktif</label>
+                <p class="text-[#4c739a] text-xs">Nonaktifkan untuk memblokir akses tenant ini</p>
+              </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+              <button
+                type="button"
+                @click="closeModal"
+                class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-[#0d141b] rounded-lg hover:bg-slate-50 font-medium transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-lg hover:bg-blue-600 font-bold transition-colors shadow-lg shadow-blue-500/30"
+              >
+                {{ editingTenant ? 'Simpan Perubahan' : 'Buat Tenant' }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

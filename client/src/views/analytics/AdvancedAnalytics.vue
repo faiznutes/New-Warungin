@@ -1,163 +1,219 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Error Message if Addon Not Active -->
-    <div v-if="addonError" class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-      <div class="flex items-center">
-        <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+    <div v-if="addonError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4">
+      <div class="flex items-start gap-3">
+        <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5">error</span>
         <div class="flex-1">
-          <p class="text-red-800 font-medium">{{ addonError }}</p>
-          <router-link to="/app/addons" class="text-red-600 hover:text-red-800 text-sm underline mt-1 inline-block">
-            Berlangganan Business Analytics & Insight
+          <p class="text-red-800 dark:text-red-300 font-bold text-sm mb-1">{{ addonError }}</p>
+          <router-link to="/app/addons" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs font-medium underline flex items-center gap-1">
+            Subscribe to Business Analytics & Insight
+            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
           </router-link>
         </div>
       </div>
     </div>
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900">Advanced Analytics</h2>
-        <p class="text-gray-600">Prediksi penjualan, forecasting, dan custom reports</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Advanced Analytics</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Sales predictions, forecasting, and deep insights.</p>
       </div>
       <button
         v-if="!addonError"
         @click="showCustomReportModal = true"
-        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
       >
-        Buat Custom Report
+        <span class="material-symbols-outlined text-[20px]">add_chart</span>
+        <span>Create Custom Report</span>
       </button>
     </div>
 
     <!-- Analytics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Prediksi Penjualan</span>
-          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Sales Prediction -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sales Prediction</p>
+             <p class="text-[10px] text-slate-400">Next month estimate</p>
+          </div>
+          <div class="bg-indigo-50 dark:bg-indigo-900/30 p-2 rounded-xl text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">query_stats</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold text-gray-900">{{ formatCurrency(predictions.nextMonth) }}</div>
-        <div class="text-sm text-gray-500 mt-1">Bulan depan</div>
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(predictions.nextMonth) }}</h3>
+        </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Trend Penjualan</span>
-          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
+      <!-- Trend -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Sales Trend</p>
+             <p class="text-[10px] text-slate-400">vs Last Month</p>
+          </div>
+          <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">trending_up</span>
+          </div>
         </div>
-        <div class="text-2xl font-bold text-gray-900" :class="predictions.trend > 0 ? 'text-green-600' : 'text-red-600'">
-          {{ predictions.trend > 0 ? '+' : '' }}{{ predictions.trend }}%
-        </div>
-        <div class="text-sm text-gray-500 mt-1">vs bulan lalu</div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Produk Terlaris</span>
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </div>
-        <div class="text-2xl font-bold text-gray-900">{{ topProducts.length }}</div>
-        <div class="text-sm text-gray-500 mt-1">Top 10 produk</div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">Forecast Accuracy</span>
-          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </div>
-        <div class="text-2xl font-bold text-gray-900">{{ predictions.accuracy }}%</div>
-        <div class="text-sm text-gray-500 mt-1">Akurasi prediksi</div>
-        <div class="mt-3">
-          <select 
-            v-model="forecastMethod" 
-            @change="loadAnalytics"
-            class="text-xs px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white" :class="predictions.trend > 0 ? 'text-emerald-600' : 'text-red-600'">
+            {{ predictions.trend > 0 ? '+' : '' }}{{ predictions.trend }}%
+          </h3>
+          <span 
+            class="text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"
+            :class="predictions.trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
           >
-            <option value="moving_average">Moving Average</option>
-            <option value="linear_regression">Linear Regression</option>
-          </select>
+            <span class="material-symbols-outlined text-[10px]">{{ predictions.trend > 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
+            {{ Math.abs(predictions.trend) }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Top Products Count -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Produk Terlaris</p>
+             <p class="text-[10px] text-slate-400">Top performa</p>
+          </div>
+          <div class="bg-orange-50 dark:bg-orange-900/30 p-2 rounded-xl text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">stars</span>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ topProducts.length }}</h3>
+          <span class="text-xs text-slate-400">Produk</span>
+        </div>
+      </div>
+
+      <!-- Forecast Accuracy -->
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Forecast Accuracy</p>
+             <p class="text-[10px] text-slate-400">Tingkat akurasi</p>
+          </div>
+          <div class="bg-purple-50 dark:bg-purple-900/30 p-2 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+             <span class="material-symbols-outlined text-[24px]">model_training</span>
+          </div>
+        </div>
+        <div class="flex flex-col gap-3">
+           <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ predictions.accuracy }}%</h3>
+           <div class="relative">
+             <select 
+              v-model="forecastMethod" 
+              @change="loadAnalytics"
+              class="w-full appearance-none bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 text-[10px] font-medium text-[#0d141b] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#137fec]"
+            >
+              <option value="moving_average">Moving Average</option>
+              <option value="linear_regression">Linear Regression</option>
+            </select>
+            <span class="absolute right-2 top-1.5 material-symbols-outlined text-[12px] text-slate-400 pointer-events-none">expand_more</span>
+           </div>
         </div>
       </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Sales Forecast Chart -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Sales Forecast (3 Bulan)</h3>
-        <div class="h-64 flex items-center justify-center text-gray-400">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Sales Forecast</h3>
+          <span class="text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 px-2 py-1 rounded-lg">3 Bulan Ke Depan</span>
+        </div>
+        
+        <div class="h-64 flex items-center justify-center bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
           <div class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            <p>Chart akan ditampilkan di sini</p>
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-full shadow-sm mx-auto mb-3 inline-block">
+               <span class="material-symbols-outlined text-3xl text-slate-300">bar_chart</span>
+            </div>
+            <p class="text-sm font-medium text-[#4c739a]">Chart Preview Area</p>
+            <p class="text-xs text-slate-400 mt-1">Implementasi chart menggunakan Chart.js</p>
           </div>
         </div>
       </div>
 
-      <!-- Top Products Chart -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Top 10 Produk Terlaris</h3>
-        <div class="space-y-3">
+      <!-- Top Products List -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Top 10 Produk</h3>
+          <span class="text-xs text-[#137fec] bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg font-bold">Best Sellers</span>
+        </div>
+        
+        <div class="space-y-4">
           <div
             v-for="(product, index) in topProducts"
             :key="product.id"
-            class="flex items-center justify-between"
+            class="group"
           >
-            <div class="flex items-center space-x-3 flex-1">
-              <span class="text-sm font-semibold text-gray-400 w-6">{{ index + 1 }}</span>
-              <span class="text-sm text-gray-900 flex-1 truncate">{{ product.name }}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-24 bg-gray-200 rounded-full h-2">
-                <div
-                  class="bg-indigo-600 h-2 rounded-full"
-                  :style="{ width: `${(product.sales / topProducts[0].sales) * 100}%` }"
-                ></div>
+            <div class="flex items-center justify-between mb-1.5 text-sm">
+              <div class="flex items-center gap-3">
+                 <span class="w-5 h-5 flex items-center justify-center rounded bg-slate-100 dark:bg-slate-700 text-xs font-bold text-slate-500">{{ index + 1 }}</span>
+                 <span class="font-medium text-[#0d141b] dark:text-white truncate max-w-[150px] sm:max-w-xs">{{ product.name }}</span>
               </div>
-              <span class="text-sm font-semibold text-gray-900 w-16 text-right">{{ product.sales }}</span>
+              <span class="font-bold text-[#137fec]">{{ product.sales }} Sales</span>
             </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+               <div
+                  class="bg-[#137fec] h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-blue-500"
+                  :style="{ width: `${(product.sales / (topProducts[0]?.sales || 1)) * 100}%` }"
+                ></div>
+            </div>
+          </div>
+          
+          <div v-if="topProducts.length === 0" class="text-center py-8">
+            <p class="text-sm text-slate-400">No product sales data yet.</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Custom Reports -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Custom Reports</h3>
-      <div v-if="customReports.length === 0" class="text-center py-8 text-gray-500">
-        Belum ada custom report
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Custom Reports</h3>
+        <button class="text-sm text-[#137fec] font-bold hover:underline">View All</button>
       </div>
+
+      <div v-if="customReports.length === 0" class="flex flex-col items-center justify-center py-12 text-center bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 p-3 rounded-full shadow-sm mb-3">
+          <span class="material-symbols-outlined text-slate-400 text-2xl">folder_open</span>
+        </div>
+        <h4 class="text-sm font-bold text-[#0d141b] dark:text-white">No reports yet</h4>
+        <p class="text-xs text-[#4c739a] mt-1 max-w-xs mx-auto">Create your first custom report to start analyzing specific data.</p>
+      </div>
+
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
           v-for="report in customReports"
           :key="report.id"
-          class="border-2 border-gray-200 rounded-lg p-4 hover:border-indigo-300 transition"
+          class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:shadow-md hover:border-[#137fec]/30 transition-all"
         >
-          <h4 class="font-semibold text-gray-900 mb-2">{{ report.name }}</h4>
-          <p class="text-sm text-gray-600 mb-3">{{ report.description }}</p>
-          <div class="flex space-x-2">
-            <button
-              @click="viewReport(report)"
-              class="flex-1 px-3 py-2 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition"
-            >
-              Lihat
-            </button>
-            <button
-              @click="exportReport(report)"
-              class="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
-            >
-              Export
-            </button>
+          <div class="flex items-start justify-between mb-3">
+             <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
+                <span class="material-symbols-outlined text-[20px]">description</span>
+             </div>
+             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button @click="viewReport(report)" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-[#137fec]" title="Lihat">
+                  <span class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+                <button @click="exportReport(report)" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-green-600" title="Export">
+                  <span class="material-symbols-outlined text-[18px]">download</span>
+                </button>
+             </div>
+          </div>
+          
+          <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 truncate">{{ report.name }}</h4>
+          <p class="text-xs text-[#4c739a] mb-4 line-clamp-2">{{ report.description || 'Tidak ada deskripsi' }}</p>
+          
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-700">
+             <span>{{ report.dataType }}</span>
+             <span>{{ report.metrics.length }} Metrik</span>
           </div>
         </div>
       </div>
@@ -167,82 +223,94 @@
     <Teleport to="body">
       <div
         v-if="showCustomReportModal"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+        class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
         @click.self="showCustomReportModal = false"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Buat Custom Report</h3>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nama Report</label>
-              <input
-                v-model="reportForm.name"
-                type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                placeholder="Contoh: Laporan Penjualan Harian"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Data</label>
-              <select
-                v-model="reportForm.dataType"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="SALES">Penjualan</option>
-                <option value="PRODUCTS">Produk</option>
-                <option value="CUSTOMERS">Customer</option>
-                <option value="INVENTORY">Inventory</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Metrik</label>
-              <div class="space-y-2">
-                <label class="flex items-center">
-                  <input v-model="reportForm.metrics" type="checkbox" value="REVENUE" class="mr-2" />
-                  <span class="text-sm text-gray-700">Revenue</span>
-                </label>
-                <label class="flex items-center">
-                  <input v-model="reportForm.metrics" type="checkbox" value="QUANTITY" class="mr-2" />
-                  <span class="text-sm text-gray-700">Quantity</span>
-                </label>
-                <label class="flex items-center">
-                  <input v-model="reportForm.metrics" type="checkbox" value="PROFIT" class="mr-2" />
-                  <span class="text-sm text-gray-700">Profit</span>
-                </label>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
-                <input
-                  v-model="reportForm.startDate"
-                  type="date"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
-                <input
-                  v-model="reportForm.endDate"
-                  type="date"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-            </div>
-            <div class="flex space-x-3">
-              <button
-                @click="showCustomReportModal = false"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
-                @click="saveCustomReport"
-                class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-              >
-                Simpan
-              </button>
-            </div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Buat Custom Report</h3>
+            <button @click="showCustomReportModal = false" class="text-[#4c739a] hover:text-[#0d141b] transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          <div class="p-6 overflow-y-auto">
+             <div class="flex flex-col gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Nama Report</label>
+                  <input
+                    v-model="reportForm.name"
+                    type="text"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                    placeholder="Contoh: Laporan Penjualan Q1"
+                  />
+                </div>
+                
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Tipe Data</label>
+                  <select
+                    v-model="reportForm.dataType"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                  >
+                    <option value="SALES">Penjualan</option>
+                    <option value="PRODUCTS">Produk</option>
+                    <option value="CUSTOMERS">Customer</option>
+                    <option value="INVENTORY">Inventory</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Metrik</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                      <input v-model="reportForm.metrics" type="checkbox" value="REVENUE" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <span class="text-sm font-medium text-[#0d141b] dark:text-white">Revenue</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                      <input v-model="reportForm.metrics" type="checkbox" value="QUANTITY" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <span class="text-sm font-medium text-[#0d141b] dark:text-white">Quantity</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                      <input v-model="reportForm.metrics" type="checkbox" value="PROFIT" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <span class="text-sm font-medium text-[#0d141b] dark:text-white">Profit</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Dari Tanggal</label>
+                    <input
+                      v-model="reportForm.startDate"
+                      type="date"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Sampai Tanggal</label>
+                    <input
+                      v-model="reportForm.endDate"
+                      type="date"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    />
+                  </div>
+                </div>
+             </div>
+          </div>
+          
+          <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex gap-3">
+             <button
+              @click="showCustomReportModal = false"
+              class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+            >
+              Batal
+            </button>
+            <button
+              @click="saveCustomReport"
+              class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+            >
+              Simpan Report
+            </button>
           </div>
         </div>
       </div>

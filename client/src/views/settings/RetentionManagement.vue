@@ -1,591 +1,409 @@
 <template>
-  <div class="flex flex-col h-full p-6">
+  <div class="flex flex-col gap-8">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Data Retention Management</h1>
-      <p class="text-gray-600">Kelola kebijakan retensi data untuk menghapus data lama secara otomatis</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Data Retention</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage retention policies and automatic deletion of legacy data.</p>
+      </div>
+      <button
+        @click="loadStats"
+        class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-primary rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition"
+      >
+        <span class="material-symbols-outlined text-[18px]">refresh</span>
+        Refresh Stats
+      </button>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+    <div v-if="loading && stats.ordersToDelete === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium text-sm">Calculating retention data...</div>
     </div>
 
-    <!-- Content -->
-    <div v-else class="space-y-6">
+    <div v-else class="space-y-6 animate-fade-in">
       <!-- Retention Statistics -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Statistik Data yang Akan Dihapus</h2>
-        <p class="text-sm text-gray-600 mb-4">
-          Berdasarkan kebijakan retensi saat ini, berikut adalah jumlah data yang akan dihapus:
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div class="bg-red-50 rounded-lg p-4">
-            <div class="text-sm text-red-600 font-medium">Orders</div>
-            <div class="text-2xl font-bold text-red-900">{{ stats.ordersToDelete || 0 }}</div>
-          </div>
-          <div class="bg-orange-50 rounded-lg p-4">
-            <div class="text-sm text-orange-600 font-medium">Transactions</div>
-            <div class="text-2xl font-bold text-orange-900">{{ stats.transactionsToDelete || 0 }}</div>
-          </div>
-          <div class="bg-yellow-50 rounded-lg p-4">
-            <div class="text-sm text-yellow-600 font-medium">Reports</div>
-            <div class="text-2xl font-bold text-yellow-900">{{ stats.reportsToDelete || 0 }}</div>
-          </div>
-          <div class="bg-purple-50 rounded-lg p-4">
-            <div class="text-sm text-purple-600 font-medium">Audit Logs</div>
-            <div class="text-2xl font-bold text-purple-900">{{ stats.auditLogsToDelete || 0 }}</div>
-          </div>
-          <div class="bg-blue-50 rounded-lg p-4">
-            <div class="text-sm text-blue-600 font-medium">Contact Submissions</div>
-            <div class="text-2xl font-bold text-blue-900">{{ stats.contactSubmissionsToDelete || 0 }}</div>
-          </div>
-          <div class="bg-indigo-50 rounded-lg p-4">
-            <div class="text-sm text-indigo-600 font-medium">Demo Requests</div>
-            <div class="text-2xl font-bold text-indigo-900">{{ stats.demoRequestsToDelete || 0 }}</div>
-          </div>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-6">
+           <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+              <span class="material-symbols-outlined">delete_sweep</span>
+           </div>
+           <div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Data to be Deleted</h3>
+              <p class="text-xs text-slate-500">Estimated data to be deleted based on current policy.</p>
+           </div>
         </div>
-        <div class="mt-4">
-          <button
-            @click="loadStats"
-            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
-          >
-            Refresh Stats
-          </button>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Orders</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.ordersToDelete || 0 }}</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Transactions</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.transactionsToDelete || 0 }}</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Reports</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.reportsToDelete || 0 }}</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Audit Logs</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.auditLogsToDelete || 0 }}</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Contacts</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.contactSubmissionsToDelete || 0 }}</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-center">
+            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Demo Req</div>
+            <div class="text-2xl font-extrabold text-[#0d141b] dark:text-white">{{ stats.demoRequestsToDelete || 0 }}</div>
+          </div>
         </div>
       </div>
 
       <!-- Retention Policy Configuration -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Kebijakan Retensi (Hari)</h2>
-        <p class="text-gray-600 mb-6">
-          Konfigurasi jumlah hari data akan disimpan sebelum dihapus secara otomatis.
-        </p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-3 mb-6">
+           <div class="p-2 bg-primary/10 text-primary rounded-lg">
+              <span class="material-symbols-outlined">tune</span>
+           </div>
+           <div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Retention Policy (Days)</h3>
+              <p class="text-xs text-slate-500">Configure data retention period before permanent deletion.</p>
+           </div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Orders (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Orders (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.orders"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Transactions (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Transactions (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.transactions"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Reports (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Reports (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.reports"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Audit Logs (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Audit Logs (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.auditLogs"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Contact Submissions (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Contact Submissions (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.contactSubmissions"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Demo Requests (Default: 730 hari / 2 tahun)
-            </label>
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Demo Requests (Default: 730)</label>
             <input
               v-model.number="retentionPolicy.demoRequests"
               type="number"
               min="30"
               max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              placeholder="730"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
         </div>
       </div>
 
       <!-- Apply Retention Actions -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">Terapkan Kebijakan Retensi</h2>
-        <p class="text-gray-600 mb-6">
-          <strong class="text-red-600">Peringatan:</strong> Tindakan ini akan menghapus data secara permanen dan tidak dapat dibatalkan. Pastikan Anda sudah membuat backup data penting.
-        </p>
-
-        <div class="space-y-4">
-          <!-- Apply Orders Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Orders Lama</h3>
-                <p class="text-sm text-gray-600">Hapus orders yang sudah selesai atau dibatalkan berdasarkan kebijakan retensi</p>
+      <div class="space-y-4">
+        <h3 class="font-bold text-[#0d141b] dark:text-white px-1">Actions</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+           <!-- Action Buttons -->
+           <button @click="showApplyOrdersModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Orders</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">shopping_cart</span>
               </div>
-              <button
-                @click="showApplyOrdersModal = true"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
+              <p class="text-xs text-[#4c739a]">Hapus order lama</p>
+           </button>
 
-          <!-- Apply Transactions Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Transactions Lama</h3>
-                <p class="text-sm text-gray-600">Hapus transactions yang sudah selesai atau gagal berdasarkan kebijakan retensi</p>
+           <button @click="showApplyTransactionsModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Transactions</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">payments</span>
               </div>
-              <button
-                @click="showApplyTransactionsModal = true"
-                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
+              <p class="text-xs text-[#4c739a]">Hapus transaksi lama</p>
+           </button>
 
-          <!-- Apply Reports Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Reports Lama</h3>
-                <p class="text-sm text-gray-600">Hapus reports lama berdasarkan kebijakan retensi</p>
+           <button @click="showApplyReportsModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Reports</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">description</span>
               </div>
-              <button
-                @click="showApplyReportsModal = true"
-                class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
+              <p class="text-xs text-[#4c739a]">Hapus laporan lama</p>
+           </button>
+           
+           <button @click="showApplyAuditLogsModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Logs</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">history</span>
+              </div>
+              <p class="text-xs text-[#4c739a]">Hapus audit logs lama</p>
+           </button>
 
-          <!-- Apply Audit Logs Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Audit Logs Lama</h3>
-                <p class="text-sm text-gray-600">Hapus audit logs lama berdasarkan kebijakan retensi</p>
+           <button @click="showApplyContactSubmissionsModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Contacts</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">contact_mail</span>
               </div>
-              <button
-                @click="showApplyAuditLogsModal = true"
-                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
+              <p class="text-xs text-[#4c739a]">Hapus submission lama</p>
+           </button>
+           
+           <button @click="showApplyDemoRequestsModal = true" class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-red-300 hover:shadow-md transition group text-left">
+              <div class="flex items-center justify-between mb-2">
+                 <span class="font-bold text-[#0d141b] dark:text-white group-hover:text-red-600 transition-colors">Cleanup Demo Req</span>
+                 <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500">co_present</span>
+              </div>
+              <p class="text-xs text-[#4c739a]">Hapus request lama</p>
+           </button>
 
-          <!-- Apply Contact Submissions Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Contact Submissions Lama</h3>
-                <p class="text-sm text-gray-600">Hapus contact submissions lama berdasarkan kebijakan retensi</p>
+           <!-- Apply All -->
+           <button @click="showApplyAllModal = true" class="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 hover:shadow-md transition group text-left lg:col-span-2 xl:col-span-2">
+              <div class="flex items-center gap-3">
+                 <div class="bg-red-100 dark:bg-red-800 text-red-600 p-2 rounded-lg">
+                    <span class="material-symbols-outlined">delete_forever</span>
+                 </div>
+                 <div>
+                    <h4 class="font-bold text-red-700 dark:text-red-300 group-hover:text-red-800 dark:group-hover:text-red-200 transition-colors">Apply All Policies</h4>
+                    <p class="text-xs text-red-600/80">Jalankan SEMUA pembersihan sekaligus</p>
+                 </div>
               </div>
-              <button
-                @click="showApplyContactSubmissionsModal = true"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
-
-          <!-- Apply Demo Requests Retention -->
-          <div class="border border-gray-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-gray-900">Hapus Demo Requests Lama</h3>
-                <p class="text-sm text-gray-600">Hapus demo requests lama berdasarkan kebijakan retensi</p>
-              </div>
-              <button
-                @click="showApplyDemoRequestsModal = true"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-              >
-                Apply Retention
-              </button>
-            </div>
-          </div>
-
-          <!-- Apply All Retention -->
-          <div class="border-2 border-red-200 bg-red-50 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-semibold text-red-900">Terapkan Semua Kebijakan Retensi</h3>
-                <p class="text-sm text-red-700">Hapus semua data lama sekaligus berdasarkan kebijakan retensi yang dikonfigurasi</p>
-              </div>
-              <button
-                @click="showApplyAllModal = true"
-                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-              >
-                Apply All
-              </button>
-            </div>
-          </div>
+           </button>
         </div>
       </div>
     </div>
 
-    <!-- Apply Orders Modal -->
-    <div
-      v-if="showApplyOrdersModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyOrdersModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Orders Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.ordersToDelete || 0 }} orders secara permanen dan tidak dapat dibatalkan.
-            </p>
+    <!-- Reusable Confirmation Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyOrdersModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyOrdersModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+          <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Konfirmasi Penghapusan</h3>
+                <p class="text-sm text-[#4c739a]">Tindakan ini akan menghapus <strong class="text-red-600">{{ stats.ordersToDelete || 0 }} orders</strong> secara PERMANEN.</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus orders lebih lama dari (hari)
-            </label>
+          
+          <div class="mb-4">
+            <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Lebih lama dari (hari)</label>
             <input
               v-model.number="applyOrdersDays"
               type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.orders?.toString() || '730'"
+              class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold"
             />
           </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyOrdersModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyOrdersRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Apply Transactions Modal -->
-    <div
-      v-if="showApplyTransactionsModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyTransactionsModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Transactions Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.transactionsToDelete || 0 }} transactions secara permanen dan tidak dapat dibatalkan.
-            </p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus transactions lebih lama dari (hari)
-            </label>
-            <input
-              v-model.number="applyTransactionsDays"
-              type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.transactions?.toString() || '730'"
-            />
-          </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyTransactionsModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyTransactionsRetention"
+          <div class="flex gap-3">
+            <button @click="showApplyOrdersModal = false" class="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 transition">Batal</button>
+            <button 
+              @click="applyOrdersRetention" 
               :disabled="applying"
-              class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:bg-red-700 transition disabled:opacity-50"
             >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
+              {{ applying ? 'Menghapus...' : 'Hapus Permanen' }}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Apply Reports Modal -->
-    <div
-      v-if="showApplyReportsModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyReportsModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Reports Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.reportsToDelete || 0 }} reports secara permanen dan tidak dapat dibatalkan.
-            </p>
+    <!-- Generic Modal template - reusing structure for others... -->
+    <!-- Transactions Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyTransactionsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyTransactionsModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+          <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Hapus Transactions</h3>
+                <p class="text-sm text-[#4c739a]">Hapus <strong class="text-red-600">{{ stats.transactionsToDelete || 0 }} transactions</strong> permanen.</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus reports lebih lama dari (hari)
-            </label>
-            <input
-              v-model.number="applyReportsDays"
-              type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.reports?.toString() || '730'"
-            />
+          <div class="mb-4">
+            <input v-model.number="applyTransactionsDays" type="number" class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 rounded-xl text-sm font-bold" />
           </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyReportsModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyReportsRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
-            </button>
+          <div class="flex gap-3">
+            <button @click="showApplyTransactionsModal = false" class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-[#4c739a]">Batal</button>
+            <button @click="applyTransactionsRetention" :disabled="applying" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">{{ applying ? '...' : 'Hapus' }}</button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Apply Audit Logs Modal -->
-    <div
-      v-if="showApplyAuditLogsModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyAuditLogsModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Audit Logs Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.auditLogsToDelete || 0 }} audit logs secara permanen dan tidak dapat dibatalkan.
-            </p>
+    <!-- Reports Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyReportsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyReportsModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+          <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Hapus Reports</h3>
+                <p class="text-sm text-[#4c739a]">Hapus <strong class="text-red-600">{{ stats.reportsToDelete || 0 }} reports</strong> permanen.</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus audit logs lebih lama dari (hari)
-            </label>
-            <input
-              v-model.number="applyAuditLogsDays"
-              type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.auditLogs?.toString() || '730'"
-            />
+          <div class="mb-4">
+            <input v-model.number="applyReportsDays" type="number" class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 rounded-xl text-sm font-bold" />
           </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyAuditLogsModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyAuditLogsRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
-            </button>
+          <div class="flex gap-3">
+            <button @click="showApplyReportsModal = false" class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-[#4c739a]">Batal</button>
+            <button @click="applyReportsRetention" :disabled="applying" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">{{ applying ? '...' : 'Hapus' }}</button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Apply Contact Submissions Modal -->
-    <div
-      v-if="showApplyContactSubmissionsModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyContactSubmissionsModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Contact Submissions Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.contactSubmissionsToDelete || 0 }} contact submissions secara permanen dan tidak dapat dibatalkan.
-            </p>
+    <!-- Audit Logs Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyAuditLogsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyAuditLogsModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+          <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Hapus Audit Logs</h3>
+                <p class="text-sm text-[#4c739a]">Hapus <strong class="text-red-600">{{ stats.auditLogsToDelete || 0 }} logs</strong> permanen.</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus contact submissions lebih lama dari (hari)
-            </label>
-            <input
-              v-model.number="applyContactSubmissionsDays"
-              type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.contactSubmissions?.toString() || '730'"
-            />
+          <div class="mb-4">
+            <input v-model.number="applyAuditLogsDays" type="number" class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 rounded-xl text-sm font-bold" />
           </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyContactSubmissionsModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyContactSubmissionsRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
-            </button>
+          <div class="flex gap-3">
+            <button @click="showApplyAuditLogsModal = false" class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-[#4c739a]">Batal</button>
+            <button @click="applyAuditLogsRetention" :disabled="applying" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">{{ applying ? '...' : 'Hapus' }}</button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
-    <!-- Apply Demo Requests Modal -->
-    <div
-      v-if="showApplyDemoRequestsModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyDemoRequestsModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Hapus Demo Requests Lama</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan:</strong> Tindakan ini akan menghapus {{ stats.demoRequestsToDelete || 0 }} demo requests secara permanen dan tidak dapat dibatalkan.
-            </p>
+    <!-- Contact Submissions Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyContactSubmissionsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyContactSubmissionsModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+           <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Hapus Contact Subs</h3>
+                <p class="text-sm text-[#4c739a]">Hapus <strong class="text-red-600">{{ stats.contactSubmissionsToDelete || 0 }} contacts</strong> permanen.</p>
+             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Hapus demo requests lebih lama dari (hari)
-            </label>
-            <input
-              v-model.number="applyDemoRequestsDays"
-              type="number"
-              min="30"
-              max="730"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-              :placeholder="retentionPolicy.demoRequests?.toString() || '730'"
-            />
+          <div class="mb-4">
+            <input v-model.number="applyContactSubmissionsDays" type="number" class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 rounded-xl text-sm font-bold" />
           </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyDemoRequestsModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyDemoRequestsRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus' }}
-            </button>
+          <div class="flex gap-3">
+            <button @click="showApplyContactSubmissionsModal = false" class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-[#4c739a]">Batal</button>
+            <button @click="applyContactSubmissionsRetention" :disabled="applying" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">{{ applying ? '...' : 'Hapus' }}</button>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
+
+    <!-- Demo Requests Modal -->
+    <Teleport to="body">
+      <div v-if="showApplyDemoRequestsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyDemoRequestsModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+           <div class="flex items-start gap-4 mb-4">
+             <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
+                <span class="material-symbols-outlined text-2xl">warning</span>
+             </div>
+             <div>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Hapus Demo Requests</h3>
+                <p class="text-sm text-[#4c739a]">Hapus <strong class="text-red-600">{{ stats.demoRequestsToDelete || 0 }} demo requests</strong> permanen.</p>
+             </div>
+          </div>
+          <div class="mb-4">
+            <input v-model.number="applyDemoRequestsDays" type="number" class="w-full px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 rounded-xl text-sm font-bold" />
+          </div>
+          <div class="flex gap-3">
+            <button @click="showApplyDemoRequestsModal = false" class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-[#4c739a]">Batal</button>
+            <button @click="applyDemoRequestsRetention" :disabled="applying" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">{{ applying ? '...' : 'Hapus' }}</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Apply All Modal -->
-    <div
-      v-if="showApplyAllModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="showApplyAllModal = false"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Terapkan Semua Kebijakan Retensi</h3>
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p class="text-sm text-red-800">
-              <strong>Peringatan Kritis:</strong> Tindakan ini akan menghapus semua data lama secara permanen berdasarkan kebijakan retensi yang dikonfigurasi. Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <p class="text-sm text-red-800 mt-2">
-              Total data yang akan dihapus:
-            </p>
-            <ul class="text-sm text-red-800 mt-2 list-disc list-inside">
-              <li>{{ stats.ordersToDelete || 0 }} orders</li>
-              <li>{{ stats.transactionsToDelete || 0 }} transactions</li>
-              <li>{{ stats.reportsToDelete || 0 }} reports</li>
-              <li>{{ stats.auditLogsToDelete || 0 }} audit logs</li>
-              <li>{{ stats.contactSubmissionsToDelete || 0 }} contact submissions</li>
-              <li>{{ stats.demoRequestsToDelete || 0 }} demo requests</li>
-            </ul>
-          </div>
-          <div class="flex space-x-3 pt-4">
-            <button
-              @click="showApplyAllModal = false"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-            <button
-              @click="applyAllRetention"
-              :disabled="applying"
-              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-            >
-              {{ applying ? 'Menghapus...' : 'Hapus Semua' }}
-            </button>
-          </div>
+    <Teleport to="body">
+      <div v-if="showApplyAllModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyAllModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full p-6 animate-scale-in border-t-4 border-red-500">
+           <div class="flex items-start gap-4 mb-6">
+              <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-full text-red-600 shrink-0">
+                 <span class="material-symbols-outlined text-3xl">delete_forever</span>
+              </div>
+              <div>
+                 <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">Pembersihan Total</h3>
+                 <p class="text-sm text-[#4c739a] mt-1">
+                   Tindakan ini akan menghapus <strong>SEMUA</strong> data lama (Orders, Transactions, Reports, Logs, Contacts) yang melewati batas waktu retensi. 
+                 </p>
+                 <div class="mt-4 p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl">
+                   <p class="text-xs font-bold text-red-800 dark:text-red-200 uppercase tracking-wider mb-2">Ringkasan Penghapusan</p>
+                   <ul class="grid grid-cols-2 gap-2 text-sm text-red-700 dark:text-red-300">
+                     <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>{{ stats.ordersToDelete || 0 }} Orders</li>
+                     <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>{{ stats.transactionsToDelete || 0 }} Trans</li>
+                     <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>{{ stats.reportsToDelete || 0 }} Reports</li>
+                     <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>{{ stats.auditLogsToDelete || 0 }} Logs</li>
+                   </ul>
+                 </div>
+              </div>
+           </div>
+           
+           <div class="flex gap-3">
+              <button @click="showApplyAllModal = false" class="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-[#4c739a] hover:bg-slate-50 transition">Batalkan</button>
+              <button 
+                @click="applyAllRetention" 
+                :disabled="applying"
+                class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/30 hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <span v-if="applying" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                {{ applying ? 'Memproses...' : 'Ya, Hapus Semua' }}
+              </button>
+           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -827,38 +645,30 @@ const applyDemoRequestsRetention = async () => {
 };
 
 const applyAllRetention = async () => {
-  const totalToDelete = 
-    (stats.value.ordersToDelete || 0) +
-    (stats.value.transactionsToDelete || 0) +
-    (stats.value.reportsToDelete || 0) +
-    (stats.value.auditLogsToDelete || 0) +
-    (stats.value.contactSubmissionsToDelete || 0) +
-    (stats.value.demoRequestsToDelete || 0);
-
   const confirmed = await showConfirm(
     'Terapkan Semua Kebijakan Retensi',
-    `Apakah Anda yakin ingin menghapus ${totalToDelete} data secara permanen? Tindakan ini tidak dapat dibatalkan. Pastikan Anda sudah membuat backup data penting.`,
-    'Hapus Semua',
-    'Cancel'
+    'APAKAH ANDA YAKIN? Tindakan ini akan menghapus semua data lama yang memenuhi kriteria retensi. Data yang dihapus TIDAK DAPAT DIKEMBALIKAN.',
+    'YA, HAPUS SEMUA',
+    'Batal'
   );
   
-  if (!confirmed) {
-    showApplyAllModal.value = false;
-    return;
-  }
+  if (!confirmed) return;
 
   applying.value = true;
   try {
-    const response = await api.post('/retention/all', {
-      policy: retentionPolicy.value,
+    const response = await api.post('/retention/apply-all', {
+      policy: retentionPolicy.value
     });
-    showSuccess(
-      `Berhasil menghapus: ${response.data.orders} orders, ${response.data.transactions} transactions, ${response.data.reports} reports, ${response.data.auditLogs} audit logs, ${response.data.contactSubmissions} contact submissions, ${response.data.demoRequests} demo requests`
-    );
+    
+    let message = 'Penghapusan selesai: ';
+    const results = response.data.results || {};
+    message += `${results.orders || 0} orders, ${results.transactions || 0} transactions, ${results.reports || 0} reports`;
+    
+    showSuccess(message);
     showApplyAllModal.value = false;
     await loadStats();
   } catch (error: any) {
-    showError(error.response?.data?.message || 'Gagal menghapus data');
+    showError(error.response?.data?.message || 'Gagal menerapkan kebijakan retensi');
   } finally {
     applying.value = false;
   }
@@ -870,4 +680,3 @@ onMounted(async () => {
   loading.value = false;
 });
 </script>
-

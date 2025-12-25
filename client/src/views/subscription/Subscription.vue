@@ -1,436 +1,451 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Berlangganan</h2>
-        <p class="text-gray-600 mt-1">Kelola paket langganan Anda</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Subscription</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your subscription plan and account status.</p>
       </div>
       <router-link
         to="/pricing"
-        class="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border border-primary-600 rounded-lg hover:bg-primary-50 transition"
+        class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-primary hover:border-primary rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
       >
-        Lihat Detail Paket →
+        <span>View Plan Details</span>
+        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
       </router-link>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300 mx-4 sm:mx-6">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat informasi berlangganan.</p>
-    </div>
-
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat data berlangganan...</div>
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-full mb-4">
+        <span class="material-symbols-outlined text-4xl text-slate-400">storefront</span>
       </div>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Select a Tenant First</h3>
+      <p class="text-slate-500 text-sm text-center max-w-md">Please select a tenant from the dropdown above to view subscription information.</p>
     </div>
 
-    <div v-else class="flex flex-col gap-6 px-4 sm:px-6">
+    <!-- Loading State -->
+    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium text-sm">Loading subscription data...</div>
+    </div>
+
+    <div v-else class="flex flex-col gap-8">
       <!-- Current Subscription Card -->
-      <div class="bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl shadow-lg p-6 border-2 border-primary-200">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div class="flex-1">
-            <div class="flex items-center gap-3 mb-3">
-              <h3 class="text-xl font-bold text-gray-900">Paket Saat Ini</h3>
-              <span
-                class="px-3 py-1 text-sm font-semibold rounded-full"
-                :class="subscription?.isExpired ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'"
-              >
-                {{ subscription?.isExpired ? 'Kedaluwarsa' : 'Aktif' }}
-              </span>
+      <div class="bg-gradient-to-br from-primary to-blue-600 rounded-2xl shadow-xl shadow-primary/20 text-white overflow-hidden relative">
+        <div class="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 p-24 bg-black/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
+        
+        <div class="relative p-6 sm:p-8">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border border-white/30">
+                  <span class="material-symbols-outlined text-[16px]">verified</span>
+                  Current Plan
+                </span>
+                <span
+                  class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg"
+                  :class="subscription?.isExpired ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
+                >
+                  {{ subscription?.isExpired ? 'Expired' : 'Active' }}
+                </span>
+              </div>
+              
+              <div class="mb-6">
+                <h3 class="text-4xl font-bold mb-2">{{ getPlanName(subscription?.plan || 'BASIC') }}</h3>
+                <div class="flex items-center gap-4 text-white/80 text-sm">
+                  <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                    Mulai: {{ formatDate(subscription?.subscription?.startDate) }}
+                  </span>
+                  <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">event_busy</span>
+                    Berakhir: {{ formatDate(subscription?.subscription?.endDate) }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="flex items-baseline gap-2 mb-2">
-              <span class="text-3xl font-bold text-primary-600">{{ getPlanName(subscription?.plan || 'BASIC') }}</span>
-            </div>
-            <div class="space-y-1 text-sm text-gray-600">
-              <p>Mulai: {{ formatDate(subscription?.subscription?.startDate) }}</p>
-              <p>Berakhir: {{ formatDate(subscription?.subscription?.endDate) }}</p>
-            </div>
-          </div>
-          <div v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'" class="flex flex-col items-center md:items-end">
-            <div class="text-5xl font-bold text-primary-600 mb-1">
-              {{ formatRemainingTime(
-                subscription?.daysRemaining || 0,
-                subscription?.hoursRemaining,
-                subscription?.minutesRemaining,
-                subscription?.secondsRemaining
-              ) }}
-            </div>
-            <div class="text-sm text-gray-600 mb-3">{{ (subscription?.daysRemaining || 0) > 1 ? 'Hari Tersisa' : 'Tersisa' }}</div>
-            <div class="w-32 bg-gray-200 rounded-full h-2">
-              <div
-                class="bg-primary-600 h-2 rounded-full transition-all"
-                :style="{ width: `${Math.min(100, (subscription?.daysRemaining || 0) / 30 * 100)}%` }"
-              ></div>
+
+            <!-- Timer / Countdown -->
+            <div v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN'" class="flex flex-col items-center md:items-end bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+              <div class="font-mono text-4xl font-bold tracking-tight mb-1">
+                {{ formatRemainingTime(
+                  subscription?.daysRemaining || 0,
+                  subscription?.hoursRemaining,
+                  subscription?.minutesRemaining,
+                  subscription?.secondsRemaining
+                ) }}
+              </div>
+              <div class="text-xs font-medium text-white/70 uppercase tracking-widest mb-3">
+                {{ (subscription?.daysRemaining || 0) > 1 ? 'Sisa Waktu Aktif' : 'Sisa Waktu' }}
+              </div>
+              <div class="w-48 bg-black/20 rounded-full h-1.5 overflow-hidden">
+                <div
+                  class="bg-white h-full rounded-full transition-all duration-500"
+                  :style="{ width: `${Math.min(100, (subscription?.daysRemaining || 0) / 30 * 100)}%` }"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Upgrade/Extend Section -->
-      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white rounded-xl shadow-lg p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-gray-900">Upgrade Paket</h3>
+      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#137fec]">upgrade</span>
+            Upgrade & Perpanjang
+          </h3>
           <button
             @click="showExtendSection = !showExtendSection"
-            class="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border border-primary-600 rounded-lg hover:bg-primary-50 transition"
+            class="px-4 py-2 text-sm font-medium text-[#137fec] hover:text-white border border-[#137fec] hover:bg-[#137fec] rounded-lg transition-all"
           >
-            {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Paket' }}
+            {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Paket Ini' }}
           </button>
         </div>
         
-        <!-- Extend Section (Perpanjang Paket) -->
-        <div v-if="showExtendSection" class="mb-6 pb-6 border-b border-gray-200">
-          <h4 class="text-lg font-semibold text-gray-900 mb-4">Perpanjang Paket Saat Ini</h4>
-          
-          <!-- Plan Selection for Extend -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div
-              v-for="plan in subscriptionPlans"
-              :key="plan.id"
-              @click="extendPlan = plan.id"
-              class="border-2 rounded-lg p-4 cursor-pointer transition-all"
-              :class="extendPlan === plan.id 
-                ? 'border-primary-600 bg-primary-50' 
-                : 'border-gray-200 hover:border-primary-300'"
-            >
-              <div class="flex items-center justify-between mb-2">
-                <h4 class="font-semibold text-gray-900">{{ plan.name }}</h4>
-                <div v-if="extendPlan === plan.id" class="w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
+        <div class="p-6">
+          <!-- Extend Section -->
+          <div v-if="showExtendSection" class="mb-8 pb-8 border-b border-dashed border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-bold text-[#4c739a] uppercase tracking-wider mb-4">Opsi Perpanjangan Paket Saat Ini</h4>
+            
+            <!-- Plan Selection for Extend -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div
+                v-for="plan in subscriptionPlans"
+                :key="plan.id"
+                @click="extendPlan = plan.id"
+                class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
+                :class="extendPlan === plan.id 
+                  ? 'border-[#137fec] bg-blue-50/50 dark:bg-blue-900/20' 
+                  : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              >
+                <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-[#137fec]">
+                  <span class="material-symbols-outlined">check_circle</span>
                 </div>
+                
+                <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-[#137fec] transition-colors">{{ plan.name }}</h4>
+                <div class="text-lg font-bold text-[#137fec] mb-2">
+                  <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
+                    <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
+                    <span>
+                      {{ formatCurrency(plan.price) }}
+                      <span class="text-[10px] font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded ml-1">Hemat {{ plan.discount }}%</span>
+                    </span>
+                  </div>
+                  <template v-else>
+                    {{ formatCurrency(plan.price) }}
+                  </template>
+                  <span class="text-xs text-[#4c739a] font-normal">/bulan</span>
+                </div>
+                <p class="text-xs text-[#4c739a] line-clamp-2 leading-relaxed">{{ plan.description }}</p>
               </div>
-              <div class="text-2xl font-bold text-primary-600 mb-1">
-                <div v-if="plan.originalPrice && plan.discount" class="flex items-baseline gap-2 flex-wrap">
-                  <span class="text-lg font-normal text-gray-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
-                  <span>{{ formatCurrency(plan.price) }}</span>
-                  <span class="text-xs font-normal text-green-600 bg-green-100 px-2 py-0.5 rounded">Hemat {{ plan.discount }}%</span>
+            </div>
+
+            <!-- Duration Selection for Extend -->
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-[#0d141b] dark:text-white mb-3">Pilih Durasi Perpanjangan</label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <button
+                  v-for="duration in durationOptions"
+                  :key="duration.value"
+                  @click="extendDuration = duration.value"
+                  class="px-4 py-3 border-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden"
+                  :class="extendDuration === duration.value
+                    ? 'border-[#137fec] bg-blue-50 dark:bg-blue-900/20 text-[#137fec]'
+                    : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 text-[#4c739a]'"
+                >
+                  <span class="relative z-10">{{ duration.label }}</span>
+                  <div v-if="duration.discount" class="absolute top-0 right-0 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg z-10">
+                    -{{ duration.discount }}%
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Summary for Extend -->
+            <div v-if="extendPlan && extendDuration" class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 mb-6 border border-slate-100 dark:border-slate-700">
+              <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Paket</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ getPlanName(extendPlan) }}</span>
+              </div>
+              <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Durasi</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ extendDuration }} hari</span>
+              </div>
+              <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Diskon Durasi</span>
+                <span class="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">-{{ getExtendDiscount() }}%</span>
+              </div>
+              <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
+                <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Pembayaran</span>
+                <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(calculateExtendTotal()) }}</span>
+              </div>
+            </div>
+
+            <button
+              v-if="extendPlan && extendDuration"
+              @click="handleExtend"
+              :disabled="processing"
+              class="w-full px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg shadow-green-600/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              {{ processing ? 'Memproses...' : 'Konfirmasi & Bayar Perpanjangan' }}
+            </button>
+          </div>
+          
+          <h4 class="text-sm font-bold text-[#4c739a] uppercase tracking-wider mb-4">Upgrade ke Paket Lebih Tinggi</h4>
+          
+          <!-- Plan Selection for Upgrade -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div
+              v-for="plan in availablePlans"
+              :key="plan.id"
+              @click="selectedPlan = plan.id"
+              class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
+              :class="selectedPlan === plan.id 
+                ? 'border-[#137fec] bg-blue-50/50 dark:bg-blue-900/20' 
+                : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+            >
+              <div v-if="selectedPlan === plan.id" class="absolute top-3 right-3 text-[#137fec]">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-[#137fec] transition-colors">{{ plan.name }}</h4>
+              
+              <div class="text-lg font-bold text-[#137fec] mb-2">
+                <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
+                  <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
+                  <span>
+                    {{ formatCurrency(plan.price) }}
+                    <span class="text-[10px] font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded ml-1">Hemat {{ plan.discount }}%</span>
+                  </span>
                 </div>
                 <template v-else>
                   {{ formatCurrency(plan.price) }}
                 </template>
-                <span class="text-sm text-gray-600 font-normal">/bulan</span>
+                <span class="text-xs text-[#4c739a] font-normal">/bulan</span>
               </div>
-              <p class="text-xs text-gray-500">{{ plan.description }}</p>
+              <p class="text-xs text-[#4c739a] line-clamp-2 leading-relaxed">{{ plan.description }}</p>
             </div>
           </div>
 
-          <!-- Duration Selection for Extend -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Durasi Perpanjangan</label>
+          <!-- Upgrade Type Selection -->
+          <div v-if="selectedPlan && selectedPlan !== currentPlan" class="mb-6 animate-fade-in">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white mb-3">Pilih Metode Upgrade</label>
+            <div class="space-y-3">
+              <!-- Temporary -->
+              <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
+                :class="upgradeType === 'temporary' 
+                  ? 'border-[#137fec] bg-blue-50/30' 
+                  : 'border-slate-100 dark:border-slate-700'"
+              >
+                <div class="flex h-5 items-center">
+                  <input type="radio" v-model="upgradeType" value="temporary" class="h-4 w-4 text-[#137fec] border-slate-300 focus:ring-[#137fec]" />
+                </div>
+                <div class="ml-3 text-sm flex-1">
+                  <span class="font-bold text-[#0d141b] dark:text-white block">1 Bulan (Coba Dulu)</span>
+                  <span class="text-[#4c739a] block text-xs mt-1">Upgrade selama 30 hari, lalu kembali ke paket {{ getPlanName(currentPlan) }} otomatis.</span>
+                  <span class="font-bold text-[#137fec] mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('temporary')) }}</span>
+                </div>
+              </label>
+
+              <!-- Until End -->
+              <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
+                :class="upgradeType === 'until_end' 
+                  ? 'border-[#137fec] bg-blue-50/30' 
+                  : 'border-slate-100 dark:border-slate-700'"
+              >
+                <div class="flex h-5 items-center">
+                  <input type="radio" v-model="upgradeType" value="until_end" class="h-4 w-4 text-[#137fec] border-slate-300 focus:ring-[#137fec]" />
+                </div>
+                <div class="ml-3 text-sm flex-1">
+                  <span class="font-bold text-[#0d141b] dark:text-white block">Sisa Masa Aktif ({{ subscription?.daysRemaining || 0 }} hari)</span>
+                  <span class="text-[#4c739a] block text-xs mt-1">Upgrade permanen sampai masa berlangganan saat ini habis.</span>
+                  <span class="font-bold text-[#137fec] mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('until_end')) }}</span>
+                </div>
+              </label>
+
+              <!-- Custom -->
+              <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
+                :class="upgradeType === 'custom' 
+                  ? 'border-[#137fec] bg-blue-50/30' 
+                  : 'border-slate-100 dark:border-slate-700'"
+              >
+                <div class="flex h-5 items-center">
+                  <input type="radio" v-model="upgradeType" value="custom" class="h-4 w-4 text-[#137fec] border-slate-300 focus:ring-[#137fec]" />
+                </div>
+                <div class="ml-3 text-sm flex-1">
+                  <span class="font-bold text-[#0d141b] dark:text-white block mb-2">Durasi Custom (Long Term)</span>
+                  
+                  <div v-if="upgradeType === 'custom'" class="grid grid-cols-3 gap-2 mb-2 animate-fade-in-down">
+                    <button
+                      v-for="duration in customDurationOptions"
+                      :key="duration.value"
+                      @click.stop="selectedCustomDuration = duration.value"
+                      type="button"
+                      class="px-2 py-2 border rounded-lg text-xs font-medium transition-all"
+                      :class="selectedCustomDuration === duration.value
+                        ? 'border-[#137fec] bg-[#137fec] text-white'
+                        : 'border-slate-200 text-slate-600 hover:border-[#137fec]'"
+                    >
+                      {{ duration.label }}
+                      <span v-if="duration.discount" class="block text-[9px] mt-0.5" :class="selectedCustomDuration === duration.value ? 'text-white/80' : 'text-green-600'">-{{ duration.discount }}%</span>
+                    </button>
+                  </div>
+                  <div v-if="upgradeType === 'custom' && selectedCustomDuration" class="font-bold text-[#137fec] mt-2">
+                    Bayar: {{ formatCurrency(calculateUpgradeAmount('custom')) }}
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Summary for Upgrade -->
+          <div v-if="selectedPlan && selectedPlan !== currentPlan && upgradeType" class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 mb-6 border border-slate-100 dark:border-slate-700 animate-fade-in">
+             <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Upgrade ke</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ getPlanName(selectedPlan) }}</span>
+              </div>
+              <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Durasi Baru</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ getUpgradeDurationLabel() }}</span>
+              </div>
+              <div v-if="getDiscount() > 0" class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Diskon</span>
+                <span class="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">-{{ getDiscount() }}%</span>
+              </div>
+              <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
+                <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Tagihan</span>
+                <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(calculateUpgradeAmount(upgradeType)) }}</span>
+              </div>
+          </div>
+
+          <!-- Action Button for Upgrade -->
+          <button
+            v-if="selectedPlan && selectedPlan !== currentPlan && upgradeType && (upgradeType !== 'custom' || selectedCustomDuration)"
+            @click="handleUpgrade"
+            :disabled="processing"
+            class="w-full px-6 py-4 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+             <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+             {{ processing ? 'Memproses...' : 'Lanjut Pembayaran Upgrade' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Expired/New Subscription Section -->
+      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && (subscription?.isExpired || !subscription?.subscription?.endDate)" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Perpanjang Berlangganan</h3>
+          <p class="text-sm text-[#4c739a] mt-1">Layanan Anda saat ini tidak aktif. Pilih paket untuk mengaktifkan kembali.</p>
+        </div>
+        
+        <div class="p-6">
+          <!-- Plan Selection -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div
+              v-for="plan in subscriptionPlans"
+              :key="plan.id"
+              @click="extendPlan = plan.id"
+              class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
+              :class="extendPlan === plan.id 
+                ? 'border-[#137fec] bg-blue-50/50 dark:bg-blue-900/20' 
+                : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+            >
+              <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-[#137fec]">
+                <span class="material-symbols-outlined">check_circle</span>
+              </div>
+              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-[#137fec] transition-colors">{{ plan.name }}</h4>
+              <div class="text-lg font-bold text-[#137fec] mb-2">
+                <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
+                  <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
+                  <span>
+                    {{ formatCurrency(plan.price) }}
+                    <span class="text-[10px] font-normal text-green-600 bg-green-50 px-1.5 py-0.5 rounded ml-1">Hemat {{ plan.discount }}%</span>
+                  </span>
+                </div>
+                <template v-else>
+                  {{ formatCurrency(plan.price) }}
+                </template>
+                <span class="text-xs text-[#4c739a] font-normal">/bulan</span>
+              </div>
+              <p class="text-xs text-[#4c739a] line-clamp-2 leading-relaxed">{{ plan.description }}</p>
+            </div>
+          </div>
+
+          <!-- Duration Selection -->
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white mb-3">Durasi Berlangganan</label>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <button
                 v-for="duration in durationOptions"
                 :key="duration.value"
                 @click="extendDuration = duration.value"
-                class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
+                class="px-4 py-3 border-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden"
                 :class="extendDuration === duration.value
-                  ? 'border-primary-600 bg-primary-50 text-primary-700'
-                  : 'border-gray-200 hover:border-primary-300 text-gray-700'"
+                  ? 'border-[#137fec] bg-blue-50 dark:bg-blue-900/20 text-[#137fec]'
+                  : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 text-[#4c739a]'"
               >
-                {{ duration.label }}
-                <span v-if="duration.discount" class="block text-xs text-green-600 mt-1">Diskon {{ duration.discount }}%</span>
+                <span class="relative z-10">{{ duration.label }}</span>
+                <div v-if="duration.discount" class="absolute top-0 right-0 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg z-10">
+                   -{{ duration.discount }}%
+                </div>
               </button>
             </div>
           </div>
 
-          <!-- Summary for Extend -->
-          <div v-if="extendPlan && extendDuration" class="bg-gray-50 rounded-lg p-4 mb-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-gray-700">Paket:</span>
-              <span class="font-semibold text-gray-900">{{ getPlanName(extendPlan) }}</span>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-gray-700">Durasi:</span>
-              <span class="font-semibold text-gray-900">{{ extendDuration }} hari</span>
-            </div>
-            <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-2">
-              <span class="text-gray-700">Diskon:</span>
-              <span class="font-semibold text-green-600">{{ getExtendDiscount() }}%</span>
-            </div>
-            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-              <span class="text-lg font-semibold text-gray-900">Total Pembayaran:</span>
-              <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
-            </div>
+          <!-- Summary -->
+          <div v-if="extendPlan && extendDuration" class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 mb-6 border border-slate-100 dark:border-slate-700">
+              <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Paket</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ getPlanName(extendPlan) }}</span>
+              </div>
+              <div class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Durasi</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ extendDuration }} hari</span>
+              </div>
+              <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-3 text-sm">
+                <span class="text-[#4c739a]">Diskon Durasi</span>
+                <span class="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">-{{ getExtendDiscount() }}%</span>
+              </div>
+              <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
+                <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Tagihan</span>
+                <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(calculateExtendTotal()) }}</span>
+              </div>
           </div>
 
-          <!-- Action Button for Extend -->
+          <!-- Action Button -->
           <button
-            v-if="extendPlan && extendDuration"
             @click="handleExtend"
-            :disabled="processing"
-            class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="!extendPlan || !extendDuration || processing"
+            class="w-full px-6 py-4 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {{ processing ? 'Memproses...' : 'Perpanjang Paket' }}
+             <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+             {{ processing ? 'Memproses...' : 'Lanjut ke Pembayaran' }}
           </button>
         </div>
-        
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Upgrade ke Paket Lain</h3>
-        
-        <!-- Plan Selection -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div
-            v-for="plan in availablePlans"
-            :key="plan.id"
-            @click="selectedPlan = plan.id"
-            class="border-2 rounded-lg p-4 cursor-pointer transition-all"
-            :class="selectedPlan === plan.id 
-              ? 'border-primary-600 bg-primary-50' 
-              : 'border-gray-200 hover:border-primary-300'"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ plan.name }}</h4>
-              <div v-if="selectedPlan === plan.id" class="w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <div class="text-2xl font-bold text-primary-600 mb-1">
-              <div v-if="plan.originalPrice && plan.discount" class="flex items-baseline gap-2 flex-wrap">
-                <span class="text-lg font-normal text-gray-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
-                <span>{{ formatCurrency(plan.price) }}</span>
-                <span class="text-xs font-normal text-green-600 bg-green-100 px-2 py-0.5 rounded">Hemat {{ plan.discount }}%</span>
-              </div>
-              <template v-else>
-                {{ formatCurrency(plan.price) }}
-              </template>
-              <span class="text-sm text-gray-600 font-normal">/bulan</span>
-            </div>
-            <p class="text-xs text-gray-500">{{ plan.description }}</p>
-          </div>
-        </div>
-
-        <!-- Upgrade Type Selection -->
-        <div v-if="selectedPlan && selectedPlan !== currentPlan" class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-3">Pilih Durasi Upgrade</label>
-          <div class="space-y-3">
-            <!-- Temporary: 1 bulan -->
-            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all"
-              :class="upgradeType === 'temporary' 
-                ? 'border-primary-600 bg-primary-50' 
-                : 'border-gray-200 hover:border-primary-300'"
-            >
-              <input
-                type="radio"
-                v-model="upgradeType"
-                value="temporary"
-                class="mt-1 mr-3"
-              />
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">1 Bulan (Sementara)</div>
-                <div class="text-sm text-gray-600">Upgrade selama 1 bulan, setelah selesai kembali ke paket {{ getPlanName(currentPlan) }}</div>
-                <div class="text-sm font-semibold text-primary-600 mt-1">
-                  Hanya bayar: {{ formatCurrency(calculateUpgradeAmount('temporary')) }}
-                </div>
-              </div>
-            </label>
-
-            <!-- Until End: Sampai masa aktif selesai -->
-            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all"
-              :class="upgradeType === 'until_end' 
-                ? 'border-primary-600 bg-primary-50' 
-                : 'border-gray-200 hover:border-primary-300'"
-            >
-              <input
-                type="radio"
-                v-model="upgradeType"
-                value="until_end"
-                class="mt-1 mr-3"
-              />
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">Sampai Masa Aktif Selesai</div>
-                <div class="text-sm text-gray-600">Upgrade hingga {{ subscription?.daysRemaining || 0 }} hari tersisa</div>
-                <div class="text-sm font-semibold text-primary-600 mt-1">
-                  Hanya bayar: {{ formatCurrency(calculateUpgradeAmount('until_end')) }}
-                </div>
-              </div>
-            </label>
-
-            <!-- Custom: 3, 6, 12 bulan -->
-            <label class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all"
-              :class="upgradeType === 'custom' 
-                ? 'border-primary-600 bg-primary-50' 
-                : 'border-gray-200 hover:border-primary-300'"
-            >
-              <input
-                type="radio"
-                v-model="upgradeType"
-                value="custom"
-                class="mt-1 mr-3"
-              />
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900 mb-2">Durasi Custom (3, 6, atau 12 Bulan)</div>
-                <div v-if="upgradeType === 'custom'" class="grid grid-cols-3 gap-2 mb-2">
-                  <button
-                    v-for="duration in customDurationOptions"
-                    :key="duration.value"
-                    @click.stop="selectedCustomDuration = duration.value"
-                    class="px-3 py-2 border-2 rounded-lg text-sm font-medium transition-all"
-                    :class="selectedCustomDuration === duration.value
-                      ? 'border-primary-600 bg-primary-50 text-primary-700'
-                      : 'border-gray-200 hover:border-primary-300 text-gray-700'"
-                  >
-                    {{ duration.label }}
-                    <span v-if="duration.discount" class="text-xs text-green-600">(Diskon {{ duration.discount }}%)</span>
-                  </button>
-                </div>
-                <div v-if="upgradeType === 'custom' && selectedCustomDuration" class="text-sm font-semibold text-primary-600">
-                  Hanya bayar: {{ formatCurrency(calculateUpgradeAmount('custom')) }}
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Summary -->
-        <div v-if="selectedPlan && selectedPlan !== currentPlan && upgradeType" class="bg-gray-50 rounded-lg p-4 mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Dari:</span>
-            <span class="font-semibold text-gray-900">{{ getPlanName(currentPlan) }}</span>
-          </div>
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Ke:</span>
-            <span class="font-semibold text-gray-900">{{ getPlanName(selectedPlan) }}</span>
-          </div>
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Durasi:</span>
-            <span class="font-semibold text-gray-900">{{ getUpgradeDurationLabel() }}</span>
-          </div>
-          <div v-if="getDiscount() > 0" class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Diskon:</span>
-            <span class="font-semibold text-green-600">{{ getDiscount() }}%</span>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-            <span class="text-lg font-semibold text-gray-900">Total Pembayaran:</span>
-            <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(calculateUpgradeAmount(upgradeType)) }}</span>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <button
-          v-if="selectedPlan && selectedPlan !== currentPlan && upgradeType && (upgradeType !== 'custom' || selectedCustomDuration)"
-          @click="handleUpgrade"
-          :disabled="processing"
-          class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ processing ? 'Memproses...' : 'Lanjutkan ke Pembayaran' }}
-        </button>
       </div>
 
-      <!-- Extend Section (if expired or no active subscription) -->
-      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && (subscription?.isExpired || !subscription?.subscription?.endDate)" class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Perpanjang Berlangganan</h3>
-        
-        <!-- Plan Selection -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div
-            v-for="plan in subscriptionPlans"
-            :key="plan.id"
-            @click="extendPlan = plan.id"
-            class="border-2 rounded-lg p-4 cursor-pointer transition-all"
-            :class="extendPlan === plan.id 
-              ? 'border-primary-600 bg-primary-50' 
-              : 'border-gray-200 hover:border-primary-300'"
+      <!-- Info Banner -->
+      <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 flex items-start gap-4">
+        <div class="bg-blue-100 dark:bg-slate-700 text-[#137fec] p-2 rounded-lg flex-shrink-0">
+          <span class="material-symbols-outlined">info</span>
+        </div>
+        <div>
+          <h4 class="font-bold text-[#0d141b] dark:text-white text-sm mb-1">Butuh bantuan memilih paket?</h4>
+          <p class="text-xs text-[#4c739a] leading-relaxed mb-3">Pelajari lebih lanjut tentang fitur setiap paket dan addon yang tersedia di halaman pricing kami.</p>
+          <router-link
+            to="/pricing"
+            class="text-xs font-bold text-[#137fec] hover:text-blue-700 hover:underline flex items-center gap-1"
           >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ plan.name }}</h4>
-              <div v-if="extendPlan === plan.id" class="w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <div class="text-2xl font-bold text-primary-600 mb-1">
-              <div v-if="plan.originalPrice && plan.discount" class="flex items-baseline gap-2 flex-wrap">
-                <span class="text-lg font-normal text-gray-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
-                <span>{{ formatCurrency(plan.price) }}</span>
-                <span class="text-xs font-normal text-green-600 bg-green-100 px-2 py-0.5 rounded">Hemat {{ plan.discount }}%</span>
-              </div>
-              <template v-else>
-                {{ formatCurrency(plan.price) }}
-              </template>
-              <span class="text-sm text-gray-600 font-normal">/bulan</span>
-            </div>
-            <p class="text-xs text-gray-500">{{ plan.description }}</p>
-          </div>
-        </div>
-
-        <!-- Duration Selection -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Durasi Berlangganan</label>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button
-              v-for="duration in durationOptions"
-              :key="duration.value"
-              @click="extendDuration = duration.value"
-              class="px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all"
-              :class="extendDuration === duration.value
-                ? 'border-primary-600 bg-primary-50 text-primary-700'
-                : 'border-gray-200 hover:border-primary-300 text-gray-700'"
-            >
-              {{ duration.label }}
-              <span v-if="duration.discount" class="block text-xs text-green-600 mt-1">Diskon {{ duration.discount }}%</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Summary -->
-        <div v-if="extendPlan && extendDuration" class="bg-gray-50 rounded-lg p-4 mb-6">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Paket:</span>
-            <span class="font-semibold text-gray-900">{{ getPlanName(extendPlan) }}</span>
-          </div>
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Durasi:</span>
-            <span class="font-semibold text-gray-900">{{ extendDuration }} hari</span>
-          </div>
-          <div v-if="getExtendDiscount() > 0" class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Diskon:</span>
-            <span class="font-semibold text-green-600">{{ getExtendDiscount() }}%</span>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-            <span class="text-lg font-semibold text-gray-900">Total:</span>
-            <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <button
-          @click="handleExtend"
-          :disabled="!extendPlan || !extendDuration || processing"
-          class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ processing ? 'Memproses...' : 'Lanjutkan ke Pembayaran' }}
-        </button>
-      </div>
-
-      <!-- Available Plans Info -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div class="flex items-start gap-3">
-          <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h4 class="font-semibold text-blue-900 mb-1">Ingin melihat detail lengkap paket?</h4>
-            <p class="text-sm text-blue-700 mb-2">Lihat perbandingan fitur, harga, dan addon yang tersedia di halaman pricing.</p>
-            <router-link
-              to="/pricing"
-              class="text-sm font-medium text-blue-600 hover:text-blue-700 underline"
-            >
-              Lihat Halaman Pricing →
-            </router-link>
-          </div>
+            Buka Halaman Pricing
+            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </router-link>
         </div>
       </div>
     </div>

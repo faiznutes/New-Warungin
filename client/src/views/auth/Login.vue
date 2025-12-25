@@ -1,74 +1,67 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
+  <div class="min-h-screen bg-[#f6f7f8] flex items-center justify-center px-4 py-12">
     <div class="w-full max-w-md">
       <!-- Logo Section -->
       <div class="text-center mb-8">
         <router-link to="/" class="inline-flex flex-col items-center hover:opacity-90 transition-opacity">
-          <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</h1>
-          <p class="text-gray-600">Sistem Modern untuk UMKM</p>
+          <div class="w-16 h-16 bg-gradient-to-br from-[#3f68e4] to-[#5b7fe8] rounded-2xl flex items-center justify-center mb-3 shadow-lg shadow-primary/30">
+            <span class="material-symbols-outlined text-white text-[32px]">store</span>
+          </div>
+          <h1 class="text-3xl font-bold text-[#3f68e4]">Warungin</h1>
+          <p class="text-slate-500 mt-1">Modern System for SMEs</p>
         </router-link>
       </div>
 
       <!-- Login Card -->
-      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2 text-center">Masuk ke Akun Anda</h2>
-        <p class="text-gray-500 text-center mb-6 text-sm">Kelola bisnis Anda dengan lebih mudah</p>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-8 border border-slate-100 dark:border-slate-700/50">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2 text-center">Sign In to Your Account</h2>
+        <p class="text-slate-500 text-center mb-6 text-sm">Manage your business with ease</p>
 
         <form @submit.prevent="handleLogin" class="space-y-5">
           <!-- Email Input -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
               Email
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                </svg>
+                <span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
               </div>
               <input
                 id="email"
                 v-model="email"
                 type="email"
                 required
-                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 placeholder-gray-400"
-                placeholder="nama@email.com"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                placeholder="name@email.com"
               />
             </div>
           </div>
 
           <!-- Password Input -->
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-              Kata Sandi
+            <label for="password" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+              Password
             </label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <span class="material-symbols-outlined text-slate-400 text-[20px]">lock</span>
               </div>
               <input
                 id="password"
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
                 required
-                class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-gray-900 placeholder-gray-400"
-                placeholder="Masukkan kata sandi"
+                class="block w-full pl-10 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                placeholder="Enter your password"
               />
               <button
                 type="button"
                 @click="showPassword = !showPassword"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 tabindex="-1"
               >
-                <svg v-if="!showPassword" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                </svg>
+                <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
               </button>
             </div>
           </div>
@@ -79,10 +72,10 @@
               id="remember-me"
               v-model="rememberMe"
               type="checkbox"
-              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              class="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded"
             />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-700 cursor-pointer">
-              Ingat saya
+            <label for="remember-me" class="ml-2 block text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+              Remember me
             </label>
           </div>
 
@@ -90,25 +83,22 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            class="w-full py-3 px-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
           >
-            <span v-if="!loading">Masuk</span>
-            <span v-else class="flex items-center justify-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12c0-4.418 3.582-8 8-8v4a4 4 0 00-4 4c0 1.104.896 2 2 2h2z"></path>
-              </svg>
-              Memproses...
+            <span v-if="!loading">Sign In</span>
+            <span v-else class="flex items-center gap-2">
+              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
             </span>
           </button>
         </form>
 
         <!-- Footer Links -->
         <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600">
-            Belum punya akun?
-            <router-link to="/contact" class="text-primary-600 hover:text-primary-700 font-medium">
-              Hubungi kami
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Don't have an account?
+            <router-link to="/contact" class="text-primary hover:text-primary-hover font-medium">
+              Contact us
             </router-link>
           </p>
         </div>
@@ -116,10 +106,10 @@
 
       <!-- Additional Info -->
       <div class="mt-6 text-center">
-        <p class="text-sm text-gray-500">
-          Lupa kata sandi?
-          <router-link to="/contact" class="text-primary-600 hover:text-primary-700 font-medium">
-            Reset di sini
+        <p class="text-sm text-slate-500">
+          Forgot your password?
+          <router-link to="/contact" class="text-primary hover:text-primary-hover font-medium">
+            Reset here
           </router-link>
         </p>
       </div>
@@ -155,23 +145,19 @@ const showPassword = ref(false);
 const rememberMe = ref(localStorage.getItem('rememberMe') === 'true');
 const showStoreSelector = ref(false);
 
-// Initialize on mount
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // If already authenticated, redirect to appropriate dashboard based on role
   if (authStore.isAuthenticated) {
     const redirect = route.query.redirect as string;
     if (redirect) {
     router.push(redirect);
     } else {
-      // Router guard will handle redirect to appropriate dashboard
       router.push('/app');
     }
     return;
   }
   
-  // Restore email from localStorage if remember me was checked
   if (rememberMe.value) {
     const storedEmail = localStorage.getItem('rememberedEmail');
     if (storedEmail) {
@@ -183,27 +169,23 @@ onMounted(() => {
 const handleLogin = async () => {
   loading.value = true;
   try {
-    // Trim email and password to avoid whitespace issues
     const trimmedEmail = email.value.trim();
     const trimmedPassword = password.value.trim();
     
     if (!trimmedEmail || !trimmedPassword) {
-      await showWarning('Email dan password harus diisi');
+      await showWarning('Email and password are required');
       loading.value = false;
       return;
     }
     
     await authStore.login(trimmedEmail, trimmedPassword, rememberMe.value);
     
-    // IMPORTANT: Wait for user data to be fully loaded and reactive
-    // Login function already calls fetchMe, but we need to ensure it's complete
     let retries = 0;
     while (!authStore.user && retries < 10) {
       await new Promise(resolve => setTimeout(resolve, 100));
       retries++;
     }
     
-    // If user still not loaded, try to fetch manually
     if (!authStore.user) {
       try {
         await authStore.fetchMe();
@@ -212,14 +194,12 @@ const handleLogin = async () => {
       }
     }
     
-    // Store email if remember me is checked
     if (rememberMe.value) {
       localStorage.setItem('rememberedEmail', trimmedEmail);
     } else {
       localStorage.removeItem('rememberedEmail');
     }
     
-    // Auto-select store berdasarkan permissions untuk SPV/Kasir/Dapur
     const user = authStore.user;
     
     if (user && ['SUPERVISOR', 'CASHIER', 'KITCHEN'].includes(user.role)) {
@@ -232,7 +212,6 @@ const handleLogin = async () => {
         const activeOutlets = allOutlets.filter((o: any) => o.isActive !== false);
         
         if (user.role === 'CASHIER' || user.role === 'KITCHEN') {
-          // CASHIER dan KITCHEN: Auto-select assignedStoreId
           const assignedStoreId = permissions?.assignedStoreId;
           if (assignedStoreId) {
             const assignedStore = activeOutlets.find((o: any) => o.id === assignedStoreId);
@@ -241,22 +220,18 @@ const handleLogin = async () => {
             }
           }
         } else if (user.role === 'SUPERVISOR') {
-          // SUPERVISOR: Auto-select berdasarkan allowedStoreIds
           const allowedStoreIds = Array.isArray(permissions?.allowedStoreIds) 
             ? permissions.allowedStoreIds 
             : [];
           
           if (allowedStoreIds.length > 0) {
-            // Filter outlets berdasarkan allowedStoreIds
             const allowedOutlets = activeOutlets.filter((o: any) => 
               allowedStoreIds.includes(o.id)
             );
             
             if (allowedOutlets.length === 1) {
-              // Auto-select jika hanya 1 store
               storeToSelect = allowedOutlets[0].id;
             } else if (allowedOutlets.length > 1) {
-              // Jika lebih dari 1, pilih yang pertama atau yang tersimpan
               const savedStoreId = localStorage.getItem('selectedStoreId');
               const savedStore = allowedOutlets.find((o: any) => o.id === savedStoreId);
               storeToSelect = savedStore ? savedStoreId : allowedOutlets[0].id;
@@ -264,16 +239,12 @@ const handleLogin = async () => {
           }
         }
         
-        // Set store jika ditemukan
         if (storeToSelect) {
           authStore.setSelectedStore(storeToSelect);
           localStorage.setItem('selectedStoreId', storeToSelect);
         } else if (activeOutlets.length === 0) {
-          // No stores available
-          await showWarning('Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
+          await showWarning('No stores available. Please contact admin to create a store first.');
         } else if (user.role === 'SUPERVISOR' && Array.isArray(permissions?.allowedStoreIds) && permissions.allowedStoreIds.length > 1) {
-          // SUPERVISOR dengan multiple stores - tidak perlu modal, bisa switch di page
-          // Auto-select store pertama atau yang tersimpan
           const allowedStoreIds = permissions.allowedStoreIds;
           const allowedOutlets = activeOutlets.filter((o: any) => allowedStoreIds.includes(o.id));
           if (allowedOutlets.length > 0) {
@@ -289,54 +260,45 @@ const handleLogin = async () => {
       }
     }
     
-    // Redirect setelah auto-select store
     const redirect = route.query.redirect as string;
     if (redirect) {
       router.push(redirect);
     } else {
       const userRole = authStore.user?.role;
       
-      // Check if cashier needs to open shift
       if (userRole === 'CASHIER') {
         try {
           const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
           if (selectedStoreId) {
-            // Check if store shift is open
             const storeShiftResponse = await api.get('/store-shift/current', {
               params: { outletId: selectedStoreId },
             });
             const storeShift = storeShiftResponse.data.data;
             
             if (!storeShift) {
-              // No store shift open, redirect to cash-shift page
               router.push({ name: 'cash-shift' });
               return;
             }
             
-            // Check if cashier has active cash shift
             try {
               const cashShiftResponse = await api.get('/cash-shift/current');
               const cashShift = cashShiftResponse.data.data;
               
               if (!cashShift) {
-                // Store shift is open but cashier hasn't opened cash shift, redirect to cash-shift page
                 router.push({ name: 'cash-shift' });
                 return;
               }
             } catch (cashShiftError: any) {
-              // If error, assume no cash shift, redirect to cash-shift page
               if (cashShiftError.response?.status === 404 || !cashShiftError.response?.data?.data) {
                 router.push({ name: 'cash-shift' });
                 return;
               }
             }
           } else {
-            // No store selected, redirect to cash-shift page to open store shift
             router.push({ name: 'cash-shift' });
             return;
           }
         } catch (error: any) {
-          // If error checking shift, redirect to cash-shift page
           console.error('Error checking shift:', error);
           router.push({ name: 'cash-shift' });
           return;
@@ -350,24 +312,21 @@ const handleLogin = async () => {
       }
     }
   } catch (error: any) {
-    // Handle rate limiting (429) errors with better messaging
     if (error.response?.status === 429) {
       const retryAfter = error.response?.data?.retryAfter;
-      let message = error.response?.data?.message || error.response?.data?.error || 'Terlalu banyak percobaan login';
+      let message = error.response?.data?.message || error.response?.data?.error || 'Too many login attempts';
       
       if (retryAfter) {
         const minutes = Math.ceil(retryAfter / 60);
-        message = `${message}. Silakan coba lagi dalam ${minutes} menit.`;
+        message = `${message}. Please try again in ${minutes} minutes.`;
       } else {
-        message = `${message}. Silakan tunggu beberapa saat sebelum mencoba lagi.`;
+        message = `${message}. Please wait before trying again.`;
       }
       
       await showError(message);
     } else if (error.response?.status === 403) {
-      // Handle store inactive errors with special alert
       const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message;
       
-      // Check if it's a store-related error
       if (errorMessage && (
         errorMessage.includes('Store') || 
         errorMessage.includes('store') ||
@@ -376,24 +335,17 @@ const handleLogin = async () => {
         errorMessage.includes('ditetapkan') ||
         errorMessage.includes('diizinkan')
       )) {
-        // Show warning with detailed message
-        await showWarning(
-          errorMessage,
-          'Store Tidak Aktif'
-        );
+        await showWarning(errorMessage, 'Store Inactive');
       } else {
-        await showError(errorMessage || 'Akses ditolak');
+        await showError(errorMessage || 'Access denied');
       }
     } else {
-      // Handle specific error messages from backend
       const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message;
       
-      // Show specific error messages
       if (errorMessage) {
         await showError(errorMessage);
       } else {
-        // Fallback to generic message
-        await showError('Email atau password salah');
+        await showError('Invalid email or password');
       }
     }
     console.error('Login error:', error);
@@ -404,12 +356,10 @@ const handleLogin = async () => {
 
 const handleStoreSelectorClose = () => {
   showStoreSelector.value = false;
-  // Redirect to intended destination or appropriate dashboard based on role
   const redirect = route.query.redirect as string;
   if (redirect) {
   router.push(redirect);
   } else {
-    // Directly redirect to appropriate dashboard based on role
     const userRole = authStore.user?.role;
     if (userRole === 'SUPER_ADMIN') {
       router.push({ name: 'super-dashboard' });
@@ -421,12 +371,10 @@ const handleStoreSelectorClose = () => {
 
 const handleStoreSelected = (storeId: string) => {
   showStoreSelector.value = false;
-  // Redirect to intended destination or appropriate dashboard based on role
   const redirect = route.query.redirect as string;
   if (redirect) {
   router.push(redirect);
   } else {
-    // Directly redirect to appropriate dashboard based on role
     const userRole = authStore.user?.role;
     if (userRole === 'SUPER_ADMIN') {
       router.push({ name: 'super-dashboard' });

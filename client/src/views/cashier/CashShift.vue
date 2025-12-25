@@ -2,8 +2,8 @@
   <div class="flex flex-col h-full p-4 sm:p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Uang Modal & Rekap Fisik</h1>
-      <p class="text-sm sm:text-base text-gray-600">Kelola shift kasir dan rekap uang fisik</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Cash & Physical Recap</h1>
+      <p class="text-sm sm:text-base text-gray-600">Manage cashier shifts and physical cash recap</p>
     </div>
 
     <!-- Loading State -->
@@ -18,8 +18,8 @@
           <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Shift Toko Aktif</h2>
-          <p class="text-gray-600">Silakan buka shift toko terlebih dahulu untuk memulai transaksi</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">No Active Store Shift</h2>
+          <p class="text-gray-600">Please open a store shift first to start transactions</p>
         </div>
 
         <form @submit.prevent="handleOpenStoreShift" class="space-y-4">
@@ -32,18 +32,18 @@
               required
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
             >
-              <option value="">Pilih Shift</option>
-              <option value="pagi">Pagi (06:00 - 12:00)</option>
-              <option value="siang">Siang (12:00 - 18:00)</option>
-              <option value="sore">Sore (18:00 - 24:00)</option>
-              <option value="malam">Malam (00:00 - 06:00)</option>
+              <option value="">Select Shift</option>
+              <option value="pagi">Morning (06:00 - 12:00)</option>
+              <option value="siang">Afternoon (12:00 - 18:00)</option>
+              <option value="sore">Evening (18:00 - 24:00)</option>
+              <option value="malam">Night (00:00 - 06:00)</option>
             </select>
-            <p class="text-xs text-gray-500 mt-1">Pilih shift yang akan dibuka untuk toko ini</p>
+            <p class="text-xs text-gray-500 mt-1">Select the shift to open for this store</p>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Modal Awal (Opsional)
+              Initial Cash (Optional)
             </label>
             <input
               v-model.number="openStoreShiftForm.modalAwal"
@@ -53,18 +53,18 @@
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
               placeholder="0"
             />
-            <p class="text-xs text-gray-500 mt-1">Modal awal shift (opsional, bisa diisi saat buka cash shift kasir)</p>
+            <p class="text-xs text-gray-500 mt-1">Initial cash for the shift (optional, can be filled when opening cashier cash shift)</p>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Catatan (Opsional)
+              Notes (Optional)
             </label>
             <textarea
               v-model="openStoreShiftForm.catatan"
               rows="3"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Catatan tambahan..."
+              placeholder="Additional notes..."
             ></textarea>
           </div>
 
@@ -77,7 +77,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>{{ openingStoreShift ? 'Membuka Shift...' : 'Buka Shift Toko' }}</span>
+            <span>{{ openingStoreShift ? 'Opening Shift...' : 'Open Store Shift' }}</span>
           </button>
         </form>
       </div>
@@ -89,13 +89,13 @@
       <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Shift Toko Aktif</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Active Store Shift</h2>
             <p class="text-sm text-gray-600">
               Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
-              Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
+              Opened: {{ formatDateTime(currentStoreShift.openedAt) }}
             </p>
             <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
-              Dibuka oleh: {{ currentStoreShift.opener.name }}
+              Opened by: {{ currentStoreShift.opener.name }}
             </p>
           </div>
           <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
@@ -110,14 +110,14 @@
           <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Buka Cash Shift</h2>
-          <p class="text-gray-600">Silakan buka cash shift untuk memulai transaksi</p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Open Cash Shift</h2>
+          <p class="text-gray-600">Please open a cash shift to start transactions</p>
         </div>
 
         <form @submit.prevent="handleOpenShift" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Modal Awal <span class="text-red-500">*</span>
+              Initial Cash <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="openShiftForm.modalAwal"
@@ -128,18 +128,18 @@
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
               placeholder="0"
             />
-            <p class="text-xs text-gray-500 mt-1">Masukkan jumlah uang modal yang tersedia di kasir</p>
+            <p class="text-xs text-gray-500 mt-1">Enter the amount of cash available at the cashier</p>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Catatan (Opsional)
+              Notes (Optional)
             </label>
             <textarea
               v-model="openShiftForm.catatan"
               rows="3"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Catatan tambahan..."
+              placeholder="Additional notes..."
             ></textarea>
           </div>
 
@@ -152,7 +152,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>{{ openingShift ? 'Membuka Shift...' : 'Buka Cash Shift' }}</span>
+            <span>{{ openingShift ? 'Opening Shift...' : 'Open Cash Shift' }}</span>
           </button>
         </form>
       </div>
@@ -173,7 +173,7 @@
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               ]"
             >
-              Shift Hari Ini
+              Today's Shifts
             </button>
             <button
               @click="activeTab = 'history'"
@@ -184,7 +184,7 @@
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               ]"
             >
-              Riwayat Shift
+              Shift History
             </button>
           </nav>
         </div>
@@ -196,13 +196,13 @@
         <div v-if="currentStoreShift" class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-1">Shift Toko Aktif</h3>
+              <h3 class="text-lg font-bold text-gray-900 mb-1">Active Store Shift</h3>
               <p class="text-sm text-gray-600">
                 Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
-                Dibuka: {{ formatDateTime(currentStoreShift.openedAt) }}
+                Opened: {{ formatDateTime(currentStoreShift.openedAt) }}
               </p>
               <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
-                Dibuka oleh: {{ currentStoreShift.opener.name }}
+                Opened by: {{ currentStoreShift.opener.name }}
               </p>
             </div>
             <div class="flex gap-2">
@@ -210,7 +210,7 @@
                 @click="viewShiftDetails(currentStoreShift.id)"
                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
               >
-                Lihat Detail
+                View Details
               </button>
               <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
                 {{ currentStoreShift.shiftType }}
@@ -221,12 +221,12 @@
 
         <!-- Today's Shifts List -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Shift Hari Ini</h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Today's Shifts</h3>
           <div v-if="todayShiftsLoading" class="text-center py-8">
             <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
           <div v-else-if="todayShifts.length === 0" class="text-center py-8 text-gray-500">
-            Belum ada shift hari ini
+            No shifts today yet
           </div>
           <div v-else class="space-y-3">
             <div
@@ -247,15 +247,15 @@
                         shift.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                       ]"
                     >
-                      {{ shift.status === 'open' ? 'Buka' : 'Tutup' }}
+                      {{ shift.status === 'open' ? 'Open' : 'Closed' }}
                     </span>
                   </div>
                   <p class="text-sm text-gray-600">
-                    Dibuka: {{ formatDateTime(shift.openedAt) }}
-                    <span v-if="shift.closedAt"> | Ditutup: {{ formatDateTime(shift.closedAt) }}</span>
+                    Opened: {{ formatDateTime(shift.openedAt) }}
+                    <span v-if="shift.closedAt"> | Closed: {{ formatDateTime(shift.closedAt) }}</span>
                   </p>
                   <p class="text-xs text-gray-500 mt-1" v-if="shift.opener">
-                    Dibuka oleh: {{ shift.opener.name }}
+                    Opened by: {{ shift.opener.name }}
                   </p>
                 </div>
                 <button
@@ -276,27 +276,27 @@
         <div v-if="currentShift" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
           <div class="flex items-center justify-between mb-6">
             <div>
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Cash Shift Aktif</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Active Cash Shift</h2>
               <p class="text-sm text-gray-600">
-                Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
+                Opened: {{ formatDateTime(currentShift.shiftStart) }}
               </p>
             </div>
             <span class="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold">
-              BUKA
+              OPEN
             </span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Modal Awal</p>
+              <p class="text-sm text-gray-600 mb-1">Initial Cash</p>
               <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(currentShift.modalAwal) }}</p>
             </div>
             <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Total Penjualan</p>
+              <p class="text-sm text-gray-600 mb-1">Total Sales</p>
               <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
             </div>
             <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Saldo Seharusnya</p>
+              <p class="text-sm text-gray-600 mb-1">Expected Balance</p>
               <p class="text-2xl font-bold text-green-600">
                 {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
               </p>
@@ -311,7 +311,7 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              Tutup Shift
+              Close Shift
             </button>
             <button
               @click="loadCurrentShift"
@@ -324,23 +324,23 @@
 
         <!-- Store Shift History -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Riwayat Shift Toko</h3>
+          <h3 class="text-xl font-bold text-gray-900 mb-4">Store Shift History</h3>
           <div v-if="storeShiftHistoryLoading" class="text-center py-8">
             <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
           <div v-else-if="storeShiftHistory.length === 0" class="text-center py-8 text-gray-500">
-            Belum ada riwayat shift
+            No shift history yet
           </div>
           <div v-else class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shift</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibuka</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ditutup</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibuka Oleh</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Opened</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Closed</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Opened By</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -370,7 +370,7 @@
                         shift.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                       ]"
                     >
-                      {{ shift.status === 'open' ? 'Buka' : 'Tutup' }}
+                      {{ shift.status === 'open' ? 'Open' : 'Closed' }}
                     </span>
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap">
@@ -389,7 +389,7 @@
           <!-- Pagination -->
           <div v-if="storeShiftHistoryPagination.totalPages > 1" class="mt-4 flex items-center justify-between">
             <div class="text-sm text-gray-700">
-              Halaman {{ storeShiftHistoryPagination.page }} dari {{ storeShiftHistoryPagination.totalPages }}
+              Page {{ storeShiftHistoryPagination.page }} of {{ storeShiftHistoryPagination.totalPages }}
             </div>
             <div class="flex gap-2">
               <button
@@ -397,14 +397,14 @@
                 :disabled="storeShiftHistoryPagination.page === 1"
                 class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
-                Sebelumnya
+                Previous
               </button>
               <button
                 @click="changeStoreShiftHistoryPage(storeShiftHistoryPagination.page + 1)"
                 :disabled="storeShiftHistoryPagination.page === storeShiftHistoryPagination.totalPages"
                 class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
-                Selanjutnya
+                Next
               </button>
             </div>
           </div>
@@ -420,7 +420,7 @@
     >
       <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full p-6 my-8">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-2xl font-bold text-gray-900">Detail Shift</h3>
+          <h3 class="text-2xl font-bold text-gray-900">Shift Details</h3>
           <button
             @click="showShiftDetailModal = false"
             class="text-gray-400 hover:text-gray-600"
@@ -439,15 +439,15 @@
               <p class="text-sm font-semibold text-gray-900 capitalize">{{ shiftDetail.shift.shiftType }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Dibuka</p>
+              <p class="text-xs text-gray-600 mb-1">Opened</p>
               <p class="text-sm font-semibold text-gray-900">{{ formatDateTime(shiftDetail.shift.openedAt) }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Ditutup</p>
-              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.closedAt ? formatDateTime(shiftDetail.shift.closedAt) : 'Masih Buka' }}</p>
+              <p class="text-xs text-gray-600 mb-1">Closed</p>
+              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.closedAt ? formatDateTime(shiftDetail.shift.closedAt) : 'Still Open' }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Dibuka Oleh</p>
+              <p class="text-xs text-gray-600 mb-1">Opened By</p>
               <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.opener?.name || '-' }}</p>
             </div>
           </div>
@@ -455,7 +455,7 @@
 
         <!-- Filters -->
         <div class="mb-6 bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-semibold text-gray-700 mb-3">Filter Detail:</p>
+          <p class="text-sm font-semibold text-gray-700 mb-3">Filter Details:</p>
           <div class="flex flex-wrap gap-3">
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -464,7 +464,7 @@
                 @change="loadShiftDetails(selectedShiftId)"
                 class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Penjualan</span>
+              <span class="text-sm text-gray-700">Sales</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -473,7 +473,7 @@
                 @change="loadShiftDetails(selectedShiftId)"
                 class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Transfer Stok</span>
+              <span class="text-sm text-gray-700">Stock Transfers</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -482,7 +482,7 @@
                 @change="loadShiftDetails(selectedShiftId)"
                 class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Update Stok</span>
+              <span class="text-sm text-gray-700">Stock Adjustments</span>
             </label>
           </div>
         </div>
@@ -490,19 +490,19 @@
         <!-- Summary -->
         <div v-if="shiftDetail" class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Total Pendapatan</p>
+            <p class="text-xs text-gray-600 mb-1">Total Revenue</p>
             <p class="text-lg font-bold text-green-600">{{ formatCurrency(shiftDetail.summary.totalRevenue) }}</p>
           </div>
           <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Total Pesanan</p>
+            <p class="text-xs text-gray-600 mb-1">Total Orders</p>
             <p class="text-lg font-bold text-blue-600">{{ shiftDetail.summary.totalOrders }}</p>
           </div>
           <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Transfer Stok</p>
+            <p class="text-xs text-gray-600 mb-1">Stock Transfers</p>
             <p class="text-lg font-bold text-purple-600">{{ shiftDetail.summary.totalStockTransfers }}</p>
           </div>
           <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Update Stok</p>
+            <p class="text-xs text-gray-600 mb-1">Stock Adjustments</p>
             <p class="text-lg font-bold text-orange-600">{{ shiftDetail.summary.totalProductAdjustments }}</p>
           </div>
         </div>
@@ -514,22 +514,22 @@
 
         <!-- Orders -->
         <div v-else-if="shiftDetail && shiftDetailFilters.includeOrders && shiftDetail.orders.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Penjualan ({{ shiftDetail.orders.length }})</h4>
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Sales ({{ shiftDetail.orders.length }})</h4>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kasir</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cashier</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="order in shiftDetail.orders" :key="order.id" class="hover:bg-gray-50">
                   <td class="px-4 py-3 text-sm text-gray-900">{{ order.orderNumber }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.customer?.name || 'Pelanggan Umum' }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.customer?.name || 'Walk-in Customer' }}</td>
                   <td class="px-4 py-3 text-sm text-gray-900">{{ order.user?.name || '-' }}</td>
                   <td class="px-4 py-3 text-sm font-semibold text-gray-900">{{ formatCurrency(order.total) }}</td>
                   <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(order.createdAt) }}</td>
@@ -541,16 +541,16 @@
 
         <!-- Stock Transfers -->
         <div v-if="shiftDetail && shiftDetailFilters.includeStockTransfers && shiftDetail.stockTransfers.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Transfer Stok ({{ shiftDetail.stockTransfers.length }})</h4>
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Stock Transfers ({{ shiftDetail.stockTransfers.length }})</h4>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Transfer #</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dari</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ke</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">To</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -575,18 +575,18 @@
 
         <!-- Product Adjustments -->
         <div v-if="shiftDetail && shiftDetailFilters.includeProductAdjustments && shiftDetail.productAdjustments.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Update Stok ({{ shiftDetail.productAdjustments.length }})</h4>
+          <h4 class="text-lg font-bold text-gray-900 mb-4">Stock Adjustments ({{ shiftDetail.productAdjustments.length }})</h4>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sebelum</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sesudah</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Oleh</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Waktu</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Before</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">After</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">By</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -597,7 +597,7 @@
                       'px-2 py-1 text-xs font-semibold rounded-full',
                       adjustment.type === 'INCREASE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     ]">
-                      {{ adjustment.type === 'INCREASE' ? 'Tambah' : 'Kurang' }}
+                      {{ adjustment.type === 'INCREASE' ? 'Add' : 'Subtract' }}
                     </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.quantity }}</td>
@@ -618,7 +618,7 @@
           (!shiftDetailFilters.includeProductAdjustments || shiftDetail.productAdjustments.length === 0)"
           class="text-center py-12 text-gray-500"
         >
-          Tidak ada data untuk filter yang dipilih
+          No data for selected filters
         </div>
       </div>
     </div>
@@ -630,19 +630,19 @@
       @click.self="showCloseModal = false"
     >
       <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Tutup Shift</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Close Shift</h3>
         
         <div class="mb-4 space-y-2">
           <div class="bg-blue-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Modal Awal</p>
+            <p class="text-sm text-gray-600">Initial Cash</p>
             <p class="text-lg font-bold text-gray-900">{{ formatCurrency(currentShift?.modalAwal || 0) }}</p>
           </div>
           <div class="bg-green-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Total Penjualan</p>
+            <p class="text-sm text-gray-600">Total Sales</p>
             <p class="text-lg font-bold text-green-600">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</p>
           </div>
           <div class="bg-purple-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Saldo Seharusnya</p>
+            <p class="text-sm text-gray-600">Expected Balance</p>
             <p class="text-lg font-bold text-purple-600">
               {{ formatCurrency((currentShift?.modalAwal || 0) + (currentShift?.totalPenjualan || 0)) }}
             </p>
@@ -652,7 +652,7 @@
         <form @submit.prevent="handleCloseShift" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Uang Fisik di Kasir <span class="text-red-500">*</span>
+              Physical Cash at Register <span class="text-red-500">*</span>
             </label>
             <input
               v-model.number="closeShiftForm.uangFisikTutup"
@@ -663,12 +663,12 @@
               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
               placeholder="0"
             />
-            <p class="text-xs text-gray-500 mt-1">Masukkan jumlah uang fisik yang ada di kasir saat ini</p>
+            <p class="text-xs text-gray-500 mt-1">Enter the physical cash amount currently in the register</p>
           </div>
 
           <div v-if="closeShiftForm.uangFisikTutup && currentShift">
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p class="text-sm text-gray-600 mb-1">Selisih</p>
+              <p class="text-sm text-gray-600 mb-1">Difference</p>
               <p
                 class="text-lg font-bold"
                 :class="getSelisihClass(calculateSelisih())"
@@ -676,20 +676,20 @@
                 {{ formatCurrency(calculateSelisih()) }}
               </p>
               <p class="text-xs text-gray-500 mt-1">
-                {{ calculateSelisih() > 0 ? 'Lebih' : calculateSelisih() < 0 ? 'Kurang' : 'Pas' }}
+                {{ calculateSelisih() > 0 ? 'Over' : calculateSelisih() < 0 ? 'Short' : 'Exact' }}
               </p>
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Catatan (Opsional)
+              Notes (Optional)
             </label>
             <textarea
               v-model="closeShiftForm.catatan"
               rows="3"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Catatan tambahan..."
+              placeholder="Additional notes..."
             ></textarea>
           </div>
 
@@ -699,14 +699,14 @@
               @click="showCloseModal = false"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
             >
-              Batal
+              Cancel
             </button>
             <button
               type="submit"
               :disabled="closingShift || !closeShiftForm.uangFisikTutup"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {{ closingShift ? 'Menutup...' : 'Tutup Shift' }}
+              {{ closingShift ? 'Closing...' : 'Close Shift' }}
             </button>
           </div>
         </form>

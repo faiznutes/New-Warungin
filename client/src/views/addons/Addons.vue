@@ -1,122 +1,137 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col gap-8">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Addon</h2>
-    </div>
-
-    <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white rounded-lg border-2 border-dashed border-gray-300">
-      <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2">Pilih Tenant Terlebih Dahulu</h3>
-      <p class="text-gray-600 text-center max-w-md">Silakan pilih tenant terlebih dahulu untuk melihat dan mengelola addon</p>
-    </div>
-
-    <div v-else-if="loading" class="flex items-center justify-center py-12">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-gray-600 font-medium">Memuat addon...</div>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="flex flex-col">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Addon Management</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage addons and additional services for tenants.</p>
       </div>
     </div>
 
-    <div v-else class="flex flex-col space-y-6">
+    <!-- Tenant Selection Message -->
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-full mb-4">
+        <span class="material-symbols-outlined text-4xl text-slate-400">storefront</span>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Select a Tenant First</h3>
+      <p class="text-slate-500 text-sm text-center max-w-md">Please select a tenant from the dropdown above to view and manage their addons.</p>
+    </div>
+
+    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-slate-500 text-sm font-medium">Loading addon data...</p>
+    </div>
+
+    <div v-else class="flex flex-col gap-8">
       <!-- Active Addons -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Aktif</h3>
-        <div v-if="activeAddons.length === 0" class="text-center py-8 text-gray-500">
-          Belum ada addon yang aktif
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="flex items-center gap-2 mb-6">
+          <span class="material-symbols-outlined text-primary">check_circle</span>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Active Addons</h3>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div v-if="activeAddons.length === 0" class="text-center py-10 text-slate-500 text-sm bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">
+          No active addons for this tenant yet.
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
-            class="border-2 border-primary-200 rounded-lg p-4 bg-primary-50"
+            class="group relative bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-primary/30 transition-all"
           >
             <div class="flex items-start justify-between mb-3">
-              <h4 class="font-semibold text-gray-900">{{ addon.addonName }}</h4>
-              <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">Aktif</span>
+              <h4 class="font-bold text-slate-900 dark:text-white">{{ addon.addonName }}</h4>
+              <span class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100 rounded-lg">Active</span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">{{ getAddonDescription(addon) }}</p>
-            <div v-if="addon.limit" class="space-y-2">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Penggunaan:</span>
-                <span class="font-semibold" :class="addon.isLimitReached ? 'text-red-600' : 'text-gray-900'">
+            <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ getAddonDescription(addon) }}</p>
+            
+            <div v-if="addon.limit" class="space-y-2 mb-4">
+              <div class="flex items-center justify-between text-xs font-medium">
+                <span class="text-slate-500">Usage</span>
+                <span :class="addon.isLimitReached ? 'text-red-500' : 'text-slate-900 dark:text-white'">
                   {{ addon.currentUsage }} / {{ addon.limit }}
                 </span>
               </div>
-              <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
                 <div
-                  class="h-2 rounded-full transition-all"
-                  :class="addon.isLimitReached ? 'bg-red-500' : 'bg-primary-600'"
+                  class="h-full rounded-full transition-all duration-500"
+                  :class="addon.isLimitReached ? 'bg-red-500' : 'bg-[#137fec]'"
                   :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }"
                 ></div>
               </div>
             </div>
+
             <button
               @click="unsubscribeAddon(addon.addonId)"
-              class="mt-3 w-full px-3 py-2 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+              class="w-full px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-lg transition-colors mt-auto"
             >
-              Nonaktifkan
+              Nonaktifkan Layanan
             </button>
           </div>
         </div>
       </div>
 
       <!-- Available Addons -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-4">Addon Tersedia</h3>
-        <div v-if="filteredAvailableAddons.length === 0" class="text-center py-8 text-gray-500">
-          Semua addon sudah aktif
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+        <div class="flex items-center gap-2 mb-6">
+          <span class="material-symbols-outlined text-[#137fec]">shopping_bag</span>
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Katalog Addon</h3>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div v-if="filteredAvailableAddons.length === 0" class="text-center py-10 text-[#4c739a]">
+          Semua addon sudah aktif.
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <div
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
-            class="border-2 rounded-lg p-4 transition"
-            :class="addon.comingSoon ? 'border-gray-300 bg-gray-50 opacity-75' : 'border-gray-200 hover:border-primary-300'"
+            class="flex flex-col bg-white dark:bg-slate-800 border rounded-xl p-5 transition-all hover:shadow-lg hover:-translate-y-1"
+            :class="addon.comingSoon ? 'border-dashed border-slate-200 bg-slate-50/50 opacity-80' : 'border-slate-200 dark:border-slate-700 hover:border-[#137fec]/30'"
           >
             <div class="flex items-start justify-between mb-2">
-              <h4 class="font-semibold text-gray-900">{{ addon.name }}</h4>
-              <span v-if="addon.comingSoon" class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+              <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ addon.name }}</h4>
+              <span v-if="addon.comingSoon" class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-lg">
                 Coming Soon
               </span>
             </div>
-            <p class="text-sm text-gray-600 mb-3">{{ addon.description }}</p>
             
-            <div class="flex items-center justify-between mb-3">
+            <p class="text-sm text-[#4c739a] mb-4 line-clamp-2 flex-1">{{ addon.description }}</p>
+            
+            <div class="flex items-end justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-700">
               <div>
-                <span class="text-lg font-bold text-primary-600">{{ formatCurrency(addon.price) }}</span>
-                <span class="text-sm text-gray-500">/bulan</span>
+                <span class="text-xl font-bold text-[#137fec]">{{ formatCurrency(addon.price) }}</span>
+                <span class="text-xs text-[#4c739a]">/bulan</span>
+              </div>
+              <div v-if="addon.defaultLimit" class="text-xs font-medium text-[#4c739a] bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
+                Limit: {{ addon.defaultLimit }}
               </div>
             </div>
-            <div v-if="addon.defaultLimit" class="text-sm text-gray-600 mb-3">
-              Limit: {{ addon.defaultLimit }}
-            </div>
-            <div class="flex gap-2">
+
+            <div class="flex gap-3">
               <button
                 @click="showAddonDetail(addon)"
-                class="flex-1 px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+                class="flex-1 px-3 py-2 text-sm text-[#4c739a] hover:text-[#0d141b] bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg font-medium transition-colors"
               >
                 Detail
               </button>
-            <button
+              <button
                 v-if="!addon.comingSoon"
-              @click="subscribeAddon(addon)"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
-            >
-              Berlangganan
+                @click="subscribeAddon(addon)"
+                class="flex-1 px-3 py-2 text-sm bg-[#137fec] text-white hover:bg-blue-600 shadow-sm hover:shadow-blue-500/30 rounded-lg font-bold transition-all"
+              >
+                Beli
               </button>
               <button
                 v-else
                 disabled
-                class="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed font-medium"
+                class="flex-1 px-3 py-2 text-sm bg-slate-200 text-slate-400 rounded-lg font-medium cursor-not-allowed"
               >
-                Coming Soon
+                Segera Hadir
               </button>
             </div>
           </div>
@@ -127,82 +142,72 @@
     <!-- Detail Modal -->
     <div
       v-if="showDetailModal && selectedAddon"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
       @click.self="showDetailModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-6">
-            <div>
-              <h3 class="text-2xl font-bold text-gray-900">{{ selectedAddon.name }}</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
+           <div>
+              <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ selectedAddon.name }}</h3>
               <div class="flex items-center gap-2 mt-2">
-                <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(selectedAddon.price) }}</span>
-                <span class="text-gray-500">/bulan</span>
-                <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
-                  Coming Soon
-                </span>
+                <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(selectedAddon.price) }}</span>
+                <span class="text-[#4c739a]">/bulan</span>
+                <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-lg">Coming Soon</span>
               </div>
-            </div>
-            <button
-              @click="showDetailModal = false"
-              class="text-gray-400 hover:text-gray-600 transition"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+           </div>
+          <button @click="showDetailModal = false" class="text-[#4c739a] hover:text-[#0d141b] transition-colors p-1 bg-slate-50 rounded-full">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
 
-          <div class="mb-6">
-            <p class="text-gray-700 mb-4">{{ selectedAddon.description }}</p>
-          </div>
+        <div class="p-6 overflow-y-auto">
+          <p class="text-[#4c739a] leading-relaxed mb-6">{{ selectedAddon.description }}</p>
 
-          <div v-if="selectedAddon.details && selectedAddon.details.length > 0" class="mb-6">
-            <h4 class="text-lg font-semibold text-gray-900 mb-3">Fitur yang Didapat:</h4>
-            <ul class="space-y-2">
+          <div v-if="selectedAddon.details && selectedAddon.details.length > 0" class="mb-6 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-700">
+            <h4 class="text-sm font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-4">Fitur yang Didapat</h4>
+            <ul class="space-y-3">
               <li
                 v-for="(detail, index) in selectedAddon.details"
                 :key="index"
-                class="flex items-start gap-2 text-gray-700"
+                class="flex items-start gap-3 text-sm text-[#4c739a] dark:text-slate-400"
               >
-                <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
+                <div class="mt-0.5 text-green-500 bg-green-50 p-0.5 rounded-full">
+                  <span class="material-symbols-outlined text-[16px] block">check</span>
+                </div>
                 <span>{{ detail }}</span>
               </li>
             </ul>
           </div>
 
-          <div v-if="selectedAddon.defaultLimit" class="mb-6 p-4 bg-blue-50 rounded-lg">
-            <p class="text-sm text-gray-700">
-              <span class="font-semibold">Limit:</span> {{ selectedAddon.defaultLimit }} 
+          <div v-if="selectedAddon.defaultLimit" class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-center gap-3">
+            <span class="material-symbols-outlined text-[#137fec]">info</span>
+            <p class="text-sm text-[#0d141b] dark:text-white">
+              <span class="font-bold">Limit Tambahan:</span> {{ selectedAddon.defaultLimit }} 
               <span v-if="selectedAddon.type === 'ADD_OUTLETS'">outlet</span>
               <span v-else-if="selectedAddon.type === 'ADD_USERS'">pengguna</span>
               <span v-else-if="selectedAddon.type === 'ADD_PRODUCTS'">produk</span>
             </p>
           </div>
+        </div>
 
-          <div class="flex gap-3 pt-4 border-t">
-            <button
-              @click="showDetailModal = false"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-            >
-              Tutup
-            </button>
-            <button
-              v-if="!selectedAddon.comingSoon"
-              @click="subscribeAddon(selectedAddon); showDetailModal = false"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
-            >
-              Berlangganan Sekarang
-            </button>
-          </div>
+        <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex gap-3 bg-slate-50 dark:bg-slate-900/30">
+          <button
+            @click="showDetailModal = false"
+            class="flex-1 px-4 py-3 bg-white border border-slate-200 text-[#0d141b] rounded-xl hover:bg-slate-50 font-bold transition-colors shadow-sm"
+          >
+            Tutup
+          </button>
+          <button
+            v-if="!selectedAddon.comingSoon"
+            @click="subscribeAddon(selectedAddon); showDetailModal = false"
+            class="flex-1 px-4 py-3 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 font-bold transition-all shadow-lg shadow-blue-500/30"
+          >
+            Berlangganan Sekarang
+          </button>
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
