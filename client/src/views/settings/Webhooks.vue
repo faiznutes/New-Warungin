@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Webhooks</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage webhooks for external integrations.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Webhooks</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage webhooks for external integrations.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Webhook</span>
@@ -23,12 +23,12 @@
     <!-- Webhooks List -->
     <div v-else class="space-y-4">
       <!-- Empty State -->
-      <div v-if="webhooks.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
+      <div v-if="webhooks.length === 0" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
         <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">webhook</span>
-        <p class="text-slate-500 mb-4">No webhooks created yet</p>
+        <p class="text-[#4c739a] mb-4">No webhooks created yet</p>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 mx-auto bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 mx-auto bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Create First Webhook

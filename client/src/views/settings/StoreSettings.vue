@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
-    <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Store Settings</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your store information and settings.</p>
+    <div class="flex flex-col gap-1">
+      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Store Settings</h1>
+      <p class="text-[#4c739a] dark:text-slate-400">Manage your store information and settings.</p>
     </div>
 
     <!-- Store Information Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
       <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-primary/10 text-primary rounded-lg">
+        <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-lg">
           <span class="material-symbols-outlined">store</span>
         </div>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Store Information</h3>
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Store Information</h3>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Discounts</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage discounts and promotions.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Discounts</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage discounts and promotions.</p>
       </div>
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Discount</span>
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
           <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
@@ -31,7 +31,7 @@
           @input="handleSearchInput"
           type="text"
           placeholder="Search discounts..."
-          class="block w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="block w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         />
       </div>
     </div>
@@ -40,14 +40,14 @@
     <div v-if="loading" class="flex items-center justify-center py-16">
       <div class="flex flex-col items-center gap-4">
         <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-slate-500 font-medium">Loading discounts...</p>
+        <p class="text-[#4c739a] font-medium">Loading discounts...</p>
       </div>
     </div>
 
-    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">percent</span>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Discounts Yet</h3>
-      <p class="text-slate-500 text-center max-w-md">Create your first discount to start offering promotions.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Discounts Yet</h3>
+      <p class="text-[#4c739a] text-center max-w-md">Create your first discount to start offering promotions.</p>
     </div>
 
     <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">

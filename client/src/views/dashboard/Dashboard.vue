@@ -1,16 +1,16 @@
 <template>
-  <div class="flex flex-col h-full bg-gradient-to-br from-gray-50 to-white">
+  <div class="flex flex-col h-full bg-[#f6f7f8]">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p class="text-sm sm:text-base text-gray-600">Your business summary in one place</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Dashboard</h1>
+        <p class="text-[#4c739a] text-sm sm:text-base">Your business summary in one place</p>
       </div>
-      <div class="w-full sm:w-auto flex items-center gap-2 sm:gap-4">
+      <div class="w-full sm:w-auto flex items-center gap-3">
         <select
           v-model="dateRange"
           @change="loadStats"
-          class="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white font-medium shadow-sm hover:shadow-md transition"
+          class="flex-1 sm:flex-none px-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-[#0d141b] font-medium cursor-pointer hover:border-slate-300 transition-colors"
         >
           <option value="today">Today</option>
           <option value="week">This Week</option>
@@ -21,8 +21,8 @@
     </div>
 
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-gray-600 font-medium">Loading data...</div>
+      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-[#4c739a] font-medium">Loading data...</div>
     </div>
 
     <!-- Kasir Dashboard -->
@@ -272,97 +272,79 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <router-link
           to="/app/reports"
-          class="group bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-white transform hover:-translate-y-1 overflow-hidden relative"
+          class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-green-100 uppercase tracking-wide">Total Revenue</span>
-              <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <span class="material-symbols-outlined text-green-600">payments</span>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ formatCurrency(stats?.overview?.totalRevenue || 0) }}</p>
-            <div class="flex items-center">
-              <span :class="stats?.overview?.revenueGrowth >= 0 ? 'text-green-100' : 'text-red-200'" class="flex items-center text-sm font-semibold">
-                <svg v-if="stats?.overview?.revenueGrowth >= 0" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-                <svg v-else class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                {{ stats?.overview?.revenueGrowth >= 0 ? '+' : '' }}{{ stats?.overview?.revenueGrowth?.toFixed(1) || 0 }}%
-              </span>
-              <span class="text-xs text-green-100 ml-2">vs last period</span>
-            </div>
+            <span :class="stats?.overview?.revenueGrowth >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'" class="flex items-center px-2 py-0.5 rounded text-xs font-semibold">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">{{ stats?.overview?.revenueGrowth >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              {{ stats?.overview?.revenueGrowth >= 0 ? '+' : '' }}{{ stats?.overview?.revenueGrowth?.toFixed(1) || 0 }}%
+            </span>
+          </div>
+          <div>
+            <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Revenue</p>
+            <p class="text-[#0d141b] dark:text-white text-xl font-bold mt-1">{{ formatCurrency(stats?.overview?.totalRevenue || 0) }}</p>
           </div>
         </router-link>
 
         <router-link
           to="/app/orders"
-          class="group bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-white transform hover:-translate-y-1 overflow-hidden relative"
+          class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-blue-100 uppercase tracking-wide">Total Orders</span>
-              <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <span class="material-symbols-outlined text-primary">shopping_bag</span>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalOrders || 0 }}</p>
-            <p class="text-sm text-blue-100">
-              <span class="font-bold text-white">{{ stats?.overview?.todayOrders || 0 }}</span> orders today
-            </p>
+            <span class="text-green-600 bg-green-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_upward</span>
+              {{ stats?.overview?.todayOrders || 0 }} today
+            </span>
+          </div>
+          <div>
+            <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Orders</p>
+            <p class="text-[#0d141b] dark:text-white text-xl font-bold mt-1">{{ stats?.overview?.totalOrders || 0 }}</p>
           </div>
         </router-link>
 
         <router-link
           to="/app/products"
-          class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-white transform hover:-translate-y-1 overflow-hidden relative"
+          class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-purple-100 uppercase tracking-wide">Total Products</span>
-              <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <span class="material-symbols-outlined text-purple-600">inventory_2</span>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalProducts || 0 }}</p>
-            <p class="text-sm text-purple-100">
-              <span class="font-bold text-white">{{ stats?.alerts?.lowStockProducts || 0 }}</span> low stock products
-            </p>
+            <span v-if="stats?.alerts?.lowStockProducts > 0" class="text-amber-600 bg-amber-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">warning</span>
+              {{ stats?.alerts?.lowStockProducts }} low
+            </span>
+          </div>
+          <div>
+            <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Products</p>
+            <p class="text-[#0d141b] dark:text-white text-xl font-bold mt-1">{{ stats?.overview?.totalProducts || 0 }}</p>
           </div>
         </router-link>
 
         <router-link
           to="/app/customers"
-          class="group bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 text-white transform hover:-translate-y-1 overflow-hidden relative"
+          class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-sm font-semibold text-indigo-100 uppercase tracking-wide">Total Customers</span>
-              <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
+          <div class="flex justify-between items-start">
+            <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+              <span class="material-symbols-outlined text-indigo-600">group</span>
             </div>
-            <p class="text-3xl sm:text-4xl font-bold mb-3">{{ stats?.overview?.totalCustomers || 0 }}</p>
-            <p class="text-sm text-indigo-100">
-              <span class="font-bold text-white">{{ stats?.overview?.totalMembers || 0 }}</span> active members
-            </p>
+            <span class="text-green-600 bg-green-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
+              {{ stats?.overview?.totalMembers || 0 }} members
+            </span>
+          </div>
+          <div>
+            <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Total Customers</p>
+            <p class="text-[#0d141b] dark:text-white text-xl font-bold mt-1">{{ stats?.overview?.totalCustomers || 0 }}</p>
           </div>
         </router-link>
       </div>
@@ -371,151 +353,140 @@
       <QuickInsightWidget v-if="hasBusinessAnalytics" class="mb-6" />
 
       <!-- Quick Actions -->
-      <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200">
-        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+      <div class="flex flex-col gap-4">
+        <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Quick Actions</h3>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <router-link
             to="/app/pos"
-            class="group flex flex-col items-center p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all border-2 border-green-200 hover:border-green-400 hover:shadow-lg"
+            class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+              <span class="material-symbols-outlined">point_of_sale</span>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">POS</span>
+            <span class="text-sm font-semibold text-[#0d141b] dark:text-white">POS</span>
           </router-link>
 
           <router-link
             to="/app/products"
-            class="group flex flex-col items-center p-5 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl hover:from-blue-100 hover:to-cyan-100 transition-all border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg"
+            class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
+            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+              <span class="material-symbols-outlined">inventory_2</span>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Products</span>
+            <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Products</span>
           </router-link>
 
           <router-link
             to="/app/orders"
-            class="group flex flex-col items-center p-5 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl hover:from-purple-100 hover:to-pink-100 transition-all border-2 border-purple-200 hover:border-purple-400 hover:shadow-lg"
+            class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
+            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+              <span class="material-symbols-outlined">shopping_bag</span>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Orders</span>
+            <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Orders</span>
           </router-link>
 
           <router-link
             to="/app/customers"
-            class="group flex flex-col items-center p-5 bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl hover:from-indigo-100 hover:to-violet-100 transition-all border-2 border-indigo-200 hover:border-indigo-400 hover:shadow-lg"
+            class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+              <span class="material-symbols-outlined">group</span>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Customers</span>
+            <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Customers</span>
           </router-link>
 
           <router-link
             to="/app/reports"
-            class="group flex flex-col items-center p-5 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl hover:from-orange-100 hover:to-amber-100 transition-all border-2 border-orange-200 hover:border-orange-400 hover:shadow-lg"
+            class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+              <span class="material-symbols-outlined">analytics</span>
             </div>
-            <span class="font-semibold text-gray-900 text-sm text-center">Reports</span>
+            <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Reports</span>
           </router-link>
         </div>
       </div>
 
 
       <!-- Charts Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Top Products -->
-        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Top Products</h3>
-            <router-link to="/app/products" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Top Products</h3>
+            <router-link to="/app/products" class="text-primary hover:text-blue-600 text-sm font-medium flex items-center gap-1">
               View All
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             </router-link>
           </div>
-          <div v-if="!Array.isArray(stats?.charts?.topProducts) || stats?.charts?.topProducts?.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
+          <div v-if="!Array.isArray(stats?.charts?.topProducts) || stats?.charts?.topProducts?.length === 0" class="text-center py-12 text-[#4c739a]">
+            <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">inventory_2</span>
             <p>No product data yet</p>
           </div>
           <div v-else class="space-y-3">
             <div
               v-for="(item, index) in stats?.charts?.topProducts?.slice(0, 5)"
               :key="item.product?.id"
-              class="group flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl hover:from-blue-50 hover:to-purple-50 transition-all border border-gray-100 hover:border-blue-200 hover:shadow-md"
+              class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
             >
-              <div class="flex items-center space-x-4 flex-1">
-                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                  <span class="text-white font-bold text-lg">{{ index + 1 }}</span>
+              <div class="flex items-center gap-3 flex-1">
+                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-sm">{{ index + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-bold text-gray-900 text-base truncate">{{ item.product?.name || 'Unknown' }}</p>
-                  <p class="text-sm text-gray-600">{{ item.totalQuantity }} sold</p>
+                  <p class="font-medium text-[#0d141b] dark:text-white text-sm truncate">{{ item.product?.name || 'Unknown' }}</p>
+                  <p class="text-xs text-[#4c739a] dark:text-slate-400">{{ item.totalQuantity }} sold</p>
                 </div>
               </div>
               <div class="text-right ml-4">
-                <p class="font-bold text-primary-600 text-lg">{{ formatCurrency(Number(item.totalRevenue)) }}</p>
+                <p class="font-bold text-primary text-sm">{{ formatCurrency(Number(item.totalRevenue)) }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Sales by Status -->
-        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6 sm:p-8 border border-gray-200">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Orders by Status</h3>
-            <router-link to="/app/orders" class="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
+            <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Orders by Status</h3>
+            <router-link to="/app/orders" class="text-primary hover:text-blue-600 text-sm font-medium flex items-center gap-1">
               View All
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             </router-link>
           </div>
-          <div v-if="!Array.isArray(stats?.charts?.salesByStatus) || stats?.charts?.salesByStatus?.length === 0" class="text-center py-12 text-gray-500">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
+          <div v-if="!Array.isArray(stats?.charts?.salesByStatus) || stats?.charts?.salesByStatus?.length === 0" class="text-center py-12 text-[#4c739a]">
+            <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">bar_chart</span>
             <p>No order data yet</p>
           </div>
           <div v-else class="space-y-4">
             <div
               v-for="item in stats?.charts?.salesByStatus"
               :key="item.status"
-              class="group"
+              class="flex flex-col gap-2"
             >
-              <div class="flex items-center justify-between mb-2">
-                <span class="px-4 py-2 text-sm font-semibold rounded-full" :class="getStatusClass(item.status)">
-                  {{ getStatusLabel(item.status) }}
-                </span>
-                <span class="text-lg font-bold text-gray-900">{{ item.count }}</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div
-                  class="h-3 rounded-full transition-all duration-500"
-                  :class="{
-                    'bg-yellow-500': item.status === 'PENDING',
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium" :class="getStatusClass(item.status)">
+                  <span class="size-1.5 rounded-full" :class="{
+                    'bg-amber-500': item.status === 'PENDING',
                     'bg-blue-500': item.status === 'PROCESSING',
                     'bg-green-500': item.status === 'COMPLETED',
                     'bg-red-500': item.status === 'CANCELLED',
-                    'bg-gray-500': item.status === 'REFUNDED'
+                    'bg-slate-500': item.status === 'REFUNDED'
+                  }"></span>
+                  {{ getStatusLabel(item.status) }}
+                </span>
+                <span class="text-sm font-bold text-[#0d141b] dark:text-white">{{ item.count }}</span>
+              </div>
+              <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                <div
+                  class="h-2 rounded-full transition-all duration-500"
+                  :class="{
+                    'bg-amber-500': item.status === 'PENDING',
+                    'bg-blue-500': item.status === 'PROCESSING',
+                    'bg-green-500': item.status === 'COMPLETED',
+                    'bg-red-500': item.status === 'CANCELLED',
+                    'bg-slate-500': item.status === 'REFUNDED'
                   }"
                   :style="{ width: `${(item.count / (stats?.overview?.totalOrders || 1)) * 100}%` }"
                 ></div>

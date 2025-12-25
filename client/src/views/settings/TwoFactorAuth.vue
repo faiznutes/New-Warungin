@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
-    <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Two-Factor Authentication</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Enhance your account security with 2FA.</p>
+    <div class="flex flex-col gap-1">
+      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Two-Factor Authentication</h1>
+      <p class="text-[#4c739a] dark:text-slate-400">Enhance your account security with 2FA.</p>
     </div>
 
     <!-- Loading State -->
@@ -13,7 +13,7 @@
 
     <!-- 2FA Status Card -->
     <div v-else class="space-y-6">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="p-2 rounded-lg" :class="status.enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'">

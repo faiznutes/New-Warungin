@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
-    <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Active Sessions</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your active sessions across devices.</p>
+    <div class="flex flex-col gap-1">
+      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Active Sessions</h1>
+      <p class="text-[#4c739a] dark:text-slate-400">Manage your active sessions across devices.</p>
     </div>
 
     <!-- Loading State -->
@@ -12,18 +12,18 @@
     </div>
 
     <!-- Sessions List -->
-    <div v-else class="space-y-6">
+    <div v-else class="space-y-4">
       <!-- Empty State -->
-      <div v-if="sessions.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
+      <div v-if="sessions.length === 0" class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
         <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">devices</span>
-        <p class="text-slate-500">No active sessions</p>
+        <p class="text-[#4c739a]">No active sessions</p>
       </div>
 
       <!-- Session Cards -->
       <div
         v-for="session in sessions"
         :key="session.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-lg transition group"
+        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 hover:shadow-md transition group"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">

@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Marketing Campaigns</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage SMS, Email, and Promo campaigns.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Marketing Campaigns</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage SMS, Email, and Promo campaigns.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Campaign</span>
@@ -21,13 +21,13 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="campaigns.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="campaigns.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">campaign</span>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Campaigns Yet</h3>
-      <p class="text-slate-500 text-center max-w-md mb-4">Create your first marketing campaign to engage with customers.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Campaigns Yet</h3>
+      <p class="text-[#4c739a] text-center max-w-md mb-4">Create your first marketing campaign to engage with customers.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Create First Campaign

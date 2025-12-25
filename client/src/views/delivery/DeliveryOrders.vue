@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Delivery Orders</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage delivery orders and tracking.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Delivery Orders</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage delivery orders and tracking.</p>
       </div>
       <div class="flex items-center gap-3">
         <button
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
       <!-- Search Bar -->
       <div class="mb-6">
         <div class="relative">

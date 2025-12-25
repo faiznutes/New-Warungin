@@ -1,27 +1,25 @@
 <template>
-  <div class="flex flex-col h-full bg-white">
+  <div class="flex flex-col h-full bg-[#f6f7f8]">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
-    <!-- Store Selector (Hanya untuk SUPERVISOR) -->
-    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-8 pt-8">
+    <!-- Store Selector (Only for SUPERVISOR) -->
+    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-6 pt-6">
       <StoreSelector @store-changed="handleStoreChange" />
     </div>
 
     <!-- Main Content Section -->
-    <section class="flex flex-col flex-1 overflow-hidden px-8 pt-8 pb-8">
+    <section class="flex flex-col flex-1 overflow-hidden px-6 pt-6 pb-6">
       <!-- Error Boundary -->
       <div v-if="hasError" class="flex flex-col items-center justify-center py-20">
-        <div class="p-4 bg-red-50 text-red-500 rounded-full mb-4">
-          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+        <div class="p-4 bg-red-50 text-red-500 rounded-lg mb-4">
+          <span class="material-symbols-outlined text-5xl">error</span>
         </div>
-        <h3 class="text-lg font-bold text-slate-900 mb-2">Something went wrong</h3>
-        <p class="text-slate-500 text-center max-w-md mb-6">{{ errorMessage || 'Failed to load page. Please try again.' }}</p>
+        <h3 class="text-lg font-bold text-[#0d141b] mb-2">Something went wrong</h3>
+        <p class="text-[#4c739a] text-center max-w-md mb-6">{{ errorMessage || 'Failed to load page. Please try again.' }}</p>
         <button
           @click="retryLoad"
-          class="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium shadow-lg shadow-primary/30"
+          class="px-4 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-blue-500/30"
         >
           Try Again
         </button>
@@ -30,10 +28,10 @@
       <!-- Main Content -->
       <div v-else class="flex flex-col flex-1">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-          <div class="flex flex-col">
-            <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Products</h2>
-            <p class="text-slate-500 mt-1">Manage your product catalog and inventory</p>
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+          <div class="flex flex-col gap-1">
+            <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Products</h1>
+            <p class="text-[#4c739a] dark:text-slate-400">Manage your product catalog and inventory</p>
           </div>
           <div class="flex items-center gap-3 flex-wrap">
              <!-- Margin Display Format Selector (Admin Tenant & Super Admin only) -->

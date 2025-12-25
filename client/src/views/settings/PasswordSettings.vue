@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
-    <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Password Settings</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Change your password and manage password policies.</p>
+    <div class="flex flex-col gap-1">
+      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Password Settings</h1>
+      <p class="text-[#4c739a] dark:text-slate-400">Change your password and manage password policies.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Change Password Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
         <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+          <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-lg">
             <span class="material-symbols-outlined">lock</span>
           </div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Change Password</h3>
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Change Password</h3>
         </div>
 
         <form @submit.prevent="updatePassword" class="space-y-4">

@@ -1,15 +1,15 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Stock Alerts</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Monitor products with low stock levels.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Stock Alerts</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Monitor products with low stock levels.</p>
       </div>
       <button
         @click="sendAlerts"
         :disabled="sending"
-        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow-lg shadow-green-500/30 transition-all active:scale-95 font-medium text-sm disabled:opacity-50"
+        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-green-500/30 transition-all font-medium text-sm disabled:opacity-50"
       >
         <span class="material-symbols-outlined text-[20px]">mail</span>
         <span>{{ sending ? 'Sending...' : 'Send Alerts' }}</span>
@@ -17,36 +17,36 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Low Stock</p>
-            <p class="text-3xl font-bold text-yellow-600">{{ stats.lowStockCount || 0 }}</p>
+            <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Low Stock</p>
+            <p class="text-2xl font-bold text-amber-600">{{ stats.lowStockCount || 0 }}</p>
           </div>
-          <div class="w-12 h-12 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-outlined text-yellow-600">warning</span>
+          <div class="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+            <span class="material-symbols-outlined text-amber-600">warning</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Out of Stock</p>
-            <p class="text-3xl font-bold text-red-600">{{ stats.outOfStockCount || 0 }}</p>
+            <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Out of Stock</p>
+            <p class="text-2xl font-bold text-red-600">{{ stats.outOfStockCount || 0 }}</p>
           </div>
-          <div class="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center">
+          <div class="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
             <span class="material-symbols-outlined text-red-600">inventory_2</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Alerts</p>
-            <p class="text-3xl font-bold text-primary">{{ stats.totalAlerts || 0 }}</p>
+            <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Total Alerts</p>
+            <p class="text-2xl font-bold text-primary">{{ stats.totalAlerts || 0 }}</p>
           </div>
           <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
             <span class="material-symbols-outlined text-primary">notifications_active</span>

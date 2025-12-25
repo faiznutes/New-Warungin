@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Suppliers</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage suppliers for purchase orders.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Suppliers</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage suppliers for purchase orders.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Supplier</span>
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1 relative">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
@@ -24,14 +24,14 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search suppliers..."
-            class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             @input="loadSuppliers"
           />
         </div>
         <select
           v-model="isActiveFilter"
           @change="loadSuppliers"
-          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="">All Status</option>
           <option value="true">Active</option>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="suppliers.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="suppliers.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">local_shipping</span>
       <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Suppliers Yet</h3>
       <p class="text-slate-500 text-center max-w-md mb-4">Add your first supplier to start creating purchase orders.</p>

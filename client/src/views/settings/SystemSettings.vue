@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">System Settings</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Configure global system and security preferences.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">System Settings</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Configure global system and security preferences.</p>
       </div>
       <button
         @click="saveSettings"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">save</span>
         <span>Save Changes</span>
@@ -19,13 +19,13 @@
       <!-- Left Column: Forms -->
       <div class="lg:col-span-2 space-y-6">
         <!-- General Settings -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center gap-3 mb-6">
-             <div class="p-2 bg-primary/10 text-primary rounded-lg">
+             <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-lg">
                 <span class="material-symbols-outlined">tune</span>
              </div>
              <div>
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">General Settings</h3>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">General Settings</h3>
                 <p class="text-xs text-slate-500">Basic system application information</p>
              </div>
           </div>

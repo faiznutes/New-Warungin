@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
@@ -10,14 +10,14 @@
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Orders & Transactions</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage orders and transaction history.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Orders & Transactions</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage orders and transaction history.</p>
       </div>
       <button
         v-if="canDeleteOrders && deletableOrdersCount > 0"
         @click="deleteAllOrders"
-        class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg transition-all font-medium text-sm shadow-lg shadow-red-500/30"
       >
         <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
         <span>Delete All ({{ deletableOrdersCount }})</span>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
       <div class="flex flex-col xl:flex-row gap-4 items-end">
         <!-- Status Filter -->
         <div class="flex-1 w-full xl:w-auto">
