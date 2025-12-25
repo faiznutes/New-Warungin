@@ -20,7 +20,7 @@
           <!-- Form -->
           <div class="bg-white rounded-xl shadow-xl hover:shadow-2xl transition p-5 sm:p-6 md:p-8 border border-gray-100">
             <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -34,7 +34,7 @@
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Nama lengkap"
                 />
               </div>
@@ -44,7 +44,7 @@
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="email@example.com"
                 />
               </div>
@@ -54,7 +54,7 @@
                   v-model="form.businessName"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Nama bisnis Anda"
                 />
               </div>
@@ -64,7 +64,7 @@
                   v-model="form.phone"
                   type="tel"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="+62 812-3456-7890"
                 />
               </div>
@@ -74,7 +74,7 @@
                   v-model="form.dateTime"
                   type="datetime-local"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
               <div>
@@ -82,14 +82,14 @@
                 <textarea
                   v-model="form.message"
                   rows="4"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Ada pertanyaan spesifik?"
                 ></textarea>
               </div>
               <button
                 type="submit"
                 :disabled="loading"
-                class="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition disabled:opacity-50 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+                class="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition disabled:opacity-50 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
               >
                 {{ loading ? 'Mengirim...' : 'Request Demo Gratis' }}
               </button>
@@ -100,7 +100,7 @@
           <div class="space-y-6">
             <div class="bg-gradient-to-br from-white to-primary-50 rounded-xl shadow-xl p-8 border border-primary-100">
               <div class="flex items-center space-x-3 mb-6">
-                <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -153,7 +153,7 @@
                 Demo personal memungkinkan kami menunjukkan fitur-fitur yang paling relevan
                 untuk bisnis Anda dan menjawab pertanyaan spesifik Anda secara langsung.
               </p>
-              <div class="bg-white/50 rounded-lg p-4 mt-4">
+              <div class="bg-white/50 rounded-xl p-4 mt-4">
                 <div class="flex items-center justify-between mb-2">
                   <span class="font-semibold text-gray-800">⏱ Durasi:</span>
                   <span class="text-primary-700 font-bold">30-45 menit</span>
@@ -165,7 +165,7 @@
               </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="bg-white rounded-xl shadow-lg p-8">
               <h2 class="text-xl font-semibold text-gray-800 mb-4">Butuh Bantuan Cepat?</h2>
               <p class="text-gray-600 mb-4">
                 Hubungi kami langsung untuk demo langsung atau pertanyaan lainnya.

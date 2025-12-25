@@ -6,7 +6,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-gray-900">Detail Campaign</h3>
@@ -22,7 +22,7 @@
 
             <div v-if="campaign" class="space-y-6">
               <!-- Campaign Info -->
-              <div class="bg-gray-50 rounded-lg p-4">
+              <div class="bg-gray-50 rounded-xl p-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <p class="text-sm text-gray-600 mb-1">Nama Campaign</p>
@@ -87,13 +87,13 @@
                 <button
                   v-if="campaign.status === 'DRAFT'"
                   @click="$emit('send', campaign.id)"
-                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  class="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
                 >
                   Kirim Campaign
                 </button>
                 <button
                   @click="$emit('close')"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Tutup
                 </button>

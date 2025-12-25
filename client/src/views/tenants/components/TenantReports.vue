@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col h-full">
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
+    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 mb-4">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">Laporan Tenant</h3>
         <button
           @click="showExportModal = true"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
+          class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition flex items-center gap-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -14,7 +14,7 @@
         </button>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600">Total Penjualan</p>
@@ -27,7 +27,7 @@
             </div>
           </div>
         </div>
-        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600">Total Pesanan</p>
@@ -40,7 +40,7 @@
             </div>
           </div>
         </div>
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600">Total Produk</p>
@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4">
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600">Total Pelanggan</p>
@@ -73,7 +73,7 @@
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm p-4 sm:p-5">
+    <div v-else class="bg-white rounded-xl shadow-sm p-4 sm:p-5">
       <h4 class="text-md font-semibold text-gray-900 mb-4">Ringkasan Laporan</h4>
       <div class="space-y-4">
         <div class="border-l-4 border-blue-500 pl-4">

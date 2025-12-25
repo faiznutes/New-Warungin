@@ -9,14 +9,14 @@
       <div class="flex items-center gap-3">
         <button
           @click="showCourierModal = true"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">local_shipping</span>
           <span>Setup Courier</span>
         </button>
         <button
           @click="showPromoModal = true"
-          class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-green-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-green-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">sell</span>
           <span>Create Promo</span>
@@ -34,7 +34,7 @@
             v-model="filters.search"
             type="text"
             placeholder="Search orders..."
-            class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
       </div>
@@ -43,14 +43,14 @@
       <div class="flex flex-col lg:flex-row gap-6">
         <!-- Status Filter -->
         <div class="flex-1">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Status</label>
+          <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-3">Status</label>
           <div class="flex flex-wrap gap-2">
             <button
               @click="filters.status = ''"
               :class="!filters.status 
                 ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               All
             </button>
@@ -58,8 +58,8 @@
               @click="filters.status = 'PENDING'"
               :class="filters.status === 'PENDING' 
                 ? 'bg-yellow-600 text-white shadow-lg shadow-yellow-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               Pending
             </button>
@@ -67,8 +67,8 @@
               @click="filters.status = 'PROCESSING'"
               :class="filters.status === 'PROCESSING' 
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               Processing
             </button>
@@ -76,8 +76,8 @@
               @click="filters.status = 'SHIPPED'"
               :class="filters.status === 'SHIPPED' 
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               Shipped
             </button>
@@ -85,8 +85,8 @@
               @click="filters.status = 'DELIVERED'"
               :class="filters.status === 'DELIVERED' 
                 ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               Delivered
             </button>
@@ -94,8 +94,8 @@
               @click="filters.status = 'CANCELLED'"
               :class="filters.status === 'CANCELLED' 
                 ? 'bg-red-600 text-white shadow-lg shadow-red-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               Cancelled
             </button>
@@ -104,14 +104,14 @@
 
         <!-- Courier Filter -->
         <div class="flex-1">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Courier</label>
+          <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-3">Courier</label>
           <div class="flex flex-wrap gap-2">
             <button
               @click="filters.courier = ''"
               :class="!filters.courier 
                 ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               All
             </button>
@@ -121,8 +121,8 @@
               @click="filters.courier = courier"
               :class="filters.courier === courier 
                 ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
+              class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
               {{ getCourierLabel(courier) }}
             </button>
@@ -137,36 +137,36 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="deliveryOrders.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="deliveryOrders.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">package_2</span>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Delivery Orders</h3>
-      <p class="text-slate-500 text-center max-w-md">Delivery orders will appear here when created.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Delivery Orders</h3>
+      <p class="text-[#4c739a] text-center max-w-md">Delivery orders will appear here when created.</p>
     </div>
 
     <!-- Delivery Orders Table -->
-    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+    <div v-else class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
           <thead>
             <tr class="bg-slate-50 dark:bg-slate-900/50">
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Order</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Customer</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Courier</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Address</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Tracking</th>
-              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Order</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Customer</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Courier</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Address</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Tracking</th>
+              <th class="px-6 py-3 text-right text-xs font-bold text-[#4c739a] uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
             <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ order.orderNumber }}</div>
-                <div class="text-xs text-slate-500">{{ formatDateTime(order.createdAt) }}</div>
+                <div class="text-sm font-bold text-[#0d141b] dark:text-white">{{ order.orderNumber }}</div>
+                <div class="text-xs text-[#4c739a]">{{ formatDateTime(order.createdAt) }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-slate-900 dark:text-white">{{ order.customerName }}</div>
-                <div class="text-xs text-slate-500">{{ order.customerPhone }}</div>
+                <div class="text-sm text-[#0d141b] dark:text-white">{{ order.customerName }}</div>
+                <div class="text-xs text-[#4c739a]">{{ order.customerPhone }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
@@ -175,7 +175,7 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm text-slate-900 dark:text-white max-w-[200px] truncate">{{ order.deliveryAddress }}</div>
+                <div class="text-sm text-[#0d141b] dark:text-white max-w-[200px] truncate">{{ order.deliveryAddress }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -186,14 +186,14 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div v-if="order.trackingNumber" class="text-sm font-mono text-slate-900 dark:text-white">{{ order.trackingNumber }}</div>
+                <div v-if="order.trackingNumber" class="text-sm font-mono text-[#0d141b] dark:text-white">{{ order.trackingNumber }}</div>
                 <div v-else class="text-sm text-slate-400">-</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="viewOrder(order)"
-                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">visibility</span>
                     Details
@@ -201,7 +201,7 @@
                   <button
                     v-if="order.status === 'PENDING'"
                     @click="processDelivery(order.id)"
-                    class="px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/40 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-200 dark:hover:bg-green-900/40 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">play_arrow</span>
                     Process
@@ -221,19 +221,19 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         @click.self="showCourierModal = false"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-lg">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-xl">
               <span class="material-symbols-outlined">local_shipping</span>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Setup Courier</h3>
+            <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Setup Courier</h3>
           </div>
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Courier</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Select Courier</label>
               <select
                 v-model="courierForm.courier"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Courier</option>
                 <option value="GOSEND">GoSend</option>
@@ -244,24 +244,24 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">API Key</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">API Key</label>
               <input
                 v-model="courierForm.apiKey"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 placeholder="Enter API Key"
               />
             </div>
             <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button
                 @click="showCourierModal = false"
-                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 @click="saveCourier"
-                class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-lg shadow-blue-500/30"
+                class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium shadow-lg shadow-blue-500/30"
               >
                 Save
               </button>
@@ -278,79 +278,79 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         @click.self="showPromoModal = false"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-lg">
+            <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-xl">
               <span class="material-symbols-outlined">sell</span>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create Promo</h3>
+            <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Create Promo</h3>
           </div>
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Promo Name</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Promo Name</label>
               <input
                 v-model="promoForm.name"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 placeholder="e.g. Holiday Sale 20%"
               />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Discount Type</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Discount Type</label>
               <select
                 v-model="promoForm.type"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="PERCENTAGE">Percentage (%)</option>
                 <option value="FIXED">Fixed Amount</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Discount Value</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Discount Value</label>
               <input
                 v-model.number="promoForm.value"
                 type="number"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 placeholder="20 or 50000"
               />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Promo Code</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Promo Code</label>
               <input
                 v-model="promoForm.code"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono uppercase"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono uppercase"
                 placeholder="HOLIDAY20"
               />
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start Date</label>
+                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Start Date</label>
                 <input
                   v-model="promoForm.startDate"
                   type="date"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">End Date</label>
+                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">End Date</label>
                 <input
                   v-model="promoForm.endDate"
                   type="date"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
             </div>
             <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button
                 @click="showPromoModal = false"
-                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 @click="savePromo"
-                class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium shadow-lg shadow-green-500/30"
+                class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium shadow-lg shadow-green-500/30"
               >
                 Save
               </button>
@@ -473,7 +473,7 @@ const getStatusClass = (status: string) => {
     DELIVERED: 'bg-green-100 text-green-700',
     CANCELLED: 'bg-red-100 text-red-700',
   };
-  return classes[status] || 'bg-slate-100 text-slate-700';
+  return classes[status] || 'bg-slate-100 text-[#0d141b]';
 };
 
 const loadDeliveryOrders = async () => {

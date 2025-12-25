@@ -26,13 +26,13 @@
       <!-- Content -->
       <div class="p-6 space-y-4">
         <!-- Card 0: Tutorial Penggunaan -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
           <button
             @click="toggleCard('tutorial')"
             class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 transition-all"
           >
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -58,7 +58,7 @@
           >
             <div class="space-y-6 text-sm text-gray-700">
               <!-- Setup Awal Toko -->
-              <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
                 <h4 class="font-bold text-blue-900 mb-3 text-base flex items-center">
                   <span class="mr-2">🚀</span>
                   Langkah 1: Setup Awal Toko
@@ -72,7 +72,7 @@
               </div>
 
               <!-- Atur User -->
-              <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
                 <h4 class="font-bold text-purple-900 mb-3 text-base flex items-center">
                   <span class="mr-2">👥</span>
                   Langkah 2: Atur User & Tim
@@ -87,7 +87,7 @@
               </div>
 
               <!-- Menu Admin Tenant -->
-              <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+              <div class="bg-green-50 p-4 rounded-xl border border-green-200">
                 <h4 class="font-bold text-green-900 mb-3 text-base flex items-center">
                   <span class="mr-2">👑</span>
                   Menu Admin Tenant - Kontrol Penuh Sistem
@@ -145,7 +145,7 @@
               </div>
 
               <!-- Menu Kasir -->
-              <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
                 <h4 class="font-bold text-yellow-900 mb-3 text-base flex items-center">
                   <span class="mr-2">💰</span>
                   Menu Kasir - Fokus Transaksi & Pelayanan
@@ -179,7 +179,7 @@
               </div>
 
               <!-- Menu Dapur -->
-              <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+              <div class="bg-red-50 p-4 rounded-xl border border-red-200">
                 <h4 class="font-bold text-red-900 mb-3 text-base flex items-center">
                   <span class="mr-2">🍳</span>
                   Menu Dapur - Fokus Pesanan Makanan & Minuman
@@ -205,7 +205,7 @@
               </div>
 
               <!-- Menu SPV (Supervisor) -->
-              <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+              <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
                 <h4 class="font-bold text-indigo-900 mb-3 text-base flex items-center">
                   <span class="mr-2">👔</span>
                   Menu Supervisor (SPV) - Monitoring & Supervisi
@@ -243,7 +243,7 @@
               </div>
 
               <!-- Tips Penting -->
-              <div class="bg-gray-50 p-4 rounded-lg border border-gray-300">
+              <div class="bg-gray-50 p-4 rounded-xl border border-gray-300">
                 <h4 class="font-bold text-gray-900 mb-3 text-base flex items-center">
                   <span class="mr-2">💡</span>
                   Tips & Trik Penting
@@ -261,13 +261,13 @@
         </div>
 
         <!-- Card 1: Langganan -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
           <button
             @click="toggleCard('subscription')"
             class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all"
           >
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -323,13 +323,13 @@
         </div>
 
         <!-- Card 2: Addons -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
           <button
             @click="toggleCard('addons')"
             class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all"
           >
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
@@ -383,13 +383,13 @@
         </div>
 
         <!-- Card 3: Penggunaan Addons -->
-        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
           <button
             @click="toggleCard('usage')"
             class="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-all"
           >
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -469,7 +469,7 @@
           </label>
           <button
             @click="close"
-            class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+            class="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-medium"
           >
             Tutup
           </button>

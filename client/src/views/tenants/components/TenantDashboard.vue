@@ -14,7 +14,7 @@
     <div v-else class="flex flex-col gap-6 px-4 sm:px-6">
       <!-- Overview Stats -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Total Sales</p>
@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Total Orders</p>
@@ -42,7 +42,7 @@
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Total Products</p>
@@ -56,7 +56,7 @@
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Total Customers</p>
@@ -73,11 +73,11 @@
 
       <!-- Today Stats -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
           <p class="text-sm text-gray-600 mb-2">Today's Sales</p>
           <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(stats.todaySales) }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
           <p class="text-sm text-gray-600 mb-2">Today's Orders</p>
           <p class="text-2xl font-bold text-gray-900">{{ stats.todayOrders }}</p>
         </div>
@@ -87,7 +87,7 @@
       <div v-if="stats.lowStockProducts > 0" class="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-6 shadow-lg">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 bg-yellow-500 rounded-xl flex items-center justify-center">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -113,7 +113,7 @@
           <div
             v-for="order in recentOrders.slice(0, 5)"
             :key="order.id"
-            class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg hover:from-primary-50 hover:to-primary-50 transition border border-gray-100 hover:border-primary-200"
+            class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl hover:from-primary-50 hover:to-primary-50 transition border border-gray-100 hover:border-primary-200"
           >
             <div class="flex-1">
               <p class="font-medium text-gray-900">{{ order.orderNumber }}</p>

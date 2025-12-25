@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showAdjustmentModal = true"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center gap-2"
+        class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition flex items-center gap-2"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Adjustments List -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
@@ -81,7 +81,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       @click.self="showAdjustmentModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Add Product Adjustment</h3>
@@ -102,7 +102,7 @@
               <select
                 v-model="adjustmentForm.productId"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Select Product</option>
                 <option v-for="product in products" :key="product.id" :value="product.id">
@@ -117,7 +117,7 @@
               <select
                 v-model="adjustmentForm.type"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="INCREASE">Stock Addition</option>
                 <option value="DECREASE">Stock Reduction</option>
@@ -132,7 +132,7 @@
                 type="number"
                 required
                 min="1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -144,13 +144,13 @@
                 required
                 rows="3"
                 placeholder="Example: Supplier return, Damaged goods, Stocktaking, etc."
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               ></textarea>
               <p class="mt-1 text-xs text-gray-500">Explain the reason for stock adjustment in detail</p>
             </div>
 
             <!-- Suggestion -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
               <p class="text-xs font-medium text-blue-900 mb-1">💡 Suggested Reasons:</p>
               <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
                 <li>Stocktaking / Stock Audit</li>
@@ -166,14 +166,14 @@
             <div class="flex space-x-3 pt-4">
               <button
                 type="submit"
-                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+                class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition"
               >
                 Save
               </button>
               <button
                 type="button"
                 @click="showAdjustmentModal = false"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition"
               >
                 Cancel
               </button>

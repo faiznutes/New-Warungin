@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     @click.self="handleCancel"
   >
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 sm:p-8">
       <!-- Header -->
       <div class="text-center mb-6">
         <div class="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
@@ -36,7 +36,7 @@
           :key="store.id"
           @click="handleSelect(store.id)"
           :disabled="selecting"
-          class="w-full p-4 text-left border-2 rounded-lg transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full p-4 text-left border-2 rounded-xl transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           :class="
             selectedStoreId === store.id
               ? 'border-primary-500 bg-primary-50'
@@ -63,7 +63,7 @@
         <button
           v-if="!isSupervisor"
           @click="handleCancel"
-          class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
+          class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-medium"
         >
           {{ stores.length === 0 ? 'Tutup' : 'Batal' }}
         </button>
@@ -71,7 +71,7 @@
           v-if="stores.length > 0"
           @click="handleConfirm"
           :disabled="!selectedStoreId || selecting"
-          class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+          class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <span v-if="!selecting">Lanjutkan</span>
           <span v-else class="flex items-center justify-center">
@@ -85,7 +85,7 @@
         <button
           v-else
           @click="handleCancel"
-          class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+          class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           Tutup
         </button>

@@ -7,12 +7,12 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col gap-1">
         <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Customers</h1>
-        <p class="text-[#4c739a] dark:text-slate-400">Manage your customer database.</p>
+        <p class="text-[#4c739a] dark:text-[#4c739a]">Manage your customer database.</p>
       </div>
       <button
         v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         <span>Add Customer</span>
@@ -22,21 +22,21 @@
     <!-- Search Filter -->
     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
       <div class="relative">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#4c739a] text-[20px]">search</span>
         <input
           v-model="filters.search"
           @focus="handleSearchFocus"
           @input="handleSearchInput"
           type="text"
           placeholder="Search customers..."
-          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full pl-10 pr-4 py-2.5 bg-[#f6f7f8] dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec]"
         />
       </div>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -47,7 +47,7 @@
       <button
         v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         Add First Customer
@@ -62,30 +62,30 @@
         class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 hover:shadow-md transition-shadow group"
       >
         <div class="flex items-start gap-3 mb-4">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg flex-shrink-0">
+          <div class="w-12 h-12 bg-[#137fec]/10 rounded-full flex items-center justify-center text-[#137fec] font-bold text-lg flex-shrink-0">
             {{ customer.name.charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
-            <h3 class="font-bold text-slate-900 dark:text-white truncate">{{ customer.name }}</h3>
-            <p v-if="customer.email" class="text-sm text-slate-500 truncate">{{ customer.email }}</p>
-            <p v-if="customer.phone" class="text-sm text-slate-500">{{ customer.phone }}</p>
+            <h3 class="font-bold text-[#0d141b] dark:text-white truncate">{{ customer.name }}</h3>
+            <p v-if="customer.email" class="text-sm text-[#4c739a] truncate">{{ customer.email }}</p>
+            <p v-if="customer.phone" class="text-sm text-[#4c739a]">{{ customer.phone }}</p>
           </div>
         </div>
         
         <div class="space-y-2 mb-4">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-slate-500 flex items-center gap-1">
+            <span class="text-[#4c739a] flex items-center gap-1">
               <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
               Orders
             </span>
-            <span class="font-bold text-slate-900 dark:text-white">{{ customer.totalOrders || 0 }}</span>
+            <span class="font-bold text-[#0d141b] dark:text-white">{{ customer.totalOrders || 0 }}</span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-slate-500 flex items-center gap-1">
+            <span class="text-[#4c739a] flex items-center gap-1">
               <span class="material-symbols-outlined text-[16px]">payments</span>
               Total Spent
             </span>
-            <span class="font-bold text-primary">{{ formatCurrency(customer.totalSpent || 0) }}</span>
+            <span class="font-bold text-[#137fec]">{{ formatCurrency(customer.totalSpent || 0) }}</span>
           </div>
         </div>
         
@@ -93,14 +93,14 @@
           <button
             v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
             @click="editCustomer(customer)"
-            class="flex-1 px-3 py-2 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center gap-1"
+            class="flex-1 px-3 py-2 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">edit</span>
             Edit
           </button>
           <button
             @click="viewCustomer(customer)"
-            class="flex-1 px-3 py-2 text-xs font-medium bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition flex items-center justify-center gap-1"
+            class="flex-1 px-3 py-2 text-xs font-medium bg-[#137fec]/10 text-[#137fec] rounded-xl hover:bg-[#137fec]/20 transition flex items-center justify-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">visibility</span>
             View
@@ -108,7 +108,7 @@
           <button
             v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
             @click="deleteCustomer(customer.id)"
-            class="px-3 py-2 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition"
+            class="px-3 py-2 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition"
           >
             <span class="material-symbols-outlined text-[16px]">delete</span>
           </button>
@@ -121,18 +121,18 @@
       <button
         @click="loadCustomers(pagination.page - 1)"
         :disabled="pagination.page === 1"
-        class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
+        class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[18px]">chevron_left</span>
         Previous
       </button>
-      <span class="px-4 py-2 text-slate-600 dark:text-slate-400 text-sm">
+      <span class="px-4 py-2 text-slate-600 dark:text-[#4c739a] text-sm">
         Page {{ pagination.page }} of {{ pagination.totalPages }}
       </span>
       <button
         @click="loadCustomers(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
-        class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
+        class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
       >
         Next
         <span class="material-symbols-outlined text-[18px]">chevron_right</span>

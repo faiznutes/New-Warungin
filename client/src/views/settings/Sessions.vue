@@ -30,13 +30,13 @@
             <div class="flex items-center gap-3 mb-3">
               <div
                 class="w-12 h-12 rounded-xl flex items-center justify-center"
-                :class="session.isCurrent ? 'bg-primary/10 text-primary' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'"
+                :class="session.isCurrent ? 'bg-primary/10 text-primary' : 'bg-[#f8fafc] dark:bg-slate-700 text-[#4c739a]'"
               >
                 <span class="material-symbols-outlined">computer</span>
               </div>
               <div class="flex-1">
                 <div class="flex items-center gap-2">
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ session.deviceInfo || 'Unknown Device' }}</h3>
+                  <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">{{ session.deviceInfo || 'Unknown Device' }}</h3>
                   <span
                     v-if="session.isCurrent"
                     class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold"
@@ -45,11 +45,11 @@
                     Current
                   </span>
                 </div>
-                <p class="text-sm text-slate-500 mt-0.5">{{ session.ipAddress || 'Unknown IP' }}</p>
+                <p class="text-sm text-[#4c739a] mt-0.5">{{ session.ipAddress || 'Unknown IP' }}</p>
               </div>
             </div>
 
-            <div class="flex flex-wrap gap-4 text-sm text-slate-500">
+            <div class="flex flex-wrap gap-4 text-sm text-[#4c739a]">
               <div class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[16px]">schedule</span>
                 <span>Last active: {{ formatDate(session.lastActivityAt) }}</span>
@@ -64,7 +64,7 @@
           <button
             v-if="!session.isCurrent"
             @click="revokeSession(session.id)"
-            class="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm font-medium flex items-center gap-1"
+            class="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 text-sm font-medium flex items-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">logout</span>
             Revoke
@@ -73,24 +73,24 @@
       </div>
 
       <!-- Actions Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+          <div class="p-2 bg-red-50 text-red-600 rounded-xl">
             <span class="material-symbols-outlined">security</span>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Security Actions</h3>
-            <p class="text-sm text-slate-500">End all sessions except current</p>
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Security Actions</h3>
+            <p class="text-sm text-[#4c739a]">End all sessions except current</p>
           </div>
         </div>
         <button
           @click="revokeAllSessions"
-          class="w-full px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
+          class="w-full px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
         >
           <span class="material-symbols-outlined text-[20px]">logout</span>
           Revoke All Other Sessions
         </button>
-        <p class="text-xs text-slate-500 mt-2 text-center">
+        <p class="text-xs text-[#4c739a] mt-2 text-center">
           This will end all active sessions except your current one.
         </p>
       </div>

@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Export Report</span>
@@ -23,7 +23,7 @@
           <input
             v-model="dateRange.from"
             type="date"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div>
@@ -31,13 +31,13 @@
           <input
             v-model="dateRange.to"
             type="date"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div class="flex items-end">
           <button
             @click="shouldLoadReport = true; loadReport()"
-            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-lg transition-all font-medium text-sm"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-xl transition-all font-medium text-sm"
           >
             <span class="material-symbols-outlined text-[20px]">{{ reportData ? 'refresh' : 'play_arrow' }}</span>
             {{ reportData ? 'Refresh' : 'Generate' }}
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div v-else-if="!reportData" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="!reportData" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">analytics</span>
       <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Report Generated</h3>
       <p class="text-slate-500 text-center max-w-md">Select a date range and click Generate to create a report.</p>
@@ -63,34 +63,34 @@
     <div v-else-if="reportData" class="space-y-6">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Global Revenue</p>
           <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(reportData.summary?.totalGlobalRevenue || 0) }}</p>
           <p class="text-xs text-slate-500 mt-1">Subscription + Addons</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Subscription Revenue</p>
           <p class="text-3xl font-bold text-green-600">{{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Addon Revenue</p>
           <p class="text-3xl font-bold text-primary">{{ formatCurrency(reportData.summary?.totalAddonRevenue || 0) }}</p>
         </div>
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
           <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Active Tenants</p>
           <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ reportData.summary?.activeTenants || 0 }}</p>
         </div>
       </div>
 
       <!-- Subscription Data -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
           <h3 class="text-lg font-semibold text-gray-900">Penjualan Subscription</h3>
           <div class="flex items-center gap-3">
             <select
               v-model="subscriptionFilter"
               @change="subscriptionPage = 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="px-3 py-2 text-sm bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none"
             >
               <option value="all">Semua Status</option>
               <option value="ACTIVE">Aktif</option>
@@ -99,7 +99,7 @@
             <select
               v-model="subscriptionPurchasedByFilter"
               @change="subscriptionPage = 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Semua</option>
               <option value="SELF">Dibeli Sendiri</option>
@@ -172,7 +172,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="editSubscription(sub)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
                       title="Edit"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@
                     </button>
                     <button
                       @click="printSubscription(sub)"
-                      class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                      class="p-2 text-green-600 hover:bg-green-50 rounded-xl transition"
                       title="Print"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,13 +202,13 @@
           <div class="flex gap-2">
             <button
               @click="bulkDeleteSubscriptions"
-              class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              class="px-4 py-2 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition"
             >
               Hapus Terpilih
             </button>
             <button
               @click="selectedSubscriptions = []"
-              class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               Batal
             </button>
@@ -223,14 +223,14 @@
             <button
               @click="subscriptionPage = Math.max(1, subscriptionPage - 1)"
               :disabled="subscriptionPage === 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Sebelumnya
             </button>
             <button
               @click="subscriptionPage = Math.min(totalSubscriptionPages, subscriptionPage + 1)"
               :disabled="subscriptionPage === totalSubscriptionPages"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Selanjutnya
             </button>
@@ -239,14 +239,14 @@
       </div>
 
       <!-- Addon Data -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <h3 class="text-lg font-semibold text-gray-900">Penjualan Addons</h3>
           <div class="flex items-center gap-3">
             <select
               v-model="addonFilter"
               @change="addonPage = 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="px-3 py-2 text-sm bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none"
             >
               <option value="all">Semua Status</option>
               <option value="active">Aktif</option>
@@ -255,7 +255,7 @@
             <select
               v-model="addonPurchasedByFilter"
               @change="addonPage = 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">Semua</option>
               <option value="SELF">Dibeli Sendiri</option>
@@ -328,7 +328,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="editAddon(addon)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
                       title="Edit"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +337,7 @@
                     </button>
                     <button
                       @click="printAddon(addon)"
-                      class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
+                      class="p-2 text-green-600 hover:bg-green-50 rounded-xl transition"
                       title="Print"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,13 +358,13 @@
           <div class="flex gap-2">
             <button
               @click="bulkDeleteAddons"
-              class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+              class="px-4 py-2 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition"
             >
               Hapus Terpilih
             </button>
             <button
               @click="selectedAddons = []"
-              class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="px-4 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               Batal
             </button>
@@ -379,14 +379,14 @@
             <button
               @click="addonPage = Math.max(1, addonPage - 1)"
               :disabled="addonPage === 1"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Sebelumnya
             </button>
             <button
               @click="addonPage = Math.min(totalAddonPages, addonPage + 1)"
               :disabled="addonPage === totalAddonPages"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Selanjutnya
             </button>
@@ -411,7 +411,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="showSubscriptionModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-2xl font-bold text-gray-900">Detail Subscription</h3>
@@ -455,7 +455,7 @@
                   <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
                   <select
                     v-model="selectedSubscriptionPurchasedBy"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="SELF">Dibeli Sendiri</option>
                     <option value="ADMIN">Dibeli oleh Admin</option>
@@ -476,19 +476,19 @@
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showSubscriptionModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
               >
                 Tutup
               </button>
               <button
                 @click="saveSubscriptionPurchasedBy"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
               >
                 Simpan
               </button>
               <button
                 @click="deleteSubscription(selectedSubscription)"
-                class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+                class="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition"
               >
                 Hapus
               </button>
@@ -504,7 +504,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="showAddonModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-2xl font-bold text-gray-900">Detail Addon</h3>
@@ -555,7 +555,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Dibeli Oleh</label>
                 <select
                   v-model="selectedAddonPurchasedBy"
-                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="SELF">Dibeli Sendiri</option>
                   <option value="ADMIN">Dibeli oleh Admin</option>
@@ -566,19 +566,19 @@
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showAddonModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
               >
                 Tutup
               </button>
               <button
                 @click="saveAddonPurchasedBy"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
               >
                 Simpan
               </button>
               <button
                 @click="deleteAddon(selectedAddon)"
-                class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+                class="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition"
               >
                 Hapus
               </button>
@@ -594,7 +594,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="showEditSubscriptionModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-2xl font-bold text-gray-900">Edit Subscription</h3>
@@ -618,7 +618,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Paket</label>
                 <select
                   v-model="editSubscriptionForm.plan"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="BASIC">BASIC</option>
                   <option value="PRO">PRO</option>
@@ -632,14 +632,14 @@
                   type="number"
                   min="0"
                   step="1000"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select
                   v-model="editSubscriptionForm.status"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="ACTIVE">Aktif</option>
                   <option value="EXPIRED">Expired</option>
@@ -667,13 +667,13 @@
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showEditSubscriptionModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 @click="updateSubscription"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
               >
                 Simpan Perubahan
               </button>
@@ -689,7 +689,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="showEditAddonModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-2xl font-bold text-gray-900">Edit Addon</h3>
@@ -717,7 +717,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select
                   v-model="editAddonForm.status"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="active">Aktif</option>
                   <option value="expired">Expired</option>
@@ -745,13 +745,13 @@
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showEditAddonModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 @click="updateAddon"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
               >
                 Simpan Perubahan
               </button>
@@ -767,7 +767,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click.self="showAddAdminModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full mx-4">
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-2xl font-bold text-gray-900">Tambah Admin untuk Tenant</h3>
@@ -787,7 +787,7 @@
               <input
                 v-model="addAdminForm.name"
                 type="text"
-                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Nama admin"
               />
             </div>
@@ -796,7 +796,7 @@
               <input
                 v-model="addAdminForm.email"
                 type="email"
-                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="email@example.com"
               />
             </div>
@@ -805,7 +805,7 @@
               <input
                 v-model="addAdminForm.password"
                 type="password"
-                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Password minimal 8 karakter"
               />
             </div>
@@ -813,14 +813,14 @@
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 @click="showAddAdminModal = false"
-                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 @click="createAdmin"
                 :disabled="!addAdminForm.name || !addAdminForm.email || !addAdminForm.password || addAdminForm.password.length < 8"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Buat Admin
               </button>

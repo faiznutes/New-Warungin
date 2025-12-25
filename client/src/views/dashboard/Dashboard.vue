@@ -1,16 +1,16 @@
 <template>
-  <div class="flex flex-col h-full bg-[#f6f7f8]">
+  <div class="flex flex-col h-full bg-background-light dark:bg-background-dark">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 sm:gap-6 px-4 sm:px-6">
       <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Dashboard</h1>
-        <p class="text-[#4c739a] text-sm sm:text-base">Your business summary in one place</p>
+        <h1 class="text-text-primary dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Dashboard</h1>
+        <p class="text-text-secondary dark:text-slate-400 text-sm sm:text-base">Your business summary in one place</p>
       </div>
       <div class="w-full sm:w-auto flex items-center gap-3">
         <select
           v-model="dateRange"
           @change="loadStats"
-          class="flex-1 sm:flex-none px-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-[#0d141b] font-medium cursor-pointer hover:border-slate-300 transition-colors"
+          class="flex-1 sm:flex-none px-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-slate-800 text-text-primary dark:text-white font-medium cursor-pointer hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
         >
           <option value="today">Today</option>
           <option value="week">This Week</option>
@@ -47,7 +47,7 @@
         <div class="bg-gradient-to-br from-white to-orange-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-orange-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Today's Transactions</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
@@ -60,7 +60,7 @@
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Today's Revenue</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -73,7 +73,7 @@
         <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-blue-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Average per Transaction</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -142,7 +142,7 @@
         <div class="bg-gradient-to-br from-white to-yellow-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-yellow-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Pending Orders</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -155,7 +155,7 @@
         <div class="bg-gradient-to-br from-white to-orange-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-orange-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Being Cooked</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -169,7 +169,7 @@
         <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-green-200">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Orders Ready</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-md">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
@@ -262,12 +262,12 @@
       </div>
       
       <!-- Welcome Section (if no subscription and subscription is loaded) -->
-      <div v-else-if="showWelcomeSection" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+      <div v-else-if="showWelcomeSection" class="relative bg-gradient-to-br from-primary via-blue-600 to-indigo-600 rounded-2xl shadow-xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
         <div class="relative z-10">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-lg">Welcome! 👋</h2>
-          <p class="text-primary-100 text-lg sm:text-xl">Manage your business easily from one place</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-md">Welcome! 👋</h2>
+          <p class="text-primary-light text-lg sm:text-xl">Manage your business easily from one place</p>
         </div>
       </div>
 
@@ -278,7 +278,7 @@
           class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
           <div class="flex justify-between items-start">
-            <div class="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div class="p-2 bg-green-50 dark:bg-green-900/20 rounded-xl">
               <span class="material-symbols-outlined text-green-600">payments</span>
             </div>
             <span :class="stats?.overview?.revenueGrowth >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'" class="flex items-center px-2 py-0.5 rounded text-xs font-semibold">
@@ -297,7 +297,7 @@
           class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
           <div class="flex justify-between items-start">
-            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
               <span class="material-symbols-outlined text-primary">shopping_bag</span>
             </div>
             <span class="text-green-600 bg-green-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
@@ -316,7 +316,7 @@
           class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
           <div class="flex justify-between items-start">
-            <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+            <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
               <span class="material-symbols-outlined text-purple-600">inventory_2</span>
             </div>
             <span v-if="stats?.alerts?.lowStockProducts > 0" class="text-amber-600 bg-amber-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
@@ -335,7 +335,7 @@
           class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
           <div class="flex justify-between items-start">
-            <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+            <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl">
               <span class="material-symbols-outlined text-indigo-600">group</span>
             </div>
             <span class="text-green-600 bg-green-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">
@@ -428,10 +428,10 @@
             <div
               v-for="(item, index) in stats?.charts?.topProducts?.slice(0, 5)"
               :key="item.product?.id"
-              class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
             >
               <div class="flex items-center gap-3 flex-1">
-                <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                <div class="w-8 h-8 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
                   <span class="text-white font-bold text-sm">{{ index + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -440,7 +440,7 @@
                 </div>
               </div>
               <div class="text-right ml-4">
-                <p class="font-bold text-primary text-sm">{{ formatCurrency(Number(item.totalRevenue)) }}</p>
+                <p class="font-bold text-text-primary dark:text-white text-sm">{{ formatCurrency(Number(item.totalRevenue)) }}</p>
               </div>
             </div>
           </div>
@@ -476,7 +476,7 @@
                   }"></span>
                   {{ getStatusLabel(item.status) }}
                 </span>
-                <span class="text-sm font-bold text-[#0d141b] dark:text-white">{{ item.count }}</span>
+                <span class="text-sm font-bold text-text-primary dark:text-white">{{ item.count }}</span>
               </div>
               <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
                 <div

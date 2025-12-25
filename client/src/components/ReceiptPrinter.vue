@@ -5,7 +5,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4"
       @click.self="$emit('close')"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-4 sm:p-6">
           <div class="flex items-center justify-between mb-4 sm:mb-6">
             <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Print Receipt</h3>
@@ -26,7 +26,7 @@
               <button
                 type="button"
                 @click="selectedPaperSize = '50mm'"
-                class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
                 :class="selectedPaperSize === '50mm' 
                   ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -40,7 +40,7 @@
               <button
                 type="button"
                 @click="selectedPaperSize = '85mm'"
-                class="px-4 py-3 rounded-lg border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
                 :class="selectedPaperSize === '85mm' 
                   ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -60,7 +60,7 @@
             <select
               v-model="selectedTemplate"
               @change="loadTemplate(selectedTemplate)"
-              class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+              class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
             >
               <option v-for="template in templates" :key="template.id" :value="template.id">
                 {{ template.name }}
@@ -71,7 +71,7 @@
           <!-- Receipt Preview -->
           <div
             ref="receiptContent"
-            class="bg-white border-2 border-gray-300 rounded-lg p-4 sm:p-6 receipt-print-container"
+            class="bg-white border-2 border-gray-300 rounded-xl p-4 sm:p-6 receipt-print-container"
             :class="{
               'receipt-50mm': selectedPaperSize === '50mm',
               'receipt-80mm': selectedPaperSize === '85mm' || selectedPaperSize === '80mm',
@@ -207,14 +207,14 @@
           <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
             <button
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
             >
               Tutup
             </button>
             <button
               @click="handlePrint"
               :disabled="!receiptData || !template"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               Print
             </button>

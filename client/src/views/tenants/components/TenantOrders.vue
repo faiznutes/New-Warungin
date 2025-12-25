@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full">
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
+    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 mb-4">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Tenant Orders</h3>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
@@ -14,13 +14,13 @@
               v-model="filters.search"
               type="text"
               placeholder="Search orders..."
-              class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             />
           </div>
         </div>
         <select
           v-model="filters.status"
-          class="px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white"
+          class="px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 bg-white"
         >
           <option value="">All Statuses</option>
           <option value="PENDING">Pending</option>
@@ -35,14 +35,14 @@
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="filteredOrders.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+    <div v-else-if="filteredOrders.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-xl">
       <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
       <p class="text-gray-500">No orders yet</p>
     </div>
 
-    <div v-else class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div v-else class="bg-white rounded-xl shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">

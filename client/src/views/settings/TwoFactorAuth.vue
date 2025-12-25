@@ -16,12 +16,12 @@
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
-            <div class="p-2 rounded-lg" :class="status.enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'">
+            <div class="p-2 rounded-xl" :class="status.enabled ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-500'">
               <span class="material-symbols-outlined">{{ status.enabled ? 'verified_user' : 'security' }}</span>
             </div>
             <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">2FA Status</h3>
-              <p class="text-sm text-slate-500">Your two-factor authentication status</p>
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">2FA Status</h3>
+              <p class="text-sm text-[#4c739a]">Your two-factor authentication status</p>
             </div>
           </div>
           <span
@@ -50,7 +50,7 @@
 
           <button
             @click="showDisableModal = true"
-            class="w-full px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
+            class="w-full px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-[20px]">shield_off</span>
             Disable 2FA
@@ -60,7 +60,7 @@
         <div v-else class="mt-4">
           <button
             @click="startSetup"
-            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
+            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
           >
             <span class="material-symbols-outlined text-[20px]">shield</span>
             Enable 2FA
@@ -69,20 +69,20 @@
       </div>
 
       <!-- Setup Flow -->
-      <div v-if="setupStep === 'generate'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div v-if="setupStep === 'generate'" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+          <div class="p-2 bg-primary/10 text-primary rounded-xl">
             <span class="material-symbols-outlined">qr_code_scanner</span>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Step 1: Scan QR Code</h3>
-            <p class="text-sm text-slate-500">Scan with Google Authenticator or Authy</p>
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Step 1: Scan QR Code</h3>
+            <p class="text-sm text-[#4c739a]">Scan with Google Authenticator or Authy</p>
           </div>
         </div>
 
         <div v-if="generating" class="text-center py-8">
           <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-slate-500">Generating QR code...</p>
+          <p class="text-[#4c739a]">Generating QR code...</p>
         </div>
 
         <div v-else-if="qrData" class="space-y-4">
@@ -92,13 +92,13 @@
           </div>
 
           <!-- Manual Entry -->
-          <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4">
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Or enter manually:</p>
+          <div class="bg-[#f8fafc] dark:bg-slate-900 rounded-xl p-4">
+            <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Or enter manually:</p>
             <div class="flex items-center gap-2">
-              <code class="flex-1 bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-mono text-slate-900 dark:text-white">{{ qrData.secret }}</code>
+              <code class="flex-1 bg-white dark:bg-slate-800 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-mono text-[#0d141b] dark:text-white">{{ qrData.secret }}</code>
               <button
                 @click="copySecret"
-                class="px-3 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition text-sm font-medium flex items-center gap-1"
+                class="px-3 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition text-sm font-medium flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-[16px]">content_copy</span>
                 Copy
@@ -116,14 +116,14 @@
               <code
                 v-for="(code, index) in qrData.backupCodes"
                 :key="index"
-                class="bg-white dark:bg-slate-800 px-2 py-1.5 rounded-lg text-xs font-mono text-center border border-yellow-200 dark:border-yellow-800"
+                class="bg-white dark:bg-slate-800 px-2 py-1.5 rounded-xl text-xs font-mono text-center border border-yellow-200 dark:border-yellow-800"
               >
                 {{ code }}
               </code>
             </div>
             <button
               @click="copyBackupCodes"
-              class="w-full px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition text-sm font-medium flex items-center justify-center gap-2"
+              class="w-full px-3 py-2 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 transition text-sm font-medium flex items-center justify-center gap-2"
             >
               <span class="material-symbols-outlined text-[18px]">content_copy</span>
               Copy All Backup Codes
@@ -132,13 +132,13 @@
 
           <!-- Verify Token -->
           <div class="space-y-2">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Enter 6-digit code from authenticator:</label>
+            <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider">Enter 6-digit code from authenticator:</label>
             <input
               v-model="verificationToken"
               type="text"
               maxlength="6"
               placeholder="000000"
-              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-center text-2xl tracking-widest font-mono"
+              class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-center text-2xl tracking-widest font-mono text-[#0d141b] dark:text-white"
               @input="verificationToken = verificationToken.replace(/\D/g, '')"
             />
             <p v-if="verifyError" class="text-sm text-red-600">{{ verifyError }}</p>
@@ -147,14 +147,14 @@
           <div class="flex gap-3">
             <button
               @click="cancelSetup"
-              class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+              class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
             >
               Cancel
             </button>
             <button
               @click="enable2FA"
               :disabled="verificationToken.length !== 6 || enabling"
-              class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
+              class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
             >
               {{ enabling ? 'Enabling...' : 'Enable 2FA' }}
             </button>
@@ -172,7 +172,7 @@
       >
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-4">
-            <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+            <div class="p-2 bg-red-50 text-red-600 rounded-xl">
               <span class="material-symbols-outlined">shield_off</span>
             </div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Disable 2FA</h3>
@@ -188,7 +188,7 @@
                 v-model="disablePassword"
                 type="password"
                 placeholder="Enter your password"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
               <p v-if="disableError" class="text-sm text-red-600 mt-1">{{ disableError }}</p>
             </div>
@@ -196,14 +196,14 @@
             <div class="flex gap-3">
               <button
                 @click="showDisableModal = false"
-                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 @click="disable2FA"
                 :disabled="!disablePassword || disabling"
-                class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium"
+                class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium"
               >
                 {{ disabling ? 'Disabling...' : 'Disable' }}
               </button>

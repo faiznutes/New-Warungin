@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Tenant Management</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage all registered tenants and their subscription status.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Tenant Management</h2>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Manage all registered tenants and their subscription status.</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
+        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Tenant</span>
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-5">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5">
       <div class="flex flex-col md:flex-row gap-4">
         <!-- Search -->
         <div class="flex-1 relative">
@@ -26,35 +26,35 @@
             @focus="handleSearchFocus"
             type="text"
             placeholder="Search tenants by name or email..."
-            class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white placeholder:text-slate-400"
+            class="w-full pl-10 pr-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-[#0d141b] dark:text-white placeholder:text-slate-400"
           />
         </div>
         <!-- Status Filter Buttons -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 bg-[#f8fafc] dark:bg-slate-900/50 p-1 rounded-xl border border-slate-100 dark:border-slate-700">
            <button
             @click="filters.isActive = ''"
-            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
+            class="px-4 py-1.5 rounded-xl text-sm font-bold transition-all"
             :class="filters.isActive === '' 
-              ? 'bg-primary/10 text-primary border-primary/20' 
-              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
+              ? 'bg-white dark:bg-slate-800 text-primary shadow-sm border border-slate-100 dark:border-slate-700' 
+              : 'text-[#4c739a] dark:text-slate-400 hover:text-[#0d141b] dark:hover:text-white'"
           >
             All
           </button>
           <button
             @click="filters.isActive = 'true'"
-            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
+            class="px-4 py-1.5 rounded-xl text-sm font-bold transition-all"
             :class="filters.isActive === 'true' 
-              ? 'bg-green-50 text-green-700 border-green-200' 
-              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
+              ? 'bg-white dark:bg-slate-800 text-green-600 shadow-sm border border-slate-100 dark:border-slate-700' 
+              : 'text-[#4c739a] dark:text-slate-400 hover:text-[#0d141b] dark:hover:text-white'"
           >
             Active
           </button>
           <button
             @click="filters.isActive = 'false'"
-            class="px-4 py-2 rounded-lg text-sm font-medium transition-all border"
+            class="px-4 py-1.5 rounded-xl text-sm font-bold transition-all"
             :class="filters.isActive === 'false' 
-              ? 'bg-red-50 text-red-700 border-red-200' 
-              : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'"
+              ? 'bg-white dark:bg-slate-800 text-red-600 shadow-sm border border-slate-100 dark:border-slate-700' 
+              : 'text-[#4c739a] dark:text-slate-400 hover:text-[#0d141b] dark:hover:text-white'"
           >
             Inactive
           </button>
@@ -93,11 +93,11 @@
             <tr v-for="tenant in filteredTenants" :key="tenant.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="size-10 rounded-lg bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-[#137fec] font-bold text-sm">
+                  <div class="size-10 rounded-xl bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-primary font-bold text-sm">
                     {{ tenant.name?.charAt(0).toUpperCase() }}
                   </div>
                   <div>
-                    <button @click="viewTenantDetail(tenant.id)" class="text-sm font-bold text-[#0d141b] dark:text-white hover:text-[#137fec] transition-colors text-left">
+                    <button @click="viewTenantDetail(tenant.id)" class="text-sm font-bold text-[#0d141b] dark:text-white hover:text-primary transition-colors text-left">
                       {{ tenant.name }}
                     </button>
                     <p class="text-xs text-[#4c739a] dark:text-slate-500 line-clamp-1">{{ tenant.address || 'Alamat tidak tersedia' }}</p>
@@ -111,7 +111,7 @@
                  </div>
               </td>
               <td class="px-6 py-4">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border"
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
                   :class="tenant.isActive !== false ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'"
                 >
                   <span class="size-1.5 rounded-full" :class="tenant.isActive !== false ? 'bg-green-500' : 'bg-red-500'"></span>
@@ -119,7 +119,7 @@
                 </span>
               </td>
               <td class="px-6 py-4">
-                 <span class="px-2.5 py-1 rounded-lg text-xs font-bold border"
+                 <span class="px-2.5 py-1 rounded-full text-xs font-bold border"
                   :class="getPlanBadgeClass(tenant.subscriptionPlan || 'BASIC')"
                  >
                    {{ getPlanName(tenant.subscriptionPlan || 'BASIC') }}
@@ -130,10 +130,10 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button @click="editTenant(tenant)" class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors" title="Edit Tenant">
+                  <button @click="editTenant(tenant)" class="p-2 hover:bg-blue-50 text-primary rounded-xl transition-colors border border-transparent hover:border-blue-100" title="Edit Tenant">
                     <span class="material-symbols-outlined text-[20px]">edit</span>
                   </button>
-                  <button @click="deleteTenant(tenant.id)" class="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors" title="Hapus Tenant">
+                  <button @click="deleteTenant(tenant.id)" class="p-2 hover:bg-red-50 text-red-600 rounded-xl transition-colors border border-transparent hover:border-red-100" title="Hapus Tenant">
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </div>
@@ -150,7 +150,7 @@
       class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
       @click.self="closeModal"
     >
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">
             {{ editingTenant ? 'Edit Tenant' : 'Tambah Tenant Baru' }}
@@ -168,7 +168,7 @@
                 v-model="tenantForm.name"
                 type="text"
                 required
-                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder="Contoh: Warung Makan Bahari"
               />
               <p v-if="!editingTenant" class="text-xs text-[#4c739a] mt-1 flex items-center gap-1">
@@ -183,7 +183,7 @@
                 <input
                   v-model="tenantForm.phone"
                   type="tel"
-                  class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                  class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   placeholder="0812..."
                 />
                </div>
@@ -192,7 +192,7 @@
                   <div class="relative">
                     <select
                       v-model="tenantForm.subscriptionPlan"
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 appearance-none"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
                     >
                       <option value="BASIC">Starter (BASIC)</option>
                       <option value="PRO">Boost (PRO)</option>
@@ -208,12 +208,12 @@
               <textarea
                 v-model="tenantForm.address"
                 rows="3"
-                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 resize-none"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                 placeholder="Jl. Contoh No. 123, Kota..."
               ></textarea>
             </div>
 
-            <div v-if="editingTenant" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg border border-slate-100 dark:border-slate-700">
+            <div v-if="editingTenant" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700">
               <div class="flex items-center h-5">
                 <input
                   v-model="tenantForm.isActive"
@@ -232,13 +232,13 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-[#0d141b] rounded-lg hover:bg-slate-50 font-medium transition-colors"
+                class="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-[#0d141b] rounded-xl hover:bg-slate-50 font-medium transition-colors"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-lg hover:bg-blue-600 font-bold transition-colors shadow-lg shadow-blue-500/30"
+                class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 font-bold transition-colors shadow-lg shadow-blue-500/30"
               >
                 {{ editingTenant ? 'Simpan Perubahan' : 'Buat Tenant' }}
               </button>

@@ -13,7 +13,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative group">
-            <select v-model="dateRange" class="appearance-none pl-10 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:border-primary/50 transition-colors">
+            <select v-model="dateRange" class="appearance-none pl-10 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:border-primary/50 transition-colors">
               <option value="today">Today</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>
@@ -21,7 +21,7 @@
             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">calendar_today</span>
             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
           </div>
-          <router-link to="/app/products" class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm">
+          <router-link to="/app/products" class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm">
             <span class="material-symbols-outlined text-[20px]">add</span>
             <span>Add Product</span>
           </router-link>
@@ -36,7 +36,7 @@
             <span class="material-symbols-outlined text-[120px] text-primary">payments</span>
           </div>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+            <div class="p-2 bg-green-50 text-green-600 rounded-xl">
               <span class="material-symbols-outlined">payments</span>
             </div>
             <span class="text-slate-500 text-sm font-medium">Net Revenue</span>
@@ -58,7 +58,7 @@
             <span class="material-symbols-outlined text-[120px] text-blue-500">shopping_cart</span>
           </div>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
               <span class="material-symbols-outlined">shopping_cart</span>
             </div>
             <span class="text-slate-500 text-sm font-medium">Total Orders</span>
@@ -92,7 +92,7 @@
           </div>
           <div class="mt-2">
             <p class="text-xs text-slate-500 mb-3">Renews on {{ formatDate(currentSubscription?.currentPeriodEnd) }}</p>
-            <router-link to="/app/subscription" class="block w-full text-center py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-primary hover:border-primary transition-colors">Manage Plan</router-link>
+            <router-link to="/app/subscription" class="block w-full text-center py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-primary hover:border-primary transition-colors">Manage Plan</router-link>
           </div>
         </div>
 
@@ -100,7 +100,7 @@
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between h-40 border-l-4 border-l-red-500">
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-3">
-              <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+              <div class="p-2 bg-red-50 text-red-600 rounded-xl">
                 <span class="material-symbols-outlined">warning</span>
               </div>
               <span class="text-slate-500 text-sm font-medium">Low Stock</span>
@@ -150,8 +150,8 @@
             <router-link to="/app/products" class="text-sm text-primary hover:text-primary-hover font-medium">See All</router-link>
           </div>
           <div class="flex-1 overflow-y-auto pr-2 space-y-4">
-            <div v-for="(item, index) in topProducts" :key="index" class="flex items-center gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg transition-colors group">
-              <div class="h-12 w-12 rounded-lg bg-cover bg-center shrink-0 border border-slate-100 dark:border-slate-700 flex items-center justify-center bg-gray-100 text-gray-400"
+            <div v-for="(item, index) in topProducts" :key="index" class="flex items-center gap-3 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors group">
+              <div class="h-12 w-12 rounded-xl bg-cover bg-center shrink-0 border border-slate-100 dark:border-slate-700 flex items-center justify-center bg-gray-100 text-gray-400"
                    :style="{ backgroundImage: item.product?.image ? `url('${item.product.image}')` : 'none' }">
                    <span v-if="!item.product?.image" class="material-symbols-outlined">image</span>
               </div>
@@ -177,8 +177,8 @@
         <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <h3 class="text-lg font-bold text-slate-900 dark:text-white">Recent Transactions</h3>
           <div class="flex gap-2">
-            <button class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">Export</button>
-            <router-link to="/app/orders" class="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors">View All</router-link>
+            <button class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Export</button>
+            <router-link to="/app/orders" class="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors">View All</router-link>
           </div>
         </div>
         <div class="overflow-x-auto">

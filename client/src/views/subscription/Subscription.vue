@@ -6,12 +6,12 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Subscription</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage your subscription plan and account status.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Subscription</h2>
+        <p class="text-[#4c739a] dark:text-[#94a3b8] mt-1">Manage your subscription plan and account status.</p>
       </div>
       <router-link
         to="/pricing"
-        class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-primary hover:border-primary rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+        class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[#4c739a] hover:text-primary hover:border-primary rounded-xl text-sm font-medium transition-all shadow-sm hover:shadow-sm"
       >
         <span>View Plan Details</span>
         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -19,23 +19,23 @@
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-full mb-4">
         <span class="material-symbols-outlined text-4xl text-slate-400">storefront</span>
       </div>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Select a Tenant First</h3>
-      <p class="text-slate-500 text-sm text-center max-w-md">Please select a tenant from the dropdown above to view subscription information.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">Select a Tenant First</h3>
+      <p class="text-[#4c739a] text-sm text-center max-w-md">Please select a tenant from the dropdown above to view subscription information.</p>
     </div>
 
     <!-- Loading State -->
-    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium text-sm">Loading subscription data...</div>
+      <div class="text-[#4c739a] font-medium text-sm">Loading subscription data...</div>
     </div>
 
     <div v-else class="flex flex-col gap-8">
       <!-- Current Subscription Card -->
-      <div class="bg-gradient-to-br from-primary to-blue-600 rounded-2xl shadow-xl shadow-primary/20 text-white overflow-hidden relative">
+      <div class="bg-gradient-to-br from-primary to-blue-600 rounded-xl shadow-xl shadow-primary/20 text-white overflow-hidden relative">
         <div class="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div class="absolute bottom-0 left-0 p-24 bg-black/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
         
@@ -43,12 +43,12 @@
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-4">
-                <span class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border border-white/30">
+                <span class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border border-white/30">
                   <span class="material-symbols-outlined text-[16px]">verified</span>
                   Current Plan
                 </span>
                 <span
-                  class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg"
+                  class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xl"
                   :class="subscription?.isExpired ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
                 >
                   {{ subscription?.isExpired ? 'Expired' : 'Active' }}
@@ -95,7 +95,7 @@
       </div>
 
       <!-- Upgrade/Extend Section -->
-      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
             <span class="material-symbols-outlined text-[#137fec]">upgrade</span>
@@ -103,7 +103,7 @@
           </h3>
           <button
             @click="showExtendSection = !showExtendSection"
-            class="px-4 py-2 text-sm font-medium text-[#137fec] hover:text-white border border-[#137fec] hover:bg-[#137fec] rounded-lg transition-all"
+            class="px-4 py-2 text-sm font-medium text-[#137fec] hover:text-white border border-[#137fec] hover:bg-[#137fec] rounded-xl transition-all"
           >
             {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Paket Ini' }}
           </button>
@@ -288,7 +288,7 @@
                       :key="duration.value"
                       @click.stop="selectedCustomDuration = duration.value"
                       type="button"
-                      class="px-2 py-2 border rounded-lg text-xs font-medium transition-all"
+                      class="px-2 py-2 border rounded-xl text-xs font-medium transition-all"
                       :class="selectedCustomDuration === duration.value
                         ? 'border-[#137fec] bg-[#137fec] text-white'
                         : 'border-slate-200 text-slate-600 hover:border-[#137fec]'"
@@ -339,7 +339,7 @@
       </div>
 
       <!-- Expired/New Subscription Section -->
-      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && (subscription?.isExpired || !subscription?.subscription?.endDate)" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && (subscription?.isExpired || !subscription?.subscription?.endDate)" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Perpanjang Berlangganan</h3>
           <p class="text-sm text-[#4c739a] mt-1">Layanan Anda saat ini tidak aktif. Pilih paket untuk mengaktifkan kembali.</p>
@@ -433,7 +433,7 @@
 
       <!-- Info Banner -->
       <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 flex items-start gap-4">
-        <div class="bg-blue-100 dark:bg-slate-700 text-[#137fec] p-2 rounded-lg flex-shrink-0">
+        <div class="bg-blue-100 dark:bg-slate-700 text-[#137fec] p-2 rounded-xl flex-shrink-0">
           <span class="material-symbols-outlined">info</span>
         </div>
         <div>

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col h-full">
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 mb-4">
+    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-5 mb-4">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Tenant Products</h3>
       <div class="flex flex-col sm:flex-row gap-4">
         <div class="flex-1">
@@ -14,13 +14,13 @@
               v-model="filters.search"
               type="text"
               placeholder="Search products..."
-              class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+              class="block w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
             />
           </div>
         </div>
         <button
           @click="showCreateModal = true"
-          class="px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
+          class="px-4 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition flex items-center justify-center space-x-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -34,7 +34,7 @@
       <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
-    <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-lg">
+    <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-12 bg-white rounded-xl">
       <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
       </svg>
@@ -45,7 +45,7 @@
       <div
         v-for="product in filteredProducts"
         :key="product.id"
-        class="bg-white rounded-lg shadow-md hover:shadow-lg transition overflow-hidden"
+        class="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden"
       >
         <div class="aspect-w-16 aspect-h-9 bg-gray-200 flex items-center justify-center overflow-hidden">
           <img

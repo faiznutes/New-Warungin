@@ -8,7 +8,7 @@
       </div>
       <button
         @click="saveSettings"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">save</span>
         <span>Save Changes</span>
@@ -21,22 +21,22 @@
         <!-- General Settings -->
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center gap-3 mb-6">
-             <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-lg">
+             <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-xl">
                 <span class="material-symbols-outlined">tune</span>
              </div>
              <div>
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">General Settings</h3>
-                <p class="text-xs text-slate-500">Basic system application information</p>
+                <p class="text-xs text-[#4c739a]">Basic system application information</p>
              </div>
           </div>
           
           <div class="space-y-5">
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">System Name</label>
+              <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">System Name</label>
               <input
                 v-model="settings.systemName"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
                 placeholder="Enter system name"
               />
             </div>
@@ -76,24 +76,24 @@
         </div>
 
         <!-- Security Settings -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
           <div class="flex items-center gap-3 mb-6">
-             <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+             <div class="p-2 bg-green-50 text-green-600 rounded-xl">
                 <span class="material-symbols-outlined">security</span>
              </div>
              <div>
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Security</h3>
-                <p class="text-xs text-slate-500">Password and authentication policies</p>
+                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Security</h3>
+                <p class="text-xs text-[#4c739a]">Password and authentication policies</p>
              </div>
           </div>
 
           <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+            <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
               <div class="flex items-center gap-3">
-                 <span class="material-symbols-outlined text-slate-400">lock_clock</span>
+                 <span class="material-symbols-outlined text-[#4c739a]">lock_clock</span>
                  <div>
-                    <label class="block text-sm font-medium text-slate-900 dark:text-white">Require Strong Password</label>
-                    <p class="text-xs text-slate-500">Require combination of letters, numbers, and symbols</p>
+                    <label class="block text-sm font-medium text-[#0d141b] dark:text-white">Require Strong Password</label>
+                    <p class="text-xs text-[#4c739a]">Require combination of letters, numbers, and symbols</p>
                  </div>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -102,12 +102,12 @@
               </label>
             </div>
 
-            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+            <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
               <div class="flex items-center gap-3">
-                 <span class="material-symbols-outlined text-slate-400">phonelink_lock</span>
+                 <span class="material-symbols-outlined text-[#4c739a]">phonelink_lock</span>
                  <div>
-                    <label class="block text-sm font-medium text-slate-900 dark:text-white">Two-Factor Authentication (2FA)</label>
-                    <p class="text-xs text-slate-500">Enable global 2FA for Super Admin</p>
+                    <label class="block text-sm font-medium text-[#0d141b] dark:text-white">Two-Factor Authentication (2FA)</label>
+                    <p class="text-xs text-[#4c739a]">Enable global 2FA for Super Admin</p>
                  </div>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
@@ -119,26 +119,26 @@
         </div>
 
         <!-- Subscription Receipt Template -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div class="flex items-center gap-3">
-                 <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                 <div class="p-2 bg-purple-50 text-purple-600 rounded-xl">
                     <span class="material-symbols-outlined">receipt_long</span>
                  </div>
                  <div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Subscription Receipt Template</h3>
-                    <p class="text-sm text-slate-500">Manage tenant payment receipt design and layout.</p>
+                    <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Subscription Receipt Template</h3>
+                    <p class="text-sm text-[#4c739a]">Manage tenant payment receipt design and layout.</p>
                  </div>
               </div>
               <button
                 @click="showTemplateManager = true"
-                class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+                class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
               >
                 <span class="material-symbols-outlined text-[20px]">settings</span>
                 <span>Manage Template</span>
               </button>
            </div>
-           <div class="mt-4 text-sm text-slate-500 space-y-1 pl-11">
+           <div class="mt-4 text-sm text-[#4c739a] space-y-1 pl-11">
               <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Supports A4 & Thermal (58mm/80mm) formats</p>
               <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Customize header & footer</p>
            </div>
@@ -147,7 +147,7 @@
 
       <!-- Right Column: Quick Links -->
       <div class="space-y-6">
-         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
             <h3 class="font-bold text-[#0d141b] dark:text-white mb-4 flex items-center gap-2">
                <span class="material-symbols-outlined text-[#4c739a]">link</span>
                Quick Actions
@@ -158,7 +158,7 @@
                  to="/app/settings/2fa"
                  class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                >
-                 <div class="bg-violet-50 dark:bg-violet-900/30 text-violet-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                 <div class="bg-violet-50 dark:bg-violet-900/30 text-violet-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined">verified_user</span>
                  </div>
                  <div>
@@ -171,7 +171,7 @@
                  to="/app/settings/webhooks"
                  class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                >
-                 <div class="bg-amber-50 dark:bg-amber-900/30 text-amber-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                 <div class="bg-amber-50 dark:bg-amber-900/30 text-amber-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined">webhook</span>
                  </div>
                  <div>
@@ -184,7 +184,7 @@
                  to="/app/settings/sessions"
                  class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                >
-                 <div class="bg-pink-50 dark:bg-pink-900/30 text-pink-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                 <div class="bg-pink-50 dark:bg-pink-900/30 text-pink-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined">devices</span>
                  </div>
                  <div>
@@ -197,7 +197,7 @@
                  to="/app/settings/password"
                  class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                >
-                 <div class="bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                 <div class="bg-cyan-50 dark:bg-cyan-900/30 text-cyan-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined">password</span>
                  </div>
                  <div>
@@ -210,7 +210,7 @@
                  to="/app/settings/gdpr"
                  class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group"
                >
-                 <div class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 p-2.5 rounded-lg group-hover:scale-110 transition-transform">
+                 <div class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined">policy</span>
                  </div>
                  <div>

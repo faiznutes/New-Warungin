@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
           <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Kelola Template Struk Langganan</h3>
@@ -24,7 +24,7 @@
             <h4 class="text-lg font-semibold text-gray-900">Template Tersedia</h4>
             <button
               @click="showCreateModal = true"
-              class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center space-x-2"
+              class="px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition flex items-center space-x-2"
             >
               <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -37,7 +37,7 @@
             <div
               v-for="template in templates"
               :key="template.id"
-              class="border-2 rounded-lg p-4 cursor-pointer transition"
+              class="border-2 rounded-xl p-4 cursor-pointer transition"
               :class="template.isDefault ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-primary-300'"
               @click="selectTemplate(template)"
             >
@@ -62,21 +62,21 @@
               <div class="flex items-center space-x-2 mt-3">
                 <button
                   @click.stop="editTemplate(template)"
-                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition"
+                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition"
                 >
                   Edit
                 </button>
                 <button
                   v-if="!template.isDefault"
                   @click.stop="setAsDefault(template.id)"
-                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition"
+                  class="flex-1 px-2 py-1 text-xs sm:text-sm bg-primary-100 text-primary-700 rounded-xl hover:bg-primary-200 transition"
                 >
                   Set Default
                 </button>
                 <button
                   v-if="!template.isDefault"
                   @click.stop="deleteTemplate(template.id)"
-                  class="px-2 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition"
+                  class="px-2 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition"
                 >
                   Hapus
                 </button>
@@ -88,10 +88,10 @@
         <!-- Template Preview -->
         <div v-if="selectedTemplate" class="border-t pt-6">
           <h4 class="text-lg font-semibold text-gray-900 mb-4">Preview Template</h4>
-          <div class="bg-gray-50 rounded-lg p-4 sm:p-6">
+          <div class="bg-gray-50 rounded-xl p-4 sm:p-6">
             <div
               ref="previewContent"
-              class="bg-white rounded p-4 sm:p-6 max-w-md mx-auto"
+              class="bg-white rounded-xl p-4 sm:p-6 max-w-md mx-auto"
               :class="[getPaperSizeClass(selectedTemplate.paperSize), getTemplateContainerClass(selectedTemplate.templateType)]"
               :style="{ fontFamily: getTemplateFontFamily(selectedTemplate.templateType, selectedTemplate.styles), fontSize: getTemplateFontSize(selectedTemplate.templateType, selectedTemplate.styles) }"
             >
@@ -138,7 +138,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4"
         @click.self="closeTemplateModal"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4 sm:mb-6">
               <h3 class="text-xl font-bold text-gray-900">
@@ -161,7 +161,7 @@
                   v-model="templateForm.name"
                   type="text"
                   required
-                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                   placeholder="Nama template"
                 />
               </div>
@@ -171,7 +171,7 @@
                 <select
                   v-model="templateForm.templateType"
                   required
-                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="DEFAULT">Struk Standar</option>
                   <option value="MODERN">Struk Modern</option>
@@ -186,7 +186,7 @@
                 <select
                   v-model="templateForm.paperSize"
                   required
-                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="A4">A4 (Kertas Biasa)</option>
                   <option value="THERMAL_58">Thermal 58mm</option>
@@ -331,13 +331,13 @@
                 <button
                   type="button"
                   @click="closeTemplateModal"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm sm:text-base"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition text-sm sm:text-base"
                 >
                   {{ editingTemplate ? 'Update' : 'Simpan' }}
                 </button>
@@ -392,7 +392,6 @@ const templates = ref<ReceiptTemplate[]>([]);
 const selectedTemplate = ref<ReceiptTemplate | null>(null);
 const showCreateModal = ref(false);
 const editingTemplate = ref<ReceiptTemplate | null>(null);
-const previewContent = ref<HTMLElement | null>(null);
 
 const templateForm = ref({
   name: '',
@@ -573,7 +572,7 @@ const getTemplateFontFamily = (templateType: string, styles?: any): string => {
   return fontMap[templateType] || 'Arial, sans-serif';
 };
 
-const getTemplateFontSize = (templateType: string, styles?: any): string => {
+const getTemplateFontSize = (_templateType: string, styles?: any): string => {
   return styles?.fontSize || '12px';
 };
 

@@ -6,7 +6,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-gray-900">Export Laporan Tenant</h3>
@@ -28,7 +28,7 @@
                 </label>
                 <select
                   v-model="exportForm.storeSelection"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
                   <option value="current">Store Saat Ini</option>
                   <option value="all">Semua Store</option>
@@ -48,7 +48,7 @@
                     v-for="template in templates"
                     :key="template.id"
                     @click="exportForm.template = template.id"
-                    class="border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md"
+                    class="border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md"
                     :class="exportForm.template === template.id 
                       ? 'border-primary-500 bg-primary-50' 
                       : 'border-gray-200 hover:border-gray-300'"
@@ -81,7 +81,7 @@
                   <input
                     v-model="exportForm.startDate"
                     type="date"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   />
                 </div>
                 <div>
@@ -89,7 +89,7 @@
                   <input
                     v-model="exportForm.endDate"
                     type="date"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   />
                 </div>
               </div>
@@ -98,14 +98,14 @@
               <div class="flex space-x-3 pt-4 border-t border-gray-200">
                 <button
                   @click="$emit('close')"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Batal
                 </button>
                 <button
                   @click="handleExport"
                   :disabled="!exportForm.template || !exportForm.storeSelection || exporting"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {{ exporting ? 'Mengekspor...' : 'Export PDF' }}
                 </button>

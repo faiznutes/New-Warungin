@@ -9,7 +9,7 @@
       <button
         @click="sendAlerts"
         :disabled="sending"
-        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-green-500/30 transition-all font-medium text-sm disabled:opacity-50"
+        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-green-500/30 transition-all font-medium text-sm disabled:opacity-50"
       >
         <span class="material-symbols-outlined text-[20px]">mail</span>
         <span>{{ sending ? 'Sending...' : 'Send Alerts' }}</span>
@@ -24,7 +24,7 @@
             <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Low Stock</p>
             <p class="text-2xl font-bold text-amber-600">{{ stats.lowStockCount || 0 }}</p>
           </div>
-          <div class="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+          <div class="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
             <span class="material-symbols-outlined text-amber-600">warning</span>
           </div>
         </div>
@@ -36,7 +36,7 @@
             <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Out of Stock</p>
             <p class="text-2xl font-bold text-red-600">{{ stats.outOfStockCount || 0 }}</p>
           </div>
-          <div class="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+          <div class="p-2 bg-red-50 dark:bg-red-900/20 rounded-xl">
             <span class="material-symbols-outlined text-red-600">inventory_2</span>
           </div>
         </div>
@@ -64,7 +64,7 @@
     <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
       <div class="p-6 border-b border-slate-100 dark:border-slate-700">
         <div class="flex items-center gap-3">
-          <div class="p-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 rounded-lg">
+          <div class="p-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 rounded-xl">
             <span class="material-symbols-outlined">inventory</span>
           </div>
           <h3 class="text-lg font-bold text-slate-900 dark:text-white">Low Stock Products</h3>

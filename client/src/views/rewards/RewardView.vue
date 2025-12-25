@@ -1,44 +1,43 @@
 <template>
-  <div class="min-h-screen bg-[#f6f7f8] flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card max-w-2xl w-full p-8 border border-slate-100 dark:border-slate-700/50">
+  <div class="min-h-screen bg-[#f6f7f8] dark:bg-[#101922] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm max-w-2xl w-full p-8 border border-slate-100 dark:border-slate-700">
       <!-- Header -->
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <span class="material-symbols-outlined text-amber-600 text-[32px]">play_circle</span>
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined text-amber-500 dark:text-amber-400 text-[32px]">play_circle</span>
         </div>
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Watch Ad to Earn Points</h1>
-        <p class="text-slate-500 dark:text-slate-400">Watch the ad to completion to earn your points.</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#0d141b] dark:text-white mb-2 leading-tight tracking-tight">Watch Ad to Earn Points</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Watch the ad to completion to earn your points.</p>
       </div>
 
       <!-- Loading State (Initializing) -->
       <div v-if="initializing" class="text-center py-12">
         <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-slate-500">Loading ad...</p>
+        <p class="text-[#4c739a] font-medium">Loading ad...</p>
       </div>
 
       <!-- Ad Container -->
       <div v-else-if="!adShown && !completed" class="mb-6">
-        <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 min-h-[300px] flex flex-col items-center justify-center">
+        <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-8 min-h-[300px] flex flex-col items-center justify-center border border-slate-100 dark:border-slate-700">
           <div v-if="!isAdAvailable" class="text-center">
-            <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">videocam</span>
-            <p class="text-slate-600 dark:text-slate-400 mb-4" v-if="!ironSourceError">Loading ad...</p>
-            <p class="text-red-600 mb-4 font-semibold" v-else>{{ ironSourceError }}</p>
-            <div v-if="ironSourceError" class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl text-sm text-yellow-800 dark:text-yellow-200">
-              <p class="font-bold mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[64px] text-slate-300 dark:text-slate-600 mb-4">videocam</span>
+            <p class="text-[#4c739a] dark:text-slate-400 mb-6 font-medium" v-if="!ironSourceError">Loading ad...</p>
+            <p class="text-red-500 mb-6 font-semibold" v-else>{{ ironSourceError }}</p>
+            <div v-if="ironSourceError" class="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl text-sm text-amber-800 dark:text-amber-200">
+              <p class="font-bold mb-2 flex items-center gap-2 justify-center">
                 <span class="material-symbols-outlined text-[18px]">lightbulb</span>
                 Tips:
               </p>
-              <ul class="list-disc list-inside text-left space-y-1">
-                <li v-if="trackingPreventionBlocked">Disable Tracking Prevention in browser settings (Edge: Settings → Privacy → Tracking Prevention → Balanced/Off)</li>
-                <li>Disable ad blocker for this page</li>
-                <li>Refresh page after changing settings</li>
-                <li>Ensure stable internet connection</li>
+              <ul class="list-disc list-inside text-left space-y-1 max-w-xs mx-auto">
+                <li v-if="trackingPreventionBlocked">Disable Tracking Prevention</li>
+                <li>Disable ad blocker</li>
+                <li>Refresh page</li>
               </ul>
             </div>
             <button
               @click="checkAdAvailability"
               :disabled="ironSourceLoading"
-              class="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed flex items-center gap-2 mx-auto shadow-lg shadow-primary/30"
+              class="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-blue-600 transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed flex items-center gap-2 mx-auto shadow-lg shadow-blue-500/30"
             >
               <span class="material-symbols-outlined text-[20px]" v-if="!ironSourceLoading">refresh</span>
               <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -47,7 +46,7 @@
           </div>
 
           <div v-else class="text-center">
-            <span class="material-symbols-outlined text-[64px] text-green-500 mb-4">play_circle</span>
+            <span class="material-symbols-outlined text-[64px] text-emerald-500 mb-4">play_circle</span>
             <p class="text-slate-700 dark:text-slate-300 font-semibold mb-4">Ad ready to show!</p>
             <button
               @click="showAd"
@@ -91,7 +90,7 @@
       <!-- Loading State (Processing Points) -->
       <div v-if="loading && !adShown" class="text-center py-8">
         <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-slate-500">Processing your points...</p>
+        <p class="text-[#4c739a]">Processing your points...</p>
       </div>
 
       <!-- Back Button -->

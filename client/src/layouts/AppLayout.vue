@@ -41,7 +41,7 @@
             >
               <router-link
                 to="/app/dashboard"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 exact-active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
@@ -55,7 +55,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageProducts) || (userRole === 'CASHIER' && canManageProducts)"
                 to="/app/products"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -68,7 +68,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canEditOrders) || userRole === 'CASHIER'"
                 to="/app/orders"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -81,7 +81,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageCustomers) || (userRole === 'CASHIER' && canManageCustomers)"
                 to="/app/customers"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -116,7 +116,7 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -130,7 +130,7 @@
               <div v-if="hasBusinessAnalytics" class="ml-4 mt-1 space-y-1">
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
                   active-class="bg-primary-50 text-primary-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
@@ -142,7 +142,7 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
                   active-class="bg-primary-50 text-primary-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
@@ -154,7 +154,7 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
                   active-class="bg-primary-50 text-primary-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
@@ -190,7 +190,7 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -203,7 +203,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/stores"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -238,7 +238,7 @@
             >
               <router-link
                 to="/app/subscription"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -251,7 +251,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/addons"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -264,7 +264,7 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || userRole === 'SUPER_ADMIN'"
                 to="/app/rewards"
-                class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
                 active-class="bg-primary-50 text-primary-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
@@ -290,7 +290,7 @@
           </div>
           <button
             @click="handleLogout"
-            class="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium flex items-center justify-center space-x-2"
+            class="w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium flex items-center justify-center space-x-2"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -315,7 +315,7 @@
         <div class="flex items-center justify-between px-4 py-4">
           <button
             @click="sidebarOpen = !sidebarOpen"
-            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 touch-manipulation"
+            class="lg:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors duration-200 touch-manipulation"
             aria-label="Toggle menu"
           >
             <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,7 +331,7 @@
           <button
             v-if="userRole === 'ADMIN_TENANT'"
             @click="showInfoModal = true"
-            class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
             title="Informasi Penting"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +347,7 @@
             <select
               v-model="selectedTenant"
               @change="handleTenantChange"
-              class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white min-w-[150px]"
+              class="px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white min-w-[150px]"
             >
               <option value="">Pilih Tenant</option>
               <option v-for="tenant in authStore.tenants" :key="tenant.id" :value="tenant.id">

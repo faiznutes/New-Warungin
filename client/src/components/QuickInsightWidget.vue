@@ -8,13 +8,13 @@
           v-if="userRole === 'ADMIN_TENANT'"
           v-model="selectedPeriod"
           @change="loadInsight"
-          class="text-xs px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white"
+          class="text-xs px-3 py-1.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white"
         >
           <option value="daily">Day</option>
           <option value="weekly">Week</option>
           <option value="monthly">Month</option>
         </select>
-        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">>
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
@@ -33,7 +33,7 @@
     <div v-else-if="insight" class="space-y-4">
       <!-- Today's Summary -->
       <div class="grid grid-cols-2 gap-4">
-        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
           <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Transactions</p>
           <p class="text-2xl font-bold text-gray-900">{{ insight.today.transactions }}</p>
           <div class="flex items-center mt-2">
@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
           <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Revenue</p>
           <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(insight.today.revenue) }}</p>
           <div class="flex items-center mt-2">
@@ -108,7 +108,7 @@
           <div 
             v-for="(product, index) in insight.today.topProducts.slice(0, 3)" 
             :key="product.id"
-            class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            class="flex items-center justify-between p-2 bg-gray-50 rounded-xl"
           >
             <div class="flex items-center flex-1 min-w-0">
               <span class="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">

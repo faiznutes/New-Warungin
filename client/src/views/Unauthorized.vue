@@ -3,7 +3,7 @@
     <div class="text-center max-w-2xl">
       <!-- Icon -->
       <div class="mb-6">
-        <div class="w-24 h-24 mx-auto bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center">
+        <div class="w-24 h-24 mx-auto bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center">
           <span class="material-symbols-outlined text-red-500 text-[48px]">block</span>
         </div>
       </div>
@@ -12,7 +12,7 @@
 
       <!-- Addon Required -->
       <div v-if="reason === 'addon'" class="mb-8">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
           <p class="text-lg text-slate-700 dark:text-slate-300 mb-4">
             This feature requires the <strong class="text-primary">{{ getAddonName(addonType) }}</strong> add-on to be active.
           </p>
@@ -21,7 +21,7 @@
           </p>
           <router-link
             to="/app/addons"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
           >
             <span class="material-symbols-outlined text-[20px]">extension</span>
             View Available Add-ons
@@ -31,13 +31,13 @@
 
       <!-- General Access Denied -->
       <div v-else class="mb-8">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-slate-100 dark:border-slate-700/50 mb-6">
           <p class="text-lg text-slate-600 dark:text-slate-400 mb-6">
             {{ route.query.message || 'You do not have permission to access this page.' }}
           </p>
           <router-link
             to="/app"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
           >
             <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             Back to Dashboard

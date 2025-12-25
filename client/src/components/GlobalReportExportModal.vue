@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6">
         <div class="flex items-center justify-between mb-4 sm:mb-6">
           <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Export Laporan Global</h3>
@@ -26,7 +26,7 @@
               <button
                 type="button"
                 @click="exportForm.period = 'daily'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
+                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
                 :class="exportForm.period === 'daily' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -36,7 +36,7 @@
               <button
                 type="button"
                 @click="exportForm.period = 'weekly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
+                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
                 :class="exportForm.period === 'weekly' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -46,7 +46,7 @@
               <button
                 type="button"
                 @click="exportForm.period = 'monthly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
+                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
                 :class="exportForm.period === 'monthly' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -56,7 +56,7 @@
               <button
                 type="button"
                 @click="exportForm.period = 'custom'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border-2 transition"
+                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
                 :class="exportForm.period === 'custom' 
                   ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
                   : 'border-gray-300 hover:border-primary-300'"
@@ -74,7 +74,7 @@
                 v-model="exportForm.startDate"
                 type="date"
                 required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -83,7 +83,7 @@
                 v-model="exportForm.endDate"
                 type="date"
                 required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
@@ -95,7 +95,7 @@
               <button
                 type="button"
                 @click="exportForm.template = 'clean'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'clean' || exportForm.template === 'minimalist'
                   ? 'border-gray-800 bg-gray-900 text-white font-semibold' 
                   : 'border-gray-300 hover:border-gray-400 bg-white'"
@@ -106,7 +106,7 @@
               <button
                 type="button"
                 @click="exportForm.template = 'contemporary'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'contemporary' || exportForm.template === 'modern' || exportForm.template === 'classic'
                   ? 'border-blue-600 bg-blue-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-blue-300 bg-white'"
@@ -117,7 +117,7 @@
               <button
                 type="button"
                 @click="exportForm.template = 'vibrant'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'vibrant' || exportForm.template === 'colorful'
                   ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-pink-600 text-white font-semibold' 
                   : 'border-gray-300 hover:border-purple-300 bg-white'"
@@ -128,7 +128,7 @@
               <button
                 type="button"
                 @click="exportForm.template = 'professional'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'professional' || exportForm.template === 'elegant'
                   ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold' 
                   : 'border-gray-300 hover:border-emerald-300 bg-white'"
@@ -139,7 +139,7 @@
               <button
                 type="button"
                 @click="exportForm.template = 'executive'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
                 :class="exportForm.template === 'executive'
                   ? 'border-amber-600 bg-amber-50 text-amber-900 font-semibold' 
                   : 'border-gray-300 hover:border-amber-300 bg-white'"
@@ -151,7 +151,7 @@
           </div>
 
           <!-- Summary -->
-          <div class="bg-gray-50 rounded-lg p-4">
+          <div class="bg-gray-50 rounded-xl p-4">
             <h4 class="font-semibold text-gray-900 mb-2">Ringkasan Export</h4>
             <div class="space-y-1 text-sm text-gray-600">
               <div class="flex justify-between">
@@ -178,14 +178,14 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm sm:text-base"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="exporting"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {{ exporting ? 'Mengekspor...' : 'Export PDF' }}
             </button>

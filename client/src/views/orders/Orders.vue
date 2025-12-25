@@ -11,13 +11,13 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Orders & Transactions</h1>
-        <p class="text-[#4c739a] dark:text-slate-400">Manage orders and transaction history.</p>
+        <h1 class="text-text-primary dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Orders & Transactions</h1>
+        <p class="text-text-secondary dark:text-slate-400">Manage orders and transaction history.</p>
       </div>
       <button
         v-if="canDeleteOrders && deletableOrdersCount > 0"
         @click="deleteAllOrders"
-        class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg transition-all font-medium text-sm shadow-lg shadow-red-500/30"
+        class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl transition-all font-bold text-sm shadow-lg shadow-red-500/30 hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
         <span>Delete All ({{ deletableOrdersCount }})</span>
@@ -25,54 +25,54 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
-      <div class="flex flex-col xl:flex-row gap-4 items-end">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+      <div class="flex flex-col xl:flex-row gap-6 items-end">
         <!-- Status Filter -->
         <div class="flex-1 w-full xl:w-auto">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
+          <label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Status</label>
           <div class="flex flex-wrap gap-2">
             <button
               @click="filters.status = ''"
               :class="!filters.status 
-                ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                ? 'bg-primary text-white shadow-lg shadow-primary/30 border-primary' 
+                : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              class="px-4 py-1.5 text-sm font-bold rounded-xl transition-all border shadow-sm"
             >
               All
             </button>
             <button
               @click="filters.status = 'PENDING'"
               :class="filters.status === 'PENDING' 
-                ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/30 border-yellow-500' 
+                : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              class="px-4 py-1.5 text-sm font-bold rounded-xl transition-all border shadow-sm"
             >
               Pending
             </button>
             <button
               @click="filters.status = 'PROCESSING'"
               :class="filters.status === 'PROCESSING' 
-                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 border-blue-500' 
+                : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              class="px-4 py-1.5 text-sm font-bold rounded-xl transition-all border shadow-sm"
             >
               Processing
             </button>
             <button
               @click="filters.status = 'COMPLETED'"
               :class="filters.status === 'COMPLETED' 
-                ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 border-green-500' 
+                : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              class="px-4 py-1.5 text-sm font-bold rounded-xl transition-all border shadow-sm"
             >
               Completed
             </button>
             <button
               @click="filters.status = 'CANCELLED'"
               :class="filters.status === 'CANCELLED' 
-                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' 
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all"
+                ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 border-red-500' 
+                : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
+              class="px-4 py-1.5 text-sm font-bold rounded-xl transition-all border shadow-sm"
             >
               Cancelled
             </button>
@@ -81,40 +81,40 @@
 
         <!-- Month Filter -->
         <div class="flex-none w-full xl:w-40">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Month</label>
+          <label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Month</label>
           <input
             v-model="filters.month"
             type="month"
             @change="handleMonthChange"
-            class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-text-primary dark:text-white"
           />
         </div>
 
         <!-- Date Range Filter -->
         <div class="flex-none w-full xl:w-56 min-w-0">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Range</label>
+          <label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Date Range</label>
           <div class="flex gap-2">
             <input
               v-model="filters.startDate"
               type="date"
               @change="loadOrders(1)"
-              class="flex-1 min-w-0 px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 min-w-0 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-text-primary dark:text-white"
             />
             <input
               v-model="filters.endDate"
               type="date"
               @change="loadOrders(1)"
-              class="flex-1 min-w-0 px-2 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 min-w-0 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-text-primary dark:text-white"
             />
           </div>
         </div>
 
         <!-- Search Bar -->
-        <div class="flex-none w-full xl:w-48 min-w-0">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Search Order</label>
+        <div class="flex-none w-full xl:w-60 min-w-0">
+          <label class="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Search Order</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="material-symbols-outlined text-slate-400 text-[18px]">search</span>
+              <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
             </div>
             <input
               v-model="filters.search"
@@ -122,7 +122,7 @@
               @input="handleSearchInput"
               type="text"
               placeholder="Order number..."
-              class="block w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="block w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-text-primary dark:text-white placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@
         <div
           v-for="order in orders"
           :key="order.id"
-          class="bg-white rounded-lg shadow-sm p-4 border border-gray-200"
+          class="bg-white rounded-xl shadow-sm p-4 border border-gray-200"
           :class="{ 'border-blue-500 bg-blue-50': isOrderSelected(order.id) }"
         >
           <div class="flex items-start justify-between mb-3">
@@ -218,7 +218,7 @@
       </div>
 
       <!-- Bulk Actions Bar -->
-      <div v-if="selectedOrders.length > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
+      <div v-if="selectedOrders.length > 0" class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <span class="text-sm font-medium text-blue-900">
             {{ selectedOrders.length }} pesanan dipilih
@@ -226,14 +226,14 @@
           <button
             v-if="canRefundOrders && selectedOrders.every(o => o.status === 'COMPLETED')"
             @click="bulkRefund"
-            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium"
+            class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition text-sm font-medium"
           >
             Refund ({{ selectedOrders.length }})
           </button>
           <button
             v-if="canDeleteOrders && canDeleteSelectedOrders"
             @click="bulkDelete"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
+            class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition text-sm font-medium"
           >
             Hapus ({{ selectedOrders.length }})
           </button>
@@ -247,58 +247,59 @@
       </div>
 
       <!-- Desktop Table View -->
-      <div class="hidden sm:block bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="hidden sm:block bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-700">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
+          <thead class="bg-slate-50 dark:bg-slate-900/50">
             <tr>
-              <th class="px-4 lg:px-6 py-3 text-left">
+              <th class="px-4 lg:px-6 py-4 text-left">
                 <input
                   type="checkbox"
                   :checked="selectedOrders.length === orders.length && orders.length > 0"
                   @change="toggleSelectAll"
-                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="rounded border-slate-300 text-primary focus:ring-primary"
                 />
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Order Number
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Customer
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Total
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Status
               </th>
-              <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-left text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Tanggal
               </th>
-              <th class="px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-4 lg:px-6 py-4 text-right text-xs font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wider">
                 Aksi
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="order in orders" :key="order.id" class="hover:bg-gray-50" :class="{ 'bg-blue-50': isOrderSelected(order.id) }">
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+            <tr v-for="order in orders" :key="order.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" :class="{ 'bg-blue-50/50': isOrderSelected(order.id) }">
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                 <input
                   type="checkbox"
                   :checked="isOrderSelected(order.id)"
                   @change="toggleOrderSelection(order)"
-                  class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  class="rounded border-slate-300 text-primary focus:ring-primary"
                 />
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ order.orderNumber }}</div>
+                <div class="text-sm font-bold text-[#0d141b] dark:text-white">{{ order.orderNumber }}</div>
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
+                <div class="text-sm font-medium text-[#0d141b] dark:text-white">
                   {{ order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in' }}
                 </div>
-                <div v-if="order.sendToKitchen" class="text-xs text-blue-600 mt-1">
-                  → Dapur
+                <div v-if="order.sendToKitchen" class="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">soup_kitchen</span>
+                  Dapur
                 </div>
               </td>
               <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
@@ -390,7 +391,7 @@
       <button
         @click="loadOrders(pagination.page - 1)"
         :disabled="pagination.page === 1"
-        class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        class="px-4 py-2 border border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
       >
         Sebelumnya
       </button>
@@ -400,7 +401,7 @@
       <button
         @click="loadOrders(pagination.page + 1)"
         :disabled="pagination.page === pagination.totalPages"
-        class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        class="px-4 py-2 border border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
       >
         Selanjutnya
       </button>
@@ -429,7 +430,7 @@
     @click.self="selectedOrder = null"
     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
         <div>
           <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Pesanan</h3>
@@ -537,7 +538,7 @@
         <div class="mt-6 flex flex-col sm:flex-row gap-3">
           <button
             @click="printReceipt(selectedOrder)"
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition"
           >
             Print Receipt
           </button>
@@ -545,7 +546,7 @@
           <button
             v-if="canEditOrders && (selectedOrder.status === 'PENDING' || selectedOrder.status === 'PROCESSING')"
             @click="editOrder(selectedOrder)"
-            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
           >
             Edit Pesanan
           </button>
@@ -553,7 +554,7 @@
           <button
             v-if="canCancelOrders && (selectedOrder.status === 'PENDING' || selectedOrder.status === 'PROCESSING')"
             @click="cancelOrder(selectedOrder.id)"
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
+            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition"
           >
             Batalkan Pesanan
           </button>
@@ -561,7 +562,7 @@
           <button
             v-if="canRefundOrders && selectedOrder.status === 'COMPLETED'"
             @click="refundOrder(selectedOrder.id)"
-            class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition"
           >
             Refund Pesanan
           </button>
@@ -569,13 +570,13 @@
           <button
             v-if="canDeleteOrders && (selectedOrder.status === 'CANCELLED' || selectedOrder.status === 'REFUNDED')"
             @click="deleteOrder(selectedOrder.id)"
-            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition"
           >
             Hapus Pesanan
           </button>
           <button
             @click="selectedOrder = null"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
           >
             Tutup
           </button>

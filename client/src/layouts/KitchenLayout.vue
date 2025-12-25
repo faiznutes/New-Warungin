@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-background-light dark:bg-background-dark font-display flex w-full">
     <!-- Sidebar - Clean White/Slate theme matching Design Contract -->
     <aside
-      class="w-72 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-800 flex flex-col h-full fixed z-50 shadow-soft transition-transform duration-300 ease-in-out"
+      class="w-72 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-800 flex flex-col h-full fixed z-50 shadow-sm transition-transform duration-300 ease-in-out"
       :class="{ 
         '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
         'translate-x-0': sidebarOpen || windowWidth >= 1024
@@ -15,8 +15,8 @@
             <span class="material-symbols-outlined text-2xl">restaurant</span>
           </div>
           <div class="flex flex-col">
-            <router-link to="/app/dashboard" class="text-lg font-bold text-slate-900 dark:text-white leading-tight hover:text-primary transition-colors">Warungin</router-link>
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wide uppercase">Kitchen Display</p>
+            <router-link to="/app/dashboard" class="text-lg font-bold text-[#0d141b] dark:text-white leading-tight hover:text-primary transition-colors">Warungin</router-link>
+            <p class="text-xs font-medium text-[#4c739a] dark:text-slate-400 tracking-wide uppercase">Kitchen Display</p>
           </div>
         </div>
 
@@ -25,7 +25,7 @@
           <router-link
             to="/app/dashboard"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/dashboard' ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/dashboard' ? 'bg-primary/10 text-primary font-medium' : 'text-[#4c739a] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#0d141b] dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/dashboard' }">dashboard</span>
@@ -35,7 +35,7 @@
           <router-link
             to="/app/orders/kitchen"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/orders/kitchen' ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/orders/kitchen' ? 'bg-primary/10 text-primary font-medium' : 'text-[#4c739a] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#0d141b] dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
@@ -53,13 +53,13 @@
               {{ userInitials }}
             </div>
             <div class="flex flex-col overflow-hidden flex-1">
-              <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ userName }}</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ tenantName }}</p>
+              <p class="text-sm font-semibold text-[#0d141b] dark:text-white truncate">{{ userName }}</p>
+              <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ tenantName }}</p>
             </div>
           </div>
           <button
             @click="handleLogout"
-            class="w-full mt-2 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+            class="w-full mt-2 px-4 py-2.5 text-sm text-[#4c739a] dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors font-medium flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-[20px]">logout</span>
             <span>Logout</span>
@@ -82,19 +82,19 @@
         <div class="flex items-center gap-4">
           <button
             @click="sidebarOpen = !sidebarOpen"
-            class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            class="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Toggle menu"
           >
-            <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">menu</span>
+            <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400">menu</span>
           </button>
           <div class="flex items-center gap-2 text-sm">
-            <router-link to="/app/dashboard" class="text-slate-500 hover:text-primary transition-colors">Home</router-link>
+            <router-link to="/app/dashboard" class="text-[#4c739a] hover:text-primary transition-colors">Home</router-link>
             <span class="text-slate-400">/</span>
-            <span class="text-slate-900 dark:text-white font-medium">{{ pageTitle }}</span>
+            <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-soft text-slate-600 hover:text-primary transition-colors border border-slate-100 dark:border-slate-700">
+          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-[#4c739a] hover:text-primary transition-colors border border-slate-100 dark:border-slate-700">
             <span class="material-symbols-outlined">notifications</span>
             <span v-if="pendingOrdersCount > 0" class="absolute top-2 right-2.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
           </button>

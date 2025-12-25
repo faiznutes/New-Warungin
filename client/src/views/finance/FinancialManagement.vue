@@ -1,22 +1,22 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Financial Management</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage cash flow, expenses, taxes, and bank reconciliation.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Financial Management</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Manage cash flow, expenses, taxes, and bank reconciliation.</p>
       </div>
       <div class="flex items-center gap-3">
         <button
           @click="showCashFlowModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all"
+          class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           <span>Record Cash Flow</span>
         </button>
         <button
           @click="showExpenseModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-rose-500/30 transition-all"
+          class="flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-rose-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">remove</span>
           <span>Record Expense</span>
@@ -31,7 +31,7 @@
         :key="tab"
         @click="activeTab = tab"
         class="px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap capitalize"
-        :class="activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'"
+        :class="activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b] dark:hover:text-white'"
       >
         {{ tab.replace(/([A-Z])/g, ' $1').trim() }}
       </button>
@@ -41,20 +41,20 @@
     <div v-if="activeTab === 'cashflow'" class="space-y-6 animate-fade-in">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
-               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Income</p>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Income</p>
                <p class="text-[10px] text-slate-400">Incoming funds</p>
              </div>
              <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
                <span class="material-symbols-outlined text-[24px]">trending_up</span>
              </div>
           </div>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Expenses</p>
@@ -67,7 +67,7 @@
           <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Cash Flow</p>
@@ -90,18 +90,18 @@
              <input
               v-model="dateRange.startDate"
               type="date"
-              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
             <span class="text-[#4c739a] dark:text-slate-400 text-sm">s/d</span>
             <input
               v-model="dateRange.endDate"
               type="date"
-              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <button
             @click="loadCashFlowSummary"
-            class="w-full sm:w-auto px-6 py-2 bg-[#137fec] text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
+            class="w-full sm:w-auto px-6 py-2 bg-[#137fec] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
           >
             Filter
           </button>
@@ -109,13 +109,13 @@
       </div>
 
       <!-- Category Breakdown -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">By Category</h3>
         <div class="space-y-3">
           <div
             v-for="(amount, category) in cashFlowSummary.byCategory"
             :key="category"
-            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-[#137fec]/30 transition-all"
+            class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-[#137fec]/30 transition-all"
           >
             <span class="font-bold text-[#0d141b] dark:text-white">{{ category }}</span>
             <span class="text-[#4c739a] font-mono">{{ formatCurrency(amount) }}</span>
@@ -129,13 +129,13 @@
 
     <!-- Expenses Tab -->
     <div v-if="activeTab === 'expenses'" class="space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Expenses by Category</h3>
         <div class="space-y-3">
           <div
             v-for="(amount, category) in expensesByCategory"
             :key="category"
-            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-red-500/30 transition-all"
+            class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-red-500/30 transition-all"
           >
             <span class="font-bold text-[#0d141b] dark:text-white">{{ category }}</span>
             <span class="text-red-600 font-mono font-medium">{{ formatCurrency(amount) }}</span>
@@ -149,7 +149,7 @@
 
     <!-- Tax Tab -->
     <div v-if="activeTab === 'tax'" class="space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 max-w-2xl mx-auto">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 max-w-2xl mx-auto">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6">Calculate Tax</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div>
@@ -172,19 +172,19 @@
 
         <div v-if="taxCalculation" class="border-t border-slate-100 dark:border-slate-700 pt-6 space-y-4">
           <div class="grid grid-cols-2 gap-6">
-            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+            <div class="p-3 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl">
               <p class="text-xs text-[#4c739a] mb-1">Total Revenue</p>
               <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.totalRevenue) }}</p>
             </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+            <div class="p-3 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl">
               <p class="text-xs text-[#4c739a] mb-1">Total Expenses</p>
               <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.totalExpenses) }}</p>
             </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+            <div class="p-3 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl">
               <p class="text-xs text-[#4c739a] mb-1">Taxable Income</p>
               <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(taxCalculation.taxableIncome) }}</p>
             </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+            <div class="p-3 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl">
               <p class="text-xs text-[#4c739a] mb-1">Tax Rate</p>
               <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
             </div>
@@ -199,7 +199,7 @@
 
     <!-- Forecast Tab -->
     <div v-if="activeTab === 'forecast'" class="space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Financial Forecast</h3>
         <div class="flex items-end gap-4 mb-8">
           <div class="flex-1 max-w-xs">
@@ -229,7 +229,7 @@
             <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500 rounded-l-xl"></div>
             <div class="flex items-center justify-between mb-3 pl-2">
               <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ item.month }}</h4>
-              <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-lg">Conf: {{ (item.confidence * 100).toFixed(0) }}%</span>
+              <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded-xl">Conf: {{ (item.confidence * 100).toFixed(0) }}%</span>
             </div>
             <div class="grid grid-cols-1 gap-2 pl-2">
               <div class="flex justify-between items-center text-sm">
@@ -254,12 +254,12 @@
 
     <!-- Bank Reconciliation Tab -->
     <div v-if="activeTab === 'reconciliation'" class="space-y-6 animate-fade-in">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Bank Reconciliation</h3>
             <button
               @click="showReconciliationModal = true"
-              class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+              class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               New Reconciliation
             </button>
@@ -275,7 +275,7 @@
             <div class="flex items-center justify-between mb-4 pl-2">
               <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ recon.bankAccount }}</h4>
               <span
-                class="px-2.5 py-1 text-xs font-bold rounded-lg uppercase tracking-wider"
+                class="px-2.5 py-1 text-xs font-bold rounded-xl uppercase tracking-wider"
                 :class="recon.reconciled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
               >
                 {{ recon.reconciled ? 'Reconciled' : 'Pending' }}
@@ -299,7 +299,7 @@
             </div>
           </div>
         </div>
-        <div v-else class="text-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+        <div v-else class="text-center py-10 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
              <div class="bg-white dark:bg-slate-800 p-3 rounded-full shadow-sm mb-3 inline-block">
                 <span class="material-symbols-outlined text-slate-400 text-2xl">account_balance</span>
              </div>
@@ -571,25 +571,25 @@
                     >
                        <div class="col-span-3">
                         <label class="text-[10px] text-slate-400 mb-1 block">Date</label>
-                        <input v-model="tx.date" type="date" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                        <input v-model="tx.date" type="date" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl text-xs" />
                        </div>
                        <div class="col-span-4">
                         <label class="text-[10px] text-slate-400 mb-1 block">Desc</label>
-                        <input v-model="tx.description" type="text" placeholder="Description" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                        <input v-model="tx.description" type="text" placeholder="Description" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl text-xs" />
                        </div>
                        <div class="col-span-2">
                         <label class="text-[10px] text-slate-400 mb-1 block">Amount</label>
-                        <input v-model.number="tx.amount" type="number" step="0.01" placeholder="Amount" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs" />
+                        <input v-model.number="tx.amount" type="number" step="0.01" placeholder="Amount" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl text-xs" />
                        </div>
                        <div class="col-span-2">
                         <label class="text-[10px] text-slate-400 mb-1 block">Type</label>
-                        <select v-model="tx.type" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-xs">
+                        <select v-model="tx.type" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl text-xs">
                            <option value="DEPOSIT">Deposit</option>
                            <option value="WITHDRAWAL">Withdrawal</option>
                         </select>
                        </div>
                        <div class="col-span-1 text-right">
-                         <button type="button" @click="removeTransaction(index)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                         <button type="button" @click="removeTransaction(index)" class="p-2 text-red-500 hover:bg-red-50 rounded-xl">
                            <span class="material-symbols-outlined text-[16px]">close</span>
                          </button>
                        </div>
@@ -597,7 +597,7 @@
                     <button
                       type="button"
                       @click="addTransaction"
-                      class="px-4 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition"
+                      class="px-4 py-2 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition"
                     >
                       + Add Transaction
                     </button>

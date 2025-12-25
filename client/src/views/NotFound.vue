@@ -4,7 +4,7 @@
       <div class="max-w-2xl mx-auto text-center">
         <!-- 404 Icon -->
         <div class="mb-6">
-          <div class="w-32 h-32 mx-auto bg-primary/10 rounded-3xl flex items-center justify-center">
+          <div class="w-32 h-32 mx-auto bg-primary/10 rounded-xl flex items-center justify-center">
             <span class="material-symbols-outlined text-primary text-[64px]">search_off</span>
           </div>
         </div>
@@ -16,7 +16,7 @@
         </p>
         
         <!-- Internal Links Section -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-8 mb-8 border border-slate-100 dark:border-slate-700/50">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-8 mb-8 border border-slate-100 dark:border-slate-700/50">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Popular Pages</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <router-link

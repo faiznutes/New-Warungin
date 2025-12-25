@@ -6,7 +6,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-gray-900">Edit Pengguna</h3>
@@ -27,7 +27,7 @@
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Masukkan nama pengguna"
                 />
               </div>
@@ -38,7 +38,7 @@
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="email@example.com"
                 />
               </div>
@@ -49,7 +49,7 @@
                   <select
                     v-model="form.role"
                     required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="ADMIN_TENANT">Admin</option>
                     <option v-if="hasSupervisorRole" value="SUPERVISOR">Supervisor</option>
@@ -65,7 +65,7 @@
                   <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                   <select
                     v-model="form.isActive"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option :value="true">Aktif</option>
                     <option :value="false">Tidak Aktif</option>
@@ -78,10 +78,10 @@
                 <input
                   v-model="form.password"
                   type="password"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Kosongkan jika tidak ingin mengubah password"
                 />
-                <div v-if="authStore.isSuperAdmin && props.user" class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div v-if="authStore.isSuperAdmin && props.user" class="mt-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                   <p class="text-xs font-medium text-gray-700 mb-2">
                     Password aktif saat ini:
                   </p>
@@ -115,7 +115,7 @@
                 <h4 class="text-lg font-semibold text-gray-900 mb-4">Hak Akses & Fitur</h4>
                 <div class="space-y-3">
                   <!-- Order Permissions -->
-                  <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="bg-gray-50 rounded-xl p-4">
                     <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Pesanan</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
@@ -154,7 +154,7 @@
                   </div>
 
                   <!-- Report Permissions -->
-                  <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="bg-gray-50 rounded-xl p-4">
                     <h5 class="text-sm font-semibold text-gray-700 mb-3">Laporan</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
@@ -185,7 +185,7 @@
                   </div>
 
                   <!-- Product & Customer Permissions (for Supervisor and Cashier) -->
-                  <div v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'" class="bg-gray-50 rounded-lg p-4">
+                  <div v-if="form.role === 'SUPERVISOR' || form.role === 'CASHIER'" class="bg-gray-50 rounded-xl p-4">
                     <h5 class="text-sm font-semibold text-gray-700 mb-3">Manajemen Data</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
@@ -208,7 +208,7 @@
                   </div>
 
                   <!-- Store Access (for Supervisor) -->
-                  <div v-if="form.role === 'SUPERVISOR'" class="bg-gray-50 rounded-lg p-4 mt-4">
+                  <div v-if="form.role === 'SUPERVISOR'" class="bg-gray-50 rounded-xl p-4 mt-4">
                     <h5 class="text-sm font-semibold text-gray-700 mb-3">Akses Store</h5>
                     <div class="space-y-2">
                       <label class="flex items-center space-x-2 cursor-pointer">
@@ -243,7 +243,7 @@
                   </div>
 
                   <!-- Store Assignment (for Cashier and Kitchen) -->
-                  <div v-if="isCashierOrKitchen" class="bg-gray-50 rounded-lg p-4 mt-4">
+                  <div v-if="isCashierOrKitchen" class="bg-gray-50 rounded-xl p-4 mt-4">
                     <h5 class="text-sm font-semibold text-gray-700 mb-3">Penugasan Store</h5>
                     <div class="space-y-2">
                       <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -254,7 +254,7 @@
                         v-else
                         v-model="permissions.assignedStoreId"
                         required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
                       >
                         <option value="">-- Pilih Store --</option>
                         <option
@@ -278,14 +278,14 @@
                 <button
                   type="button"
                   @click="$emit('close')"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {{ saving ? 'Menyimpan...' : 'Simpan' }}
                 </button>

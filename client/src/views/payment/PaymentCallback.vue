@@ -1,38 +1,38 @@
 <template>
   <div class="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-card p-8 text-center">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-sm p-8 text-center">
       <!-- Success State -->
       <div v-if="status === 'success'" class="space-y-4">
         <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
           <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
         </div>
-        <h1 class="text-2xl font-bold text-slate-900">Payment Successful!</h1>
-        <p class="text-slate-600">
+        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Successful!</h1>
+        <p class="text-[#4c739a]">
           Your payment has been successfully processed. Your addon or subscription will be activated shortly.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
-          <p class="text-sm text-slate-500">Order ID:</p>
-          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
+          <p class="text-sm text-[#4c739a]">Order ID:</p>
+          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
         </div>
-        <div v-if="activationStatus === 'checking'" class="mt-4 p-3 bg-blue-50 rounded-lg">
+        <div v-if="activationStatus === 'checking'" class="mt-4 p-3 bg-blue-50 rounded-xl">
           <div class="flex items-center justify-center gap-2">
             <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             <p class="text-sm text-blue-600">Verifying and activating addon/subscription...</p>
           </div>
         </div>
-        <div v-else-if="activationStatus === 'success'" class="mt-4 p-3 bg-green-50 rounded-lg">
+        <div v-else-if="activationStatus === 'success'" class="mt-4 p-3 bg-green-50 rounded-xl">
           <p class="text-sm text-green-600">✅ Addon/subscription activated successfully!</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
           >
             {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
           >
             Go to Dashboard
           </button>
@@ -44,24 +44,24 @@
         <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
           <span class="material-symbols-outlined text-red-600 text-3xl">cancel</span>
         </div>
-        <h1 class="text-2xl font-bold text-slate-900">Payment Failed</h1>
-        <p class="text-slate-600">
+        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Failed</h1>
+        <p class="text-[#4c739a]">
           Sorry, your payment could not be processed. Please try again or contact support if the problem persists.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
-          <p class="text-sm text-slate-500">Order ID:</p>
-          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
+          <p class="text-sm text-[#4c739a]">Order ID:</p>
+          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
           >
             Try Again
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
           >
             Go to Dashboard
           </button>
@@ -73,24 +73,24 @@
         <div class="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
           <span class="material-symbols-outlined text-yellow-600 text-3xl animate-spin">sync</span>
         </div>
-        <h1 class="text-2xl font-bold text-slate-900">Payment Pending</h1>
-        <p class="text-slate-600">
+        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Pending</h1>
+        <p class="text-[#4c739a]">
           Your payment is being processed. We will send a notification once the payment is confirmed.
         </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-lg">
-          <p class="text-sm text-slate-500">Order ID:</p>
-          <p class="text-sm font-mono text-slate-700">{{ orderId }}</p>
+        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
+          <p class="text-sm text-[#4c739a]">Order ID:</p>
+          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
         </div>
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
           >
             {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition"
+            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
           >
             Go to Dashboard
           </button>

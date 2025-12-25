@@ -9,7 +9,7 @@
       <button
         @click="loadSuggestions"
         :disabled="loading"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm disabled:opacity-50"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm disabled:opacity-50"
       >
         <span v-if="loading" class="flex items-center gap-2">
           <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -43,7 +43,7 @@
           :key="urgencyOption.value"
           @click="selectedUrgency = urgencyOption.value"
           :class="[
-            'px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5',
+            'px-4 py-2 rounded-xl font-medium transition flex items-center gap-1.5',
             selectedUrgency === urgencyOption.value
               ? urgencyOption.class
               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -75,7 +75,7 @@
             </div>
             <button
               @click="goToProduct(suggestion.productId)"
-              class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1 font-medium"
+              class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1 font-medium"
             >
               <span class="material-symbols-outlined text-[16px]">visibility</span>
               View Product
@@ -83,21 +83,21 @@
           </div>
 
           <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+            <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Current Stock</p>
               <p class="text-xl font-bold" :class="suggestion.currentStock === 0 ? 'text-red-600' : 'text-slate-900 dark:text-white'">
                 {{ suggestion.currentStock }}
               </p>
             </div>
-            <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+            <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Min Stock</p>
               <p class="text-xl font-bold text-slate-900 dark:text-white">{{ suggestion.minStock }}</p>
             </div>
-            <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+            <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Avg Sales/Day</p>
               <p class="text-xl font-bold text-slate-900 dark:text-white">{{ suggestion.avgDailySales.toFixed(2) }}</p>
             </div>
-            <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+            <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Days Until Empty</p>
               <p class="text-xl font-bold" :class="suggestion.daysLeft < 1 ? 'text-red-600' : 'text-yellow-600'">
                 {{ formatDaysLeft(suggestion.daysLeft) }}
@@ -114,7 +114,7 @@
               </div>
               <button
                 @click="applySuggestion(suggestion)"
-                class="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2"
+                class="px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
                 Apply

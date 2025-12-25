@@ -1,30 +1,30 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Profit & Loss Report</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Analyze your business finances in detail.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Profit & Loss Report</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Analyze your business finances in detail.</p>
       </div>
       <div class="flex flex-col sm:flex-row items-center gap-3">
-        <div class="flex items-center gap-2 p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+        <div class="flex items-center gap-2 p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
           <input
             type="date"
             v-model="startDate"
             @change="loadProfitLoss"
-            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-[#0d141b] dark:text-white"
           />
           <span class="text-slate-500 text-xs font-medium px-1">to</span>
           <input
             type="date"
             v-model="endDate"
             @change="loadProfitLoss"
-            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+            class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-[#0d141b] dark:text-white"
           />
         </div>
         <button
           @click="exportReport"
-          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/30 hover:bg-primary-hover transition"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">download</span>
           <span>Export PDF</span>
@@ -33,13 +33,13 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium text-sm">Loading report...</div>
+      <div class="text-[#4c739a] font-medium text-sm">Loading report...</div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="p-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-2xl">
+    <div v-else-if="error" class="p-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl">
       <div class="flex items-start gap-4">
         <span class="material-symbols-outlined text-red-500 text-3xl">error_outline</span>
         <div>
@@ -60,20 +60,20 @@
     <div v-else-if="profitLoss" class="space-y-6 animate-fade-in">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
-               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Revenue</p>
+               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Revenue</p>
                <p class="text-[10px] text-slate-400">Total Income</p>
              </div>
              <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
                <span class="material-symbols-outlined text-[24px]">payments</span>
              </div>
           </div>
-          <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(profitLoss.revenue) }}</p>
+          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.revenue) }}</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">COGS</p>
@@ -86,7 +86,7 @@
           <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.cogs) }}</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Gross Profit</p>
@@ -103,7 +103,7 @@
           </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-violet-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-violet-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Profit</p>
@@ -122,7 +122,7 @@
       </div>
 
       <!-- Detailed Report -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Detail Laporan Laba Rugi</h3>
         </div>
@@ -160,7 +160,7 @@
           </div>
 
           <!-- Gross Profit -->
-          <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+          <div class="p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center mb-1">
               <span class="text-base font-extrabold text-[#0d141b] dark:text-white">Gross Profit</span>
               <span class="text-lg font-extrabold text-[#137fec]">{{ formatCurrency(profitLoss.grossProfit) }}</span>
@@ -180,7 +180,7 @@
           </div>
 
           <!-- Net Profit -->
-          <div class="p-6 bg-[#137fec]/5 dark:bg-[#137fec]/10 rounded-2xl border-2 border-[#137fec]/20">
+          <div class="p-6 bg-[#137fec]/5 dark:bg-[#137fec]/10 rounded-xl border-2 border-[#137fec]/20">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xl font-extrabold text-[#0d141b] dark:text-white">Net Profit</span>
               <span 

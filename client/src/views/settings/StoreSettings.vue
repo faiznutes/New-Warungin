@@ -9,62 +9,62 @@
     <!-- Store Information Card -->
     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
       <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-lg">
+        <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-xl">
           <span class="material-symbols-outlined">store</span>
         </div>
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Store Information</h3>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Store Name</label>
+          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Store Name</label>
           <input
             v-model="storeInfo.name"
             type="text"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
           />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phone</label>
+          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Phone</label>
           <input
             v-model="storeInfo.phone"
             type="tel"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
           />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Email</label>
           <input
             v-model="storeInfo.email"
             type="email"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
           />
         </div>
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Address</label>
+          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Address</label>
           <textarea
             v-model="storeInfo.address"
             rows="3"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
           ></textarea>
         </div>
       </div>
     </div>
 
     <!-- Feature Toggles Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+        <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
           <span class="material-symbols-outlined">toggle_on</span>
         </div>
-        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Additional Features</h3>
+        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Additional Features</h3>
       </div>
       <div class="space-y-4">
-        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+        <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
           <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-slate-400">touch_app</span>
+            <span class="material-symbols-outlined text-[#4c739a]">touch_app</span>
             <div>
-              <label class="text-sm font-medium text-slate-900 dark:text-white">Simple POS Mode</label>
-              <p class="text-xs text-slate-500">Enable simplified cashier mode with large buttons</p>
+              <label class="text-sm font-medium text-[#0d141b] dark:text-white">Simple POS Mode</label>
+              <p class="text-xs text-[#4c739a]">Enable simplified cashier mode with large buttons</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -77,12 +77,12 @@
             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
           </label>
         </div>
-        <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+        <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
           <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-slate-400">mail</span>
+            <span class="material-symbols-outlined text-[#4c739a]">mail</span>
             <div>
-              <label class="text-sm font-medium text-slate-900 dark:text-white">Daily Email Backup</label>
-              <p class="text-xs text-slate-500">Send daily reports automatically via email</p>
+              <label class="text-sm font-medium text-[#0d141b] dark:text-white">Daily Email Backup</label>
+              <p class="text-xs text-[#4c739a]">Send daily reports automatically via email</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -99,26 +99,26 @@
     </div>
 
     <!-- Receipt Template Management Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
         <div class="flex items-center gap-3">
-          <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+          <div class="p-2 bg-green-50 text-green-600 rounded-xl">
             <span class="material-symbols-outlined">receipt_long</span>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Receipt Templates</h3>
-            <p class="text-sm text-slate-500">Manage receipt templates for different paper sizes</p>
+            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Receipt Templates</h3>
+            <p class="text-sm text-[#4c739a]">Manage receipt templates for different paper sizes</p>
           </div>
         </div>
         <button
           @click="showTemplateManager = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">settings</span>
           <span>Manage Templates</span>
         </button>
       </div>
-      <div class="text-sm text-slate-500 space-y-1 pl-11">
+      <div class="text-sm text-[#4c739a] space-y-1 pl-11">
         <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Templates for A4, Thermal 58mm, or Thermal 80mm</p>
         <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Customize header, footer, and displayed fields</p>
         <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Support for Browser, Thermal, and Bluetooth printing</p>
@@ -129,7 +129,7 @@
     <div class="flex justify-end">
       <button
         @click="saveSettings"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
       >
         <span class="material-symbols-outlined text-[20px]">save</span>
         Save Settings

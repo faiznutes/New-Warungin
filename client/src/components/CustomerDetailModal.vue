@@ -6,7 +6,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-gray-900">Detail Pelanggan</h3>
@@ -37,11 +37,11 @@
 
               <!-- Information Grid -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 rounded-lg p-4">
+                <div class="bg-gray-50 rounded-xl p-4">
                   <p class="text-sm text-gray-600 mb-1">Total Pesanan</p>
                   <p class="text-2xl font-bold text-gray-900">{{ customer.totalOrders || 0 }}</p>
                 </div>
-                <div class="bg-gray-50 rounded-lg p-4">
+                <div class="bg-gray-50 rounded-xl p-4">
                   <p class="text-sm text-gray-600 mb-1">Total Belanja</p>
                   <p class="text-2xl font-bold text-primary-600">{{ formatCurrency(customer.totalSpent || 0) }}</p>
                 </div>
@@ -57,13 +57,13 @@
               <div class="flex space-x-3 pt-4 border-t border-gray-200">
                 <button
                   @click="$emit('edit', customer)"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition"
                 >
                   Edit
                 </button>
                 <button
                   @click="$emit('close')"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Tutup
                 </button>

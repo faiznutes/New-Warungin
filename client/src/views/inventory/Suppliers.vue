@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Supplier</span>
@@ -24,14 +24,14 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search suppliers..."
-            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             @input="loadSuppliers"
           />
         </div>
         <select
           v-model="isActiveFilter"
           @change="loadSuppliers"
-          class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="">All Status</option>
           <option value="true">Active</option>
@@ -52,7 +52,7 @@
       <p class="text-slate-500 text-center max-w-md mb-4">Add your first supplier to start creating purchase orders.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Add First Supplier
@@ -76,7 +76,7 @@
             <tr v-for="supplier in suppliers" :key="supplier.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-primary text-[20px]">local_shipping</span>
                   </div>
                   <div>
@@ -111,14 +111,14 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="editSupplier(supplier)"
-                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">edit</span>
                     Edit
                   </button>
                   <button
                     @click="deleteSupplier(supplier)"
-                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">delete</span>
                     Delete
@@ -139,7 +139,7 @@
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
+            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
           >
             <span class="material-symbols-outlined text-[18px]">chevron_left</span>
             Previous
@@ -147,7 +147,7 @@
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
+            class="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-1 font-medium text-sm"
           >
             Next
             <span class="material-symbols-outlined text-[18px]">chevron_right</span>
@@ -167,7 +167,7 @@
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                <div class="p-2 bg-primary/10 text-primary rounded-xl">
                   <span class="material-symbols-outlined">local_shipping</span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">
@@ -189,7 +189,7 @@
                   v-model="supplierForm.name"
                   type="text"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
 
@@ -199,7 +199,7 @@
                   <input
                     v-model="supplierForm.email"
                     type="email"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
                 <div>
@@ -207,7 +207,7 @@
                   <input
                     v-model="supplierForm.phone"
                     type="text"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
               </div>
@@ -217,7 +217,7 @@
                 <input
                   v-model="supplierForm.contactPerson"
                   type="text"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
 
@@ -226,7 +226,7 @@
                 <textarea
                   v-model="supplierForm.address"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                 ></textarea>
               </div>
 
@@ -235,11 +235,11 @@
                 <textarea
                   v-model="supplierForm.notes"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                 ></textarea>
               </div>
 
-              <div v-if="editingSupplier" class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div v-if="editingSupplier" class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
                 <input
                   v-model="supplierForm.isActive"
                   type="checkbox"
@@ -253,14 +253,14 @@
                 <button
                   type="button"
                   @click="closeModal"
-                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
                 >
                   {{ saving ? 'Saving...' : editingSupplier ? 'Update' : 'Save' }}
                 </button>

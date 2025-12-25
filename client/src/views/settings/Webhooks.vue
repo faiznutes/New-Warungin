@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Webhook</span>
@@ -28,7 +28,7 @@
         <p class="text-[#4c739a] mb-4">No webhooks created yet</p>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 mx-auto bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 mx-auto bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Create First Webhook
@@ -39,19 +39,19 @@
       <div
         v-for="webhook in webhooks"
         :key="webhook.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-lg transition group"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-lg transition group"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-3">
-              <div class="p-2 bg-primary/10 text-primary rounded-lg">
+              <div class="p-2 bg-primary/10 text-primary rounded-xl">
                 <span class="material-symbols-outlined">webhook</span>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white break-all">{{ webhook.url }}</h3>
+                <h3 class="text-sm font-bold text-[#0d141b] dark:text-white break-all">{{ webhook.url }}</h3>
                 <span
                   class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1"
-                  :class="webhook.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
+                  :class="webhook.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-[#4c739a]'"
                 >
                   <span class="w-1.5 h-1.5 rounded-full" :class="webhook.isActive ? 'bg-green-500' : 'bg-slate-400'"></span>
                   {{ webhook.isActive ? 'Active' : 'Inactive' }}
@@ -61,19 +61,19 @@
 
             <div class="space-y-3 text-sm">
               <div>
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Events</p>
+                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1.5">Events</p>
                 <div class="flex flex-wrap gap-1.5">
                   <span
                     v-for="event in webhook.events"
                     :key="event"
-                    class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium"
+                    class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl text-xs font-medium"
                   >
                     {{ event }}
                   </span>
                 </div>
               </div>
 
-              <div class="flex gap-4 text-slate-500 text-xs">
+              <div class="flex gap-4 text-[#4c739a] text-xs">
                 <span class="flex items-center gap-1">
                   <span class="material-symbols-outlined text-[14px]">replay</span>
                   Retries: {{ webhook.retryCount || 3 }}
@@ -93,28 +93,28 @@
           <div class="flex flex-wrap gap-2 ml-4">
             <router-link
               :to="`/app/settings/webhooks/tester?webhookId=${webhook.id}`"
-              class="px-3 py-1.5 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition text-xs font-medium flex items-center gap-1"
+              class="px-3 py-1.5 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition text-xs font-medium flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">science</span>
               Tester
             </router-link>
             <button
               @click="testWebhook(webhook.id)"
-              class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition text-xs font-medium flex items-center gap-1"
+              class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition text-xs font-medium flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">send</span>
               Test
             </button>
             <button
               @click="editWebhook(webhook)"
-              class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-xs font-medium flex items-center gap-1"
+              class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition text-xs font-medium flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">edit</span>
               Edit
             </button>
             <button
               @click="deleteWebhook(webhook.id)"
-              class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition text-xs font-medium flex items-center gap-1"
+              class="px-3 py-1.5 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition text-xs font-medium flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">delete</span>
               Delete
@@ -134,33 +134,33 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
           <div class="p-6">
             <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-primary/10 text-primary rounded-lg">
+              <div class="p-2 bg-primary/10 text-primary rounded-xl">
                 <span class="material-symbols-outlined">webhook</span>
               </div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">
                 {{ editingWebhook ? 'Edit Webhook' : 'Create New Webhook' }}
               </h3>
             </div>
 
             <form @submit.prevent="saveWebhook" class="space-y-4">
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">URL *</label>
+                <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">URL *</label>
                 <input
                   v-model="webhookForm.url"
                   type="url"
                   required
                   placeholder="https://example.com/webhook"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
                 />
               </div>
 
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Events *</label>
+                <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Events *</label>
                 <div class="grid grid-cols-2 gap-2">
                   <label
                     v-for="event in availableEvents"
                     :key="event"
-                    class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer transition"
+                    class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-[#f8fafc] dark:hover:bg-slate-900 cursor-pointer transition"
                   >
                     <input
                       type="checkbox"
@@ -168,7 +168,7 @@
                       v-model="webhookForm.events"
                       class="rounded border-slate-300 text-primary focus:ring-primary"
                     />
-                    <span class="text-sm text-slate-700 dark:text-slate-300">{{ event }}</span>
+                    <span class="text-sm text-[#0d141b] dark:text-slate-300">{{ event }}</span>
                   </label>
                 </div>
                 <p v-if="webhookForm.events.length === 0" class="text-sm text-red-600 mt-1">
@@ -178,51 +178,51 @@
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Retry Count</label>
+                  <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Retry Count</label>
                   <input
                     v-model.number="webhookForm.retryCount"
                     type="number"
                     min="1"
                     max="10"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Timeout (ms)</label>
+                  <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Timeout (ms)</label>
                   <input
                     v-model.number="webhookForm.timeout"
                     type="number"
                     min="1000"
                     max="30000"
                     step="1000"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
                   />
                 </div>
               </div>
 
-              <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <div class="flex items-center gap-3 p-3 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
                 <input
                   type="checkbox"
                   v-model="webhookForm.isActive"
                   id="isActive"
                   class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
                 />
-                <label for="isActive" class="text-sm font-medium text-slate-700 dark:text-slate-300">Active</label>
+                <label for="isActive" class="text-sm font-medium text-[#0d141b] dark:text-slate-300">Active</label>
               </div>
 
               <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button
                   type="button"
                   @click="closeModal"
-                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                  class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   :disabled="saving || webhookForm.events.length === 0"
-                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
                 >
                   {{ saving ? 'Saving...' : 'Save' }}
                 </button>

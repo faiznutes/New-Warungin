@@ -295,7 +295,7 @@
                   <button
                     type="button"
                     @click="addTransferItem"
-                    class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition"
+                    class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition"
                   >
                     + Add Product
                   </button>
@@ -311,7 +311,7 @@
                       <select
                         v-model="item.productId"
                         required
-                        class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
+                        class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
                       >
                         <option value="">Select Product</option>
                         <option v-for="product in products" :key="product.id" :value="product.id">
@@ -327,14 +327,14 @@
                         min="1"
                         required
                         placeholder="Qty"
-                        class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
+                        class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-white"
                       />
                     </div>
                     <div class="col-span-1 flex items-center justify-end pb-1">
                       <button
                         type="button"
                         @click="removeTransferItem(index)"
-                        class="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-lg transition"
+                        class="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-xl transition"
                       >
                         <span class="material-symbols-outlined text-[18px]">close</span>
                       </button>

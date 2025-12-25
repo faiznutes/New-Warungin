@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Email Scheduler</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Schedule email campaign delivery</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Email Scheduler</h1>
+        <p class="text-[#4c739a] dark:text-[#0d141b]">Schedule email campaign delivery</p>
       </div>
       <button
         @click="showScheduleModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Schedule Email</span>
@@ -16,11 +16,11 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4">
       <select
         v-model="statusFilter"
         @change="loadSchedules"
-        class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
       >
         <option value="">All Status</option>
         <option value="PENDING">Pending</option>
@@ -36,13 +36,13 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="schedules.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="schedules.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">schedule_send</span>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Scheduled Emails</h3>
-      <p class="text-slate-500 text-center max-w-md mb-4">Schedule your first email to automate campaigns.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Scheduled Emails</h3>
+      <p class="text-[#4c739a] text-center max-w-md mb-4">Schedule your first email to automate campaigns.</p>
       <button
         @click="showScheduleModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Schedule First Email
@@ -54,7 +54,7 @@
       <div
         v-for="schedule in schedules"
         :key="schedule.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-l-4 transition-all hover:shadow-lg"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 transition-all hover:shadow-lg"
         :class="getStatusBorderClass(schedule.status)"
       >
         <div class="flex items-start justify-between">
@@ -114,7 +114,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">
@@ -137,7 +137,7 @@
                 v-model="scheduleForm.campaignId"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Campaign ID"
               />
             </div>
@@ -148,7 +148,7 @@
                 v-model="scheduleForm.subject"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Email subject"
               />
             </div>
@@ -159,7 +159,7 @@
                 v-model="scheduleForm.content"
                 required
                 rows="6"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Email content"
               ></textarea>
             </div>
@@ -169,7 +169,7 @@
               <select
                 v-model="scheduleForm.target"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="ALL">All Customers</option>
                 <option value="MEMBERS">Members Only</option>
@@ -184,7 +184,7 @@
                 v-model="scheduleForm.scheduledAt"
                 type="datetime-local"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -193,7 +193,7 @@
               <input
                 v-model="scheduleForm.templateId"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Template ID"
               />
             </div>
@@ -202,14 +202,14 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition disabled:opacity-50"
               >
                 {{ saving ? 'Menyimpan...' : editingSchedule ? 'Update' : 'Jadwalkan' }}
               </button>

@@ -135,7 +135,7 @@ const router = createRouter({
         {
           path: 'tenants/support',
           name: 'tenant-support',
-          component: () => import('../views/tenants/TenantSupport.vue'),
+          component: () => import('../views/tenants/SupportTickets.vue'),
           meta: { roles: ['SUPER_ADMIN', 'ADMIN_TENANT'] },
         },
         {
@@ -331,6 +331,12 @@ const router = createRouter({
           name: 'finance',
           component: () => import('../views/finance/AccountingFinance.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
+        },
+        {
+          path: 'finance/transactions',
+          name: 'transactions',
+          component: () => import('../views/finance/Transactions.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         {
           path: 'profit-loss',

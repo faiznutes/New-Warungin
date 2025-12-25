@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click.self="close"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-gray-900">Pilih Metode Pembayaran</h3>
@@ -18,7 +18,7 @@
           </button>
         </div>
 
-        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+        <div class="mb-4 p-4 bg-gray-50 rounded-xl">
           <div class="flex justify-between items-center mb-2">
             <span class="text-gray-700">Total Pembayaran:</span>
             <span class="text-2xl font-bold text-orange-600">{{ formatCurrency(total) }}</span>
@@ -37,7 +37,7 @@
           <select
             v-model="selectedPayment"
             @change="onPaymentMethodChange"
-            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold bg-white"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold bg-white"
           >
             <option value="" disabled>Pilih metode pembayaran</option>
             <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
@@ -58,17 +58,17 @@
               min="0"
               step="1000"
               placeholder="Masukkan jumlah uang"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold"
+              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold"
               @input="calculateChange"
             />
           </div>
-          <div v-if="change >= 0" class="p-4 bg-green-50 rounded-lg">
+          <div v-if="change >= 0" class="p-4 bg-green-50 rounded-xl">
             <div class="flex justify-between items-center">
               <span class="text-gray-700 font-medium">Kembalian:</span>
               <span class="text-2xl font-bold text-green-600">{{ formatCurrency(change) }}</span>
             </div>
           </div>
-          <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-lg">
+          <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-xl">
             <div class="flex justify-between items-center">
               <span class="text-red-700 font-medium">Kurang:</span>
               <span class="text-xl font-bold text-red-600">{{ formatCurrency(Math.abs(change)) }}</span>
@@ -86,10 +86,10 @@
               v-model="qrCode"
               type="text"
               placeholder="Masukkan atau scan QR Code"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             />
           </div>
-          <div class="p-3 bg-blue-50 rounded-lg">
+          <div class="p-3 bg-blue-50 rounded-xl">
             <p class="text-sm text-blue-700">
               💡 Scan QR Code menggunakan aplikasi e-wallet (DANA, ShopeePay, OVO, dll)
             </p>
@@ -98,7 +98,7 @@
 
         <!-- Info untuk metode pembayaran lainnya -->
         <div v-if="selectedPayment && selectedPayment !== 'CASH' && selectedPayment !== 'QRIS'" class="mb-6">
-          <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+          <div class="p-4 bg-green-50 rounded-xl border border-green-200">
             <p class="text-sm text-green-800 font-medium">
               ✅ Metode pembayaran <strong>{{ getPaymentMethodLabel(selectedPayment) }}</strong> dipilih.
             </p>
@@ -111,14 +111,14 @@
         <div class="flex space-x-3">
           <button
             @click="close"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium"
           >
             Batal
           </button>
           <button
             @click="confirmPayment"
             :disabled="!canConfirm || processing"
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
           >
             {{ processing ? 'Memproses...' : 'Bayar' }}
           </button>
@@ -249,7 +249,7 @@ const confirmPayment = () => {
 };
 
 // Watch for total changes and auto-update cash amount
-watch(() => props.total, (newTotal) => {
+watch(() => props.total, () => {
   if (selectedPayment.value === 'CASH' && cashAmount.value < finalTotal.value) {
     cashAmount.value = Math.ceil(finalTotal.value / 1000) * 1000;
   }

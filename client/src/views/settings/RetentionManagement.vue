@@ -3,33 +3,33 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Data Retention</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage retention policies and automatic deletion of legacy data.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Data Retention</h2>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Manage retention policies and automatic deletion of legacy data.</p>
       </div>
       <button
         @click="loadStats"
-        class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 hover:text-primary rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition"
+        class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[#4c739a] hover:text-primary rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition"
       >
         <span class="material-symbols-outlined text-[18px]">refresh</span>
         Refresh Stats
       </button>
     </div>
 
-    <div v-if="loading && stats.ordersToDelete === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-if="loading && stats.ordersToDelete === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium text-sm">Calculating retention data...</div>
+      <div class="text-[#4c739a] font-medium text-sm">Calculating retention data...</div>
     </div>
 
     <div v-else class="space-y-6 animate-fade-in">
       <!-- Retention Statistics -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-6">
-           <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+           <div class="p-2 bg-red-50 text-red-600 rounded-xl">
               <span class="material-symbols-outlined">delete_sweep</span>
            </div>
            <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Data to be Deleted</h3>
-              <p class="text-xs text-slate-500">Estimated data to be deleted based on current policy.</p>
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Data to be Deleted</h3>
+              <p class="text-xs text-[#4c739a]">Estimated data to be deleted based on current policy.</p>
            </div>
         </div>
 
@@ -62,14 +62,14 @@
       </div>
 
       <!-- Retention Policy Configuration -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-6">
-           <div class="p-2 bg-primary/10 text-primary rounded-lg">
+           <div class="p-2 bg-primary/10 text-primary rounded-xl">
               <span class="material-symbols-outlined">tune</span>
            </div>
            <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Retention Policy (Days)</h3>
-              <p class="text-xs text-slate-500">Configure data retention period before permanent deletion.</p>
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Retention Policy (Days)</h3>
+              <p class="text-xs text-[#4c739a]">Configure data retention period before permanent deletion.</p>
            </div>
         </div>
 
@@ -194,7 +194,7 @@
            <!-- Apply All -->
            <button @click="showApplyAllModal = true" class="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 hover:shadow-md transition group text-left lg:col-span-2 xl:col-span-2">
               <div class="flex items-center gap-3">
-                 <div class="bg-red-100 dark:bg-red-800 text-red-600 p-2 rounded-lg">
+                 <div class="bg-red-100 dark:bg-red-800 text-red-600 p-2 rounded-xl">
                     <span class="material-symbols-outlined">delete_forever</span>
                  </div>
                  <div>
@@ -210,7 +210,7 @@
     <!-- Reusable Confirmation Modal -->
     <Teleport to="body">
       <div v-if="showApplyOrdersModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyOrdersModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
           <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -248,7 +248,7 @@
     <!-- Transactions Modal -->
     <Teleport to="body">
       <div v-if="showApplyTransactionsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyTransactionsModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
           <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -272,7 +272,7 @@
     <!-- Reports Modal -->
     <Teleport to="body">
       <div v-if="showApplyReportsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyReportsModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
           <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -296,7 +296,7 @@
     <!-- Audit Logs Modal -->
     <Teleport to="body">
       <div v-if="showApplyAuditLogsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyAuditLogsModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
           <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -320,7 +320,7 @@
     <!-- Contact Submissions Modal -->
     <Teleport to="body">
       <div v-if="showApplyContactSubmissionsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyContactSubmissionsModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
            <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -344,7 +344,7 @@
     <!-- Demo Requests Modal -->
     <Teleport to="body">
       <div v-if="showApplyDemoRequestsModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyDemoRequestsModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 animate-scale-in border-t-4 border-red-500">
            <div class="flex items-start gap-4 mb-4">
              <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-full text-red-600 shrink-0">
                 <span class="material-symbols-outlined text-2xl">warning</span>
@@ -368,7 +368,7 @@
     <!-- Apply All Modal -->
     <Teleport to="body">
       <div v-if="showApplyAllModal" class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showApplyAllModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-lg w-full p-6 animate-scale-in border-t-4 border-red-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-lg w-full p-6 animate-scale-in border-t-4 border-red-500">
            <div class="flex items-start gap-4 mb-6">
               <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-full text-red-600 shrink-0">
                  <span class="material-symbols-outlined text-3xl">delete_forever</span>

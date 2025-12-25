@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-gray-900">
@@ -27,7 +27,7 @@
               v-model="form.name"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Masukkan nama produk"
             />
           </div>
@@ -37,7 +37,7 @@
             <textarea
               v-model="form.description"
               rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Masukkan deskripsi produk"
             ></textarea>
           </div>
@@ -51,7 +51,7 @@
                 required
                 min="0"
                 step="100"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
               />
             </div>
@@ -63,7 +63,7 @@
                 type="number"
                 min="0"
                 step="100"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
                 @input="loadPriceSuggestions"
               />
@@ -72,7 +72,7 @@
           </div>
 
           <!-- Price Suggestions -->
-          <div v-if="priceSuggestions && form.cost && form.cost > 0" class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <div v-if="priceSuggestions && form.cost && form.cost > 0" class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
             <h4 class="text-sm font-semibold text-blue-900 mb-3">💡 Rekomendasi Harga Jual</h4>
             <div class="space-y-2">
               <div class="flex items-center justify-between p-2 bg-white rounded border border-blue-200">
@@ -123,7 +123,7 @@
               <input
                 v-model="form.category"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Masukkan kategori"
               />
             </div>
@@ -153,7 +153,7 @@
                 type="number"
                 required
                 min="0"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
               />
             </div>
@@ -164,7 +164,7 @@
                 v-model.number="form.minStock"
                 type="number"
                 min="0"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="0"
               />
             </div>
@@ -178,7 +178,7 @@
               <button
                 type="button"
                 @click="imageType = 'image'"
-                class="flex-1 px-4 py-2 rounded-lg transition"
+                class="flex-1 px-4 py-2 rounded-xl transition"
                 :class="imageType === 'image' 
                   ? 'bg-primary-600 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
@@ -188,7 +188,7 @@
               <button
                 type="button"
                 @click="imageType = 'emoji'"
-                class="flex-1 px-4 py-2 rounded-lg transition"
+                class="flex-1 px-4 py-2 rounded-xl transition"
                 :class="imageType === 'emoji' 
                   ? 'bg-primary-600 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
@@ -205,7 +205,7 @@
                   <img
                     :src="form.image"
                     alt="Product preview"
-                    class="w-32 h-32 object-cover rounded-lg border-2 border-gray-200"
+                    class="w-32 h-32 object-cover rounded-xl border-2 border-gray-200"
                   />
                   <button
                     type="button"
@@ -224,7 +224,7 @@
                 <button
                   type="button"
                   @click="openFileInput"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition flex items-center justify-center space-x-2"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition flex items-center justify-center space-x-2"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -234,7 +234,7 @@
                 <button
                   type="button"
                   @click="openUrlInput"
-                  class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center space-x-2"
+                  class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition flex items-center justify-center space-x-2"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -248,7 +248,7 @@
                 <input
                   v-model="form.image"
                   type="url"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="https://example.com/image.jpg"
                   @blur="showUrlInput = false"
                 />
@@ -270,7 +270,7 @@
               <!-- Emoji Preview -->
               <div v-if="form.emoji" class="mb-3">
                 <div class="relative inline-block">
-                  <div class="w-32 h-32 bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
+                  <div class="w-32 h-32 bg-gray-100 rounded-xl border-2 border-gray-200 flex items-center justify-center">>
                     <span class="text-6xl">{{ form.emoji }}</span>
                   </div>
                   <button
@@ -291,7 +291,7 @@
                   v-model="form.emoji"
                   type="text"
                   maxlength="2"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-2xl text-center"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-2xl text-center"
                   placeholder="Pilih atau ketik emoji (contoh: 🍕 🍔 🍟)"
                 />
                 <p class="text-xs text-gray-500 mt-1">Ketik emoji atau pilih dari keyboard emoji</p>
@@ -306,7 +306,7 @@
                     :key="emoji"
                     type="button"
                     @click="form.emoji = emoji"
-                    class="w-10 h-10 text-2xl hover:bg-gray-100 rounded-lg transition flex items-center justify-center"
+                    class="w-10 h-10 text-2xl hover:bg-gray-100 rounded-xl transition flex items-center justify-center"
                     :class="{ 'bg-primary-100 border-2 border-primary-500': form.emoji === emoji }"
                   >
                     {{ emoji }}
@@ -330,14 +330,14 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="saving"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ saving ? 'Menyimpan...' : (editingProduct ? 'Update' : 'Simpan') }}
             </button>

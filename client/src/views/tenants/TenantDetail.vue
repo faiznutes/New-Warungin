@@ -3,19 +3,19 @@
     <div class="max-w-[1600px] mx-auto space-y-6">
       
       <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#137fec]"></div>
         <p class="mt-4 text-[#4c739a] dark:text-slate-400 font-medium">Memuat detail tenant...</p>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="hasError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
+      <div v-else-if="hasError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
         <span class="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
         <h3 class="text-lg font-bold text-red-800 dark:text-red-200 mb-2">Terjadi Kesalahan</h3>
         <p class="text-red-600 dark:text-red-300 mb-4">{{ errorMessage }}</p>
         <button 
           @click="retryLoad" 
-          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium flex items-center gap-2 mx-auto"
+          class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center gap-2 mx-auto"
         >
           <span class="material-symbols-outlined text-[18px]">refresh</span>
           Coba Lagi
@@ -55,7 +55,7 @@
           <div class="flex items-center gap-3">
              <button 
                 @click="loadTenantDetail"
-                class="px-4 py-2 bg-white dark:bg-slate-800 text-[#4c739a] dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold text-sm flex items-center gap-2"
+                class="px-4 py-2 bg-white dark:bg-slate-800 text-[#4c739a] dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold text-sm flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">refresh</span>
                 Refresh
@@ -66,7 +66,7 @@
         <!-- Info Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Tenant Profile -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-1">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-1">
              <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                    <span class="material-symbols-outlined text-[#137fec]">store</span>
@@ -75,8 +75,8 @@
              </div>
              
              <div class="space-y-4">
-                <div class="flex items-start gap-4 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-lg shadow-sm text-blue-600">
+                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
                       <span class="material-symbols-outlined">person</span>
                    </div>
                    <div>
@@ -85,8 +85,8 @@
                    </div>
                 </div>
                 
-                <div class="flex items-start gap-4 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-lg shadow-sm text-blue-600">
+                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
                       <span class="material-symbols-outlined">mail</span>
                    </div>
                    <div>
@@ -95,8 +95,8 @@
                    </div>
                 </div>
 
-                <div class="flex items-start gap-4 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-lg shadow-sm text-blue-600">
+                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
                       <span class="material-symbols-outlined">call</span>
                    </div>
                    <div>
@@ -108,7 +108,7 @@
           </div>
 
           <!-- Subscription Status -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 flex flex-col">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 flex flex-col">
              <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                    <span class="material-symbols-outlined text-[#137fec]">card_membership</span>
@@ -116,14 +116,14 @@
                 </h3>
                 <div class="flex items-center gap-2">
               </div>
-              <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-gray-500 mt-2">
+              <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-[#4c739a] mt-2">
                 ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
               </p>
             </div>
           </div>
 
           <!-- Active Addons Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                  <span class="material-symbols-outlined text-[#137fec]">extension</span>
@@ -131,7 +131,7 @@
               </h3>
               <button
                 @click="showAddAddonModal = true"
-                class="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Tambah Addon
@@ -157,7 +157,7 @@
                   <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100 rounded">Active</span>
                 </div>
 
-                <div v-if="addon.limit" class="mb-4 bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-100 dark:border-slate-700">
+                <div v-if="addon.limit" class="mb-4 bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
                   <div class="flex items-center justify-between text-xs mb-1.5">
                     <span class="text-[#4c739a] font-bold">Penggunaan</span>
                     <span class="font-bold" :class="addon.isLimitReached ? 'text-red-500' : 'text-[#0d141b] dark:text-white'">
@@ -173,7 +173,7 @@
                   </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs mb-4 p-2 bg-white dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                <div class="flex items-center justify-between text-xs mb-4 p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
                    <div>
                       <p class="text-[10px] text-[#4c739a] uppercase font-bold tracking-wider">Berakhir</p>
                       <p class="font-bold text-[#0d141b] dark:text-white">{{ addon.expiresAt ? formatDate(addon.expiresAt) : '-' }}</p>
@@ -192,19 +192,19 @@
                 <div class="flex gap-2">
                   <button
                     @click="reduceAddon(addon)"
-                     class="flex-1 px-3 py-2 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition border border-amber-100"
+                     class="flex-1 px-3 py-2 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-xl transition border border-amber-100"
                   >
                     Kurangi
                   </button>
                   <button
                     @click="extendAddon(addon)"
-                    class="flex-1 px-3 py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition border border-blue-100"
+                    class="flex-1 px-3 py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition border border-blue-100"
                   >
                     Perpanjang
                   </button>
                   <button
                     @click="unsubscribeAddon(addon)"
-                    class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition border border-red-100"
+                    class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition border border-red-100"
                     title="Nonaktifkan"
                   >
                     <span class="material-symbols-outlined text-[16px]">power_settings_new</span>
@@ -214,7 +214,7 @@
             </div>
           </div>
           <!-- Reward Points Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                  <span class="material-symbols-outlined text-[#137fec]">stars</span>
@@ -222,7 +222,7 @@
               </h3>
               <button
                 @click="showEditPointsModal = true"
-                class="px-4 py-2 bg-slate-100 text-[#4c739a] border border-slate-200 rounded-lg hover:bg-slate-200 transition font-bold text-sm flex items-center gap-2"
+                class="px-4 py-2 bg-slate-100 text-[#4c739a] border border-slate-200 rounded-xl hover:bg-slate-200 transition font-bold text-sm flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">edit</span>
                 Edit Point
@@ -278,7 +278,7 @@
             </div>
           </div>
           <!-- Users Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
@@ -294,7 +294,7 @@
               </div>
               <button
                 @click="showCreateUserModal = true"
-                class="px-4 py-2 bg-[#137fec] text-white rounded-lg hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">person_add</span>
                 User Baru
@@ -321,14 +321,14 @@
                      <button
                        v-if="selectedUsers.some(u => !u.isActive)"
                        @click="bulkActivateUsers"
-                       class="px-3 py-1.5 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition text-xs font-bold shadow-sm"
+                       class="px-3 py-1.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition text-xs font-bold shadow-sm"
                      >
                        Aktifkan ({{ selectedUsers.filter(u => !u.isActive).length }})
                      </button>
                      <button
                        v-if="selectedUsers.some(u => u.isActive)"
                        @click="bulkDeactivateUsers"
-                       class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs font-bold shadow-sm"
+                       class="px-3 py-1.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition text-xs font-bold shadow-sm"
                      >
                        Nonaktifkan ({{ selectedUsers.filter(u => u.isActive).length }})
                      </button>
@@ -403,7 +403,7 @@
             </template>
           </div>
           <!-- Stores Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
@@ -419,7 +419,7 @@
               </div>
               <button
                 @click="showCreateStoreModal = true"
-                class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center gap-2"
+                class="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">add_business</span>
                 Buat Toko
@@ -492,7 +492,7 @@
           </div>
 
           <!-- Available Addons Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6 flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#137fec]">shopping_bag</span>
                 Addon Tersedia
@@ -511,7 +511,7 @@
                 :class="addon.comingSoon || addon.requiresApi ? 'border-slate-200 bg-slate-50 opacity-75' : 'border-slate-200 dark:border-slate-700'"
               >
                 <div class="flex items-start justify-between mb-2">
-                   <div class="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:scale-110 transition-transform mb-2">
+                   <div class="p-2 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-110 transition-transform mb-2">
                       <span class="material-symbols-outlined">{{ addon.comingSoon ? 'hourglass_top' : 'extension' }}</span>
                    </div>
                    <span v-if="addon.comingSoon || addon.requiresApi" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-100 rounded">Coming Soon</span>
@@ -549,7 +549,7 @@
     <!-- Edit Plan Modal -->
     <Teleport to="body">
       <div v-if="showEditPlanModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showEditPlanModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
            <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Edit Paket Langganan</h3>
            <div class="space-y-4">
               <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
@@ -578,7 +578,7 @@
     <!-- Reduce Subscription Modal -->
     <Teleport to="body">
        <div v-if="showReduceSubscriptionModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showReduceSubscriptionModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Kurangi Durasi Langganan</h3>
              <div class="space-y-4">
                 <div>
@@ -599,7 +599,7 @@
     <!-- Extend Subscription Modal -->
     <Teleport to="body">
        <div v-if="showExtendSubscriptionModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showExtendSubscriptionModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Perpanjang Langganan</h3>
              <div class="space-y-4">
                 <div>
@@ -623,11 +623,11 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="showReduceAddonModal = false"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Kurangi Durasi Addon</h3>
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+          <h3 class="text-xl font-bold text-[#0d141b] mb-4">Kurangi Durasi Addon</h3>
           <div class="mb-4">
-            <p class="text-sm text-gray-600 mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
-            <p class="text-sm text-gray-600">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
+            <p class="text-sm text-[#4c739a] mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
+            <p class="text-sm text-[#4c739a]">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
           </div>
           <div class="space-y-4">
             <div>
@@ -636,21 +636,21 @@
                 v-model.number="reduceAddonDays"
                 type="number"
                 min="1"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500"
                 placeholder="Masukkan jumlah hari"
               />
             </div>
             <div class="flex space-x-3">
               <button
                 @click="showReduceAddonModal = false"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
                 @click="handleReduceAddon"
                 :disabled="!reduceAddonDays || reduceAddonDays < 1 || reducing"
-                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ reducing ? 'Memproses...' : 'Kurangi' }}
               </button>
@@ -666,11 +666,11 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="showExtendAddonModal = false"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Perpanjang Addon</h3>
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-[#0d141b] mb-4">Perpanjang Addon</h3>
         <div class="mb-4">
-          <p class="text-sm text-gray-600 mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
-          <p class="text-sm text-gray-600">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
+          <p class="text-sm text-[#4c739a] mb-2">Addon: <span class="font-semibold">{{ selectedAddon?.addonName }}</span></p>
+          <p class="text-sm text-[#4c739a]">Sisa waktu: <span class="font-semibold">{{ selectedAddon ? getAddonDaysRemaining(selectedAddon) : 0 }} hari</span></p>
         </div>
         <div class="space-y-4">
           <div>
@@ -679,21 +679,21 @@
               v-model.number="extendAddonDays"
               type="number"
               min="1"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
               placeholder="Masukkan jumlah hari"
             />
           </div>
           <div class="flex space-x-3">
             <button
               @click="showExtendAddonModal = false"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               Batal
             </button>
             <button
               @click="handleExtendAddon"
               :disabled="!extendAddonDays || extendAddonDays < 1 || extending"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ extending ? 'Memproses...' : 'Perpanjang' }}
             </button>
@@ -705,7 +705,7 @@
     <!-- Add Addon Modal (Subscribe) -->
     <Teleport to="body">
        <div v-if="showAddAddonModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showAddAddonModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Tambah Addon</h3>
              <div class="space-y-4">
                 <div 
@@ -750,7 +750,7 @@
     <!-- Create Store Modal -->
     <Teleport to="body">
        <div v-if="showCreateStoreModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showCreateStoreModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Buat Toko Baru</h3>
              <form @submit.prevent="handleCreateStore" class="space-y-4">
                 <div>
@@ -779,7 +779,7 @@
     <!-- Create User Modal -->
     <Teleport to="body">
        <div v-if="showCreateUserModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showCreateUserModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Tambah Pengguna Baru</h3>
              <form @submit.prevent="handleCreateUser" class="space-y-4">
                 <div>
@@ -1191,11 +1191,11 @@ const getPlanName = (plan: string) => {
 
 const getPlanBadgeClass = (plan: string) => {
   const classes: Record<string, string> = {
-    BASIC: 'bg-gray-100 text-gray-700',
+    BASIC: 'bg-[#f6f7f8] text-gray-700',
     PRO: 'bg-blue-100 text-blue-700',
     ENTERPRISE: 'bg-purple-100 text-purple-700',
   };
-  return classes[plan] || 'bg-gray-100 text-gray-700';
+  return classes[plan] || 'bg-[#f6f7f8] text-gray-700';
 };
 
 
@@ -1544,7 +1544,7 @@ const getRoleClass = (role: string) => {
     CASHIER: 'bg-green-100 text-green-800',
     KITCHEN: 'bg-orange-100 text-orange-800',
   };
-  return classes[role] || 'bg-gray-100 text-gray-800';
+  return classes[role] || 'bg-[#f6f7f8] text-gray-800';
 };
 
 const getRoleLabel = (role: string) => {

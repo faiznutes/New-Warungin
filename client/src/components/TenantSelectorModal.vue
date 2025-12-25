@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     @click.self="handleCancel"
   >
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold text-gray-900">Pilih Tenant</h2>
         <button
@@ -35,7 +35,7 @@
           v-for="tenant in tenants"
           :key="tenant.id"
           @click="handleSelect(tenant.id)"
-          class="w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
+          class="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
         >
           <div class="font-semibold text-gray-900">{{ tenant.name }}</div>
           <div class="text-sm text-gray-500 mt-1">{{ tenant.email || tenant.slug }}</div>
@@ -45,7 +45,7 @@
       <div class="mt-6 flex justify-end space-x-3">
         <button
           @click="handleCancel"
-          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
+          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-medium"
         >
           Batal
         </button>

@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Email Templates</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage email templates for campaigns</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Email Templates</h1>
+        <p class="text-[#4c739a] dark:text-[#0d141b]">Manage email templates for campaigns</p>
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Template</span>
@@ -16,11 +16,11 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-4">
       <select
         v-model="selectedCategory"
         @change="loadTemplates"
-        class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
       >
         <option value="">All Categories</option>
         <option value="PROMOTION">Promotion</option>
@@ -35,13 +35,13 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="templates.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-else-if="templates.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">mail</span>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No Templates Yet</h3>
-      <p class="text-slate-500 text-center max-w-md mb-4">Create your first email template to start campaigns.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Templates Yet</h3>
+      <p class="text-[#4c739a] text-center max-w-md mb-4">Create your first email template to start campaigns.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Add First Template
@@ -53,7 +53,7 @@
       <div
         v-for="template in templates"
         :key="template.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-2 transition-all hover:shadow-lg"
         :class="template.isActive ? 'border-emerald-300 dark:border-emerald-800' : 'border-slate-100 dark:border-slate-700 opacity-60'"
       >
         <div class="flex items-start justify-between mb-4">
@@ -133,7 +133,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">
@@ -156,7 +156,7 @@
                 v-model="templateForm.name"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Nama template"
               />
             </div>
@@ -167,7 +167,7 @@
                 v-model="templateForm.subject"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="Email subject"
               />
             </div>
@@ -177,7 +177,7 @@
               <select
                 v-model="templateForm.category"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
               >
                 <option value="PROMOTION">Promotion</option>
                 <option value="NOTIFICATION">Notification</option>
@@ -191,7 +191,7 @@
                 v-model="templateForm.htmlContent"
                 required
                 rows="10"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
                 placeholder="HTML content dengan variables seperti {{name}}, {{email}}, dll"
               ></textarea>
               <p class="text-xs text-gray-500 mt-1">
@@ -204,7 +204,7 @@
               <textarea
                 v-model="templateForm.textContent"
                 rows="5"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
                 placeholder="Plain text version"
               ></textarea>
             </div>
@@ -214,7 +214,7 @@
               <input
                 v-model="templateForm.variablesString"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="name, email, orderNumber"
               />
               <p class="text-xs text-gray-500 mt-1">
@@ -236,14 +236,14 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition disabled:opacity-50"
               >
                 {{ saving ? 'Menyimpan...' : editingTemplate ? 'Update' : 'Simpan' }}
               </button>
@@ -259,7 +259,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="previewingTemplate = null"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-gray-900">Preview Template</h3>
@@ -278,7 +278,7 @@
             <p class="text-sm text-gray-600 mb-4">Subject: {{ previewingTemplate.subject }}</p>
           </div>
 
-          <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+          <div class="border border-gray-300 rounded-xl p-4 bg-gray-50">
             <div v-html="renderPreview(previewingTemplate.htmlContent)"></div>
           </div>
         </div>

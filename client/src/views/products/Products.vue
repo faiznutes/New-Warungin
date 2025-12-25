@@ -12,14 +12,14 @@
     <section class="flex flex-col flex-1 overflow-hidden px-6 pt-6 pb-6">
       <!-- Error Boundary -->
       <div v-if="hasError" class="flex flex-col items-center justify-center py-20">
-        <div class="p-4 bg-red-50 text-red-500 rounded-lg mb-4">
+        <div class="p-4 bg-red-50 text-red-500 rounded-xl mb-4">
           <span class="material-symbols-outlined text-5xl">error</span>
         </div>
         <h3 class="text-lg font-bold text-[#0d141b] mb-2">Something went wrong</h3>
         <p class="text-[#4c739a] text-center max-w-md mb-6">{{ errorMessage || 'Failed to load page. Please try again.' }}</p>
         <button
           @click="retryLoad"
-          class="px-4 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-blue-500/30"
+          class="px-4 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl transition-colors font-medium shadow-lg shadow-blue-500/30"
         >
           Try Again
         </button>
@@ -30,8 +30,8 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
           <div class="flex flex-col gap-1">
-            <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Products</h1>
-            <p class="text-[#4c739a] dark:text-slate-400">Manage your product catalog and inventory</p>
+            <h1 class="text-text-primary dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Products</h1>
+            <p class="text-text-secondary dark:text-slate-400">Manage your product catalog and inventory</p>
           </div>
           <div class="flex items-center gap-3 flex-wrap">
              <!-- Margin Display Format Selector (Admin Tenant & Super Admin only) -->
@@ -42,7 +42,7 @@
               <select
                 v-model="marginDisplayFormat"
                 @change="saveMarginFormat"
-                class="appearance-none pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:bg-slate-100 transition-colors"
+                class="appearance-none pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:bg-slate-100 transition-colors"
               >
                 <option value="percentage">Margin %</option>
                 <option value="amount">Margin $</option>
@@ -54,7 +54,7 @@
             <div v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex items-center gap-2">
                <button
                 @click="downloadTemplate"
-                class="p-2.5 text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                class="p-2.5 text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors"
                 title="Download Template"
               >
                 <span class="material-symbols-outlined text-[20px]">download</span>
@@ -62,7 +62,7 @@
               
               <button
                 @click="triggerFileInput"
-                class="p-2.5 text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                class="p-2.5 text-green-700 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-colors"
                 title="Import CSV"
               >
                 <span class="material-symbols-outlined text-[20px]">upload_file</span>
@@ -92,7 +92,7 @@
             <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
               <span>Add Product</span>
@@ -101,11 +101,11 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-2xl shadow-card border border-slate-100 p-5 mb-8">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5 mb-8">
           <div class="flex flex-col lg:flex-row gap-6">
             <!-- Search -->
             <div class="flex-1">
-              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Search</label>
+              <label class="block text-xs font-bold text-text-secondary dark:text-slate-400 uppercase tracking-wider mb-2">Search</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">search</span>
                 <input
@@ -113,21 +113,21 @@
                   @focus="handleSearchFocus"
                   type="text"
                   placeholder="Search products..."
-                  class="block w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
+                  class="block w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 dark:bg-slate-900 text-text-primary dark:text-white focus:bg-white dark:focus:bg-slate-800 transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
 
             <!-- Category Filter -->
             <div class="flex-1">
-              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Category</label>
+              <label class="block text-xs font-bold text-text-secondary dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
               <div class="flex flex-wrap gap-2">
                 <button
                   @click="filters.category = ''"
                   :class="!filters.category 
                     ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300'"
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                    : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                  class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
                   All
                 </button>
@@ -137,8 +137,8 @@
                   @click="filters.category = cat"
                   :class="filters.category === cat 
                     ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300'"
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                    : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                  class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
                   {{ cat }}
                 </button>
@@ -147,14 +147,14 @@
 
              <!-- Status Filter -->
             <div class="flex-none">
-              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Status</label>
+              <label class="block text-xs font-bold text-text-secondary dark:text-slate-400 uppercase tracking-wider mb-2">Status</label>
               <div class="flex flex-wrap gap-2">
                 <button
                   @click="filters.isActive = ''"
                   :class="filters.isActive === '' 
                     ? 'bg-slate-800 text-white shadow-md' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                    : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                  class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
                   All
                 </button>
@@ -162,8 +162,8 @@
                   @click="filters.isActive = 'true'"
                   :class="filters.isActive === 'true' 
                     ? 'bg-green-600 text-white shadow-md shadow-green-600/20' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                    : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                  class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
                   Active
                 </button>
@@ -171,8 +171,8 @@
                   @click="filters.isActive = 'false'"
                   :class="filters.isActive === 'false' 
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/20' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
+                    : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                  class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
                   Inactive
                 </button>
@@ -229,7 +229,7 @@
           <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
               <span>Add Product</span>
@@ -240,7 +240,7 @@
           <div
             v-for="product in products"
             :key="product.id"
-            class="bg-white rounded-2xl shadow-card hover:shadow-card-hover border border-slate-100 transition-all duration-300 group overflow-hidden flex flex-col"
+            class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-md border border-slate-100 dark:border-slate-700 transition-all duration-300 group overflow-hidden flex flex-col"
           >
             <!-- Image Area -->
             <div class="aspect-w-4 aspect-h-3 bg-slate-100 relative overflow-hidden">
@@ -250,11 +250,11 @@
                 :alt="product.name"
                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
-              <div v-else-if="product.emoji" class="w-full h-full flex items-center justify-center text-7xl bg-slate-50">
+              <div v-else-if="product.emoji" class="w-full h-full flex items-center justify-center text-7xl bg-slate-50 dark:bg-slate-900">
                 {{ product.emoji }}
               </div>
-              <div v-else class="w-full h-full flex items-center justify-center bg-slate-50">
-                <span class="material-symbols-outlined text-4xl text-slate-300">image</span>
+              <div v-else class="w-full h-full flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+                <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">image</span>
               </div>
               
               <!-- Badges Overlay -->
@@ -349,7 +349,7 @@
             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
             Previous
           </button>
-          <span class="px-4 py-2 text-slate-600 font-medium bg-slate-50 rounded-lg border border-slate-100">
+          <span class="px-4 py-2 text-slate-600 font-medium bg-slate-50 rounded-xl border border-slate-100">
             Page {{ pagination.page }} of {{ pagination.totalPages }}
           </span>
           <button

@@ -1,60 +1,62 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Backup Management</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Monitor and manage daily backups for all tenants.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Backup Management</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Monitor and manage daily backups for all tenants.</p>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
       <div class="flex items-center gap-2 mb-4">
-         <span class="material-symbols-outlined text-primary">filter_list</span>
-         <h3 class="font-bold text-slate-900 dark:text-white">Filter Backups</h3>
+         <div class="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+           <span class="material-symbols-outlined text-[#137fec] text-[20px]">filter_list</span>
+         </div>
+         <h3 class="font-bold text-[#0d141b] dark:text-white">Filter Backups</h3>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tenant</label>
+          <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Tenant</label>
           <div class="relative">
              <select
                v-model="filters.tenantId"
-               class="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white appearance-none cursor-pointer"
+               class="w-full pl-4 pr-10 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
              >
                <option value="">All Tenants</option>
                <option v-for="tenant in tenants" :key="tenant.id" :value="tenant.id">
                  {{ tenant.name }}
                </option>
              </select>
-             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
+             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#4c739a]">
                 <span class="material-symbols-outlined">expand_more</span>
              </div>
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
+          <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Status</label>
           <div class="relative">
              <select
                v-model="filters.status"
-               class="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white appearance-none cursor-pointer"
+               class="w-full pl-4 pr-10 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
              >
                <option value="">All Status</option>
                <option value="success">Success</option>
                <option value="failed">Failed</option>
                <option value="email_failed">Email Failed</option>
              </select>
-             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
+             <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#4c739a]">
                 <span class="material-symbols-outlined">expand_more</span>
              </div>
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start Date</label>
+          <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Start Date</label>
           <input
             v-model="filters.startDate"
             type="date"
-            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white"
+            class="w-full px-4 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-[#0d141b] dark:text-white"
           />
         </div>
         <div>
@@ -69,7 +71,7 @@
       <div class="mt-6 flex justify-end gap-3">
         <button
           @click="resetFilters"
-          class="px-4 py-2 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#4c739a] rounded-xl text-sm font-bold transition"
+          class="px-4 py-2 border border-slate-200 dark:border-slate-700 hover:bg-[#f6f7f8] dark:hover:bg-slate-800 text-[#4c739a] rounded-xl text-sm font-bold transition"
         >
           Reset
         </button>
@@ -84,12 +86,12 @@
     </div>
 
     <!-- Backup Logs Table -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col min-h-0">
-      <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col min-h-0">
+      <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-[#f6f7f8]/50 dark:bg-slate-900/50">
         <h2 class="text-lg font-bold text-[#0d141b] dark:text-white">Backup Logs</h2>
         <button
           @click="loadBackups"
-          class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-lg hover:bg-slate-50 transition"
+          class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-xl hover:bg-[#f6f7f8] transition"
           title="Refresh"
         >
           <span class="material-symbols-outlined text-[20px]">refresh</span>
@@ -102,7 +104,7 @@
       </div>
 
       <div v-else-if="backupLogs.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-full mb-3">
+        <div class="bg-[#f6f7f8] dark:bg-slate-900/50 p-4 rounded-full mb-3">
             <span class="material-symbols-outlined text-slate-300 text-4xl">backup_table</span>
         </div>
         <p class="text-[#0d141b] dark:text-white font-bold">No backup logs yet</p>
@@ -111,7 +113,7 @@
 
       <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
-          <thead class="bg-slate-50 dark:bg-slate-900/50">
+          <thead class="bg-[#f6f7f8] dark:bg-slate-900/50">
             <tr>
               <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Tenant</th>
               <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Last Backup</th>
@@ -125,7 +127,7 @@
             <tr
               v-for="log in backupLogs"
               :key="log.id"
-              class="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+              class="hover:bg-[#f6f7f8] dark:hover:bg-slate-900/50 transition-colors"
               :class="{
                 'bg-red-50/50': criticalTenants.has(log.tenantId) || (log.status === 'failed' && !criticalTenants.has(log.tenantId)),
                 'bg-amber-50/50': log.status === 'email_failed' && !criticalTenants.has(log.tenantId),
@@ -139,7 +141,7 @@
                   </div>
                   <span
                     v-if="criticalTenants.has(log.tenantId)"
-                    class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-red-100 text-red-700 border border-red-200 flex items-center gap-1"
+                    class="px-2 py-0.5 text-[10px] font-bold rounded-xl bg-red-100 text-red-700 border border-red-200 flex items-center gap-1"
                     title="Backup gagal 3+ hari berturut-turut"
                   >
                     <span class="material-symbols-outlined text-[12px]">warning</span>
@@ -152,7 +154,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border"
+                  class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-xl border"
                   :class="[
                     log.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                     log.status === 'email_failed' ? 'bg-amber-50 text-amber-700 border-amber-100' :
@@ -173,14 +175,14 @@
                 <div class="flex items-center justify-end gap-1 opacity-0 hover:opacity-100 transition-opacity">
                   <button
                     @click="viewBackup(log.id)"
-                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
                     title="View Backup"
                   >
                     <span class="material-symbols-outlined text-[20px]">visibility</span>
                   </button>
                   <button
                     @click="downloadBackup(log.id)"
-                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition"
                     title="Download"
                   >
                     <span class="material-symbols-outlined text-[20px]">download</span>
@@ -188,14 +190,14 @@
                   <button
                     v-if="log.status === 'email_failed' || !log.emailSentAt"
                     @click="resendEmail(log.id)"
-                    class="p-2 text-[#4c739a] hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-amber-600 hover:bg-amber-50 rounded-xl transition"
                     title="Resend Email"
                   >
                    <span class="material-symbols-outlined text-[20px]">send</span>
                   </button>
                   <button
                     @click="regenerateBackup(log.tenantId)"
-                    class="p-2 text-[#4c739a] hover:text-violet-600 hover:bg-violet-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-violet-600 hover:bg-violet-50 rounded-xl transition"
                     title="Regenerate Backup"
                   >
                     <span class="material-symbols-outlined text-[20px]">autorenew</span>
@@ -216,14 +218,14 @@
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Sebelumnya
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Selanjutnya
           </button>
@@ -238,10 +240,10 @@
         class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
         @click.self="showViewModal = false"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
-          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
+          <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-[#f6f7f8] dark:bg-slate-900">
             <div class="flex items-center gap-3">
-               <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm text-[#137fec]">
+               <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm text-[#137fec]">
                   <span class="material-symbols-outlined">description</span>
                </div>
                <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">View Backup</h3>

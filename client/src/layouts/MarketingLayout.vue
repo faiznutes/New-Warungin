@@ -65,7 +65,7 @@
             </router-link>
             <router-link
               to="/pricing"
-              class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+              class="px-6 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-medium"
             >
               Lihat Harga
             </router-link>
@@ -74,7 +74,7 @@
           <!-- Hamburger Menu Button - Show below 1200px (lg breakpoint) -->
           <button
             @click="mobileMenuOpen = !mobileMenuOpen"
-            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            class="lg:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors"
             aria-label="Toggle menu"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,14 +147,14 @@
               <router-link
                 to="/login"
                 @click="mobileMenuOpen = false"
-                class="block w-full px-4 py-2 text-center text-gray-700 hover:text-primary-600 transition font-medium border border-gray-300 rounded-lg hover:border-primary-600"
+                class="block w-full px-4 py-2 text-center text-gray-700 hover:text-primary-600 transition font-medium border border-gray-300 rounded-xl hover:border-primary-600"
               >
                 Masuk
               </router-link>
               <router-link
                 to="/pricing"
                 @click="mobileMenuOpen = false"
-                class="block w-full px-4 py-2 text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium"
+                class="block w-full px-4 py-2 text-center bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-medium"
               >
                 Lihat Harga
               </router-link>

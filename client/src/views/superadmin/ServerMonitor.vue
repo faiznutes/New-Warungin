@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Server Monitor</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Monitor server health, Docker stack, and resource usage.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Server Monitor</h1>
+        <p class="text-[#4c739a] dark:text-[#4c739a]">Monitor server health, Docker stack, and resource usage.</p>
       </div>
       <div class="flex items-center gap-2">
          <span class="relative flex h-3 w-3">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
       <div class="flex items-center p-2 gap-2 overflow-x-auto">
         <button
           v-for="tab in tabs"
@@ -24,8 +24,8 @@
           @click="activeTab = tab.id"
           class="flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap"
           :class="activeTab === tab.id 
-            ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-            : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
+            ? 'bg-[#137fec] text-white shadow-lg shadow-blue-500/30' 
+            : 'text-[#4c739a] hover:bg-[#f6f7f8] dark:hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">{{ tab.icon }}</span>
           {{ tab.label }}
@@ -34,19 +34,19 @@
     </div>
 
     <!-- Content Area -->
-    <div v-if="loading && !containers.length && !serverResources.cpu" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium text-sm">Connecting to server...</div>
+    <div v-if="loading && !containers.length && !serverResources.cpu" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+      <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-[#4c739a] font-medium text-sm">Connecting to server...</div>
     </div>
 
     <div v-else class="flex-1 min-h-0">
       <!-- Docker Containers Tab -->
-      <div v-if="activeTab === 'docker'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col h-full">
+      <div v-if="activeTab === 'docker'" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col h-full">
         <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Docker Containers</h3>
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Docker Containers</h3>
           <button
             @click="loadContainers"
-            class="p-2 text-slate-500 hover:text-primary rounded-lg hover:bg-slate-50 transition"
+            class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-xl hover:bg-[#f6f7f8] transition"
             title="Refresh"
           >
             <span class="material-symbols-outlined">refresh</span>
@@ -55,12 +55,12 @@
 
         <div v-if="containers.length === 0" class="flex flex-col items-center justify-center py-16">
            <span class="material-symbols-outlined text-slate-300 text-5xl mb-2">layers_clear</span>
-           <p class="text-slate-500 font-medium">No containers found</p>
+           <p class="text-[#4c739a] font-medium">No containers found</p>
         </div>
 
         <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
-            <thead class="bg-slate-50 dark:bg-slate-900/50">
+            <thead class="bg-[#f6f7f8] dark:bg-slate-900/50">
               <tr>
                 <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Name</th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Image</th>
@@ -74,7 +74,7 @@
               <tr
                 v-for="container in containers"
                 :key="container.id"
-                class="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
+                class="hover:bg-[#f6f7f8] dark:hover:bg-slate-900/50 transition-colors"
               >
                 <td class="px-6 py-4">
                    <div class="font-bold text-[#0d141b] dark:text-white">{{ container.name }}</div>
@@ -84,7 +84,7 @@
                 </td>
                 <td class="px-6 py-4">
                   <span
-                    class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border"
+                    class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-xl border"
                     :class="[
                       container.status === 'running'
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
@@ -102,7 +102,7 @@
                   <div class="flex items-center justify-end gap-1">
                     <button
                       @click="viewLogs(container.name)"
-                      class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-lg transition"
+                      class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
                       title="View Logs"
                     >
                       <span class="material-symbols-outlined text-[18px]">terminal</span>
@@ -110,7 +110,7 @@
                     <button
                       v-if="container.status === 'running'"
                       @click="restartContainer(container.name)"
-                      class="p-2 text-[#4c739a] hover:text-amber-600 hover:bg-amber-50 rounded-lg transition"
+                      class="p-2 text-[#4c739a] hover:text-amber-600 hover:bg-amber-50 rounded-xl transition"
                       title="Restart"
                     >
                       <span class="material-symbols-outlined text-[18px]">restart_alt</span>
@@ -118,7 +118,7 @@
                     <button
                       v-if="container.status === 'running'"
                       @click="stopContainer(container.name)"
-                      class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                      class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 rounded-xl transition"
                       title="Stop"
                     >
                       <span class="material-symbols-outlined text-[18px]">stop_circle</span>
@@ -135,7 +135,7 @@
       <div v-else-if="activeTab === 'resources'" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- CPU Card -->
-          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
              <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-[#0d141b] dark:text-white">CPU Usage</h3>
                 <span class="material-symbols-outlined text-slate-300 text-3xl">memory</span>
@@ -162,7 +162,7 @@
           </div>
 
           <!-- Memory Card -->
-          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
              <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-[#0d141b] dark:text-white">Memory Usage</h3>
                 <span class="material-symbols-outlined text-slate-300 text-3xl">psychology</span>
@@ -189,7 +189,7 @@
           </div>
 
           <!-- System Info Card -->
-          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
              <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-[#0d141b] dark:text-white">System Info</h3>
                 <span class="material-symbols-outlined text-slate-300 text-3xl">dns</span>
@@ -208,7 +208,7 @@
         </div>
 
         <!-- Disks Section -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
            <h3 class="font-bold text-[#0d141b] dark:text-white mb-4 flex items-center gap-2">
               <span class="material-symbols-outlined text-[#4c739a]">hard_drive</span>
               Disk Usage
@@ -217,7 +217,7 @@
               Memuat data disk...
            </div>
            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="disk in serverResources.disks" :key="disk.mount || disk.device" class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700">
+              <div v-for="disk in serverResources.disks" :key="disk.mount || disk.device" class="p-4 rounded-xl bg-[#f6f7f8] dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700">
                  <div class="flex justify-between mb-2">
                     <span class="font-bold text-[#0d141b] dark:text-white text-sm truncate" :title="disk.mount">{{ disk.mount || disk.device }}</span>
                     <span class="font-bold text-[#137fec] text-sm">{{ disk.usage || '0' }}%</span>
@@ -238,7 +238,7 @@
       </div>
 
       <!-- Health Check Tab -->
-      <div v-else-if="activeTab === 'health'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div v-else-if="activeTab === 'health'" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <h3 class="font-bold text-[#0d141b] dark:text-white mb-6">Service Health</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
            <div
@@ -260,7 +260,7 @@
                </div>
              </div>
              <span
-               class="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+               class="px-2 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider"
                :class="service.status === 'healthy' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
              >
                {{ service.status }}
@@ -270,14 +270,14 @@
       </div>
 
       <!-- Logs Tab -->
-      <div v-else-if="activeTab === 'logs'" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[calc(100vh-250px)]">
+      <div v-else-if="activeTab === 'logs'" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[calc(100vh-250px)]">
          <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between gap-4">
             <h3 class="font-bold text-[#0d141b] dark:text-white">System Logs</h3>
             <div class="flex items-center gap-2">
                <select
                  v-model="selectedLogType"
                  @change="loadLogs"
-                 class="px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                 class="px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
                >
                  <option value="backend">Backend</option>
                  <option value="frontend">Frontend</option>
@@ -287,7 +287,7 @@
                </select>
                <button
                  @click="loadLogs"
-                 class="px-4 py-2 bg-[#137fec] text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
+                 class="px-4 py-2 bg-[#137fec] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
                >
                  Refresh
                </button>
@@ -296,7 +296,7 @@
          <div class="flex-1 overflow-hidden bg-[#0d141b] relative">
             <div class="absolute inset-0 overflow-auto p-4 font-mono text-xs leading-relaxed text-emerald-400">
                <pre v-if="logs">{{ logs }}</pre>
-               <div v-else class="text-slate-500 italic">No logs available for this service.</div>
+               <div v-else class="text-[#4c739a] italic">No logs available for this service.</div>
             </div>
          </div>
       </div>
@@ -309,8 +309,8 @@
         class="fixed inset-0 bg-[#0d141b]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
         @click.self="showLogsModal = false"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-5xl w-full h-[80vh] flex flex-col overflow-hidden animate-scale-in">
-          <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-5xl w-full h-[80vh] flex flex-col overflow-hidden animate-scale-in">
+          <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-[#f6f7f8] dark:bg-slate-900">
             <div class="flex items-center gap-3">
                <span class="material-symbols-outlined text-[#137fec]">terminal</span>
                <div>
@@ -328,7 +328,7 @@
           <div class="flex-1 bg-[#0d141b] overflow-hidden relative">
             <div class="absolute inset-0 overflow-auto p-6 font-mono text-xs leading-relaxed text-emerald-400 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
               <pre v-if="containerLogs">{{ containerLogs }}</pre>
-              <div v-else class="text-slate-500 italic flex items-center gap-2">
+              <div v-else class="text-[#4c739a] italic flex items-center gap-2">
                  <span class="w-4 h-4 border-2 border-slate-500 border-t-transparent rounded-full animate-spin"></span>
                  Loading logs...
               </div>

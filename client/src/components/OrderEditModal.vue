@@ -6,7 +6,7 @@
         class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-bold text-gray-900">Edit Pesanan</h3>
@@ -26,7 +26,7 @@
 
             <div v-else-if="order" class="space-y-6">
               <!-- Order Info -->
-              <div class="bg-gray-50 rounded-lg p-4">
+              <div class="bg-gray-50 rounded-xl p-4">
                 <div class="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span class="text-gray-600">Nomor Pesanan:</span>
@@ -54,7 +54,7 @@
                   <div
                     v-for="(item, index) in orderItems"
                     :key="index"
-                    class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
                   >
                     <div class="flex-1">
                       <div class="font-medium text-gray-900">{{ item.product?.name || item.name }}</div>
@@ -105,14 +105,14 @@
               <div class="border-t pt-4">
                 <button
                   @click="showAddProduct = true"
-                  class="px-4 py-2 text-sm text-primary-600 border border-primary-600 rounded-lg hover:bg-primary-50 transition"
+                  class="px-4 py-2 text-sm text-primary-600 border border-primary-600 rounded-xl hover:bg-primary-50 transition"
                 >
                   + Tambah Produk
                 </button>
               </div>
 
               <!-- Summary -->
-              <div class="bg-gray-50 rounded-lg p-4">
+              <div class="bg-gray-50 rounded-xl p-4">
                 <div class="space-y-2">
                   <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
@@ -134,7 +134,7 @@
                 <button
                   type="button"
                   @click="$emit('close')"
-                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
                 >
                   Batal
                 </button>
@@ -142,7 +142,7 @@
                   type="button"
                   @click="handleSave"
                   :disabled="saving || orderItems.length === 0"
-                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
                 </button>

@@ -77,7 +77,7 @@
             </ul>
             <router-link
               to="/contact"
-              class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-center"
+              class="w-full px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-semibold text-center"
             >
             Mulai Sekarang
             </router-link>
@@ -169,7 +169,7 @@
             </ul>
             <router-link
               to="/contact"
-              class="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white text-primary-600 rounded-lg hover:bg-gray-50 transition font-bold text-center shadow-lg text-sm sm:text-base"
+              class="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white text-primary-600 rounded-xl hover:bg-gray-50 transition font-bold text-center shadow-lg text-sm sm:text-base"
             >
               Mulai Sekarang
             </router-link>
@@ -249,7 +249,7 @@
             </ul>
             <router-link
               to="/contact"
-              class="w-full px-4 sm:px-6 py-2 sm:py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold text-center text-sm sm:text-base"
+              class="w-full px-4 sm:px-6 py-2 sm:py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-semibold text-center text-sm sm:text-base"
             >
               Chat Sales untuk Custom 🔥
             </router-link>
@@ -280,7 +280,7 @@
               <div
                 v-for="addon in unlimitedAddons"
                 :key="addon.id"
-                class="bg-gradient-to-br rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-white to-blue-50 border-blue-100"
+                class="bg-gradient-to-br rounded-xl sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-white to-blue-50 border-blue-100"
               >
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ addon.name }}</h3>
@@ -310,7 +310,7 @@
               <div
                 v-for="addon in limitedAddons"
                 :key="addon.id"
-                class="bg-gradient-to-br rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-white to-blue-50 border-blue-100"
+                class="bg-gradient-to-br rounded-xl sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-white to-blue-50 border-blue-100"
               >
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ addon.name }}</h3>
@@ -343,7 +343,7 @@
               <div
                 v-for="addon in comingSoonAddons"
                 :key="addon.id"
-                class="bg-gradient-to-br rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-gray-50 to-gray-100 border-gray-200 opacity-75"
+                class="bg-gradient-to-br rounded-xl sm:rounded-xl shadow-lg hover:shadow-xl transition p-4 sm:p-5 md:p-6 border from-gray-50 to-gray-100 border-gray-200 opacity-75"
               >
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
                   <h3 class="text-base sm:text-lg font-bold text-gray-900">{{ addon.name }}</h3>
@@ -374,7 +374,7 @@
           <p class="text-gray-600 mb-4">💡 <strong>Tip:</strong> Kombinasi addon bisa dapat diskon hingga 20%!</p>
           <router-link
             to="/contact"
-            class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold"
+            class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-semibold"
           >
             Tanya Paket Addon Terbaik
           </router-link>
@@ -387,25 +387,25 @@
           FAQ - Pertanyaan yang Sering Diajukan tentang Paket Warungin
         </h2>
         <div class="space-y-4 sm:space-y-5 md:space-y-6">
-          <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
+          <div class="bg-white rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
             <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Apakah ada trial gratis?</h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Ya! Semua paket mendapatkan trial gratis 14 hari tanpa perlu kartu kredit. Coba semua fitur tanpa batasan.
             </p>
           </div>
-          <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
+          <div class="bg-white rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
             <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Bisakah saya upgrade paket nanti?</h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Tentu! Anda bisa upgrade kapan saja. Selisih pembayaran akan dihitung secara proporsional.
             </p>
           </div>
-          <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
+          <div class="bg-white rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
             <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Metode pembayaran apa saja yang diterima?</h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Kami menerima transfer bank, kartu kredit/debit, dan e-wallet (OVO, GoPay, DANA, LinkAja).
             </p>
           </div>
-          <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
+          <div class="bg-white rounded-xl shadow-lg p-4 sm:p-5 md:p-6">
             <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">Apakah data saya aman?</h3>
             <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
               Sangat aman! Data Anda dienkripsi dengan standar industri dan tersimpan di server lokal Indonesia. Backup otomatis setiap hari.

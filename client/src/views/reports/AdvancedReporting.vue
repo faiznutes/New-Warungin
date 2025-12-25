@@ -9,14 +9,14 @@
       <div class="flex gap-3">
         <button
           @click="showTemplateModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           <span>Create Template</span>
         </button>
         <button
           @click="showScheduleModal = true"
-          class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+          class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">schedule</span>
           <span>Schedule Report</span>
@@ -62,7 +62,7 @@
         <p class="text-slate-500 text-center max-w-md mb-4">Create your first template to customize reports.</p>
         <button
           @click="showTemplateModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Create Template
@@ -72,7 +72,7 @@
         <div
           v-for="template in templates"
           :key="template.id"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-l-4 border-primary p-6 hover:shadow-lg transition"
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-primary p-6 hover:shadow-lg transition"
         >
           <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ template.name }}</h3>
           <p class="text-sm text-slate-500 mb-4">{{ template.description || 'No description' }}</p>
@@ -83,14 +83,14 @@
             <div class="flex gap-2">
               <button
                 @click="generateReport(template)"
-                class="px-3 py-1.5 text-xs font-medium bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition flex items-center gap-1"
+                class="px-3 py-1.5 text-xs font-medium bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-[16px]">play_arrow</span>
                 Generate
               </button>
               <button
                 @click="editTemplate(template)"
-                class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-[16px]">edit</span>
                 Edit
@@ -109,7 +109,7 @@
         <p class="text-slate-500 text-center max-w-md mb-4">Set up automated report delivery to your inbox.</p>
         <button
           @click="showScheduleModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Schedule Report
@@ -119,7 +119,7 @@
         <div
           v-for="report in scheduledReports"
           :key="report.id"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-l-4 p-6 hover:shadow-lg transition"
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 p-6 hover:shadow-lg transition"
           :class="getStatusBorderClass(report.status)"
         >
           <div class="flex items-start justify-between">
@@ -155,14 +155,14 @@
             <div class="flex flex-col gap-2 ml-4">
               <button
                 @click="editSchedule(report)"
-                class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-[16px]">edit</span>
                 Edit
               </button>
               <button
                 @click="deleteSchedule(report)"
-                class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+                class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-[16px]">delete</span>
                 Delete
@@ -175,7 +175,7 @@
 
     <!-- Dashboard Settings Tab -->
     <div v-if="activeTab === 'dashboard'" class="space-y-6">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
           <span class="material-symbols-outlined text-primary">dashboard_customize</span>
           Customize Dashboard Layout
@@ -209,7 +209,7 @@
           <button
             @click="saveDashboardSettings"
             :disabled="saving"
-            class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm disabled:opacity-50"
+            class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm disabled:opacity-50"
           >
             <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             <span class="material-symbols-outlined text-[20px]" v-else>save</span>
@@ -234,7 +234,7 @@
             </h3>
             <button
               @click="closeTemplateModal"
-              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition"
             >
               <span class="material-symbols-outlined text-slate-500">close</span>
             </button>
@@ -247,7 +247,7 @@
                 v-model="templateForm.name"
                 type="text"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
 
@@ -256,7 +256,7 @@
               <textarea
                 v-model="templateForm.description"
                 rows="3"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               ></textarea>
             </div>
 
@@ -265,7 +265,7 @@
               <select
                 v-model="templateForm.type"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Type</option>
                 <option value="SALES">Sales Report</option>
@@ -288,18 +288,18 @@
                     v-model="column.field"
                     type="text"
                     placeholder="Field name"
-                    class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                    class="flex-1 px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm"
                   />
                   <input
                     v-model="column.label"
                     type="text"
                     placeholder="Label"
-                    class="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                    class="flex-1 px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm"
                   />
                   <button
                     type="button"
                     @click="removeColumn(index)"
-                    class="px-3 py-2 text-sm bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition"
+                    class="px-3 py-2 text-sm bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition"
                   >
                     <span class="material-symbols-outlined text-[18px]">delete</span>
                   </button>
@@ -307,7 +307,7 @@
                 <button
                   type="button"
                   @click="addColumn"
-                  class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                  class="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                 >
                   <span class="material-symbols-outlined text-[18px]">add</span>
                   Add Column
@@ -319,14 +319,14 @@
               <button
                 type="button"
                 @click="closeTemplateModal"
-                class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+                class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
               >
                 <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 {{ saving ? 'Saving...' : 'Save Template' }}
@@ -343,7 +343,7 @@
       class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       @click.self="closeScheduleModal"
     >
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -352,7 +352,7 @@
             </h3>
             <button
               @click="closeScheduleModal"
-              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition"
             >
               <span class="material-symbols-outlined text-slate-500">close</span>
             </button>
@@ -364,7 +364,7 @@
               <select
                 v-model="scheduleForm.templateId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Template</option>
                 <option v-for="template in templates" :key="template.id" :value="template.id">
@@ -379,7 +379,7 @@
                 v-model="scheduleForm.schedule"
                 required
                 @change="updateScheduleConfig"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="DAILY">Daily</option>
                 <option value="WEEKLY">Weekly</option>
@@ -392,7 +392,7 @@
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Day of Week</label>
               <select
                 v-model="scheduleForm.scheduleConfig.dayOfWeek"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm"
               >
                 <option :value="1">Monday</option>
                 <option :value="2">Tuesday</option>
@@ -411,7 +411,7 @@
                 type="number"
                 min="1"
                 max="31"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm"
               />
             </div>
 
@@ -420,7 +420,7 @@
               <input
                 v-model="scheduleForm.scheduleConfig.time"
                 type="time"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm"
               />
             </div>
 
@@ -429,7 +429,7 @@
               <select
                 v-model="scheduleForm.format"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="PDF">PDF</option>
                 <option value="EXCEL">Excel</option>
@@ -445,7 +445,7 @@
                 rows="3"
                 placeholder="Enter email addresses, one per line"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               ></textarea>
             </div>
 
@@ -453,14 +453,14 @@
               <button
                 type="button"
                 @click="closeScheduleModal"
-                class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+                class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
               >
                 <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 {{ saving ? 'Saving...' : 'Save Schedule' }}

@@ -9,7 +9,7 @@
     </div>
 
     <!-- Tenant & Store Selection Area -->
-    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
        <!-- Tenant Selector (only for SUPER_ADMIN) -->
       <div v-if="authStore.isSuperAdmin">
         <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">
@@ -19,7 +19,7 @@
           <select
             v-model="selectedTenantId"
             @change="handleTenantChange"
-            class="w-full pl-4 pr-10 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
+            class="w-full pl-4 pr-10 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
             :class="{ 'border-red-300': !selectedTenantId && showError }"
           >
             <option value="">-- Pilih Tenant --</option>
@@ -42,7 +42,7 @@
 
         <!-- Selected Tenant Info Badge -->
         <div v-if="selectedTenant" class="mt-3 flex items-center gap-2">
-          <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 flex items-center gap-2">
+          <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 flex items-center gap-2">
              <span class="material-symbols-outlined text-emerald-500 text-[18px]">verified</span>
              <span class="text-sm text-[#0d141b] dark:text-white font-medium">{{ selectedTenant.name }}</span>
              <span class="w-px h-3 bg-slate-300 dark:bg-slate-600 mx-1"></span>
@@ -88,7 +88,7 @@
       </div>
 
       <!-- Tab Content (Scrollable Container) -->
-      <div class="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden relative">
+      <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden relative">
          <div class="absolute inset-0 overflow-auto p-6 animate-fade-in">
             <!-- Dashboard Tab -->
             <TenantDashboard v-if="activeTab === 'dashboard'" :tenant-id="selectedTenantId" />
@@ -112,7 +112,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else class="flex-1 flex items-center justify-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-10 animate-fade-in">
+    <div v-else class="flex-1 flex items-center justify-center bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-10 animate-fade-in">
       <div class="text-center max-w-md">
         <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-full inline-block mb-4">
            <span class="material-symbols-outlined text-5xl text-slate-300">storefront</span>

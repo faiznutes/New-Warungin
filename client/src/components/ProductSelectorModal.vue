@@ -5,7 +5,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
       @click.self="handleCancel"
     >
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
       <!-- Header -->
       <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
         <div>
@@ -37,7 +37,7 @@
                 v-model="filters.search"
                 type="text"
                 placeholder="Cari produk..."
-                class="block w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="block w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
           </div>
@@ -46,7 +46,7 @@
           <div>
             <select
               v-model="filters.category"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">Semua Kategori</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -57,7 +57,7 @@
           <div>
             <select
               v-model="filters.sortBy"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="name">Nama A-Z</option>
               <option value="name-desc">Nama Z-A</option>
@@ -106,7 +106,7 @@
           <label
             v-for="product in filteredProducts"
             :key="product.id"
-            class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-transparent hover:border-gray-200 transition"
+            class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-200 transition"
             :class="{ 'bg-primary-50 border-primary-200': isSelected(product.id) }"
           >
             <input
@@ -141,14 +141,14 @@
         <div class="flex space-x-3">
           <button
             @click="handleCancel"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
           >
             Batal
           </button>
           <button
             @click="handleConfirm"
             :disabled="selectedProducts.length === 0"
-            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Konfirmasi ({{ selectedProducts.length }})
           </button>

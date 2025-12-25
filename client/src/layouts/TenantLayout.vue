@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-[#f6f7f8] dark:bg-[#101922] font-display overflow-hidden">
+  <div class="flex h-screen bg-background-light dark:bg-background-dark font-display overflow-hidden">
     <!-- Sidebar - Main Tenant -->
     <aside
       class="w-64 bg-slate-50 dark:bg-[#1e293b] border-r border-[#e7edf3] dark:border-slate-700 flex flex-col h-full shrink-0 transition-all duration-300 fixed lg:relative z-50"
@@ -13,12 +13,12 @@
         <!-- Logo -->
         <div class="p-6 pb-2 shrink-0">
           <router-link to="/app/dashboard" class="flex flex-col gap-1 group">
-            <h1 class="text-[#137fec] text-xl font-bold leading-normal flex items-center gap-2">
+            <h1 class="text-primary text-xl font-bold leading-normal flex items-center gap-2">
                <span class="material-symbols-outlined icon-filled">storefront</span>
-               Warungin
+               {{ outletName }}
             </h1>
             <div class="flex items-center gap-2 pl-8">
-               <span class="text-[#4c739a] dark:text-slate-400 text-xs font-medium leading-normal">Tenant Panel</span>
+               <span class="text-[#4c739a] dark:text-slate-400 text-xs font-bold leading-normal truncate max-w-[150px]" :title="branchName">{{ branchName }}</span>
                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">Owner</span>
             </div>
           </router-link>
@@ -30,7 +30,7 @@
           <div class="mb-1">
             <button
               @click="toggleMenu('operasional')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-primary transition-colors mb-1"
             >
               <span>Operasional</span>
               <span 
@@ -44,9 +44,9 @@
             >
             <router-link
               to="/app/dashboard"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
-              exact-active-class="bg-[#137fec]/10 text-[#137fec]"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+              active-class="bg-primary/10 text-primary"
+              exact-active-class="bg-primary/10 text-primary"
               :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -56,9 +56,9 @@
 
             <router-link
               to="/app/dashboard-new"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
-              exact-active-class="bg-[#137fec]/10 text-[#137fec]"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+              active-class="bg-primary/10 text-primary"
+              exact-active-class="bg-primary/10 text-primary"
               :class="[$route.path === '/app/dashboard-new' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -70,8 +70,8 @@
 
             <router-link
               to="/app/products"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+              active-class="bg-primary/10 text-primary"
               :class="[$route.path.startsWith('/app/products') && !$route.path.includes('adjustments') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -82,7 +82,7 @@
             <router-link
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               to="/app/products/adjustments"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
               active-class="bg-[#137fec]/10 text-[#137fec]"
               :class="[$route.path === '/app/products/adjustments' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
@@ -93,7 +93,7 @@
 
             <router-link
               to="/app/orders"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
               active-class="bg-[#137fec]/10 text-[#137fec]"
               :class="[$route.path.startsWith('/app/orders') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
@@ -104,7 +104,7 @@
 
             <router-link
               to="/app/customers"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
               active-class="bg-[#137fec]/10 text-[#137fec]"
               :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
@@ -135,7 +135,7 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 exact-active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/reports' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
@@ -149,7 +149,7 @@
               <div v-if="hasBusinessAnalytics" class="space-y-1">
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                   active-class="bg-[#137fec]/10 text-[#137fec]"
                   :class="[$route.path === '/app/analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
@@ -160,7 +160,7 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                   active-class="bg-[#137fec]/10 text-[#137fec]"
                   :class="[$route.path === '/app/finance' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
@@ -171,7 +171,7 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                   active-class="bg-[#137fec]/10 text-[#137fec]"
                   :class="[$route.path === '/app/profit-loss' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
@@ -182,7 +182,7 @@
 
                 <router-link
                   to="/app/reports/advanced"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                   active-class="bg-[#137fec]/10 text-[#137fec]"
                   :class="[$route.path === '/app/reports/advanced' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
@@ -193,7 +193,7 @@
 
                 <router-link
                   to="/app/finance/management"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                   active-class="bg-[#137fec]/10 text-[#137fec]"
                   :class="[$route.path === '/app/finance/management' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
@@ -225,7 +225,7 @@
             >
               <router-link
                 to="/app/marketing"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/marketing' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -236,7 +236,7 @@
 
               <router-link
                 to="/app/marketing/email-templates"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/marketing/email-templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -247,7 +247,7 @@
 
               <router-link
                 to="/app/marketing/email-analytics"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/marketing/email-analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -258,7 +258,7 @@
 
               <router-link
                 to="/app/marketing/email-scheduler"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/marketing/email-scheduler' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -269,7 +269,7 @@
 
               <router-link
                 to="/app/marketing/customer-engagement"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/marketing/customer-engagement' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -280,7 +280,7 @@
 
               <router-link
                 to="/app/delivery"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/delivery' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -311,7 +311,7 @@
             >
               <router-link
                 to="/app/inventory/suppliers"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/inventory/suppliers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -322,7 +322,7 @@
 
               <router-link
                 to="/app/inventory/purchase-orders"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                  active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/inventory/purchase-orders' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -333,7 +333,7 @@
 
               <router-link
                 to="/app/inventory/stock-transfers"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                  active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/inventory/stock-transfers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -344,7 +344,7 @@
 
               <router-link
                 to="/app/inventory/stock-alerts"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                  active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/inventory/stock-alerts' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -375,7 +375,7 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/users') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -386,7 +386,7 @@
 
               <router-link
                 to="/app/stores"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/stores') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -397,7 +397,7 @@
 
               <router-link
                 to="/app/discounts"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/discounts') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -428,7 +428,7 @@
             >
               <router-link
                 to="/app/subscription"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -439,7 +439,7 @@
 
               <router-link
                 to="/app/addons"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -449,8 +449,19 @@
               </router-link>
 
               <router-link
+                to="/app/tenants/support"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+                active-class="bg-[#137fec]/10 text-[#137fec]"
+                :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+                @click="closeSidebarOnMobile"
+              >
+                <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                <span class="text-sm font-medium leading-normal">Bantuan</span>
+              </router-link>
+
+              <router-link
                 to="/app/rewards"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/rewards') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -461,7 +472,7 @@
 
               <router-link
                 to="/app/settings/store"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/settings/store' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -472,7 +483,7 @@
 
               <router-link
                 to="/app/receipts/templates"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path === '/app/receipts/templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -484,7 +495,7 @@
               <router-link
                 v-if="authStore.isSuperAdmin"
                 to="/app/settings/archive"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/settings/archive') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -496,7 +507,7 @@
               <router-link
                 v-if="authStore.isSuperAdmin"
                 to="/app/settings/retention"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#137fec]/10 text-[#137fec]"
                 :class="[$route.path.startsWith('/app/settings/retention') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
@@ -521,7 +532,7 @@
           </div>
           <button
             @click="handleLogout"
-            class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold text-[#4c739a] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors w-full border border-transparent hover:border-red-100"
+            class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-bold text-[#4c739a] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors w-full border border-transparent hover:border-red-100"
           >
             <span class="material-symbols-outlined text-[18px]">logout</span>
             <span>Keluar</span>
@@ -538,21 +549,21 @@
     ></div>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-w-0 w-full bg-[#f6f7f8] dark:bg-[#101922]">
+    <div class="flex-1 flex flex-col min-w-0 w-full bg-background-light dark:bg-background-dark">
       <!-- Top Bar -->
       <header class="bg-slate-50 dark:bg-[#1e293b] border-b border-[#e7edf3] dark:border-slate-700 shadow-sm sticky top-0 z-30 shrink-0">
         <div class="flex items-center justify-between px-6 py-4">
            <div class="flex items-center gap-4">
               <button
                 @click="sidebarOpen = !sidebarOpen"
-                class="lg:hidden p-2 text-[#4c739a] hover:bg-slate-100 rounded-lg transition-colors"
+                class="lg:hidden p-2 text-[#4c739a] hover:bg-slate-100 rounded-xl transition-colors"
                 aria-label="Toggle menu"
               >
                 <span class="material-symbols-outlined">menu</span>
               </button>
               <div>
                 <nav class="flex items-center gap-2 text-sm text-[#4c739a] dark:text-slate-400 mb-1">
-                  <span class="hover:text-[#137fec] transition-colors cursor-pointer">App</span>
+                  <span class="hover:text-primary transition-colors cursor-pointer">App</span>
                   <span class="text-xs">/</span>
                   <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
                 </nav>
@@ -561,17 +572,33 @@
            </div>
            
           <div class="flex items-center gap-4">
+             <!-- System Status -->
+             <div class="hidden lg:flex items-center gap-4 mr-2">
+               <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                 <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
+                 <span class="text-xs font-bold text-[#4c739a] dark:text-slate-400 capitalize">{{ isOnline ? 'Online' : 'Offline' }}</span>
+               </div>
+               <div class="px-3 py-1.5 bg-[#0d141b] dark:bg-white text-white dark:text-[#0d141b] rounded-xl shadow-md font-mono text-sm font-bold tracking-wider border border-[#2a3036] dark:border-slate-200">
+                 {{ currentTime }}
+               </div>
+             </div>
              <!-- Search (Optional) -->
-             <div class="hidden md:flex items-center bg-[#e7edf3] dark:bg-slate-700 rounded-lg px-3 py-2 w-64 focus-within:ring-2 ring-[#137fec]/50 transition-all">
+             <div class="hidden md:flex items-center bg-[#e7edf3] dark:bg-slate-700 rounded-xl px-3 py-2 w-64 focus-within:ring-2 ring-primary/50 transition-all">
                 <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400 text-[20px]">search</span>
-                <input class="bg-transparent border-none text-sm w-full focus:ring-0 text-[#0d141b] dark:text-white placeholder:text-[#4c739a] dark:placeholder:text-slate-400" placeholder="Search..." type="text"/>
+                <input 
+                  v-model="searchQuery"
+                  @keyup.enter="handleGlobalSearch"
+                  class="bg-transparent border-none text-sm w-full focus:ring-0 text-[#0d141b] dark:text-white placeholder:text-[#4c739a] dark:placeholder:text-slate-400" 
+                  placeholder="Search products, orders..." 
+                  type="text"
+                />
               </div>
 
             <!-- Notification Button for Admin Tenant -->
             <button
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               @click="showInfoModal = true"
-              class="relative p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              class="relative p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
               title="Informasi Penting"
             >
               <span class="material-symbols-outlined">notifications</span>
@@ -608,11 +635,13 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { safeArrayMethod } from '../utils/array-helpers';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { useSystemStatus } from '../composables/useSystemStatus';
 import AdminInfoModal from '../components/AdminInfoModal.vue';
 import api from '../api';
 
 const route = useRoute();
 const authStore = useAuthStore();
+const { isOnline, currentTime, outletName, branchName } = useSystemStatus();
 
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
@@ -1032,6 +1061,22 @@ const pageTitle = computed(() => {
   return titles[route.path] || 'Dashboard';
 });
 
+// Search functionality
+const searchQuery = ref('');
+const handleGlobalSearch = () => {
+  if (!searchQuery.value) return;
+  // TODO: Implement global search navigation or filtered view
+  console.log('Searching for:', searchQuery.value);
+  // For now, redirect to relevant page based on keyword if possible
+  if (searchQuery.value.toLowerCase().includes('produk') || searchQuery.value.toLowerCase().includes('product')) {
+    router.push('/app/products');
+  } else if (searchQuery.value.toLowerCase().includes('order') || searchQuery.value.toLowerCase().includes('pesan')) {
+    router.push('/app/orders');
+  } else if (searchQuery.value.toLowerCase().includes('cust') || searchQuery.value.toLowerCase().includes('pelanggan')) {
+    router.push('/app/customers');
+  }
+};
+
 const closeSidebarOnMobile = () => {
   if (windowWidth.value < 1024) {
     sidebarOpen.value = false;
@@ -1048,19 +1093,19 @@ const handleResize = () => {
 };
 
 const handleLogout = () => {
-  // Clear auth synchronously to prevent any flash
   authStore.clearAuth();
-  // Use replace instead of href to avoid history entry and flash
   window.location.replace('/login');
 };
 
 onMounted(() => {
   windowWidth.value = window.innerWidth;
+  // Initialize responsive state correctly
   if (windowWidth.value >= 1024) {
     sidebarOpen.value = true;
+  } else {
+    sidebarOpen.value = false;
   }
   
-  // Check and show info modal for Admin Tenant (once per day)
   if (checkShouldShowInfo()) {
     showInfoModal.value = true;
   }

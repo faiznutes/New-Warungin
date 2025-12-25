@@ -9,35 +9,35 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#3f68e4', // Royal Blue
-          hover: '#3558c7',
-          light: '#eef2ff',
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          200: '#BFDBFE',
-          300: '#93C5FD',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-          800: '#1E40AF',
-          900: '#1E3A8A',
+          DEFAULT: '#137fec', // V3 Primary Blue
+          hover: '#0f6bd0',   // Darker shade for hover
+          light: '#e7f2fd',   // Lighter shade for bg
+          50: '#f0f7fe',
+          100: '#e0effd',
+          200: '#b9dcfb',
+          300: '#7cc0f8',
+          400: '#36a0f4',
+          500: '#137fec',     // Base
+          600: '#0663cc',
+          700: '#064fa4',
+          800: '#084384',
+          900: '#0c386d',
         },
-        'primary-hover': '#3558c7',
-        'primary-light': '#eef2ff',
-        'background-light': '#ffffff', // User requested All White
-        'background-dark': '#111521',
+        'primary-hover': '#0f6bd0',
+        'primary-light': '#e7f2fd',
+        'background-light': '#f6f7f8', // V3 Light BG
+        'background-dark': '#101922',  // V3 Dark BG
         'surface-light': '#ffffff',
-        'surface-dark': '#1e2330',
-        'text-primary': '#0e111b',
-        'text-secondary': '#506295',
+        'surface-dark': '#1e293b',     // Updated to match V3 sidebar dark mode
+        'text-primary': '#0d141b',
+        'text-secondary': '#4c739a',
       },
       fontFamily: {
         "display": ["Inter", "sans-serif"]
       },
       boxShadow: {
         "soft": "0 2px 10px rgba(0, 0, 0, 0.03)",
-        "card": "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
       },
     },
   },

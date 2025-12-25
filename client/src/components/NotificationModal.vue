@@ -7,7 +7,7 @@
         @click.self="handleClose"
       >
         <div
-          class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all"
+          class="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all"
           :class="modalClass"
         >
           <!-- Icon & Title -->
@@ -35,13 +35,13 @@
             <button
               v-if="type === 'confirm'"
               @click="handleCancel"
-              class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
             >
               {{ cancelText }}
             </button>
             <button
               @click="handleConfirm"
-              class="flex-1 px-4 py-2.5 rounded-lg font-medium transition"
+              class="flex-1 px-4 py-2.5 rounded-xl font-medium transition"
               :class="confirmButtonClass"
             >
               {{ confirmText }}

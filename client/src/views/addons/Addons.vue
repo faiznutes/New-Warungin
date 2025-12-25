@@ -6,34 +6,34 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Addon Management</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage addons and additional services for tenants.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Addon Management</h2>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Manage addons and additional services for tenants.</p>
       </div>
     </div>
 
     <!-- Tenant Selection Message -->
-    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+    <div v-if="needsTenantSelection" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
       <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-full mb-4">
         <span class="material-symbols-outlined text-4xl text-slate-400">storefront</span>
       </div>
-      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Select a Tenant First</h3>
-      <p class="text-slate-500 text-sm text-center max-w-md">Please select a tenant from the dropdown above to view and manage their addons.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">Select a Tenant First</h3>
+      <p class="text-[#4c739a] text-sm text-center max-w-md">Please select a tenant from the dropdown above to view and manage their addons.</p>
     </div>
 
-    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-slate-500 text-sm font-medium">Loading addon data...</p>
+      <p class="text-[#4c739a] text-sm font-medium">Loading addon data...</p>
     </div>
 
     <div v-else class="flex flex-col gap-8">
       <!-- Active Addons -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-2 mb-6">
           <span class="material-symbols-outlined text-primary">check_circle</span>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Active Addons</h3>
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Active Addons</h3>
         </div>
 
-        <div v-if="activeAddons.length === 0" class="text-center py-10 text-slate-500 text-sm bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">
+        <div v-if="activeAddons.length === 0" class="text-center py-10 text-[#4c739a] text-sm bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
           No active addons for this tenant yet.
         </div>
 
@@ -41,18 +41,18 @@
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
-            class="group relative bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-primary/30 transition-all"
+            class="group relative bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:border-primary/30 transition-all"
           >
             <div class="flex items-start justify-between mb-3">
-              <h4 class="font-bold text-slate-900 dark:text-white">{{ addon.addonName }}</h4>
-              <span class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100 rounded-lg">Active</span>
+              <h4 class="font-bold text-[#0d141b] dark:text-white">{{ addon.addonName }}</h4>
+              <span class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100 rounded-xl">Active</span>
             </div>
-            <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ getAddonDescription(addon) }}</p>
+            <p class="text-sm text-[#4c739a] mb-4 line-clamp-2">{{ getAddonDescription(addon) }}</p>
             
             <div v-if="addon.limit" class="space-y-2 mb-4">
               <div class="flex items-center justify-between text-xs font-medium">
-                <span class="text-slate-500">Usage</span>
-                <span :class="addon.isLimitReached ? 'text-red-500' : 'text-slate-900 dark:text-white'">
+                <span class="text-[#4c739a]">Usage</span>
+                <span :class="addon.isLimitReached ? 'text-red-500' : 'text-[#0d141b] dark:text-white'">
                   {{ addon.currentUsage }} / {{ addon.limit }}
                 </span>
               </div>
@@ -67,7 +67,7 @@
 
             <button
               @click="unsubscribeAddon(addon.addonId)"
-              class="w-full px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-lg transition-colors mt-auto"
+              class="w-full px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-xl transition-colors mt-auto"
             >
               Nonaktifkan Layanan
             </button>
@@ -95,7 +95,7 @@
           >
             <div class="flex items-start justify-between mb-2">
               <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ addon.name }}</h4>
-              <span v-if="addon.comingSoon" class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-lg">
+              <span v-if="addon.comingSoon" class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-xl">
                 Coming Soon
               </span>
             </div>
@@ -115,21 +115,21 @@
             <div class="flex gap-3">
               <button
                 @click="showAddonDetail(addon)"
-                class="flex-1 px-3 py-2 text-sm text-[#4c739a] hover:text-[#0d141b] bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg font-medium transition-colors"
+                class="flex-1 px-3 py-2 text-sm text-[#4c739a] hover:text-[#0d141b] bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl font-medium transition-colors"
               >
                 Detail
               </button>
               <button
                 v-if="!addon.comingSoon"
                 @click="subscribeAddon(addon)"
-                class="flex-1 px-3 py-2 text-sm bg-[#137fec] text-white hover:bg-blue-600 shadow-sm hover:shadow-blue-500/30 rounded-lg font-bold transition-all"
+                class="flex-1 px-3 py-2 text-sm bg-[#137fec] text-white hover:bg-blue-600 shadow-sm hover:shadow-blue-500/30 rounded-xl font-bold transition-all"
               >
                 Beli
               </button>
               <button
                 v-else
                 disabled
-                class="flex-1 px-3 py-2 text-sm bg-slate-200 text-slate-400 rounded-lg font-medium cursor-not-allowed"
+                class="flex-1 px-3 py-2 text-sm bg-slate-200 text-slate-400 rounded-xl font-medium cursor-not-allowed"
               >
                 Segera Hadir
               </button>
@@ -145,14 +145,14 @@
       class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
       @click.self="showDetailModal = false"
     >
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-start">
            <div>
               <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ selectedAddon.name }}</h3>
               <div class="flex items-center gap-2 mt-2">
                 <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(selectedAddon.price) }}</span>
                 <span class="text-[#4c739a]">/bulan</span>
-                <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-lg">Coming Soon</span>
+                <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-xl">Coming Soon</span>
               </div>
            </div>
           <button @click="showDetailModal = false" class="text-[#4c739a] hover:text-[#0d141b] transition-colors p-1 bg-slate-50 rounded-full">

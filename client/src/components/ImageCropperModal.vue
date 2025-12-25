@@ -5,7 +5,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="$emit('close')"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-bold text-gray-900">Crop Gambar</h3>
@@ -24,7 +24,7 @@
               Pilih area gambar yang ingin di-crop. Gambar akan di-upscale menjadi 200x200 pixels.
             </p>
             <div class="flex items-center justify-center mb-4">
-              <div class="w-32 h-32 border-2 border-dashed border-primary-500 rounded-lg flex items-center justify-center bg-gray-50">
+              <div class="w-32 h-32 border-2 border-dashed border-primary-500 rounded-xl flex items-center justify-center bg-gray-50">
                 <span class="text-xs text-gray-500 text-center px-2">Output: 200x200<br/>(Auto Upscale)</span>
               </div>
             </div>
@@ -34,7 +34,7 @@
           </div>
 
           <div class="mb-6">
-            <div ref="imageContainer" class="flex justify-center max-h-96 overflow-auto relative">
+            <div class="flex justify-center max-h-96 overflow-auto relative">
               <div class="relative inline-block">
                 <img
                   ref="imageElement"
@@ -63,7 +63,7 @@
             <button
               type="button"
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
             >
               Batal
             </button>
@@ -71,7 +71,7 @@
               type="button"
               @click="handleCrop"
               :disabled="cropping"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ cropping ? 'Memproses...' : 'Crop & Simpan' }}
             </button>
@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 import { Teleport } from 'vue';
 import { useNotification } from '../composables/useNotification';
 
@@ -102,7 +102,6 @@ const emit = defineEmits<{
 }>();
 
 const imageElement = ref<HTMLImageElement | null>(null);
-const imageContainer = ref<HTMLElement | null>(null);
 const cropBox = ref<HTMLElement | null>(null);
 const cropping = ref(false);
 

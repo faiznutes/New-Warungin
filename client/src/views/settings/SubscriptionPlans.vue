@@ -2,14 +2,14 @@
   <div class="flex flex-col gap-8">
     <!-- Header -->
     <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Subscription Plans</h2>
-      <p class="text-slate-500 dark:text-slate-400 mt-1">Choose the plan that fits your business needs</p>
+      <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Subscription Plans</h2>
+      <p class="text-[#4c739a] dark:text-slate-400 mt-1">Choose the plan that fits your business needs</p>
     </div>
 
     <!-- Current Plan Banner -->
     <div
       v-if="currentPlan"
-      class="p-5 rounded-2xl border-l-4"
+      class="p-5 rounded-xl border-l-4"
       :class="getPlanBannerClass(currentPlan.plan)"
     >
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -27,30 +27,30 @@
           <p class="text-2xl font-bold" :class="getPlanTextClass(currentPlan.plan)">
             {{ getPlanPrice(currentPlan.plan) }}
           </p>
-          <p class="text-sm text-slate-500">per month</p>
+          <p class="text-sm text-[#4c739a]">per month</p>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-slate-500">Loading plans...</p>
+      <p class="text-[#4c739a]">Loading plans...</p>
     </div>
 
     <!-- Plans Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- BASIC Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6"
         :class="currentPlan?.plan === 'BASIC' ? 'border-primary ring-2 ring-primary/20' : 'border-slate-100 dark:border-slate-700'"
       >
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🎟️ BASIC</h3>
-          <p class="text-slate-500 mb-4">Small Business</p>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">🎟️ BASIC</h3>
+          <p class="text-[#4c739a] mb-4">Small Business</p>
           <div class="mb-4">
-            <span class="text-3xl font-bold text-slate-900 dark:text-white">Rp 149k</span>
-            <span class="text-slate-500">/month</span>
+            <span class="text-3xl font-bold text-[#0d141b] dark:text-white">Rp 149k</span>
+            <span class="text-[#4c739a]">/month</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -106,9 +106,9 @@
         <button
           @click="handleUpgrade('BASIC')"
           :disabled="currentPlan?.plan === 'BASIC' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
           :class="currentPlan?.plan === 'BASIC' 
-            ? 'bg-slate-100 text-slate-500 cursor-not-allowed' 
+            ? 'bg-slate-100 text-[#4c739a] cursor-not-allowed' 
             : 'bg-slate-600 text-white hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">check_circle</span>
@@ -118,7 +118,7 @@
 
       <!-- PRO Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6 relative"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6 relative"
         :class="currentPlan?.plan === 'PRO' ? 'border-primary ring-2 ring-primary/20' : 'border-primary/30'"
       >
         <div
@@ -128,11 +128,11 @@
           POPULAR
         </div>
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">⚡ PRO</h3>
-          <p class="text-slate-500 mb-4">Medium-Large Business</p>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">⚡ PRO</h3>
+          <p class="text-[#4c739a] mb-4">Medium-Large Business</p>
           <div class="mb-4">
             <span class="text-3xl font-bold text-primary">Rp 299k</span>
-            <span class="text-slate-500">/month</span>
+            <span class="text-[#4c739a]">/month</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -188,7 +188,7 @@
         <button
           @click="handleUpgrade('PRO')"
           :disabled="currentPlan?.plan === 'PRO' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
           :class="currentPlan?.plan === 'PRO' 
             ? 'bg-primary/20 text-primary cursor-not-allowed' 
             : 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/30'"
@@ -200,15 +200,15 @@
 
       <!-- MAX Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border-2 p-6"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6"
         :class="currentPlan?.plan === 'ENTERPRISE' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-100 dark:border-slate-700'"
       >
         <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🔴 MAX</h3>
-          <p class="text-slate-500 mb-4">Large Business / Semi Enterprise</p>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">🔴 MAX</h3>
+          <p class="text-[#4c739a] mb-4">Large Business / Semi Enterprise</p>
           <div class="mb-4">
             <span class="text-3xl font-bold text-purple-600">Custom</span>
-            <span class="text-slate-500 block text-sm mt-1">Contact sales</span>
+            <span class="text-[#4c739a] block text-sm mt-1">Contact sales</span>
           </div>
         </div>
         <ul class="space-y-3 mb-6">
@@ -264,7 +264,7 @@
         <button
           @click="handleUpgrade('ENTERPRISE')"
           :disabled="currentPlan?.plan === 'ENTERPRISE' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
           :class="currentPlan?.plan === 'ENTERPRISE' 
             ? 'bg-purple-100 text-purple-700 cursor-not-allowed' 
             : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-500/30'"
@@ -278,7 +278,7 @@
     <!-- Limit Warning Banner -->
     <div
       v-if="limitWarning"
-      class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-5 rounded-2xl"
+      class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-5 rounded-xl"
     >
       <div class="flex items-start gap-3">
         <span class="material-symbols-outlined text-amber-600">warning</span>

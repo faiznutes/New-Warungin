@@ -12,7 +12,7 @@
         <div class="bg-white rounded-xl shadow-xl p-5 sm:p-6 md:p-8 space-y-6 sm:space-y-8 border border-gray-100">
           <section class="pb-4 sm:pb-6 border-b border-gray-200">
             <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <span class="text-primary-600 font-bold text-base sm:text-lg">1</span>
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-gray-900">1. Penerimaan Syarat & Ketentuan</h2>
@@ -25,7 +25,7 @@
 
           <section class="pb-6 border-b border-gray-200">
             <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                 <span class="text-primary-600 font-bold text-lg">2</span>
               </div>
               <h2 class="text-2xl font-bold text-gray-900">2. Deskripsi Layanan Sistem Kasir</h2>
@@ -39,7 +39,7 @@
 
           <section class="pb-6 border-b border-gray-200">
             <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                 <span class="text-primary-600 font-bold text-lg">3</span>
               </div>
               <h2 class="text-2xl font-bold text-gray-900">3. Berlangganan & Pembayaran Paket</h2>
@@ -56,7 +56,7 @@
 
           <section class="pb-6 border-b border-gray-200">
             <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                 <span class="text-primary-600 font-bold text-lg">4</span>
               </div>
               <h2 class="text-2xl font-bold text-gray-900">4. Data & Privasi Pengguna</h2>
@@ -73,7 +73,7 @@
 
           <section>
             <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
                 <span class="text-primary-600 font-bold text-lg">5</span>
               </div>
               <h2 class="text-2xl font-bold text-gray-900">5. Tanggung Jawab Pengguna Sistem</h2>
@@ -89,7 +89,7 @@
         <div class="mt-12 text-center">
           <router-link
             to="/"
-            class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

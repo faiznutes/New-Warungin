@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click.self="close"
   >
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-xl font-bold text-gray-900">Pembayaran {{ itemName }}</h3>
@@ -18,7 +18,7 @@
           </button>
         </div>
 
-        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+        <div class="mb-4 p-4 bg-gray-50 rounded-xl">
           <div class="flex justify-between items-center mb-2">
             <span class="text-gray-700">Total Pembayaran:</span>
             <span class="text-2xl font-bold text-primary-600">{{ formatCurrency(amount) }}</span>
@@ -33,14 +33,14 @@
             <div class="text-gray-600 font-medium">Memuat halaman pembayaran...</div>
           </div>
         </div>
-        <div v-else-if="error" class="p-4 bg-red-50 rounded-lg mb-4">
+        <div v-else-if="error" class="p-4 bg-red-50 rounded-xl mb-4">
           <p class="text-red-700">{{ error }}</p>
         </div>
 
         <div class="flex space-x-3 mt-4">
           <button
             @click="close"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-medium"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium"
           >
             Batal
           </button>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, watch, onUnmounted, nextTick } from 'vue';
 import { formatCurrency } from '../utils/formatters';
 import api from '../api';
 
@@ -167,7 +167,7 @@ const createPayment = async () => {
       } catch (err: any) {
         console.error('Failed to load Snap.js:', err);
         error.value = err.message || 'Gagal memuat Midtrans Snap.js';
-        emit('error', error.value);
+        emit('error', error.value as string);
         loading.value = false;
         return;
       }
@@ -242,7 +242,7 @@ const createPayment = async () => {
             onError: (result: any) => {
               console.error('Payment error:', result);
               error.value = result.status_message || 'Pembayaran gagal';
-              emit('error', error.value);
+              emit('error', error.value as string);
             },
             onClose: () => {
               console.log('Payment modal closed');
@@ -253,7 +253,7 @@ const createPayment = async () => {
         } catch (embedError: any) {
           console.error('Failed to embed Snap.js:', embedError);
           error.value = embedError.message || 'Gagal memuat halaman pembayaran';
-          emit('error', error.value);
+          emit('error', error.value as string);
         }
       } else {
         console.error('Snap.js not available:', {
@@ -265,12 +265,12 @@ const createPayment = async () => {
       }
     } else {
       error.value = response.data.message || 'Gagal membuat pembayaran';
-      emit('error', error.value);
+      emit('error', error.value as string);
     }
   } catch (err: any) {
     console.error('Error creating payment:', err);
     error.value = err.response?.data?.message || 'Gagal membuat pembayaran';
-    emit('error', error.value);
+    emit('error', error.value as string);
   } finally {
     loading.value = false;
   }

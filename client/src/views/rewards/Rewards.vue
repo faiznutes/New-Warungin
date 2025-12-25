@@ -95,7 +95,7 @@
     <div v-if="activeTab === 'earn'" class="space-y-6">
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 rounded-lg">
+          <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 rounded-xl">
             <span class="material-symbols-outlined">videocam</span>
           </div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">Watch Ads to Earn Points</h2>
@@ -140,7 +140,7 @@
       <!-- Subscription Redeem -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-primary/10 text-primary rounded-lg">
+          <div class="p-2 bg-primary/10 text-primary rounded-xl">
             <span class="material-symbols-outlined">card_membership</span>
           </div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Subscription</h2>
@@ -170,7 +170,7 @@
               <button
                 @click="redeemSubscription(plan)"
                 :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
-                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
+                class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
               >
                 {{ redeeming ? 'Processing...' : 'Redeem' }}
               </button>
@@ -182,7 +182,7 @@
       <!-- Addon Redeem -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-lg">
+          <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-xl">
             <span class="material-symbols-outlined">extension</span>
           </div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Add-ons</h2>
@@ -212,7 +212,7 @@
               <button
                 @click="redeemAddon(addon)"
                 :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
+                class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
               >
                 {{ redeeming ? 'Processing...' : 'Redeem' }}
               </button>
@@ -227,7 +227,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700">
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-lg">
+            <div class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl">
               <span class="material-symbols-outlined">history</span>
             </div>
             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Points Transaction History</h2>

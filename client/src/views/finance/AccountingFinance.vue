@@ -1,22 +1,22 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Accounting & Finance</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Complete financial reports: Balance Sheet, Cash Flow and analysis.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Accounting & Finance</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Complete financial reports: Balance Sheet, Cash Flow and analysis.</p>
       </div>
       <div class="flex items-center gap-3">
         <button
           @click="showPeriodModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary text-slate-600 dark:text-slate-400 rounded-lg text-sm font-medium transition-all bg-white dark:bg-slate-800"
+          class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary text-[#4c739a] dark:text-slate-400 rounded-xl text-sm font-medium transition-all bg-white dark:bg-slate-800 shadow-sm"
         >
           <span class="material-symbols-outlined text-[20px]">calendar_today</span>
           <span>Select Period</span>
         </button>
         <button
           @click="exportFinancialReport"
-          class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
+          class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-blue-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">file_download</span>
           <span>Export Report</span>
@@ -25,12 +25,12 @@
     </div>
 
     <!-- Financial Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Total Revenue -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
-             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Revenue</p>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Revenue</p>
              <p class="text-[10px] text-slate-400">Total income</p>
           </div>
           <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
@@ -38,22 +38,22 @@
           </div>
         </div>
         <div class="flex flex-col gap-1">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(financialSummary.revenue) }}</h3>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(financialSummary.revenue) }}</h3>
           <div class="flex items-center gap-1">
              <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded flex items-center">
                <span class="material-symbols-outlined text-[10px]">arrow_upward</span>
                {{ financialSummary.revenueGrowth }}%
              </span>
-             <span class="text-[10px] text-slate-400">vs last month</span>
+             <span class="text-[10px] text-[#4c739a]">vs last month</span>
           </div>
         </div>
       </div>
 
       <!-- Total Expenses -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
-             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Expenses</p>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Expenses</p>
              <p class="text-[10px] text-slate-400">Operating costs</p>
           </div>
           <div class="bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
@@ -61,16 +61,16 @@
           </div>
         </div>
         <div class="flex flex-col gap-1">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(financialSummary.expenses) }}</h3>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(financialSummary.expenses) }}</h3>
           <div class="h-4"></div> <!-- Spacer to align with growth indicator -->
         </div>
       </div>
 
       <!-- Net Profit -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
-             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Profit</p>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Profit</p>
              <p class="text-[10px] text-slate-400">Net income</p>
           </div>
           <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
@@ -78,16 +78,16 @@
           </div>
         </div>
         <div class="flex flex-col gap-1">
-          <h3 class="text-2xl font-bold" :class="financialSummary.profit >= 0 ? 'text-slate-900 dark:text-white' : 'text-red-600'">{{ formatCurrency(financialSummary.profit) }}</h3>
+          <h3 class="text-2xl font-bold" :class="financialSummary.profit >= 0 ? 'text-[#0d141b] dark:text-white' : 'text-red-600'">{{ formatCurrency(financialSummary.profit) }}</h3>
           <div class="h-4"></div>
         </div>
       </div>
 
       <!-- Profit Margin -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
-             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Profit Margin</p>
+             <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Profit Margin</p>
              <p class="text-[10px] text-slate-400">Margin percentage</p>
           </div>
           <div class="bg-purple-50 dark:bg-purple-900/30 p-2 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
@@ -95,27 +95,27 @@
           </div>
         </div>
         <div class="flex flex-col gap-1">
-          <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ financialSummary.profitMargin }}%</h3>
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ financialSummary.profitMargin }}%</h3>
           <div class="h-4"></div>
         </div>
       </div>
     </div>
 
     <!-- Financial Reports Tabs & Content -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden flex-1 flex flex-col">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex-1 flex flex-col">
       <!-- Tabs -->
       <div class="flex border-b border-slate-100 dark:border-slate-700 px-6 pt-4 gap-6">
         <button
           @click="activeTab = 'balance-sheet'"
           class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
-          :class="activeTab === 'balance-sheet' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900'"
+          :class="activeTab === 'balance-sheet' ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
         >
           Balance Sheet
         </button>
         <button
           @click="activeTab = 'cash-flow'"
           class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
-          :class="activeTab === 'cash-flow' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-900'"
+          :class="activeTab === 'cash-flow' ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
         >
           Cash Flow
         </button>
@@ -126,33 +126,33 @@
         <!-- Balance Sheet -->
         <div v-if="activeTab === 'balance-sheet'" class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
           <!-- Assets -->
-          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
-            <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-4 flex items-center gap-2">
+          <div class="bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
+            <h4 class="font-bold text-[#0d141b] dark:text-white text-lg mb-4 flex items-center gap-2">
                <span class="material-symbols-outlined text-emerald-500">account_balance</span>
                Assets
             </h4>
             <div class="space-y-3">
               <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
-                <span class="text-slate-500 dark:text-slate-400">Cash & Bank</span>
-                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.cash) }}</span>
+                <span class="text-[#4c739a] dark:text-slate-400">Cash & Bank</span>
+                <span class="font-semibold text-[#0d141b] dark:text-white">{{ formatCurrency(balanceSheet.cash) }}</span>
               </div>
               <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
-                <span class="text-slate-500 dark:text-slate-400">Accounts Receivable</span>
-                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.receivables) }}</span>
+                <span class="text-[#4c739a] dark:text-slate-400">Accounts Receivable</span>
+                <span class="font-semibold text-[#0d141b] dark:text-white">{{ formatCurrency(balanceSheet.receivables) }}</span>
               </div>
               <div class="flex justify-between items-center text-sm py-2 border-b border-slate-200/50 dark:border-slate-700/50">
-                <span class="text-slate-500 dark:text-slate-400">Inventory</span>
-                <span class="font-semibold text-slate-900 dark:text-white">{{ formatCurrency(balanceSheet.inventory) }}</span>
+                <span class="text-[#4c739a] dark:text-slate-400">Inventory</span>
+                <span class="font-semibold text-[#0d141b] dark:text-white">{{ formatCurrency(balanceSheet.inventory) }}</span>
               </div>
               <div class="flex justify-between items-center pt-3 mt-2">
-                <span class="font-bold text-slate-900 dark:text-white">Total Assets</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">Total Assets</span>
                 <span class="font-bold text-primary text-lg">{{ formatCurrency(balanceSheet.totalAssets) }}</span>
               </div>
             </div>
           </div>
           
           <!-- Pasiva -->
-          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
+          <div class="bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700 h-fit">
             <h4 class="font-bold text-[#0d141b] dark:text-white text-lg mb-4 flex items-center gap-2">
                <span class="material-symbols-outlined text-orange-500">account_balance_wallet</span>
                Pasiva (Liabilities & Equity)
@@ -178,7 +178,7 @@
         <div v-if="activeTab === 'cash-flow'" class="space-y-6 animate-fade-in max-w-4xl mx-auto">
           <!-- Operasi -->
           <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+             <div class="bg-[#f8fafc] dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                  <span class="material-symbols-outlined text-blue-500">work</span>
                  Aktivitas Operasi
@@ -199,12 +199,12 @@
 
           <!-- Investasi -->
           <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+             <div class="bg-[#f8fafc] dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                  <span class="material-symbols-outlined text-purple-500">trending_up</span>
                  Aktivitas Investasi
                </h4>
-               <span class="font-bold" :class="cashFlow.investing.net >= 0 ? 'text-[#137fec]' : 'text-slate-500'">{{ formatCurrency(cashFlow.investing.net) }}</span>
+               <span class="font-bold" :class="cashFlow.investing.net >= 0 ? 'text-[#137fec]' : 'text-[#4c739a]'">{{ formatCurrency(cashFlow.investing.net) }}</span>
              </div>
              <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
                 <div class="flex justify-between items-center text-sm ml-8">
@@ -216,7 +216,7 @@
 
           <!-- Pendanaan -->
           <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-             <div class="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+             <div class="bg-[#f8fafc] dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
                  <span class="material-symbols-outlined text-orange-500">attach_money</span>
                  Aktivitas Pendanaan

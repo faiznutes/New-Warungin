@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Purchase Order</span>
@@ -21,7 +21,7 @@
         <select
           v-model="statusFilter"
           @change="loadPurchaseOrders"
-          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -33,7 +33,7 @@
         <select
           v-model="supplierFilter"
           @change="loadPurchaseOrders"
-          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="">All Suppliers</option>
           <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
@@ -55,7 +55,7 @@
       <p class="text-slate-500 text-center max-w-md mb-4">Create your first purchase order to start restocking products.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Create First PO
@@ -86,19 +86,19 @@
               Supplier: <span class="font-semibold text-slate-900 dark:text-white ml-1">{{ po.supplier.name }}</span>
             </p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
-              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Order Date</p>
                 <p class="font-semibold text-slate-900 dark:text-white">{{ formatDate(po.orderDate) }}</p>
               </div>
-              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Expected Date</p>
                 <p class="font-semibold text-slate-900 dark:text-white">{{ po.expectedDate ? formatDate(po.expectedDate) : '-' }}</p>
               </div>
-              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Amount</p>
                 <p class="font-semibold text-primary">Rp {{ formatCurrency(po.totalAmount) }}</p>
               </div>
-              <div class="bg-slate-50 dark:bg-slate-900 rounded-lg p-3">
+              <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Items</p>
                 <p class="font-semibold text-slate-900 dark:text-white">{{ po.items.length }} items</p>
               </div>
@@ -109,7 +109,7 @@
                 <div
                   v-for="item in po.items"
                   :key="item.id"
-                  class="flex items-center justify-between text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded-lg"
+                  class="flex items-center justify-between text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded-xl"
                 >
                   <div>
                     <span class="font-medium text-slate-900 dark:text-white">{{ item.product.name }}</span>
@@ -124,7 +124,7 @@
             <button
               v-if="po.status === 'PENDING'"
               @click="approvePurchaseOrder(po)"
-              class="px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/40 transition flex items-center gap-1"
+              class="px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-200 dark:hover:bg-green-900/40 transition flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">check</span>
               Approve
@@ -132,7 +132,7 @@
             <button
               v-if="po.status === 'ORDERED' || po.status === 'APPROVED'"
               @click="receivePurchaseOrder(po)"
-              class="px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/40 transition flex items-center gap-1"
+              class="px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/40 transition flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">inventory</span>
               Receive
@@ -140,14 +140,14 @@
             <button
               v-if="po.status !== 'RECEIVED' && po.status !== 'CANCELLED'"
               @click="cancelPurchaseOrder(po)"
-              class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+              class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">close</span>
               Cancel
             </button>
             <button
               @click="viewPurchaseOrder(po)"
-              class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+              class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
             >
               <span class="material-symbols-outlined text-[16px]">visibility</span>
               View
@@ -168,7 +168,7 @@
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                <div class="p-2 bg-primary/10 text-primary rounded-xl">
                   <span class="material-symbols-outlined">receipt_long</span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create Purchase Order</h3>
@@ -188,7 +188,7 @@
                   <select
                     v-model="poForm.supplierId"
                     required
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
                     <option value="">Select Supplier</option>
                     <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
@@ -201,7 +201,7 @@
                   <input
                     v-model="poForm.expectedDate"
                     type="date"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
               </div>
@@ -211,7 +211,7 @@
                 <textarea
                   v-model="poForm.notes"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                 ></textarea>
               </div>
 
@@ -221,7 +221,7 @@
                   <button
                     type="button"
                     @click="addItem"
-                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">add</span>
                     Add Item
@@ -231,13 +231,13 @@
                   <div
                     v-for="(item, index) in poForm.items"
                     :key="index"
-                    class="grid grid-cols-12 gap-2 items-end p-3 bg-slate-50 dark:bg-slate-900 rounded-lg"
+                    class="grid grid-cols-12 gap-2 items-end p-3 bg-slate-50 dark:bg-slate-900 rounded-xl"
                   >
                     <div class="col-span-5">
                       <select
                         v-model="item.productId"
                         required
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       >
                         <option value="">Select Product</option>
                         <option v-for="product in products" :key="product.id" :value="product.id">
@@ -252,7 +252,7 @@
                         min="1"
                         required
                         placeholder="Qty"
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />
                     </div>
                     <div class="col-span-3">
@@ -263,14 +263,14 @@
                         step="0.01"
                         required
                         placeholder="Unit Price"
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />
                     </div>
                     <div class="col-span-2 flex items-center justify-end">
                       <button
                         type="button"
                         @click="removeItem(index)"
-                        class="px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition flex items-center gap-1"
+                        class="px-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition flex items-center gap-1"
                       >
                         <span class="material-symbols-outlined text-[16px]">delete</span>
                         Remove
@@ -286,14 +286,14 @@
                   <button
                     type="button"
                     @click="closeModal"
-                    class="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                    class="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     :disabled="saving || poForm.items.length === 0"
-                    class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
+                    class="px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium shadow-lg shadow-primary/30"
                   >
                     {{ saving ? 'Saving...' : 'Create PO' }}
                   </button>

@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Webhook Tester</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Test, preview, and replay webhook deliveries</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Webhook Tester</h2>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Test, preview, and replay webhook deliveries</p>
       </div>
       <router-link
         to="/app/settings/webhooks"
-        class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition font-medium"
+        class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-medium"
       >
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         Back to Webhooks
@@ -19,12 +19,12 @@
       <!-- Left: Webhook Selection & Testing -->
       <div class="space-y-6">
         <!-- Webhook Selection -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Select Webhook</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Select Webhook</h3>
           <select
             v-model="selectedWebhookId"
             @change="loadWebhookDetails"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="">Select Webhook</option>
             <option v-for="webhook in webhooks" :key="webhook.id" :value="webhook.id">
@@ -34,17 +34,17 @@
 
           <div v-if="selectedWebhook" class="mt-4 space-y-3 text-sm">
             <div class="flex items-center justify-between">
-              <span class="text-slate-500">URL:</span>
-              <span class="font-medium text-slate-900 dark:text-white">{{ selectedWebhook.url }}</span>
+              <span class="text-[#4c739a]">URL:</span>
+              <span class="font-medium text-[#0d141b] dark:text-white">{{ selectedWebhook.url }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-500">Status:</span>
+              <span class="text-[#4c739a]">Status:</span>
               <span
                 :class="[
-                  'px-2.5 py-1 rounded-lg text-xs font-bold',
+                  'px-2.5 py-1 rounded-xl text-xs font-bold',
                   selectedWebhook.isActive
                     ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-slate-100 text-slate-600'
+                    : 'bg-slate-100 text-[#4c739a]'
                 ]"
               >
                 {{ selectedWebhook.isActive ? 'Active' : 'Inactive' }}
@@ -66,15 +66,15 @@
         </div>
 
         <!-- Test Webhook -->
-        <div v-if="selectedWebhook" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Test Webhook</h3>
+        <div v-if="selectedWebhook" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
+          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Test Webhook</h3>
           
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
               <select
                 v-model="testForm.event"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
               >
                 <option value="test.event">Test Event</option>
                 <option
@@ -88,20 +88,20 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Custom Payload (JSON)</label>
+              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Custom Payload (JSON)</label>
               <textarea
                 v-model="testForm.payload"
                 rows="8"
                 placeholder='{"test": true, "message": "Custom test payload"}'
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
               ></textarea>
-              <p class="text-xs text-slate-500 mt-1.5">Leave empty to use default test payload</p>
+              <p class="text-xs text-[#4c739a] mt-1.5">Leave empty to use default test payload</p>
             </div>
 
             <button
               @click="testWebhook"
               :disabled="testing"
-              class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
+              class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
             >
               <span class="material-symbols-outlined text-[20px]">send</span>
               {{ testing ? 'Testing...' : 'Test Webhook' }}
@@ -110,14 +110,14 @@
         </div>
 
         <!-- Preview Payload -->
-        <div v-if="selectedWebhook" class="bg-white rounded-lg shadow-md p-6">
+        <div v-if="selectedWebhook" class="bg-white rounded-xl shadow-md p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Preview Payload</h2>
-          <div class="bg-gray-50 rounded-lg p-4">
+          <div class="bg-gray-50 rounded-xl p-4">
             <pre class="text-xs overflow-x-auto">{{ previewPayload }}</pre>
           </div>
           <button
             @click="copyPayload"
-            class="mt-3 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
+            class="mt-3 px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition text-sm"
           >
             Copy Payload
           </button>
@@ -126,13 +126,13 @@
 
       <!-- Right: Delivery History -->
       <div class="space-y-6">
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-xl shadow-md p-6">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold text-gray-900">Delivery History</h2>
             <button
               v-if="selectedWebhookId"
               @click="loadDeliveries"
-              class="px-3 py-1 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm"
+              class="px-3 py-1 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition text-sm"
             >
               Refresh
             </button>
@@ -140,7 +140,7 @@
 
           <div v-if="!selectedWebhookId" class="flex flex-col items-center justify-center py-16 text-center">
             <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">webhook</span>
-            <p class="text-slate-500">Select a webhook to view delivery history</p>
+            <p class="text-[#4c739a]">Select a webhook to view delivery history</p>
           </div>
 
           <div v-else>
@@ -149,7 +149,7 @@
               <select
                 v-model="deliveryFilter.status"
                 @change="loadDeliveries"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 text-sm"
               >
                 <option value="">All Status</option>
                 <option value="SUCCESS">Success</option>
@@ -168,7 +168,7 @@
               <div
                 v-for="delivery in deliveries"
                 :key="delivery.id"
-                class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+                class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition"
               >
                 <div class="flex items-start justify-between mb-2">
                   <div class="flex-1">
@@ -231,7 +231,7 @@
 
               <div v-if="deliveries.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
                 <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">inbox</span>
-                <p class="text-slate-500">No delivery history yet</p>
+                <p class="text-[#4c739a]">No delivery history yet</p>
               </div>
             </div>
 
@@ -247,14 +247,14 @@
                 <button
                   @click="loadDeliveries(deliveryPagination.page - 1)"
                   :disabled="deliveryPagination.page === 1"
-                  class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="px-3 py-1 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   Previous
                 </button>
                 <button
                   @click="loadDeliveries(deliveryPagination.page + 1)"
                   :disabled="deliveryPagination.page === deliveryPagination.totalPages"
-                  class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="px-3 py-1 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   Next
                 </button>

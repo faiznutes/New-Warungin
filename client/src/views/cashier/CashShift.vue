@@ -1,36 +1,36 @@
 <template>
-  <div class="flex flex-col h-full p-4 sm:p-6">
+  <div class="flex flex-col h-full gap-6 p-6">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Cash & Physical Recap</h1>
-      <p class="text-sm sm:text-base text-gray-600">Manage cashier shifts and physical cash recap</p>
+    <div class="flex flex-col gap-1">
+      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Cash & Physical Recap</h1>
+      <p class="text-[#4c739a] dark:text-slate-400">Manage cashier shifts and physical cash recap</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- No Active Store Shift - Show Open Store Shift Form -->
-    <div v-else-if="!currentStoreShift" class="max-w-2xl mx-auto">
-      <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-2 border-dashed border-gray-300">
-        <div class="text-center mb-6">
-          <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">No Active Store Shift</h2>
-          <p class="text-gray-600">Please open a store shift first to start transactions</p>
+    <div v-else-if="!currentStoreShift" class="max-w-2xl mx-auto w-full">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 border-dashed border-slate-200 dark:border-slate-700 p-8">
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-[40px] text-slate-400">store_front</span>
+          </div>
+          <h2 class="text-xl font-bold text-[#0d141b] dark:text-white mb-2">No Active Store Shift</h2>
+          <p class="text-[#4c739a] dark:text-slate-400">Please open a store shift first to start transactions</p>
         </div>
 
-        <form @submit.prevent="handleOpenStoreShift" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+        <form @submit.prevent="handleOpenStoreShift" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white">
               Shift Type <span class="text-red-500">*</span>
             </label>
             <select
               v-model="openStoreShiftForm.shiftType"
               required
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
             >
               <option value="">Select Shift</option>
               <option value="pagi">Morning (06:00 - 12:00)</option>
@@ -38,32 +38,37 @@
               <option value="sore">Evening (18:00 - 24:00)</option>
               <option value="malam">Night (00:00 - 06:00)</option>
             </select>
-            <p class="text-xs text-gray-500 mt-1">Select the shift to open for this store</p>
+            <p class="text-xs text-[#4c739a]">Select the shift to open for this store</p>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white">
               Initial Cash (Optional)
             </label>
-            <input
-              v-model.number="openStoreShiftForm.modalAwal"
-              type="number"
-              step="0.01"
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c739a] font-bold">Rp</span>
+              <input
+                v-model.number="openStoreShiftForm.modalAwal"
+                type="number"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+                placeholder="0"
+              />
+            </div>              step="0.01"
               min="0"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+              class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
               placeholder="0"
             />
-            <p class="text-xs text-gray-500 mt-1">Initial cash for the shift (optional, can be filled when opening cashier cash shift)</p>
+            <p class="text-xs text-[#4c739a] mt-1">Initial cash for the shift (optional, can be filled when opening cashier cash shift)</p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-[#0d141b] mb-2">
               Notes (Optional)
             </label>
             <textarea
               v-model="openStoreShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -71,7 +76,7 @@
           <button
             type="submit"
             :disabled="openingStoreShift || !openStoreShiftForm.shiftType"
-            class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg v-if="openingStoreShift" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -84,61 +89,68 @@
     </div>
 
     <!-- Active Store Shift - Show Store Shift Info and Cash Shift Form -->
-    <div v-else-if="currentStoreShift && !currentShift" class="space-y-6">
+    <div v-else-if="currentStoreShift && !currentShift" class="space-y-6 max-w-2xl mx-auto w-full">
       <!-- Store Shift Info Card -->
-      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
-        <div class="flex items-center justify-between mb-6">
+      <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+        <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Active Store Shift</h2>
-            <p class="text-sm text-gray-600">
-              Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
-              Opened: {{ formatDateTime(currentStoreShift.openedAt) }}
-            </p>
-            <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
-              Opened by: {{ currentStoreShift.opener.name }}
-            </p>
+            <h2 class="text-xl font-bold text-[#0d141b] dark:text-white mb-2">Active Store Shift</h2>
+            <div class="space-y-1">
+              <p class="text-sm text-[#4c739a] dark:text-slate-300">
+                Shift: <span class="font-bold capitalize text-[#0d141b] dark:text-white">{{ currentStoreShift.shiftType }}</span>
+              </p>
+              <p class="text-sm text-[#4c739a] dark:text-slate-300">
+                Opened: <span class="font-medium">{{ formatDateTime(currentStoreShift.openedAt) }}</span>
+              </p>
+              <p class="text-xs text-[#4c739a] dark:text-slate-400 mt-2" v-if="currentStoreShift.opener">
+                Opened by: <span class="font-medium">{{ currentStoreShift.opener.name }}</span>
+              </p>
+            </div>
           </div>
-          <span class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold capitalize">
+          <div class="px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 rounded-xl text-sm font-bold capitalize shadow-sm">
             {{ currentStoreShift.shiftType }}
-          </span>
+          </div>
         </div>
       </div>
 
       <!-- Cash Shift Form -->
-      <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-2 border-dashed border-gray-300">
-        <div class="text-center mb-6">
-          <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Open Cash Shift</h2>
-          <p class="text-gray-600">Please open a cash shift to start transactions</p>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 border-dashed border-slate-200 dark:border-slate-700 p-8">
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-[40px] text-emerald-500">payments</span>
+          </div>
+          <h2 class="text-xl font-bold text-[#0d141b] dark:text-white mb-2">Open Cash Shift</h2>
+          <p class="text-[#4c739a] dark:text-slate-400">Please open a cash shift to start transactions</p>
         </div>
 
-        <form @submit.prevent="handleOpenShift" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+        <form @submit.prevent="handleOpenShift" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white">
               Initial Cash <span class="text-red-500">*</span>
             </label>
-            <input
-              v-model.number="openShiftForm.modalAwal"
-              type="number"
-              step="0.01"
-              min="0.01"
-              required
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
-              placeholder="0"
-            />
-            <p class="text-xs text-gray-500 mt-1">Enter the amount of cash available at the cashier</p>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c739a] font-bold">Rp</span>
+              <input
+                v-model.number="openShiftForm.modalAwal"
+                type="number"
+                step="0.01"
+                min="0.01"
+                required
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+                placeholder="0"
+              />
+            </div>
+            <p class="text-xs text-[#4c739a]">Enter the amount of cash available at the cashier</p>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-[#0d141b] dark:text-white">
               Notes (Optional)
             </label>
             <textarea
               v-model="openShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -146,12 +158,9 @@
           <button
             type="submit"
             :disabled="openingShift || !openShiftForm.modalAwal || openShiftForm.modalAwal <= 0"
-            class="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-3 bg-primary hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <svg v-if="openingShift" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <div v-if="openingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             <span>{{ openingShift ? 'Opening Shift...' : 'Open Cash Shift' }}</span>
           </button>
         </form>
@@ -161,8 +170,8 @@
     <!-- Active Shift - Show Current Shift Info with Tabs -->
     <div v-else class="space-y-6">
       <!-- Tabs Navigation -->
-      <div class="bg-white rounded-xl shadow-lg border border-gray-200">
-        <div class="border-b border-gray-200">
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200">
+        <div class="border-b border-slate-200">
           <nav class="flex -mb-px">
             <button
               @click="activeTab = 'today'"
@@ -170,7 +179,7 @@
                 'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'today'
                   ? 'border-primary-600 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-[#4c739a] hover:text-[#0d141b] hover:border-slate-300'
               ]"
             >
               Today's Shifts
@@ -181,7 +190,7 @@
                 'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'history'
                   ? 'border-primary-600 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-[#4c739a] hover:text-[#0d141b] hover:border-slate-300'
               ]"
             >
               Shift History
@@ -196,19 +205,19 @@
         <div v-if="currentStoreShift" class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-blue-200">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-1">Active Store Shift</h3>
-              <p class="text-sm text-gray-600">
+              <h3 class="text-lg font-bold text-[#0d141b] mb-1">Active Store Shift</h3>
+              <p class="text-sm text-[#4c739a]">
                 Shift: <span class="font-semibold capitalize">{{ currentStoreShift.shiftType }}</span> | 
                 Opened: {{ formatDateTime(currentStoreShift.openedAt) }}
               </p>
-              <p class="text-xs text-gray-500 mt-1" v-if="currentStoreShift.opener">
+              <p class="text-xs text-[#4c739a] mt-1" v-if="currentStoreShift.opener">
                 Opened by: {{ currentStoreShift.opener.name }}
               </p>
             </div>
             <div class="flex gap-2">
               <button
                 @click="viewShiftDetails(currentStoreShift.id)"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm font-semibold"
               >
                 View Details
               </button>
@@ -221,18 +230,18 @@
 
         <!-- Today's Shifts List -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Today's Shifts</h3>
+          <h3 class="text-xl font-bold text-[#0d141b] mb-4">Today's Shifts</h3>
           <div v-if="todayShiftsLoading" class="text-center py-8">
             <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-          <div v-else-if="todayShifts.length === 0" class="text-center py-8 text-gray-500">
+          <div v-else-if="todayShifts.length === 0" class="text-center py-8 text-[#4c739a]">
             No shifts today yet
           </div>
           <div v-else class="space-y-3">
             <div
               v-for="shift in todayShifts"
               :key="shift.id"
-              class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer"
+              class="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition cursor-pointer"
               @click="viewShiftDetails(shift.id)"
             >
               <div class="flex items-center justify-between">
@@ -250,17 +259,17 @@
                       {{ shift.status === 'open' ? 'Open' : 'Closed' }}
                     </span>
                   </div>
-                  <p class="text-sm text-gray-600">
+                  <p class="text-sm text-[#4c739a]">
                     Opened: {{ formatDateTime(shift.openedAt) }}
                     <span v-if="shift.closedAt"> | Closed: {{ formatDateTime(shift.closedAt) }}</span>
                   </p>
-                  <p class="text-xs text-gray-500 mt-1" v-if="shift.opener">
+                  <p class="text-xs text-[#4c739a] mt-1" v-if="shift.opener">
                     Opened by: {{ shift.opener.name }}
                   </p>
                 </div>
                 <button
                   @click.stop="viewShiftDetails(shift.id)"
-                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-semibold"
+                  class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition text-sm font-semibold"
                 >
                   Detail
                 </button>
@@ -276,8 +285,8 @@
         <div v-if="currentShift" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
           <div class="flex items-center justify-between mb-6">
             <div>
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Active Cash Shift</h2>
-              <p class="text-sm text-gray-600">
+              <h2 class="text-xl sm:text-2xl font-bold text-[#0d141b] mb-2">Active Cash Shift</h2>
+              <p class="text-sm text-[#4c739a]">
                 Opened: {{ formatDateTime(currentShift.shiftStart) }}
               </p>
             </div>
@@ -287,16 +296,16 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Initial Cash</p>
-              <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(currentShift.modalAwal) }}</p>
+            <div class="bg-white rounded-xl p-4 border border-slate-200">
+              <p class="text-sm text-[#4c739a] mb-1">Initial Cash</p>
+              <p class="text-2xl font-bold text-[#0d141b]">{{ formatCurrency(currentShift.modalAwal) }}</p>
             </div>
-            <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Total Sales</p>
+            <div class="bg-white rounded-xl p-4 border border-slate-200">
+              <p class="text-sm text-[#4c739a] mb-1">Total Sales</p>
               <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
             </div>
-            <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-1">Expected Balance</p>
+            <div class="bg-white rounded-xl p-4 border border-slate-200">
+              <p class="text-sm text-[#4c739a] mb-1">Expected Balance</p>
               <p class="text-2xl font-bold text-green-600">
                 {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
               </p>
@@ -306,7 +315,7 @@
           <div class="flex gap-3">
             <button
               @click="showCloseModal = true"
-              class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold flex items-center justify-center gap-2"
+              class="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-semibold flex items-center justify-center gap-2"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -315,7 +324,7 @@
             </button>
             <button
               @click="loadCurrentShift"
-              class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold"
+              class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition font-semibold"
             >
               Refresh
             </button>
@@ -324,43 +333,43 @@
 
         <!-- Store Shift History -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">Store Shift History</h3>
+          <h3 class="text-xl font-bold text-[#0d141b] mb-4">Store Shift History</h3>
           <div v-if="storeShiftHistoryLoading" class="text-center py-8">
             <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-          <div v-else-if="storeShiftHistory.length === 0" class="text-center py-8 text-gray-500">
+          <div v-else-if="storeShiftHistory.length === 0" class="text-center py-8 text-[#4c739a]">
             No shift history yet
           </div>
           <div v-else class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shift</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Opened</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Closed</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Opened By</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Shift</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Opened</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Closed</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Opened By</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="bg-white divide-y divide-slate-200">
                 <tr
                   v-for="shift in storeShiftHistory"
                   :key="shift.id"
-                  class="hover:bg-gray-50"
+                  class="hover:bg-slate-50"
                 >
                   <td class="px-4 py-3 whitespace-nowrap">
                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold capitalize">
                       {{ shift.shiftType }}
                     </span>
                   </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-[#0d141b]">
                     {{ formatDateTime(shift.openedAt) }}
                   </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-[#0d141b]">
                     {{ shift.closedAt ? formatDateTime(shift.closedAt) : '-' }}
                   </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-[#0d141b]">
                     {{ shift.opener?.name || '-' }}
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap">
@@ -376,7 +385,7 @@
                   <td class="px-4 py-3 whitespace-nowrap">
                     <button
                       @click="viewShiftDetails(shift.id)"
-                      class="px-3 py-1 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-xs font-semibold"
+                      class="px-3 py-1 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition text-xs font-semibold"
                     >
                       Detail
                     </button>
@@ -388,21 +397,21 @@
 
           <!-- Pagination -->
           <div v-if="storeShiftHistoryPagination.totalPages > 1" class="mt-4 flex items-center justify-between">
-            <div class="text-sm text-gray-700">
+            <div class="text-sm text-[#0d141b]">
               Page {{ storeShiftHistoryPagination.page }} of {{ storeShiftHistoryPagination.totalPages }}
             </div>
             <div class="flex gap-2">
               <button
                 @click="changeStoreShiftHistoryPage(storeShiftHistoryPagination.page - 1)"
                 :disabled="storeShiftHistoryPagination.page === 1"
-                class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                class="px-4 py-2 border border-slate-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
               >
                 Previous
               </button>
               <button
                 @click="changeStoreShiftHistoryPage(storeShiftHistoryPagination.page + 1)"
                 :disabled="storeShiftHistoryPagination.page === storeShiftHistoryPagination.totalPages"
-                class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                class="px-4 py-2 border border-slate-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
               >
                 Next
               </button>
@@ -420,10 +429,10 @@
     >
       <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full p-6 my-8">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-2xl font-bold text-gray-900">Shift Details</h3>
+          <h3 class="text-2xl font-bold text-[#0d141b]">Shift Details</h3>
           <button
             @click="showShiftDetailModal = false"
-            class="text-gray-400 hover:text-gray-600"
+            class="text-slate-400 hover:text-[#4c739a]"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -432,77 +441,77 @@
         </div>
 
         <!-- Shift Info -->
-        <div v-if="shiftDetail" class="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+        <div v-if="shiftDetail" class="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p class="text-xs text-gray-600 mb-1">Shift Type</p>
-              <p class="text-sm font-semibold text-gray-900 capitalize">{{ shiftDetail.shift.shiftType }}</p>
+              <p class="text-xs text-[#4c739a] mb-1">Shift Type</p>
+              <p class="text-sm font-semibold text-[#0d141b] capitalize">{{ shiftDetail.shift.shiftType }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Opened</p>
-              <p class="text-sm font-semibold text-gray-900">{{ formatDateTime(shiftDetail.shift.openedAt) }}</p>
+              <p class="text-xs text-[#4c739a] mb-1">Opened</p>
+              <p class="text-sm font-semibold text-[#0d141b]">{{ formatDateTime(shiftDetail.shift.openedAt) }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Closed</p>
-              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.closedAt ? formatDateTime(shiftDetail.shift.closedAt) : 'Still Open' }}</p>
+              <p class="text-xs text-[#4c739a] mb-1">Closed</p>
+              <p class="text-sm font-semibold text-[#0d141b]">{{ shiftDetail.shift.closedAt ? formatDateTime(shiftDetail.shift.closedAt) : 'Still Open' }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-600 mb-1">Opened By</p>
-              <p class="text-sm font-semibold text-gray-900">{{ shiftDetail.shift.opener?.name || '-' }}</p>
+              <p class="text-xs text-[#4c739a] mb-1">Opened By</p>
+              <p class="text-sm font-semibold text-[#0d141b]">{{ shiftDetail.shift.opener?.name || '-' }}</p>
             </div>
           </div>
         </div>
 
         <!-- Filters -->
-        <div class="mb-6 bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-semibold text-gray-700 mb-3">Filter Details:</p>
+        <div class="mb-6 bg-slate-50 rounded-xl p-4">
+          <p class="text-sm font-semibold text-[#0d141b] mb-3">Filter Details:</p>
           <div class="flex flex-wrap gap-3">
             <label class="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeOrders"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Sales</span>
+              <span class="text-sm text-[#0d141b]">Sales</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeStockTransfers"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Stock Transfers</span>
+              <span class="text-sm text-[#0d141b]">Stock Transfers</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeProductAdjustments"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
               />
-              <span class="text-sm text-gray-700">Stock Adjustments</span>
+              <span class="text-sm text-[#0d141b]">Stock Adjustments</span>
             </label>
           </div>
         </div>
 
         <!-- Summary -->
         <div v-if="shiftDetail" class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Total Revenue</p>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <p class="text-xs text-[#4c739a] mb-1">Total Revenue</p>
             <p class="text-lg font-bold text-green-600">{{ formatCurrency(shiftDetail.summary.totalRevenue) }}</p>
           </div>
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Total Orders</p>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <p class="text-xs text-[#4c739a] mb-1">Total Orders</p>
             <p class="text-lg font-bold text-blue-600">{{ shiftDetail.summary.totalOrders }}</p>
           </div>
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Stock Transfers</p>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <p class="text-xs text-[#4c739a] mb-1">Stock Transfers</p>
             <p class="text-lg font-bold text-purple-600">{{ shiftDetail.summary.totalStockTransfers }}</p>
           </div>
-          <div class="bg-white rounded-lg p-4 border border-gray-200">
-            <p class="text-xs text-gray-600 mb-1">Stock Adjustments</p>
+          <div class="bg-white rounded-xl p-4 border border-slate-200">
+            <p class="text-xs text-[#4c739a] mb-1">Stock Adjustments</p>
             <p class="text-lg font-bold text-orange-600">{{ shiftDetail.summary.totalProductAdjustments }}</p>
           </div>
         </div>
@@ -514,25 +523,25 @@
 
         <!-- Orders -->
         <div v-else-if="shiftDetail && shiftDetailFilters.includeOrders && shiftDetail.orders.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Sales ({{ shiftDetail.orders.length }})</h4>
+          <h4 class="text-lg font-bold text-[#0d141b] mb-4">Sales ({{ shiftDetail.orders.length }})</h4>
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order #</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cashier</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Order #</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Customer</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Cashier</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Total</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Time</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="order in shiftDetail.orders" :key="order.id" class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.orderNumber }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.customer?.name || 'Walk-in Customer' }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ order.user?.name || '-' }}</td>
-                  <td class="px-4 py-3 text-sm font-semibold text-gray-900">{{ formatCurrency(order.total) }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(order.createdAt) }}</td>
+              <tbody class="bg-white divide-y divide-slate-200">
+                <tr v-for="order in shiftDetail.orders" :key="order.id" class="hover:bg-slate-50">
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ order.orderNumber }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ order.customer?.name || 'Walk-in Customer' }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ order.user?.name || '-' }}</td>
+                  <td class="px-4 py-3 text-sm font-semibold text-[#0d141b]">{{ formatCurrency(order.total) }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ formatDateTime(order.createdAt) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -541,23 +550,23 @@
 
         <!-- Stock Transfers -->
         <div v-if="shiftDetail && shiftDetailFilters.includeStockTransfers && shiftDetail.stockTransfers.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Stock Transfers ({{ shiftDetail.stockTransfers.length }})</h4>
+          <h4 class="text-lg font-bold text-[#0d141b] mb-4">Stock Transfers ({{ shiftDetail.stockTransfers.length }})</h4>
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Transfer #</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">From</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">To</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Transfer #</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">From</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">To</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Time</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="transfer in shiftDetail.stockTransfers" :key="transfer.id" class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.transferNumber }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.fromOutletId }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ transfer.toOutletId }}</td>
+              <tbody class="bg-white divide-y divide-slate-200">
+                <tr v-for="transfer in shiftDetail.stockTransfers" :key="transfer.id" class="hover:bg-slate-50">
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ transfer.transferNumber }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ transfer.fromOutletId }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ transfer.toOutletId }}</td>
                   <td class="px-4 py-3 text-sm">
                     <span :class="[
                       'px-2 py-1 text-xs font-semibold rounded-full',
@@ -566,7 +575,7 @@
                       {{ transfer.status }}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(transfer.createdAt) }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ formatDateTime(transfer.createdAt) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -575,23 +584,23 @@
 
         <!-- Product Adjustments -->
         <div v-if="shiftDetail && shiftDetailFilters.includeProductAdjustments && shiftDetail.productAdjustments.length > 0" class="mb-6">
-          <h4 class="text-lg font-bold text-gray-900 mb-4">Stock Adjustments ({{ shiftDetail.productAdjustments.length }})</h4>
+          <h4 class="text-lg font-bold text-[#0d141b] mb-4">Stock Adjustments ({{ shiftDetail.productAdjustments.length }})</h4>
           <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Before</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">After</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">By</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Product</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Qty</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Before</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">After</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">By</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-[#4c739a] uppercase">Time</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="adjustment in shiftDetail.productAdjustments" :key="adjustment.id" class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.product?.name || '-' }}</td>
+              <tbody class="bg-white divide-y divide-slate-200">
+                <tr v-for="adjustment in shiftDetail.productAdjustments" :key="adjustment.id" class="hover:bg-slate-50">
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ adjustment.product?.name || '-' }}</td>
                   <td class="px-4 py-3 text-sm">
                     <span :class="[
                       'px-2 py-1 text-xs font-semibold rounded-full',
@@ -600,11 +609,11 @@
                       {{ adjustment.type === 'INCREASE' ? 'Add' : 'Subtract' }}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.quantity }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.stockBefore }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.stockAfter }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ adjustment.user?.name || '-' }}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{{ formatDateTime(adjustment.createdAt) }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ adjustment.quantity }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ adjustment.stockBefore }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ adjustment.stockAfter }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ adjustment.user?.name || '-' }}</td>
+                  <td class="px-4 py-3 text-sm text-[#0d141b]">{{ formatDateTime(adjustment.createdAt) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -616,7 +625,7 @@
           (!shiftDetailFilters.includeOrders || shiftDetail.orders.length === 0) &&
           (!shiftDetailFilters.includeStockTransfers || shiftDetail.stockTransfers.length === 0) &&
           (!shiftDetailFilters.includeProductAdjustments || shiftDetail.productAdjustments.length === 0)"
-          class="text-center py-12 text-gray-500"
+          class="text-center py-12 text-[#4c739a]"
         >
           No data for selected filters
         </div>
@@ -630,19 +639,19 @@
       @click.self="showCloseModal = false"
     >
       <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Close Shift</h3>
+        <h3 class="text-xl font-bold text-[#0d141b] mb-4">Close Shift</h3>
         
         <div class="mb-4 space-y-2">
-          <div class="bg-blue-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Initial Cash</p>
-            <p class="text-lg font-bold text-gray-900">{{ formatCurrency(currentShift?.modalAwal || 0) }}</p>
+          <div class="bg-blue-50 rounded-xl p-3">
+            <p class="text-sm text-[#4c739a]">Initial Cash</p>
+            <p class="text-lg font-bold text-[#0d141b]">{{ formatCurrency(currentShift?.modalAwal || 0) }}</p>
           </div>
-          <div class="bg-green-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Total Sales</p>
+          <div class="bg-green-50 rounded-xl p-3">
+            <p class="text-sm text-[#4c739a]">Total Sales</p>
             <p class="text-lg font-bold text-green-600">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</p>
           </div>
-          <div class="bg-purple-50 rounded-lg p-3">
-            <p class="text-sm text-gray-600">Expected Balance</p>
+          <div class="bg-purple-50 rounded-xl p-3">
+            <p class="text-sm text-[#4c739a]">Expected Balance</p>
             <p class="text-lg font-bold text-purple-600">
               {{ formatCurrency((currentShift?.modalAwal || 0) + (currentShift?.totalPenjualan || 0)) }}
             </p>
@@ -651,7 +660,7 @@
 
         <form @submit.prevent="handleCloseShift" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-[#0d141b] mb-2">
               Physical Cash at Register <span class="text-red-500">*</span>
             </label>
             <input
@@ -660,35 +669,35 @@
               step="0.01"
               min="0"
               required
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+              class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
               placeholder="0"
             />
-            <p class="text-xs text-gray-500 mt-1">Enter the physical cash amount currently in the register</p>
+            <p class="text-xs text-[#4c739a] mt-1">Enter the physical cash amount currently in the register</p>
           </div>
 
           <div v-if="closeShiftForm.uangFisikTutup && currentShift">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p class="text-sm text-gray-600 mb-1">Difference</p>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+              <p class="text-sm text-[#4c739a] mb-1">Difference</p>
               <p
                 class="text-lg font-bold"
                 :class="getSelisihClass(calculateSelisih())"
               >
                 {{ formatCurrency(calculateSelisih()) }}
               </p>
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="text-xs text-[#4c739a] mt-1">
                 {{ calculateSelisih() > 0 ? 'Over' : calculateSelisih() < 0 ? 'Short' : 'Exact' }}
               </p>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-[#0d141b] mb-2">
               Notes (Optional)
             </label>
             <textarea
               v-model="closeShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -697,14 +706,14 @@
             <button
               type="button"
               @click="showCloseModal = false"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              class="flex-1 px-4 py-2 border border-slate-300 rounded-xl hover:bg-slate-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="closingShift || !closeShiftForm.uangFisikTutup"
-              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ closingShift ? 'Closing...' : 'Close Shift' }}
             </button>
@@ -925,10 +934,10 @@ const calculateSelisih = (): number => {
 };
 
 const getSelisihClass = (selisih: number | null): string => {
-  if (selisih === null) return 'text-gray-600';
+  if (selisih === null) return 'text-[#4c739a]';
   if (selisih > 0) return 'text-green-600';
   if (selisih < 0) return 'text-red-600';
-  return 'text-gray-600';
+  return 'text-[#4c739a]';
 };
 
 const formatDateTime = (date: string | Date) => {

@@ -6,7 +6,7 @@
       v-if="isPortrait"
       class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
     >
-      <div class="bg-white rounded-lg p-8 text-center max-w-md mx-4">
+      <div class="bg-white rounded-xl p-8 text-center max-w-md mx-4">
         <svg class="w-16 h-16 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
@@ -21,7 +21,7 @@
       <!-- Offline Status Indicator -->
       <div
         v-if="!isOnline"
-        class="mb-2 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg flex items-center gap-2"
+        class="mb-2 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-xl flex items-center gap-2"
       >
         <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -30,14 +30,14 @@
       </div>
       <div
         v-else-if="isSyncing"
-        class="mb-2 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-lg flex items-center gap-2"
+        class="mb-2 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-xl flex items-center gap-2"
       >
         <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         <span class="text-sm font-semibold text-blue-800">Syncing... ({{ pendingSyncCount }} pending)</span>
       </div>
       <div
         v-else-if="pendingSyncCount > 0"
-        class="mb-2 p-3 bg-green-100 border-l-4 border-green-500 rounded-lg flex items-center gap-2"
+        class="mb-2 p-3 bg-green-100 border-l-4 border-green-500 rounded-xl flex items-center gap-2"
       >
         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -45,21 +45,21 @@
         <span class="text-sm font-semibold text-green-800">Sync complete! ({{ pendingSyncCount }} pending)</span>
       </div>
       
-      <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div class="bg-white rounded-xl shadow-md p-4 mb-4">
         <h1 class="text-3xl font-bold text-gray-900 text-center">SIMPLE POS</h1>
         <p class="text-center text-gray-600 mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
       </div>
 
       <div class="flex-1 grid grid-cols-3 gap-4 overflow-hidden">
         <!-- Categories -->
-        <div class="bg-white rounded-lg shadow-md p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-md p-4 overflow-y-auto">
           <h2 class="text-xl font-bold text-gray-900 mb-4 text-center">CATEGORIES</h2>
           <div class="space-y-3">
             <button
               v-for="category in categories"
               :key="category"
               @click="selectedCategory = category"
-              class="w-full py-6 px-4 text-lg font-bold rounded-lg transition-all"
+              class="w-full py-6 px-4 text-lg font-bold rounded-xl transition-all"
               :class="selectedCategory === category 
                 ? 'bg-blue-600 text-white shadow-lg scale-105' 
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'"
@@ -70,7 +70,7 @@
         </div>
 
         <!-- Products -->
-        <div class="bg-white rounded-lg shadow-md p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-md p-4 overflow-y-auto">
           <h2 class="text-xl font-bold text-gray-900 mb-4 text-center">PRODUCTS</h2>
           <div v-if="loading" class="flex items-center justify-center py-12">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -84,7 +84,7 @@
               :key="product.id"
               @click="addToCart(product)"
               :disabled="product.stock <= 0"
-              class="py-8 px-4 text-lg font-bold rounded-lg transition-all active:scale-95"
+              class="py-8 px-4 text-lg font-bold rounded-xl transition-all active:scale-95"
               :class="product.stock <= 0 
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                 : isInCart(product.id)
@@ -100,14 +100,14 @@
         </div>
 
         <!-- Cart & Payment -->
-        <div class="bg-white rounded-lg shadow-md p-4 flex flex-col">
+        <div class="bg-white rounded-xl shadow-md p-4 flex flex-col">
           <h2 class="text-xl font-bold text-gray-900 mb-4 text-center">CART</h2>
           
           <div class="flex-1 overflow-y-auto mb-4 space-y-2">
             <div
               v-for="item in cart"
               :key="item.id"
-              class="bg-gray-50 rounded-lg p-3 flex items-center justify-between"
+              class="bg-gray-50 rounded-xl p-3 flex items-center justify-between"
             >
               <div class="flex-1">
                 <p class="font-semibold text-gray-900">{{ item.name }}</p>
@@ -116,20 +116,20 @@
               <div class="flex items-center space-x-2">
                 <button
                   @click="decreaseQuantity(item.id)"
-                  class="w-8 h-8 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600"
+                  class="w-8 h-8 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600"
                 >
                   -
                 </button>
                 <span class="w-8 text-center font-bold">{{ item.quantity }}</span>
                 <button
                   @click="increaseQuantity(item.id)"
-                  class="w-8 h-8 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600"
+                  class="w-8 h-8 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600"
                 >
                   +
                 </button>
                 <button
                   @click="removeFromCart(item.id)"
-                  class="w-8 h-8 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 ml-2"
+                  class="w-8 h-8 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 ml-2"
                 >
                   ×
                 </button>
@@ -155,11 +155,11 @@
                 type="number"
                 min="0"
                 placeholder="0"
-                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-lg"
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-lg"
               />
               <select
                 v-model="discountType"
-                class="px-4 py-2 border border-gray-300 rounded-lg"
+                class="px-4 py-2 border border-gray-300 rounded-xl"
               >
                 <option value="amount">Rp</option>
                 <option value="percent">%</option>
@@ -168,14 +168,14 @@
           </div>
 
           <!-- Cash Amount Input (only for CASH payment) -->
-          <div v-if="showCashInput" class="mb-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+          <div v-if="showCashInput" class="mb-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
             <label class="block text-sm font-medium text-gray-700 mb-2">Cash Amount</label>
             <input
               v-model.number="cashAmount"
               type="number"
               min="0"
               :placeholder="`Min: ${formatCurrency(total)}`"
-              class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-lg font-bold focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-lg font-bold focus:ring-2 focus:ring-green-500 focus:border-green-500"
               @keyup.enter="processPaymentSimple('CASH')"
             />
             <div v-if="cashAmount > 0" class="mt-2 text-sm">
@@ -191,14 +191,14 @@
             <div class="flex gap-2 mt-3">
               <button
                 @click="showCashInput = false; cashAmount = 0"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
+                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 @click="processPaymentSimple('CASH')"
                 :disabled="!cashAmount || cashAmount < total || processing"
-                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Pay
               </button>
@@ -210,21 +210,21 @@
               v-if="!showCashInput"
               @click="showCashInput = true; cashAmount = total"
               :disabled="cart.length === 0 || processing"
-              class="w-full py-6 bg-green-600 text-white rounded-lg font-bold text-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full py-6 bg-green-600 text-white rounded-xl font-bold text-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               💵 CASH
             </button>
             <button
               @click="processPaymentSimple('QRIS')"
               :disabled="cart.length === 0 || processing || showCashInput"
-              class="w-full py-6 bg-blue-600 text-white rounded-lg font-bold text-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full py-6 bg-blue-600 text-white rounded-xl font-bold text-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               📱 QRIS
             </button>
             <button
               @click="clearCart"
               :disabled="cart.length === 0"
-              class="w-full py-4 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full py-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               CLEAR ALL
             </button>
@@ -239,7 +239,7 @@
     <!-- Offline Status Indicator -->
     <div
       v-if="!isOnline"
-      class="px-4 py-2 bg-yellow-50 border-b border-yellow-200 flex items-center justify-center gap-2"
+      class="px-4 py-2 bg-white border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-2"
     >
       <span class="material-symbols-outlined text-yellow-600">wifi_off</span>
       <span class="text-sm font-semibold text-yellow-800">You are offline — transactions will be synced later</span>
@@ -253,7 +253,7 @@
     </div>
     <div
       v-else-if="pendingSyncCount > 0"
-      class="px-4 py-2 bg-green-50 border-b border-green-200 flex items-center justify-center gap-2"
+      class="px-4 py-2 bg-white border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-2"
     >
       <span class="material-symbols-outlined text-green-600">cloud_done</span>
       <span class="text-sm font-semibold text-green-800">Sync complete! ({{ pendingSyncCount }} pending)</span>
@@ -273,14 +273,14 @@
     <!-- Header Section -->
     <div class="px-8 pt-8 pb-6">
       <div class="flex flex-col gap-1">
-        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Point of Sale</h2>
-        <p class="text-slate-500">Process transactions and manage daily sales</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] tracking-tight">Point of Sale</h2>
+        <p class="text-[#4c739a]">Process transactions and manage daily sales</p>
       </div>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8 h-full px-8 pb-8 overflow-hidden">
       <!-- Product Grid -->
-      <div class="flex-1 bg-white rounded-2xl shadow-card border border-slate-100 p-6 overflow-hidden flex flex-col">
+      <div class="flex-1 bg-white rounded-xl shadow-sm border border-slate-100 p-6 overflow-hidden flex flex-col">
         <!-- Search Section -->
         <div class="mb-6 flex-shrink-0">
           <div class="relative">
@@ -297,11 +297,11 @@
         <div v-if="loading" class="flex items-center justify-center py-20">
           <div class="flex flex-col items-center">
              <div class="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-             <span class="text-slate-500 font-medium">Loading products...</span>
+             <span class="text-[#4c739a] font-medium">Loading products...</span>
           </div>
         </div>
 
-        <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20 text-slate-500">
+        <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20 text-[#4c739a]">
            <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">search_off</span>
           <p>No products found</p>
         </div>
@@ -311,7 +311,7 @@
             v-for="product in filteredProducts"
             :key="product.id"
             @click="addToCart(product)"
-            class="group relative bg-white border border-slate-100 rounded-2xl p-4 cursor-pointer hover:border-primary hover:shadow-card-hover transition-all duration-200"
+            class="group relative bg-white border border-slate-100 rounded-xl p-4 cursor-pointer hover:border-primary hover:shadow-sm-hover transition-all duration-200"
             :class="{ 'ring-2 ring-primary ring-offset-2': isInCart(product.id) }"
           >
             <div class="text-center">
@@ -320,10 +320,10 @@
                 <span v-else-if="product.emoji" class="text-4xl">{{ product.emoji }}</span>
                 <span v-else class="material-symbols-outlined text-3xl text-slate-300">image</span>
               </div>
-              <h3 class="font-bold text-sm text-slate-900 mb-1 truncate px-1">{{ product.name }}</h3>
+              <h3 class="font-bold text-sm text-[#0d141b] mb-1 truncate px-1">{{ product.name }}</h3>
               <p class="text-base font-bold text-primary mb-1">{{ formatCurrency(product.price) }}</p>
               <div class="flex justify-center">
-                 <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                 <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-[#4c739a]">
                    Stock: {{ product.stock }}
                  </span>
               </div>
@@ -338,16 +338,16 @@
       </div>
 
       <!-- Cart Sidebar -->
-      <div class="w-full lg:w-[400px] bg-white rounded-2xl shadow-card border border-slate-100 p-6 flex flex-col flex-shrink-0 h-full">
+      <div class="w-full lg:w-[400px] bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col flex-shrink-0 h-full">
         <div class="mb-6 flex justify-between items-center flex-shrink-0">
           <div>
-             <h2 class="text-xl font-bold text-slate-900">Current Order</h2>
-             <p class="text-sm text-slate-500">{{ cart.length }} items</p>
+             <h2 class="text-xl font-bold text-[#0d141b]">Current Order</h2>
+             <p class="text-sm text-[#4c739a]">{{ cart.length }} items</p>
           </div>
           <button
             @click="clearCart"
             :disabled="cart.length === 0"
-            class="text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Clear All
           </button>
@@ -367,29 +367,29 @@
               :key="item.id"
               class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 group hover:border-slate-200 transition-colors"
             >
-              <div class="w-12 h-12 bg-white rounded-lg border border-slate-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div class="w-12 h-12 bg-white rounded-xl border border-slate-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
                 <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
                 <span v-else-if="item.emoji" class="text-2xl">{{ item.emoji }}</span>
                 <span v-else class="material-symbols-outlined text-slate-300">image</span>
               </div>
               
               <div class="flex-1 min-w-0">
-                <h4 class="font-bold text-slate-900 truncate text-sm">{{ item.name }}</h4>
-                <p class="text-xs text-slate-500 font-medium">{{ formatCurrency(item.price) }}</p>
+                <h4 class="font-bold text-[#0d141b] truncate text-sm">{{ item.name }}</h4>
+                <p class="text-xs text-[#4c739a] font-medium">{{ formatCurrency(item.price) }}</p>
               </div>
 
               <!-- Qty Controls -->
-              <div class="flex items-center gap-2 bg-white rounded-lg border border-slate-200 p-1">
+              <div class="flex items-center gap-2 bg-white rounded-xl border border-slate-200 p-1">
                 <button
                   @click="decreaseQuantity(item.id)"
-                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 transition"
+                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-[#4c739a] transition"
                 >
                   <span class="material-symbols-outlined text-[16px]">remove</span>
                 </button>
-                <span class="w-6 text-center text-sm font-bold text-slate-900">{{ item.quantity }}</span>
+                <span class="w-6 text-center text-sm font-bold text-[#0d141b]">{{ item.quantity }}</span>
                 <button
                   @click="increaseQuantity(item.id)"
-                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 transition"
+                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-[#4c739a] transition"
                 >
                   <span class="material-symbols-outlined text-[16px]">add</span>
                 </button>
@@ -400,14 +400,14 @@
 
         <!-- Customer/Member Info -->
         <div class="mb-4 p-4 bg-slate-50 rounded-xl border border-slate-100 flex-shrink-0">
-          <div class="flex gap-2 mb-3 bg-slate-200/50 p-1 rounded-lg">
+          <div class="flex gap-2 mb-3 bg-slate-200/50 p-1 rounded-xl">
             <button
               @click="switchCustomerType('customer')"
               :class="[
                 'flex-1 py-1.5 text-xs font-bold rounded-md transition-all',
                 customerType === 'customer'
                   ? 'bg-white text-primary shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-[#4c739a] hover:text-[#0d141b]'
               ]"
             >
               Customer
@@ -418,7 +418,7 @@
                 'flex-1 py-1.5 text-xs font-bold rounded-md transition-all',
                 customerType === 'member'
                   ? 'bg-white text-primary shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  : 'text-[#4c739a] hover:text-[#0d141b]'
               ]"
             >
               Member
@@ -432,14 +432,14 @@
                 v-model="customerInput"
                 type="text"
                 placeholder="Customer Name (Optional)"
-                class="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-white"
+                class="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary bg-white"
                 @blur="handleCustomerInput"
               />
             </div>
             <button
               @click="clearCustomer"
               v-if="customerInput"
-              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
+              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition"
             >
               <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
@@ -449,7 +449,7 @@
             <select
               v-model="selectedMemberId"
               @change="handleMemberSelect"
-              class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-white"
+              class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary bg-white"
             >
               <option value="">Select Member</option>
               <option
@@ -463,14 +463,14 @@
             <button
               @click="clearCustomer"
               v-if="selectedMember"
-              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition"
+              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition"
             >
               <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
           </div>
 
           <!-- Selected Member Badge -->
-          <div v-if="selectedMember" class="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-100 rounded-lg text-xs text-green-700 font-medium">
+          <div v-if="selectedMember" class="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-100 rounded-xl text-xs text-green-700 font-medium">
              <span class="material-symbols-outlined text-[16px]">verified</span>
              <span>{{ selectedMember.name }}</span>
              <span v-if="selectedMember.discountValue" class="ml-auto font-bold bg-green-100 px-1.5 py-0.5 rounded text-green-800">
@@ -478,7 +478,7 @@
              </span>
           </div>
           <!-- Selected Customer Badge -->
-          <div v-else-if="customerType === 'customer' && customerName" class="mt-3 flex items-center gap-2 p-2 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700 font-medium">
+          <div v-else-if="customerType === 'customer' && customerName" class="mt-3 flex items-center gap-2 p-2 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-700 font-medium">
              <span class="material-symbols-outlined text-[16px]">person</span>
              <span>{{ customerName }}</span>
           </div>
@@ -492,7 +492,7 @@
               type="checkbox"
               class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
             />
-            <span class="text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">Send order to kitchen</span>
+            <span class="text-sm font-medium text-[#0d141b] group-hover:text-primary transition-colors">Send order to kitchen</span>
           </label>
         </div>
 
@@ -500,15 +500,15 @@
         <div class="mt-auto flex-shrink-0">
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-sm text-slate-500">Subtotal</span>
-              <span class="text-sm font-semibold text-slate-900">{{ formatCurrency(subtotal) }}</span>
+              <span class="text-sm text-[#4c739a]">Subtotal</span>
+              <span class="text-sm font-semibold text-[#0d141b]">{{ formatCurrency(subtotal) }}</span>
             </div>
             <div v-if="estimatedDiscount > 0" class="flex justify-between items-center mb-2">
               <span class="text-sm text-green-600">Discount</span>
               <span class="text-sm font-bold text-green-600">-{{ formatCurrency(estimatedDiscount) }}</span>
             </div>
             <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-              <span class="text-base font-bold text-slate-900">Total</span>
+              <span class="text-base font-bold text-[#0d141b]">Total</span>
               <span class="text-xl font-bold text-primary">{{ formatCurrency(total) }}</span>
             </div>
           </div>
@@ -551,24 +551,24 @@
     class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity"
     @click.self="showLowStockModal = false"
   >
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 transform transition-all scale-100">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 transform transition-all scale-100">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
-          <div class="p-2 bg-red-50 rounded-lg">
+          <div class="p-2 bg-red-50 rounded-xl">
              <span class="material-symbols-outlined text-red-600">warning</span>
           </div>
-          <h3 class="text-xl font-bold text-slate-900">Low Stock Alert</h3>
+          <h3 class="text-xl font-bold text-[#0d141b]">Low Stock Alert</h3>
         </div>
         <button
           @click="dismissLowStockModal"
-          class="text-slate-400 hover:text-slate-600 transition-colors"
+          class="text-slate-400 hover:text-[#4c739a] transition-colors"
         >
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
       
       <div class="mb-6">
-        <p class="text-slate-600 mb-4">
+        <p class="text-[#4c739a] mb-4">
           There are <span class="font-bold text-red-600">{{ criticalStockProducts.length }}</span> products that need immediate attention:
         </p>
         <div class="max-h-64 overflow-y-auto space-y-3 pr-1">
@@ -579,17 +579,17 @@
             :class="product.stock === 0 ? 'border-red-200 bg-red-50/30' : 'border-yellow-200 bg-yellow-50/30'"
           >
             <div>
-              <p class="font-bold text-slate-900">{{ product.name }}</p>
+              <p class="font-bold text-[#0d141b]">{{ product.name }}</p>
               <div class="flex items-center gap-2 mt-1">
                  <span class="text-xs font-medium px-2 py-0.5 rounded-full" :class="product.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
                    Stock: {{ product.stock }}
                  </span>
-                 <span class="text-xs text-slate-500">Min: {{ product.minStock }}</span>
+                 <span class="text-xs text-[#4c739a]">Min: {{ product.minStock }}</span>
               </div>
             </div>
             <button
               @click="goToRestock(product.id)"
-              class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:border-primary hover:text-primary transition-colors shadow-sm"
+              class="px-3 py-1.5 bg-white border border-slate-100 dark:border-slate-700 text-[#0d141b] rounded-xl text-sm font-semibold hover:border-primary hover:text-primary transition-colors shadow-sm"
             >
               Restock
             </button>
@@ -600,7 +600,7 @@
       <div class="flex gap-3">
         <button
           @click="dismissLowStockModal"
-          class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition font-semibold"
+          class="flex-1 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-semibold"
         >
           Dismiss
         </button>

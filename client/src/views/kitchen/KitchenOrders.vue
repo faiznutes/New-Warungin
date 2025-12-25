@@ -8,16 +8,16 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Kitchen Orders</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage orders sent from the cashier.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Kitchen Orders</h2>
+        <p class="text-[#4c739a] dark:text-[#4c739a] mt-1">Manage orders sent from the cashier.</p>
       </div>
       <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-card">
-        <span class="text-sm font-medium bg-primary/10 text-primary px-3 py-1.5 rounded-lg">
+        <span class="text-sm font-medium bg-[#137fec]/10 text-[#137fec] px-3 py-1.5 rounded-xl">
           {{ selectedOrders.length }} orders selected
         </span>
         <select
           v-model="bulkStatus"
-          class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium"
+          class="px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/20 focus:border-[#137fec] font-medium"
         >
           <option value="">Select Status</option>
           <option value="COOKING">Cooking</option>
@@ -27,7 +27,7 @@
         <button
           @click="bulkUpdateStatus"
           :disabled="!bulkStatus || bulkUpdating"
-          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition shadow-lg shadow-primary/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-[#137fec]-hover transition shadow-lg shadow-primary/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <span v-if="!bulkUpdating" class="material-symbols-outlined text-[18px]">check</span>
           <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -35,7 +35,7 @@
         </button>
         <button
           @click="clearSelection"
-          class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium"
+          class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium"
         >
           Cancel
         </button>
@@ -44,16 +44,16 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium">Loading orders...</div>
+      <div class="w-16 h-16 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-[#4c739a] font-medium">Loading orders...</div>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
         <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">receipt_long</span>
-        <p class="text-lg font-medium text-slate-900 dark:text-white mb-2">No incoming orders</p>
-        <p class="text-slate-500 text-sm">Orders from the cashier will appear here.</p>
+        <p class="text-lg font-medium text-[#0d141b] dark:text-white mb-2">No incoming orders</p>
+        <p class="text-[#4c739a] text-sm">Orders from the cashier will appear here.</p>
       </div>
     </div>
 
@@ -62,10 +62,10 @@
       <div
         v-for="order in orders"
         :key="order.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
         :class="[
           getStatusClass(order.kitchenStatus),
-          selectedOrders.includes(order.id) ? 'ring-2 ring-primary ring-offset-2 scale-[1.02]' : ''
+          selectedOrders.includes(order.id) ? 'ring-2 ring-[#137fec] ring-offset-2 scale-[1.02]' : ''
         ]"
       >
         <div class="flex items-start justify-between mb-4">
@@ -74,11 +74,11 @@
               type="checkbox"
               :checked="selectedOrders.includes(order.id)"
               @change="toggleOrderSelection(order.id)"
-              class="mt-1.5 w-5 h-5 text-primary border-2 border-slate-300 rounded focus:ring-primary cursor-pointer"
+              class="mt-1.5 w-5 h-5 text-[#137fec] border-2 border-slate-300 rounded focus:ring-[#137fec] cursor-pointer"
             />
             <div class="flex-1">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Order #{{ order.orderNumber }}</h3>
-              <p class="text-xs text-slate-500 flex items-center gap-1">
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-1">Order #{{ order.orderNumber }}</h3>
+              <p class="text-xs text-[#4c739a] flex items-center gap-1">
                 <span class="material-symbols-outlined text-[14px]">schedule</span>
                 {{ formatDateTime(order.createdAt) }}
               </p>
@@ -93,16 +93,16 @@
           </span>
         </div>
 
-        <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+        <div class="mb-4 p-3 bg-[#f6f7f8] dark:bg-slate-900 rounded-xl">
+          <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[14px]">person</span>
             Customer
           </p>
-          <p class="text-sm font-medium text-slate-900 dark:text-white">{{ order.customerName || order.temporaryCustomerName || 'Walk-in Customer' }}</p>
+          <p class="text-sm font-medium text-[#0d141b] dark:text-white">{{ order.customerName || order.temporaryCustomerName || 'Walk-in Customer' }}</p>
         </div>
 
         <!-- Shift Info -->
-        <div v-if="order.storeShift" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div v-if="order.storeShift" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
           <p class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1.5 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[14px]">schedule</span>
             Shift {{ order.storeShift.shiftType?.charAt(0).toUpperCase() + order.storeShift.shiftType?.slice(1) }}
@@ -116,7 +116,7 @@
         </div>
 
         <div class="mb-4">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[14px]">receipt</span>
             Items
           </p>
@@ -124,18 +124,18 @@
             <div
               v-for="item in order.items"
               :key="item.id"
-              class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900 rounded-lg"
+              class="flex justify-between items-center p-2 bg-[#f6f7f8] dark:bg-slate-900 rounded-xl"
             >
-              <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">{{ item.product?.name || item.productName }} × {{ item.quantity }}</span>
-              <span class="text-sm text-slate-900 dark:text-white font-bold">{{ formatCurrency(Number(item.price || item.subtotal) * item.quantity) }}</span>
+              <span class="text-sm text-[#0d141b] dark:text-slate-300 font-medium">{{ item.product?.name || item.productName }} × {{ item.quantity }}</span>
+              <span class="text-sm text-[#0d141b] dark:text-white font-bold">{{ formatCurrency(Number(item.price || item.subtotal) * item.quantity) }}</span>
             </div>
           </div>
         </div>
 
-        <div class="mb-4 p-3 bg-primary/10 rounded-xl">
+        <div class="mb-4 p-3 bg-[#137fec]/10 rounded-xl">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Total:</span>
-            <span class="text-lg font-bold text-primary">{{ formatCurrency(order.total) }}</span>
+            <span class="text-sm font-medium text-[#0d141b] dark:text-slate-300">Total:</span>
+            <span class="text-lg font-bold text-[#137fec]">{{ formatCurrency(order.total) }}</span>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ const getStatusBadgeClass = (status: string) => {
     READY: 'bg-green-100 text-green-700',
     SERVED: 'bg-blue-100 text-blue-700',
   };
-  return classes[status] || 'bg-slate-100 text-slate-700';
+  return classes[status] || 'bg-slate-100 text-[#0d141b]';
 };
 
 const getStatusLabel = (status: string) => {

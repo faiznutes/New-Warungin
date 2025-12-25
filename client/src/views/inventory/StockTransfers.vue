@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showTransferModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Transfer</span>
@@ -22,7 +22,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Source Store</label>
           <select
             v-model="filters.fromStore"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -34,7 +34,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination Store</label>
           <select
             v-model="filters.toStore"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -46,7 +46,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
           <select
             v-model="filters.status"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -60,7 +60,7 @@
           <input
             v-model="filters.date"
             type="date"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
       </div>
@@ -133,7 +133,7 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="viewTransfer(transfer)"
-                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">visibility</span>
                     Details
@@ -141,7 +141,7 @@
                   <button
                     v-if="transfer.status === 'PENDING'"
                     @click="cancelTransfer(transfer.id)"
-                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
+                    class="px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-600 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center gap-1"
                   >
                     <span class="material-symbols-outlined text-[16px]">close</span>
                     Cancel
@@ -164,14 +164,14 @@
           <button
             @click="loadTransfers(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
           >
             Previous
           </button>
           <button
             @click="loadTransfers(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
+            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium text-sm"
           >
             Next
           </button>
@@ -188,7 +188,7 @@
       >
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-primary/10 text-primary rounded-lg">
+            <div class="p-2 bg-primary/10 text-primary rounded-xl">
               <span class="material-symbols-outlined">swap_horiz</span>
             </div>
             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Add Stock Transfer</h2>
@@ -199,7 +199,7 @@
               <select
                 v-model="transferForm.fromStoreId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Source Store</option>
                 <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -212,7 +212,7 @@
               <select
                 v-model="transferForm.toStoreId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Destination Store</option>
                 <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -225,7 +225,7 @@
               <select
                 v-model="transferForm.productId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               >
                 <option value="">Select Product</option>
                 <option v-for="product in products" :key="product.id" :value="product.id">
@@ -240,7 +240,7 @@
                 type="number"
                 min="1"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
             <div>
@@ -248,20 +248,20 @@
               <textarea
                 v-model="transferForm.notes"
                 rows="3"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
               ></textarea>
             </div>
             <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
               <button
                 type="button"
                 @click="showTransferModal = false"
-                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
+                class="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
               >
                 Save
               </button>

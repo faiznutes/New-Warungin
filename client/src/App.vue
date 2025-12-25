@@ -9,7 +9,7 @@
       <p class="text-gray-600 text-center max-w-md mb-4">{{ globalErrorMessage || 'Terjadi kesalahan saat memuat aplikasi. Silakan refresh halaman.' }}</p>
       <button
         @click="handleGlobalErrorRetry"
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+        class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition"
       >
         Refresh Halaman
       </button>

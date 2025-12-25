@@ -1,29 +1,29 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Contact Messages</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage messages and inquiries from users.</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Contact Messages</h1>
+        <p class="text-[#4c739a] dark:text-[#4c739a]">Manage messages and inquiries from users.</p>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row gap-4 items-center justify-between">
       <div class="relative w-full sm:w-80">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">search</span>
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c739a] text-[20px]">search</span>
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Search messages..."
-          class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white placeholder:text-slate-400"
+          class="w-full pl-10 pr-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec] text-[#0d141b] dark:text-white placeholder:text-[#4c739a]"
           @input="loadMessages"
         />
       </div>
       <select
         v-model="filterRead"
         @change="loadMessages"
-        class="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white"
+        class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec] text-[#0d141b] dark:text-white"
       >
         <option value="">All Status</option>
         <option value="false">Unread</option>
@@ -31,51 +31,51 @@
       </select>
     </div>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
-       <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-       <div class="text-slate-500 font-medium text-sm">Loading messages...</div>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+       <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+       <div class="text-[#4c739a] font-medium text-sm">Loading messages...</div>
     </div>
 
-    <div v-else-if="messages.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-       <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-full mb-3">
-          <span class="material-symbols-outlined text-slate-400 text-3xl">inbox</span>
+    <div v-else-if="messages.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+       <div class="bg-[#f6f7f8] dark:bg-slate-900/50 p-4 rounded-full mb-3">
+          <span class="material-symbols-outlined text-[#4c739a] text-3xl">inbox</span>
        </div>
-       <p class="text-slate-900 dark:text-white font-bold">No Contact Messages</p>
-       <p class="text-slate-500 text-sm">No incoming messages found.</p>
+       <p class="text-[#0d141b] dark:text-white font-bold">No Contact Messages</p>
+       <p class="text-[#4c739a] text-sm">No incoming messages found.</p>
     </div>
 
-    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden flex flex-col min-h-0">
+    <div v-else class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col min-h-0">
       <!-- Bulk Actions Bar -->
       <div v-if="selectedMessages.length > 0" class="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-2 text-sm font-bold text-primary">
+        <div class="flex items-center gap-2 text-sm font-bold text-[#137fec]">
           <span class="material-symbols-outlined text-[20px]">check_circle</span>
           {{ selectedMessages.length }} messages selected
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button
             @click="bulkMarkAsRead"
-            class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
+            class="px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">mark_email_read</span>
             Mark as Read
           </button>
           <button
             @click="bulkMarkAsUnread"
-            class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
+            class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-xl text-xs font-bold transition flex items-center gap-1"
           >
            <span class="material-symbols-outlined text-[16px]">mark_email_unread</span>
             Tandai Belum Dibaca
           </button>
           <button
             @click="bulkDelete"
-            class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-xs font-bold transition flex items-center gap-1"
+            class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl text-xs font-bold transition flex items-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">delete</span>
             Hapus
           </button>
           <button
             @click="selectedMessages = []"
-            class="px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-[#4c739a] rounded-lg text-xs font-medium transition"
+            class="px-3 py-1.5 border border-slate-300 hover:bg-[#f6f7f8] text-[#4c739a] rounded-xl text-xs font-medium transition"
           >
             Batal
           </button>
@@ -85,7 +85,7 @@
       <!-- Messages Table -->
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
-          <thead class="bg-slate-50 dark:bg-slate-900/50">
+          <thead class="bg-[#f6f7f8] dark:bg-slate-900/50">
             <tr>
               <th class="px-6 py-4 text-left w-10">
                 <input
@@ -106,7 +106,7 @@
             <tr
               v-for="message in messages"
               :key="message.id"
-              class="hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors group cursor-pointer"
+              class="hover:bg-[#f6f7f8] dark:hover:bg-slate-900/50 transition-colors group cursor-pointer"
               :class="{ 'bg-blue-50/30 dark:bg-blue-900/10': !message.isRead }"
               @click.stop="viewMessage(message)"
             >
@@ -136,7 +136,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border"
+                  class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-xl border"
                   :class="message.isRead 
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
                     : 'bg-amber-50 text-amber-700 border-amber-100'"
@@ -148,21 +148,21 @@
                 <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     @click="viewMessage(message)"
-                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
                     title="Lihat Detail"
                   >
                     <span class="material-symbols-outlined text-[20px]">visibility</span>
                   </button>
                   <button
                     @click="toggleReadStatus(message)"
-                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition"
                     :title="message.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca'"
                   >
                     <span class="material-symbols-outlined text-[20px]">{{ message.isRead ? 'mark_email_unread' : 'mark_email_read' }}</span>
                   </button>
                   <button
                     @click="deleteMessage(message)"
-                    class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                    class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 rounded-xl transition"
                     title="Hapus"
                   >
                     <span class="material-symbols-outlined text-[20px]">delete</span>
@@ -183,14 +183,14 @@
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Sebelumnya
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
+            class="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-[#f6f7f8] dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition text-[#0d141b] dark:text-white"
           >
             Selanjutnya
           </button>
@@ -205,7 +205,7 @@
         class="fixed inset-0 bg-[#0d141b]/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all"
         @click.self="showDetailModal = false"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
           <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
             <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Detail Pesan</h3>
             <button
@@ -242,7 +242,7 @@
 
             <div class="space-y-2">
                <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">Pesan</label>
-               <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-700 text-[#0d141b] dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+               <div class="bg-[#f6f7f8] dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-700 text-[#0d141b] dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                   {{ selectedMessage.message }}
                </div>
             </div>
@@ -257,7 +257,7 @@
                   <label class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</label>
                   <div class="mt-1">
                      <span
-                        class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border inline-block"
+                        class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-xl border inline-block"
                         :class="selectedMessage.isRead 
                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
                            : 'bg-amber-50 text-amber-700 border-amber-100'"
@@ -269,7 +269,7 @@
             </div>
           </div>
           
-          <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-900/10">
+          <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 bg-[#f6f7f8] dark:bg-slate-900/10">
             <button
               @click="toggleReadStatus(selectedMessage)"
               class="px-4 py-2 border border-slate-300 hover:bg-white text-[#4c739a] hover:text-[#137fec] rounded-xl text-sm font-bold transition flex items-center gap-2"

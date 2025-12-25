@@ -12,7 +12,7 @@
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Discount</span>
@@ -31,7 +31,7 @@
           @input="handleSearchInput"
           type="text"
           placeholder="Search discounts..."
-          class="block w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="block w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         />
       </div>
     </div>
@@ -113,14 +113,14 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="editDiscount(discount)"
-                    class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-lg transition"
+                    class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition"
                     title="Edit"
                   >
                     <span class="material-symbols-outlined text-[18px]">edit</span>
                   </button>
                   <button
                     @click="deleteDiscount(discount.id)"
-                    class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                    class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
                     title="Delete"
                   >
                     <span class="material-symbols-outlined text-[18px]">delete</span>
@@ -139,7 +139,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
           <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
             {{ editingDiscount ? 'Edit Diskon' : 'Tambah Diskon' }}
@@ -164,7 +164,7 @@
                 type="text"
                 required
                 placeholder="Contoh: Diskon Lebaran 20%"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -175,7 +175,7 @@
                 v-model="discountForm.discountType"
                 required
                 @change="handleDiscountTypeChange"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="AMOUNT_BASED">Berdasarkan Total Pembelian</option>
                 <option value="BUNDLE">Bundle (Beli Bersama)</option>
@@ -193,7 +193,7 @@
                 <button
                   type="button"
                   @click="openProductSelector('BUNDLE')"
-                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
                 >
                   <span class="text-sm text-gray-700">
                     <span v-if="discountForm.bundleProducts.length === 0" class="text-gray-400">
@@ -212,7 +212,7 @@
                   v-if="discountForm.bundleProducts.length > 0"
                   type="button"
                   @click="openProductSelector('BUNDLE')"
-                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -234,7 +234,7 @@
                 <button
                   type="button"
                   @click="openProductSelector('PRODUCT_BASED')"
-                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
                 >
                   <span class="text-sm text-gray-700">
                     <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
@@ -253,7 +253,7 @@
                   v-if="discountForm.applicableProducts.length > 0"
                   type="button"
                   @click="openProductSelector('PRODUCT_BASED')"
-                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -276,7 +276,7 @@
                   <label class="block text-xs font-medium text-gray-600 mb-2">Pilihan Produk</label>
                   <select
                     v-model="productSelectionType"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="CATEGORY">Berdasarkan Kategori</option>
                     <option value="PRODUCTS">Pilih Produk Tertentu</option>
@@ -289,7 +289,7 @@
                   <select
                     v-model="selectedCategory"
                     @change="handleCategoryChange"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value="">Pilih Kategori</option>
                     <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -302,7 +302,7 @@
                     <button
                       type="button"
                       @click="openProductSelector('QUANTITY_BASED')"
-                      class="w-full px-4 py-2 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-between"
+                      class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
                     >
                       <span class="text-sm text-gray-700">
                         <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
@@ -321,7 +321,7 @@
                       v-if="discountForm.applicableProducts.length > 0"
                       type="button"
                       @click="openProductSelector('QUANTITY_BASED')"
-                      class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 transition flex items-center justify-center gap-2"
+                      class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -344,7 +344,7 @@
               <select
                 v-model="discountForm.bundleDiscountProduct"
                 required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Pilih Produk</option>
                 <option
@@ -369,7 +369,7 @@
                 required
                 min="1"
                 placeholder="Contoh: 3 (beli 3 item dapat diskon)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
               <p class="mt-1 text-xs text-gray-500">
                 Contoh: Beli 3 item ayam (20rb) = 60rb, dapat diskon sesuai nilai diskon yang diatur
@@ -382,7 +382,7 @@
               <select
                 v-model="discountForm.discountValueType"
                 required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="PERCENTAGE">Persentase (%)</option>
                 <option value="FIXED">Nominal (Rp)</option>
@@ -400,7 +400,7 @@
                 required
                 min="0"
                 :step="discountForm.discountValueType === 'PERCENTAGE' ? '1' : '1000'"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -413,7 +413,7 @@
                 min="0"
                 step="1000"
                 placeholder="0 = tidak ada minimum"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -425,7 +425,7 @@
                 type="number"
                 min="1"
                 placeholder="1"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -435,7 +435,7 @@
               <input
                 v-model="discountForm.startDate"
                 type="datetime-local"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -445,7 +445,7 @@
               <input
                 v-model="discountForm.endDate"
                 type="datetime-local"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
             </div>
 
@@ -455,7 +455,7 @@
               <select
                 v-model="discountForm.applicableTo"
                 required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="ALL">Semua Orang</option>
                 <option value="MEMBER_ONLY">Hanya Member</option>
@@ -477,14 +477,14 @@
           <div class="flex space-x-3 pt-4 mt-6 border-t border-gray-200">
             <button
               type="submit"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition"
             >
               {{ editingDiscount ? 'Update' : 'Simpan' }}
             </button>
             <button
               type="button"
               @click="closeModal"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition"
             >
               Batal
             </button>

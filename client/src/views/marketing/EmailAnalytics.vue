@@ -1,26 +1,26 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Email Analytics</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Analyze email campaign performance</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Email Analytics</h1>
+        <p class="text-[#4c739a] dark:text-slate-400">Analyze email campaign performance</p>
       </div>
-      <div class="flex items-center gap-4 p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+      <div class="flex flex-wrap items-center gap-3 p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
         <input
           v-model="dateRange.start"
           type="date"
-          class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+          class="px-3 py-2 text-xs sm:text-sm bg-transparent border-none focus:ring-0 text-[#0d141b] dark:text-white"
         />
-        <span class="text-slate-500 text-xs font-medium px-1">to</span>
+        <span class="text-[#4c739a] text-xs font-medium px-1">to</span>
         <input
           v-model="dateRange.end"
           type="date"
-          class="px-3 py-1.5 text-sm bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white"
+          class="px-3 py-2 text-xs sm:text-sm bg-transparent border-none focus:ring-0 text-[#0d141b] dark:text-white"
         />
         <button
           @click="loadAnalytics"
-          class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover rounded-lg text-sm font-medium text-white transition"
+          class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-600 rounded-xl text-xs sm:text-sm font-medium text-white transition shadow-sm"
         >
           Filter
         </button>
@@ -36,11 +36,11 @@
     <div v-else class="space-y-6">
       <!-- Overall Analytics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6 border-l-4 border-blue-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Sent</p>
-              <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ overallAnalytics.sent || 0 }}</p>
+              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Sent</p>
+              <p class="text-3xl font-bold text-[#0d141b] dark:text-white">{{ overallAnalytics.sent || 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
               <span class="material-symbols-outlined text-blue-600">mail</span>
@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Open Rate</p>
@@ -63,7 +63,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Click Rate</p>
@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 mb-1">Bounce Rate</p>
@@ -93,13 +93,13 @@
       </div>
 
       <!-- Campaign Analytics -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="bg-white rounded-xl shadow-lg p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-xl font-bold text-gray-900">Campaign Performance</h3>
           <select
             v-model="selectedCampaignId"
             @change="loadCampaignAnalytics"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            class="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
           >
             <option value="">All Campaigns</option>
             <option v-for="campaign in campaigns" :key="campaign.id" :value="campaign.id">
@@ -109,55 +109,55 @@
         </div>
 
         <div v-if="selectedCampaignId && campaignAnalytics" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Sent</p>
             <p class="text-2xl font-bold text-gray-900">{{ campaignAnalytics.sent || 0 }}</p>
           </div>
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Opened</p>
             <p class="text-2xl font-bold text-green-600">{{ campaignAnalytics.opened || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Open Rate: {{ formatPercentage(campaignAnalytics.openRate || 0) }}%</p>
           </div>
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Clicked</p>
             <p class="text-2xl font-bold text-purple-600">{{ campaignAnalytics.clicked || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Click Rate: {{ formatPercentage(campaignAnalytics.clickRate || 0) }}%</p>
           </div>
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Unique Opens</p>
             <p class="text-2xl font-bold text-blue-600">{{ campaignAnalytics.uniqueOpens || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Unique Open Rate: {{ formatPercentage(campaignAnalytics.uniqueOpenRate || 0) }}%</p>
           </div>
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Unique Clicks</p>
             <p class="text-2xl font-bold text-indigo-600">{{ campaignAnalytics.uniqueClicks || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Unique Click Rate: {{ formatPercentage(campaignAnalytics.uniqueClickRate || 0) }}%</p>
           </div>
-          <div class="p-4 bg-gray-50 rounded-lg">
+          <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Bounced</p>
             <p class="text-2xl font-bold text-red-600">{{ campaignAnalytics.bounced || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Bounce Rate: {{ formatPercentage(campaignAnalytics.bounceRate || 0) }}%</p>
           </div>
         </div>
 
-        <div v-else class="text-center py-12 text-slate-500">
+        <div v-else class="text-center py-12 text-[#4c739a]">
           <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">analytics</span>
           <p>Select a campaign to view detailed analytics</p>
         </div>
       </div>
 
       <!-- Event Timeline -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card p-6">
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Recent Events</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-6">Recent Events</h3>
         <div v-if="recentEvents.length === 0" class="text-center py-12">
           <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">event_note</span>
-          <p class="text-slate-500">No events yet</p>
+          <p class="text-[#4c739a]">No events yet</p>
         </div>
         <div v-else class="space-y-4">
           <div
             v-for="event in recentEvents"
             :key="event.id"
-            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-xl"
           >
             <div class="flex items-center space-x-4">
               <div

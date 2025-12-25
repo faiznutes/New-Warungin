@@ -17,7 +17,7 @@
       <button
         v-if="canExportReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Export Report</span>
@@ -32,7 +32,7 @@
           <select
             v-model="reportType"
             @change="handleReportTypeChange"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="sales">Sales Report</option>
             <option value="financial">Financial Report</option>
@@ -43,7 +43,7 @@
           <select
             v-model="reportViewType"
             @change="handleReportViewTypeChange"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="full">Full (Revenue + Cost)</option>
             <option value="revenue">Revenue Only</option>
@@ -55,7 +55,7 @@
           <select
             v-model="marginDisplayFormat"
             @change="saveMarginFormat"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="percentage">Percentage (%)</option>
             <option value="amount">Amount</option>
@@ -66,7 +66,7 @@
           <select
             v-model="period"
             @change="setPeriod(period)"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -81,13 +81,13 @@
               v-model="dateRange.from"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
             <input
               v-model="dateRange.to"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@
     </div>
 
     <!-- Analytics Section -->
-    <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
+    <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <span class="material-symbols-outlined text-primary">insights</span>
@@ -143,7 +143,7 @@
           <div
             v-for="(product, index) in analyticsData.topProducts.slice(0, 5)"
             :key="product.id"
-            class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg"
+            class="flex items-center justify-between p-3 bg-[#f8fafc] dark:bg-slate-900 rounded-xl"
           >
             <div class="flex items-center gap-3">
               <span class="w-6 h-6 flex items-center justify-center text-xs font-bold bg-primary/10 text-primary rounded">#{{ index + 1 }}</span>
@@ -170,7 +170,7 @@
         <div
           v-for="(stat, index) in summaryStats"
           :key="index"
-          class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6"
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6"
         >
           <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ stat.label }}</p>
@@ -181,7 +181,7 @@
       </div>
 
       <!-- Report Details Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
           <div class="flex items-center justify-between">
             <div>
@@ -196,7 +196,7 @@
             <button
               v-if="reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')"
               @click="showProductDetails = !showProductDetails"
-              class="flex items-center gap-2 px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition font-medium"
+              class="flex items-center gap-2 px-4 py-2 text-sm bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
             >
               <span class="material-symbols-outlined text-[18px]">{{ showProductDetails ? 'visibility_off' : 'visibility' }}</span>
               {{ showProductDetails ? 'Hide' : 'Show' }} Product Details
@@ -206,7 +206,7 @@
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
             <thead>
-              <tr class="bg-slate-50 dark:bg-slate-900/50">
+              <tr class="bg-[#f8fafc] dark:bg-slate-900/50">
                 <th
                   v-for="header in reportHeaders"
                   :key="header"
@@ -309,12 +309,12 @@
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         @click.self="selectedProductDetail = null"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ selectedProductDetail.name }}</h3>
             <button
               @click="selectedProductDetail = null"
-              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition"
             >
               <span class="material-symbols-outlined text-slate-500">close</span>
             </button>
@@ -371,13 +371,13 @@
     </div>
 
     <!-- Loading Reports Permission Check -->
-    <div v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">bar_chart</span>
       <p class="text-slate-500 font-medium">Loading reports...</p>
     </div>
 
     <!-- Access Denied -->
-    <div v-else class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+    <div v-else class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">lock</span>
       <p class="text-slate-900 dark:text-white font-bold">Access Denied</p>
       <p class="text-slate-500 text-sm mt-2">You don't have permission to view reports</p>

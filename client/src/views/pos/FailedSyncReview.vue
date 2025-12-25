@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Failed Sync Orders</h2>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">Manage offline orders that failed to sync with server.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Failed Sync Orders</h2>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Manage offline orders that failed to sync with server.</p>
       </div>
       <button
         @click="refreshList"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">refresh</span>
         <span>Refresh</span>
@@ -56,14 +56,14 @@
       <div
         v-for="order in failedOrders"
         :key="order.id"
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-card overflow-hidden border-l-4 border-red-500 hover:shadow-lg transition"
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border-l-4 border-red-500 hover:shadow-lg transition"
       >
         <!-- Order Header -->
         <div class="p-6 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Order #{{ order.id.slice(0, 8) }}</h3>
-              <p class="text-sm text-slate-500 mt-1">
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Order #{{ order.id.slice(0, 8) }}</h3>
+              <p class="text-sm text-[#4c739a] mt-1">
                 {{ new Date(order.timestamp).toLocaleString('en-US') }}
               </p>
             </div>
@@ -89,18 +89,18 @@
 
           <!-- Order Items -->
           <div>
-            <h4 class="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px] text-slate-500">receipt</span>
+            <h4 class="font-bold text-[#0d141b] dark:text-white mb-2 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-[#4c739a]">receipt</span>
               Items:
             </h4>
             <div v-if="order.orderData?.items" class="space-y-2">
               <div
                 v-for="(item, idx) in order.orderData.items"
                 :key="idx"
-                class="flex justify-between items-center text-sm bg-slate-50 dark:bg-slate-900 p-3 rounded-lg"
+                class="flex justify-between items-center text-sm bg-slate-50 dark:bg-slate-900 p-3 rounded-xl"
               >
-                <span class="text-slate-700 dark:text-slate-300">{{ item.productId }} ({{ item.quantity }}x)</span>
-                <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(item.price * item.quantity) }}</span>
+                <span class="text-[#0d141b] dark:text-slate-300">{{ item.productId }} ({{ item.quantity }}x)</span>
+                <span class="font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(item.price * item.quantity) }}</span>
               </div>
             </div>
           </div>
@@ -108,7 +108,7 @@
           <!-- Order Total -->
           <div class="border-t border-slate-100 dark:border-slate-700 pt-4">
             <div class="flex justify-between items-center">
-              <span class="font-bold text-slate-900 dark:text-white">Total:</span>
+              <span class="font-bold text-[#0d141b] dark:text-white">Total:</span>
               <span class="text-xl font-bold text-primary">
                 {{ formatCurrency(order.orderData?.discount ? 
                   (calculateSubtotal(order.orderData.items) - order.orderData.discount) :
@@ -118,7 +118,7 @@
           </div>
 
           <!-- Discount Info -->
-          <div v-if="order.orderData?.discount && order.orderData.discount > 0" class="text-sm text-slate-500">
+          <div v-if="order.orderData?.discount && order.orderData.discount > 0" class="text-sm text-[#4c739a]">
             Discount: {{ formatCurrency(order.orderData.discount) }}
           </div>
 
@@ -127,7 +127,7 @@
             <button
               @click="retrySync(order.id)"
               :disabled="retrying === order.id || retryOrder?.id === order.id"
-              class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium shadow-lg shadow-green-500/30"
+              class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium shadow-lg shadow-green-500/30"
             >
               <span v-if="retrying === order.id" class="material-symbols-outlined animate-spin text-[20px]">refresh</span>
               <span v-else class="material-symbols-outlined text-[20px]">replay</span>
@@ -136,7 +136,7 @@
             <button
               @click="discardOrder(order.id)"
               :disabled="discarding === order.id"
-              class="px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+              class="px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
             >
               <span class="material-symbols-outlined text-[20px]">delete</span>
               {{ discarding === order.id ? 'Deleting...' : 'Discard' }}

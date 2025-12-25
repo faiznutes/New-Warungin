@@ -29,7 +29,7 @@
                 v-model="form.tenantName"
                 type="text"
                 required
-                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
                 placeholder="Your business name"
               />
             </div>
@@ -46,7 +46,7 @@
                 v-model="form.tenantEmail"
                 type="email"
                 required
-                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
                 placeholder="business@email.com"
               />
             </div>
@@ -63,7 +63,7 @@
                 v-model="form.userName"
                 type="text"
                 required
-                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
                 placeholder="Your full name"
               />
             </div>
@@ -80,7 +80,7 @@
                 v-model="form.userEmail"
                 type="email"
                 required
-                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
                 placeholder="admin@email.com"
               />
             </div>
@@ -97,7 +97,7 @@
                 v-model="form.userPassword"
                 type="password"
                 required
-                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
+                class="block w-full pl-10 pr-3 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-slate-900 dark:text-white placeholder-slate-400"
                 placeholder="Create a secure password"
               />
             </div>
@@ -107,7 +107,7 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full py-3 px-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+            class="w-full py-3 px-4 bg-primary text-white rounded-xl font-semibold hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
           >
             <span v-if="!loading">Register</span>
             <span v-else class="flex items-center gap-2">

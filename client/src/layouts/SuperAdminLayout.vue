@@ -1,10 +1,17 @@
 <template>
-  <div class="flex h-screen bg-[#f6f7f8] dark:bg-[#101922] font-display overflow-hidden">
+  <div class="bg-background-light dark:bg-background-dark text-[#0d141b] dark:text-white font-display overflow-hidden h-screen flex">
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-50 dark:bg-[#1e293b] border-r border-[#e7edf3] dark:border-slate-700 flex flex-col h-full shrink-0 transition-all duration-300">
+    <aside 
+      class="w-64 bg-slate-50 dark:bg-[#1e293b] border-r border-[#e7edf3] dark:border-slate-700 flex flex-col h-full shrink-0 transition-all duration-300 fixed lg:relative z-50"
+      :class="{ 
+        '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
+        'translate-x-0': sidebarOpen || windowWidth >= 1024,
+        'shadow-xl lg:shadow-none': sidebarOpen && windowWidth < 1024
+      }"
+    >
       <div class="p-6 pb-2">
         <div class="flex flex-col gap-1">
-          <h1 class="text-[#137fec] text-xl font-bold leading-normal flex items-center gap-2">
+          <h1 class="text-primary text-xl font-bold leading-normal flex items-center gap-2">
             <span class="material-symbols-outlined icon-filled">storefront</span>
             Warungin
           </h1>
@@ -12,139 +19,101 @@
         </div>
       </div>
 
-      <nav class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2">
+      <nav class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 custom-scrollbar">
         <router-link 
           to="/app/super-dashboard" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path === '/app/super-dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/super-dashboard' }">dashboard</span>
-          <p class="text-sm font-semibold leading-normal">Dashboard</p>
+          <p class="text-sm font-medium leading-normal">Dashboard</p>
         </router-link>
 
         <router-link 
           to="/app/tenants" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/tenants') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path.startsWith('/app/tenants') && !$route.path.includes('/support') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/tenants') }">store</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/tenants') && !$route.path.includes('/support') }">store</span>
           <p class="text-sm font-medium leading-normal">Tenants</p>
         </router-link>
 
         <router-link 
           to="/app/subscription" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined">receipt_long</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/subscription') }">receipt_long</span>
           <p class="text-sm font-medium leading-normal">Subscriptions</p>
+        </router-link>
+
+        <!-- New V3 Support Tickets Link -->
+        <router-link 
+          to="/app/tenants/support" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/tenants/support' }">support_agent</span>
+          <p class="text-sm font-medium leading-normal">Support Tickets</p>
         </router-link>
 
         <router-link 
           to="/app/addons" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined">extension</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/addons') }">extension</span>
           <p class="text-sm font-medium leading-normal">Addons</p>
         </router-link>
 
         <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
-        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">Business</p>
 
         <router-link 
           to="/app/finance" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path.startsWith('/app/finance') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined">payments</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/finance') }">payments</span>
           <p class="text-sm font-medium leading-normal">Finance</p>
         </router-link>
 
         <router-link 
           to="/app/analytics" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path.startsWith('/app/analytics') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined">analytics</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/analytics') }">analytics</span>
           <p class="text-sm font-medium leading-normal">Analytics</p>
-        </router-link>
-
-        <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
-        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">System</p>
-        
-        <router-link 
-          to="/app/superadmin/server-monitor" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/superadmin/server-monitor') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-        >
-          <span class="material-symbols-outlined">dns</span>
-          <p class="text-sm font-medium leading-normal">Monitor</p>
-        </router-link>
-
-        <router-link 
-          to="/app/superadmin/system-info" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/superadmin/system-info') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-        >
-          <span class="material-symbols-outlined">info</span>
-          <p class="text-sm font-medium leading-normal">System Info</p>
         </router-link>
 
         <router-link 
           to="/app/settings/system" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
           :class="[$route.path === '/app/settings/system' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
-          <span class="material-symbols-outlined">settings</span>
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/settings/system' }">settings</span>
           <p class="text-sm font-medium leading-normal">Settings</p>
-        </router-link>
-
-        <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
-        <p class="px-3 text-xs font-bold text-[#4c739a]/70 uppercase tracking-wider mb-1">Maintenance</p>
-
-        <router-link 
-          to="/app/superadmin/backups" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/superadmin/backups') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-        >
-          <span class="material-symbols-outlined">backup</span>
-          <p class="text-sm font-medium leading-normal">Backups</p>
-        </router-link>
-        
-        <router-link 
-          to="/app/settings/archive" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/settings/archive') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-        >
-          <span class="material-symbols-outlined">inventory_2</span>
-          <p class="text-sm font-medium leading-normal">Archives</p>
-        </router-link>
-
-        <router-link 
-          to="/app/settings/retention" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group"
-          active-class="bg-[#137fec]/10 text-[#137fec]"
-          :class="[$route.path.startsWith('/app/settings/retention') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-        >
-          <span class="material-symbols-outlined">delete_sweep</span>
-          <p class="text-sm font-medium leading-normal">Retention</p>
         </router-link>
 
         <button 
           @click="handleLogout" 
-          class="flex items-center gap-3 px-3 py-3 rounded-lg text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
         >
           <span class="material-symbols-outlined">logout</span>
           <p class="text-sm font-medium leading-normal">Logout</p>
@@ -164,17 +133,27 @@
       </div>
     </aside>
 
+    <!-- Overlay for mobile/tablet -->
+    <div
+      v-if="sidebarOpen && windowWidth < 1024"
+      class="fixed inset-0 bg-[#0d141b]/50 z-40 transition-opacity duration-300 backdrop-blur-sm"
+      @click="sidebarOpen = false"
+    ></div>
+
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-w-0 bg-[#f6f7f8] dark:bg-[#101922] overflow-hidden">
+    <main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark overflow-hidden">
       <!-- Header -->
       <header class="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-[#1e293b] border-b border-[#e7edf3] dark:border-slate-700 shrink-0 z-10">
         <div class="flex items-center gap-4">
-          <button class="lg:hidden text-[#4c739a]">
+          <button 
+            @click="sidebarOpen = !sidebarOpen"
+            class="lg:hidden text-[#4c739a]"
+          >
             <span class="material-symbols-outlined">menu</span>
           </button>
           <div>
             <nav class="flex items-center gap-2 text-sm text-[#4c739a] dark:text-slate-400 mb-1">
-              <span class="hover:text-[#137fec] transition-colors cursor-pointer">Home</span>
+              <span class="hover:text-primary transition-colors cursor-pointer">Home</span>
               <span class="text-xs">/</span>
               <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
             </nav>
@@ -182,13 +161,7 @@
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <!-- Search -->
-          <div class="hidden md:flex items-center bg-[#e7edf3] dark:bg-slate-700 rounded-lg px-3 py-2 w-64 focus-within:ring-2 ring-[#137fec]/50 transition-all">
-            <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400 text-[20px]">search</span>
-            <input class="bg-transparent border-none text-sm w-full focus:ring-0 text-[#0d141b] dark:text-white placeholder:text-[#4c739a] dark:placeholder:text-slate-400" placeholder="Search tenants, orders..." type="text"/>
-          </div>
-          <!-- Notifications -->
-          <button class="relative p-2 text-[#4c739a] dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+          <button class="relative p-2 text-[#4c739a] dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
             <span class="material-symbols-outlined">notifications</span>
             <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-[#1e293b]"></span>
           </button>
@@ -196,8 +169,8 @@
       </header>
 
       <!-- Scrollable Dashboard Content -->
-      <div class="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth">
-        <div class="max-w-[1400px] mx-auto flex flex-col gap-8 h-full">
+      <div class="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth hover:scroll-auto">
+        <div class="max-w-[1400px] mx-auto flex flex-col gap-6 h-full">
            <router-view></router-view>
            <!-- Footer spacing -->
            <div class="h-8 shrink-0"></div>
@@ -216,6 +189,7 @@ const route = useRoute();
 const authStore = useAuthStore();
 
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+const sidebarOpen = ref(true);
 
 const user = computed(() => authStore.user);
 
@@ -250,10 +224,20 @@ const handleLogout = () => {
 
 const handleResize = () => {
   windowWidth.value = window.innerWidth;
+  if (windowWidth.value >= 1024) {
+    sidebarOpen.value = true;
+  } else {
+    sidebarOpen.value = false;
+  }
 };
 
 onMounted(() => {
   windowWidth.value = window.innerWidth;
+  if (windowWidth.value >= 1024) {
+    sidebarOpen.value = true;
+  } else {
+    sidebarOpen.value = false;
+  }
   window.addEventListener('resize', handleResize);
 });
 
