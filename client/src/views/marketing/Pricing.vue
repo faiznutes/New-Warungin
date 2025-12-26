@@ -236,7 +236,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
             <h3 class="font-bold text-slate-900 dark:text-white mb-2">Apakah ada trial gratis?</h3>
             <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Ya! Semua paket mendapatkan trial gratis 14 hari tanpa perlu kartu kredit.
+              Ya! Hubungi kami untuk mendapatkan akses demo/trial gratis selama 14 hari.
             </p>
           </div>
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700">

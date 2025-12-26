@@ -27,17 +27,18 @@ Panduan ini akan membantu Anda menyiapkan outlet pertama dan mulai menggunakan s
 
 ### Langkah 1: Registrasi Akun
 
-1. Kunjungi halaman [Registrasi](/register)
-2. Masukkan email dan password Anda
-3. Verifikasi email Anda melalui link yang dikirim
+Untuk menjaga keamanan dan validitas data bisnis, pendaftaran akun dilakukan oleh tim Warungin.
+
+1. Kunjungi halaman [Kontak](/contact) atau klik tombol WhatsApp di pojok kanan bawah.
+2. Sampaikan data bisnis Anda (Nama, Alamat, Email) kepada tim sales.
+3. Anda akan menerima email aktivasi dan password sementara.
+4. Login menggunakan kredensial yang diberikan.
 
 ### Langkah 2: Setup Profil Bisnis
 
-Setelah login, Anda akan diminta untuk mengisi informasi bisnis:
-- **Nama Bisnis**: Nama warung atau toko Anda
-- **Alamat**: Alamat lengkap outlet
-- **Nomor Telepon**: Untuk kontak pelanggan
-- **Logo**: Upload logo bisnis (opsional)
+Setelah login, Anda sebaiknya segera mengganti password sementara:
+- Masuk ke **Pengaturan > Password**
+- Ubah password sesuai keinginan Anda
 
 ### Langkah 3: Tambah Outlet Pertama
 

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-slate-900 font-display text-slate-900 dark:text-white antialiased">
-    <div class="min-h-screen flex items-center justify-center p-4 md:p-6 bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-900 dark:to-slate-900">
+    <div class="min-h-screen flex items-center justify-center p-4 md:p-6 bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
       <!-- Main Card Container -->
       <div class="w-full max-w-[900px] bg-white dark:bg-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row relative">
         <!-- Left Section: Branding -->

@@ -217,16 +217,16 @@
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
              <router-link
-              to="/register"
+              to="/contact"
               class="px-10 py-5 bg-white text-emerald-600 rounded-2xl font-bold text-xl hover:bg-slate-50 transition shadow-lg transform hover:-translate-y-1"
             >
-              Daftar Sekarang
+              Hubungi Sales
             </router-link>
             <router-link
-              to="/contact"
+              to="/pricing"
               class="px-10 py-5 bg-emerald-700/50 backdrop-blur-sm border border-emerald-400/30 text-white rounded-2xl font-bold text-xl hover:bg-emerald-700/70 transition"
             >
-              Hubungi Sales
+              Lihat Harga
             </router-link>
           </div>
         </div>

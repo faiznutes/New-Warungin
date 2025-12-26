@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-900 dark:to-slate-900 font-display">
+  <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] font-display">
     
     <!-- Navbar (Simplified) -->
     <header class="w-full border-b border-white/50 bg-white/50 backdrop-blur-sm px-6 py-4 dark:border-slate-800 dark:bg-slate-900/80 sticky top-0 z-50">
