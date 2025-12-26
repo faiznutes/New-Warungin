@@ -244,7 +244,7 @@ const tenantName = computed(() => {
 });
 
 const topProducts = computed(() => {
-  if (!stats.value?.charts?.topProducts) return [];
+  if (!stats.value || !stats.value.charts || !stats.value.charts.topProducts) return [];
   // Return top 4 products
   return stats.value.charts.topProducts.slice(0, 4);
 });
@@ -524,6 +524,7 @@ onUnmounted(() => {
     revenueChart.destroy();
   }
 });
+</script>
 </script>
 
 <style scoped>
