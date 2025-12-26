@@ -79,7 +79,7 @@ function waitForImages(container: HTMLElement): Promise<void> {
   const images = container.querySelectorAll('img');
   const promises = Array.from(images).map((img) => {
     if (img.complete) return Promise.resolve();
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, _reject) => {
       img.onload = () => resolve();
       img.onerror = () => resolve(); // Continue even if image fails
       setTimeout(() => resolve(), 5000); // Timeout after 5 seconds
