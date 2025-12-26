@@ -21,7 +21,7 @@
           </p>
           <router-link
             to="/app/addons"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30"
           >
             <span class="material-symbols-outlined text-[20px]">extension</span>
             View Available Add-ons
@@ -37,7 +37,7 @@
           </p>
           <router-link
             to="/app"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30"
           >
             <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             Back to Dashboard

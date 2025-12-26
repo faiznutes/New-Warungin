@@ -191,7 +191,7 @@
           class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
           :class="currentPlan?.plan === 'PRO' 
             ? 'bg-primary/20 text-primary cursor-not-allowed' 
-            : 'bg-primary hover:bg-primary-hover text-white shadow-lg shadow-primary/30'"
+            : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30'"
         >
           <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
           {{ currentPlan?.plan === 'PRO' ? 'Current Plan' : 'Choose PRO' }}

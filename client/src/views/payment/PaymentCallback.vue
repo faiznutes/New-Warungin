@@ -26,7 +26,7 @@
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
           >
             {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>
@@ -55,7 +55,7 @@
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
           >
             Try Again
           </button>
@@ -84,7 +84,7 @@
         <div class="mt-6 space-y-3">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
+            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
           >
             {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
           </button>

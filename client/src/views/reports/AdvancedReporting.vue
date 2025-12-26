@@ -9,7 +9,7 @@
       <div class="flex gap-3">
         <button
           @click="showTemplateModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           <span>Create Template</span>
@@ -30,7 +30,7 @@
         <button
           @click="activeTab = 'templates'"
           class="flex-1 py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition"
-          :class="activeTab === 'templates' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
+          :class="activeTab === 'templates' ? 'bg-primary text-white shadow-lg shadow-emerald-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">description</span>
           Report Templates
@@ -38,7 +38,7 @@
         <button
           @click="activeTab = 'scheduled'"
           class="flex-1 py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition"
-          :class="activeTab === 'scheduled' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
+          :class="activeTab === 'scheduled' ? 'bg-primary text-white shadow-lg shadow-emerald-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">schedule</span>
           Scheduled Reports
@@ -46,7 +46,7 @@
         <button
           @click="activeTab = 'dashboard'"
           class="flex-1 py-3 px-4 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition"
-          :class="activeTab === 'dashboard' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
+          :class="activeTab === 'dashboard' ? 'bg-primary text-white shadow-lg shadow-emerald-500/30' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">dashboard_customize</span>
           Dashboard Settings
@@ -62,7 +62,7 @@
         <p class="text-slate-500 text-center max-w-md mb-4">Create your first template to customize reports.</p>
         <button
           @click="showTemplateModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Create Template
@@ -109,7 +109,7 @@
         <p class="text-slate-500 text-center max-w-md mb-4">Set up automated report delivery to your inbox.</p>
         <button
           @click="showScheduleModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Schedule Report
@@ -209,7 +209,7 @@
           <button
             @click="saveDashboardSettings"
             :disabled="saving"
-            class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm disabled:opacity-50"
+            class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm disabled:opacity-50"
           >
             <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             <span class="material-symbols-outlined text-[20px]" v-else>save</span>
@@ -326,7 +326,7 @@
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
               >
                 <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 {{ saving ? 'Saving...' : 'Save Template' }}
@@ -460,7 +460,7 @@
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition font-medium text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
               >
                 <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 {{ saving ? 'Saving...' : 'Save Schedule' }}

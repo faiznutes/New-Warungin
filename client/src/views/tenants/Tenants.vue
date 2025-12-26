@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5"
+        class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Tenant</span>

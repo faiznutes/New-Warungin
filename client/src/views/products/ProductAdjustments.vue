@@ -9,7 +9,7 @@
       <div class="flex gap-2">
         <button
           @click="showAdjustmentModal = true"
-          class="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium flex items-center gap-2"
+          class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium flex items-center gap-2"
         >
           <span class="material-symbols-outlined text-[20px]">add_circle</span>
           <span>New Adjustment</span>
@@ -413,7 +413,7 @@
               <button
                 type="submit"
                 :disabled="saving || !isFormValid"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
               >
                 {{ saving ? 'Saving...' : 'Save Adjustment' }}
               </button>

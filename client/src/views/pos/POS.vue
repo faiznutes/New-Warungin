@@ -643,7 +643,7 @@
           </button>
           <button
             @click="goToStockAlerts"
-            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 font-semibold"
+            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-primary/20 font-semibold"
           >
             View All Alerts
           </button>

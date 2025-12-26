@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Template</span>
@@ -31,7 +31,7 @@
         <p class="text-[#4c739a] text-center max-w-md mb-4">Create your first receipt template to customize how receipts look.</p>
         <button
           @click="showCreateModal = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           Create First Template
@@ -276,7 +276,7 @@
               <button
                 type="submit"
                 :disabled="saving"
-                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                class="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
               >
                 <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 {{ saving ? 'Saving...' : 'Save Template' }}

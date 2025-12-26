@@ -71,7 +71,7 @@
         
         <router-link
           to="/"
-          class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-semibold text-lg shadow-lg shadow-primary/30"
+          class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-semibold text-lg shadow-lg shadow-emerald-500/30"
         >
           <span class="material-symbols-outlined text-[20px]">arrow_back</span>
           Back to Home

@@ -23,7 +23,7 @@
       <button
         v-if="!addonError"
         @click="showCustomReportModal = true"
-        class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#10b981]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
+        class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#10b981]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all"
       >
         <span class="material-symbols-outlined text-[20px]">add_chart</span>
         <span>Create Custom Report</span>

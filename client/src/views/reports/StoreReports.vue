@@ -31,7 +31,7 @@
           <button
             @click="loadReport"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 bg-[#10b981] hover:bg-[#10b981]-hover text-white px-5 py-3 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm disabled:opacity-50"
+            class="w-full flex items-center justify-center gap-2 bg-[#10b981] hover:bg-[#10b981]-hover text-white px-5 py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm disabled:opacity-50"
           >
             <span class="material-symbols-outlined text-[20px]" v-if="!loading">bar_chart</span>
             <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

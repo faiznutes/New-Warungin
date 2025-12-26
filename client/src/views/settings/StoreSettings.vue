@@ -112,7 +112,7 @@
         </div>
         <button
           @click="showTemplateManager = true"
-          class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">settings</span>
           <span>Manage Templates</span>
@@ -129,7 +129,7 @@
     <div class="flex justify-end">
       <button
         @click="saveSettings"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium"
       >
         <span class="material-symbols-outlined text-[20px]">save</span>
         Save Settings

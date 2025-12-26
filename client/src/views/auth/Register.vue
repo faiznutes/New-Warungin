@@ -4,7 +4,7 @@
       <!-- Logo Section -->
       <div class="text-center mb-8">
         <router-link to="/" class="inline-flex flex-col items-center hover:opacity-90 transition-opacity">
-          <div class="w-16 h-16 bg-gradient-to-br from-[#3f68e4] to-[#5b7fe8] rounded-2xl flex items-center justify-center mb-3 shadow-lg shadow-primary/30">
+          <div class="w-16 h-16 bg-gradient-to-br from-[#3f68e4] to-[#5b7fe8] rounded-2xl flex items-center justify-center mb-3 shadow-lg shadow-emerald-500/30">
             <span class="material-symbols-outlined text-white text-[32px]">store</span>
           </div>
           <h1 class="text-3xl font-bold text-[#3f68e4]">Warungin</h1>

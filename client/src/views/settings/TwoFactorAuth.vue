@@ -60,7 +60,7 @@
         <div v-else class="mt-4">
           <button
             @click="startSetup"
-            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium"
+            class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium"
           >
             <span class="material-symbols-outlined text-[20px]">shield</span>
             Enable 2FA
@@ -154,7 +154,7 @@
             <button
               @click="enable2FA"
               :disabled="verificationToken.length !== 6 || enabling"
-              class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
+              class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-emerald-500/30"
             >
               {{ enabling ? 'Enabling...' : 'Enable 2FA' }}
             </button>

@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Export Report</span>
@@ -37,7 +37,7 @@
         <div class="flex items-end">
           <button
             @click="shouldLoadReport = true; loadReport()"
-            class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-xl transition-all font-medium text-sm"
+            class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl transition-all font-medium text-sm"
           >
             <span class="material-symbols-outlined text-[20px]">{{ reportData ? 'refresh' : 'play_arrow' }}</span>
             {{ reportData ? 'Refresh' : 'Generate' }}

@@ -51,7 +51,7 @@
             <button
               @click="showAd"
               :disabled="loading"
-              class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition shadow-lg shadow-primary/30 flex items-center gap-2 mx-auto"
+              class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition shadow-lg shadow-emerald-500/30 flex items-center gap-2 mx-auto"
             >
               <span class="material-symbols-outlined text-[20px]" v-if="!loading">play_arrow</span>
               <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -97,7 +97,7 @@
       <div v-if="completed" class="text-center">
         <button
           @click="goBack"
-          class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-hover transition shadow-lg shadow-primary/30 flex items-center gap-2 mx-auto"
+          class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center gap-2 mx-auto"
         >
           <span class="material-symbols-outlined text-[20px]">arrow_back</span>
           Back to Rewards Page

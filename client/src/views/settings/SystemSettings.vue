@@ -132,7 +132,7 @@
               </div>
               <button
                 @click="showTemplateManager = true"
-                class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
+                class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
               >
                 <span class="material-symbols-outlined text-[20px]">settings</span>
                 <span>Manage Template</span>

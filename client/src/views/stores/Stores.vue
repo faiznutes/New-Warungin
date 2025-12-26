@@ -199,7 +199,7 @@
                 <button
                   type="submit"
                   :disabled="processing"
-                  class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-[#137fec]-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-primary/30"
+                  class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-[#137fec]-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30"
                 >
                   {{ processing ? 'Saving...' : editingStore ? 'Update' : 'Save' }}
                 </button>

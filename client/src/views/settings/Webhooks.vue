@@ -222,7 +222,7 @@
                 <button
                   type="submit"
                   :disabled="saving || webhookForm.events.length === 0"
-                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-primary/30"
+                  class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed transition font-medium shadow-lg shadow-emerald-500/30"
                 >
                   {{ saving ? 'Saving...' : 'Save' }}
                 </button>

@@ -118,7 +118,7 @@
           <button
             @click="claimReward"
             :disabled="loading || dailyLimit.remaining === 0"
-            class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 shadow-lg shadow-primary/30"
+            class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30"
           >
             <div v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             <span class="material-symbols-outlined text-[20px]" v-else>play_arrow</span>
@@ -170,7 +170,7 @@
               <button
                 @click="redeemSubscription(plan)"
                 :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
-                class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
+                class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
               >
                 {{ redeeming ? 'Processing...' : 'Redeem' }}
               </button>

@@ -66,7 +66,7 @@
             <button 
               @click="handlePrint"
               :disabled="!receiptData || !template"
-              class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span class="material-symbols-outlined text-[18px]">print</span>
               Print
