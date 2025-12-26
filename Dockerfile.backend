@@ -50,6 +50,7 @@ COPY prisma ./prisma
 
 # Install production dependencies only and clean cache immediately
 RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
+    npm install prisma@6.19.1 --save-dev && \
     npm cache clean --force && \
     rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
 
