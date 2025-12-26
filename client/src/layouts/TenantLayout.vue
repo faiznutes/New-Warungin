@@ -211,7 +211,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasDeliveryMarketing" class="mb-1">
             <button
               @click="toggleMenu('marketing')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
             >
               <span>Marketing & Delivery</span>
                <span 
@@ -226,7 +226,7 @@
               <router-link
                 to="/app/marketing"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/marketing' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -237,7 +237,7 @@
               <router-link
                 to="/app/marketing/email-templates"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/marketing/email-templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -248,7 +248,7 @@
               <router-link
                 to="/app/marketing/email-analytics"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/marketing/email-analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -259,7 +259,7 @@
               <router-link
                 to="/app/marketing/email-scheduler"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/marketing/email-scheduler' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -270,7 +270,7 @@
               <router-link
                 to="/app/marketing/customer-engagement"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/marketing/customer-engagement' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -281,7 +281,7 @@
               <router-link
                 to="/app/delivery"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/delivery' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -297,7 +297,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="mb-1">
              <button
               @click="toggleMenu('inventory')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
             >
               <span>Inventory</span>
                <span 
@@ -312,7 +312,7 @@
               <router-link
                 to="/app/inventory/suppliers"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/inventory/suppliers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -323,7 +323,7 @@
               <router-link
                 to="/app/inventory/purchase-orders"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#137fec]/10 text-[#137fec]"
+                 active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/inventory/purchase-orders' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -334,7 +334,7 @@
               <router-link
                 to="/app/inventory/stock-transfers"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#137fec]/10 text-[#137fec]"
+                 active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/inventory/stock-transfers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -345,7 +345,7 @@
               <router-link
                 to="/app/inventory/stock-alerts"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#137fec]/10 text-[#137fec]"
+                 active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/inventory/stock-alerts' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -361,7 +361,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
              <button
               @click="toggleMenu('manajemen')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
             >
               <span>Manajemen</span>
                <span 
@@ -376,7 +376,7 @@
               <router-link
                 to="/app/users"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/users') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -387,7 +387,7 @@
               <router-link
                 to="/app/stores"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/stores') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -398,7 +398,7 @@
               <router-link
                 to="/app/discounts"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/discounts') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -414,7 +414,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
              <button
               @click="toggleMenu('pengaturan')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
             >
               <span>Pengaturan</span>
                <span 
@@ -429,7 +429,7 @@
               <router-link
                 to="/app/subscription"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -440,7 +440,7 @@
               <router-link
                 to="/app/addons"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -451,7 +451,7 @@
               <router-link
                 to="/app/tenants/support"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -462,7 +462,7 @@
               <router-link
                 to="/app/rewards"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/rewards') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -473,7 +473,7 @@
               <router-link
                 to="/app/settings/store"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/settings/store' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -484,7 +484,7 @@
               <router-link
                 to="/app/receipts/templates"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/receipts/templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -496,7 +496,7 @@
                 v-if="authStore.isSuperAdmin"
                 to="/app/settings/archive"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/settings/archive') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -508,7 +508,7 @@
                 v-if="authStore.isSuperAdmin"
                 to="/app/settings/retention"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path.startsWith('/app/settings/retention') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -522,7 +522,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 shrink-0">
           <div class="flex items-center gap-3 mb-3">
-            <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#137fec] font-bold">
+            <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#10b981] font-bold">
                {{ userInitials }}
             </div>
             <div class="flex flex-col min-w-0">
@@ -598,7 +598,7 @@
             <button
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               @click="showInfoModal = true"
-              class="relative p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
+              class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
               title="Informasi Penting"
             >
               <span class="material-symbols-outlined">notifications</span>
