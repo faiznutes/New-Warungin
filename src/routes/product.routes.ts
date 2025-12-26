@@ -13,6 +13,10 @@ import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
+// ==========================================
+// 1. Static Routes & Collection Routes
+// ==========================================
+
 /**
  * @swagger
  * /api/products:
@@ -71,7 +75,7 @@ router.get(
       const tenantId = requireTenantId(req);
       const user = (req as any).user;
       const userRole = user?.role;
-      
+
       // Build query with optional store filter for CASHIER/KITCHEN
       const query: any = { ...req.query };
       if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && user?.assignedStoreId) {
@@ -79,306 +83,9 @@ router.get(
         // Note: Products are tenant-level, not store-level, so we don't filter by store
         // But we can add store-specific filtering if needed in the future
       }
-      
+
       const result = await productService.getProducts(tenantId, query as any);
       res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Get product by ID
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Product ID
- *     responses:
- *       200:
- *         description: Product details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 price:
- *                   type: number
- *                 stock:
- *                   type: integer
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.get(
-  '/:id',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.getProductById(req.params.id, tenantId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      res.json(product);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products:
- *   post:
- *     summary: Create new product
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - price
- *             properties:
- *               name:
- *                 type: string
- *                 example: Product Name
- *               price:
- *                 type: number
- *                 example: 10000
- *               stock:
- *                 type: integer
- *                 example: 100
- *               category:
- *                 type: string
- *                 example: Category Name
- *               description:
- *                 type: string
- *     responses:
- *       201:
- *         description: Product created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.post(
-  '/',
-  authGuard,
-  subscriptionGuard,
-  validateImageUpload, // Validate image upload security
-  validate({ body: createProductSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userRole = req.role;
-      let tenantId: string;
-      if (userRole === 'SUPER_ADMIN') {
-        tenantId = req.body.tenantId || req.query.tenantId as string;
-        if (!tenantId) {
-          return res.status(400).json({ message: 'tenantId is required for super admin' });
-        }
-      } else {
-        tenantId = requireTenantId(req);
-      }
-      const product = await productService.createProduct(req.body, tenantId, userRole);
-      
-      // Log audit
-      await logAction(req, 'CREATE', 'products', product.id, { name: product.name, price: product.price }, 'SUCCESS');
-      
-      res.status(201).json(product);
-    } catch (error: unknown) {
-      await logAction(req, 'CREATE', 'products', null, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to create product', 'CREATE_PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   put:
- *     summary: Update product
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Product ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateProductRequest'
- *     responses:
- *       200:
- *         description: Product updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.put(
-  '/:id',
-  authGuard,
-  validateImageUpload, // Validate image upload security
-  validate({ body: updateProductSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.updateProduct(req.params.id, req.body, tenantId);
-      
-      // Log audit
-      await logAction(req, 'UPDATE', 'products', product.id, { changes: req.body }, 'SUCCESS');
-      
-      res.json(product);
-    } catch (error: unknown) {
-      await logAction(req, 'UPDATE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to update product', 'UPDATE_PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   delete:
- *     summary: Delete product
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Product ID
- *     responses:
- *       204:
- *         description: Product deleted successfully
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.delete(
-  '/:id',
-  authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.getProductById(req.params.id, tenantId);
-      await productService.deleteProduct(req.params.id, tenantId);
-      
-      // Log audit
-      if (product) {
-        await logAction(req, 'DELETE', 'products', req.params.id, { name: product.name }, 'SUCCESS');
-      }
-      
-      res.status(204).send();
-    } catch (error: unknown) {
-      await logAction(req, 'DELETE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to delete product', 'DELETE_PRODUCT');
-    }
-  }
-);
-
-/**
- * @swagger
- * /api/products/{id}/stock:
- *   put:
- *     summary: Update product stock
- *     tags: [Products]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema: { type: string }
- *         required: true
- *         description: Product ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - quantity
- *             properties:
- *               quantity:
- *                 type: integer
- *                 description: Stock quantity
- *               operation:
- *                 type: string
- *                 enum: [set, add, subtract]
- *                 default: set
- *                 description: Operation type (set, add, or subtract)
- *     responses:
- *       200:
- *         description: Stock updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
- *       400:
- *         $ref: '#/components/responses/ValidationError'
- *       404:
- *         $ref: '#/components/responses/NotFoundError'
- *       401:
- *         $ref: '#/components/responses/UnauthorizedError'
- */
-router.put(
-  '/:id/stock',
-  authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { quantity, operation } = req.body;
-      const product = await productService.updateStock(
-        req.params.id,
-        quantity,
-        tenantId,
-        operation || 'set'
-      );
-      res.json(product);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
     }
@@ -465,10 +172,10 @@ router.post(
         tenantId,
         userId
       );
-      
+
       // Handle array response for stock transfer
       const adjustments = Array.isArray(result) ? result : [result];
-      
+
       // Log audit for each adjustment
       for (const adjustment of adjustments) {
         await logAction(
@@ -481,11 +188,23 @@ router.post(
             type: adjustment.type,
             quantity: adjustment.quantity,
             reason: adjustment.reason,
+            stockUpdate: {
+              before: adjustment.stockBefore,
+              after: adjustment.stockAfter
+            }
           },
           'SUCCESS'
         );
       }
-      
+
+      // Log for debugging
+      console.log('Adjustment created, products should be updated:', adjustments.map(a => ({
+        productId: a.productId,
+        stockBefore: a.stockBefore,
+        stockAfter: a.stockAfter,
+        type: a.type
+      })));
+
       // Return array for transfer, single object for regular adjustment
       res.status(201).json(Array.isArray(result) ? { data: result, type: 'TRANSFER' } : result);
     } catch (error: any) {
@@ -530,5 +249,305 @@ router.get(
   }
 );
 
-export default router;
+// ==========================================
+// 2. Dynamic Routes (Must be after Static)
+// ==========================================
 
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Create new product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - price
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Product Name
+ *               price:
+ *                 type: number
+ *                 example: 10000
+ *               stock:
+ *                 type: integer
+ *                 example: 100
+ *               category:
+ *                 type: string
+ *                 example: Category Name
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.post(
+  '/',
+  authGuard,
+  subscriptionGuard,
+  validateImageUpload, // Validate image upload security
+  validate({ body: createProductSchema }),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const userRole = req.role;
+      let tenantId: string;
+      if (userRole === 'SUPER_ADMIN') {
+        tenantId = req.body.tenantId || req.query.tenantId as string;
+        if (!tenantId) {
+          return res.status(400).json({ message: 'tenantId is required for super admin' });
+        }
+      } else {
+        tenantId = requireTenantId(req);
+      }
+      const product = await productService.createProduct(req.body, tenantId, userRole);
+
+      // Log audit
+      await logAction(req, 'CREATE', 'products', product.id, { name: product.name, price: product.price }, 'SUCCESS');
+
+      res.status(201).json(product);
+    } catch (error: unknown) {
+      await logAction(req, 'CREATE', 'products', null, { error: (error as Error).message }, 'FAILED', (error as Error).message);
+      handleRouteError(res, error, 'Failed to create product', 'CREATE_PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get product by ID
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 stock:
+ *                   type: integer
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.get(
+  '/:id',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.getProductById(req.params.id, tenantId);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.json(product);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   put:
+ *     summary: Update product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateProductRequest'
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.put(
+  '/:id',
+  authGuard,
+  validateImageUpload, // Validate image upload security
+  validate({ body: updateProductSchema }),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.updateProduct(req.params.id, req.body, tenantId);
+
+      // Log audit
+      await logAction(req, 'UPDATE', 'products', product.id, { changes: req.body }, 'SUCCESS');
+
+      res.json(product);
+    } catch (error: unknown) {
+      await logAction(req, 'UPDATE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
+      handleRouteError(res, error, 'Failed to update product', 'UPDATE_PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Delete product
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Product ID
+ *     responses:
+ *       204:
+ *         description: Product deleted successfully
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.delete(
+  '/:id',
+  authGuard,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const product = await productService.getProductById(req.params.id, tenantId);
+      await productService.deleteProduct(req.params.id, tenantId);
+
+      // Log audit
+      if (product) {
+        await logAction(req, 'DELETE', 'products', req.params.id, { name: product.name }, 'SUCCESS');
+      }
+
+      res.status(204).send();
+    } catch (error: unknown) {
+      await logAction(req, 'DELETE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
+      handleRouteError(res, error, 'Failed to delete product', 'DELETE_PRODUCT');
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/products/{id}/stock:
+ *   put:
+ *     summary: Update product stock
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema: { type: string }
+ *         required: true
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - quantity
+ *             properties:
+ *               quantity:
+ *                 type: integer
+ *                 description: Stock quantity
+ *               operation:
+ *                 type: string
+ *                 enum: [set, add, subtract]
+ *                 default: set
+ *                 description: Operation type (set, add, or subtract)
+ *     responses:
+ *       200:
+ *         description: Stock updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.put(
+  '/:id/stock',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const tenantId = requireTenantId(req);
+      const { quantity, operation } = req.body;
+      const product = await productService.updateStock(
+        req.params.id,
+        quantity,
+        tenantId,
+        operation || 'set'
+      );
+      res.json(product);
+    } catch (error: unknown) {
+      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
+    }
+  }
+);
+
+export default router;
