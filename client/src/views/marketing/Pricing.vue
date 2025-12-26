@@ -73,9 +73,9 @@
         </div>
 
         <!-- Boost Plan (Popular) -->
-        <div class="flex flex-col bg-slate-900 dark:bg-emerald-500 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative overflow-hidden">
-          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-purple-500"></div>
-          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+        <div class="flex flex-col bg-slate-900 dark:bg-emerald-500 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative">
+          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-t-xl"></div>
+          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
             <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg uppercase tracking-wider">
               Paling Populer
             </span>
