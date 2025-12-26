@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4 font-display">
+  <div class="min-h-screen flex items-center justify-center px-4 font-display bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <div class="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 text-center">
       
       <!-- Success State -->

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#f6f7f8]">
+  <div class="min-h-screen flex items-center justify-center font-display bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-2xl mx-auto text-center">
         <!-- 404 Icon -->
