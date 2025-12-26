@@ -73,11 +73,11 @@
         </div>
 
         <!-- Boost Plan (Popular) -->
-        <div class="flex flex-col bg-slate-900 dark:bg-emerald-500 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative">
-          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-t-xl"></div>
-          <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-            <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg uppercase tracking-wider">
-              Paling Populer
+        <div class="flex flex-col bg-slate-900 dark:bg-emerald-500 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative z-20">
+          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-t-lg"></div>
+          <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-full text-center z-30">
+            <span class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-1.5 rounded-full text-xs font-bold shadow-xl uppercase tracking-wider border-2 border-slate-900 transform scale-110">
+              ⭐ Paling Populer
             </span>
           </div>
           <div class="flex flex-col p-6 sm:p-8 relative z-10 h-full">
@@ -190,95 +190,40 @@
              Addons Premium
           </h2>
           <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Tambah fitur sesuai kebutuhan, bayar pay-as-you-go.
+            Tambah fitur spesifik yang Anda butuhkan. Bayar apa yang dipakai saja.
           </p>
         </div>
 
-        <div v-if="loadingAddons" class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-        </div>
-        
-        <div v-else>
-           <!-- Addon grid would go here, reusing similar structure but with V3 classes -->
-           <!-- For brevity, I'll use a simplified list or the existing logic if I can rely on list rendering, 
-                but I'll reimplement the grid for consistency using the computed props -->
-            
-            <div v-if="unlimitedAddons.length > 0" class="mb-12">
-               <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-emerald-600">all_inclusive</span>
-                  Addon Unlimited
-               </h3>
-               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div
-                    v-for="addon in unlimitedAddons"
-                    :key="addon.id"
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 transition shadow-sm"
-                  >
-                     <h4 class="font-bold text-slate-900 dark:text-white mb-2">{{ addon.name }}</h4>
-                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 h-10 line-clamp-2">{{ addon.description }}</p>
-                     <div class="flex items-baseline gap-1 mb-4">
-                        <span class="text-2xl font-bold text-slate-900 dark:text-white">Rp {{ formatAddonPrice(addon.price) }}</span>
-                        <span class="text-xs text-slate-500">rb/bulan</span>
-                     </div>
-                     <ul class="space-y-2 mb-0">
-                        <li v-for="(detail, idx) in addon.details?.slice(0, 3) || []" :key="idx" class="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
-                           <span class="material-symbols-outlined text-green-500 text-[16px]">check</span>
-                           {{ detail }}
-                        </li>
-                     </ul>
-                  </div>
-               </div>
-            </div>
-            
-            <!-- Limited Addons -->
-            <div v-if="limitedAddons.length > 0" class="mb-12">
-               <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-emerald-600">bolt</span>
-                  Addon Fitur
-               </h3>
-               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div
-                    v-for="addon in limitedAddons"
-                    :key="addon.id"
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 transition shadow-sm"
-                  >
-                     <h4 class="font-bold text-slate-900 dark:text-white mb-2">{{ addon.name }}</h4>
-                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 h-10 line-clamp-2">{{ addon.description }}</p>
-                     <div class="flex items-baseline gap-1 mb-4">
-                        <span class="text-2xl font-bold text-slate-900 dark:text-white">Rp {{ formatAddonPrice(addon.price) }}</span>
-                        <span class="text-xs text-slate-500">rb/bulan</span>
-                     </div>
-                      <div v-if="addon.defaultLimit" class="text-xs bg-slate-100 dark:bg-slate-700 rounded px-2 py-1 inline-block mb-3 text-slate-600 dark:text-slate-300">
-                         <strong>Limit:</strong> {{ addon.defaultLimit }}
-                      </div>
-                  </div>
-               </div>
-            </div>
-
-             <!-- Coming Soon Addons -->
-            <div v-if="comingSoonAddons.length > 0">
-               <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-amber-500">hourglass_top</span>
-                  Segera Hadir
-               </h3>
-               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div
-                    v-for="addon in comingSoonAddons"
-                    :key="addon.id"
-                    class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-6 border border-slate-200 dark:border-slate-700 opacity-75"
-                  >
-                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-bold text-slate-900 dark:text-white">{{ addon.name }}</h4>
-                        <span class="text-[10px] uppercase font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Soon</span>
-                     </div>
-                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">{{ addon.description }}</p>
-                     <div class="flex items-baseline gap-1">
-                        <span class="text-2xl font-bold text-slate-900 dark:text-white">Rp {{ formatAddonPrice(addon.price) }}</span>
-                        <span class="text-xs text-slate-500">rb/bulan</span>
-                     </div>
-                  </div>
-               </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           <div
+             v-for="addon in featuredAddons"
+             :key="addon.id"
+             class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-lg transition group"
+           >
+              <div class="flex items-start justify-between mb-4">
+                 <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-2xl">{{ addon.icon }}</span>
+                 </div>
+                 <div class="text-right">
+                    <span class="block text-2xl font-bold text-slate-900 dark:text-white">Rp {{ formatAddonPrice(addon.price) }}</span>
+                    <span class="text-xs text-slate-500">rb/bulan</span>
+                 </div>
+              </div>
+              
+              <h4 class="font-bold text-lg text-slate-900 dark:text-white mb-2">{{ addon.name }}</h4>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 min-h-[40px]">{{ addon.description }}</p>
+              
+              <ul class="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+                 <li v-for="(feature, idx) in addon.features" :key="idx" class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                    <span class="material-symbols-outlined text-green-500 text-[16px]">check_circle</span>
+                    {{ feature }}
+                 </li>
+              </ul>
+              
+              <button class="w-full mt-6 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                Lihat Detail
+              </button>
+           </div>
         </div>
       </div>
 
@@ -324,53 +269,62 @@ useSEO({
   keywords: 'harga warungin, paket warungin',
 });
 
-const availableAddons = ref<any[]>([]);
-const loadingAddons = ref(false);
-
-const hasDefaultLimit = (addon: any) => {
-  return addon.defaultLimit !== null && addon.defaultLimit !== undefined;
-};
-
-const isComingSoon = (addon: any) => {
-  return addon?.comingSoon === true || addon?.requiresApi === true;
-};
-
-const filteredAvailableAddons = computed(() => {
-  const uniqueAddons = availableAddons.value.filter((addon, index, self) => 
-    index === self.findIndex(a => a.id === addon.id)
-  );
-  return uniqueAddons.sort((a, b) => {
-    // Sort logic preserved
-   if (isComingSoon(a) && !isComingSoon(b)) return 1;
-   if (!isComingSoon(a) && isComingSoon(b)) return -1;
-   if (hasDefaultLimit(a) && !hasDefaultLimit(b)) return -1;
-   if (!hasDefaultLimit(a) && hasDefaultLimit(b)) return 1;
-   return 0;
-  });
-});
-
-const unlimitedAddons = computed(() => filteredAvailableAddons.value.filter(a => hasDefaultLimit(a) && !isComingSoon(a)));
-const limitedAddons = computed(() => filteredAvailableAddons.value.filter(a => !hasDefaultLimit(a) && !isComingSoon(a)));
-const comingSoonAddons = computed(() => filteredAvailableAddons.value.filter(a => isComingSoon(a)));
-
-const loadAddons = async () => {
-  loadingAddons.value = true;
-  try {
-    const response = await api.get('/addons/available');
-    availableAddons.value = response.data || [];
-  } catch (error: any) {
-    console.error('Error loading addons:', error);
-  } finally {
-    loadingAddons.value = false;
+const featuredAddons = [
+  {
+    id: 'kds',
+    name: 'Kitchen Display (KDS)',
+    description: 'Layar pesanan digital untuk area dapur, menggantikan kertas printer.',
+    price: 49000,
+    icon: 'restaurant',
+    features: ['Real-time Order', 'Timer Masak', 'Status Selesai']
+  },
+  {
+    id: 'accounting',
+    name: 'Akuntansi & Laba Rugi',
+    description: 'Laporan keuangan standar akuntansi otomatis dari transaksi.',
+    price: 99000,
+    icon: 'analytics',
+    features: ['Neraca & Laba Rugi', 'Arus Kas', 'Jurnal Otomatis']
+  },
+  {
+    id: 'ingredient',
+    name: 'Manajemen Resep',
+    description: 'Potong stok bahan baku otomatis berdasarkan resep menu yang terjual.',
+    price: 79000,
+    icon: 'inventory_2',
+    features: ['HPP Akurat', 'Varian Resep', 'Kartu Stok Bahan']
+  },
+  {
+    id: 'online',
+    name: 'Toko Online (QR)',
+    description: 'Website pemesanan sendiri untuk pelanggan (QR Order & Delivery).',
+    price: 129000,
+    icon: 'storefront',
+    features: ['Domain Sendiri', 'Pembayaran QRIS', 'Notif WhatsApp']
+  },
+  {
+    id: 'attendance',
+    name: 'Absensi & Gaji',
+    description: 'Catat kehadiran karyawan dengan foto & lokasi GPS.',
+    price: 49000,
+    icon: 'badge',
+    features: ['Slip Gaji Otomatis', 'Shift Kerja', 'Export Excel']
+  },
+  {
+    id: 'marketplace',
+    name: 'Integrasi Grab/Gojek',
+    description: 'Terima pesanan ojol langsung di satu aplikasi POS.',
+    price: 149000,
+    icon: 'two_wheeler',
+    features: ['Sync Harga Menu', 'Update Stok Otomatis', 'Laporan Gabungan']
   }
-};
+];
 
 const formatAddonPrice = (price: number) => {
   return (price / 1000).toFixed(0);
 };
 
-onMounted(async () => {
+onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  await loadAddons();
 });
 </script>
