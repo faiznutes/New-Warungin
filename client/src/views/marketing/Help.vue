@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen font-display bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <!-- Hero Section -->
-    <section class="container mx-auto px-4 py-16 relative overflow-hidden">
+    <section class="container mx-auto px-4 py-16 relative">
       <!-- Background Gradients -->
-      <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
          <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-100 dark:bg-emerald-900/10 rounded-full blur-3xl opacity-50"></div>
       </div>
       
@@ -15,7 +15,7 @@
           Temukan jawaban, panduan, dan tips untuk memaksimalkan bisnis Anda.
         </p>
         <div class="w-full max-w-2xl">
-          <div class="relative group z-30">
+          <div class="relative group z-50">
             <input
               v-model="searchQuery"
               type="text"
@@ -29,7 +29,7 @@
             <!-- Search Results Dropdown -->
             <div 
               v-if="searchQuery && searchResults.length > 0"
-              class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-50"
+              class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-[60]"
             >
               <router-link
                 v-for="result in searchResults.slice(0, 5)"
@@ -54,7 +54,7 @@
             <!-- No Results -->
             <div 
               v-if="searchQuery && searchResults.length === 0"
-              class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 text-center z-50"
+              class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 text-center z-[60]"
             >
               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">search_off</span>
               <p class="text-slate-500">Tidak ada artikel ditemukan untuk "{{ searchQuery }}"</p>
@@ -69,11 +69,11 @@
       <div class="max-w-6xl mx-auto">
         <!-- Categories -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          <div 
+          <router-link 
             v-for="category in categories"
             :key="category.id"
+            :to="`/help/category/${category.id}`"
             class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-emerald-500/50 transition cursor-pointer group"
-            @click="filterByCategory(category.id)"
           >
             <div 
               class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
@@ -84,7 +84,7 @@
             <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ category.label }}</h2>
             <p class="text-slate-500 dark:text-slate-400 text-sm">{{ category.description }}</p>
             <div class="mt-4 text-xs text-emerald-600 font-bold">{{ getArticleCountByCategory(category.id) }} artikel</div>
-          </div>
+          </router-link>
         </div>
 
         <!-- Popular Articles -->
@@ -117,33 +117,7 @@
           </div>
         </div>
 
-        <!-- All Articles by Category (when category is selected) -->
-        <div v-if="selectedCategory" class="mb-16">
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-emerald-600">folder</span>
-              {{ getCategoryLabel(selectedCategory) }}
-            </h2>
-            <button 
-              @click="selectedCategory = ''"
-              class="text-slate-500 hover:text-emerald-600 transition flex items-center gap-1 text-sm font-medium"
-            >
-              <span class="material-symbols-outlined text-[16px]">close</span>
-              Clear Filter
-            </button>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <router-link 
-              v-for="article in filteredArticles"
-              :key="article.slug"
-              :to="`/help/${article.slug}`"
-              class="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition group"
-            >
-              <h4 class="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition mb-2">{{ article.title }}</h4>
-              <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{{ article.description }}</p>
-            </router-link>
-          </div>
-        </div>
+
 
         <!-- Contact Support -->
         <div class="bg-emerald-500 rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
@@ -195,7 +169,6 @@ onMounted(() => {
 });
 
 const searchQuery = ref('');
-const selectedCategory = ref('');
 
 const categories = [
   { 
@@ -258,11 +231,6 @@ const searchResults = computed(() => {
   return searchArticles(searchQuery.value);
 });
 
-const filteredArticles = computed(() => {
-  if (!selectedCategory.value) return helpArticles;
-  return getArticlesByCategory(selectedCategory.value as HelpArticle['category']);
-});
-
 const handleSearch = () => {
   // Real-time search is handled by computed
 };
@@ -278,16 +246,7 @@ const clearSearch = () => {
   searchQuery.value = '';
 };
 
-const filterByCategory = (categoryId: string) => {
-  selectedCategory.value = categoryId;
-};
-
 const getArticleCountByCategory = (categoryId: string) => {
   return getArticlesByCategory(categoryId as HelpArticle['category']).length;
-};
-
-const getCategoryLabel = (categoryId: string) => {
-  const category = categories.find(c => c.id === categoryId);
-  return category?.label || categoryId;
 };
 </script>

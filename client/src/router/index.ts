@@ -67,6 +67,11 @@ const router = createRouter({
           name: 'help-article',
           component: () => import('../views/marketing/HelpArticle.vue'),
         },
+        {
+          path: 'help/category/:categoryId',
+          name: 'help-category',
+          component: () => import('../views/marketing/HelpCategory.vue'),
+        },
       ],
     },
     {
