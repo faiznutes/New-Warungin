@@ -82,15 +82,17 @@ router.put(
   '/bulk-update-kitchen',
   authGuard,
   subscriptionGuard,
-  validate({ body: z.object({ 
-    orderIds: z.array(z.string()).min(1),
-    status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED'])
-  }) }),
+  validate({
+    body: z.object({
+      orderIds: z.array(z.string()).min(1),
+      status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED'])
+    })
+  }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const { orderIds, status } = req.body;
-      
+
       const results = await orderService.bulkUpdateKitchenStatus(tenantId, orderIds, status);
       res.json(results);
     } catch (error: unknown) {
@@ -400,10 +402,10 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can delete orders' });
+
+      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat menghapus pesanan' });
       }
 
       const { orderIds } = req.body;
@@ -433,10 +435,10 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can refund orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can refund orders' });
+
+      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can refund orders
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat melakukan refund' });
       }
 
       const { orderIds } = req.body;
@@ -465,12 +467,12 @@ router.delete(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can delete orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ 
+
+      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({
           error: 'FORBIDDEN',
-          message: 'Hanya admin yang dapat menghapus pesanan' 
+          message: 'Hanya admin atau supervisor yang dapat menghapus pesanan'
         });
       }
 

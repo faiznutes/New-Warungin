@@ -84,10 +84,10 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT can view users
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can view users' });
+
+      // Only ADMIN_TENANT, SUPERVISOR, and SUPER_ADMIN can view users
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat melihat daftar pengguna' });
       }
 
       const page = parseInt(req.query.page as string) || 1;
@@ -137,9 +137,9 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can view user details' });
+
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat melihat detail pengguna' });
       }
 
       const user = await userService.getUserById(req.params.id, tenantId);
@@ -208,9 +208,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const userRole = (req as any).user.role;
-      
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin or super admin can create users' });
+
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat menambah pengguna' });
       }
 
       // For SUPER_ADMIN, tenantId can be provided in body or query
@@ -225,7 +225,7 @@ router.post(
       }
 
       const result = await userService.createUser(req.body, tenantId, userRole);
-      
+
       // Log audit
       await logAction(
         req as AuthRequest,
@@ -235,7 +235,7 @@ router.post(
         { email: result.email, name: result.name, role: result.role },
         'SUCCESS'
       );
-      
+
       res.status(201).json(result);
     } catch (error: unknown) {
       const err = error as Error;
@@ -331,9 +331,9 @@ router.put(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can update users' });
+
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat memperbarui pengguna' });
       }
 
       // Check subscription status for ADMIN_TENANT when trying to activate user
@@ -341,7 +341,7 @@ router.put(
       // ADMIN_TENANT can only activate if ANY subscription still has remaining time
       if (userRole === 'ADMIN_TENANT' && req.body.isActive === true) {
         const now = new Date();
-        
+
         // Get all subscriptions that are still active (not expired)
         const activeSubscriptions = await prisma.subscription.findMany({
           where: {
@@ -370,12 +370,12 @@ router.put(
 
         // Get the latest endDate from all sources
         let latestEndDate: Date | null = null;
-        
+
         // Check all active subscriptions
         if (activeSubscriptions.length > 0) {
           latestEndDate = activeSubscriptions[0].endDate;
         }
-        
+
         // Also check tenant.subscriptionEnd (might be later than subscription records)
         if (tenant.subscriptionEnd) {
           if (!latestEndDate || tenant.subscriptionEnd > latestEndDate) {
@@ -386,7 +386,7 @@ router.put(
         // Block ADMIN_TENANT from activating users if ALL subscriptions are expired (basic 0, boost 0, max 0)
         // Only SUPER_ADMIN can activate users when all subscriptions are expired
         if (!latestEndDate || latestEndDate <= now) {
-          return res.status(403).json({ 
+          return res.status(403).json({
             message: 'Tidak dapat mengaktifkan user. Semua langganan (basic, boost, max) telah kedaluwarsa. Silakan perpanjang langganan terlebih dahulu atau hubungi Super Admin.',
             code: 'SUBSCRIPTION_EXPIRED'
           });
@@ -394,7 +394,7 @@ router.put(
       }
 
       const user = await userService.updateUser(req.params.id, req.body, tenantId, userRole);
-      
+
       // Log audit
       await logAction(
         req as AuthRequest,
@@ -404,7 +404,7 @@ router.put(
         { changes: req.body },
         'SUCCESS'
       );
-      
+
       res.json(user);
     } catch (error: unknown) {
       const err = error as Error;
@@ -447,18 +447,18 @@ router.delete(
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only tenant admin can delete users' });
+
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat menghapus pengguna' });
       }
 
       const user = await userService.getUserById(req.params.id, tenantId);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      
+
       await userService.deleteUser(req.params.id, tenantId);
-      
+
       // Log audit
       await logAction(
         req as AuthRequest,
@@ -468,7 +468,7 @@ router.delete(
         { email: user.email, name: user.name },
         'SUCCESS'
       );
-      
+
       res.status(204).send();
     } catch (error: unknown) {
       const err = error as Error;
@@ -486,7 +486,7 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can view user passwords
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can view user passwords' });
@@ -508,7 +508,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can reset user passwords
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can reset user passwords' });
@@ -530,7 +530,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can activate users
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can activate users' });
@@ -552,7 +552,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can deactivate users
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can deactivate users' });
@@ -617,18 +617,20 @@ router.post(
   '/bulk-update-status',
   authGuard,
   subscriptionGuard,
-  validate({ body: z.object({ 
-    userIds: z.array(z.string()).min(1),
-    isActive: z.boolean()
-  }) }),
+  validate({
+    body: z.object({
+      userIds: z.array(z.string()).min(1),
+      isActive: z.boolean()
+    })
+  }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
-      // Only ADMIN_TENANT and SUPER_ADMIN can bulk update user status
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only admin can bulk update user status' });
+
+      // Only ADMIN_TENANT, SUPERVISOR, and SUPER_ADMIN can bulk update user status
+      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+        return res.status(403).json({ message: 'Akses terbatas - Hanya admin atau supervisor yang dapat memperbarui status pengguna secara massal' });
       }
 
       const { userIds, isActive } = req.body;

@@ -1,61 +1,64 @@
 <template>
-  <div v-if="shouldShow" class="mb-4 sm:mb-6">
-    <div class="flex items-center gap-3 flex-wrap">
-      <label for="store-select" class="text-sm font-medium text-gray-700 whitespace-nowrap">
-        Pilih Store:
-      </label>
-      <div class="flex-1 max-w-xs relative">
-        <select
-          id="store-select"
-          :value="selectedStoreId || ''"
-          @change="handleStoreChange"
-          :disabled="loading"
-          class="w-full px-4 py-2.5 text-sm border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <option value="">Semua Store</option>
-          <option 
-            v-for="store in stores" 
-            :key="store.id" 
-            :value="store.id"
+  <div v-if="shouldShow" class="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+        <span class="material-symbols-outlined">storefront</span>
+      </div>
+      
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">Pilih Store</p>
+        <div class="relative">
+          <select
+            id="store-select"
+            :value="selectedStoreId || ''"
+            @change="handleStoreChange"
+            :disabled="loading"
+            class="w-full pl-0 pr-8 py-0 bg-transparent border-none text-slate-900 dark:text-white font-bold focus:ring-0 appearance-none cursor-pointer disabled:opacity-50 text-sm"
           >
-            {{ store.name }}
-          </option>
-        </select>
-        <!-- Custom dropdown arrow -->
-        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg 
-            class="w-5 h-5 text-gray-400"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-        <!-- Loading indicator -->
-        <div v-if="loading" class="absolute inset-y-0 right-0 flex items-center pr-10">
-          <div class="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            <option value="" class="dark:bg-slate-800">Semua Store (Grup)</option>
+            <option 
+              v-for="store in stores" 
+              :key="store.id" 
+              :value="store.id"
+              class="dark:bg-slate-800"
+            >
+              {{ store.name }}
+            </option>
+          </select>
+          <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none text-slate-400">
+            <span class="material-symbols-outlined text-sm">expand_more</span>
+          </div>
         </div>
       </div>
-      <!-- Clear button (only show when store is selected) -->
-      <button
-        v-if="selectedStoreId && !loading"
-        @click="clearSelection"
-        type="button"
-        class="px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors duration-200 border border-gray-300 hover:border-red-300"
-        title="Tampilkan semua store"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 pl-4 border-l border-slate-100 dark:border-slate-700">
+        <button
+          @click="loadStores"
+          type="button"
+          :disabled="loading"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200"
+          title="Refresh Stores"
+        >
+          <span class="material-symbols-outlined text-[20px]" :class="{ 'animate-spin': loading }">refresh</span>
+        </button>
+        
+        <button
+          v-if="selectedStoreId && !loading"
+          @click="clearSelection"
+          type="button"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
+          title="Clear Selection"
+        >
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
     </div>
-    <!-- Selected store info -->
-    <div v-if="selectedStoreId && selectedStoreName" class="mt-2 flex items-center gap-2 text-xs text-gray-600">
-      <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span>Menampilkan data: <strong class="text-gray-900">{{ selectedStoreName }}</strong></span>
+    
+    <!-- Status indicator -->
+    <div v-if="selectedStoreId && selectedStoreName" class="px-4 mt-2 flex items-center gap-2 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 transition-all animate-in fade-in duration-300">
+       <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+       <span>Aktif: {{ selectedStoreName }}</span>
     </div>
   </div>
 </template>

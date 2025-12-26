@@ -12,7 +12,7 @@
         <!-- Logo -->
         <div class="p-6 border-b border-gray-200 flex-shrink-0">
           <router-link to="/app/dashboard" class="flex items-center hover:opacity-90 transition-opacity group">
-            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span>
+            <span class="text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">Warungin</span>
           </router-link>
         </div>
 
@@ -41,9 +41,9 @@
             >
               <router-link
                 to="/app/dashboard"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
-                exact-active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                exact-active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,8 +55,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageProducts) || (userRole === 'CASHIER' && canManageProducts)"
                 to="/app/products"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,8 +68,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canEditOrders) || userRole === 'CASHIER'"
                 to="/app/orders"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,8 +81,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageCustomers) || (userRole === 'CASHIER' && canManageCustomers)"
                 to="/app/customers"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,8 +116,8 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,8 +130,8 @@
               <div v-if="hasBusinessAnalytics" class="ml-4 mt-1 space-y-1">
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
+                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,8 +142,8 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
+                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,8 +154,8 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group text-sm"
-                  active-class="bg-primary-50 text-primary-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
+                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,8 +190,8 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,8 +203,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/stores"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,8 +238,8 @@
             >
               <router-link
                 to="/app/subscription"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -251,8 +251,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/addons"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,8 +264,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || userRole === 'SUPER_ADMIN'"
                 to="/app/rewards"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-600 group"
-                active-class="bg-primary-50 text-primary-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,8 +280,8 @@
         <!-- User Section -->
         <div class="p-4 border-t border-gray-200 flex-shrink-0">
           <div class="flex items-center space-x-3 mb-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-primary-700 font-semibold text-sm">{{ userInitials }}</span>
+            <div class="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-emerald-700 font-semibold text-sm">{{ userInitials }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate">{{ userName }}</p>

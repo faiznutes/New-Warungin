@@ -125,9 +125,9 @@
                          </span>
                       </div>
                       <div class="flex text-xs gap-3 mt-1 text-[#4c739a] dark:text-slate-400 font-medium">
-                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : '-' }}</span>
+                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : (subscription?.subscription?.startDate ? formatDate(subscription.subscription.startDate) : '-') }}</span>
                          <span>•</span>
-                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : '-' }}</span>
+                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : (subscription?.subscription?.endDate ? formatDate(subscription.subscription.endDate) : '-') }}</span>
                       </div>
                    </div>
                 </div>
@@ -433,7 +433,7 @@
                 </p>
               </div>
               <button
-                @click="showCreateStoreModal = true"
+                @click="openCreateStoreModal"
                 class="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">add_business</span>
@@ -497,6 +497,12 @@
                              :class="store.isActive !== false ? 'text-orange-600' : 'text-emerald-600'"
                            >
                              {{ store.isActive !== false ? 'Nonaktifkan' : 'Aktifkan' }}
+                           </button>
+                           <button 
+                             @click="editStore(store)" 
+                             class="text-xs font-bold text-blue-600 hover:underline transition ml-3"
+                           >
+                             Edit
                            </button>
                         </td>
                      </tr>
@@ -764,11 +770,11 @@
     <!-- Create Store Modal -->
     <Teleport to="body">
        <div v-if="showCreateStoreModal" class="fixed inset-0 bg-[#0d141b]/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="showCreateStoreModal = false">
-          <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
-             <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">Buat Toko Baru</h3>
-             <form @submit.prevent="handleCreateStore" class="space-y-4">
-                <div>
-                   <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Nama Toko</label>
+           <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white mb-4">{{ editingStore ? 'Edit Toko' : 'Buat Toko Baru' }}</h3>
+              <form @submit.prevent="handleSaveStore" class="space-y-4">
+                 <div>
+                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Nama Toko</label>
                    <input v-model="createStoreForm.name" type="text" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
@@ -780,9 +786,9 @@
                    <input v-model="createStoreForm.phone" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div class="flex gap-3 pt-2">
-                   <button type="button" @click="showCreateStoreModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
+                   <button type="button" @click="closeCreateStoreModal" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
                    <button type="submit" :disabled="creatingStore" class="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-500/30">
-                      {{ creatingStore ? 'Membuat...' : 'Buat Toko' }}
+                      {{ creatingStore ? 'Menyimpan...' : (editingStore ? 'Simpan Perubahan' : 'Buat Toko') }}
                    </button>
                 </div>
              </form>
@@ -970,6 +976,8 @@ interface Subscription {
   isExpired: boolean;
   isTemporaryUpgrade?: boolean;
   status: string;
+  startDate?: string; // Added for normalization
+  endDate?: string;   // Added for normalization
   subscription?: {
     temporaryUpgrade?: boolean;
     previousPlan?: string;
@@ -1040,6 +1048,7 @@ const editPointsForm = ref({
 });
 const loadingStores = ref(false);
 const tenantStores = ref<any[]>([]);
+const editingStore = ref<any>(null); // For editing store
 const outletUsage = ref<{ currentUsage: number; limit: number } | null>(null);
 const selectedUsers = ref<any[]>([]);
 const creatingUser = ref(false);
@@ -2129,6 +2138,62 @@ const handleCreateUser = async () => {
   } finally {
     creatingUser.value = false;
   }
+};
+
+const editStore = (store: any) => {
+  editingStore.value = store;
+  createStoreForm.value = {
+    name: store.name,
+    address: store.address || '',
+    phone: store.phone || '',
+  };
+  showCreateStoreModal.value = true;
+};
+
+const handleSaveStore = async () => {
+  if (editingStore.value) {
+    await handleUpdateStore();
+  } else {
+    await handleCreateStore();
+  }
+};
+
+const handleUpdateStore = async () => {
+  if (!editingStore.value) return;
+  
+  // Validate
+  if (!createStoreForm.value.name) {
+    await showError('Nama toko wajib diisi');
+    return;
+  }
+
+  creatingStore.value = true; // reusing creatingStore loading state
+  try {
+    const response = await api.put(`/outlets/${editingStore.value.id}`, createStoreForm.value);
+    
+    await showSuccess('Store berhasil diperbarui');
+    showCreateStoreModal.value = false;
+    editingStore.value = null; // Reset editing state
+    createStoreForm.value = { name: '', address: '', phone: '' };
+    await loadStores();
+  } catch (error: any) {
+    console.error('Error updating store:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui store');
+  } finally {
+    creatingStore.value = false;
+  }
+};
+
+const openCreateStoreModal = () => {
+  editingStore.value = null;
+  createStoreForm.value = { name: '', address: '', phone: '' };
+  showCreateStoreModal.value = true;
+};
+
+const closeCreateStoreModal = () => {
+  showCreateStoreModal.value = false;
+  editingStore.value = null;
+  createStoreForm.value = { name: '', address: '', phone: '' };
 };
 
 const handleCreateStore = async () => {

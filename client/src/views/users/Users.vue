@@ -308,7 +308,7 @@ const deleteUser = async (id: string) => {
 
 const handleTenantChange = (tenantId: string | null) => {
   if (tenantId && !needsTenantSelection.value) {
-    if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
+    if (['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'].includes(userRole)) {
       loadUsers();
     }
   }
@@ -316,7 +316,7 @@ const handleTenantChange = (tenantId: string | null) => {
 
 watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
   if (newTenantId && newTenantId !== oldTenantId && !needsTenantSelection.value) {
-    if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
+    if (['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'].includes(userRole)) {
       loadUsers();
     }
   }
@@ -332,7 +332,7 @@ onMounted(() => {
     }
   }
   
-  if (userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') {
+  if (['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'].includes(userRole)) {
     if (!needsTenantSelection.value) {
       loadUsers();
     }

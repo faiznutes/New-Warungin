@@ -174,6 +174,14 @@
                 <span class="material-symbols-outlined text-[18px]">delete</span>
                 Delete
              </button>
+             <button 
+               v-if="canRefundOrders && canRefundSelectedOrders"
+               @click="bulkRefund"
+               class="px-4 py-2 bg-orange-500 hover:bg-orange-600 rounded-xl font-bold text-xs transition flex items-center gap-2"
+             >
+                <span class="material-symbols-outlined text-[18px]">undo</span>
+                Refund
+             </button>
              <button @click="selectedOrders = []" class="px-4 py-2 hover:bg-slate-800 rounded-xl font-bold text-xs text-slate-400 transition">Cancel</button>
           </div>
       </div>
@@ -876,6 +884,16 @@ const toggleSelectAll = () => {
     selectedOrders.value = [...orders.value];
   }
 };
+
+const canDeleteSelectedOrders = computed(() => {
+  if (selectedOrders.value.length === 0) return false;
+  return selectedOrders.value.every(o => o.status === 'CANCELLED' || o.status === 'REFUNDED');
+});
+
+const canRefundSelectedOrders = computed(() => {
+  if (selectedOrders.value.length === 0) return false;
+  return selectedOrders.value.every(o => o.status === 'COMPLETED');
+});
 
 const bulkDelete = async () => {
   if (!Array.isArray(selectedOrders.value) || selectedOrders.value.length === 0) return;

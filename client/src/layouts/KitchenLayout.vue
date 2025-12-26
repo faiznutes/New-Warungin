@@ -9,15 +9,17 @@
       }"
     >
       <div class="flex flex-col h-full">
-        <!-- Logo -->
-        <div class="p-6 flex items-center gap-3">
-          <div class="h-10 w-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-            <span class="material-symbols-outlined text-2xl">restaurant</span>
-          </div>
-          <div class="flex flex-col">
-            <router-link to="/app/dashboard" class="text-lg font-bold text-slate-900 dark:text-white leading-tight hover:text-emerald-600 transition-colors">Warungin</router-link>
-            <p class="text-xs font-medium text-[#4c739a] dark:text-slate-400 tracking-wide uppercase">Kitchen Display</p>
-          </div>
+        <div class="p-6 shrink-0">
+          <router-link to="/app/dashboard" class="flex flex-col gap-1 group">
+            <h1 class="text-emerald-600 text-xl font-bold leading-normal flex items-center gap-2">
+               <span class="material-symbols-outlined icon-filled">restaurant</span>
+               {{ outletName }}
+            </h1>
+            <div class="flex items-center gap-2 pl-8">
+               <span class="text-[#4c739a] dark:text-slate-400 text-xs font-bold leading-normal truncate max-w-[150px]">{{ branchName }}</span>
+               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase tracking-wider">Kitchen</span>
+            </div>
+          </router-link>
         </div>
 
         <!-- Navigation -->
@@ -54,7 +56,7 @@
             </div>
             <div class="flex flex-col overflow-hidden flex-1">
               <p class="text-sm font-semibold text-[#0d141b] dark:text-white truncate">{{ userName }}</p>
-              <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ tenantName }}</p>
+              <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ outletName }}</p>
             </div>
           </div>
           <button
@@ -94,6 +96,17 @@
           </div>
         </div>
         <div class="flex items-center gap-4">
+          <!-- System Status -->
+           <div class="hidden lg:flex items-center gap-4 mr-2">
+             <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+               <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
+               <span class="text-xs font-bold text-[#4c739a] dark:text-slate-400 capitalize">{{ isOnline ? 'Online' : 'Offline' }}</span>
+             </div>
+             <div class="px-3 py-1.5 bg-[#0d141b] dark:bg-white text-white dark:text-[#0d141b] rounded-xl shadow-md font-mono text-sm font-bold tracking-wider border border-[#2a3036] dark:border-slate-200">
+               {{ currentTime }}
+             </div>
+           </div>
+
           <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-slate-500 hover:text-emerald-600 transition-colors border border-slate-100 dark:border-slate-700">
             <span class="material-symbols-outlined">notifications</span>
             <span v-if="pendingOrdersCount > 0" class="absolute top-2 right-2.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
@@ -112,20 +125,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { useSocket } from '../composables/useSocket';
+import { useSystemStatus } from '../composables/useSystemStatus';
+import api from '../api';
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const { socket } = useSocket();
+const { isOnline, currentTime, outletName, branchName } = useSystemStatus();
 
 const sidebarOpen = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 const pendingOrdersCount = ref(0);
 
 const userName = computed(() => authStore.user?.name || 'Kitchen');
-const tenantName = computed(() => authStore.user?.tenantName || 'Toko');
 const userInitials = computed(() => {
   const name = userName.value;
   return name
@@ -166,16 +183,56 @@ const handleLogout = () => {
   window.location.replace('/login');
 };
 
+const fetchPendingOrdersCount = async () => {
+  if (!authStore.isAuthenticated) return;
+  try {
+    const response = await api.get('/orders', {
+      params: {
+        sendToKitchen: true,
+        kitchenStatus: ['PENDING', 'COOKING', 'READY'],
+        limit: 1 // We only need the total count
+      }
+    });
+    // Assuming backend returns result with total count
+    pendingOrdersCount.value = response.data.total || response.data.data?.length || 0;
+  } catch (err) {
+    console.error('Failed to fetch pending orders count:', err);
+  }
+};
+
+// Polling fallback
+let pollInterval: number | null = null;
+
 onMounted(() => {
   windowWidth.value = window.innerWidth;
   if (windowWidth.value >= 1024) {
     sidebarOpen.value = true;
   }
   window.addEventListener('resize', handleResize);
+  
+  fetchPendingOrdersCount();
+  
+  // Setup socket listeners
+  if (socket) {
+    socket.on('order:new', () => {
+      fetchPendingOrdersCount();
+    });
+    socket.on('order:update', () => {
+      fetchPendingOrdersCount();
+    });
+  }
+  
+  // Fallback polling every 60 seconds
+  pollInterval = window.setInterval(fetchPendingOrdersCount, 60000);
 });
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
+  if (pollInterval) clearInterval(pollInterval);
+  if (socket) {
+    socket.off('order:new');
+    socket.off('order:update');
+  }
 });
 </script>
 

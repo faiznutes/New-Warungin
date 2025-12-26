@@ -277,8 +277,18 @@
       </div>
 
       <!-- Right: Actions -->
-      <div class="flex items-center gap-3">
-         <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors relative">
+       <div class="flex items-center gap-3">
+          <!-- Held Orders Button -->
+          <button 
+            v-if="heldOrders.length > 0"
+            @click="showHeldOrdersModal = true"
+            class="h-10 px-3 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center gap-2 hover:bg-amber-100 transition-all font-bold text-xs shadow-sm shadow-amber-500/10"
+          >
+             <span class="material-symbols-outlined text-[18px]">pause_circle</span>
+             <span>{{ heldOrders.length }} Terparkir</span>
+          </button>
+
+          <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors relative">
             <span class="material-symbols-outlined">notifications</span>
             <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
          </button>
@@ -288,7 +298,7 @@
             </div>
             <div class="hidden md:block text-left">
                <p class="text-sm font-bold text-slate-900 leading-none">{{ authStore.user?.name || 'Cashier' }}</p>
-               <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wide mt-0.5">{{ authStore.user?.role || 'Staff' }}</p>
+               <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wide mt-1.5">{{ authStore.user?.role || 'Staff' }}</p>
             </div>
          </div>
       </div>
@@ -357,6 +367,7 @@
               to="/app/orders" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
               @click="showNavSidebar = false"
+              v-if="authStore.user?.role !== 'Cashier'"
             >
               <span class="material-symbols-outlined">receipt_long</span>
               <span class="font-medium">Orders</span>
@@ -366,6 +377,7 @@
               to="/app/products" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
               @click="showNavSidebar = false"
+              v-if="authStore.user?.role !== 'Cashier'"
             >
               <span class="material-symbols-outlined">inventory_2</span>
               <span class="font-medium">Products</span>
@@ -375,6 +387,7 @@
               to="/app/customers" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
               @click="showNavSidebar = false"
+              v-if="authStore.user?.role !== 'Cashier'"
             >
               <span class="material-symbols-outlined">group</span>
               <span class="font-medium">Customers</span>
@@ -384,6 +397,7 @@
               to="/app/reports" 
               class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
               @click="showNavSidebar = false"
+              v-if="authStore.user?.role !== 'Cashier'"
             >
               <span class="material-symbols-outlined">bar_chart</span>
               <span class="font-medium">Reports</span>
@@ -429,6 +443,11 @@
     <main class="flex-1 overflow-hidden flex flex-col lg:grid lg:grid-cols-[90px_1fr_420px] bg-slate-50">
        <!-- 1. Categories Sidebar -->
        <aside class="hidden lg:flex flex-col items-center py-6 bg-white border-r border-slate-200 gap-4 overflow-y-auto no-scrollbar">
+          <!-- Refresh Button -->
+          <button @click="refreshProducts" :disabled="loading" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500 transition-all flex items-center justify-center mb-4 group shadow-sm">
+             <span class="material-symbols-outlined text-2xl group-hover:rotate-180 transition-transform duration-500" :class="{ 'animate-spin': loading }">refresh</span>
+          </button>
+          
           <button 
             v-for="cat in categories" 
             :key="cat"
@@ -513,23 +532,23 @@
                       </div>
                       
                       <!-- Stock Badge -->
-                      <div v-if="product.stock <= 5" class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 shadow-sm backdrop-blur-sm" :class="product.stock === 0 ? 'text-red-500' : 'text-amber-500'">
-                         {{ product.stock === 0 ? 'Out' : `${product.stock} Left` }}
-                      </div>
+                       <div v-if="product.stock <= 5" class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/95 shadow-lg backdrop-blur-md border border-slate-100/50" :class="product.stock === 0 ? 'text-red-500' : 'text-amber-600'">
+                          {{ product.stock === 0 ? 'Habis' : `${product.stock} Tersisa` }}
+                       </div>
                    </div>
 
                    <!-- Info -->
-                   <div>
-                      <h3 class="font-bold text-slate-800 leading-snug mb-1 line-clamp-2 min-h-[2.5rem]">{{ product.name }}</h3>
+                   <div class="px-1">
+                      <h3 class="font-bold text-slate-800 leading-tight mb-1.5 line-clamp-2 min-h-[2.5rem] text-[13px]">{{ product.name }}</h3>
                       <div class="flex items-center justify-between">
-                         <span class="text-emerald-600 font-bold">{{ formatCurrency(product.price) }}</span>
+                         <span class="text-emerald-600 font-black text-sm">{{ formatCurrency(product.price) }}</span>
                       </div>
                    </div>
                    
                    <!-- In Cart Indicator -->
-                   <div v-if="isInCart(product.id)" class="absolute top-3 left-3 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-md z-10">
-                      <span class="material-symbols-outlined text-[14px] font-bold">check</span>
-                   </div>
+                    <div v-if="isInCart(product.id)" class="absolute top-3 left-3 w-7 h-7 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/40 z-10 border-2 border-white animate-bounce-in">
+                       <span class="material-symbols-outlined text-[16px] font-black">check</span>
+                    </div>
                 </div>
              </div>
           </div>
@@ -649,18 +668,36 @@
 
              <!-- Action Buttons -->
              <div class="grid grid-cols-4 gap-2 mb-3">
-                <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1" @click="clearCart">
-                   <span class="material-symbols-outlined text-xl">delete</span>
+                <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="clearCart">
+                   <span class="material-symbols-outlined text-xl group-hover:scale-110">delete</span>
+                   <span class="text-[9px] font-bold uppercase tracking-wider">Hapus</span>
                 </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-amber-500 hover:bg-amber-50 transition-colors flex flex-col items-center justify-center gap-1">
-                   <span class="material-symbols-outlined text-xl">pause</span>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-amber-500 hover:bg-amber-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="holdOrder">
+                   <span class="material-symbols-outlined text-xl group-hover:scale-110">pause</span>
+                   <span class="text-[9px] font-bold uppercase tracking-wider">Hold</span>
                 </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-500 hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1">
-                   <span class="material-symbols-outlined text-xl">percent</span>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-500 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md">
+                   <span class="material-symbols-outlined text-xl group-hover:scale-110">percent</span>
+                   <span class="text-[9px] font-bold uppercase tracking-wider">Diskon</span>
                 </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-purple-500 hover:bg-purple-50 transition-colors flex flex-col items-center justify-center gap-1">
-                   <span class="material-symbols-outlined text-xl">split_mode</span>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-purple-500 hover:bg-purple-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="toggleSplitBill">
+                   <span class="material-symbols-outlined text-xl group-hover:scale-110">call_split</span>
+                   <span class="text-[9px] font-bold uppercase tracking-wider">Split</span>
                 </button>
+             </div>
+
+             <!-- Kitchen Toggle (F&B Feature) -->
+             <div class="flex items-center justify-between gap-2 mb-4 px-1 py-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm" v-if="authStore.user?.role !== 'KITCHEN'">
+                <div class="flex items-center gap-2">
+                   <div class="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-xl">restaurant</span>
+                   </div>
+                   <span class="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">Kirim ke Dapur?</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                   <input type="checkbox" v-model="sendToKitchen" class="sr-only peer">
+                   <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+                </label>
              </div>
 
              <!-- Pay Button -->
@@ -789,6 +826,116 @@
         </div>
       </div>
     </div>
+
+    <!-- Held Orders Modal -->
+    <div v-if="showHeldOrdersModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-slide-up">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Held Orders</h3>
+                <button @click="showHeldOrdersModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                    <span class="material-symbols-outlined text-slate-500">close</span>
+                </button>
+            </div>
+            <div class="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+                <div v-if="heldOrders.length === 0" class="text-center py-8 text-slate-500">
+                    <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
+                    <p>No held orders found.</p>
+                </div>
+                <div v-for="order in heldOrders" :key="order.id" class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                    <div>
+                        <p class="font-bold text-[#0d141b] dark:text-white">{{ order.checkName }}</p>
+                        <p class="text-xs text-slate-500">{{ new Date(order.date).toLocaleTimeString() }} • {{ order.items.length }} Items</p>
+                        <p class="font-bold text-primary mt-1">{{ formatCurrency(order.total) }}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button @click="deleteHeldOrder(order)" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                        <button @click="restoreHeldOrder(order)" class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-emerald-600 transition-colors shadow-lg shadow-primary/20">
+                            Resume
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-end">
+                <button @click="showHeldOrdersModal = false" class="px-6 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split Bill Modal -->
+    <div v-if="showSplitBillModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Split Bill</h3>
+                    <p class="text-xs text-slate-500 mt-1">Distribusi item untuk pembayaran terpisah</p>
+                </div>
+                <div class="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
+                    <button @click="splitMode = 'ITEM'" :class="splitMode === 'ITEM' ? 'bg-white dark:bg-slate-800 shadow-sm' : ''" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Per Item</button>
+                    <button @click="splitMode = 'EQUAL'" :class="splitMode === 'EQUAL' ? 'bg-white dark:bg-slate-800 shadow-sm' : ''" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all">Sama Rata</button>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-hidden flex p-6 gap-6">
+                <!-- Mode Item: Side by Side -->
+                <template v-if="splitMode === 'ITEM'">
+                    <div v-for="(scat, idx) in splitCarts" :key="idx" class="flex-1 flex flex-col border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/30">
+                        <div class="p-4 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                            <span class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">BILL {{ String.fromCharCode(65 + idx) }}</span>
+                            <span class="text-xs font-bold text-emerald-600">{{ formatCurrency(scat.reduce((sum, i) => sum + i.price * i.quantity, 0)) }}</span>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                             <div v-for="(item, iidx) in scat" :key="item.id + iidx" class="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between group">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ item.name }}</p>
+                                    <p class="text-[10px] text-slate-500">{{ item.quantity }} x {{ formatCurrency(item.price) }}</p>
+                                </div>
+                                <button @click="moveItemToSplit(iidx, idx, idx === 0 ? 1 : 0)" class="p-2 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined text-lg">{{ idx === 0 ? 'arrow_forward' : 'arrow_back' }}</span>
+                                </button>
+                             </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Mode Equal: Simple Input -->
+                <div v-else class="flex-1 flex flex-col items-center justify-center p-12 text-center">
+                    <div class="size-20 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-6">
+                        <span class="material-symbols-outlined text-4xl">payments</span>
+                    </div>
+                    <h4 class="text-lg font-bold mb-2">Split Sama Rata</h4>
+                    <p class="text-sm text-slate-500 mb-8 max-w-sm">Bagi total tagihan menjadi beberapa bagian sama besar secara otomatis.</p>
+                    
+                    <div class="flex items-center gap-6 p-4 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <button @click="splitParts = Math.max(2, splitParts - 1)" class="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-slate-600">-</button>
+                        <div class="text-center min-w-[100px]">
+                            <p class="text-2xl font-black">{{ splitParts }}</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bagian</p>
+                        </div>
+                        <button @click="splitParts++" class="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-slate-600">+</button>
+                    </div>
+                    
+                    <div class="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-700/30 w-full max-w-xs">
+                        <p class="text-xs text-emerald-600 font-bold mb-1">Per Bagian</p>
+                        <p class="text-xl font-black text-emerald-700 dark:text-emerald-400">{{ formatCurrency(total / splitParts) }}</p>
+                    </div>
+                </div>
+            </div>
+
+             <div class="p-6 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-end gap-3">
+                <button @click="showSplitBillModal = false" class="px-6 py-2.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-colors">
+                    Batalkan
+                </button>
+                <button @click="confirmSplitBill" class="px-8 py-2.5 bg-emerald-500 text-white rounded-xl font-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all">
+                    Konfirmasi Split
+                </button>
+            </div>
+        </div>
+    </div>
+
   </div>
 </template>
 
@@ -853,6 +1000,17 @@ const lastOrderReceipt = ref<any>(null);
 const lastOrderId = ref<string | undefined>(undefined);
 const estimatedDiscount = ref(0);
 
+// New Features State
+const heldOrders = ref<any[]>(JSON.parse(localStorage.getItem('pos_held_orders') || '[]'));
+const showHeldOrdersModal = ref(false);
+const discounts = ref<any[]>([]);
+const showSplitBillModal = ref(false);
+const splitParts = ref(2); // Default 2 split
+const splitMode = ref<'EQUAL' | 'ITEM'>('EQUAL');
+const splitCarts = ref<CartItem[][]>([[], []]); // For ITEM split
+const activeSplitIndex = ref(0);
+const isSplitActive = ref(false);
+
 // Offline mode state
 const isOnline = ref(navigator.onLine);
 const isSyncing = ref(false);
@@ -868,14 +1026,26 @@ const categories = computed(() => {
 });
 
 const filteredProducts = computed(() => {
-  if (!searchQuery.value) {
-    return safeFilter(products.value, (p: any) => p?.isActive && p?.stock > 0);
+  let items = products.value;
+  
+  // Filter by Category
+  if (selectedCategory.value && selectedCategory.value !== 'SEMUA') {
+    items = safeFilter(items, (p: any) => p?.category === selectedCategory.value);
   }
-  const query = searchQuery.value.toLowerCase();
-  return safeFilter(products.value, (p: any) => 
-    p?.isActive && p?.stock > 0 && 
-    (p?.name?.toLowerCase().includes(query) || p?.category?.toLowerCase().includes(query))
-  );
+  
+  // Filter by Search
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    items = safeFilter(items, (p: any) => 
+      p?.name?.toLowerCase().includes(query) || 
+      p?.sku?.toLowerCase().includes(query) ||
+      p?.barcode?.toLowerCase().includes(query)
+    );
+  }
+  
+  // Active & Positive Stock (or allow OOS viewing?)
+  // Keeping original logic: must be active and stock > 0
+  return safeFilter(items, (p: any) => p?.isActive && p?.stock > 0);
 });
 
 const filteredProductsSimple = computed(() => {
@@ -890,19 +1060,181 @@ const subtotal = computed(() => {
   return safeReduce(cart.value, (sum: number, item: any) => sum + (item?.price || 0) * (item?.quantity || 0), 0);
 });
 
-const discount = computed(() => {
-  if (quickDiscount.value <= 0) return 0;
-  if (discountType.value === 'percent') {
-    return (subtotal.value * quickDiscount.value) / 100;
+const sendToKitchen = ref(false);
+
+// Separated Discount Calculations to mirror Backend Service
+const promotionDiscounts = computed(() => {
+  let totalPromoDiscount = 0;
+  const details: any[] = [];
+  const globalProductsWithDiscount = new Set<string>();
+
+  if (discounts.value.length === 0) return { amount: 0, details: [] };
+
+  // Track if any promotion is "Exclusive" (not in schema yet, but good for future)
+  // For now, follow backend: sequential application
+  discounts.value.forEach((d: any) => {
+    if (d.applicableTo === 'MEMBER_ONLY' && !selectedMember.value) return;
+
+    let discountAmount = 0;
+    const appliedTo: string[] = [];
+
+    if (d.discountType === 'AMOUNT_BASED') {
+      const minAmount = d.minAmount ? Number(d.minAmount) : 0;
+      const minQuantity = d.minQuantity || 1;
+
+      if (subtotal.value >= minAmount && cart.value.length >= minQuantity) {
+        let currentParsing: any = d.applicableProducts;
+        if (typeof currentParsing === 'string') {
+          try { currentParsing = JSON.parse(currentParsing); } catch (e) { currentParsing = []; }
+        }
+        const applicableProductIds = (Array.isArray(currentParsing) && currentParsing.length > 0)
+          ? currentParsing
+          : cart.value.map(item => item.id);
+
+        cart.value.forEach(item => {
+          if (applicableProductIds.includes(item.id)) {
+            const itemSubtotal = (item.price || 0) * (item.quantity || 0);
+            if (d.discountValueType === 'PERCENTAGE') {
+              let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+              discountAmount += evalAmt;
+            } else {
+              discountAmount += Number(d.discountValue);
+            }
+            appliedTo.push(item.id);
+          }
+        });
+        
+        // Cap total discount for this rule if PERCENTAGE
+        if (d.discountValueType === 'PERCENTAGE' && d.maxDiscountAmount && discountAmount > d.maxDiscountAmount) {
+          discountAmount = Number(d.maxDiscountAmount);
+        }
+      }
+    } else if (d.discountType === 'BUNDLE') {
+      let bundleParsing: any = d.bundleProducts;
+      if (typeof bundleParsing === 'string') {
+        try { bundleParsing = JSON.parse(bundleParsing); } catch (e) { bundleParsing = []; }
+      }
+      const bundleProductIds = Array.isArray(bundleParsing) ? bundleParsing : [];
+      const discountProductId = d.bundleDiscountProduct;
+
+      const orderProductIds = cart.value.map(item => item.id);
+      const hasAllBundleProducts = bundleProductIds.length > 0 && bundleProductIds.every((id: string) => orderProductIds.includes(id));
+
+      if (hasAllBundleProducts && discountProductId) {
+        const discountItem = cart.value.find(item => item.id === discountProductId);
+        if (discountItem) {
+          const itemSubtotal = (discountItem.price || 0) * (discountItem.quantity || 0);
+          if (d.discountValueType === 'PERCENTAGE') {
+            let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+            if (d.maxDiscountAmount && evalAmt > d.maxDiscountAmount) evalAmt = d.maxDiscountAmount;
+            discountAmount = evalAmt;
+          } else {
+            discountAmount = Number(d.discountValue);
+          }
+          appliedTo.push(discountProductId);
+        }
+      }
+    } else if (d.discountType === 'PRODUCT_BASED') {
+      let productParsing: any = d.applicableProducts;
+      if (typeof productParsing === 'string') {
+        try { productParsing = JSON.parse(productParsing); } catch (e) { productParsing = []; }
+      }
+      const applicableProductIds = Array.isArray(productParsing) ? productParsing : [];
+
+      cart.value.forEach(item => {
+        if ((applicableProductIds.length === 0 || applicableProductIds.includes(item.id)) 
+            && !globalProductsWithDiscount.has(item.id)) {
+          const itemSubtotal = (item.price || 0) * (item.quantity || 0);
+          if (d.discountValueType === 'PERCENTAGE') {
+            let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+            // Note: maxDiscountAmount usually applies per rule, not per product for PRODUCT_BASED in backend
+            discountAmount += evalAmt;
+          } else {
+            discountAmount += Number(d.discountValue) * (item.quantity || 0);
+          }
+          appliedTo.push(item.id);
+          globalProductsWithDiscount.add(item.id);
+        }
+      });
+      
+      // Cap total discount for this rule if PERCENTAGE
+      if (d.discountValueType === 'PERCENTAGE' && d.maxDiscountAmount && discountAmount > d.maxDiscountAmount) {
+        discountAmount = Number(d.maxDiscountAmount);
+      }
+    } else if (d.discountType === 'QUANTITY_BASED') {
+      const minQuantity = d.minQuantity || 1;
+      let qtyParsing: any = d.applicableProducts;
+      if (typeof qtyParsing === 'string') {
+        try { qtyParsing = JSON.parse(qtyParsing); } catch (e) { qtyParsing = []; }
+      }
+      const applicableProductIds = Array.isArray(qtyParsing) ? qtyParsing : [];
+
+      cart.value.forEach(item => {
+        if (applicableProductIds.length === 0 || applicableProductIds.includes(item.id)) {
+          if ((item.quantity || 0) >= minQuantity) {
+            const itemSubtotal = (item.price || 0) * (item.quantity || 0);
+            if (d.discountValueType === 'PERCENTAGE') {
+              let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+              discountAmount += evalAmt;
+            } else {
+              discountAmount += Number(d.discountValue) * (item.quantity || 0);
+            }
+            appliedTo.push(item.id);
+          }
+        }
+      });
+      
+      // Cap total discount for this rule if PERCENTAGE
+      if (d.discountValueType === 'PERCENTAGE' && d.maxDiscountAmount && discountAmount > d.maxDiscountAmount) {
+        discountAmount = Number(d.maxDiscountAmount);
+      }
+    }
+
+    if (discountAmount > 0) {
+      totalPromoDiscount += discountAmount;
+      details.push({
+        id: d.id,
+        name: d.name,
+        amount: discountAmount,
+        appliedTo
+      });
+    }
+  });
+
+  return { amount: totalPromoDiscount, details };
+});
+
+const memberDiscount = computed(() => {
+  if (!selectedMember.value?.discountValue) return 0;
+  
+  // Member discount applies after promo discounts
+  const subtotalAfterPromo = Math.max(0, subtotal.value - promotionDiscounts.value.amount);
+  
+  if (selectedMember.value.discountType === 'PERCENTAGE') {
+    return (subtotalAfterPromo * Number(selectedMember.value.discountValue)) / 100;
+  } else {
+    // Fixed member discount cannot exceed remaining subtotal
+    return Math.min(Number(selectedMember.value.discountValue), subtotalAfterPromo);
   }
-  return Math.min(quickDiscount.value, subtotal.value);
+});
+
+const autoDiscount = computed(() => {
+  return promotionDiscounts.value.amount + memberDiscount.value;
+});
+
+const discount = computed(() => {
+  // Priority: Quick Discount > Member/Auto Discount
+  if (quickDiscount.value > 0) {
+      if (discountType.value === 'percent') {
+        return (subtotal.value * quickDiscount.value) / 100;
+      }
+      return Math.min(quickDiscount.value, subtotal.value);
+  }
+  return autoDiscount.value;
 });
 
 const total = computed(() => {
-  if (isSimpleMode.value) {
-    return Math.max(0, subtotal.value - discount.value);
-  }
-  return Math.max(0, subtotal.value - estimatedDiscount.value);
+  return Math.max(0, subtotal.value - discount.value);
 });
 
 // Methods
@@ -945,7 +1277,7 @@ const loadTenantFeatures = async () => {
   }
 };
 
-const loadProducts = async () => {
+const loadProducts = async (retryCount = 0) => {
   // For SUPER_ADMIN, ensure tenantId is available
   if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
     const selectedTenantId = localStorage.getItem('selectedTenantId');
@@ -978,11 +1310,18 @@ const loadProducts = async () => {
     
     // Cache products for offline use
     if (Array.isArray(products.value)) {
-    await offlineStorage.cacheProducts(products.value);
+      await offlineStorage.cacheProducts(products.value);
     }
     
     await checkCriticalStock();
   } catch (err: any) {
+    // Retry logic
+    if (retryCount < 3 && isOnline.value) {
+        console.warn(`Product load failed, retrying (${retryCount + 1}/3)...`);
+        setTimeout(() => loadProducts(retryCount + 1), 1500);
+        return;
+    }
+
     // If offline, try to load from cache
     if (!isOnline.value) {
       console.log('Offline: Loading products from cache...');
@@ -996,10 +1335,12 @@ const loadProducts = async () => {
     } else {
       const errorMessage = err.response?.data?.message || 'Failed to load products';
       console.error('Error loading products:', err);
-      showError(errorMessage, 'Error');
+      showError(`${errorMessage}. Please check connection.`, 'Error');
     }
   } finally {
-    loading.value = false;
+    if (retryCount >= 3 || !isOnline.value || products.value.length > 0) {
+        loading.value = false;
+    }
   }
 };
 
@@ -1252,6 +1593,28 @@ const loadMembers = async () => {
   }
 };
 
+const loadDiscounts = async () => {
+  try {
+    const response = await api.get('/discounts');
+    const result = response.data.data || response.data;
+    discounts.value = Array.isArray(result) ? result : [];
+  } catch (error: any) {
+    console.error('Error loading discounts:', error);
+    discounts.value = [];
+  }
+};
+
+const refreshProducts = async () => {
+  loading.value = true;
+  await Promise.all([
+    loadProducts(),
+    loadMembers(),
+    loadDiscounts(),
+    fetchInventoryAddonStatus()
+  ]);
+  showSuccess('Data refreshed');
+};
+
 const handlePaymentConfirm = async (paymentData: { paymentMethod: string; cashAmount?: number; qrCode?: string }) => {
   selectedPaymentMethod.value = paymentData.paymentMethod;
   showPaymentModal.value = false;
@@ -1278,6 +1641,7 @@ const processPaymentSimple = async (paymentMethod: string) => {
         price: item.price,
       })) : [],
       discount: discount.value,
+      sendToKitchen: sendToKitchen.value,
     };
 
     if (authStore.selectedStoreId) {
@@ -1327,6 +1691,9 @@ const processPaymentSimple = async (paymentMethod: string) => {
       showSuccess('Transaction saved offline. Will sync automatically when online.');
       pendingSyncCount.value = await syncManager.getPendingCount();
     }
+    
+    // Clear sendToKitchen after success
+    sendToKitchen.value = false;
     
     // Reset cash input
     showCashInput.value = false;
@@ -1382,6 +1749,112 @@ const processPaymentSimple = async (paymentMethod: string) => {
   }
 };
 
+const toggleSplitBill = () => {
+    if (cart.value.length === 0) return;
+    
+    // Initialize split carts
+    splitCarts.value = [
+        [...cart.value], // All in Part A
+        []              // None in Part B
+    ];
+    showSplitBillModal.value = true;
+};
+
+const moveItemToSplit = (itemIndex: number, fromIndex: number, toIndex: number) => {
+    const item = splitCarts.value[fromIndex][itemIndex];
+    if (item.quantity > 1) {
+        // Just move one quantity
+        const existingInTarget = splitCarts.value[toIndex].find(i => i.id === item.id);
+        if (existingInTarget) {
+            existingInTarget.quantity++;
+        } else {
+            splitCarts.value[toIndex].push({ ...item, quantity: 1 });
+        }
+        item.quantity--;
+    } else {
+        // Move entire item
+        const existingInTarget = splitCarts.value[toIndex].find(i => i.id === item.id);
+        if (existingInTarget) {
+            existingInTarget.quantity += item.quantity;
+        } else {
+            splitCarts.value[toIndex].push({ ...item });
+        }
+        splitCarts.value[fromIndex].splice(itemIndex, 1);
+    }
+};
+
+const confirmSplitBill = () => {
+    if (splitMode.value === 'ITEM') {
+        const hasItemsInAll = splitCarts.value.every(c => c.length > 0);
+        if (!hasItemsInAll && splitCarts.value.length > 0) {
+            showError('Each split part must have at least one item.');
+            return;
+        }
+    } else {
+        // EQUAL split logic - distribute items automatically
+        const totalParts = splitParts.value;
+        const newSplitCarts = Array.from({ length: totalParts }, (): CartItem[] => []);
+        
+        // Flatten cart into individual units for easier distribution
+        const allUnits: CartItem[] = [];
+        cart.value.forEach(item => {
+            const qty = Number(item.quantity) || 0;
+            for (let i = 0; i < qty; i++) {
+                allUnits.push({ ...item, quantity: 1 });
+            }
+        });
+
+        // Distribute units
+        allUnits.forEach((unit, index) => {
+            const targetIndex = index % totalParts;
+            const existing = newSplitCarts[targetIndex].find(i => i.id === unit.id);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                newSplitCarts[targetIndex].push({ ...unit });
+            }
+        });
+        
+        splitCarts.value = newSplitCarts;
+    }
+    
+    // Start process with Part A
+    isSplitActive.value = true;
+    activeSplitIndex.value = 0;
+    cart.value = [...splitCarts.value[0]];
+    
+    // Set custom label for split
+    const suffix = ` (Split ${String.fromCharCode(65 + activeSplitIndex.value)})`;
+    if (!customerName.value || customerName.value === '') {
+        customerName.value = 'Pelanggan' + suffix;
+    } else {
+        customerName.value += suffix;
+    }
+    
+    showSplitBillModal.value = false;
+    showSuccess('Bill split successfully. Please process payments sequentially.');
+};
+
+const nextSplitPart = () => {
+    if (!isSplitActive.value) return;
+    
+    activeSplitIndex.value++;
+    if (activeSplitIndex.value < splitCarts.value.length) {
+        cart.value = [...splitCarts.value[activeSplitIndex.value]];
+        // Update label
+        const suffix = ` (Split ${String.fromCharCode(65 + activeSplitIndex.value)})`;
+        if (!customerName.value.includes('(Split')) {
+            customerName.value += suffix;
+        } else {
+            customerName.value = customerName.value.replace(/\(Split .*\)/, suffix);
+        }
+        showSuccess(`Moving to ${suffix}`);
+    } else {
+        isSplitActive.value = false;
+        activeSplitIndex.value = 0;
+        showSuccess('All split parts processed.');
+    }
+};
 const processPayment = async (paymentData: { paymentMethod: string; cashAmount?: number; qrCode?: string }) => {
   if (cart.value.length === 0) return;
   processing.value = true;
@@ -1518,9 +1991,11 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
 
     lastOrderReceipt.value = receiptData;
 
+
     // showReceiptModal.value = true;
     showSuccessOverlay.value = true;
     clearCart();
+    // Don't modify estimatedDiscount directly here, it will be reset by clearCart
     await loadProducts();
   } catch (error: any) {
     console.error('Error processing payment:', error);
@@ -1533,6 +2008,9 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
 
 const closeSuccessOverlay = () => {
   showSuccessOverlay.value = false;
+  if (isSplitActive.value) {
+    nextSplitPart();
+  }
 };
 
 const printReceiptAndClose = async () => {
@@ -1632,6 +2110,7 @@ onMounted(() => {
         loadTenantFeatures();
         loadProducts();
         loadMembers();
+        loadDiscounts();
       }, 100);
     } else {
       setTimeout(() => {
@@ -1641,6 +2120,7 @@ onMounted(() => {
           loadTenantFeatures();
           loadProducts();
           loadMembers();
+          loadDiscounts();
         }
       }, 500);
     }
@@ -1648,6 +2128,7 @@ onMounted(() => {
     loadTenantFeatures();
     loadProducts();
     loadMembers();
+    loadDiscounts();
   }
   
   const tenantIdForSocket = authStore.isSuperAdmin 

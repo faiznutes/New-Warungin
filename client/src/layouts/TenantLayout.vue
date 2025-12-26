@@ -80,7 +80,7 @@
             </router-link>
 
             <router-link
-              v-if="authStore.user?.role === 'ADMIN_TENANT'"
+              v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role)"
               to="/app/products/adjustments"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
               active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -112,13 +112,34 @@
               <span class="material-symbols-outlined text-[20px]">group</span>
               <span class="text-sm font-medium leading-normal">Pelanggan</span>
             </router-link>
+
+            <router-link
+              to="/app/orders/kitchen"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+              active-class="bg-[#10b981]/10 text-[#10b981]"
+              :class="[$route.path === '/app/orders/kitchen' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+              @click="closeSidebarOnMobile"
+            >
+              <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
+              <span class="text-sm font-medium leading-normal">Dapur (KDS)</span>
+            </router-link>
+
+            <router-link
+              to="/pos"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+              @click="closeSidebarOnMobile"
+              target="_blank"
+            >
+              <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+              <span class="text-sm font-medium leading-normal">Buka POS</span>
+            </router-link>
             </div>
           </div>
 
           <div class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
 
           <!-- Laporan & Analitik Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
+          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role)" class="mb-1">
             <button
               @click="toggleMenu('laporan')"
               class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
@@ -208,7 +229,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
 
           <!-- Marketing & Delivery Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasDeliveryMarketing" class="mb-1">
+          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role) && hasDeliveryMarketing" class="mb-1">
             <button
               @click="toggleMenu('marketing')"
               class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
@@ -294,7 +315,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
 
           <!-- Inventory Management Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="mb-1">
+          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role) && hasInventoryAccess" class="mb-1">
              <button
               @click="toggleMenu('inventory')"
               class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
@@ -358,7 +379,7 @@
            <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
 
           <!-- Manajemen Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
+          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role)" class="mb-1">
              <button
               @click="toggleMenu('manajemen')"
               class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
@@ -385,6 +406,7 @@
               </router-link>
 
               <router-link
+                v-if="authStore.user?.role === 'ADMIN_TENANT'"
                 to="/app/stores"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -396,6 +418,7 @@
               </router-link>
 
               <router-link
+                v-if="authStore.user?.role === 'ADMIN_TENANT'"
                 to="/app/discounts"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -411,7 +434,7 @@
            <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
 
           <!-- Pengaturan Section -->
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
+          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role)" class="mb-1">
              <button
               @click="toggleMenu('pengaturan')"
               class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
@@ -427,6 +450,7 @@
               class="space-y-1 transition-all duration-200"
             >
               <router-link
+                v-if="authStore.user?.role === 'ADMIN_TENANT'"
                 to="/app/subscription"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -438,6 +462,7 @@
               </router-link>
 
               <router-link
+                v-if="authStore.user?.role === 'ADMIN_TENANT'"
                 to="/app/addons"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -471,6 +496,7 @@
               </router-link>
 
               <router-link
+                v-if="authStore.user?.role === 'ADMIN_TENANT'"
                 to="/app/settings/store"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -482,6 +508,7 @@
               </router-link>
 
               <router-link
+                v-if="hasSimpleNotaEditor"
                 to="/app/receipts/templates"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
                 active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -539,7 +566,22 @@
                {{ userInitials }}
             </div>
             <div class="flex flex-col min-w-0">
-              <p class="text-sm font-bold text-[#0d141b] dark:text-white truncate">{{ userName }}</p>
+              <div class="flex items-center gap-1.5">
+                <p class="text-sm font-bold text-[#0d141b] dark:text-white truncate">{{ userName }}</p>
+                <span 
+                  v-if="authStore.user?.role"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider"
+                  :class="{
+                    'bg-emerald-50 text-emerald-600 border border-emerald-100': authStore.user.role === 'ADMIN_TENANT',
+                    'bg-blue-50 text-blue-600 border border-blue-100': authStore.user.role === 'SUPERVISOR',
+                    'bg-orange-50 text-orange-600 border border-orange-100': authStore.user.role === 'CASHIER',
+                    'bg-purple-50 text-purple-600 border border-purple-100': authStore.user.role === 'KITCHEN',
+                    'bg-red-50 text-red-600 border border-red-100': authStore.isSuperAdmin
+                  }"
+                >
+                  {{ authStore.isSuperAdmin ? 'S-Admin' : authStore.user.role }}
+                </span>
+              </div>
               <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ tenantName }}</p>
             </div>
           </div>
@@ -607,14 +649,17 @@
                 />
               </div>
 
-            <!-- Notification Button for Admin Tenant -->
+            <!-- Notification Dropdown -->
+            <NotificationDropdown />
+            
+            <!-- Knowledge/Info Button for Admin Tenant -->
             <button
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               @click="showInfoModal = true"
               class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              title="Informasi Penting"
+              title="Informasi / Knowledge Base"
             >
-              <span class="material-symbols-outlined">notifications</span>
+              <span class="material-symbols-outlined">menu_book</span>
               <span
                 v-if="hasUnreadInfo"
                 class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white dark:border-[#1e293b]"
@@ -647,9 +692,10 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { safeArrayMethod } from '../utils/array-helpers';
 import { useRoute } from 'vue-router';
+import NotificationDropdown from '../components/NotificationDropdown.vue';
+import AdminInfoModal from '../components/AdminInfoModal.vue';
 import { useAuthStore } from '../stores/auth';
 import { useSystemStatus } from '../composables/useSystemStatus';
-import AdminInfoModal from '../components/AdminInfoModal.vue';
 import api from '../api';
 
 const route = useRoute();
@@ -805,7 +851,10 @@ const hasDeliveryMarketing = computed(() => {
           // Final check inside
           if (!Array.isArray(addons)) return false;
           return addons.some(
-            (addon: any) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+            (addon: any) => addon && (
+              (addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active') ||
+              (addon.addonType === 'MARKETING_TOOLS' && addon.status === 'active')
+            )
           );
         } catch (error) {
           console.error('Error in hasDeliveryMarketing .some():', error);
@@ -820,16 +869,64 @@ const hasDeliveryMarketing = computed(() => {
   }
 });
 
-// Check if user has access to Inventory Management (PRO/ENTERPRISE only)
+// Check if user has access to Inventory Management
 const hasInventoryAccess = computed(() => {
-  if (!authStore.user || authStore.user.role !== 'ADMIN_TENANT') {
+  // Check Role
+  if (!authStore.user || !['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user.role)) return false;
+
+  // Check Subscription Plan (PRO/ENTERPRISE)
+  const plan = currentSubscription.value?.plan || 'BASIC';
+  if (plan === 'PRO' || plan === 'ENTERPRISE') return true;
+
+  // Check Addons
+  try {
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) return false;
+    
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon: any) => addon && addon.addonType === 'INVENTORY_MANAGEMENT' && addon.status === 'active'
+          );
+        } catch (error) {
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
     return false;
   }
-  
-  const plan = currentSubscription.value?.plan || 'BASIC';
-  // PRO and ENTERPRISE have access to 'manajemen-stok'
-  return plan === 'PRO' || plan === 'ENTERPRISE';
 });
+
+const hasSimpleNotaEditor = computed(() => {
+  try {
+    const addonsToCheck = activeAddons.value;
+    if (!addonsToCheck || !Array.isArray(addonsToCheck)) return false;
+    
+    return safeArrayMethod(
+      addonsToCheck,
+      (addons) => {
+        try {
+          if (!Array.isArray(addons)) return false;
+          return addons.some(
+            (addon: any) => addon && (addon.addonType === 'SIMPLE_NOTA_EDITOR' || addon.addonType === 'RECEIPT_CUSTOMIZER') && addon.status === 'active'
+          );
+        } catch (error) {
+          return false;
+        }
+      },
+      false
+    );
+  } catch (error) {
+    return false;
+  }
+});
+
+
 
 // Menu expand/collapse state - semua tertutup saat login
 const expandedMenus = ref({
@@ -867,7 +964,8 @@ const autoExpandMenu = () => {
   
   // Check which section contains the current route
   if (currentPath.includes('/dashboard') || currentPath.includes('/products') || 
-      currentPath.includes('/orders') || currentPath.includes('/customers')) {
+      currentPath.includes('/orders') || currentPath.includes('/customers') ||
+      currentPath.includes('/orders/kitchen')) {
     expandedMenus.value.operasional = true;
   }
   

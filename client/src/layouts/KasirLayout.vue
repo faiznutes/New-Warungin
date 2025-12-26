@@ -12,7 +12,7 @@
       <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="p-6 flex items-center gap-3 shrink-0">
-          <div class="h-10 w-10 shrink-0 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
+          <div class="h-10 w-10 shrink-0 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
             <span class="material-symbols-outlined text-[24px]">point_of_sale</span>
           </div>
           <div class="flex flex-col min-w-0">
@@ -26,8 +26,8 @@
           <router-link
             to="/app/dashboard"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/dashboard' }">dashboard</span>
@@ -38,8 +38,8 @@
             v-if="canManageProducts"
             to="/app/products"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path.startsWith('/app/products') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path.startsWith('/app/products') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/products') }">inventory_2</span>
@@ -49,8 +49,8 @@
           <router-link
             to="/pos"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path === '/pos' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path === '/pos' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/pos' }">point_of_sale</span>
@@ -61,8 +61,8 @@
             v-if="canEditOrders"
             to="/app/orders"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path.startsWith('/app/orders') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path.startsWith('/app/orders') && !$route.path.includes('kitchen') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/orders') }">receipt_long</span>
@@ -73,8 +73,8 @@
             v-if="canManageCustomers"
             to="/app/customers"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/customers') }">group</span>
@@ -82,11 +82,22 @@
           </router-link>
 
           <router-link
+            to="/app/orders/kitchen"
+            class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path === '/app/orders/kitchen' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            @click="closeSidebarOnMobile"
+          >
+            <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
+            <span class="text-sm font-medium leading-normal">Kitchen (KDS)</span>
+          </router-link>
+
+          <router-link
             v-if="canViewReports"
             to="/app/reports"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-primary/10 text-primary"
-            :class="[$route.path.startsWith('/app/reports') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            active-class="bg-emerald-50 text-emerald-600 font-bold"
+            :class="[$route.path.startsWith('/app/reports') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/reports') }">bar_chart</span>
@@ -110,7 +121,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 shrink-0">
           <div class="flex items-center gap-3 mb-3">
-            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#10b981] font-bold">
+            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
                {{ userInitials }}
             </div>
             <div class="flex flex-col min-w-0">
@@ -168,9 +179,7 @@
              </div>
 
             <!-- Notifications -->
-            <button class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
-              <span class="material-symbols-outlined text-[24px]">notifications</span>
-            </button>
+            <NotificationDropdown />
           </div>
         </div>
       </header>
@@ -191,6 +200,7 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { usePermissions } from '../composables/usePermissions';
 import { useSystemStatus } from '../composables/useSystemStatus';
+import NotificationDropdown from '../components/NotificationDropdown.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();

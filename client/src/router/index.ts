@@ -471,13 +471,7 @@ const router = createRouter({
           component: () => import('../views/settings/SubscriptionPlans.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
-        // Kasir and Admin Tenant
-        {
-          path: 'pos',
-          name: 'pos',
-          component: () => import('../views/pos/POS.vue'),
-          meta: { roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
-        },
+
         // Failed Sync Review (for offline orders that failed to sync)
         {
           path: 'pos/failed-syncs',

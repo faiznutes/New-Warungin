@@ -82,6 +82,12 @@
                 <span class="material-symbols-outlined text-[14px]">schedule</span>
                 {{ formatDateTime(order.createdAt) }}
               </p>
+              <div v-if="order.kitchenStatus !== 'SERVED'" class="mt-1.5 flex items-center gap-2">
+                 <div class="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-900/30 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">timer</span>
+                    {{ getTimeElapsed(order.createdAt) }}
+                 </div>
+              </div>
             </div>
           </div>
           <span
@@ -227,6 +233,20 @@ const getStatusIcon = (status: string) => {
   };
   return icons[status] || 'help';
 };
+
+const getTimeElapsed = (date: string | Date) => {
+  const diff = Date.now() - new Date(date).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'Baru';
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours}j ${remainingMinutes}m`;
+};
+
+// Force update for time elapsed
+const ticker = ref(0);
+let tickerInterval: number | null = null;
 
 const handleStoreChange = () => {
   // Reload orders when store changes
@@ -410,9 +430,15 @@ onMounted(() => {
   } else {
     startPolling();
   }
+
+  // Start ticker for time elapsed
+  tickerInterval = window.setInterval(() => {
+    ticker.value++;
+  }, 60000);
 });
 
 onUnmounted(() => {
   stopPolling();
+  if (tickerInterval) clearInterval(tickerInterval);
 });
 </script>

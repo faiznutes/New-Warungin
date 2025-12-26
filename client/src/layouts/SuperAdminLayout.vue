@@ -9,13 +9,13 @@
         'shadow-xl lg:shadow-none': sidebarOpen && windowWidth < 1024
       }"
     >
-      <div class="p-6 pb-2">
+      <div class="p-6 pb-2 shrink-0">
         <div class="flex flex-col gap-1">
-          <h1 class="text-primary text-xl font-bold leading-normal flex items-center gap-2">
+          <h1 class="text-emerald-600 dark:text-emerald-400 text-xl font-bold leading-normal flex items-center gap-2">
             <span class="material-symbols-outlined icon-filled">storefront</span>
             Warungin
           </h1>
-          <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium leading-normal pl-8">Super Admin Panel</p>
+          <p class="text-[#4c739a] dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-normal pl-8">Super Admin Panel</p>
         </div>
       </div>
 
@@ -23,8 +23,8 @@
         <router-link 
           to="/app/super-dashboard" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/super-dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/super-dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/super-dashboard' }">dashboard</span>
@@ -34,8 +34,8 @@
         <router-link 
           to="/app/tenants" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path.startsWith('/app/tenants') && !$route.path.includes('/support') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path.startsWith('/app/tenants') && !$route.path.includes('/support') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/tenants') && !$route.path.includes('/support') }">store</span>
@@ -45,8 +45,8 @@
         <router-link 
           to="/app/subscription" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/subscription') }">receipt_long</span>
@@ -57,8 +57,8 @@
         <router-link 
           to="/app/tenants/support" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/tenants/support' }">support_agent</span>
@@ -68,8 +68,8 @@
         <router-link 
           to="/app/addons" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/addons') }">extension</span>
@@ -81,8 +81,8 @@
         <router-link 
           to="/app/finance" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path.startsWith('/app/finance') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path.startsWith('/app/finance') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/finance') }">payments</span>
@@ -92,8 +92,8 @@
         <router-link 
           to="/app/analytics" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path.startsWith('/app/analytics') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path.startsWith('/app/analytics') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/analytics') }">analytics</span>
@@ -106,8 +106,8 @@
         <router-link 
           to="/app/superadmin/server-monitor" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/superadmin/server-monitor' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/superadmin/server-monitor' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/server-monitor' }">dns</span>
@@ -117,8 +117,8 @@
         <router-link 
           to="/app/superadmin/backups" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/superadmin/backups' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/superadmin/backups' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/backups' }">backup</span>
@@ -128,8 +128,8 @@
         <router-link 
           to="/app/superadmin/contact-messages" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/superadmin/contact-messages' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/superadmin/contact-messages' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
            <!-- Badge check -->
@@ -140,8 +140,8 @@
         <router-link 
           to="/app/superadmin/system-info" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/superadmin/system-info' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/superadmin/system-info' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/system-info' }">info</span>
@@ -151,8 +151,8 @@
         <router-link 
           to="/app/settings/system" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-          active-class="bg-primary/10 text-primary"
-          :class="[$route.path === '/app/settings/system' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          active-class="bg-emerald-50 text-emerald-600 font-bold"
+          :class="[$route.path === '/app/settings/system' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
           @click="windowWidth < 1024 ? sidebarOpen = false : null"
         >
           <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/settings/system' }">settings</span>
@@ -161,21 +161,21 @@
 
         <button 
           @click="handleLogout" 
-          class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl text-[#4c739a] dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 transition-colors w-full text-left"
         >
           <span class="material-symbols-outlined">logout</span>
           <p class="text-sm font-medium leading-normal">Logout</p>
         </button>
       </nav>
 
-      <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700">
+      <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50">
         <div class="flex items-center gap-3">
-          <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#4c739a]">
-             <span class="material-symbols-outlined">person</span>
+          <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
+             {{ user?.name?.substring(0,2).toUpperCase() || 'SA' }}
           </div>
-          <div class="flex flex-col">
-            <p class="text-sm font-bold text-[#0d141b] dark:text-white">{{ user?.name || 'Admin User' }}</p>
-            <p class="text-xs text-[#4c739a] dark:text-slate-400">{{ user?.email || 'admin@warungin.com' }}</p>
+          <div class="flex flex-col overflow-hidden">
+            <p class="text-sm font-bold text-[#0d141b] dark:text-white truncate">{{ user?.name || 'Super Admin' }}</p>
+            <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ user?.email || 'admin@warungin.com' }}</p>
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@
           </button>
           <div>
             <nav class="flex items-center gap-2 text-sm text-[#4c739a] dark:text-slate-400 mb-1">
-              <span class="hover:text-primary transition-colors cursor-pointer">Home</span>
+              <span class="hover:text-emerald-600 transition-colors cursor-pointer">Home</span>
               <span class="text-xs">/</span>
               <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
             </nav>
@@ -209,10 +209,7 @@
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <button class="relative p-2 text-[#4c739a] dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-[#1e293b]"></span>
-          </button>
+          <NotificationDropdown />
         </div>
       </header>
 
@@ -232,6 +229,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import NotificationDropdown from '../components/NotificationDropdown.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
