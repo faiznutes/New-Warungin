@@ -8,7 +8,7 @@
       </div>
       
       <div class="flex items-center gap-3">
-        <RouterLink to="/app/pos" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 hover:text-slate-900 transition flex items-center gap-2">
+        <RouterLink to="/pos" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 hover:text-slate-900 transition flex items-center gap-2">
             <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             Back to POS
         </RouterLink>

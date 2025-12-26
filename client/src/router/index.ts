@@ -162,7 +162,13 @@ const router = createRouter({
           path: 'tenants/support',
           name: 'tenant-support',
           component: () => import('../views/tenants/SupportTickets.vue'),
-          meta: { roles: ['SUPER_ADMIN', 'ADMIN_TENANT'] },
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'support',
+          name: 'client-support',
+          component: () => import('../views/support/ClientSupport.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'] },
         },
         {
           path: 'reports/global',

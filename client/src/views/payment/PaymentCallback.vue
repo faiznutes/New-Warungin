@@ -1,98 +1,115 @@
 <template>
-  <div class="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-    <div class="max-w-md w-full bg-white rounded-xl shadow-sm p-8 text-center">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-4 font-display">
+    <div class="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 text-center">
+      
       <!-- Success State -->
-      <div v-if="status === 'success'" class="space-y-4">
-        <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
+      <div v-if="status === 'success'" class="space-y-6">
+        <div class="mx-auto w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 animate-bounce-in">
+          <span class="material-symbols-outlined text-emerald-600 text-4xl">check_circle</span>
         </div>
-        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Successful!</h1>
-        <p class="text-[#4c739a]">
-          Your payment has been successfully processed. Your addon or subscription will be activated shortly.
-        </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
-          <p class="text-sm text-[#4c739a]">Order ID:</p>
-          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pembayaran Berhasil!</h1>
+          <p class="text-slate-500 dark:text-slate-400">
+            Terima kasih! Pembayaran Anda telah kami terima. Layanan Anda akan segera aktif.
+          </p>
         </div>
-        <div v-if="activationStatus === 'checking'" class="mt-4 p-3 bg-blue-50 rounded-xl">
-          <div class="flex items-center justify-center gap-2">
-            <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-sm text-blue-600">Verifying and activating addon/subscription...</p>
+        
+        <div v-if="orderId" class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
+          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold mb-1">Order ID</p>
+          <p class="text-lg font-mono font-bold text-slate-900 dark:text-white break-all">{{ orderId }}</p>
+        </div>
+
+        <div v-if="activationStatus === 'checking'" class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+          <div class="flex items-center justify-center gap-3">
+            <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-sm font-bold text-blue-600 dark:text-blue-400">Memverifikasi & Mengaktifkan...</p>
           </div>
         </div>
-        <div v-else-if="activationStatus === 'success'" class="mt-4 p-3 bg-green-50 rounded-xl">
-          <p class="text-sm text-green-600">✅ Addon/subscription activated successfully!</p>
+        <div v-else-if="activationStatus === 'success'" class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+           <div class="flex items-center justify-center gap-2">
+             <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">verified</span>
+             <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">Layanan Aktif!</p>
+           </div>
         </div>
-        <div class="mt-6 space-y-3">
+
+        <div class="space-y-3 pt-2">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
+            class="w-full px-6 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-bold shadow-lg shadow-emerald-500/30 active:scale-95"
           >
-            {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
+            {{ isSubscriptionPayment ? 'Kembali ke Subscription' : 'Kembali ke Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
+            class="w-full px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold"
           >
-            Go to Dashboard
+            Ke Dashboard
           </button>
         </div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="status === 'error'" class="space-y-4">
-        <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-red-600 text-3xl">cancel</span>
+      <div v-else-if="status === 'error'" class="space-y-6">
+        <div class="mx-auto w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 animate-bounce-in">
+          <span class="material-symbols-outlined text-red-600 text-4xl">cancel</span>
         </div>
-        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Failed</h1>
-        <p class="text-[#4c739a]">
-          Sorry, your payment could not be processed. Please try again or contact support if the problem persists.
-        </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
-          <p class="text-sm text-[#4c739a]">Order ID:</p>
-          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pembayaran Gagal</h1>
+          <p class="text-slate-500 dark:text-slate-400">
+            Maaf, kami tidak dapat memproses pembayaran Anda. Silakan coba lagi atau hubungi support.
+          </p>
         </div>
-        <div class="mt-6 space-y-3">
+
+        <div v-if="orderId" class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
+          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold mb-1">Order ID</p>
+          <p class="text-lg font-mono font-bold text-slate-900 dark:text-white break-all">{{ orderId }}</p>
+        </div>
+
+        <div class="space-y-3 pt-2">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
+            class="w-full px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition font-bold shadow-lg shadow-red-500/30 active:scale-95"
           >
-            Try Again
+            Coba Lagi
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
+            class="w-full px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold"
           >
-            Go to Dashboard
+             Ke Dashboard
           </button>
         </div>
       </div>
 
       <!-- Pending State -->
-      <div v-else-if="status === 'pending'" class="space-y-4">
-        <div class="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-          <span class="material-symbols-outlined text-yellow-600 text-3xl animate-spin">sync</span>
+      <div v-else-if="status === 'pending'" class="space-y-6">
+        <div class="mx-auto w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/20 animate-pulse">
+          <span class="material-symbols-outlined text-yellow-600 text-4xl">hourglass_top</span>
         </div>
-        <h1 class="text-2xl font-bold text-[#0d141b]">Payment Pending</h1>
-        <p class="text-[#4c739a]">
-          Your payment is being processed. We will send a notification once the payment is confirmed.
-        </p>
-        <div v-if="orderId" class="mt-4 p-3 bg-slate-50 rounded-xl">
-          <p class="text-sm text-[#4c739a]">Order ID:</p>
-          <p class="text-sm font-mono text-[#0d141b]">{{ orderId }}</p>
+         <div>
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Menunggu Pembayaran</h1>
+          <p class="text-slate-500 dark:text-slate-400">
+            Pembayaran Anda sedang kami proses. Mohon selesaikan pembayaran sesuai instruksi.
+          </p>
         </div>
-        <div class="mt-6 space-y-3">
+
+        <div v-if="orderId" class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
+          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold mb-1">Order ID</p>
+          <p class="text-lg font-mono font-bold text-slate-900 dark:text-white break-all">{{ orderId }}</p>
+        </div>
+
+        <div class="space-y-3 pt-2">
           <button
             @click="goToPaymentPage"
-            class="w-full px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition font-medium"
+             class="w-full px-6 py-3 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition font-bold shadow-lg shadow-yellow-500/30 active:scale-95"
           >
-            {{ isSubscriptionPayment ? 'Back to Subscription' : 'Back to Addons' }}
+            {{ isSubscriptionPayment ? 'Cek Status Subscription' : 'Cek Status Addons' }}
           </button>
           <button
             @click="goToDashboard"
-            class="w-full px-4 py-2.5 border border-slate-300 text-[#0d141b] rounded-xl hover:bg-slate-50 transition"
+            class="w-full px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold"
           >
-            Go to Dashboard
+             Ke Dashboard
           </button>
         </div>
       </div>

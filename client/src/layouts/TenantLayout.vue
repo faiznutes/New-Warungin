@@ -517,6 +517,19 @@
               </router-link>
             </div>
           </div>
+            <!-- Support Section -->
+            <div class="mb-1 mt-4 border-t border-slate-100 dark:border-slate-700 pt-2">
+              <router-link
+                :to="authStore.isSuperAdmin ? '/app/tenants/support' : '/app/support'"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
+                :class="[$route.path.includes('/support') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+                @click="closeSidebarOnMobile"
+              >
+                 <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path.includes('/support') }">help_center</span>
+                 <span class="text-sm font-medium leading-normal">Bantuan & Support</span>
+              </router-link>
+            </div>
         </nav>
 
         <!-- User Section -->
