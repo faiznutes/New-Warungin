@@ -372,7 +372,7 @@ const form = ref<Partial<User & { password?: string; permissions?: UserPermissio
 const permissions = computed({
   get: () => {
     if (!form.value.permissions) {
-      form.value.permissions = {
+      return {
         canEditOrders: false,
         canDeleteOrders: false,
         canCancelOrders: false,

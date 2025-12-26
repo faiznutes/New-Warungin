@@ -624,7 +624,6 @@ const activeAddons = computed({
     const result = getActiveAddons();
     // Triple-check: ensure computed property always returns array
     if (!Array.isArray(result)) {
-      _activeAddons.value = [];
       return [];
     }
     return result;

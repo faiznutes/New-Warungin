@@ -418,7 +418,7 @@
   <!-- Order Edit Modal -->
   <OrderEditModal
     :show="showEditModal"
-    :order="editingOrder as Order | null"
+    :order="(editingOrder as Order | null)"
     @close="showEditModal = false; editingOrder = null"
     @saved="handleOrderSaved"
   />

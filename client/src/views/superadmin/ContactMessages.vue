@@ -491,7 +491,7 @@ const formatDate = (date: string | Date) => {
 
 // Auto-refresh untuk pesan baru - hanya refresh jika ada pesan baru
 let refreshInterval: NodeJS.Timeout | null = null;
-let previousUnreadCount = ref(0);
+const previousUnreadCount = ref(0);
 
 const checkForNewMessages = async () => {
   try {

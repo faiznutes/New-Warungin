@@ -1234,7 +1234,7 @@ const loadActiveAddons = async () => {
     const addonsData = response.data?.data || response.data || [];
     // Filter to only show active addons (status === 'active' and not expired)
     const now = new Date();
-    let filteredAddons = (Array.isArray(addonsData) ? addonsData : []).filter((addon: any) => {
+    const filteredAddons = (Array.isArray(addonsData) ? addonsData : []).filter((addon: any) => {
       // Ensure status exists and is 'active'
       if (addon.status && addon.status !== 'active') return false;
       // If no status field, assume active if not expired
