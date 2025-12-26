@@ -1,6 +1,6 @@
 <template>
   <!-- Simple POS Mode -->
-  <div v-if="isSimpleMode" class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+  <div v-if="isSimpleMode" class="min-h-screen p-4 bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <!-- Orientation Warning (Portrait) -->
     <div
       v-if="isPortrait"
