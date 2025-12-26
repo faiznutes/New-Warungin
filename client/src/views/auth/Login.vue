@@ -8,7 +8,7 @@
           <div class="mb-8">
             <!-- Logo -->
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                 <span class="material-symbols-outlined text-3xl">storefront</span>
               </div>
               <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h1>
@@ -44,7 +44,7 @@
                 <input
                   id="email"
                   v-model="email"
-                  class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-slate-400 text-base transition-colors"
+                  class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder:text-slate-400 text-base transition-colors"
                   placeholder="nama@bisnisanda.com"
                   required
                   type="email"
@@ -64,7 +64,7 @@
                   id="password"
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'"
-                  class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-slate-400 text-base transition-colors"
+                  class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder:text-slate-400 text-base transition-colors"
                   placeholder="••••••••"
                   required
                 />
@@ -86,13 +86,13 @@
                       id="remember-me"
                       v-model="rememberMe"
                       type="checkbox"
-                      class="h-4 w-4 text-primary focus:ring-primary border-slate-300 rounded"
+                      class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded"
                     />
                     <label for="remember-me" class="ml-2 block text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
                       Ingat Saya
                     </label>
                 </div>
-                <router-link to="/forgot-password" class="text-sm font-medium text-primary hover:text-blue-600 transition-colors">
+                <router-link to="/forgot-password" class="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
                     Lupa Kata Sandi?
                 </router-link>
             </div>
@@ -101,7 +101,7 @@
             <button
               type="submit"
               :disabled="loading"
-              class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               <span v-else>Masuk Dashboard</span>

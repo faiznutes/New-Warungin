@@ -5,7 +5,7 @@
     <header class="w-full border-b border-white/50 bg-white/50 backdrop-blur-sm px-6 py-4 dark:border-slate-800 dark:bg-slate-900/80 sticky top-0 z-50">
       <div class="mx-auto flex max-w-7xl items-center justify-between">
         <router-link to="/" class="flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white">
             <span class="material-symbols-outlined text-[20px]">storefront</span>
           </div>
           <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
@@ -20,8 +20,8 @@
         <div class="mx-auto flex flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-slate-800 md:flex-row">
           <!-- Image Section (Left) -->
           <div class="relative h-64 w-full bg-slate-200 md:h-auto md:w-5/12">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 mix-blend-normal"></div>
-            <div class="absolute inset-0 bg-primary/10 flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-emerald-600 mix-blend-normal"></div>
+            <div class="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
                  <span class="material-symbols-outlined text-9xl text-white/20">lock_reset</span>
              </div>
           </div>
@@ -29,7 +29,7 @@
           <!-- Content Section (Right) -->
           <div class="flex flex-col justify-center p-8 md:w-7/12 md:p-12">
             <!-- Icon -->
-            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-slate-700 dark:text-blue-400">
+            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-slate-700 dark:text-blue-400">
               <span class="material-symbols-outlined text-[32px]">lock_reset</span>
             </div>
             <!-- Text Content -->
@@ -41,7 +41,7 @@
             </p>
             <!-- Actions -->
             <div class="flex flex-col gap-4">
-              <router-link to="/contact" class="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-hover focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-800 shadow-md hover:shadow-lg">
+              <router-link to="/contact" class="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 text-sm font-semibold text-white transition-all hover:bg-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 shadow-md hover:shadow-lg">
                 <span class="material-symbols-outlined text-[20px]">support_agent</span>
                 <span>Hubungi Bantuan</span>
               </router-link>
