@@ -30,9 +30,9 @@
       </div>
       <div
         v-else-if="isSyncing"
-        class="mb-2 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-xl flex items-center gap-2"
+        class="mb-2 p-3 bg-blue-100 border-l-4 border-emerald-500 rounded-xl flex items-center gap-2"
       >
-        <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
         <span class="text-sm font-semibold text-blue-800">Syncing... ({{ pendingSyncCount }} pending)</span>
       </div>
       <div
@@ -61,7 +61,7 @@
               @click="selectedCategory = category"
               class="w-full py-6 px-4 text-lg font-bold rounded-xl transition-all"
               :class="selectedCategory === category 
-                ? 'bg-blue-600 text-white shadow-lg scale-105' 
+                ? 'bg-emerald-500 text-white shadow-lg scale-105' 
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'"
             >
               {{ category === 'SEMUA' ? 'ALL' : (category || 'ALL') }}
@@ -73,7 +73,7 @@
         <div class="bg-white rounded-xl shadow-md p-4 overflow-y-auto">
           <h2 class="text-xl font-bold text-gray-900 mb-4 text-center">PRODUCTS</h2>
           <div v-if="loading" class="flex items-center justify-center py-12">
-            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
           <div v-else-if="filteredProductsSimple.length === 0" class="text-center py-12 text-gray-500">
             <p>No products found</p>
@@ -89,7 +89,7 @@
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                 : isInCart(product.id)
                   ? 'bg-green-500 text-white shadow-lg'
-                  : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md'"
+                  : 'bg-emerald-500 text-white hover:bg-emerald-500 shadow-md'"
             >
               <div class="text-3xl mb-2">{{ product.emoji || '📦' }}</div>
               <div class="text-sm font-semibold">{{ product.name }}</div>
@@ -143,7 +143,7 @@
           <div class="border-t-2 border-gray-300 pt-4 mb-4">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xl font-bold text-gray-700">TOTAL:</span>
-              <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(total) }}</span>
+              <span class="text-2xl font-bold text-emerald-500">{{ formatCurrency(total) }}</span>
             </div>
           </div>
 
@@ -217,7 +217,7 @@
             <button
               @click="processPaymentSimple('QRIS')"
               :disabled="cart.length === 0 || processing || showCashInput"
-              class="w-full py-6 bg-blue-600 text-white rounded-xl font-bold text-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full py-6 bg-emerald-500 text-white rounded-xl font-bold text-xl hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               📱 QRIS
             </button>

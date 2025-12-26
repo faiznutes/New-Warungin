@@ -103,14 +103,14 @@
 
         <!-- Shift Info -->
         <div v-if="order.storeShift" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-          <p class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1.5 flex items-center gap-1.5">
+          <p class="text-xs font-bold text-emerald-600 dark:text-blue-300 mb-1.5 flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[14px]">schedule</span>
             Shift {{ order.storeShift.shiftType?.charAt(0).toUpperCase() + order.storeShift.shiftType?.slice(1) }}
           </p>
-          <p class="text-xs text-blue-600 dark:text-blue-400">
+          <p class="text-xs text-emerald-500 dark:text-blue-400">
             Opened by: {{ order.storeShift.opener?.name || 'Unknown' }}
           </p>
-          <p class="text-xs text-blue-600 dark:text-blue-400">
+          <p class="text-xs text-emerald-500 dark:text-blue-400">
             Time: {{ formatDateTime(order.storeShift.openedAt) }}
           </p>
         </div>
@@ -159,7 +159,7 @@
           <button
             v-if="order.kitchenStatus === 'READY'"
             @click="updateStatus(order.id, 'SERVED')"
-            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 font-semibold text-sm flex items-center justify-center gap-2"
+            class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 font-semibold text-sm flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-[18px]">local_shipping</span>
             Served

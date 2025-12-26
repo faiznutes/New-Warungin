@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Export Report</span>
@@ -116,7 +116,7 @@
                     type="checkbox"
                     :checked="selectedSubscriptions.length === paginatedSubscriptions.length && paginatedSubscriptions.length > 0"
                     @change="toggleSelectAllSubscriptions"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
@@ -138,13 +138,13 @@
                     type="checkbox"
                     :value="sub.id"
                     v-model="selectedSubscriptions"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <router-link
                     :to="`/app/tenants/${sub.tenantId}`"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                    class="text-sm font-medium text-emerald-500 hover:text-blue-800 hover:underline"
                   >
                     {{ sub.tenantName }}
                   </router-link>
@@ -172,7 +172,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="editSubscription(sub)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
+                      class="p-2 text-emerald-500 hover:bg-blue-50 rounded-xl transition"
                       title="Edit"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,7 +272,7 @@
                     type="checkbox"
                     :checked="selectedAddons.length === paginatedAddons.length && paginatedAddons.length > 0"
                     @change="toggleSelectAllAddons"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
@@ -294,13 +294,13 @@
                     type="checkbox"
                     :value="addon.id"
                     v-model="selectedAddons"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <router-link
                     :to="`/app/tenants/${addon.tenantId}`"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                    class="text-sm font-medium text-emerald-500 hover:text-blue-800 hover:underline"
                   >
                     {{ addon.tenantName }}
                   </router-link>
@@ -328,7 +328,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       @click="editAddon(addon)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
+                      class="p-2 text-emerald-500 hover:bg-blue-50 rounded-xl transition"
                       title="Edit"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -482,7 +482,7 @@
               </button>
               <button
                 @click="saveSubscriptionPurchasedBy"
-                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition"
               >
                 Simpan
               </button>
@@ -572,7 +572,7 @@
               </button>
               <button
                 @click="saveAddonPurchasedBy"
-                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition"
               >
                 Simpan
               </button>
@@ -652,7 +652,7 @@
                     type="checkbox"
                     :checked="editingSubscription.purchasedBy === 'ADMIN'"
                     disabled
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                   <span class="text-sm text-gray-900 font-medium">
                     {{ editingSubscription.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
@@ -673,7 +673,7 @@
               </button>
               <button
                 @click="updateSubscription"
-                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition"
               >
                 Simpan Perubahan
               </button>
@@ -730,7 +730,7 @@
                     type="checkbox"
                     :checked="editingAddon.purchasedBy === 'ADMIN'"
                     disabled
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    class="rounded border-gray-300 text-emerald-500 focus:ring-blue-500"
                   />
                   <span class="text-sm text-gray-900 font-medium">
                     {{ editingAddon.purchasedBy === 'ADMIN' ? 'Admin' : 'Sendiri' }}
@@ -751,7 +751,7 @@
               </button>
               <button
                 @click="updateAddon"
-                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition"
+                class="px-4 py-2 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition"
               >
                 Simpan Perubahan
               </button>
@@ -820,7 +820,7 @@
               <button
                 @click="createAdmin"
                 :disabled="!addAdminForm.name || !addAdminForm.email || !addAdminForm.password || addAdminForm.password.length < 8"
-                class="px-4 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-4 py-2 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Buat Admin
               </button>
