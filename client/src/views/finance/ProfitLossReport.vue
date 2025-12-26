@@ -24,7 +24,7 @@
         </div>
         <button
           @click="exportReport"
-          class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition font-medium text-sm"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-xl text-sm font-medium shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">download</span>
           <span>Export PDF</span>
@@ -34,7 +34,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium text-sm">Loading report...</div>
     </div>
 
@@ -99,7 +99,7 @@
           <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.grossProfit) }}</p>
           <div class="mt-2 flex items-center gap-1 text-xs text-[#4c739a]">
             <span>Margin:</span>
-            <span class="font-bold text-[#137fec]">{{ profitLoss.grossProfitMargin.toFixed(1) }}%</span>
+            <span class="font-bold text-emerald-600">{{ profitLoss.grossProfitMargin.toFixed(1) }}%</span>
           </div>
         </div>
 
@@ -163,7 +163,7 @@
           <div class="p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center mb-1">
               <span class="text-base font-extrabold text-[#0d141b] dark:text-white">Gross Profit</span>
-              <span class="text-lg font-extrabold text-[#137fec]">{{ formatCurrency(profitLoss.grossProfit) }}</span>
+              <span class="text-lg font-extrabold text-emerald-600">{{ formatCurrency(profitLoss.grossProfit) }}</span>
             </div>
             <div class="text-xs text-[#4c739a]">
               Gross Profit Margin: <span class="font-bold text-[#0d141b] dark:text-white">{{ profitLoss.grossProfitMargin.toFixed(2) }}%</span>
@@ -180,7 +180,7 @@
           </div>
 
           <!-- Net Profit -->
-          <div class="p-6 bg-[#137fec]/5 dark:bg-[#137fec]/10 rounded-xl border-2 border-[#137fec]/20">
+          <div class="p-6 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl border-2 border-emerald-500/20">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xl font-extrabold text-[#0d141b] dark:text-white">Net Profit</span>
               <span 

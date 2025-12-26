@@ -9,14 +9,14 @@
       <div class="flex items-center gap-3">
         <button
           @click="showPeriodModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary text-[#4c739a] dark:text-slate-400 rounded-xl text-sm font-medium transition-all bg-white dark:bg-slate-800 shadow-sm"
+          class="flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 text-[#4c739a] dark:text-slate-400 rounded-xl text-sm font-medium transition-all bg-white dark:bg-slate-800 shadow-sm"
         >
           <span class="material-symbols-outlined text-[20px]">calendar_today</span>
           <span>Select Period</span>
         </button>
         <button
           @click="exportFinancialReport"
-          class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-blue-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">file_download</span>
           <span>Export Report</span>
@@ -27,7 +27,7 @@
     <!-- Financial Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Total Revenue -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Revenue</p>
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Total Expenses -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Expenses</p>
@@ -67,7 +67,7 @@
       </div>
 
       <!-- Net Profit -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Profit</p>
@@ -84,7 +84,7 @@
       </div>
 
       <!-- Profit Margin -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-primary/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Profit Margin</p>
@@ -108,14 +108,14 @@
         <button
           @click="activeTab = 'balance-sheet'"
           class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
-          :class="activeTab === 'balance-sheet' ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
+          :class="activeTab === 'balance-sheet' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
         >
           Balance Sheet
         </button>
         <button
           @click="activeTab = 'cash-flow'"
           class="pb-4 text-sm font-bold border-b-2 transition-all px-2 relative"
-          :class="activeTab === 'cash-flow' ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
+          :class="activeTab === 'cash-flow' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-[#4c739a] hover:text-[#0d141b]'"
         >
           Cash Flow
         </button>
@@ -146,7 +146,7 @@
               </div>
               <div class="flex justify-between items-center pt-3 mt-2">
                 <span class="font-bold text-[#0d141b] dark:text-white">Total Assets</span>
-                <span class="font-bold text-primary text-lg">{{ formatCurrency(balanceSheet.totalAssets) }}</span>
+                <span class="font-bold text-emerald-600 text-lg">{{ formatCurrency(balanceSheet.totalAssets) }}</span>
               </div>
             </div>
           </div>
@@ -168,7 +168,7 @@
               </div>
               <div class="flex justify-between items-center pt-3 mt-2">
                 <span class="font-bold text-[#0d141b] dark:text-white">Total Pasiva</span>
-                <span class="font-bold text-[#137fec] text-lg">{{ formatCurrency(balanceSheet.totalLiabilities) }}</span>
+                <span class="font-bold text-emerald-600 text-lg">{{ formatCurrency(balanceSheet.totalLiabilities) }}</span>
               </div>
             </div>
           </div>
@@ -183,7 +183,7 @@
                  <span class="material-symbols-outlined text-blue-500">work</span>
                  Aktivitas Operasi
                </h4>
-               <span class="font-bold text-[#137fec]">{{ formatCurrency(cashFlow.operating.net) }}</span>
+               <span class="font-bold text-emerald-600">{{ formatCurrency(cashFlow.operating.net) }}</span>
              </div>
              <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
                 <div class="flex justify-between items-center text-sm ml-8">
@@ -204,7 +204,7 @@
                  <span class="material-symbols-outlined text-purple-500">trending_up</span>
                  Aktivitas Investasi
                </h4>
-               <span class="font-bold" :class="cashFlow.investing.net >= 0 ? 'text-[#137fec]' : 'text-[#4c739a]'">{{ formatCurrency(cashFlow.investing.net) }}</span>
+               <span class="font-bold" :class="cashFlow.investing.net >= 0 ? 'text-emerald-600' : 'text-[#4c739a]'">{{ formatCurrency(cashFlow.investing.net) }}</span>
              </div>
              <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
                 <div class="flex justify-between items-center text-sm ml-8">
@@ -221,7 +221,7 @@
                  <span class="material-symbols-outlined text-orange-500">attach_money</span>
                  Aktivitas Pendanaan
                </h4>
-               <span class="font-bold text-[#137fec]">{{ formatCurrency(cashFlow.financing.net) }}</span>
+               <span class="font-bold text-emerald-600">{{ formatCurrency(cashFlow.financing.net) }}</span>
              </div>
              <div class="p-6 space-y-3 bg-white dark:bg-slate-800">
                <div class="flex justify-between items-center text-sm ml-8">
@@ -232,9 +232,9 @@
           </div>
 
           <!-- Total -->
-          <div class="bg-[#137fec]/10 border border-[#137fec]/20 rounded-xl p-5 flex justify-between items-center">
+          <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 flex justify-between items-center">
              <span class="font-bold text-[#0d141b] dark:text-white text-lg">Net Cash Flow</span>
-             <span class="font-bold text-2xl" :class="cashFlow.total >= 0 ? 'text-[#137fec]' : 'text-red-500'">{{ formatCurrency(cashFlow.total) }}</span>
+             <span class="font-bold text-2xl" :class="cashFlow.total >= 0 ? 'text-emerald-600' : 'text-red-500'">{{ formatCurrency(cashFlow.total) }}</span>
           </div>
         </div>
       </div>
@@ -261,7 +261,7 @@
               <input
                 v-model="periodForm.startDate"
                 type="date"
-                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
               />
             </div>
             <div>
@@ -269,7 +269,7 @@
               <input
                 v-model="periodForm.endDate"
                 type="date"
-                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
               />
             </div>
             
@@ -282,7 +282,7 @@
               </button>
               <button
                 @click="loadFinancialData"
-                class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+                class="flex-1 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
               >
                 Terapkan
               </button>
