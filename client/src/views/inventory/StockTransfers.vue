@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showTransferModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Transfer</span>
@@ -22,7 +22,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Source Store</label>
           <select
             v-model="filters.fromStore"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -34,7 +34,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination Store</label>
           <select
             v-model="filters.toStore"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="">All Stores</option>
             <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -46,7 +46,7 @@
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status</label>
           <select
             v-model="filters.status"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -60,7 +60,7 @@
           <input
             v-model="filters.date"
             type="date"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           />
         </div>
       </div>
@@ -86,7 +86,7 @@
             <tr v-if="loading">
               <td colspan="8" class="px-6 py-12 text-center">
                 <div class="flex items-center justify-center gap-3">
-                  <div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
                   <span class="text-slate-500">Loading data...</span>
                 </div>
               </td>
@@ -188,7 +188,7 @@
       >
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-primary/10 text-primary rounded-xl">
+            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
               <span class="material-symbols-outlined">swap_horiz</span>
             </div>
             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Add Stock Transfer</h2>
@@ -199,7 +199,7 @@
               <select
                 v-model="transferForm.fromStoreId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               >
                 <option value="">Select Source Store</option>
                 <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -212,7 +212,7 @@
               <select
                 v-model="transferForm.toStoreId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               >
                 <option value="">Select Destination Store</option>
                 <option v-for="store in stores" :key="store.id" :value="store.id">
@@ -225,7 +225,7 @@
               <select
                 v-model="transferForm.productId"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               >
                 <option value="">Select Product</option>
                 <option v-for="product in products" :key="product.id" :value="product.id">
@@ -236,11 +236,9 @@
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Quantity</label>
               <input
-                v-model.number="transferForm.quantity"
-                type="number"
                 min="1"
                 required
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
             <div>
@@ -248,7 +246,7 @@
               <textarea
                 v-model="transferForm.notes"
                 rows="3"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
               ></textarea>
             </div>
             <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
@@ -261,7 +259,7 @@
               </button>
               <button
                 type="submit"
-                class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium shadow-lg shadow-primary/30"
+                class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30"
               >
                 Save
               </button>
