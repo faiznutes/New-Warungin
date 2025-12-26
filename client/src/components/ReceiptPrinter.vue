@@ -80,7 +80,7 @@
           class="w-full max-w-[400px] bg-white relative z-10 shadow-receipt rounded-2xl overflow-hidden transition-all duration-300"
           :class="{
             'receipt-50mm': selectedPaperSize === '50mm',
-            'receipt-80mm': selectedPaperSize === '85mm' || selectedPaperSize === '80mm',
+            'receipt-80mm': selectedPaperSize === '85mm',
           }"
         >
           <div v-if="receiptData && template" class="receipt-content">
@@ -214,7 +214,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { Teleport } from 'vue';
 import api from '../api';
-import { formatCurrency, formatDateTime } from '../utils/formatters';
+import { formatCurrency } from '../utils/formatters';
 import { useNotification } from '../composables/useNotification';
 
 const { warning, success } = useNotification();
