@@ -2,131 +2,135 @@
   <Teleport to="body">
     <div
       v-if="show"
-      class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 transition-all"
       @click.self="handleCancel"
     >
-    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 font-display">
       <!-- Header -->
-      <div class="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+      <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
         <div>
-          <h3 class="text-xl font-bold text-gray-900">{{ title }}</h3>
-          <p class="text-sm text-gray-500 mt-1">{{ subtitle }}</p>
+          <h3 class="text-xl font-bold text-slate-900">{{ title }}</h3>
+          <p class="text-sm text-slate-500 mt-1 font-medium">{{ subtitle }}</p>
         </div>
         <button
           @click="handleCancel"
-          class="text-gray-400 hover:text-gray-600 transition p-2"
+          class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition shadow-sm"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <span class="material-symbols-outlined text-[24px]">close</span>
         </button>
       </div>
 
       <!-- Filters -->
-      <div class="p-4 border-b border-gray-200 bg-gray-50">
+      <div class="p-5 border-b border-slate-100 bg-white">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <!-- Search -->
           <div class="md:col-span-2">
             <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
               <input
                 v-model="filters.search"
                 type="text"
-                placeholder="Cari produk..."
-                class="block w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Search products..."
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
               />
             </div>
           </div>
 
           <!-- Category Filter -->
-          <div>
+          <div class="relative">
             <select
               v-model="filters.category"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
-              <option value="">Semua Kategori</option>
+              <option value="">All Categories</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
             </select>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
           </div>
 
           <!-- Sort Filter -->
-          <div>
+          <div class="relative">
             <select
               v-model="filters.sortBy"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
-              <option value="name">Nama A-Z</option>
-              <option value="name-desc">Nama Z-A</option>
-              <option value="price-asc">Harga: Murah ke Mahal</option>
-              <option value="price-desc">Harga: Mahal ke Murah</option>
-              <option value="stock">Stok: Banyak ke Sedikit</option>
+              <option value="name">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="stock">Stock: High to Low</option>
             </select>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">sort</span>
           </div>
         </div>
 
         <!-- Selected Count -->
-        <div class="mt-3 flex items-center justify-between">
-          <div class="text-sm text-gray-600">
-            <span class="font-medium">{{ selectedProducts.length }}</span> produk dipilih
-            <span v-if="filteredProducts.length > 0" class="text-gray-400">
-              dari {{ filteredProducts.length }} produk tersedia
+        <div class="mt-4 flex items-center justify-between">
+          <div class="text-sm text-slate-600 font-medium">
+            <span class="text-emerald-600 font-bold">{{ selectedProducts.length }}</span> selected
+            <span v-if="filteredProducts.length > 0" class="text-slate-400">
+              from {{ filteredProducts.length }} available
             </span>
           </div>
           <button
             v-if="selectedProducts.length > 0"
             @click="clearSelection"
-            class="text-sm text-red-600 hover:text-red-700"
+            class="text-xs font-bold text-red-500 hover:text-red-700 hover:underline transition"
           >
-            Hapus Semua Pilihan
+            Clear Selection
           </button>
         </div>
       </div>
 
       <!-- Product List -->
-      <div class="flex-1 overflow-y-auto p-4">
-        <div v-if="loading" class="flex items-center justify-center py-12">
-          <div class="flex flex-col items-center">
-            <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <div class="text-gray-600 font-medium">Memuat produk...</div>
+      <div class="flex-1 overflow-y-auto p-5 bg-slate-50 custom-scrollbar">
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+          <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div class="text-slate-500 font-medium animate-pulse">Loading products...</div>
+        </div>
+
+        <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20">
+          <div class="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mb-4">
+             <span class="material-symbols-outlined text-[40px] text-slate-400">inventory_2</span>
           </div>
+          <p class="text-slate-500 font-medium">No products found</p>
         </div>
 
-        <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-12">
-          <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <p class="text-gray-500">Tidak ada produk ditemukan</p>
-        </div>
-
-        <div v-else class="space-y-2">
+        <div v-else class="space-y-3">
           <label
             v-for="product in filteredProducts"
             :key="product.id"
-            class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-xl cursor-pointer border border-transparent hover:border-gray-200 transition"
-            :class="{ 'bg-primary-50 border-primary-200': isSelected(product.id) }"
+            class="flex items-center gap-4 p-4 bg-white hover:bg-slate-50 rounded-2xl cursor-pointer border-2 transition-all duration-200 group"
+            :class="isSelected(product.id) ? 'border-emerald-500 shadow-md shadow-emerald-500/10' : 'border-transparent hover:border-slate-200 shadow-sm'"
           >
+            <div 
+               class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors"
+               :class="isSelected(product.id) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 group-hover:border-emerald-400'"
+            >
+               <span v-if="isSelected(product.id)" class="material-symbols-outlined text-white text-[16px]">check</span>
+            </div>
+            
             <input
               type="checkbox"
               :checked="isSelected(product.id)"
               @change="toggleProduct(product.id)"
-              class="mt-1 w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+              class="hidden"
             />
+            
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-gray-900">{{ product.name }}</p>
-                  <div class="mt-1 flex items-center gap-3 text-xs text-gray-500">
-                    <span v-if="product.category">{{ product.category }}</span>
-                    <span class="font-semibold text-primary-600">{{ formatCurrency(product.price) }}</span>
-                    <span :class="product.stock > 0 ? 'text-green-600' : 'text-red-600'">
-                      Stok: {{ product.stock }}
+                <div>
+                  <p class="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{{ product.name }}</p>
+                  <div class="mt-1 flex items-center gap-3 text-xs font-medium text-slate-500">
+                    <span v-if="product.category" class="bg-slate-100 px-2 py-0.5 rounded-md">{{ product.category }}</span>
+                    <span :class="product.stock > 0 ? 'text-emerald-600' : 'text-red-500'">
+                      Stock: {{ product.stock }}
                     </span>
                   </div>
                 </div>
+                <span class="font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                   {{ formatCurrency(product.price) }}
+                </span>
               </div>
             </div>
           </label>
@@ -134,28 +138,29 @@
       </div>
 
       <!-- Footer -->
-      <div class="p-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-        <div class="text-sm text-gray-600">
-          <span class="font-medium">{{ selectedProducts.length }}</span> produk dipilih
+      <div class="p-6 bg-white border-t border-slate-100 flex items-center justify-between gap-4 sticky bottom-0 z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
+        <div class="text-sm font-bold text-slate-600 hidden sm:block">
+          <span class="text-emerald-600 text-lg">{{ selectedProducts.length }}</span> items selected
         </div>
-        <div class="flex space-x-3">
+        <div class="flex flex-1 sm:flex-none gap-3">
           <button
             @click="handleCancel"
-            class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+            class="flex-1 sm:w-32 px-4 py-3 border border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition"
           >
-            Batal
+            Cancel
           </button>
           <button
             @click="handleConfirm"
             :disabled="selectedProducts.length === 0"
-            class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 sm:w-48 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2"
           >
-            Konfirmasi ({{ selectedProducts.length }})
+            <span class="material-symbols-outlined text-[20px]">check</span>
+            <span>Confirm ({{ selectedProducts.length }})</span>
           </button>
         </div>
       </div>
     </div>
-  </div>
+    </div>
   </Teleport>
 </template>
 
@@ -181,8 +186,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: 'Pilih Produk',
-  subtitle: 'Pilih produk yang ingin ditambahkan',
+  title: 'Select Products',
+  subtitle: 'Choose products to add',
   selectedProductIds: () => [],
   allowMultiple: true,
 });
@@ -310,4 +315,3 @@ onMounted(() => {
   }
 });
 </script>
-

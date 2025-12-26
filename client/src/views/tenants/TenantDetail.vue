@@ -460,8 +460,7 @@
             </div>
             
             <div v-else-if="tenantStores.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">store_off</span>
-               <p class="text-[#4c739a] dark:text-slate-400 font-medium">Belum ada store</p>
+               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">domain_disabled</span>
             </div>
             
             <div v-else class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">

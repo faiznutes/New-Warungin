@@ -235,298 +235,336 @@
   </div>
 
   <!-- Normal POS Mode -->
-  <div v-else class="flex flex-col h-full bg-white">
-    <!-- Offline Status Indicator -->
-    <div
-      v-if="!isOnline"
-      class="px-4 py-2 bg-white border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-2"
-    >
-      <span class="material-symbols-outlined text-yellow-600">wifi_off</span>
-      <span class="text-sm font-semibold text-yellow-800">You are offline — transactions will be synced later</span>
-    </div>
-    <div
-      v-else-if="isSyncing"
-      class="px-4 py-2 bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2"
-    >
-      <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <span class="text-sm font-semibold text-blue-800">Syncing... ({{ pendingSyncCount }} pending)</span>
-    </div>
-    <div
-      v-else-if="pendingSyncCount > 0"
-      class="px-4 py-2 bg-white border border-slate-100 dark:border-slate-700 flex items-center justify-center gap-2"
-    >
-      <span class="material-symbols-outlined text-green-600">cloud_done</span>
-      <span class="text-sm font-semibold text-green-800">Sync complete! ({{ pendingSyncCount }} pending)</span>
-       <RouterLink
-        to="/app/pos/failed-syncs"
-        class="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-medium hover:bg-yellow-200 transition"
-      >
-        View Failed Syncs
-      </RouterLink>
-    </div>
-
-    <!-- Store Selector (Hanya untuk SUPERVISOR) -->
-    <div v-if="authStore.user?.role === 'SUPERVISOR'" class="px-8 pt-6">
-      <StoreSelector @store-changed="handleStoreChange" />
-    </div>
-    
-    <!-- Header Section -->
-    <div class="px-8 pt-8 pb-6">
-      <div class="flex flex-col gap-1">
-        <h2 class="text-3xl font-bold text-[#0d141b] tracking-tight">Point of Sale</h2>
-        <p class="text-[#4c739a]">Process transactions and manage daily sales</p>
-      </div>
-    </div>
-
-    <div class="flex flex-col lg:flex-row gap-8 h-full px-8 pb-8 overflow-hidden">
-      <!-- Product Grid -->
-      <div class="flex-1 bg-white rounded-xl shadow-sm border border-slate-100 p-6 overflow-hidden flex flex-col">
-        <!-- Search Section -->
-        <div class="mb-6 flex-shrink-0">
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">search</span>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search products..."
-              class="block w-full pl-10 pr-4 py-3 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 focus:bg-white transition-all"
-            />
-          </div>
+  <!-- Normal POS Mode (V3 Reskin) -->
+  <div v-else class="bg-slate-50 text-slate-900 font-display overflow-hidden h-screen w-screen flex flex-col relative">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-6 relative z-30 shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <span class="material-symbols-outlined text-white text-2xl">point_of_sale</span>
         </div>
-
-        <div v-if="loading" class="flex items-center justify-center py-20">
-          <div class="flex flex-col items-center">
-             <div class="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-             <span class="text-[#4c739a] font-medium">Loading products...</span>
-          </div>
-        </div>
-
-        <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20 text-[#4c739a]">
-           <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">search_off</span>
-          <p>No products found</p>
-        </div>
-
-        <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-2">
-          <div
-            v-for="product in filteredProducts"
-            :key="product.id"
-            @click="addToCart(product)"
-            class="group relative bg-white border border-slate-100 rounded-xl p-4 cursor-pointer hover:border-primary hover:shadow-sm-hover transition-all duration-200"
-            :class="{ 'ring-2 ring-primary ring-offset-2': isInCart(product.id) }"
-          >
-            <div class="text-center">
-              <div class="w-16 h-16 bg-slate-50 rounded-xl mx-auto mb-3 flex items-center justify-center overflow-hidden group-hover:bg-slate-100 transition-colors">
-                <img v-if="product.image" :src="product.image" :alt="product.name" class="w-full h-full object-cover" />
-                <span v-else-if="product.emoji" class="text-4xl">{{ product.emoji }}</span>
-                <span v-else class="material-symbols-outlined text-3xl text-slate-300">image</span>
-              </div>
-              <h3 class="font-bold text-sm text-[#0d141b] mb-1 truncate px-1">{{ product.name }}</h3>
-              <p class="text-base font-bold text-primary mb-1">{{ formatCurrency(product.price) }}</p>
-              <div class="flex justify-center">
-                 <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-[#4c739a]">
-                   Stock: {{ product.stock }}
-                 </span>
-              </div>
-            </div>
-            
-            <!-- Added Indicator -->
-            <div v-if="isInCart(product.id)" class="absolute top-2 right-2 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center shadow-md">
-              <span class="material-symbols-outlined text-[14px] font-bold">check</span>
-            </div>
+        <div class="hidden md:block">
+          <h1 class="text-xl font-bold text-slate-900 leading-tight">Warungin POS</h1>
+          <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+             <span class="w-2 h-2 rounded-full" :class="isOnline ? 'bg-emerald-500' : 'bg-red-500'"></span>
+             {{ authStore.user?.tenantName || 'Main Store' }}
           </div>
         </div>
       </div>
 
-      <!-- Cart Sidebar -->
-      <div class="w-full lg:w-[400px] bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col flex-shrink-0 h-full">
-        <div class="mb-6 flex justify-between items-center flex-shrink-0">
-          <div>
-             <h2 class="text-xl font-bold text-[#0d141b]">Current Order</h2>
-             <p class="text-sm text-[#4c739a]">{{ cart.length }} items</p>
-          </div>
-          <button
-            @click="clearCart"
-            :disabled="cart.length === 0"
-            class="text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Clear All
-          </button>
-        </div>
-
-        <!-- Cart Items -->
-        <div class="flex-1 overflow-y-auto mb-4 pr-1">
-          <div v-if="cart.length === 0" class="flex flex-col items-center justify-center h-full text-slate-400 py-10">
-            <span class="material-symbols-outlined text-6xl mb-4 text-slate-200">shopping_cart</span>
-            <p>Cart is empty</p>
-            <p class="text-xs mt-1">Select products to start order</p>
-          </div>
-
-          <div v-else class="space-y-3">
-            <div
-              v-for="item in cart"
-              :key="item.id"
-              class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 group hover:border-slate-200 transition-colors"
-            >
-              <div class="w-12 h-12 bg-white rounded-xl border border-slate-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-cover" />
-                <span v-else-if="item.emoji" class="text-2xl">{{ item.emoji }}</span>
-                <span v-else class="material-symbols-outlined text-slate-300">image</span>
-              </div>
-              
-              <div class="flex-1 min-w-0">
-                <h4 class="font-bold text-[#0d141b] truncate text-sm">{{ item.name }}</h4>
-                <p class="text-xs text-[#4c739a] font-medium">{{ formatCurrency(item.price) }}</p>
-              </div>
-
-              <!-- Qty Controls -->
-              <div class="flex items-center gap-2 bg-white rounded-xl border border-slate-200 p-1">
-                <button
-                  @click="decreaseQuantity(item.id)"
-                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-[#4c739a] transition"
-                >
-                  <span class="material-symbols-outlined text-[16px]">remove</span>
-                </button>
-                <span class="w-6 text-center text-sm font-bold text-[#0d141b]">{{ item.quantity }}</span>
-                <button
-                  @click="increaseQuantity(item.id)"
-                  class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-[#4c739a] transition"
-                >
-                  <span class="material-symbols-outlined text-[16px]">add</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Customer/Member Info -->
-        <div class="mb-4 p-4 bg-slate-50 rounded-xl border border-slate-100 flex-shrink-0">
-          <div class="flex gap-2 mb-3 bg-slate-200/50 p-1 rounded-xl">
-            <button
-              @click="switchCustomerType('customer')"
-              :class="[
-                'flex-1 py-1.5 text-xs font-bold rounded-md transition-all',
-                customerType === 'customer'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-[#4c739a] hover:text-[#0d141b]'
-              ]"
-            >
-              Customer
-            </button>
-            <button
-              @click="switchCustomerType('member')"
-              :class="[
-                'flex-1 py-1.5 text-xs font-bold rounded-md transition-all',
-                customerType === 'member'
-                  ? 'bg-white text-primary shadow-sm'
-                  : 'text-[#4c739a] hover:text-[#0d141b]'
-              ]"
-            >
-              Member
-            </button>
-          </div>
-          
-          <div v-if="customerType === 'customer'" class="flex gap-2">
-            <div class="relative flex-1">
-               <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">person</span>
-               <input
-                v-model="customerInput"
-                type="text"
-                placeholder="Customer Name (Optional)"
-                class="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary bg-white"
-                @blur="handleCustomerInput"
-              />
-            </div>
-            <button
-              @click="clearCustomer"
-              v-if="customerInput"
-              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition"
-            >
-              <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-          </div>
-
-          <div v-else class="flex gap-2">
-            <select
-              v-model="selectedMemberId"
-              @change="handleMemberSelect"
-              class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary bg-white"
-            >
-              <option value="">Select Member</option>
-              <option
-                v-for="member in members"
-                :key="member.id"
-                :value="member.id"
-              >
-                {{ member.name }} ({{ member.phone }})
-              </option>
-            </select>
-            <button
-              @click="clearCustomer"
-              v-if="selectedMember"
-              class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition"
-            >
-              <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-          </div>
-
-          <!-- Selected Member Badge -->
-          <div v-if="selectedMember" class="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-100 rounded-xl text-xs text-green-700 font-medium">
-             <span class="material-symbols-outlined text-[16px]">verified</span>
-             <span>{{ selectedMember.name }}</span>
-             <span v-if="selectedMember.discountValue" class="ml-auto font-bold bg-green-100 px-1.5 py-0.5 rounded text-green-800">
-               -{{ selectedMember.discountType === 'PERCENTAGE' ? selectedMember.discountValue + '%' : formatCurrency(selectedMember.discountValue) }}
+      <!-- Center: Stats & Clock -->
+      <div class="hidden lg:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+        <div class="flex flex-col items-center">
+             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</span>
+             <span class="text-sm font-bold flex items-center gap-1.5" :class="isOnline ? 'text-emerald-600' : 'text-red-600'">
+               <span class="material-symbols-outlined text-[18px]">{{ isOnline ? 'wifi' : 'wifi_off' }}</span>
+               {{ isOnline ? 'ONLINE' : 'OFFLINE' }}
              </span>
-          </div>
-          <!-- Selected Customer Badge -->
-          <div v-else-if="customerType === 'customer' && customerName" class="mt-3 flex items-center gap-2 p-2 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-700 font-medium">
-             <span class="material-symbols-outlined text-[16px]">person</span>
-             <span>{{ customerName }}</span>
-          </div>
         </div>
-
-        <!-- Kitchen Option -->
-        <div class="mb-4 flex-shrink-0">
-          <label class="flex items-center space-x-2 cursor-pointer select-none group">
-            <input
-              v-model="sendToKitchen"
-              type="checkbox"
-              class="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
-            />
-            <span class="text-sm font-medium text-[#0d141b] group-hover:text-primary transition-colors">Send order to kitchen</span>
-          </label>
-        </div>
-
-        <!-- Summary & Checkout -->
-        <div class="mt-auto flex-shrink-0">
-          <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-sm text-[#4c739a]">Subtotal</span>
-              <span class="text-sm font-semibold text-[#0d141b]">{{ formatCurrency(subtotal) }}</span>
-            </div>
-            <div v-if="estimatedDiscount > 0" class="flex justify-between items-center mb-2">
-              <span class="text-sm text-green-600">Discount</span>
-              <span class="text-sm font-bold text-green-600">-{{ formatCurrency(estimatedDiscount) }}</span>
-            </div>
-            <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-              <span class="text-base font-bold text-[#0d141b]">Total</span>
-              <span class="text-xl font-bold text-primary">{{ formatCurrency(total) }}</span>
-            </div>
-          </div>
-          
-           <button
-            @click="showPaymentModal = true"
-            :disabled="cart.length === 0 || processing"
-            class="w-full py-3.5 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg flex items-center justify-center gap-2"
-          >
-             <span class="material-symbols-outlined">payments</span>
-             <span>Checkout</span>
-             <div v-if="processing" class="ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          </button>
+        <div class="w-px h-8 bg-slate-200"></div>
+        <div class="flex flex-col items-center">
+             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Time</span>
+             <span class="text-sm font-bold text-slate-700 font-mono">{{ currentTime }}</span>
         </div>
       </div>
-    </div>
 
-    <!-- Payment Modal -->
+      <!-- Right: Actions -->
+      <div class="flex items-center gap-3">
+         <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+         </button>
+         <div class="h-10 pl-1 pr-3 bg-slate-50 rounded-xl flex items-center gap-3 border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm">
+              {{ authStore.user?.name?.[0]?.toUpperCase() || 'U' }}
+            </div>
+            <div class="hidden md:block text-left">
+               <p class="text-sm font-bold text-slate-900 leading-none">{{ authStore.user?.name || 'Cashier' }}</p>
+               <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wide mt-0.5">{{ authStore.user?.role || 'Staff' }}</p>
+            </div>
+         </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-hidden flex flex-col lg:grid lg:grid-cols-[90px_1fr_420px] bg-slate-50">
+       <!-- 1. Categories Sidebar -->
+       <aside class="hidden lg:flex flex-col items-center py-6 bg-white border-r border-slate-200 gap-4 overflow-y-auto no-scrollbar">
+          <button 
+            v-for="cat in categories" 
+            :key="cat"
+            @click="selectedCategory = cat === 'SEMUA' ? '' : cat"
+            class="flex flex-col items-center group w-full px-2"
+          >
+             <div 
+               class="w-12 h-12 rounded-xl flex items-center justify-center mb-1.5 transition-all duration-300 relative overflow-hidden"
+               :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-500'"
+             >
+                <span class="material-symbols-outlined text-2xl relative z-10">
+                  {{ cat === 'SEMUA' ? 'apps' : 'category' }}
+                </span>
+             </div>
+             <span 
+               class="text-[10px] font-bold text-center w-full truncate px-1 transition-colors"
+               :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'text-emerald-600' : 'text-slate-400 group-hover:text-emerald-500'"
+             >
+               {{ cat === 'SEMUA' ? 'All' : cat }}
+             </span>
+          </button>
+       </aside>
+
+       <!-- Mobile Categories (Horizontal Scroll) -->
+       <div class="lg:hidden flex overflow-x-auto p-2 gap-2 bg-white border-b border-slate-200 no-scrollbar">
+          <button 
+             v-for="cat in categories"
+             :key="cat"
+             @click="selectedCategory = cat === 'SEMUA' ? '' : cat"
+             class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors"
+             :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'"
+          >
+             {{ cat === 'SEMUA' ? 'All' : cat }}
+          </button>
+       </div>
+
+       <!-- 2. Product Grid Section -->
+       <section class="flex-1 flex flex-col h-full overflow-hidden relative">
+          <!-- Search Bar Sticky -->
+          <div class="p-4 lg:p-6 pb-2 sticky top-0 z-20 bg-slate-50/95 backdrop-blur-sm">
+             <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input 
+                  v-model="searchQuery" 
+                  type="text" 
+                  placeholder="Search menu, sku or barcode..." 
+                  class="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium placeholder:text-slate-400"
+                >
+             </div>
+          </div>
+
+          <!-- Grid -->
+          <div class="flex-1 overflow-y-auto p-4 lg:p-6 pt-2">
+             <div v-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center h-64 text-slate-400">
+                <span class="material-symbols-outlined text-5xl mb-2">search_off</span>
+                <p>No products found</p>
+             </div>
+             <div v-else class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 pb-20 lg:pb-0">
+                <div 
+                  v-for="product in filteredProducts" 
+                  :key="product.id"
+                  @click="addToCart(product)"
+                  class="bg-white rounded-2xl p-3 shadow-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group border border-transparent hover:border-emerald-500/30 overflow-hidden relative"
+                >
+                   <!-- Image -->
+                   <div class="aspect-[4/3] rounded-xl bg-slate-100 mb-3 overflow-hidden relative">
+                      <img 
+                        v-if="product.image" 
+                        :src="product.image" 
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        alt="Product"
+                      >
+                      <div v-else class="w-full h-full flex items-center justify-center text-3xl">
+                        {{ product.emoji || '📦' }}
+                      </div>
+                      
+                      <!-- Add Overlay on Hover -->
+                      <div class="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                            <span class="material-symbols-outlined text-emerald-600 font-bold">add</span>
+                         </div>
+                      </div>
+                      
+                      <!-- Stock Badge -->
+                      <div v-if="product.stock <= 5" class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 shadow-sm backdrop-blur-sm" :class="product.stock === 0 ? 'text-red-500' : 'text-amber-500'">
+                         {{ product.stock === 0 ? 'Out' : `${product.stock} Left` }}
+                      </div>
+                   </div>
+
+                   <!-- Info -->
+                   <div>
+                      <h3 class="font-bold text-slate-800 leading-snug mb-1 line-clamp-2 min-h-[2.5rem]">{{ product.name }}</h3>
+                      <div class="flex items-center justify-between">
+                         <span class="text-emerald-600 font-bold">{{ formatCurrency(product.price) }}</span>
+                      </div>
+                   </div>
+                   
+                   <!-- In Cart Indicator -->
+                   <div v-if="isInCart(product.id)" class="absolute top-3 left-3 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-md z-10">
+                      <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </section>
+
+       <!-- 3. Cart Sidebar -->
+       <aside class="bg-white flex flex-col border-l border-slate-200 h-[40vh] lg:h-full relative shadow-2xl lg:shadow-none z-30">
+          <!-- Cart Header -->
+          <div class="p-5 border-b border-slate-100 bg-white sticky top-0 z-10">
+             <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-extrabold text-slate-800">Current Order</h2>
+                <div class="px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
+                   <span class="text-xs font-bold text-emerald-600">ID #{{ lastOrderReceipt?.orderNumber || 'NEW' }}</span>
+                </div>
+             </div>
+             
+             <!-- Customer Selector (Compact) -->
+             <div class="flex gap-2">
+                 <button 
+                    @click="showCustomerModal = true" 
+                    id="customer-selector-btn" 
+                    class="flex-1 py-2.5 px-3 bg-slate-50 border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 rounded-xl flex items-center justify-between group transition-all"
+                 >
+                    <div class="flex items-center gap-2 overflow-hidden">
+                       <div class="w-6 h-6 rounded-full bg-slate-200 group-hover:bg-emerald-200 flex items-center justify-center text-slate-500 group-hover:text-emerald-600 transition-colors">
+                          <span class="material-symbols-outlined text-sm">person</span>
+                       </div>
+                       <span class="text-sm font-semibold text-slate-600 group-hover:text-emerald-700 truncate">
+                          {{ customerName || selectedMember?.name || 'Walk-in Customer' }}
+                       </span>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500 text-sm">edit</span>
+                 </button>
+                 <!-- Simple toggle or add -->
+                 <button @click="switchCustomerType(customerType === 'customer' ? 'member' : 'customer')" class="w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-emerald-500 transition-colors" title="Switch Type">
+                    <span class="material-symbols-outlined text-xl">swap_horiz</span>
+                 </button>
+             </div>
+             
+             <!-- Customer Input Expansion (Simple implementation) -->
+             <div v-if="showCustomerModal" class="absolute top-full left-0 right-0 p-4 bg-white shadow-xl border-b border-slate-200 z-20">
+                <div class="flex gap-2 mb-2">
+                   <button @click="switchCustomerType('customer')" :class="customerType === 'customer' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Customer</button>
+                   <button @click="switchCustomerType('member')" :class="customerType === 'member' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Member</button>
+                </div>
+                <div v-if="customerType === 'customer'">
+                   <input v-model="customerInput" @blur="handleCustomerInput" placeholder="Name" class="w-full p-2 border rounded-lg text-sm mb-2" />
+                </div>
+                <div v-else>
+                   <select v-model="selectedMemberId" @change="handleMemberSelect" class="w-full p-2 border rounded-lg text-sm mb-2">
+                      <option value="">Select Member</option>
+                      <option v-for="m in members" :key="m.id" :value="m.id">{{ m.name }}</option>
+                   </select>
+                </div>
+                <button @click="showCustomerModal = false" class="w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-bold">Done</button>
+             </div>
+          </div>
+
+          <!-- Cart Items -->
+          <div class="flex-1 overflow-y-auto p-4 space-y-3">
+             <div v-if="cart.length === 0" class="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
+                 <span class="material-symbols-outlined text-6xl mb-2">shopping_bag</span>
+                 <p class="font-medium">Cart is empty</p>
+                 <p class="text-xs">Scan barcode or select item</p>
+             </div>
+             <div 
+               v-for="item in cart" 
+               :key="item.id"
+               class="flex gap-3 p-2 hover:bg-slate-50 rounded-xl transition-colors group relative border border-transparent hover:border-slate-200"
+             >
+                <!-- Item Image -->
+                <div class="w-14 h-14 rounded-lg bg-slate-100 shrink-0 overflow-hidden">
+                   <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
+                   <div v-else class="w-full h-full flex items-center justify-center text-xl">{{ item.emoji || '📦' }}</div>
+                </div>
+                
+                <!-- Details -->
+                <div class="flex-1 min-w-0">
+                   <div class="flex justify-between items-start">
+                      <h4 class="font-bold text-slate-800 text-sm truncate pr-2">{{ item.name }}</h4>
+                      <span class="font-bold text-slate-900 text-sm">{{ formatCurrency(item.price * item.quantity) }}</span>
+                   </div>
+                   <p class="text-xs text-slate-400 mb-1.5">{{ formatCurrency(item.price) }} / unit</p>
+                   
+                   <!-- Qty Controls -->
+                   <div class="flex items-center gap-3">
+                       <button @click="decreaseQuantity(item.id)" class="w-6 h-6 rounded bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors">
+                          <span class="material-symbols-outlined text-sm font-bold">remove</span>
+                       </button>
+                       <span class="font-bold text-sm text-slate-900 w-4 text-center">{{ item.quantity }}</span>
+                       <button @click="increaseQuantity(item.id)" class="w-6 h-6 rounded bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition-colors">
+                          <span class="material-symbols-outlined text-sm font-bold">add</span>
+                       </button>
+                   </div>
+                </div>
+             </div>
+          </div>
+
+          <!-- Total & Actions -->
+          <div class="p-5 bg-slate-50 border-t border-slate-200">
+             
+             <!-- Totals -->
+             <div class="space-y-2 mb-4">
+                <div class="flex justify-between text-sm text-slate-500">
+                   <span>Subtotal</span>
+                   <span>{{ formatCurrency(subtotal) }}</span>
+                </div>
+                <div class="flex justify-between text-sm text-emerald-600 font-medium" v-if="discount > 0">
+                   <span>Discount</span>
+                   <span>-{{ formatCurrency(discount) }}</span>
+                </div>
+                <div class="flex justify-between items-end mt-4 pt-4 border-t border-slate-200">
+                   <span class="text-slate-600 font-bold">Total Payment</span>
+                   <span class="text-2xl font-black text-slate-900">{{ formatCurrency(total) }}</span>
+                </div>
+             </div>
+
+             <!-- Action Buttons -->
+             <div class="grid grid-cols-4 gap-2 mb-3">
+                <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1" @click="clearCart">
+                   <span class="material-symbols-outlined text-xl">delete</span>
+                </button>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-amber-500 hover:bg-amber-50 transition-colors flex flex-col items-center justify-center gap-1">
+                   <span class="material-symbols-outlined text-xl">pause</span>
+                </button>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-500 hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1">
+                   <span class="material-symbols-outlined text-xl">percent</span>
+                </button>
+                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-purple-500 hover:bg-purple-50 transition-colors flex flex-col items-center justify-center gap-1">
+                   <span class="material-symbols-outlined text-xl">split_mode</span>
+                </button>
+             </div>
+
+             <!-- Pay Button -->
+             <button 
+               @click="showPaymentModal = true" 
+               :disabled="cart.length === 0"
+               class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 hover:shadow-emerald-500/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+             >
+                <span class="material-symbols-outlined">payments</span>
+                Proccess Payment
+             </button>
+          </div>
+       </aside>
+    </main>
+
+    <!-- Success Overlay (New) -->
+     <div v-if="showSuccessOverlay" class="absolute inset-0 z-50 bg-white/50 backdrop-blur-md flex items-center justify-center">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border-2 border-emerald-100 transform scale-100 animate-bounce-in">
+           <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <span class="material-symbols-outlined text-5xl text-emerald-500 animate-pulse">check_circle</span>
+              <div class="absolute inset-0 rounded-full border-4 border-emerald-200 animate-ping opacity-20"></div>
+           </div>
+           
+           <h2 class="text-2xl font-black text-slate-800 mb-2">Payment Successful!</h2>
+           <p class="text-slate-500 mb-8 font-medium">Transaction #{{ lastOrderReceipt?.orderNumber }} has been completed</p>
+           
+           <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
+              <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Change Due</p>
+              <p class="text-4xl font-black text-slate-900">{{ formatCurrency(lastOrderReceipt?.change || 0) }}</p>
+           </div>
+           
+           <div class="space-y-3">
+              <button @click="printReceiptAndClose" class="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20">
+                 <span class="material-symbols-outlined">print</span> Print Receipt
+              </button>
+              <button @click="closeSuccessOverlay" class="w-full py-3.5 bg-white text-slate-600 border-2 border-slate-100 rounded-xl font-bold hover:bg-slate-50 transition">
+                 New Order
+              </button>
+           </div>
+        </div>
+     </div>
+
+    <!-- Modals -->
     <PaymentModal
       :show="showPaymentModal"
       :total="total"
@@ -536,80 +574,80 @@
       @confirm="handlePaymentConfirm"
     />
 
-    <!-- Receipt Printer -->
     <ReceiptPrinter
       :show="showReceiptModal"
       :order-id="lastOrderId"
       :receipt-data="lastOrderReceipt"
       @close="showReceiptModal = false"
+      ref="printerRef"
     />
-  </div>
 
-  <!-- Low Stock Reminder Modal (Shared) -->
-  <div
-    v-if="showLowStockModal && criticalStockProducts.length > 0"
-    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity"
-    @click.self="showLowStockModal = false"
-  >
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 transform transition-all scale-100">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-red-50 rounded-xl">
-             <span class="material-symbols-outlined text-red-600">warning</span>
-          </div>
-          <h3 class="text-xl font-bold text-[#0d141b]">Low Stock Alert</h3>
-        </div>
-        <button
-          @click="dismissLowStockModal"
-          class="text-slate-400 hover:text-[#4c739a] transition-colors"
-        >
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      
-      <div class="mb-6">
-        <p class="text-[#4c739a] mb-4">
-          There are <span class="font-bold text-red-600">{{ criticalStockProducts.length }}</span> products that need immediate attention:
-        </p>
-        <div class="max-h-64 overflow-y-auto space-y-3 pr-1">
-          <div
-            v-for="product in criticalStockProducts"
-            :key="product.id"
-            class="p-4 rounded-xl border flex items-center justify-between bg-white"
-            :class="product.stock === 0 ? 'border-red-200 bg-red-50/30' : 'border-yellow-200 bg-yellow-50/30'"
-          >
-            <div>
-              <p class="font-bold text-[#0d141b]">{{ product.name }}</p>
-              <div class="flex items-center gap-2 mt-1">
-                 <span class="text-xs font-medium px-2 py-0.5 rounded-full" :class="product.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
-                   Stock: {{ product.stock }}
-                 </span>
-                 <span class="text-xs text-[#4c739a]">Min: {{ product.minStock }}</span>
-              </div>
+    <!-- Low Stock Reminder Modal (Shared) -->
+    <div
+      v-if="showLowStockModal && criticalStockProducts.length > 0"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity"
+      @click.self="showLowStockModal = false"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 transform transition-all scale-100">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-red-50 rounded-xl">
+               <span class="material-symbols-outlined text-red-600">warning</span>
             </div>
-            <button
-              @click="goToRestock(product.id)"
-              class="px-3 py-1.5 bg-white border border-slate-100 dark:border-slate-700 text-[#0d141b] rounded-xl text-sm font-semibold hover:border-primary hover:text-primary transition-colors shadow-sm"
+            <h3 class="text-xl font-bold text-[#0d141b]">Low Stock Alert</h3>
+          </div>
+          <button
+            @click="dismissLowStockModal"
+            class="text-slate-400 hover:text-[#4c739a] transition-colors"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="mb-6">
+          <p class="text-[#4c739a] mb-4">
+            There are <span class="font-bold text-red-600">{{ criticalStockProducts.length }}</span> products that need immediate attention:
+          </p>
+          <div class="max-h-64 overflow-y-auto space-y-3 pr-1">
+            <div
+              v-for="product in criticalStockProducts"
+              :key="product.id"
+              class="p-4 rounded-xl border flex items-center justify-between bg-white"
+              :class="product.stock === 0 ? 'border-red-200 bg-red-50/30' : 'border-yellow-200 bg-yellow-50/30'"
             >
-              Restock
-            </button>
+              <div>
+                <p class="font-bold text-[#0d141b]">{{ product.name }}</p>
+                <div class="flex items-center gap-2 mt-1">
+                   <span class="text-xs font-medium px-2 py-0.5 rounded-full" :class="product.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
+                     Stock: {{ product.stock }}
+                   </span>
+                   <span class="text-xs text-[#4c739a]">Min: {{ product.minStock }}</span>
+                </div>
+              </div>
+              <button
+                @click="goToRestock(product.id)"
+                class="px-3 py-1.5 bg-white border border-slate-100 dark:border-slate-700 text-[#0d141b] rounded-xl text-sm font-semibold hover:border-primary hover:text-primary transition-colors shadow-sm"
+              >
+                Restock
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div class="flex gap-3">
-        <button
-          @click="dismissLowStockModal"
-          class="flex-1 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-semibold"
-        >
-          Dismiss
-        </button>
-        <button
-          @click="goToStockAlerts"
-          class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 font-semibold"
-        >
-          View All Alerts
-        </button>
+        
+        <div class="flex gap-3">
+          <button
+            @click="dismissLowStockModal"
+            class="flex-1 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-semibold"
+          >
+            Dismiss
+          </button>
+          <button
+            @click="goToStockAlerts"
+            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 font-semibold"
+          >
+            View All Alerts
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -664,6 +702,10 @@ const members = ref<any[]>([]);
 const sendToKitchen = ref(false);
 const showPaymentModal = ref(false);
 const showReceiptModal = ref(false);
+const showSuccessOverlay = ref(false);
+const currentTime = ref('');
+const showCustomerModal = ref(false);
+const printerRef = ref<any>(null);
 const showLowStockModal = ref(false);
 const criticalStockProducts = ref<any[]>([]);
 const selectedPaymentMethod = ref<string>('CASH');
@@ -674,7 +716,9 @@ const estimatedDiscount = ref(0);
 // Offline mode state
 const isOnline = ref(navigator.onLine);
 const isSyncing = ref(false);
+
 const pendingSyncCount = ref(0);
+let clockInterval: any;
 
 // Computed
 const categories = computed(() => {
@@ -1332,7 +1376,10 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
 
     lastOrderReceipt.value = receiptData;
 
-    showReceiptModal.value = true;
+    lastOrderReceipt.value = receiptData;
+
+    // showReceiptModal.value = true;
+    showSuccessOverlay.value = true;
     clearCart();
     await loadProducts();
   } catch (error: any) {
@@ -1341,6 +1388,30 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
     showError(errorMessage, 'Payment Failed');
   } finally {
     processing.value = false;
+  }
+};
+
+const closeSuccessOverlay = () => {
+  showSuccessOverlay.value = false;
+};
+
+const printReceiptAndClose = async () => {
+  // Use the existing ReceiptPrinter component logic
+  // We need to pass the data to it or ensure it has it
+  if (printerRef.value) {
+    // Assuming printerRef invokes ReceiptPrinter component
+    // If ReceiptPrinter exposes a method, we call it.
+    // If not, we might need to rely on showReceiptModal logic if we use that component.
+    // Actually, ReceiptPrinter takes props.
+    // Let's just set showReceiptModal = true to trigger the printer visible?
+    // But we want to print without opening the old modal?
+    // ReceiptPrinter usually has a print button.
+    // If we want to auto print or print on demand, we need access to its print function.
+    // Let's assume for now we just show the old modal if they want to print?
+    // The user design "Print Receipt" button implies immediate print.
+    // I'll check ReceiptPrinter.vue later. For now, let's just make it visible.
+    showReceiptModal.value = true;
+    showSuccessOverlay.value = false;
   }
 };
 
@@ -1462,9 +1533,19 @@ onMounted(() => {
       }
     });
   }
+
+  // Clock Logic
+  // Clock Logic
+  const updateClock = () => {
+    const now = new Date();
+    currentTime.value = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  };
+  updateClock();
+  clockInterval = setInterval(updateClock, 1000);
 });
 
 onUnmounted(() => {
+  if (clockInterval) clearInterval(clockInterval);
   if (isSimpleMode.value) {
     window.removeEventListener('resize', checkOrientation);
     window.removeEventListener('orientationchange', checkOrientation);
@@ -1477,5 +1558,21 @@ onUnmounted(() => {
   body {
     overflow: hidden;
   }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-bounce-in {
+  animation: bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 </style>

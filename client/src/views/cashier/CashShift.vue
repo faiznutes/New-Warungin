@@ -16,7 +16,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 border-dashed border-slate-200 dark:border-slate-700 p-8">
         <div class="text-center mb-8">
           <div class="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="material-symbols-outlined text-[40px] text-slate-400">store_front</span>
+            <span class="material-symbols-outlined text-[40px] text-slate-400">storefront</span>
           </div>
           <h2 class="text-xl font-bold text-[#0d141b] dark:text-white mb-2">No Active Store Shift</h2>
           <p class="text-[#4c739a] dark:text-slate-400">Please open a store shift first to start transactions</p>
@@ -50,14 +50,12 @@
               <input
                 v-model.number="openStoreShiftForm.modalAwal"
                 type="number"
+                step="0.01"
+                min="0"
                 class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
                 placeholder="0"
               />
-            </div>              step="0.01"
-              min="0"
-              class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
-              placeholder="0"
-            />
+            </div>
             <p class="text-xs text-[#4c739a] mt-1">Initial cash for the shift (optional, can be filled when opening cashier cash shift)</p>
           </div>
 
@@ -305,7 +303,7 @@
               <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
             </div>
             <div class="bg-white rounded-xl p-4 border border-slate-200">
-              <p class="text-sm text-[#4c739a] mb-1">Expected Balance</p>
+              <p class="text-sm text-[#4c739a] mb-1">Total Cash (System)</p>
               <p class="text-2xl font-bold text-green-600">
                 {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
               </p>
@@ -725,7 +723,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { formatCurrency } from '../../utils/formatters';
@@ -761,6 +759,8 @@ const shiftDetailFilters = ref({
   includeStockTransfers: true,
   includeProductAdjustments: true,
 });
+
+const pollingInterval = ref<any>(null);
 
 const openShiftForm = ref({
   modalAwal: 0,
@@ -1054,5 +1054,18 @@ onMounted(async () => {
     loadTodayShifts(),
   ]);
   loading.value = false;
+
+  // Auto-refresh current shift data every 30 seconds
+  pollingInterval.value = setInterval(() => {
+    if (currentShift.value) {
+      loadCurrentShift();
+    }
+  }, 30000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval.value) {
+    clearInterval(pollingInterval.value);
+  }
 });
 </script>

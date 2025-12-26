@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 font-display p-6 lg:p-8 bg-slate-50 min-h-screen">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
 
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Discounts</h1>
-        <p class="text-[#4c739a] dark:text-slate-400">Manage discounts and promotions.</p>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Discounts & Promos</h1>
+        <p class="text-slate-500 font-medium">Create and manage your store promotions.</p>
       </div>
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Discount</span>
@@ -20,110 +20,103 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sticky top-4 z-20">
       <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
-        </div>
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
         <input
           v-model="filters.search"
           @focus="handleSearchFocus"
           @input="handleSearchInput"
           type="text"
           placeholder="Search discounts..."
-          class="block w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
         />
       </div>
     </div>
 
     <!-- Discounts Table -->
-    <div v-if="loading" class="flex items-center justify-center py-16">
-      <div class="flex flex-col items-center gap-4">
-        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-[#4c739a] font-medium">Loading discounts...</p>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+       <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+       <p class="text-slate-500 font-medium animate-pulse">Loading discounts...</p>
+    </div>
+
+    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+      <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-[40px] text-slate-300">percent</span>
       </div>
+      <h3 class="text-xl font-bold text-slate-900 mb-2">No Discounts Yet</h3>
+      <p class="text-slate-500 text-center max-w-md">Create your first discount to start offering promotions.</p>
+      <button 
+        @click="showCreateModal = true"
+        class="mt-6 text-emerald-600 font-bold hover:text-emerald-700 hover:underline"
+      >
+        Create Now
+      </button>
     </div>
 
-    <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">percent</span>
-      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Discounts Yet</h3>
-      <p class="text-[#4c739a] text-center max-w-md">Create your first discount to start offering promotions.</p>
-    </div>
-
-    <div v-else class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+    <div v-else class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
-          <thead>
-            <tr class="bg-slate-50 dark:bg-slate-900/50">
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Discount Name
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Value
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Period
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Actions
-              </th>
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-slate-50 border-b border-slate-100">
+            <tr>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Discount Name</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Value</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Period</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
-            <tr v-for="discount in filteredDiscounts" :key="discount.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ discount.name }}</div>
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="discount in filteredDiscounts" :key="discount.id" class="hover:bg-slate-50 transition-colors group">
+              <td class="p-4">
+                <div class="font-bold text-slate-900">{{ discount.name }}</div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+              <td class="p-4">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                   {{ getDiscountTypeLabel(discount.discountType) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-bold text-primary">
+              <td class="p-4">
+                <div class="font-bold text-emerald-600">
                   {{ discount.discountValueType === 'PERCENTAGE' 
                     ? `${discount.discountValue}%` 
                     : formatCurrency(Number(discount.discountValue)) }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-slate-500">
-                  <div v-if="discount.startDate || discount.endDate">
-                    {{ discount.startDate ? formatDate(discount.startDate) : '-' }} - 
-                    {{ discount.endDate ? formatDate(discount.endDate) : 'No limit' }}
+              <td class="p-4">
+                <div class="text-sm font-medium text-slate-500">
+                  <div v-if="discount.startDate || discount.endDate" class="flex flex-col">
+                    <span v-if="discount.startDate" class="text-xs">From: {{ formatDate(discount.startDate) }}</span>
+                    <span v-if="discount.endDate" class="text-xs">To: {{ formatDate(discount.endDate) }}</span>
                   </div>
-                  <div v-else class="text-slate-400">No limit</div>
+                  <span v-else class="text-slate-400 italic">No time limit</span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="p-4">
                 <span
-                  class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full"
-                  :class="discount.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'"
+                  class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border"
+                  :class="discount.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-200'"
                 >
+                  <span class="w-1.5 h-1.5 rounded-full" :class="discount.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
                   {{ discount.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right">
-                <div class="flex items-center justify-end gap-2">
+              <td class="p-4 text-right">
+                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     @click="editDiscount(discount)"
-                    class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-emerald-600 transition"
                     title="Edit"
                   >
-                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
                   </button>
                   <button
                     @click="deleteDiscount(discount.id)"
-                    class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition"
                     title="Delete"
                   >
-                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </div>
               </td>
@@ -136,360 +129,318 @@
     <!-- Create/Edit Modal -->
     <div
       v-if="showCreateModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all"
       @click.self="closeModal"
     >
-      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
-          <h3 class="text-lg sm:text-xl font-semibold text-gray-900">
-            {{ editingDiscount ? 'Edit Diskon' : 'Tambah Diskon' }}
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+        <!-- Modal Header -->
+        <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <h3 class="text-xl font-bold text-slate-900">
+            {{ editingDiscount ? 'Edit Discount' : 'New Discount' }}
           </h3>
           <button
             @click="closeModal"
-            class="text-gray-400 hover:text-gray-600 transition p-2"
+            class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition shadow-sm"
           >
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="saveDiscount" class="p-4 sm:p-6">
-          <div class="space-y-4">
+        <form @submit.prevent="saveDiscount" class="flex-1 overflow-y-auto custom-scrollbar p-6">
+          <div class="space-y-6">
             <!-- Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Nama Diskon</label>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Discount Name</label>
               <input
                 v-model="discountForm.name"
                 type="text"
                 required
-                placeholder="Contoh: Diskon Lebaran 20%"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="e.g., Summer Sale 20%"
+                class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
               />
             </div>
 
-            <!-- Discount Type -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Diskon</label>
-              <select
-                v-model="discountForm.discountType"
-                required
-                @change="handleDiscountTypeChange"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="AMOUNT_BASED">Berdasarkan Total Pembelian</option>
-                <option value="BUNDLE">Bundle (Beli Bersama)</option>
-                <option value="PRODUCT_BASED">Berdasarkan Produk Tertentu</option>
-                <option value="QUANTITY_BASED">Berdasarkan Jumlah Item (Beli X dapat diskon)</option>
-              </select>
-            </div>
-
-            <!-- Product Selection for BUNDLE - Direct Popup -->
-            <div v-if="discountForm.discountType === 'BUNDLE'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Pilih Produk untuk Bundle <span class="text-red-500">*</span>
-              </label>
-              <div class="space-y-2">
-                <button
-                  type="button"
-                  @click="openProductSelector('BUNDLE')"
-                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
-                >
-                  <span class="text-sm text-gray-700">
-                    <span v-if="discountForm.bundleProducts.length === 0" class="text-gray-400">
-                      Klik untuk memilih produk bundle
-                    </span>
-                    <span v-else>
-                      {{ discountForm.bundleProducts.length }} produk dipilih
-                    </span>
-                  </span>
-                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <!-- Edit Button if products already selected -->
-                <button
-                  v-if="discountForm.bundleProducts.length > 0"
-                  type="button"
-                  @click="openProductSelector('BUNDLE')"
-                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit Produk yang Dipilih
-                </button>
-              </div>
-              <p class="mt-1 text-xs text-gray-500">
-                Semua produk yang dipilih harus dibeli bersama untuk mendapatkan diskon
-              </p>
-            </div>
-
-            <!-- Product Selection for PRODUCT_BASED - Popup -->
-            <div v-if="discountForm.discountType === 'PRODUCT_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Pilih Produk yang Mendapat Diskon <span class="text-red-500">*</span>
-              </label>
-              <div class="space-y-2">
-                <button
-                  type="button"
-                  @click="openProductSelector('PRODUCT_BASED')"
-                  class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
-                >
-                  <span class="text-sm text-gray-700">
-                    <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
-                      Klik untuk memilih produk
-                    </span>
-                    <span v-else>
-                      {{ discountForm.applicableProducts.length }} produk dipilih
-                    </span>
-                  </span>
-                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <!-- Edit Button if products already selected -->
-                <button
-                  v-if="discountForm.applicableProducts.length > 0"
-                  type="button"
-                  @click="openProductSelector('PRODUCT_BASED')"
-                  class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit Produk yang Dipilih
-                </button>
-              </div>
-              <p class="mt-1 text-xs text-gray-500">
-                Produk yang dipilih akan mendapat diskon saat dibeli (bisa 1 per satu atau bersama)
-              </p>
-            </div>
-
-            <!-- Product Selection for QUANTITY_BASED - Popup with Category Option -->
-            <div v-if="discountForm.discountType === 'QUANTITY_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Pilih Produk <span class="text-red-500">*</span>
-              </label>
-              <div class="space-y-3">
-                <div>
-                  <label class="block text-xs font-medium text-gray-600 mb-2">Pilihan Produk</label>
-                  <select
-                    v-model="productSelectionType"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="CATEGORY">Berdasarkan Kategori</option>
-                    <option value="PRODUCTS">Pilih Produk Tertentu</option>
-                  </select>
-                </div>
-
-                <!-- Category Selection -->
-                <div v-if="productSelectionType === 'CATEGORY'">
-                  <label class="block text-xs font-medium text-gray-600 mb-2">Pilih Kategori</label>
-                  <select
-                    v-model="selectedCategory"
-                    @change="handleCategoryChange"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="">Pilih Kategori</option>
-                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-                  </select>
-                </div>
-
-                <!-- Product Selection Button -->
-                <div v-if="productSelectionType === 'PRODUCTS'">
-                  <div class="space-y-2">
-                    <button
-                      type="button"
-                      @click="openProductSelector('QUANTITY_BASED')"
-                      class="w-full px-4 py-2 text-left border border-gray-300 rounded-xl hover:bg-gray-50 transition flex items-center justify-between"
-                    >
-                      <span class="text-sm text-gray-700">
-                        <span v-if="discountForm.applicableProducts.length === 0" class="text-gray-400">
-                          Klik untuk memilih produk
-                        </span>
-                        <span v-else>
-                          {{ discountForm.applicableProducts.length }} produk dipilih
-                        </span>
-                      </span>
-                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                    <!-- Edit Button if products already selected -->
-                    <button
-                      v-if="discountForm.applicableProducts.length > 0"
-                      type="button"
-                      @click="openProductSelector('QUANTITY_BASED')"
-                      class="w-full px-3 py-1.5 text-sm text-primary-600 border border-primary-300 rounded-xl hover:bg-primary-50 transition flex items-center justify-center gap-2"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Edit Produk yang Dipilih
-                    </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <!-- Discount Type -->
+               <div>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">Discount Type</label>
+                  <div class="relative">
+                     <select
+                        v-model="discountForm.discountType"
+                        required
+                        @change="handleDiscountTypeChange"
+                        class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
+                     >
+                        <option value="AMOUNT_BASED">Based on Total Amount</option>
+                        <option value="BUNDLE">Bundle (Buy Together)</option>
+                        <option value="PRODUCT_BASED">Product Specific</option>
+                        <option value="QUANTITY_BASED">Quantity Based (Buy X Get Y)</option>
+                     </select>
+                     <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">expand_more</span>
                   </div>
-                </div>
-              </div>
-              <p class="mt-1 text-xs text-gray-500">
-                Produk harus dibeli dalam jumlah minimum yang ditentukan untuk mendapatkan diskon
-              </p>
-            </div>
-
-            <!-- Bundle Discount Product Selection (for BUNDLE) - Only show if bundle products are selected -->
-            <div v-if="discountForm.discountType === 'BUNDLE' && discountForm.bundleProducts.length > 0">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Produk yang Mendapat Diskon <span class="text-red-500">*</span>
-              </label>
-              <select
-                v-model="discountForm.bundleDiscountProduct"
-                required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="">Pilih Produk</option>
-                <option
-                  v-for="productId in discountForm.bundleProducts"
-                  :key="productId"
-                  :value="productId"
-                >
-                  {{ getProductName(productId) }}
-                </option>
-              </select>
-              <p class="mt-1 text-xs text-gray-500">
-                Pilih produk yang akan mendapat diskon ketika semua produk bundle dibeli bersama
-              </p>
-            </div>
-
-            <!-- Quantity Based Settings (for QUANTITY_BASED) -->
-            <div v-if="discountForm.discountType === 'QUANTITY_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Jumlah Item yang Harus Dibeli</label>
-              <input
-                v-model.number="discountForm.minQuantity"
-                type="number"
-                required
-                min="1"
-                placeholder="Contoh: 3 (beli 3 item dapat diskon)"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-              <p class="mt-1 text-xs text-gray-500">
-                Contoh: Beli 3 item ayam (20rb) = 60rb, dapat diskon sesuai nilai diskon yang diatur
-              </p>
-            </div>
-
-            <!-- Discount Value Type -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Nilai Diskon</label>
-              <select
-                v-model="discountForm.discountValueType"
-                required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="PERCENTAGE">Persentase (%)</option>
-                <option value="FIXED">Nominal (Rp)</option>
-              </select>
+               </div>
+               
+               <!-- Value Type -->
+               <div>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">Value Type</label>
+                  <div class="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
+                     <button 
+                        type="button" 
+                        @click="discountForm.discountValueType = 'PERCENTAGE'"
+                        class="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
+                        :class="discountForm.discountValueType === 'PERCENTAGE' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                     >
+                        Percentage (%)
+                     </button>
+                     <button 
+                        type="button" 
+                        @click="discountForm.discountValueType = 'FIXED'"
+                        class="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
+                        :class="discountForm.discountValueType === 'FIXED' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                     >
+                        Fixed (Rp)
+                     </button>
+                  </div>
+               </div>
             </div>
 
             <!-- Discount Value -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nilai Diskon {{ discountForm.discountValueType === 'PERCENTAGE' ? '(%)' : '(Rp)' }}
+              <label class="block text-sm font-bold text-slate-700 mb-2">
+                Discount Value <span class="text-slate-400 font-normal">{{ discountForm.discountValueType === 'PERCENTAGE' ? '(%)' : '(Rp)' }}</span>
               </label>
-              <input
-                v-model.number="discountForm.discountValue"
-                type="number"
-                required
-                min="0"
-                :step="discountForm.discountValueType === 'PERCENTAGE' ? '1' : '1000'"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
+              <div class="relative">
+                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                    {{ discountForm.discountValueType === 'PERCENTAGE' ? '%' : 'Rp' }}
+                 </span>
+                 <input
+                   v-model.number="discountForm.discountValue"
+                   type="number"
+                   required
+                   min="0"
+                   :step="discountForm.discountValueType === 'PERCENTAGE' ? '1' : '1000'"
+                   class="w-full pl-12 pr-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-bold text-lg"
+                 />
+              </div>
             </div>
 
-            <!-- Min Amount (for AMOUNT_BASED) -->
-            <div v-if="discountForm.discountType === 'AMOUNT_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Total Pembelian (Rp)</label>
-              <input
-                v-model.number="discountForm.minAmount"
-                type="number"
-                min="0"
-                step="1000"
-                placeholder="0 = tidak ada minimum"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
+            <!-- TYPE SPECIFIC SECTIONS -->
+            
+            <!-- BUNDLE -->
+            <div v-if="discountForm.discountType === 'BUNDLE'" class="bg-blue-50/50 p-5 rounded-xl border border-blue-100 space-y-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">
+                  Select Bundle Products <span class="text-red-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  @click="openProductSelector('BUNDLE')"
+                  class="w-full px-4 py-3 text-left bg-white border border-blue-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between group"
+                >
+                  <span class="text-sm font-medium text-slate-700">
+                    <span v-if="discountForm.bundleProducts.length === 0" class="text-slate-400">
+                       Click to select products...
+                    </span>
+                    <span v-else class="text-blue-700 font-bold">
+                      {{ discountForm.bundleProducts.length }} products selected
+                    </span>
+                  </span>
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-500">add_circle</span>
+                </button>
+                <p class="mt-2 text-xs text-slate-500">
+                  Customers must buy ALL selected products to get the discount.
+                </p>
+              </div>
+              
+              <div v-if="discountForm.bundleProducts.length > 0">
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Which product is discounted?</label>
+                 <div class="relative">
+                    <select
+                      v-model="discountForm.bundleDiscountProduct"
+                      required
+                      class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-medium appearance-none"
+                    >
+                      <option value="">Select a product from bundle</option>
+                      <option
+                        v-for="productId in discountForm.bundleProducts"
+                        :key="productId"
+                        :value="productId"
+                      >
+                        {{ getProductName(productId) }}
+                      </option>
+                    </select>
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">expand_more</span>
+                 </div>
+              </div>
             </div>
 
-            <!-- Min Quantity (for AMOUNT_BASED) -->
-            <div v-if="discountForm.discountType === 'AMOUNT_BASED'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Jumlah Item</label>
-              <input
-                v-model.number="discountForm.minQuantity"
-                type="number"
-                min="1"
-                placeholder="1"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <!-- Start Date -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai (Opsional)</label>
-              <input
-                v-model="discountForm.startDate"
-                type="datetime-local"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <!-- End Date -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Berakhir (Opsional)</label>
-              <input
-                v-model="discountForm.endDate"
-                type="datetime-local"
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <!-- Applicable To -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Berlaku Untuk</label>
-              <select
-                v-model="discountForm.applicableTo"
-                required
-                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            <!-- PRODUCT_BASED -->
+            <div v-if="discountForm.discountType === 'PRODUCT_BASED'" class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+              <label class="block text-sm font-bold text-slate-700 mb-2">
+                Applicable Products <span class="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                @click="openProductSelector('PRODUCT_BASED')"
+                class="w-full px-4 py-3 text-left bg-white border border-emerald-200 rounded-xl hover:bg-emerald-50 hover:border-emerald-300 transition flex items-center justify-between group"
               >
-                <option value="ALL">Semua Orang</option>
-                <option value="MEMBER_ONLY">Hanya Member</option>
-              </select>
+                <span class="text-sm font-medium text-slate-700">
+                  <span v-if="discountForm.applicableProducts.length === 0" class="text-slate-400">
+                    Click to select products...
+                  </span>
+                  <span v-else class="text-emerald-700 font-bold">
+                    {{ discountForm.applicableProducts.length }} products selected
+                  </span>
+                </span>
+                <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500">inventory_2</span>
+              </button>
             </div>
 
-            <!-- Is Active -->
-            <div class="flex items-center space-x-2">
-              <input
-                v-model="discountForm.isActive"
-                type="checkbox"
-                id="isActive"
-                class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
-              />
-              <label for="isActive" class="text-sm text-gray-700">Aktif</label>
+            <!-- QUANTITY_BASED -->
+            <div v-if="discountForm.discountType === 'QUANTITY_BASED'" class="bg-amber-50/50 p-5 rounded-xl border border-amber-100 space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select By</label>
+                    <div class="relative">
+                       <select
+                         v-model="productSelectionType"
+                         class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none appearance-none"
+                       >
+                         <option value="CATEGORY">Category</option>
+                         <option value="PRODUCTS">Specific Products</option>
+                       </select>
+                       <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined text-[18px]">expand_more</span>
+                    </div>
+                 </div>
+                 
+                 <div v-if="productSelectionType === 'CATEGORY'">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
+                    <div class="relative">
+                       <select
+                         v-model="selectedCategory"
+                         @change="handleCategoryChange"
+                         class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none appearance-none"
+                       >
+                         <option value="">Select Category</option>
+                         <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                       </select>
+                       <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined text-[18px]">expand_more</span>
+                    </div>
+                 </div>
+                 
+                 <div v-if="productSelectionType === 'PRODUCTS'" class="col-span-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Products</label>
+                    <button
+                      type="button"
+                      @click="openProductSelector('QUANTITY_BASED')"
+                      class="w-full px-4 py-2 text-left bg-white border border-amber-200 rounded-lg hover:bg-amber-50 transition flex items-center justify-between"
+                    >
+                      <span class="text-sm font-bold text-amber-700">
+                         {{ discountForm.applicableProducts.length > 0 ? `${discountForm.applicableProducts.length} products` : 'Select products' }}
+                      </span>
+                      <span class="material-symbols-outlined text-amber-400">add</span>
+                    </button>
+                 </div>
+              </div>
+              
+              <div>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Minimum Quantity</label>
+                 <input
+                    v-model.number="discountForm.minQuantity"
+                    type="number"
+                    required
+                    min="1"
+                    placeholder="e.g. 3"
+                    class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-amber-500 outline-none font-bold"
+                 />
+                 <p class="mt-1 text-xs text-slate-500">Buy at least this amount to get discount.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="flex space-x-3 pt-4 mt-6 border-t border-gray-200">
-            <button
-              type="submit"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition"
-            >
-              {{ editingDiscount ? 'Update' : 'Simpan' }}
-            </button>
-            <button
-              type="button"
-              @click="closeModal"
-              class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition"
-            >
-              Batal
-            </button>
+            <!-- AMOUNT_BASED -->
+             <div v-if="discountForm.discountType === 'AMOUNT_BASED'" class="grid grid-cols-2 gap-4">
+               <div>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Min Total (Rp)</label>
+                 <input
+                   v-model.number="discountForm.minAmount"
+                   type="number"
+                   min="0"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
+                   placeholder="0"
+                 />
+               </div>
+               <div>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Min Items</label>
+                 <input
+                   v-model.number="discountForm.minQuantity"
+                   type="number"
+                   min="1"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
+                   placeholder="Optional"
+                 />
+               </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">StartDate</label>
+                 <input
+                   v-model="discountForm.startDate"
+                   type="datetime-local"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium text-sm"
+                 />
+              </div>
+              <div>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">EndDate</label>
+                 <input
+                   v-model="discountForm.endDate"
+                   type="datetime-local"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium text-sm"
+                 />
+              </div>
+            </div>
+
+            <!-- Options -->
+            <div class="space-y-4 pt-4 border-t border-slate-100">
+               <div class="flex items-center justify-between">
+                  <label class="text-sm font-bold text-slate-700">Applicable To</label>
+                  <select
+                     v-model="discountForm.applicableTo"
+                     class="px-3 py-2 bg-slate-50 rounded-lg text-sm font-medium border-none outline-none"
+                  >
+                     <option value="ALL">Everyone</option>
+                     <option value="MEMBER_ONLY">Members Only</option>
+                  </select>
+               </div>
+               
+               <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl cursor-pointer" @click="discountForm.isActive = !discountForm.isActive">
+                  <span class="text-sm font-bold text-slate-700">Active Status</span>
+                  <div class="w-12 h-6 rounded-full relative transition-colors duration-300" :class="discountForm.isActive ? 'bg-emerald-500' : 'bg-slate-300'">
+                     <div class="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300" :class="discountForm.isActive ? 'left-7' : 'left-1'"></div>
+                  </div>
+               </div>
+            </div>
+
           </div>
         </form>
+        
+        <!-- Footer -->
+        <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+          <button
+            type="button"
+            @click="closeModal"
+            class="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition"
+          >
+            Cancel
+          </button>
+          <button
+            @click="saveDiscount"
+            class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95"
+          >
+            {{ editingDiscount ? 'Update Discount' : 'Create Discount' }}
+          </button>
+        </div>
       </div>
     </div>
 

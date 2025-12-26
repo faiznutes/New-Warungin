@@ -1,131 +1,147 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-    @click.self="close"
-  >
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-gray-900">Pilih Metode Pembayaran</h3>
+  <Teleport to="body">
+    <div
+      v-if="show"
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 transition-all"
+      @click.self="close"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 font-display">
+        <!-- Header -->
+        <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between sticky top-0 z-10">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900">Payment Method</h3>
+            <p class="text-sm text-slate-500 font-medium">Select how to pay</p>
+          </div>
           <button
             @click="close"
-            class="text-gray-400 hover:text-gray-600 transition"
+            class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:border-slate-300 transition shadow-sm"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <span class="material-symbols-outlined text-[24px]">close</span>
           </button>
         </div>
 
-        <div class="mb-4 p-4 bg-gray-50 rounded-xl">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-gray-700">Total Pembayaran:</span>
-            <span class="text-2xl font-bold text-orange-600">{{ formatCurrency(total) }}</span>
-          </div>
-          <div v-if="discount > 0" class="flex justify-between items-center text-sm text-green-600">
-            <span>Diskon:</span>
-            <span class="font-semibold">-{{ formatCurrency(discount) }}</span>
-          </div>
-        </div>
-
-        <!-- Payment Methods Selection -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Metode Pembayaran
-          </label>
-          <select
-            v-model="selectedPayment"
-            @change="onPaymentMethodChange"
-            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold bg-white"
-          >
-            <option value="" disabled>Pilih metode pembayaran</option>
-            <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
-              {{ method.icon }} {{ method.label }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Cash Payment Input -->
-        <div v-if="selectedPayment === 'CASH'" class="mb-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Uang yang Dibayar
-            </label>
-            <input
-              v-model.number="cashAmount"
-              type="number"
-              min="0"
-              step="1000"
-              placeholder="Masukkan jumlah uang"
-              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg font-semibold"
-              @input="calculateChange"
-            />
-          </div>
-          <div v-if="change >= 0" class="p-4 bg-green-50 rounded-xl">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-700 font-medium">Kembalian:</span>
-              <span class="text-2xl font-bold text-green-600">{{ formatCurrency(change) }}</span>
+        <div class="p-6 overflow-y-auto custom-scrollbar">
+          <!-- Total Card -->
+          <div class="mb-6 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-slate-600 font-medium">Total Payment</span>
+              <span class="text-2xl font-black text-emerald-600">{{ formatCurrency(total) }}</span>
+            </div>
+            <div v-if="discount > 0" class="flex justify-between items-center text-sm font-medium pt-2 border-t border-emerald-200/50 mt-2">
+              <span class="text-emerald-700">Discount Applied</span>
+              <span class="text-emerald-700">-{{ formatCurrency(discount) }}</span>
             </div>
           </div>
-          <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-xl">
-            <div class="flex justify-between items-center">
-              <span class="text-red-700 font-medium">Kurang:</span>
-              <span class="text-xl font-bold text-red-600">{{ formatCurrency(Math.abs(change)) }}</span>
+
+          <!-- Payment Methods Selection -->
+          <div class="mb-6">
+            <label class="block text-sm font-bold text-slate-700 mb-2">
+              Select Method
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+               <button
+                 v-for="method in paymentMethods"
+                 :key="method.value"
+                 @click="selectedPayment = method.value; onPaymentMethodChange()"
+                 class="p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 group"
+                 :class="selectedPayment === method.value ? 'border-emerald-500 bg-emerald-50/50 text-emerald-700 shadow-md shadow-emerald-500/10' : 'border-slate-100 bg-slate-50 text-slate-600 hover:bg-white hover:border-emerald-200 hover:shadow-sm'"
+               >
+                 <span class="text-3xl filter drop-shadow-sm transition-transform group-hover:scale-110 duration-200">{{ method.icon }}</span>
+                 <span class="font-bold text-sm">{{ method.label }}</span>
+               </button>
+            </div>
+          </div>
+
+          <!-- Cash Payment Input -->
+          <div v-if="selectedPayment === 'CASH'" class="mb-6 animate-in slide-in-from-top-2 duration-200">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">
+                  Cash Received
+                </label>
+                <div class="relative">
+                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                     <span class="text-slate-400 font-bold">Rp</span>
+                   </div>
+                   <input
+                    v-model.number="cashAmount"
+                    type="number"
+                    min="0"
+                    step="1000"
+                    placeholder="0"
+                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-transparent hover:bg-white focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-bold text-lg text-slate-900 placeholder:text-slate-400"
+                    @input="calculateChange"
+                  />
+                </div>
+                <!-- Quick Amount Buttons -->
+                 <div class="flex gap-2 mt-2 overflow-x-auto pb-1 no-scrollbar">
+                    <button 
+                      v-for="amount in quickAmounts" 
+                      :key="amount"
+                      @click="cashAmount = amount"
+                      class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold whitespace-nowrap transition"
+                    >
+                      {{ formatCurrency(amount) }}
+                    </button>
+                 </div>
+              </div>
+              
+              <div v-if="change >= 0" class="p-4 bg-emerald-50 rounded-xl border border-emerald-100 animate-in fade-in zoom-in-95 duration-200">
+                <div class="flex justify-between items-center">
+                  <span class="text-emerald-700 font-bold">Change Due</span>
+                  <span class="text-2xl font-black text-emerald-600">{{ formatCurrency(change) }}</span>
+                </div>
+              </div>
+              <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-xl border border-red-100 animate-in fade-in zoom-in-95 duration-200">
+                <div class="flex justify-between items-center">
+                  <span class="text-red-700 font-bold">Insufficent</span>
+                  <span class="text-xl font-black text-red-600">{{ formatCurrency(Math.abs(change)) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QRIS Payment Input -->
+          <div v-if="selectedPayment === 'QRIS'" class="mb-6 animate-in slide-in-from-top-2 duration-200">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-2">
+                QR Code Ref (Optional)
+              </label>
+              <input
+                v-model="qrCode"
+                type="text"
+                placeholder="Direct scan or enter ref..."
+                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-medium transition"
+              />
+            </div>
+            <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 flex gap-3">
+              <span class="text-2xl">💡</span>
+              <p class="text-sm text-blue-700 font-medium leading-relaxed">
+                Scan QR Code using E-Wallet apps (DANA, OVO, ShopeePay, etc).
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- QRIS Payment Input -->
-        <div v-if="selectedPayment === 'QRIS'" class="mb-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              QR Code (Opsional)
-            </label>
-            <input
-              v-model="qrCode"
-              type="text"
-              placeholder="Masukkan atau scan QR Code"
-              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-            />
-          </div>
-          <div class="p-3 bg-blue-50 rounded-xl">
-            <p class="text-sm text-blue-700">
-              💡 Scan QR Code menggunakan aplikasi e-wallet (DANA, ShopeePay, OVO, dll)
-            </p>
-          </div>
-        </div>
-
-        <!-- Info untuk metode pembayaran lainnya -->
-        <div v-if="selectedPayment && selectedPayment !== 'CASH' && selectedPayment !== 'QRIS'" class="mb-6">
-          <div class="p-4 bg-green-50 rounded-xl border border-green-200">
-            <p class="text-sm text-green-800 font-medium">
-              ✅ Metode pembayaran <strong>{{ getPaymentMethodLabel(selectedPayment) }}</strong> dipilih.
-            </p>
-            <p class="text-xs text-green-700 mt-1">
-              Klik "Bayar" untuk menyelesaikan transaksi.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex space-x-3">
+        <div class="p-6 bg-white border-t border-slate-100 flex gap-3 sticky bottom-0 z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
           <button
             @click="close"
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium"
+            class="flex-1 px-4 py-3 border-2 border-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-200 transition"
           >
-            Batal
+            Cancel
           </button>
           <button
             @click="confirmPayment"
             :disabled="!canConfirm || processing"
-            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+            class="flex-[2] px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold text-lg hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
           >
-            {{ processing ? 'Memproses...' : 'Bayar' }}
+            <span v-if="processing" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <span>{{ processing ? 'Processing...' : `Pay ${formatCurrency(total)}` }}</span>
           </button>
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -156,40 +172,15 @@ const cashAmount = ref<number>(0);
 const qrCode = ref<string>('');
 
 const paymentMethods = [
-  {
-    value: 'CASH',
-    label: 'Cash',
-    icon: '💵',
-    description: 'Pembayaran tunai langsung',
-  },
-  {
-    value: 'QRIS',
-    label: 'QRIS',
-    icon: '📲',
-    description: 'Scan QR Code untuk pembayaran',
-  },
-  {
-    value: 'BANK_TRANSFER',
-    label: 'Bank',
-    icon: '🏦',
-    description: 'Transfer Bank',
-  },
-  {
-    value: 'SHOPEEPAY',
-    label: 'ShopeePay',
-    icon: '🛒',
-    description: 'Pembayaran via ShopeePay',
-  },
-  {
-    value: 'DANA',
-    label: 'Dana',
-    icon: '💙',
-    description: 'Pembayaran via DANA',
-  },
+  { value: 'CASH', label: 'Cash', icon: '💵' },
+  { value: 'QRIS', label: 'QRIS', icon: '📲' },
+  { value: 'BANK_TRANSFER', label: 'Bank', icon: '🏦' },
+  { value: 'SHOPEEPAY', label: 'ShopeePay', icon: '🛒' },
+  { value: 'DANA', label: 'DANA', icon: '💙' },
 ];
 
 const finalTotal = computed(() => {
-  return props.total - props.discount;
+  return props.total; // Total passed in should already be discounted if needed, but let's respect prop
 });
 
 const change = computed(() => {
@@ -202,17 +193,22 @@ const canConfirm = computed(() => {
   if (selectedPayment.value === 'CASH') {
     return cashAmount.value >= finalTotal.value;
   }
-  // Untuk metode pembayaran lainnya (QRIS, BANK_TRANSFER, SHOPEEPAY, DANA), langsung bisa konfirmasi
   return true;
+});
+
+const quickAmounts = computed(() => {
+  const total = finalTotal.value;
+  if (total <= 0) return [];
+  return [
+    total,
+    Math.ceil(total / 10000) * 10000,
+    Math.ceil(total / 50000) * 50000,
+    Math.ceil(total / 100000) * 100000
+  ].filter((v, i, a) => a.indexOf(v) === i && v >= total).slice(0, 4);
 });
 
 const calculateChange = () => {
   // Auto-calculate change
-};
-
-const getPaymentMethodLabel = (method: string) => {
-  const methodObj = paymentMethods.find(m => m.value === method);
-  return methodObj ? methodObj.label : method;
 };
 
 const close = () => {
@@ -224,9 +220,8 @@ const close = () => {
 
 const onPaymentMethodChange = () => {
   if (selectedPayment.value === 'CASH') {
-    // Auto-set cash amount to total if empty
     if (!cashAmount.value || cashAmount.value < finalTotal.value) {
-      cashAmount.value = Math.ceil(finalTotal.value / 1000) * 1000; // Round up to nearest 1000
+      cashAmount.value = finalTotal.value;
     }
   }
 };
@@ -243,22 +238,22 @@ const confirmPayment = () => {
   } else if (selectedPayment.value === 'QRIS') {
     paymentData.qrCode = qrCode.value || undefined;
   }
-  // Untuk BANK_TRANSFER, SHOPEEPAY, DANA tidak perlu data tambahan
   
   emit('confirm', paymentData);
 };
 
-// Watch for total changes and auto-update cash amount
-watch(() => props.total, () => {
-  if (selectedPayment.value === 'CASH' && cashAmount.value < finalTotal.value) {
-    cashAmount.value = Math.ceil(finalTotal.value / 1000) * 1000;
+watch(() => props.total, (newTotal) => {
+  if (selectedPayment.value === 'CASH') {
+     // If cash was default (exact), update it
+     if (Math.abs(cashAmount.value - (newTotal - (props.discount || 0))) < 100) {
+        cashAmount.value = newTotal;
+     }
   }
 });
 
-// Reset when modal opens
 watch(() => props.show, (isOpen) => {
   if (isOpen) {
-    selectedPayment.value = ''; // Reset to empty, user must select
+    selectedPayment.value = ''; 
     cashAmount.value = 0;
     qrCode.value = '';
   }

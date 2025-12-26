@@ -589,13 +589,13 @@ onMounted(() => {
 <style scoped>
 /* V3 Design System Colors */
 .bg-primary {
-  background-color: #137fec;
+  background-color: #10b981;
 }
 .text-primary {
-  color: #137fec;
+  color: #10b981;
 }
 .border-primary {
-  border-color: #137fec;
+  border-color: #10b981;
 }
 
 /* Receipt Pattern Background */

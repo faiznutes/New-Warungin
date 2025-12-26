@@ -1,53 +1,54 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 transition-all"
     @click.self="handleCancel"
   >
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-gray-900">Pilih Tenant</h2>
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200 font-display">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+           <h2 class="text-2xl font-bold text-slate-900">Select Tenant</h2>
+           <p class="text-sm text-slate-500 font-medium mt-1">Choose a tenant to manage</p>
+        </div>
         <button
           @click="handleCancel"
-          class="text-gray-400 hover:text-gray-600 transition-colors"
+          class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
-      <p class="text-gray-600 mb-6">
-        Sebagai Super Admin, Anda perlu memilih tenant untuk melihat data mereka.
-      </p>
-
-      <div v-if="loading" class="text-center py-8">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Memuat daftar tenant...</p>
+      <div v-if="loading" class="flex flex-col items-center justify-center py-10">
+        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <p class="text-slate-500 font-medium">Loading tenants...</p>
       </div>
 
-      <div v-else-if="tenants.length === 0" class="text-center py-8">
-        <p class="text-gray-600">Tidak ada tenant tersedia.</p>
+      <div v-else-if="tenants.length === 0" class="flex flex-col items-center justify-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+        <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">store</span>
+        <p class="text-slate-500 font-medium">No tenants available.</p>
       </div>
 
-      <div v-else class="space-y-2 max-h-96 overflow-y-auto">
+      <div v-else class="space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar px-1">
         <button
           v-for="tenant in tenants"
           :key="tenant.id"
           @click="handleSelect(tenant.id)"
-          class="w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
+          class="w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-white hover:border-emerald-500 hover:bg-emerald-50/50 hover:shadow-md transition-all duration-200 group"
         >
-          <div class="font-semibold text-gray-900">{{ tenant.name }}</div>
-          <div class="text-sm text-gray-500 mt-1">{{ tenant.email || tenant.slug }}</div>
+          <div class="flex items-center justify-between">
+             <div class="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{{ tenant.name }}</div>
+             <span class="material-symbols-outlined text-slate-300 group-hover:text-emerald-500 transition-colors">arrow_forward</span>
+          </div>
+          <div class="text-sm text-slate-500 mt-1 font-medium group-hover:text-emerald-600/70">{{ tenant.email || tenant.slug }}</div>
         </button>
       </div>
 
-      <div class="mt-6 flex justify-end space-x-3">
+      <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-100">
         <button
           @click="handleCancel"
-          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-medium"
+          class="w-full py-3 text-slate-700 font-bold bg-slate-50 rounded-xl hover:bg-slate-100 border border-slate-200 transition"
         >
-          Batal
+          Cancel
         </button>
       </div>
     </div>
@@ -115,4 +116,3 @@ onMounted(() => {
   }
 });
 </script>
-
