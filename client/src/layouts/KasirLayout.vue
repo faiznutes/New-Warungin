@@ -98,7 +98,7 @@
           <router-link
             to="/app/cashier/cash-shift"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-[#137fec]/10 text-[#137fec]"
+            active-class="bg-[#10b981]/10 text-[#10b981]"
             :class="[$route.path.startsWith('/app/cashier/cash-shift') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
             @click="closeSidebarOnMobile"
           >
@@ -110,7 +110,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 shrink-0">
           <div class="flex items-center gap-3 mb-3">
-            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#137fec] font-bold">
+            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#10b981] font-bold">
                {{ userInitials }}
             </div>
             <div class="flex flex-col min-w-0">
@@ -150,7 +150,7 @@
               <span class="material-symbols-outlined">menu</span>
             </button>
             <div class="flex items-center gap-2 text-sm text-[#4c739a] dark:text-slate-400 mb-1">
-              <router-link to="/app/dashboard" class="hover:text-[#137fec] transition-colors">Home</router-link>
+              <router-link to="/app/dashboard" class="hover:text-[#10b981] transition-colors">Home</router-link>
               <span class="text-xs">/</span>
               <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
             </div>
@@ -168,7 +168,7 @@
              </div>
 
             <!-- Notifications -->
-            <button class="relative p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
+            <button class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
               <span class="material-symbols-outlined text-[24px]">notifications</span>
             </button>
           </div>

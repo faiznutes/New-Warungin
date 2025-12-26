@@ -24,7 +24,7 @@
           @click="activeTab = tab.id"
           class="flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap"
           :class="activeTab === tab.id 
-            ? 'bg-[#137fec] text-white shadow-lg shadow-blue-500/30' 
+            ? 'bg-[#10b981] text-white shadow-lg shadow-blue-500/30' 
             : 'text-[#4c739a] hover:bg-[#f6f7f8] dark:hover:bg-slate-700'"
         >
           <span class="material-symbols-outlined text-[20px]">{{ tab.icon }}</span>
@@ -35,7 +35,7 @@
 
     <!-- Content Area -->
     <div v-if="loading && !containers.length && !serverResources.cpu" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-      <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium text-sm">Connecting to server...</div>
     </div>
 
@@ -46,7 +46,7 @@
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Docker Containers</h3>
           <button
             @click="loadContainers"
-            class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-xl hover:bg-[#f6f7f8] transition"
+            class="p-2 text-[#4c739a] hover:text-[#10b981] rounded-xl hover:bg-[#f6f7f8] transition"
             title="Refresh"
           >
             <span class="material-symbols-outlined">refresh</span>
@@ -102,7 +102,7 @@
                   <div class="flex items-center justify-end gap-1">
                     <button
                       @click="viewLogs(container.name)"
-                      class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
+                      class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 rounded-xl transition"
                       title="View Logs"
                     >
                       <span class="material-symbols-outlined text-[18px]">terminal</span>
@@ -142,14 +142,14 @@
              </div>
              <div class="relative pt-2">
                 <div class="flex items-end gap-2 mb-2">
-                   <span class="text-4xl font-extrabold text-[#137fec]">{{ serverResources.cpu || '0' }}<span class="text-xl">%</span></span>
+                   <span class="text-4xl font-extrabold text-[#10b981]">{{ serverResources.cpu || '0' }}<span class="text-xl">%</span></span>
                 </div>
                 <div class="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                    <div 
                       class="h-full rounded-full transition-all duration-500"
                       :class="[
                          (parseFloat(serverResources.cpu) || 0) > 80 ? 'bg-red-500' : 
-                         (parseFloat(serverResources.cpu) || 0) > 60 ? 'bg-amber-500' : 'bg-[#137fec]'
+                         (parseFloat(serverResources.cpu) || 0) > 60 ? 'bg-amber-500' : 'bg-[#10b981]'
                       ]"
                       :style="{ width: (serverResources.cpu || 0) + '%' }"
                    ></div>
@@ -220,11 +220,11 @@
               <div v-for="disk in serverResources.disks" :key="disk.mount || disk.device" class="p-4 rounded-xl bg-[#f6f7f8] dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700">
                  <div class="flex justify-between mb-2">
                     <span class="font-bold text-[#0d141b] dark:text-white text-sm truncate" :title="disk.mount">{{ disk.mount || disk.device }}</span>
-                    <span class="font-bold text-[#137fec] text-sm">{{ disk.usage || '0' }}%</span>
+                    <span class="font-bold text-[#10b981] text-sm">{{ disk.usage || '0' }}%</span>
                  </div>
                  <div class="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
                     <div 
-                       class="h-full rounded-full bg-[#137fec]"
+                       class="h-full rounded-full bg-[#10b981]"
                        :style="{ width: (disk.usage || '0') + '%' }"
                     ></div>
                  </div>
@@ -277,7 +277,7 @@
                <select
                  v-model="selectedLogType"
                  @change="loadLogs"
-                 class="px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                 class="px-3 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50"
                >
                  <option value="backend">Backend</option>
                  <option value="frontend">Frontend</option>
@@ -287,7 +287,7 @@
                </select>
                <button
                  @click="loadLogs"
-                 class="px-4 py-2 bg-[#137fec] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
+                 class="px-4 py-2 bg-[#10b981] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
                >
                  Refresh
                </button>
@@ -312,7 +312,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-5xl w-full h-[80vh] flex flex-col overflow-hidden animate-scale-in">
           <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-[#f6f7f8] dark:bg-slate-900">
             <div class="flex items-center gap-3">
-               <span class="material-symbols-outlined text-[#137fec]">terminal</span>
+               <span class="material-symbols-outlined text-[#10b981]">terminal</span>
                <div>
                   <h3 class="font-bold text-[#0d141b] dark:text-white">Container Logs</h3>
                   <p class="text-xs text-[#4c739a] font-mono">{{ selectedContainerName }}</p>

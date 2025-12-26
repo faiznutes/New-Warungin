@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-8">
     <!-- Welcome Section -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-16 h-16 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium">Loading data...</div>
     </div>
 
@@ -22,7 +22,7 @@
           </router-link>
           <router-link
             to="/app/tenants"
-            class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-blue-500/30 flex items-center gap-2 transition-colors"
+            class="px-4 py-2 bg-[#10b981] hover:bg-blue-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-blue-500/30 flex items-center gap-2 transition-colors"
           >
             <span class="material-symbols-outlined text-[18px]">add</span>
             New Tenant
@@ -36,7 +36,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
           <div class="flex justify-between items-start">
             <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <span class="material-symbols-outlined text-[#137fec]">payments</span>
+              <span class="material-symbols-outlined text-[#10b981]">payments</span>
             </div>
             <span class="flex items-center text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded text-xs font-semibold">
               <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span> 12%
@@ -131,27 +131,27 @@
           <div class="flex flex-col gap-4">
             <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Aksi Cepat</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <router-link to="/app/tenants" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#137fec]/50 hover:shadow-md transition-all group">
-                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#137fec] group-hover:text-white transition-colors text-[#137fec]">
+              <router-link to="/app/tenants" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#10b981]/50 hover:shadow-md transition-all group">
+                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#10b981] group-hover:text-white transition-colors text-[#10b981]">
                   <span class="material-symbols-outlined">add_business</span>
                 </div>
                 <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Tambah Tenant</span>
               </router-link>
-              <router-link to="/app/reports/global" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#137fec]/50 hover:shadow-md transition-all group">
-                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#137fec] group-hover:text-white transition-colors text-[#137fec]">
+              <router-link to="/app/reports/global" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#10b981]/50 hover:shadow-md transition-all group">
+                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#10b981] group-hover:text-white transition-colors text-[#10b981]">
                   <span class="material-symbols-outlined">post_add</span>
                 </div>
                 <!-- Kept route to global reports, but label matches HTML if visually relevant, but user said not to change route functions -->
                 <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Global Reports</span> 
               </router-link>
-              <router-link to="/app/tenants/support" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#137fec]/50 hover:shadow-md transition-all group">
-                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#137fec] group-hover:text-white transition-colors text-[#137fec]">
+              <router-link to="/app/tenants/support" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#10b981]/50 hover:shadow-md transition-all group">
+                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#10b981] group-hover:text-white transition-colors text-[#10b981]">
                   <span class="material-symbols-outlined">support_agent</span>
                 </div>
                 <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Tiket Support</span>
               </router-link>
-              <router-link to="/app/users" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#137fec]/50 hover:shadow-md transition-all group">
-                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#137fec] group-hover:text-white transition-colors text-[#137fec]">
+              <router-link to="/app/users" class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-[#10b981]/50 hover:shadow-md transition-all group">
+                <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#10b981] group-hover:text-white transition-colors text-[#10b981]">
                   <span class="material-symbols-outlined">settings_account_box</span>
                 </div>
                 <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Manage User</span>
@@ -163,7 +163,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
               <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Pembelian Addon Terbaru</h3>
-              <router-link to="/app/addons" class="text-sm text-[#137fec] font-medium hover:underline">View All</router-link>
+              <router-link to="/app/addons" class="text-sm text-[#10b981] font-medium hover:underline">View All</router-link>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
@@ -221,7 +221,7 @@
                   <span class="text-xs font-semibold text-[#4c739a] dark:text-slate-400">{{ plan.count }} Tenants</span>
                 </div>
                 <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
-                  <div class="bg-[#137fec] h-2 rounded-full" :style="{ width: `${(plan.count / (stats?.overview?.activeSubscriptions || 1)) * 100}%` }"></div>
+                  <div class="bg-[#10b981] h-2 rounded-full" :style="{ width: `${(plan.count / (stats?.overview?.activeSubscriptions || 1)) * 100}%` }"></div>
                 </div>
                 <p class="text-xs text-[#4c739a]">{{ Math.round((plan.count / (stats?.overview?.activeSubscriptions || 1)) * 100) }}% of subscriptions</p>
               </div>
@@ -238,8 +238,8 @@
               <!-- Simple CSS Donut representation using conic gradient or fall back to simple circle -->
               <div class="relative size-32 shrink-0 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
                  <!-- Gradient approximation based on active count vs total -->
-                 <div class="absolute inset-0 rounded-full" :style="`background: conic-gradient(#137fec 0% ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}%, #f59e0b ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}% 100%); opacity: 0.1`"></div>
-                <div class="absolute inset-0 rounded-full border-[8px] border-[#137fec]" style="clip-path: circle(100%);"></div>
+                 <div class="absolute inset-0 rounded-full" :style="`background: conic-gradient(#10b981 0% ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}%, #f59e0b ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}% 100%); opacity: 0.1`"></div>
+                <div class="absolute inset-0 rounded-full border-[8px] border-[#10b981]" style="clip-path: circle(100%);"></div>
                 
                 <div class="absolute inset-4 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center flex-col z-10">
                   <span class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ stats?.overview?.activeSubscriptions || 0 }}</span>

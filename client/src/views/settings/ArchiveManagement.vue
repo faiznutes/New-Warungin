@@ -17,7 +17,7 @@
         <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
            <div class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Orders Archived</div>
            <div class="flex items-end gap-2">
-              <span class="text-3xl font-extrabold text-[#137fec]">{{ stats.ordersCount || 0 }}</span>
+              <span class="text-3xl font-extrabold text-[#10b981]">{{ stats.ordersCount || 0 }}</span>
               <span class="material-symbols-outlined text-slate-300 text-3xl ml-auto">shopping_cart</span>
            </div>
         </div>
@@ -71,7 +71,7 @@
                    <input
                      v-model="archiveLink"
                      type="url"
-                     class="flex-1 px-4 py-2 bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white placeholder:text-[#94a3b8]"
+                     class="flex-1 px-4 py-2 bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white placeholder:text-[#94a3b8]"
                      placeholder="https://drive.google.com/..."
                      @blur="saveArchiveLink"
                    />
@@ -94,13 +94,13 @@
           <!-- Archive Orders -->
           <button
             @click="showArchiveOrdersModal = true"
-            class="flex items-center p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#137fec] hover:shadow-md hover:bg-blue-50/30 transition-all text-left bg-white dark:bg-slate-800 group"
+            class="flex items-center p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#10b981] hover:shadow-md hover:bg-blue-50/30 transition-all text-left bg-white dark:bg-slate-800 group"
           >
              <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined">shopping_bag</span>
              </div>
              <div>
-                <h4 class="font-bold text-[#0d141b] dark:text-white text-sm group-hover:text-[#137fec] transition-colors">Archive Orders</h4>
+                <h4 class="font-bold text-[#0d141b] dark:text-white text-sm group-hover:text-[#10b981] transition-colors">Archive Orders</h4>
                 <p class="text-xs text-[#4c739a]">Completed/Cancelled</p>
              </div>
           </button>
@@ -155,7 +155,7 @@
           <h2 class="text-lg font-bold text-[#0d141b] dark:text-white">Archive Files</h2>
           <button
             @click="loadArchiveFiles"
-            class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-xl hover:bg-slate-50 transition"
+            class="p-2 text-[#4c739a] hover:text-[#10b981] rounded-xl hover:bg-slate-50 transition"
             title="Refresh"
           >
             <span class="material-symbols-outlined">refresh</span>
@@ -206,7 +206,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right">
                   <button
                     @click="restoreArchive(file.path)"
-                    class="px-3 py-1.5 bg-white border border-slate-200 text-[#4c739a] hover:text-[#137fec] hover:border-[#137fec] rounded-xl text-xs font-bold transition flex items-center gap-1 ml-auto shadow-sm"
+                    class="px-3 py-1.5 bg-white border border-slate-200 text-[#4c739a] hover:text-[#10b981] hover:border-[#10b981] rounded-xl text-xs font-bold transition flex items-center gap-1 ml-auto shadow-sm"
                   >
                     <span class="material-symbols-outlined text-[16px]">history</span>
                     Restore
@@ -239,7 +239,7 @@
                   type="number"
                   min="30"
                   max="730"
-                  class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-center font-bold text-lg"
+                  class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-center font-bold text-lg"
                 />
                 <p class="text-xs text-[#4c739a] mt-2 text-center">Rekomendasi: 730 hari (2 tahun)</p>
              </div>
@@ -249,7 +249,7 @@
                 <button 
                   @click="archiveOrders" 
                   :disabled="archiving"
-                  class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition disabled:opacity-50"
+                  class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition disabled:opacity-50"
                 >
                   {{ archiving ? 'Memproses...' : 'Mulai Archive' }}
                 </button>

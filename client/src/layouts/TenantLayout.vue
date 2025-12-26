@@ -83,7 +83,7 @@
               v-if="authStore.user?.role === 'ADMIN_TENANT'"
               to="/app/products/adjustments"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
+              active-class="bg-[#10b981]/10 text-[#10b981]"
               :class="[$route.path === '/app/products/adjustments' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -94,7 +94,7 @@
             <router-link
               to="/app/orders"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
+              active-class="bg-[#10b981]/10 text-[#10b981]"
               :class="[$route.path.startsWith('/app/orders') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -105,7 +105,7 @@
             <router-link
               to="/app/customers"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#137fec]/10 text-[#137fec]"
+              active-class="bg-[#10b981]/10 text-[#10b981]"
               :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
               @click="closeSidebarOnMobile"
             >
@@ -121,7 +121,7 @@
           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="mb-1">
             <button
               @click="toggleMenu('laporan')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#137fec] transition-colors mb-1"
+              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
             >
               <span>Laporan & Analitik</span>
               <span 
@@ -136,8 +136,8 @@
               <router-link
                 to="/app/reports"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#137fec]/10 text-[#137fec]"
-                exact-active-class="bg-[#137fec]/10 text-[#137fec]"
+                active-class="bg-[#10b981]/10 text-[#10b981]"
+                exact-active-class="bg-[#10b981]/10 text-[#10b981]"
                 :class="[$route.path === '/app/reports' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                 @click="closeSidebarOnMobile"
               >
@@ -150,7 +150,7 @@
                 <router-link
                   to="/app/analytics"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#137fec]/10 text-[#137fec]"
+                  active-class="bg-[#10b981]/10 text-[#10b981]"
                   :class="[$route.path === '/app/analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
                 >
@@ -161,7 +161,7 @@
                 <router-link
                   to="/app/finance"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#137fec]/10 text-[#137fec]"
+                  active-class="bg-[#10b981]/10 text-[#10b981]"
                   :class="[$route.path === '/app/finance' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
                 >
@@ -172,7 +172,7 @@
                 <router-link
                   to="/app/profit-loss"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#137fec]/10 text-[#137fec]"
+                  active-class="bg-[#10b981]/10 text-[#10b981]"
                   :class="[$route.path === '/app/profit-loss' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
                 >
@@ -183,7 +183,7 @@
                 <router-link
                   to="/app/reports/advanced"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#137fec]/10 text-[#137fec]"
+                  active-class="bg-[#10b981]/10 text-[#10b981]"
                   :class="[$route.path === '/app/reports/advanced' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
                 >
@@ -194,7 +194,7 @@
                 <router-link
                   to="/app/finance/management"
                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#137fec]/10 text-[#137fec]"
+                  active-class="bg-[#10b981]/10 text-[#10b981]"
                   :class="[$route.path === '/app/finance/management' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
                   @click="closeSidebarOnMobile"
                 >

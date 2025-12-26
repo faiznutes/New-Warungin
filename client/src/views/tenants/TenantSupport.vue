@@ -19,7 +19,7 @@
           <select
             v-model="selectedTenantId"
             @change="handleTenantChange"
-            class="w-full pl-4 pr-10 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
+            class="w-full pl-4 pr-10 py-2.5 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
             :class="{ 'border-red-300': !selectedTenantId && showError }"
           >
             <option value="">-- Pilih Tenant --</option>
@@ -79,7 +79,7 @@
           @click="activeTab = tab.id"
           class="flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap"
           :class="activeTab === tab.id 
-            ? 'border-[#137fec] text-[#137fec]' 
+            ? 'border-[#10b981] text-[#10b981]' 
             : 'border-transparent text-[#4c739a] hover:text-[#0d141b] dark:hover:text-white'"
         >
           <component :is="tab.icon" class="w-5 h-5" />

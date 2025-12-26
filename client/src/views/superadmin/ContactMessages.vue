@@ -16,14 +16,14 @@
           v-model="searchQuery"
           type="text"
           placeholder="Search messages..."
-          class="w-full pl-10 pr-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec] text-[#0d141b] dark:text-white placeholder:text-[#4c739a]"
+          class="w-full pl-10 pr-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#10b981] text-[#0d141b] dark:text-white placeholder:text-[#4c739a]"
           @input="loadMessages"
         />
       </div>
       <select
         v-model="filterRead"
         @change="loadMessages"
-        class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec] text-[#0d141b] dark:text-white"
+        class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#10b981] text-[#0d141b] dark:text-white"
       >
         <option value="">All Status</option>
         <option value="false">Unread</option>
@@ -32,7 +32,7 @@
     </div>
 
     <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-       <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+       <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
        <div class="text-[#4c739a] font-medium text-sm">Loading messages...</div>
     </div>
 
@@ -47,7 +47,7 @@
     <div v-else class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col min-h-0">
       <!-- Bulk Actions Bar -->
       <div v-if="selectedMessages.length > 0" class="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="flex items-center gap-2 text-sm font-bold text-[#137fec]">
+        <div class="flex items-center gap-2 text-sm font-bold text-[#10b981]">
           <span class="material-symbols-outlined text-[20px]">check_circle</span>
           {{ selectedMessages.length }} messages selected
         </div>
@@ -92,7 +92,7 @@
                   type="checkbox"
                   :checked="selectedMessages.length === messages.length && messages.length > 0"
                   @change="toggleSelectAll"
-                  class="rounded border-slate-300 text-[#137fec] focus:ring-[#137fec]"
+                  class="rounded border-slate-300 text-[#10b981] focus:ring-[#10b981]"
                 />
               </th>
               <th class="px-6 py-4 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Pengirim</th>
@@ -115,7 +115,7 @@
                   type="checkbox"
                   :value="message.id"
                   v-model="selectedMessages"
-                  class="rounded border-slate-300 text-[#137fec] focus:ring-[#137fec]"
+                  class="rounded border-slate-300 text-[#10b981] focus:ring-[#10b981]"
                 />
               </td>
               <td class="px-6 py-4">
@@ -148,7 +148,7 @@
                 <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     @click="viewMessage(message)"
-                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
+                    class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 rounded-xl transition"
                     title="Lihat Detail"
                   >
                     <span class="material-symbols-outlined text-[20px]">visibility</span>
@@ -220,7 +220,7 @@
             <!-- Header Info -->
             <div class="flex items-start justify-between gap-4">
                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-full bg-[#137fec]/10 flex items-center justify-center text-[#137fec] text-xl font-bold uppercase">
+                  <div class="w-12 h-12 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981] text-xl font-bold uppercase">
                      {{ selectedMessage.name.charAt(0) }}
                   </div>
                   <div>
@@ -272,7 +272,7 @@
           <div class="p-6 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 bg-[#f6f7f8] dark:bg-slate-900/10">
             <button
               @click="toggleReadStatus(selectedMessage)"
-              class="px-4 py-2 border border-slate-300 hover:bg-white text-[#4c739a] hover:text-[#137fec] rounded-xl text-sm font-bold transition flex items-center gap-2"
+              class="px-4 py-2 border border-slate-300 hover:bg-white text-[#4c739a] hover:text-[#10b981] rounded-xl text-sm font-bold transition flex items-center gap-2"
             >
               <span class="material-symbols-outlined text-[18px]">{{ selectedMessage.isRead ? 'mark_email_unread' : 'mark_email_read' }}</span>
               <span>{{ selectedMessage.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca' }}</span>
@@ -286,7 +286,7 @@
             </button>
             <button
               @click="showDetailModal = false"
-              class="px-4 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+              class="px-4 py-2 bg-[#10b981] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               Tutup
             </button>

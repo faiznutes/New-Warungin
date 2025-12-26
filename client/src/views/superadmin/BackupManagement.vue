@@ -12,7 +12,7 @@
     <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
       <div class="flex items-center gap-2 mb-4">
          <div class="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-           <span class="material-symbols-outlined text-[#137fec] text-[20px]">filter_list</span>
+           <span class="material-symbols-outlined text-[#10b981] text-[20px]">filter_list</span>
          </div>
          <h3 class="font-bold text-[#0d141b] dark:text-white">Filter Backups</h3>
       </div>
@@ -64,7 +64,7 @@
           <input
             v-model="filters.endDate"
             type="date"
-            class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+            class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white"
           />
         </div>
       </div>
@@ -77,7 +77,7 @@
         </button>
         <button
           @click="loadBackups"
-          class="px-6 py-2 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition flex items-center gap-2"
+          class="px-6 py-2 bg-[#10b981] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition flex items-center gap-2"
         >
           <span class="material-symbols-outlined text-[18px]">search</span>
           Filter
@@ -91,7 +91,7 @@
         <h2 class="text-lg font-bold text-[#0d141b] dark:text-white">Backup Logs</h2>
         <button
           @click="loadBackups"
-          class="p-2 text-[#4c739a] hover:text-[#137fec] rounded-xl hover:bg-[#f6f7f8] transition"
+          class="p-2 text-[#4c739a] hover:text-[#10b981] rounded-xl hover:bg-[#f6f7f8] transition"
           title="Refresh"
         >
           <span class="material-symbols-outlined text-[20px]">refresh</span>
@@ -99,7 +99,7 @@
       </div>
 
       <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-         <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+         <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
          <div class="text-[#4c739a] font-medium text-sm">Memuat data backup...</div>
       </div>
 
@@ -175,7 +175,7 @@
                 <div class="flex items-center justify-end gap-1 opacity-0 hover:opacity-100 transition-opacity">
                   <button
                     @click="viewBackup(log.id)"
-                    class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 rounded-xl transition"
+                    class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 rounded-xl transition"
                     title="View Backup"
                   >
                     <span class="material-symbols-outlined text-[20px]">visibility</span>
@@ -243,7 +243,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
           <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-[#f6f7f8] dark:bg-slate-900">
             <div class="flex items-center gap-3">
-               <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm text-[#137fec]">
+               <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm text-[#10b981]">
                   <span class="material-symbols-outlined">description</span>
                </div>
                <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">View Backup</h3>
@@ -258,7 +258,7 @@
           <div class="flex-1 overflow-auto bg-white p-8">
             <div v-if="viewingBackup" v-html="viewingBackup" class="backup-content prose max-w-none"></div>
             <div v-else class="flex flex-col items-center justify-center h-full text-[#4c739a]">
-               <div class="w-10 h-10 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+               <div class="w-10 h-10 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
                <p>Memuat konten backup...</p>
             </div>
           </div>

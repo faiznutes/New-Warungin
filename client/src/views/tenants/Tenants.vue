@@ -65,7 +65,7 @@
     <!-- Tenants Table -->
     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm flex-1 overflow-hidden flex flex-col">
        <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-         <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+         <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
          <p class="text-[#4c739a] text-sm font-medium">Memuat data tenant...</p>
        </div>
 
@@ -219,7 +219,7 @@
                   v-model="tenantForm.isActive"
                   type="checkbox"
                   id="isActive"
-                  class="w-4 h-4 text-[#137fec] border-gray-300 rounded focus:ring-[#137fec]"
+                  class="w-4 h-4 text-[#10b981] border-gray-300 rounded focus:ring-[#10b981]"
                 />
               </div>
               <div class="ml-2 text-sm">
@@ -238,7 +238,7 @@
               </button>
               <button
                 type="submit"
-                class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 font-bold transition-colors shadow-lg shadow-blue-500/30"
+                class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 font-bold transition-colors shadow-lg shadow-blue-500/30"
               >
                 {{ editingTenant ? 'Simpan Perubahan' : 'Buat Tenant' }}
               </button>

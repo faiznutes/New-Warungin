@@ -49,7 +49,7 @@
                     <input
                       v-model="settings.supportEmail"
                       type="email"
-                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white placeholder:text-[#94a3b8] transition-all"
+                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white placeholder:text-[#94a3b8] transition-all"
                       placeholder="support@example.com"
                     />
                  </div>
@@ -60,7 +60,7 @@
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#94a3b8] text-[20px]">schedule</span>
                     <select
                       v-model="settings.timezone"
-                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
+                      class="w-full pl-10 pr-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white appearance-none cursor-pointer"
                     >
                       <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
                       <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
@@ -162,7 +162,7 @@
                     <span class="material-symbols-outlined">verified_user</span>
                  </div>
                  <div>
-                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">My 2FA</h4>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#10b981] transition-colors">My 2FA</h4>
                     <p class="text-xs text-[#4c739a]">Kelola otentikasi 2 faktor Anda</p>
                  </div>
                </router-link>
@@ -175,7 +175,7 @@
                     <span class="material-symbols-outlined">webhook</span>
                  </div>
                  <div>
-                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Webhooks</h4>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#10b981] transition-colors">Webhooks</h4>
                     <p class="text-xs text-[#4c739a]">Integrasi pihak ketiga</p>
                  </div>
                </router-link>
@@ -188,7 +188,7 @@
                     <span class="material-symbols-outlined">devices</span>
                  </div>
                  <div>
-                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Active Sessions</h4>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#10b981] transition-colors">Active Sessions</h4>
                     <p class="text-xs text-[#4c739a]">Monitor login aktif</p>
                  </div>
                </router-link>
@@ -201,7 +201,7 @@
                     <span class="material-symbols-outlined">password</span>
                  </div>
                  <div>
-                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">Change Password</h4>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#10b981] transition-colors">Change Password</h4>
                     <p class="text-xs text-[#4c739a]">Update kata sandi akun</p>
                  </div>
                </router-link>
@@ -214,7 +214,7 @@
                     <span class="material-symbols-outlined">policy</span>
                  </div>
                  <div>
-                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#137fec] transition-colors">GDPR / Data</h4>
+                    <h4 class="text-sm font-bold text-[#0d141b] dark:text-white group-hover:text-[#10b981] transition-colors">GDPR / Data</h4>
                     <p class="text-xs text-[#4c739a]">Ekspor dan privasi data</p>
                  </div>
                </router-link>

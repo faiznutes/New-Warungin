@@ -9,7 +9,7 @@
       <button
         v-if="canManageStores"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-[#10b981] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Store</span>
@@ -37,7 +37,7 @@
       <div class="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-2">
         <div
           class="h-2 rounded-full transition-all"
-          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-[#137fec]'"
+          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-[#10b981]'"
           :style="{ width: `${Math.min(100, ((outletLimit.currentUsage || 0) / outletLimit.limit) * 100)}%` }"
         ></div>
       </div>
@@ -46,7 +46,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
       <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
         <div class="text-[#4c739a] font-medium text-sm">Loading stores...</div>
       </div>
     </div>
@@ -59,7 +59,7 @@
       <button
         v-if="canManageStores"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-[#10b981] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Add First Store
@@ -89,7 +89,7 @@
           <div v-if="canManageStores" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               @click="editStore(store)"
-              class="p-2 text-[#4c739a] hover:text-[#137fec] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
+              class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
               title="Edit Store"
             >
               <span class="material-symbols-outlined text-[20px]">edit</span>
@@ -148,7 +148,7 @@
                   type="text"
                   required
                   placeholder="e.g. Branch A"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/20 focus:border-[#137fec]"
+                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
                 />
               </div>
 
@@ -160,7 +160,7 @@
                   v-model="storeForm.address"
                   rows="3"
                   placeholder="Full store address"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/20 focus:border-[#137fec]"
+                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
                 ></textarea>
               </div>
 
@@ -172,7 +172,7 @@
                   v-model="storeForm.phone"
                   type="tel"
                   placeholder="081234567890"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/20 focus:border-[#137fec]"
+                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
                 />
               </div>
 
@@ -181,7 +181,7 @@
                   v-model="storeForm.isActive"
                   type="checkbox"
                   id="isActive"
-                  class="w-5 h-5 text-[#137fec] border-slate-300 rounded focus:ring-[#137fec]"
+                  class="w-5 h-5 text-[#10b981] border-slate-300 rounded focus:ring-[#10b981]"
                 />
                 <label for="isActive" class="text-sm font-medium text-[#0d141b] dark:text-slate-300">
                   Store is Active
@@ -199,7 +199,7 @@
                 <button
                   type="submit"
                   :disabled="processing"
-                  class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-[#137fec]-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30"
+                  class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl hover:bg-[#10b981]-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30"
                 >
                   {{ processing ? 'Saving...' : editingStore ? 'Update' : 'Save' }}
                 </button>

@@ -4,7 +4,7 @@
       
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#137fec]"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10b981]"></div>
         <p class="mt-4 text-[#4c739a] dark:text-slate-400 font-medium">Memuat detail tenant...</p>
       </div>
 
@@ -28,7 +28,7 @@
           <div class="flex items-center gap-4">
             <button 
               @click="handleBackToTenants" 
-              class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-[#137fec] text-[#4c739a] dark:text-slate-400 hover:text-[#137fec] transition-all shadow-sm group"
+              class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-[#10b981] text-[#4c739a] dark:text-slate-400 hover:text-[#10b981] transition-all shadow-sm group"
             >
               <span class="material-symbols-outlined group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
             </button>
@@ -69,7 +69,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-1">
              <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#137fec]">store</span>
+                   <span class="material-symbols-outlined text-[#10b981]">store</span>
                    Profil Tenant
                 </h3>
              </div>
@@ -111,7 +111,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 flex flex-col">
              <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#137fec]">card_membership</span>
+                   <span class="material-symbols-outlined text-[#10b981]">card_membership</span>
                    Langganan Aktif
                 </h3>
                 <div class="flex items-center gap-2">
@@ -141,12 +141,12 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                 <span class="material-symbols-outlined text-[#137fec]">extension</span>
+                 <span class="material-symbols-outlined text-[#10b981]">extension</span>
                  Addon Aktif
               </h3>
               <button
                 @click="showAddAddonModal = true"
-                class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                class="px-4 py-2 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Tambah Addon
@@ -232,7 +232,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                 <span class="material-symbols-outlined text-[#137fec]">stars</span>
+                 <span class="material-symbols-outlined text-[#10b981]">stars</span>
                  Reward Points
               </h3>
               <button
@@ -245,7 +245,7 @@
             </div>
             
             <div v-if="loadingPoints" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#137fec]"></div>
+               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
             </div>
             
             <div v-else class="space-y-6">
@@ -297,7 +297,7 @@
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#137fec]">group</span>
+                   <span class="material-symbols-outlined text-[#10b981]">group</span>
                    Pengguna Tenant
                 </h3>
                 <p v-if="userUsage" class="text-xs text-[#4c739a] dark:text-slate-400 mt-1 font-medium">
@@ -309,7 +309,7 @@
               </div>
               <button
                 @click="showCreateUserModal = true"
-                class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
+                class="px-4 py-2 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[18px]">person_add</span>
                 User Baru
@@ -317,7 +317,7 @@
             </div>
             
             <div v-if="loadingUsers" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#137fec]"></div>
+               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
             </div>
             
             <div v-else-if="tenantUsers.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
@@ -407,7 +407,7 @@
                              <div class="text-xs text-[#4c739a] dark:text-slate-400">{{ user.lastLogin ? formatDate(user.lastLogin) : '-' }}</div>
                           </td>
                           <td class="px-4 py-3 text-right">
-                             <button @click="editUser(user)" class="p-1 text-[#4c739a] hover:text-[#137fec] transition rounded group">
+                             <button @click="editUser(user)" class="p-1 text-[#4c739a] hover:text-[#10b981] transition rounded group">
                                 <span class="material-symbols-outlined text-[20px] group-hover:scale-110">edit</span>
                              </button>
                           </td>
@@ -422,7 +422,7 @@
             <div class="flex items-center justify-between mb-6">
               <div>
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#137fec]">storefront</span>
+                   <span class="material-symbols-outlined text-[#10b981]">storefront</span>
                    Store / Outlet
                 </h3>
                 <p v-if="outletUsage" class="text-xs text-[#4c739a] dark:text-slate-400 mt-1 font-medium">
@@ -456,7 +456,7 @@
             </div>
 
             <div v-if="loadingStores" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#137fec]"></div>
+               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
             </div>
             
             <div v-else-if="tenantStores.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
@@ -508,7 +508,7 @@
           <!-- Available Addons Card -->
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-3">
              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#137fec]">shopping_bag</span>
+                <span class="material-symbols-outlined text-[#10b981]">shopping_bag</span>
                 Addon Tersedia
              </h3>
              
@@ -536,14 +536,14 @@
                 
                 <div class="mt-auto">
                    <div class="flex items-end gap-1 mb-4">
-                      <span class="text-xl font-extrabold text-[#137fec]">{{ formatCurrency(addon.price) }}</span>
+                      <span class="text-xl font-extrabold text-[#10b981]">{{ formatCurrency(addon.price) }}</span>
                       <span class="text-xs text-[#4c739a] mb-1 font-medium">/bulan</span>
                    </div>
                    
                    <button
                      v-if="!addon.comingSoon && !addon.requiresApi"
                      @click="subscribeAddon(addon)"
-                     class="w-full px-4 py-2.5 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-md shadow-blue-500/20"
+                     class="w-full px-4 py-2.5 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-md shadow-blue-500/20"
                    >
                      Berlangganan
                    </button>
@@ -571,7 +571,7 @@
               </div>
               <div>
                  <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Pilih Paket Baru</label>
-                 <select v-model="planForm.subscriptionPlan" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium">
+                 <select v-model="planForm.subscriptionPlan" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium">
                     <option value="BASIC">Starter (BASIC)</option>
                     <option value="PRO">Boost (PRO)</option>
                     <option value="ENTERPRISE">Max (ENTERPRISE)</option>
@@ -579,11 +579,11 @@
               </div>
               <div>
                  <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Durasi (Hari)</label>
-                 <input v-model.number="planForm.durationDays" type="number" min="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                 <input v-model.number="planForm.durationDays" type="number" min="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
               </div>
               <div class="flex gap-3 pt-2">
                  <button @click="showEditPlanModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
-                 <button @click="handleEditPlan" class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">Simpan</button>
+                 <button @click="handleEditPlan" class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">Simpan</button>
               </div>
            </div>
         </div>
@@ -618,11 +618,11 @@
              <div class="space-y-4">
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Durasi (Hari)</label>
-                   <input v-model.number="extendSubscriptionDays" type="number" min="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model.number="extendSubscriptionDays" type="number" min="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div class="flex gap-3 pt-2">
                    <button @click="showExtendSubscriptionModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
-                   <button @click="handleExtendSubscription" :disabled="extending" class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
+                   <button @click="handleExtendSubscription" :disabled="extending" class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
                       {{ extending ? 'Memproses...' : 'Perpanjang' }}
                    </button>
                 </div>
@@ -729,7 +729,7 @@
                   class="border rounded-xl p-4 cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50"
                   :class="[
                      addon.comingSoon || addon.requiresApi ? 'opacity-60 cursor-not-allowed bg-slate-50' : 'hover:border-blue-400',
-                     selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon ? 'border-[#137fec] ring-1 ring-[#137fec] bg-blue-50/50' : 'border-slate-200 dark:border-slate-700'
+                     selectedAddonForSubscribe?.id === addon.id && !addon.comingSoon ? 'border-[#10b981] ring-1 ring-[#10b981] bg-blue-50/50' : 'border-slate-200 dark:border-slate-700'
                   ]"
                 >
                    <div class="flex justify-between items-start">
@@ -741,7 +741,7 @@
                          <p class="text-xs text-[#4c739a] dark:text-slate-400 mt-1">{{ addon.description }}</p>
                       </div>
                       <div class="text-right">
-                         <span class="font-bold text-[#137fec]">{{ formatCurrency(addon.price) }}</span>
+                         <span class="font-bold text-[#10b981]">{{ formatCurrency(addon.price) }}</span>
                          <span class="text-xs text-[#4c739a]">/bln</span>
                       </div>
                    </div>
@@ -752,7 +752,7 @@
                 <button 
                   @click="handleSubscribeAddon" 
                   :disabled="!selectedAddonForSubscribe || selectedAddonForSubscribe?.comingSoon" 
-                  class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:shadow-none"
+                  class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:shadow-none"
                 >
                    Berlangganan
                 </button>
@@ -769,15 +769,15 @@
              <form @submit.prevent="handleCreateStore" class="space-y-4">
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Nama Toko</label>
-                   <input v-model="createStoreForm.name" type="text" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createStoreForm.name" type="text" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Alamat</label>
-                   <input v-model="createStoreForm.address" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createStoreForm.address" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Telepon</label>
-                   <input v-model="createStoreForm.phone" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createStoreForm.phone" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div class="flex gap-3 pt-2">
                    <button type="button" @click="showCreateStoreModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
@@ -798,15 +798,15 @@
              <form @submit.prevent="handleCreateUser" class="space-y-4">
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Nama</label>
-                   <input v-model="createUserForm.name" type="text" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createUserForm.name" type="text" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Email</label>
-                   <input v-model="createUserForm.email" type="email" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createUserForm.email" type="email" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Role</label>
-                   <select v-model="createUserForm.role" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium">
+                   <select v-model="createUserForm.role" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium">
                       <option value="ADMIN_TENANT">Admin</option>
                       <option value="SUPERVISOR">Supervisor</option>
                       <option value="CASHIER">Kasir</option>
@@ -815,11 +815,11 @@
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Password (Opsional)</label>
-                   <input v-model="createUserForm.password" type="password" placeholder="Auto-generate jika kosong" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="createUserForm.password" type="password" placeholder="Auto-generate jika kosong" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div class="flex gap-3 pt-2">
                    <button type="button" @click="showCreateUserModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
-                   <button type="submit" :disabled="creatingUser" class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
+                   <button type="submit" :disabled="creatingUser" class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
                       {{ creatingUser ? 'Membuat...' : 'Buat Pengguna' }}
                    </button>
                 </div>
@@ -835,15 +835,15 @@
              <div class="space-y-4">
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Nama</label>
-                   <input v-model="editUserForm.name" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="editUserForm.name" type="text" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Email</label>
-                   <input v-model="editUserForm.email" type="email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="editUserForm.email" type="email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Role</label>
-                   <select v-model="editUserForm.role" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium">
+                   <select v-model="editUserForm.role" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium">
                       <option value="OWNER">Owner</option>
                       <option value="ADMIN_TENANT">Admin</option>
                       <option value="SUPERVISOR">Supervisor</option>
@@ -853,18 +853,18 @@
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Status</label>
-                   <select v-model="editUserForm.isActive" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium">
+                   <select v-model="editUserForm.isActive" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium">
                       <option :value="true">Aktif</option>
                       <option :value="false">Tidak Aktif</option>
                    </select>
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Password Baru (Opsional)</label>
-                   <input v-model="editUserForm.password" type="password" placeholder="Kosongkan jika tidak ingin mengubah" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" />
+                   <input v-model="editUserForm.password" type="password" placeholder="Kosongkan jika tidak ingin mengubah" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" />
                 </div>
                 <div class="flex gap-3 pt-2">
                    <button @click="showEditUserModal = false" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
-                   <button @click="handleUpdateUser" :disabled="updatingUser || !editUserForm.name || !editUserForm.email" class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
+                   <button @click="handleUpdateUser" :disabled="updatingUser || !editUserForm.name || !editUserForm.email" class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
                       {{ updatingUser ? 'Menyimpan...' : 'Simpan' }}
                    </button>
                 </div>
@@ -913,19 +913,19 @@
              <div class="space-y-4">
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
                    <p class="text-xs text-[#4c739a] dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Saldo Point Saat Ini</p>
-                   <p class="text-2xl font-black text-[#137fec]">{{ tenantPoints?.currentPoints || 0 }}</p>
+                   <p class="text-2xl font-black text-[#10b981]">{{ tenantPoints?.currentPoints || 0 }}</p>
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Penyesuaian Point (+/-)</label>
-                   <input v-model.number="editPointsForm.points" type="number" step="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" placeholder="Contoh: 100 atau -50" />
+                   <input v-model.number="editPointsForm.points" type="number" step="1" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" placeholder="Contoh: 100 atau -50" />
                 </div>
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Alasan</label>
-                   <textarea v-model="editPointsForm.reason" rows="3" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium" placeholder="Wajib diisi..."></textarea>
+                   <textarea v-model="editPointsForm.reason" rows="3" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#10b981] outline-none font-medium" placeholder="Wajib diisi..."></textarea>
                 </div>
                 <div class="flex gap-3 pt-2">
                    <button @click="showEditPointsModal = false; editPointsForm = { points: 0, reason: '' };" class="flex-1 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Batal</button>
-                   <button @click="handleUpdatePoints" :disabled="updatingPoints" class="flex-1 px-4 py-2.5 bg-[#137fec] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
+                   <button @click="handleUpdatePoints" :disabled="updatingPoints" class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30">
                       {{ updatingPoints ? 'Memproses...' : 'Simpan' }}
                    </button>
                 </div>

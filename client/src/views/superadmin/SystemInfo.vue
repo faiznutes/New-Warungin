@@ -14,13 +14,13 @@
       <!-- Accordion Groups -->
       <div class="space-y-4">
         <!-- Frontend & Backend Info -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#10b981]/30">
           <button
             @click="toggleAccordion('tech')"
             class="w-full px-6 py-4 bg-[#f6f7f8] dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
             <div class="flex items-center gap-3">
-               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">code</span>
+               <span class="material-symbols-outlined text-[#10b981] group-hover:scale-110 transition-transform">code</span>
                <span class="font-bold text-[#0d141b] dark:text-white">Installed Technologies</span>
             </div>
             <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'tech' }">expand_more</span>
@@ -60,13 +60,13 @@
         </div>
 
         <!-- Docker Services -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#10b981]/30">
           <button
             @click="toggleAccordion('docker')"
             class="w-full px-6 py-4 bg-[#f6f7f8] dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
             <div class="flex items-center gap-3">
-               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">dns</span>
+               <span class="material-symbols-outlined text-[#10b981] group-hover:scale-110 transition-transform">dns</span>
                <span class="font-bold text-[#0d141b] dark:text-white">Docker Services & Penggunaan</span>
             </div>
             <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'docker' }">expand_more</span>
@@ -75,7 +75,7 @@
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div class="p-4 rounded-xl bg-[#f6f7f8] dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700">
                   <h3 class="font-bold text-[#0d141b] dark:text-white mb-2 text-sm flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[#137fec] text-[18px]">database</span> PostgreSQL Database
+                    <span class="material-symbols-outlined text-[#10b981] text-[18px]">database</span> PostgreSQL Database
                   </h3>
                   <p class="text-xs text-[#4c739a]">Database utama untuk menyimpan semua data aplikasi. Menggunakan Prisma ORM untuk manajemen schema dan migrasi.</p>
                </div>
@@ -102,13 +102,13 @@
         </div>
 
         <!-- Features by Role -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#10b981]/30">
           <button
             @click="toggleAccordion('features')"
             class="w-full px-6 py-4 bg-[#f6f7f8] dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
             <div class="flex items-center gap-3">
-               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">admin_panel_settings</span>
+               <span class="material-symbols-outlined text-[#10b981] group-hover:scale-110 transition-transform">admin_panel_settings</span>
                <span class="font-bold text-[#0d141b] dark:text-white">Fitur per Role</span>
             </div>
             <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'features' }">expand_more</span>
@@ -141,13 +141,13 @@
         </div>
 
         <!-- Subscription Plans -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#137fec]/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all hover:border-[#10b981]/30">
           <button
             @click="toggleAccordion('plans')"
              class="w-full px-6 py-4 bg-[#f6f7f8] dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group"
           >
             <div class="flex items-center gap-3">
-               <span class="material-symbols-outlined text-[#137fec] group-hover:scale-110 transition-transform">card_membership</span>
+               <span class="material-symbols-outlined text-[#10b981] group-hover:scale-110 transition-transform">card_membership</span>
                <span class="font-bold text-[#0d141b] dark:text-white">Paket Subscription</span>
             </div>
             <span class="material-symbols-outlined text-[#4c739a] transition-transform duration-300" :class="{ 'rotate-180': openAccordion === 'plans' }">expand_more</span>
@@ -163,14 +163,14 @@
                    <p class="text-green-600 font-medium">+ Receipt Basic</p>
                 </div>
               </div>
-              <div class="border-2 border-[#137fec] rounded-xl p-5 shadow-lg shadow-[#137fec]/10 relative overflow-hidden">
-                <div class="absolute top-0 right-0 bg-[#137fec] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>
-                <h3 class="font-bold text-[#137fec] mb-2">PRO (Boost)</h3>
+              <div class="border-2 border-[#10b981] rounded-xl p-5 shadow-lg shadow-[#10b981]/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-[#10b981] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>
+                <h3 class="font-bold text-[#10b981] mb-2">PRO (Boost)</h3>
                 <div class="text-xs text-[#4c739a] dark:text-slate-300 space-y-2">
                    <p><strong>200</strong> Produk</p>
                    <p><strong>10</strong> User</p>
                    <p><strong>2</strong> Outlet</p>
-                   <p class="text-[#137fec] font-medium">+ Multi-Outlet & Stock</p>
+                   <p class="text-[#10b981] font-medium">+ Multi-Outlet & Stock</p>
                 </div>
               </div>
               <div class="border border-slate-100 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition-shadow bg-purple-50 dark:bg-purple-900/10">
