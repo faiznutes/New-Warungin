@@ -115,7 +115,22 @@
                    Langganan Aktif
                 </h3>
                 <div class="flex items-center gap-2">
-              </div>
+                   <div class="flex items-start flex-col gap-1">
+                      <div class="flex items-center gap-2">
+                         <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs uppercase border border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800">
+                           {{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'basic') }}
+                         </span>
+                         <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
+                           {{ subscription ? getSubscriptionDuration(subscription) : 0 }} Hari
+                         </span>
+                      </div>
+                      <div class="flex text-xs gap-3 mt-1 text-[#4c739a] dark:text-slate-400 font-medium">
+                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : '-' }}</span>
+                         <span>•</span>
+                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : '-' }}</span>
+                      </div>
+                   </div>
+                </div>
               <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-[#4c739a] mt-2">
                 ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
               </p>
@@ -492,7 +507,7 @@
           </div>
 
           <!-- Available Addons Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-3">
              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6 flex items-center gap-2">
                 <span class="material-symbols-outlined text-[#137fec]">shopping_bag</span>
                 Addon Tersedia
@@ -830,6 +845,7 @@
                 <div>
                    <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Role</label>
                    <select v-model="editUserForm.role" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-[#137fec] outline-none font-medium">
+                      <option value="OWNER">Owner</option>
                       <option value="ADMIN_TENANT">Admin</option>
                       <option value="SUPERVISOR">Supervisor</option>
                       <option value="CASHIER">Kasir</option>
@@ -1069,7 +1085,16 @@ const getAddonDaysRemaining = (addon: Addon) => {
 };
 
 
-// Computed property for filtered active addons (safe for template)
+// Helper to calculate subscription duration
+const getSubscriptionDuration = (sub: any) => {
+  if (!sub?.startDate || !sub?.endDate) return 0;
+  const start = new Date(sub.startDate);
+  const end = new Date(sub.endDate);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+};
+
+// Filtered active addons
 const filteredActiveAddons = computed(() => {
   return safeArrayMethod(
     activeAddons.value,

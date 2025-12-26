@@ -1,87 +1,88 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-50 to-white">
+  <div class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-display">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8 sm:mb-10 md:mb-12">
-          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 px-2">Syarat & Ketentuan Warungin - Kebijakan Layanan Sistem Kasir</h1>
-          <p class="text-base sm:text-lg md:text-xl text-gray-600 px-4">
-            Ketentuan penggunaan layanan Warungin
+        <div class="text-center mb-12">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 px-2">
+             Syarat & Ketentuan Layanan
+          </h1>
+          <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 px-4">
+            Terakhir diperbarui: Desember 2025
           </p>
         </div>
         
-        <div class="bg-white rounded-xl shadow-xl p-5 sm:p-6 md:p-8 space-y-6 sm:space-y-8 border border-gray-100">
-          <section class="pb-4 sm:pb-6 border-b border-gray-200">
-            <div class="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span class="text-primary-600 font-bold text-base sm:text-lg">1</span>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-md transition p-8 sm:p-10 space-y-10 border border-slate-200 dark:border-slate-700">
+          <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+                1
               </div>
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900">1. Penerimaan Syarat & Ketentuan</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Penerimaan Syarat & Ketentuan</h2>
             </div>
-            <p class="text-gray-700 leading-relaxed">
-              Dengan menggunakan Warungin, Anda menyetujui untuk terikat oleh syarat dan ketentuan ini.
-              Jika Anda tidak setuju dengan syarat-syarat ini, mohon jangan menggunakan layanan kami.
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+              Dengan mendaftar dan menggunakan layanan Warungin, Anda menyatakan setuju untuk terikat oleh syarat dan ketentuan ini. 
+              Layanan ini ditujukan untuk penggunaan bisnis profesional.
             </p>
           </section>
 
-          <section class="pb-6 border-b border-gray-200">
-            <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                <span class="text-primary-600 font-bold text-lg">2</span>
+          <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+                2
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">2. Deskripsi Layanan Sistem Kasir</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Layanan Sistem Kasir</h2>
             </div>
-            <p class="text-gray-700 leading-relaxed">
-              Warungin adalah sistem berbasis cloud yang memungkinkan Anda mengelola
-              bisnis, produk, transaksi, dan laporan secara digital. Layanan ini tersedia 24/7 dengan 
-              backup otomatis dan keamanan data terjamin.
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg mb-4">
+              Warungin menyediakan platform Point of Sales (POS) berbasis cloud. Kami menjamin ketersediaan layanan (SLA) 99.9% 
+              untuk mendukung operasional bisnis Anda.
             </p>
+             <ul class="list-disc list-inside text-slate-600 dark:text-slate-400 space-y-2 ml-2">
+                <li>Backup data otomatis setiap hari</li>
+                <li>Enkripsi data end-to-end</li>
+                <li>Akses multi-device real-time</li>
+             </ul>
           </section>
 
-          <section class="pb-6 border-b border-gray-200">
-            <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                <span class="text-primary-600 font-bold text-lg">3</span>
+          <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+                3
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">3. Berlangganan & Pembayaran Paket</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Berlangganan & Pembayaran</h2>
             </div>
-            <p class="text-gray-700 leading-relaxed mb-3">
-              Layanan kami tersedia dengan berbagai paket berlangganan mulai dari Rp 149rb/bulan. 
-              Pembayaran dilakukan secara berkala sesuai dengan paket yang Anda pilih.
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg mb-4">
+              Tagihan dibayarkan di muka sesuai siklus yang dipilih (bulanan/tahunan). Harga dapat berubah dengan pemberitahuan 30 hari sebelumnya.
             </p>
-            <p class="text-gray-700 leading-relaxed">
-              <strong>Pembatalan:</strong> Anda dapat membatalkan langganan kapan saja tanpa biaya tambahan. 
-              Data Anda akan tetap tersimpan selama 30 hari setelah pembatalan.
-            </p>
+            <div class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
+               <p class="text-slate-700 dark:text-slate-300 font-medium">
+                  <strong>Kebijakan Refund:</strong> Kami menawarkan garansi uang kembali 7 hari pertama jika layanan tidak sesuai ekspektasi teknis.
+               </p>
+            </div>
           </section>
 
-          <section class="pb-6 border-b border-gray-200">
-            <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                <span class="text-primary-600 font-bold text-lg">4</span>
+          <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
+            <div class="flex items-center gap-4 mb-4">
+               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+                4
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">4. Data & Privasi Pengguna</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Privasi Data</h2>
             </div>
-            <p class="text-gray-700 leading-relaxed mb-3">
-              Kami sangat menghormati privasi data Anda. Data yang Anda simpan di Warungin dijamin
-              keamanannya dengan enkripsi tingkat tinggi dan backup otomatis setiap hari.
-            </p>
-            <p class="text-gray-700 leading-relaxed">
-              <strong>Privasi:</strong> Data Anda tidak akan dibagikan kepada pihak ketiga tanpa persetujuan 
-              Anda, kecuali diminta oleh hukum yang berlaku.
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg mb-4">
+              Data transaksi Anda adalah milik Anda sepenuhnya. Warungin tidak akan membagikan, menjual, atau menggunakan data transaksi spesifik Anda 
+              tanpa izin, kecuali untuk keperluan agregasi statistik anonim atau kewajiban hukum.
             </p>
           </section>
 
           <section>
-            <div class="flex items-center space-x-3 mb-4">
-              <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                <span class="text-primary-600 font-bold text-lg">5</span>
+            <div class="flex items-center gap-4 mb-4">
+               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+                5
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">5. Tanggung Jawab Pengguna Sistem</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Batasan Tanggung Jawab</h2>
             </div>
-            <p class="text-gray-700 leading-relaxed">
-              Anda bertanggung jawab untuk menjaga kerahasiaan akun Anda dan memastikan bahwa semua
-              aktivitas yang dilakukan melalui akun Anda sesuai dengan hukum yang berlaku. 
-              Jangan bagikan kredensial login Anda kepada pihak lain.
+            <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+              Warungin tidak bertanggung jawab atas kerugian tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan layanan, 
+              termasuk namun tidak terbatas pada kehilangan keuntungan atau data akibat kesalahan pengguna.
             </p>
           </section>
         </div>
@@ -89,11 +90,9 @@
         <div class="mt-12 text-center">
           <router-link
             to="/"
-            class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            class="inline-flex items-center px-8 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold shadow-sm hover:shadow-md"
           >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <span class="material-symbols-outlined mr-2">arrow_back</span>
             Kembali ke Beranda
           </router-link>
         </div>
@@ -107,13 +106,11 @@ import { onMounted } from 'vue';
 import { useSEO } from '../../composables/useSEO';
 
 useSEO({
-  title: 'Syarat & Ketentuan - Warungin',
-  description: 'Ketentuan penggunaan layanan Warungin. Pelajari tentang berlangganan, pembayaran, privasi data, dan tanggung jawab pengguna.',
-  keywords: 'syarat ketentuan warungin, terms of service, kebijakan privasi, ketentuan penggunaan',
+  title: 'Syarat & Ketentuan Layanan',
+  description: 'Ketentuan penggunaan dan kebijakan layanan sistem kasir Warungin.',
 });
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
-

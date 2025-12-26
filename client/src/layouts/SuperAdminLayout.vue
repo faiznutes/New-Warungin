@@ -100,6 +100,54 @@
           <p class="text-sm font-medium leading-normal">Analytics</p>
         </router-link>
 
+        <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
+        <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 mt-1">System</p>
+
+        <router-link 
+          to="/app/superadmin/server-monitor" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path === '/app/superadmin/server-monitor' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/server-monitor' }">dns</span>
+          <p class="text-sm font-medium leading-normal">Server Monitor</p>
+        </router-link>
+
+        <router-link 
+          to="/app/superadmin/backups" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path === '/app/superadmin/backups' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/backups' }">backup</span>
+          <p class="text-sm font-medium leading-normal">Backups</p>
+        </router-link>
+
+        <router-link 
+          to="/app/superadmin/contact-messages" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path === '/app/superadmin/contact-messages' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+           <!-- Badge check -->
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/contact-messages' }">mail</span>
+          <p class="text-sm font-medium leading-normal">Pesan Kontak</p>
+        </router-link>
+
+        <router-link 
+          to="/app/superadmin/system-info" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-primary/10 text-primary"
+          :class="[$route.path === '/app/superadmin/system-info' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/superadmin/system-info' }">info</span>
+          <p class="text-sm font-medium leading-normal">Info Sistem</p>
+        </router-link>
+
         <router-link 
           to="/app/settings/system" 
           class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"

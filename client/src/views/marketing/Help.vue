@@ -1,25 +1,28 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-50 via-white to-blue-50">
+  <div class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-display">
     <!-- Hero Section -->
-    <section class="container mx-auto px-4 py-16">
-      <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 px-2">
-          Pusat Bantuan Warungin - FAQ & Panduan Sistem Kasir
+    <section class="container mx-auto px-4 py-16 relative overflow-hidden">
+      <!-- Background Gradients -->
+      <div class="absolute inset-0 pointer-events-none">
+         <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-100 dark:bg-blue-900/10 rounded-full blur-3xl opacity-50"></div>
+      </div>
+      
+      <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto relative z-10">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 px-2">
+           Pusat Bantuan <span class="text-primary">Warungin</span>
         </h1>
-        <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl px-4">
-          Temukan jawaban untuk pertanyaan Anda atau hubungi tim support kami
+        <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl px-4">
+          Temukan jawaban, panduan, dan tips untuk memaksimalkan bisnis Anda.
         </p>
         <div class="w-full max-w-2xl">
-          <div class="relative">
+          <div class="relative group">
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Cari bantuan..."
-              class="w-full px-6 py-4 pl-14 rounded-xl border-2 border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 text-lg"
+              placeholder="Cari artikel bantuan... (Contoh: 'Cara tambah produk')"
+              class="w-full px-6 py-4 pl-14 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition text-lg shadow-sm group-hover:shadow-md"
             />
-            <svg class="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <span class="material-symbols-outlined absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition">search</span>
           </div>
         </div>
       </div>
@@ -30,118 +33,114 @@
       <div class="max-w-6xl mx-auto">
         <!-- Categories -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'getting-started'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'getting-started'">
+            <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+               <span class="material-symbols-outlined text-primary text-3xl group-hover:text-white transition-colors">rocket_launch</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Panduan Memulai Warungin</h2>
-            <p class="text-gray-600">Panduan setup dan onboarding untuk memulai menggunakan Warungin</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Panduan Memulai</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Setup akun, outlet pertama, dan onboarding.</p>
           </div>
 
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'features'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'features'">
+            <div class="w-14 h-14 bg-purple-50 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+              <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl group-hover:text-white transition-colors">featured_play_list</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Panduan Fitur Sistem Kasir</h2>
-            <p class="text-gray-600">Pelajari cara menggunakan semua fitur yang tersedia di platform</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Fitur Sistem</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Panduan lengkap manajemen produk, stok, dan kasir.</p>
           </div>
 
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'billing'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'billing'">
+            <div class="w-14 h-14 bg-green-50 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300">
+               <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-3xl group-hover:text-white transition-colors">receipt_long</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Panduan Paket & Pembayaran</h2>
-            <p class="text-gray-600">Informasi tentang paket, pembayaran, dan upgrade</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Tagihan & Paket</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Info paket langganan, upgrade, dan invoice.</p>
           </div>
 
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'troubleshooting'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'troubleshooting'">
+             <div class="w-14 h-14 bg-orange-50 dark:bg-orange-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors duration-300">
+               <span class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-3xl group-hover:text-white transition-colors">build</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Troubleshooting & Solusi Masalah</h2>
-            <p class="text-gray-600">Solusi untuk masalah umum yang mungkin Anda hadapi</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Troubleshooting</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Solusi kendala teknis dan cara mengatasinya.</p>
           </div>
 
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'api'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'api'">
+            <div class="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-slate-600 group-hover:text-white transition-colors duration-300">
+               <span class="material-symbols-outlined text-slate-600 dark:text-slate-300 text-3xl group-hover:text-white transition-colors">api</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">API & Integrasi Sistem</h2>
-            <p class="text-gray-600">Dokumentasi API dan panduan integrasi dengan sistem lain</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">API & Integrasi</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Dokumentasi teknis untuk developer.</p>
           </div>
 
-          <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition cursor-pointer" @click="selectedCategory = 'security'">
-            <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
-              <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-primary/50 transition cursor-pointer group" @click="selectedCategory = 'security'">
+             <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">
+               <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl group-hover:text-white transition-colors">security</span>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Keamanan Data & Privasi</h2>
-            <p class="text-gray-600">Informasi tentang keamanan data dan privasi</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Keamanan & Privasi</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Standar keamanan data dan kebijakan privasi.</p>
           </div>
         </div>
 
         <!-- Popular Articles -->
         <div class="mb-16">
-          <h2 class="text-3xl font-bold text-gray-900 mb-8">Artikel & Panduan Populer Warungin</h2>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
+             <span class="material-symbols-outlined text-primary">trending_up</span>
+             Panduan Populer
+          </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">Cara Setup Awal Warungin</h3>
-              <p class="text-gray-600 mb-4">Panduan lengkap untuk menyiapkan akun dan outlet pertama Anda</p>
-              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Baca lebih lanjut →</a>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary transition group cursor-pointer">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary transition">Cara Setup Awal Warungin</h3>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Langkah demi langkah menyiapkan outlet pertama Anda.</p>
+              <span class="text-primary text-sm font-bold flex items-center gap-1">Baca Selengkapnya <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">Cara Menambah Produk</h3>
-              <p class="text-gray-600 mb-4">Pelajari cara menambahkan dan mengelola produk di sistem</p>
-              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Baca lebih lanjut →</a>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary transition group cursor-pointer">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary transition">Cara Menambah Produk</h3>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Panduan input produk, varian, dan manajemen stok.</p>
+              <span class="text-primary text-sm font-bold flex items-center gap-1">Baca Selengkapnya <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">Cara Mencetak Struk</h3>
-              <p class="text-gray-600 mb-4">Setup printer dan konfigurasi untuk mencetak struk transaksi</p>
-              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Baca lebih lanjut →</a>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary transition group cursor-pointer">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary transition">Konfigurasi Printer Struk</h3>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Cara menghubungkan printer thermal bluetooth/USB.</p>
+              <span class="text-primary text-sm font-bold flex items-center gap-1">Baca Selengkapnya <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition">
-              <h3 class="text-xl font-semibold text-gray-900 mb-3">Mengelola Laporan</h3>
-              <p class="text-gray-600 mb-4">Cara membuat dan mengunduh laporan penjualan, produk, dan keuangan</p>
-              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Baca lebih lanjut →</a>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary transition group cursor-pointer">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary transition">Download Laporan Bulanan</h3>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Export laporan penjualan ke Excel/PDF.</p>
+              <span class="text-primary text-sm font-bold flex items-center gap-1">Baca Selengkapnya <span class="material-symbols-outlined text-sm">arrow_forward</span></span>
             </div>
           </div>
         </div>
 
         <!-- Contact Support -->
-        <div class="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-12 text-white text-center">
-          <h2 class="text-3xl font-bold mb-4">Masih Butuh Bantuan? Hubungi Support Warungin</h2>
-          <p class="text-xl mb-8 opacity-90">
-            Tim support kami siap membantu Anda 24/7
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link
-              to="/contact"
-              class="px-8 py-4 bg-white text-primary-600 rounded-xl hover:bg-gray-100 transition font-semibold"
-            >
-              Hubungi Support
-            </router-link>
-            <a
-              href="mailto:support@warungin.com"
-              class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white hover:text-primary-600 transition font-semibold"
-            >
-              Kirim Email
-            </a>
-          </div>
+        <div class="bg-primary rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
+           <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary opacity-50"></div>
+           <div class="relative z-10">
+             <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                <span class="material-symbols-outlined text-4xl">support_agent</span>
+             </div>
+             <h2 class="text-2xl sm:text-3xl font-bold mb-4">Masih Butuh Bantuan?</h2>
+             <p class="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
+               Tim support kami siap membantu Anda menyelesaikan masalah secepat mungkin.
+             </p>
+             <div class="flex flex-col sm:flex-row gap-4 justify-center">
+               <router-link
+                 to="/contact"
+                 class="px-8 py-4 bg-white text-primary rounded-xl hover:bg-slate-100 transition font-bold shadow-lg"
+               >
+                 Hubungi Support
+               </router-link>
+               <a
+                 href="mailto:support@warungin.com"
+                 class="px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-xl hover:bg-white/10 transition font-bold"
+               >
+                 Kirim Email
+               </a>
+             </div>
+           </div>
         </div>
       </div>
     </section>
@@ -153,9 +152,8 @@ import { ref, onMounted } from 'vue';
 import { useSEO } from '../../composables/useSEO';
 
 useSEO({
-  title: 'Pusat Bantuan Warungin - FAQ & Panduan | Warungin',
-  description: 'Temukan jawaban untuk pertanyaan Anda tentang Warungin. Panduan setup, fitur, pembayaran, troubleshooting, dan lebih banyak lagi. Atau hubungi tim support kami.',
-  keywords: 'bantuan warungin, FAQ warungin, panduan warungin, help center, tutorial warungin, support warungin',
+  title: 'Pusat Bantuan Warungin',
+  description: 'FAQ dan panduan penggunaan sistem kasir Warungin.',
 });
 
 onMounted(() => {
@@ -165,4 +163,3 @@ onMounted(() => {
 const searchQuery = ref('');
 const selectedCategory = ref('');
 </script>
-

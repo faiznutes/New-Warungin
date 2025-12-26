@@ -1,96 +1,97 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-50 to-white">
+  <div class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-display">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-6xl mx-auto">
         <!-- Hero Section -->
-        <div class="text-center mb-8 sm:mb-10 md:mb-12">
-          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">
-            Request Demo Sistem Kasir <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 bg-clip-text text-transparent">Warungin</span> - Gratis 30 Menit
+        <div class="text-center mb-12">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 px-2 text-slate-900 dark:text-white">
+            Request Demo Sistem Kasir <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Warungin</span>
           </h1>
-          <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-2 px-4">
+          <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-2 px-4">
             Lihat langsung bagaimana Warungin dapat membantu mengembangkan bisnis UMKM Anda
           </p>
-          <p class="text-sm sm:text-base md:text-lg text-gray-500 px-4">
-            Demo personal 30-45 menit • Gratis • Tanpa komitmen • Semua fitur ditunjukkan
-          </p>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary text-sm font-bold mt-4">
+             <span class="material-symbols-outlined text-[18px]">timer</span>
+             Gratis 30 Menit • Tanpa Komitmen
+          </div>
         </div>
 
         <!-- Demo Form -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Form -->
-          <div class="bg-white rounded-xl shadow-xl hover:shadow-2xl transition p-5 sm:p-6 md:p-8 border border-gray-100">
-            <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-xl transition p-8 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center space-x-3 mb-6">
+              <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary text-2xl">edit_document</span>
               </div>
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Formulir Request Demo</h2>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Formulir Request Demo</h2>
             </div>
-            <form @submit.prevent="handleSubmit" class="space-y-6">
+            
+            <form @submit.prevent="handleSubmit" class="space-y-5">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Lengkap</label>
                 <input
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Nama lengkap"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  placeholder="Nama Lengkap Anda"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email Bisnis</label>
                 <input
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="email@example.com"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  placeholder="email@bisnis.com"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Bisnis</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nama Bisnis / Usaha</label>
                 <input
                   v-model="form.businessName"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Nama bisnis Anda"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  placeholder="Contoh: Kopi Kenangan Mantan"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nomor WhatsApp</label>
                 <input
                   v-model="form.phone"
                   type="tel"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="+62 812-3456-7890"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  placeholder="0812-3456-7890"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal & Waktu</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Jadwal Demo (Opsional)</label>
                 <input
                   v-model="form.dateTime"
                   type="datetime-local"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Pesan (Opsional)</label>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Pesan / Fokus Demo</label>
                 <textarea
                   v-model="form.message"
-                  rows="4"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Ada pertanyaan spesifik?"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  placeholder="Fitur apa yang ingin Anda lihat spesifik?"
                 ></textarea>
               </div>
+              
               <button
                 type="submit"
                 :disabled="loading"
-                class="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition disabled:opacity-50 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+                class="w-full px-6 py-4 bg-primary text-white rounded-xl hover:bg-blue-600 transition disabled:opacity-50 font-bold shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
               >
+                <span v-if="loading" class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
                 {{ loading ? 'Mengirim...' : 'Request Demo Gratis' }}
               </button>
             </form>
@@ -98,90 +99,70 @@
 
           <!-- Info Section -->
           <div class="space-y-6">
-            <div class="bg-gradient-to-br from-white to-primary-50 rounded-xl shadow-xl p-8 border border-primary-100">
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700">
               <div class="flex items-center space-x-3 mb-6">
-                <div class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                <div class="w-12 h-12 bg-white dark:bg-slate-700 rounded-xl flex items-center justify-center shadow-sm">
+                  <span class="material-symbols-outlined text-primary text-2xl">featured_play_list</span>
                 </div>
-                <h2 class="text-xl font-bold text-gray-900">Fitur yang Akan Ditunjukkan dalam Demo</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Apa yang Anda dapatkan?</h2>
               </div>
-              <ul class="space-y-3">
-                <li class="flex items-start space-x-3">
-                  <svg class="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-gray-600">Dashboard dengan statistik real-time</span>
+              <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="text-slate-600 dark:text-slate-300">Tour lengkap dashboard & fitur POS</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                  <svg class="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-gray-600">Manajemen produk & inventory</span>
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="text-slate-600 dark:text-slate-300">Konsultasi kebutuhan bisnis spesifik Anda</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                  <svg class="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-gray-600">Sistem & transaksi</span>
+                <li class="flex items-start gap-3">
+                   <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="text-slate-600 dark:text-slate-300">Simulasi manajemen stok & laporan</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                  <svg class="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-gray-600">Laporan & analitik lengkap</span>
-                </li>
-                <li class="flex items-start space-x-3">
-                  <svg class="w-6 h-6 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span class="text-gray-600">Multi-outlet management</span>
+                <li class="flex items-start gap-3">
+                   <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="text-slate-600 dark:text-slate-300">Tanya jawab langsung dengan tim produk</span>
                 </li>
               </ul>
             </div>
 
-            <div class="bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl p-8 border border-primary-300">
-              <div class="flex items-center space-x-3 mb-4">
-                <svg class="w-6 h-6 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <h2 class="text-xl font-bold text-gray-900">Mengapa Perlu Request Demo?</h2>
+            <div class="bg-blue-600 dark:bg-blue-700 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+               <div class="absolute top-0 right-0 p-4 opacity-10">
+                  <span class="material-symbols-outlined text-9xl">rocket_launch</span>
+               </div>
+              <div class="flex items-center space-x-3 mb-4 relative z-10">
+                <span class="material-symbols-outlined text-3xl">rocket_launch</span>
+                <h2 class="text-xl font-bold">Kenapa Warungin?</h2>
               </div>
-              <p class="text-gray-700 leading-relaxed mb-4 font-medium">
-                Demo personal memungkinkan kami menunjukkan fitur-fitur yang paling relevan
-                untuk bisnis Anda dan menjawab pertanyaan spesifik Anda secara langsung.
+              <p class="text-blue-50 leading-relaxed mb-6 font-medium relative z-10">
+                Kami tidak sekadar menjual software, tapi menjadi partner teknologi untuk pertumbuhan bisnis Anda.
               </p>
-              <div class="bg-white/50 rounded-xl p-4 mt-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="font-semibold text-gray-800">⏱ Durasi:</span>
-                  <span class="text-primary-700 font-bold">30-45 menit</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="font-semibold text-gray-800">💰 Biaya:</span>
-                  <span class="text-green-600 font-bold">Gratis & Tanpa Komitmen</span>
-                </div>
+              
+              <div class="grid grid-cols-2 gap-4 relative z-10">
+                 <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <p class="text-xs text-blue-200 uppercase font-bold">Durasi</p>
+                    <p class="font-bold text-lg">30-45 Mins</p>
+                 </div>
+                 <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                    <p class="text-xs text-blue-200 uppercase font-bold">Biaya</p>
+                    <p class="font-bold text-lg">Gratis</p>
+                 </div>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-lg p-8">
-              <h2 class="text-xl font-semibold text-gray-800 mb-4">Butuh Bantuan Cepat?</h2>
-              <p class="text-gray-600 mb-4">
-                Hubungi kami langsung untuk demo langsung atau pertanyaan lainnya.
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+              <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Butuh Bantuan Cepat?</h2>
+              <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                Hubungi kami langsung jika ada pertanyaan mendesak.
               </p>
-              <div class="space-y-2">
-                <a href="mailto:support@warungin.com" class="flex items-center space-x-2 text-primary-600 hover:text-primary-700">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span>support@warungin.com</span>
+              <div class="space-y-3">
+                <a href="mailto:support@warungin.com" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-primary transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
+                  <span class="material-symbols-outlined text-slate-400">mail</span>
+                  <span class="font-medium">support@warungin.com</span>
                 </a>
-                <a href="tel:+6281234567890" class="flex items-center space-x-2 text-primary-600 hover:text-primary-700">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  <span>+62 812-3456-7890</span>
+                <a href="tel:+6281234567890" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-primary transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
+                  <span class="material-symbols-outlined text-slate-400">call</span>
+                  <span class="font-medium">+62 812-3456-7890</span>
                 </a>
               </div>
             </div>
@@ -199,9 +180,8 @@ import { useNotification } from '../../composables/useNotification';
 import { useSEO } from '../../composables/useSEO';
 
 useSEO({
-  title: 'Request Demo Warungin - Lihat Demo Sistem Kasir | Warungin',
-  description: 'Lihat langsung bagaimana Warungin dapat membantu mengembangkan bisnis UMKM Anda. Demo personal 30-45 menit, gratis, tanpa komitmen. Semua fitur ditunjukkan.',
-  keywords: 'demo warungin, request demo, coba warungin, demo sistem kasir, trial warungin',
+  title: 'Request Demo Warungin',
+  description: 'Lihat langsung demo sistem kasir Warungin secara gratis.',
 });
 
 const { success: showSuccess, error: showError } = useNotification();
@@ -225,14 +205,13 @@ const handleSubmit = async () => {
   loading.value = true;
   try {
     await api.post('/contact/demo', form.value);
-    await showSuccess('Terima kasih! Permintaan demo Anda telah dikirim. Tim kami akan menghubungi Anda segera.');
+    await showSuccess('Permintaan demo terkirim! Tim kami akan menghubungi Anda.');
     form.value = { name: '', email: '', businessName: '', phone: '', dateTime: '', message: '' };
   } catch (error: any) {
     console.error('Error submitting demo request:', error);
-    await showError(error.response?.data?.message || 'Gagal mengirim permintaan demo. Silakan coba lagi.');
+    await showError(error.response?.data?.message || 'Gagal mengirim permintaan demo.');
   } finally {
     loading.value = false;
   }
 };
 </script>
-
