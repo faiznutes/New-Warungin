@@ -40,11 +40,11 @@ def main():
     
     # Step 1: Commit changes locally
     print("\n[1/3] Committing changes locally...")
-    run_cmd("git add .", "Adding all changes to git")
-    status = run_cmd("git status --short", "Checking git status")
+    run_cmd(["git", "add", "."], "Adding all changes to git")
+    status = run_cmd(["git", "status", "--short"], "Checking git status")
     if status:
         run_cmd(
-            "git commit -m 'feat: reskin UI (Products, POS, Adjustments) and standardize language'",
+            ["git", "commit", "-m", "feat: POS enhancements (Hold, Split Bill), Supervisor role integration, and Emerald theme harmonization"],
             "Committing changes"
         )
         print("  ✓ Changes committed")
@@ -53,7 +53,7 @@ def main():
     
     # Step 2: Push to GitHub
     print("\n[2/3] Pushing to GitHub...")
-    output = run_cmd("git push origin main", "Pushing to GitHub")
+    output = run_cmd(["git", "push", "origin", "main"], "Pushing to GitHub")
     if output:
         print("  ✓ Pushed to GitHub")
     else:
@@ -79,14 +79,15 @@ def main():
     """
     
     ssh_cmd = [
-        'sshpass', '-p', '123',
-        'ssh', '-o', 'StrictHostKeyChecking=no',
+        'ssh', '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=no',
+        '-i', os.path.expanduser('~/.ssh/id_rsa_warungin'),
         'faiz@192.168.1.101',
         deploy_cmd
     ]
     
     print("  Executing deployment on server...")
-    result = subprocess.run(ssh_cmd, capture_output=True, text=True, timeout=300)
+    # Removing timeout for server execution as it might take time
+    result = subprocess.run(ssh_cmd, capture_output=True, text=True)
     
     if result.returncode == 0:
         print("  ✓ Deployment successful!")

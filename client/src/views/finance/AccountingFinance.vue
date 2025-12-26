@@ -73,7 +73,7 @@
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Profit</p>
              <p class="text-[10px] text-slate-400">Net income</p>
           </div>
-          <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+          <div class="bg-indigo-50 dark:bg-indigo-900/30 p-2 rounded-xl text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
              <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
           </div>
         </div>
@@ -180,7 +180,7 @@
           <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
              <div class="bg-[#f8fafc] dark:bg-slate-900/50 px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                <h4 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                 <span class="material-symbols-outlined text-blue-500">work</span>
+                 <span class="material-symbols-outlined text-indigo-500">work</span>
                  Aktivitas Operasi
                </h4>
                <span class="font-bold text-emerald-600">{{ formatCurrency(cashFlow.operating.net) }}</span>

@@ -55,10 +55,10 @@
         <!-- Total Orders -->
         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 flex flex-col justify-between h-40 relative overflow-hidden group">
           <div class="absolute right-[-20px] top-[-20px] opacity-5 group-hover:opacity-10 transition-opacity">
-            <span class="material-symbols-outlined text-[120px] text-blue-500">shopping_cart</span>
+            <span class="material-symbols-outlined text-[120px] text-indigo-500">shopping_cart</span>
           </div>
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
               <span class="material-symbols-outlined">shopping_cart</span>
             </div>
             <span class="text-slate-500 text-sm font-medium">Total Orders</span>
@@ -75,7 +75,7 @@
         </div>
 
         <!-- Subscription -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-slate-900 p-5 rounded-2xl shadow-card border border-blue-100 dark:border-slate-700 flex flex-col justify-between h-40 relative">
+        <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-white to-indigo-50 dark:from-slate-800 dark:to-slate-900 p-5 rounded-2xl shadow-card border border-indigo-100 dark:border-slate-700 flex flex-col justify-between h-40 relative">
           <div class="flex justify-between items-start">
             <div class="flex flex-col">
               <span class="text-slate-500 text-sm font-medium">Subscription</span>
@@ -410,8 +410,8 @@ const renderRevenueChart = () => {
   if (!ctx) return;
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(63, 104, 228, 0.2)'); 
-  gradient.addColorStop(1, 'rgba(63, 104, 228, 0)');
+  gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)'); 
+  gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
   // Use real data if available, fallback to mock (though stats logic above handles this mostly, chart specific check here)
   const chartData = stats.value?.charts?.revenue || mockStats.charts.revenue;
@@ -426,12 +426,12 @@ const renderRevenueChart = () => {
         {
           label: 'Revenue',
           data: data,
-          borderColor: '#3f68e4', 
+          borderColor: '#10b981', 
           backgroundColor: gradient,
           borderWidth: 3,
           tension: 0.4,
           fill: true,
-          pointBackgroundColor: '#3f68e4',
+          pointBackgroundColor: '#10b981',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 4,

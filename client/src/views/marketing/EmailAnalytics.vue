@@ -36,14 +36,14 @@
     <div v-else class="space-y-6">
       <!-- Overall Analytics Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border-l-4 border-indigo-500">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Sent</p>
               <p class="text-3xl font-bold text-[#0d141b] dark:text-white">{{ overallAnalytics.sent || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-              <span class="material-symbols-outlined text-blue-600">mail</span>
+            <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-indigo-600">mail</span>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@
           </div>
           <div class="p-4 bg-gray-50 rounded-xl">
             <p class="text-sm text-gray-600 mb-1">Unique Opens</p>
-            <p class="text-2xl font-bold text-blue-600">{{ campaignAnalytics.uniqueOpens || 0 }}</p>
+            <p class="text-2xl font-bold text-indigo-600">{{ campaignAnalytics.uniqueOpens || 0 }}</p>
             <p class="text-xs text-gray-500 mt-1">Unique Open Rate: {{ formatPercentage(campaignAnalytics.uniqueOpenRate || 0) }}%</p>
           </div>
           <div class="p-4 bg-gray-50 rounded-xl">
@@ -175,7 +175,7 @@
             </div>
             <div class="text-right">
               <p class="text-sm text-gray-600">{{ formatDate(event.createdAt) }}</p>
-              <p v-if="event.linkUrl" class="text-xs text-blue-600 truncate max-w-xs">{{ event.linkUrl }}</p>
+              <p v-if="event.linkUrl" class="text-xs text-indigo-600 truncate max-w-xs">{{ event.linkUrl }}</p>
             </div>
           </div>
         </div>
@@ -279,7 +279,7 @@ const formatDate = (dateString: string): string => {
 
 const getEventTypeClass = (eventType: string): string => {
   const classes: Record<string, string> = {
-    SENT: 'bg-blue-100',
+    SENT: 'bg-indigo-50 dark:bg-indigo-900/20',
     OPENED: 'bg-green-100',
     CLICKED: 'bg-purple-100',
     BOUNCED: 'bg-red-100',
@@ -290,7 +290,7 @@ const getEventTypeClass = (eventType: string): string => {
 
 const getEventTypeIconClass = (eventType: string): string => {
   const classes: Record<string, string> = {
-    SENT: 'text-blue-600',
+    SENT: 'text-indigo-600 dark:text-indigo-400',
     OPENED: 'text-green-600',
     CLICKED: 'text-purple-600',
     BOUNCED: 'text-red-600',

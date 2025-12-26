@@ -227,7 +227,7 @@
             <!-- TYPE SPECIFIC SECTIONS -->
             
             <!-- BUNDLE -->
-            <div v-if="discountForm.discountType === 'BUNDLE'" class="bg-blue-50/50 p-5 rounded-xl border border-blue-100 space-y-4">
+            <div v-if="discountForm.discountType === 'BUNDLE'" class="bg-indigo-50/50 dark:bg-indigo-900/10 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800 space-y-4">
               <div>
                 <label class="block text-sm font-bold text-slate-700 mb-2">
                   Select Bundle Products <span class="text-red-500">*</span>
@@ -235,17 +235,17 @@
                 <button
                   type="button"
                   @click="openProductSelector('BUNDLE')"
-                  class="w-full px-4 py-3 text-left bg-white border border-blue-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition flex items-center justify-between group"
+                  class="w-full px-4 py-3 text-left bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-300 transition flex items-center justify-between group"
                 >
                   <span class="text-sm font-medium text-slate-700">
                     <span v-if="discountForm.bundleProducts.length === 0" class="text-slate-400">
                        Click to select products...
                     </span>
-                    <span v-else class="text-blue-700 font-bold">
+                    <span v-else class="text-indigo-700 dark:text-indigo-400 font-bold">
                       {{ discountForm.bundleProducts.length }} products selected
                     </span>
                   </span>
-                  <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-500">add_circle</span>
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-indigo-500">add_circle</span>
                 </button>
                 <p class="mt-2 text-xs text-slate-500">
                   Customers must buy ALL selected products to get the discount.

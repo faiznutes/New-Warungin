@@ -31,10 +31,10 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-[10px] font-bold text-[#4c739a] uppercase tracking-wider mb-1">Medium Engagement</p>
-              <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 leading-none">{{ overallStats.medium || 0 }}</p>
+              <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 leading-none">{{ overallStats.medium || 0 }}</p>
             </div>
-            <div class="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-              <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">trending_up</span>
+            <div class="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400">trending_up</span>
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ const loadCustomers = async () => {
 const getEngagementLevelClass = (level: string): string => {
   const classes: Record<string, string> = {
     HIGH: 'bg-green-100 text-green-700',
-    MEDIUM: 'bg-blue-100 text-blue-700',
+    MEDIUM: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400',
     LOW: 'bg-yellow-100 text-yellow-700',
     INACTIVE: 'bg-slate-100 text-slate-600',
   };

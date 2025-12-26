@@ -70,17 +70,17 @@
           <p class="text-xs sm:text-sm text-gray-600">Total revenue today</p>
         </div>
 
-        <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-blue-200">
+        <div class="bg-gradient-to-br from-white to-indigo-50 dark:bg-slate-800 dark:to-indigo-900/10 rounded-xl shadow-lg hover:shadow-xl transition-all p-5 sm:p-6 border border-indigo-200 dark:border-indigo-800">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs sm:text-sm font-semibold text-gray-700 uppercase tracking-wide">Average per Transaction</span>
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+            <span class="text-xs sm:text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wide">Average per Transaction</span>
+            <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
           </div>
-          <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{{ formatCurrency(cashierStats?.averageTransaction || 0) }}</p>
-          <p class="text-xs sm:text-sm text-gray-600">Average transaction value</p>
+          <p class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ formatCurrency(cashierStats?.averageTransaction || 0) }}</p>
+          <p class="text-xs sm:text-sm text-gray-600 dark:text-slate-400">Average transaction value</p>
         </div>
       </div>
 
@@ -204,7 +204,7 @@
     <!-- Super admin should not see this - they have separate super-dashboard route -->
     <div v-if="stats" class="flex flex-col gap-6 sm:gap-8 px-4 sm:px-6 pb-6 sm:pb-8">
       <!-- Loading State for Subscription (Admin/Supervisor only) -->
-      <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-primary-600 via-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
+      <div v-if="isAdminOrSupervisor && subscriptionLoading" class="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-indigo-700 rounded-2xl shadow-2xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="relative z-10 flex items-center justify-center py-8">
           <div class="flex flex-col items-center gap-4">
@@ -262,7 +262,7 @@
       </div>
       
       <!-- Welcome Section (if no subscription and subscription is loaded) -->
-      <div v-else-if="showWelcomeSection" class="relative bg-gradient-to-br from-primary via-blue-600 to-indigo-600 rounded-2xl shadow-xl p-8 sm:p-12 text-white overflow-hidden">
+      <div v-else-if="showWelcomeSection" class="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-indigo-700 rounded-2xl shadow-xl p-8 sm:p-12 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black opacity-10"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
         <div class="relative z-10">
@@ -297,7 +297,7 @@
           class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow"
         >
           <div class="flex justify-between items-start">
-            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+            <div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
               <span class="material-symbols-outlined text-primary">shopping_bag</span>
             </div>
             <span class="text-green-600 bg-green-50 flex items-center px-2 py-0.5 rounded text-xs font-semibold">

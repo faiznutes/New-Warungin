@@ -2,7 +2,7 @@
   <div class="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] font-display text-slate-900 dark:text-white antialiased selection:bg-emerald-500/20 selection:text-emerald-600">
     <!-- Background Gradient Decoration -->
     <div class="absolute inset-0 pointer-events-none z-0">
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-primary/5 dark:to-transparent"></div>
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-emerald-50/50 to-transparent dark:from-emerald-400/5 dark:to-transparent"></div>
     </div>
 
     <!-- Header -->
@@ -26,7 +26,7 @@
           <!-- Icon Animation Wrapper -->
           <div class="mx-auto w-20 h-20 mb-6 relative animate-float">
             <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-20"></div>
-            <div class="relative w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 dark:from-primary/20 dark:to-primary/10 rounded-full flex items-center justify-center shadow-glow">
+            <div class="relative w-full h-full bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-400/20 dark:to-emerald-400/10 rounded-full flex items-center justify-center shadow-glow">
               <span class="material-symbols-outlined text-4xl text-emerald-600" style="font-variation-settings: 'FILL' 1, 'wght' 600;">mark_email_read</span>
             </div>
           </div>
@@ -37,7 +37,7 @@
             Terima kasih! Kami telah menerima laporan Anda. Tim support Warungin akan segera menghubungi Anda melalui email yang terdaftar untuk proses verifikasi selanjutnya.
           </p>
           <div class="flex flex-col gap-3">
-            <router-link to="/login" class="w-full flex items-center justify-center gap-2 h-11 px-6 bg-emerald-500 hover:bg-emerald-500 active:bg-blue-700 text-white rounded-lg text-sm font-bold tracking-wide transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 transform active:scale-[0.98]">
+            <router-link to="/login" class="w-full flex items-center justify-center gap-2 h-11 px-6 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-lg text-sm font-bold tracking-wide transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform active:scale-[0.98]">
               <span>Kembali ke Halaman Masuk</span>
             </router-link>
           </div>

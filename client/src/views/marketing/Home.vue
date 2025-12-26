@@ -6,7 +6,7 @@
       <!-- Decor -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden">
          <div class="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-emerald-400/10 rounded-full blur-[100px]"></div>
-         <div class="absolute top-[40%] -left-[10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[100px]"></div>
+         <div class="absolute top-[40%] -left-[10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px]"></div>
       </div>
 
       <div class="container mx-auto px-4 relative z-10">
@@ -24,7 +24,7 @@
             
             <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold tracking-tight text-[#0d131b] dark:text-white mb-6 leading-[1.1]">
               Kelola Bisnis <br/>
-              <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-500">Tanpa Batas</span>
+              <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-indigo-500">Tanpa Batas</span>
             </h1>
             
             <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
@@ -69,7 +69,7 @@
              <div class="relative bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 transform rotate-2 hover:rotate-0 transition-transform duration-500">
                 <!-- Mockup Content Simplified -->
                 <div class="bg-slate-50 dark:bg-slate-900 rounded-2xl overflow-hidden aspect-[4/3] relative group">
-                   <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-blue-50/50 dark:from-emerald-900/20 dark:to-blue-900/20"></div>
+                   <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-indigo-50/50 dark:from-emerald-900/20 dark:to-blue-900/20"></div>
                    <div class="absolute inset-0 flex items-center justify-center">
                       <div class="text-center p-8">
                          <span class="material-symbols-outlined text-6xl text-emerald-500 mb-4 bg-white dark:bg-slate-800/80 p-4 rounded-2xl shadow-lg">storefront</span>
@@ -133,8 +133,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Feature Card 1 -->
           <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 hover:border-emerald-500 transition-all group hover:-translate-y-2 duration-300">
-            <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-               <span class="material-symbols-outlined text-primary text-4xl">point_of_sale</span>
+            <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+               <span class="material-symbols-outlined text-emerald-600 text-4xl">point_of_sale</span>
             </div>
             <h3 class="text-2xl font-bold text-[#0d131b] dark:text-white mb-4">Kasir Modern</h3>
             <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
