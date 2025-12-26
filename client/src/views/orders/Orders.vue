@@ -57,7 +57,7 @@
             "
           >
              <span v-if="status === 'PENDING'" class="w-2 h-2 rounded-full bg-yellow-400"></span>
-             <span v-if="status === 'PROCESSING'" class="w-2 h-2 rounded-full bg-blue-500"></span>
+             <span v-if="status === 'PROCESSING'" class="w-2 h-2 rounded-full bg-indigo-500"></span>
              <span v-if="status === 'COMPLETED'" class="w-2 h-2 rounded-full bg-emerald-500"></span>
              <span v-if="status === 'CANCELLED'" class="w-2 h-2 rounded-full bg-red-500"></span>
              {{ status === 'ALL' ? 'All Orders' : status.charAt(0) + status.slice(1).toLowerCase() }}
@@ -146,7 +146,7 @@
 
           <div class="grid grid-cols-2 gap-2">
             <button @click="viewOrder(order)" class="py-2.5 px-4 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200 transition">Detail</button>
-            <button @click="printReceipt(order)" class="py-2.5 px-4 rounded-xl bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-100 transition">Print</button>
+            <button @click="printReceipt(order)" class="py-2.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-100 transition">Print</button>
             
             <button 
               v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
@@ -224,7 +224,7 @@
               </td>
               <td class="p-4">
                 <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{{ order.orderNumber }}</div>
-                <div v-if="order.sendToKitchen" class="text-xs text-blue-600 flex items-center gap-1 mt-1 font-medium">
+                <div v-if="order.sendToKitchen" class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1 font-medium">
                    <span class="material-symbols-outlined text-[14px]">soup_kitchen</span>
                    Kitchen
                 </div>
@@ -253,7 +253,7 @@
                     <button @click="viewOrder(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-emerald-600 transition" title="View Details">
                        <span class="material-symbols-outlined text-[20px]">visibility</span>
                     </button>
-                    <button @click="printReceipt(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition" title="Print Receipt">
+                    <button @click="printReceipt(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-600 transition" title="Print Receipt">
                        <span class="material-symbols-outlined text-[20px]">print</span>
                     </button>
                     <button 
@@ -578,7 +578,7 @@ const loadOrders = async (page = 1) => {
 const getStatusClass = (status: string) => {
   const classes: Record<string, string> = {
     PENDING: 'bg-yellow-100 text-yellow-800',
-    PROCESSING: 'bg-blue-100 text-blue-800',
+    PROCESSING: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800',
     COMPLETED: 'bg-green-100 text-green-800',
     CANCELLED: 'bg-red-100 text-red-800',
     REFUNDED: 'bg-gray-100 text-gray-800',

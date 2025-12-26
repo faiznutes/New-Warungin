@@ -30,10 +30,10 @@
       </div>
       <div
         v-else-if="isSyncing"
-        class="mb-2 p-3 bg-blue-100 border-l-4 border-emerald-500 rounded-xl flex items-center gap-2"
+        class="mb-2 p-3 bg-emerald-50 dark:bg-emerald-900/10 border-l-4 border-emerald-500 rounded-xl flex items-center gap-2"
       >
         <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <span class="text-sm font-semibold text-blue-800">Syncing... ({{ pendingSyncCount }} pending)</span>
+        <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Syncing Data... ({{ pendingSyncCount }} pending)</span>
       </div>
       <div
         v-else-if="pendingSyncCount > 0"
@@ -676,7 +676,7 @@
                    <span class="material-symbols-outlined text-xl group-hover:scale-110">pause</span>
                    <span class="text-[9px] font-bold uppercase tracking-wider">Hold</span>
                 </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-500 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md">
+                 <button class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-slate-700 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md">
                    <span class="material-symbols-outlined text-xl group-hover:scale-110">percent</span>
                    <span class="text-[9px] font-bold uppercase tracking-wider">Diskon</span>
                 </button>

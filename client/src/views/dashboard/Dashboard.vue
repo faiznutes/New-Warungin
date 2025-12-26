@@ -360,7 +360,7 @@
             to="/app/pos"
             class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+            <div class="bg-emerald-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
               <span class="material-symbols-outlined">point_of_sale</span>
             </div>
             <span class="text-sm font-semibold text-[#0d141b] dark:text-white">POS</span>
@@ -370,7 +370,7 @@
             to="/app/products"
             class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+            <div class="bg-emerald-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
               <span class="material-symbols-outlined">inventory_2</span>
             </div>
             <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Products</span>
@@ -380,7 +380,7 @@
             to="/app/orders"
             class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+            <div class="bg-emerald-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
               <span class="material-symbols-outlined">shopping_bag</span>
             </div>
             <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Orders</span>
@@ -390,7 +390,7 @@
             to="/app/customers"
             class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+            <div class="bg-emerald-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
               <span class="material-symbols-outlined">group</span>
             </div>
             <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Customers</span>
@@ -400,7 +400,7 @@
             to="/app/reports"
             class="flex flex-col items-center justify-center gap-3 p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
           >
-            <div class="bg-blue-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-primary group-hover:text-white transition-colors text-primary">
+            <div class="bg-emerald-50 dark:bg-slate-700 p-3 rounded-full group-hover:bg-emerald-500 group-hover:text-white transition-colors text-emerald-600">
               <span class="material-symbols-outlined">analytics</span>
             </div>
             <span class="text-sm font-semibold text-[#0d141b] dark:text-white">Reports</span>
@@ -469,7 +469,7 @@
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium" :class="getStatusClass(item.status)">
                   <span class="size-1.5 rounded-full" :class="{
                     'bg-amber-500': item.status === 'PENDING',
-                    'bg-blue-500': item.status === 'PROCESSING',
+                    'bg-indigo-500': item.status === 'PROCESSING',
                     'bg-green-500': item.status === 'COMPLETED',
                     'bg-red-500': item.status === 'CANCELLED',
                     'bg-slate-500': item.status === 'REFUNDED'
@@ -483,7 +483,7 @@
                   class="h-2 rounded-full transition-all duration-500"
                   :class="{
                     'bg-amber-500': item.status === 'PENDING',
-                    'bg-blue-500': item.status === 'PROCESSING',
+                    'bg-indigo-500': item.status === 'PROCESSING',
                     'bg-green-500': item.status === 'COMPLETED',
                     'bg-red-500': item.status === 'CANCELLED',
                     'bg-slate-500': item.status === 'REFUNDED'
@@ -706,7 +706,7 @@ const getDateRange = () => {
 const getStatusClass = (status: string) => {
   const classes: Record<string, string> = {
     PENDING: 'bg-yellow-100 text-yellow-800',
-    PROCESSING: 'bg-blue-100 text-blue-800',
+    PROCESSING: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800',
     COMPLETED: 'bg-green-100 text-green-800',
     CANCELLED: 'bg-red-100 text-red-800',
     REFUNDED: 'bg-gray-100 text-gray-800',

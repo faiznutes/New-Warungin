@@ -108,16 +108,19 @@
         </div>
 
         <!-- Shift Info -->
-        <div v-if="order.storeShift" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-          <p class="text-xs font-bold text-emerald-600 dark:text-blue-300 mb-1.5 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">schedule</span>
-            Shift {{ order.storeShift.shiftType?.charAt(0).toUpperCase() + order.storeShift.shiftType?.slice(1) }}
+        <div v-if="order.storeShift" class="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800">
+          <p class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mb-1.5 flex items-center gap-1.5 uppercase tracking-widest">
+            <span class="material-symbols-outlined text-[14px]">local_mall</span>
+            Store Info
           </p>
-          <p class="text-xs text-emerald-500 dark:text-blue-400">
-            Opened by: {{ order.storeShift.opener?.name || 'Unknown' }}
+          <p class="text-xs font-bold text-slate-700 dark:text-slate-300">
+            {{ order.storeShift.store.name }}
           </p>
-          <p class="text-xs text-emerald-500 dark:text-blue-400">
-            Time: {{ formatDateTime(order.storeShift.openedAt) }}
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+            Sales: {{ formatCurrency(order.storeShift.totalSales) }}
+          </p>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400">
+            Shift: {{ order.storeShift.shiftNumber }}
           </p>
         </div>
 
@@ -199,7 +202,7 @@ const getStatusClass = (status: string) => {
     PENDING: 'border-red-300 dark:border-red-800',
     COOKING: 'border-orange-300 dark:border-orange-800',
     READY: 'border-green-300 dark:border-green-800',
-    SERVED: 'border-blue-300 dark:border-blue-800',
+    SERVED: 'border-indigo-300 dark:border-indigo-800 shadow-lg shadow-indigo-500/5',
   };
   return classes[status] || 'border-slate-200 dark:border-slate-700';
 };
@@ -209,7 +212,7 @@ const getStatusBadgeClass = (status: string) => {
     PENDING: 'bg-red-100 text-red-700',
     COOKING: 'bg-orange-100 text-orange-700',
     READY: 'bg-green-100 text-green-700',
-    SERVED: 'bg-blue-100 text-blue-700',
+    SERVED: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400',
   };
   return classes[status] || 'bg-slate-100 text-[#0d141b]';
 };

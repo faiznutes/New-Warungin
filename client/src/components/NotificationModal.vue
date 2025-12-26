@@ -83,8 +83,8 @@ const modalClass = computed(() => {
     success: 'border-t-4 border-green-500',
     error: 'border-t-4 border-red-500',
     warning: 'border-t-4 border-yellow-500',
-    info: 'border-t-4 border-blue-500',
-    confirm: 'border-t-4 border-blue-500',
+    info: 'border-t-4 border-emerald-500',
+    confirm: 'border-t-4 border-indigo-500',
   };
   return classes[props.type] || '';
 });
@@ -94,8 +94,8 @@ const iconBgClass = computed(() => {
     success: 'bg-green-100',
     error: 'bg-red-100',
     warning: 'bg-yellow-100',
-    info: 'bg-blue-100',
-    confirm: 'bg-blue-100',
+    info: 'bg-emerald-50 dark:bg-emerald-900/20',
+    confirm: 'bg-indigo-50 dark:bg-indigo-900/20',
   };
   return classes[props.type] || '';
 });
@@ -105,8 +105,8 @@ const iconClass = computed(() => {
     success: 'text-green-600',
     error: 'text-red-600',
     warning: 'text-yellow-600',
-    info: 'text-blue-600',
-    confirm: 'text-blue-600',
+    info: 'text-emerald-600 dark:text-emerald-400',
+    confirm: 'text-indigo-600 dark:text-indigo-400',
   };
   return classes[props.type] || '';
 });
@@ -116,8 +116,8 @@ const confirmButtonClass = computed(() => {
     success: 'bg-green-600 text-white hover:bg-green-700',
     error: 'bg-red-600 text-white hover:bg-red-700',
     warning: 'bg-yellow-600 text-white hover:bg-yellow-700',
-    info: 'bg-blue-600 text-white hover:bg-blue-700',
-    confirm: 'bg-blue-600 text-white hover:bg-blue-700',
+    info: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/25',
+    confirm: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/25',
   };
   return classes[props.type] || '';
 });

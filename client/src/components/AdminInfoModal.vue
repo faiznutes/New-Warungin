@@ -89,8 +89,8 @@
                    <div v-for="(item, index) in [
                      { title: 'Dashboard', desc: 'Lihat ringkasan penjualan hari ini, produk terlaris, grafik penjualan, dan statistik penting lainnya. Quick Insight menampilkan analisis cepat untuk pengambilan keputusan.', icon: 'dashboard' },
                      { title: 'Produk', desc: 'Kelola semua produk toko Anda. Tambah produk baru dengan foto, kategori, harga, stok, dan barcode. Edit atau hapus produk yang sudah tidak dijual.', icon: 'inventory_2' },
-                     { title: 'POS (Point of Sale)', desc: 'Sistem kasir untuk transaksi langsung. Pilih produk, atur jumlah, pilih customer/member, terapkan diskon, dan proses pembayaran.', icon: 'point_of_sale' },
-                     { title: 'Pesanan', desc: 'Lihat semua pesanan yang masuk, filter berdasarkan status (Pending, Processing, Completed, Cancelled). Edit pesanan yang belum dibayar.', icon: 'receipt_long' },
+                    { title: 'POS (Point of Sale)', desc: 'Sistem kasir untuk transaksi langsung. Dukungan penuh untuk Hold Order (Parkir Pesanan) dan Split Bill (Pisah Tagihan).', icon: 'point_of_sale' },
+                    { title: 'Pesanan', desc: 'Lihat semua pesanan yang masuk, filter berdasarkan status (Pending, Processing, Completed, Cancelled). Lakukan Refund khusus untuk pesanan Completed.', icon: 'receipt_long' },
                      { title: 'Pelanggan', desc: 'Kelola data pelanggan dan member. Tambah pelanggan baru, lihat riwayat pembelian, dan kelola member dengan diskon khusus.', icon: 'group' },
                      { title: 'Laporan', desc: 'Akses berbagai laporan penjualan dan keuangan. Filter berdasarkan tanggal, export ke Excel/PDF, dan analisis performa bisnis.', icon: 'analytics' }
                    ]" :key="index">
@@ -107,14 +107,14 @@
         </div>
 
         <!-- Card 1: Paket Langganan -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-blue-50/50 dark:bg-slate-700/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-emerald-50/50 dark:bg-slate-700/30">
           <button
             @click="toggleCard('subscription')"
             class="w-full flex items-center justify-between p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex-1 text-left"
             :class="expandedCard === 'subscription' ? 'bg-slate-100 dark:bg-slate-700' : ''"
           >
             <div class="flex items-center space-x-4">
-               <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center">
+               <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
                 <span class="material-symbols-outlined text-[24px]">card_membership</span>
               </div>
               <div>
@@ -133,9 +133,9 @@
               <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
                 <h4 class="font-bold text-[#0d141b] dark:text-white mb-3">Paket yang Tersedia:</h4>
                 <ul class="space-y-2">
-                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span> <strong>BASIC</strong> - Rp 149.000/bulan: Fitur dasar untuk UMKM kecil</li>
-                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> <strong>PRO</strong> - Rp 299.000/bulan: Fitur lengkap untuk bisnis menengah</li>
-                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500"></span> <strong>ENTERPRISE</strong> - Rp 499.000/bulan: Fitur premium untuk bisnis besar</li>
+                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span> <strong>BASIC</strong> - Rp 99.000/bulan: Fitur dasar untuk UMKM kecil</li>
+                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> <strong>PRO</strong> - Rp 249.000/bulan: Fitur lengkap untuk bisnis menengah</li>
+                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> <strong>ENTERPRISE</strong> - Rp 599.000/bulan: Fitur premium untuk bisnis besar</li>
                 </ul>
               </div>
               <div>
@@ -153,7 +153,7 @@
         </div>
 
         <!-- Card 2: Addons -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-blue-50/50 dark:bg-slate-700/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-emerald-50/50 dark:bg-slate-700/30">
           <button
             @click="toggleCard('addons')"
             class="w-full flex items-center justify-between p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex-1 text-left"

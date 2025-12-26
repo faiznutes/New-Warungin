@@ -19,7 +19,7 @@
     </div>
 
     <!-- User Limit Info with Progress Bar -->
-    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
+    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 rounded-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <div>
           <p class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">

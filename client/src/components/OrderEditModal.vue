@@ -237,7 +237,7 @@ const getStatusClass = (status: string) => {
   switch (status) {
     case 'COMPLETED': return 'bg-green-100 text-green-700 border-green-200';
     case 'PENDING': return 'bg-amber-100 text-amber-700 border-amber-200';
-    case 'PROCESSING': return 'bg-blue-100 text-blue-700 border-blue-200';
+    case 'PROCESSING': return 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800';
     case 'CANCELLED': return 'bg-red-100 text-red-700 border-red-200';
     case 'REFUNDED': return 'bg-purple-100 text-purple-700 border-purple-200';
     default: return 'bg-slate-100 text-slate-700 border-slate-200';

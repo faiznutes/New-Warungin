@@ -72,34 +72,37 @@
           </div>
 
           <!-- Price Suggestions -->
-          <div v-if="priceSuggestions && form.cost && form.cost > 0" class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-            <h4 class="text-sm font-semibold text-blue-900 mb-3">💡 Rekomendasi Harga Jual</h4>
+          <div v-if="priceSuggestions && form.cost && form.cost > 0" class="bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-100 dark:border-emerald-800 rounded-xl p-4">
+            <h4 class="text-sm font-semibold text-emerald-900 dark:text-emerald-100 mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+              Rekomendasi Harga Jual
+            </h4>
             <div class="space-y-2">
-              <div class="flex items-center justify-between p-2 bg-white rounded border border-blue-200">
+              <div class="flex items-center justify-between p-2 bg-white dark:bg-slate-800 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
                 <div>
-                  <p class="text-xs text-gray-600">Margin 20%</p>
-                  <p class="text-lg font-bold text-gray-900">{{ formatCurrency(priceSuggestions.suggestedPrice20) }}</p>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Margin 20%</p>
+                  <p class="text-base font-black text-slate-900 dark:text-white">{{ formatCurrency(priceSuggestions.suggestedPrice20) }}</p>
                 </div>
-                <button
-                  type="button"
-                  @click="applyPrice(priceSuggestions.suggestedPrice20)"
-                  class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                  Gunakan
-                </button>
+                  <button
+                    type="button"
+                    @click="applyPrice(priceSuggestions.suggestedPrice20)"
+                    class="px-3 py-1.5 text-[10px] font-bold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
+                  >
+                    Gunakan
+                  </button>
               </div>
-              <div class="flex items-center justify-between p-2 bg-white rounded border border-blue-200">
+              <div class="flex items-center justify-between p-2 bg-white dark:bg-slate-800 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm">
                 <div>
-                  <p class="text-xs text-gray-600">Margin 30%</p>
-                  <p class="text-lg font-bold text-gray-900">{{ formatCurrency(priceSuggestions.suggestedPrice30) }}</p>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Margin 30%</p>
+                  <p class="text-base font-black text-slate-900 dark:text-white">{{ formatCurrency(priceSuggestions.suggestedPrice30) }}</p>
                 </div>
-                <button
-                  type="button"
-                  @click="applyPrice(priceSuggestions.suggestedPrice30)"
-                  class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                  Gunakan
-                </button>
+                  <button
+                    type="button"
+                    @click="applyPrice(priceSuggestions.suggestedPrice30)"
+                    class="px-3 py-1.5 text-[10px] font-bold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
+                  >
+                    Gunakan
+                  </button>
               </div>
               <div v-if="priceSuggestions.marketPrice" class="flex items-center justify-between p-2 bg-white rounded border border-green-200">
                 <div>
