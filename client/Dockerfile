@@ -12,11 +12,11 @@ RUN npm config set fetch-timeout 300000 && \
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps || \
-    npm install || \
-    (sleep 10 && npm install --legacy-peer-deps) || \
-    (sleep 20 && npm install)
+# Install dependencies logic:
+# 1. Force remove lock file to guarantee fresh dependency resolution
+# 2. Run clean install
+RUN rm -rf package-lock.json node_modules && \
+    npm install --legacy-peer-deps --save-dev @babel/parser
 
 # Copy source code
 COPY . .
