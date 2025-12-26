@@ -19,6 +19,7 @@
     "dompurify": "^3.3.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
+    "marked": "^17.0.1",
     "pinia": "^2.1.7",
     "socket.io-client": "^4.7.2",
     "vue": "^3.3.4",

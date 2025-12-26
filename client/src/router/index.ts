@@ -62,6 +62,11 @@ const router = createRouter({
           name: 'help',
           component: () => import('../views/marketing/Help.vue'),
         },
+        {
+          path: 'help/:slug',
+          name: 'help-article',
+          component: () => import('../views/marketing/HelpArticle.vue'),
+        },
       ],
     },
     {
@@ -97,6 +102,17 @@ const router = createRouter({
       name: 'payment-pending',
       component: () => import('../views/payment/PaymentCallback.vue'),
       props: (route) => ({ status: 'pending', ...route.query }),
+    },
+    // Fullscreen POS Route (no layout wrapper for optimal POS experience)
+    {
+      path: '/pos',
+      name: 'pos-fullscreen',
+      component: () => import('../views/pos/POS.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        fullscreen: true
+      },
     },
     // App Routes - Dynamic Layout based on role
     {

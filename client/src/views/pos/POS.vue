@@ -239,7 +239,15 @@
   <div v-else class="bg-slate-50 text-slate-900 font-display overflow-hidden h-screen w-screen flex flex-col relative">
     <!-- Header -->
     <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-6 relative z-30 shrink-0">
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Burger Menu Button -->
+        <button 
+          @click="showNavSidebar = !showNavSidebar"
+          class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition-colors"
+          aria-label="Toggle navigation"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
           <span class="material-symbols-outlined text-white text-2xl">point_of_sale</span>
         </div>
@@ -285,6 +293,137 @@
          </div>
       </div>
     </header>
+
+    <!-- Navigation Sidebar Overlay -->
+    <Teleport to="body">
+      <!-- Backdrop -->
+      <Transition name="fade">
+        <div 
+          v-if="showNavSidebar"
+          class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100]"
+          @click="showNavSidebar = false"
+        ></div>
+      </Transition>
+      
+      <!-- Sidebar -->
+      <Transition name="slide-left">
+        <aside 
+          v-if="showNavSidebar"
+          class="fixed top-0 left-0 bottom-0 w-72 bg-white dark:bg-slate-800 shadow-2xl z-[101] flex flex-col"
+        >
+          <!-- Sidebar Header -->
+          <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <span class="material-symbols-outlined text-white text-2xl">storefront</span>
+              </div>
+              <div>
+                <h2 class="font-bold text-slate-900 dark:text-white">{{ authStore.user?.tenantName || 'Warungin' }}</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Menu Navigasi</p>
+              </div>
+            </div>
+            <button 
+              @click="showNavSidebar = false"
+              class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 flex items-center justify-center transition-colors"
+            >
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+          
+          <!-- Navigation Links -->
+          <nav class="flex-1 p-4 overflow-y-auto">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">Menu Utama</p>
+            
+            <router-link 
+              to="/app/dashboard" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">dashboard</span>
+              <span class="font-medium">Dashboard</span>
+            </router-link>
+            
+            <router-link 
+              to="/pos" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">point_of_sale</span>
+              <span class="font-medium">POS</span>
+              <span class="ml-auto text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full">Active</span>
+            </router-link>
+            
+            <router-link 
+              to="/app/orders" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">receipt_long</span>
+              <span class="font-medium">Orders</span>
+            </router-link>
+            
+            <router-link 
+              to="/app/products" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">inventory_2</span>
+              <span class="font-medium">Products</span>
+            </router-link>
+            
+            <router-link 
+              to="/app/customers" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">group</span>
+              <span class="font-medium">Customers</span>
+            </router-link>
+            
+            <router-link 
+              to="/app/reports" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">bar_chart</span>
+              <span class="font-medium">Reports</span>
+            </router-link>
+            
+            <div class="my-4 border-t border-slate-200 dark:border-slate-700"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">Kasir</p>
+            
+            <router-link 
+              to="/app/cashier/cash-shift" 
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              @click="showNavSidebar = false"
+            >
+              <span class="material-symbols-outlined">payments</span>
+              <span class="font-medium">Cash Shift</span>
+            </router-link>
+          </nav>
+          
+          <!-- User Section -->
+          <div class="p-4 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 font-bold">
+                {{ authStore.user?.name?.[0]?.toUpperCase() || 'U' }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-slate-900 dark:text-white truncate">{{ authStore.user?.name || 'User' }}</p>
+                <p class="text-xs text-emerald-600 font-bold uppercase">{{ authStore.user?.role || 'Staff' }}</p>
+              </div>
+            </div>
+            <button 
+              @click="handleLogout"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium"
+            >
+              <span class="material-symbols-outlined text-[20px]">logout</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </aside>
+      </Transition>
+    </Teleport>
 
     <!-- Main Content -->
     <main class="flex-1 overflow-hidden flex flex-col lg:grid lg:grid-cols-[90px_1fr_420px] bg-slate-50">
@@ -683,6 +822,7 @@ const { success: showSuccess, error: showError, warning: showWarning, confirm: s
 // State
 const isSimpleMode = ref(false);
 const isPortrait = ref(false);
+const showNavSidebar = ref(false);
 const products = ref<any[]>([]);
 const cart = ref<CartItem[]>([]);
 const loading = ref(false);
@@ -1415,6 +1555,13 @@ const printReceiptAndClose = async () => {
   }
 };
 
+// Handle logout
+const handleLogout = () => {
+  showNavSidebar.value = false;
+  authStore.clearAuth();
+  window.location.replace('/login');
+};
+
 // Watch for tenantId changes
 watch(
   () => {
@@ -1574,5 +1721,24 @@ onUnmounted(() => {
 }
 .animate-bounce-in {
   animation: bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Navigation Sidebar Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-left-enter-from,
+.slide-left-leave-to {
+  transform: translateX(-100%);
 }
 </style>

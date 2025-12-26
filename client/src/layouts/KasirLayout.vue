@@ -47,13 +47,13 @@
           </router-link>
 
           <router-link
-            to="/app/pos"
+            to="/pos"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
             active-class="bg-primary/10 text-primary"
-            :class="[$route.path.startsWith('/app/pos') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
+            :class="[$route.path === '/pos' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
             @click="closeSidebarOnMobile"
           >
-            <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/pos') }">point_of_sale</span>
+            <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/pos' }">point_of_sale</span>
             <span class="text-sm font-medium leading-normal">POS</span>
           </router-link>
 
@@ -231,7 +231,7 @@ const pageTitle = computed(() => {
   const titles: Record<string, string> = {
       '/app/dashboard': 'Dashboard',
       '/app/products': 'Products',
-      '/app/pos': 'Point of Sale',
+      '/pos': 'Point of Sale',
       '/app/orders': 'Orders',
       '/app/customers': 'Customers',
       '/app/reports': 'Reports',
