@@ -9,7 +9,7 @@
       <div class="flex items-center gap-3">
         <button
           @click="showCourierModal = true"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">local_shipping</span>
           <span>Setup Courier</span>
@@ -48,7 +48,7 @@
             <button
               @click="filters.status = ''"
               :class="!filters.status 
-                ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
                 : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
               class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
@@ -66,7 +66,7 @@
             <button
               @click="filters.status = 'PROCESSING'"
               :class="filters.status === 'PROCESSING' 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
                 : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
               class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
@@ -109,7 +109,7 @@
             <button
               @click="filters.courier = ''"
               :class="!filters.courier 
-                ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
                 : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
               class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
@@ -120,7 +120,7 @@
               :key="courier"
               @click="filters.courier = courier"
               :class="filters.courier === courier 
-                ? 'bg-primary text-white shadow-lg shadow-primary/30' 
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
                 : 'bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'"
               class="px-3 py-1.5 text-sm font-medium rounded-xl transition-all"
             >
@@ -169,7 +169,7 @@
                 <div class="text-xs text-[#4c739a]">{{ order.customerPhone }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
+                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold rounded-full bg-blue-50 dark:bg-blue-900/20 text-emerald-600 dark:text-blue-300">
                   <span class="material-symbols-outlined text-[14px]">local_shipping</span>
                   {{ getCourierLabel(order.courier) }}
                 </span>
@@ -223,7 +223,7 @@
       >
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-xl">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-emerald-500 rounded-xl">
               <span class="material-symbols-outlined">local_shipping</span>
             </div>
             <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Setup Courier</h3>
@@ -261,7 +261,7 @@
               </button>
               <button
                 @click="saveCourier"
-                class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium shadow-lg shadow-blue-500/30"
+                class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30"
               >
                 Save
               </button>

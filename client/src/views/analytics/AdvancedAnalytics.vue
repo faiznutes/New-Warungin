@@ -23,7 +23,7 @@
       <button
         v-if="!addonError"
         @click="showCustomReportModal = true"
-        class="flex items-center gap-2 px-4 py-2.5 bg-[#137fec] hover:bg-[#137fec]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
+        class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#10b981]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all"
       >
         <span class="material-symbols-outlined text-[20px]">add_chart</span>
         <span>Create Custom Report</span>
@@ -33,7 +33,7 @@
     <!-- Analytics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- Sales Prediction -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-[#10b981]/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Sales Prediction</p>
@@ -49,7 +49,7 @@
       </div>
 
       <!-- Trend -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-[#10b981]/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Sales Trend</p>
@@ -74,7 +74,7 @@
       </div>
 
       <!-- Top Products Count -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#10b981]/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Produk Terlaris</p>
@@ -91,7 +91,7 @@
       </div>
 
       <!-- Forecast Accuracy -->
-      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#137fec]/50 transition-colors">
+      <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-[#10b981]/50 transition-colors">
         <div class="flex justify-between items-start mb-4">
           <div>
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Forecast Accuracy</p>
@@ -107,7 +107,7 @@
              <select 
               v-model="forecastMethod" 
               @change="loadAnalytics"
-              class="w-full appearance-none bg-[#f6f7f8] dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-2 py-1 text-[10px] font-medium text-[#0d141b] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#137fec]"
+              class="w-full appearance-none bg-[#f6f7f8] dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-2 py-1 text-[10px] font-medium text-[#0d141b] dark:text-white focus:outline-none focus:ring-1 focus:ring-[#10b981]"
             >
               <option value="moving_average">Moving Average</option>
               <option value="linear_regression">Linear Regression</option>
@@ -142,7 +142,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Top 10 Produk</h3>
-          <span class="text-xs text-[#137fec] bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-xl font-bold">Best Sellers</span>
+          <span class="text-xs text-[#10b981] bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-xl font-bold">Best Sellers</span>
         </div>
         
         <div class="space-y-4">
@@ -156,11 +156,11 @@
                  <span class="w-5 h-5 flex items-center justify-center rounded bg-slate-100 dark:bg-slate-700 text-xs font-bold text-[#4c739a]">{{ index + 1 }}</span>
                  <span class="font-medium text-[#0d141b] dark:text-white truncate max-w-[150px] sm:max-w-xs">{{ product.name }}</span>
               </div>
-              <span class="font-bold text-[#137fec]">{{ product.sales }} Sales</span>
+              <span class="font-bold text-[#10b981]">{{ product.sales }} Sales</span>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
                <div
-                  class="bg-[#137fec] h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-blue-500"
+                  class="bg-[#10b981] h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-emerald-600"
                   :style="{ width: `${(product.sales / (topProducts[0]?.sales || 1)) * 100}%` }"
                 ></div>
             </div>
@@ -177,7 +177,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Custom Reports</h3>
-        <button class="text-sm text-[#137fec] font-bold hover:underline">View All</button>
+        <button class="text-sm text-[#10b981] font-bold hover:underline">View All</button>
       </div>
 
       <div v-if="customReports.length === 0" class="flex flex-col items-center justify-center py-12 text-center bg-[#f6f7f8] dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
@@ -192,14 +192,14 @@
         <div
           v-for="report in customReports"
           :key="report.id"
-          class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:shadow-md hover:border-[#137fec]/30 transition-all"
+          class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:shadow-md hover:border-[#10b981]/30 transition-all"
         >
           <div class="flex items-start justify-between mb-3">
              <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-xl">
                 <span class="material-symbols-outlined text-[20px]">description</span>
              </div>
              <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button @click="viewReport(report)" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-[#4c739a] hover:text-[#137fec]" title="Lihat">
+                <button @click="viewReport(report)" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-[#4c739a] hover:text-[#10b981]" title="Lihat">
                   <span class="material-symbols-outlined text-[18px]">visibility</span>
                 </button>
                 <button @click="exportReport(report)" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-[#4c739a] hover:text-green-600" title="Export">
@@ -241,7 +241,7 @@
                   <input
                     v-model="reportForm.name"
                     type="text"
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50"
                     placeholder="Contoh: Laporan Penjualan Q1"
                   />
                 </div>
@@ -250,7 +250,7 @@
                   <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Tipe Data</label>
                   <select
                     v-model="reportForm.dataType"
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white"
                   >
                     <option value="SALES">Penjualan</option>
                     <option value="PRODUCTS">Produk</option>
@@ -263,15 +263,15 @@
                   <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Metrik</label>
                   <div class="grid grid-cols-2 gap-3">
                     <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-[#f6f7f8] dark:hover:bg-slate-800 transition-colors">
-                      <input v-model="reportForm.metrics" type="checkbox" value="REVENUE" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <input v-model="reportForm.metrics" type="checkbox" value="REVENUE" class="h-4 w-4 text-[#10b981] rounded focus:ring-[#10b981]" />
                       <span class="text-sm font-medium text-[#0d141b] dark:text-white">Revenue</span>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-[#f6f7f8] dark:hover:bg-slate-800 transition-colors">
-                      <input v-model="reportForm.metrics" type="checkbox" value="QUANTITY" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <input v-model="reportForm.metrics" type="checkbox" value="QUANTITY" class="h-4 w-4 text-[#10b981] rounded focus:ring-[#10b981]" />
                       <span class="text-sm font-medium text-[#0d141b] dark:text-white">Quantity</span>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-[#f6f7f8] dark:hover:bg-slate-800 transition-colors">
-                      <input v-model="reportForm.metrics" type="checkbox" value="PROFIT" class="h-4 w-4 text-[#137fec] rounded focus:ring-[#137fec]" />
+                      <input v-model="reportForm.metrics" type="checkbox" value="PROFIT" class="h-4 w-4 text-[#10b981] rounded focus:ring-[#10b981]" />
                       <span class="text-sm font-medium text-[#0d141b] dark:text-white">Profit</span>
                     </label>
                   </div>
@@ -283,7 +283,7 @@
                     <input
                       v-model="reportForm.startDate"
                       type="date"
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                   <div>
@@ -291,7 +291,7 @@
                     <input
                       v-model="reportForm.endDate"
                       type="date"
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                 </div>
@@ -307,7 +307,7 @@
             </button>
             <button
               @click="saveCustomReport"
-              class="flex-1 px-4 py-2.5 bg-[#137fec] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
+              class="flex-1 px-4 py-2.5 bg-[#10b981] hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
             >
               Simpan Report
             </button>
