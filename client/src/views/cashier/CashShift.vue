@@ -8,7 +8,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- No Active Store Shift - Show Open Store Shift Form -->
@@ -30,7 +30,7 @@
             <select
               v-model="openStoreShiftForm.shiftType"
               required
-              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-[#0d141b] dark:text-white font-medium transition-all"
             >
               <option value="">Select Shift</option>
               <option value="pagi">Morning (06:00 - 12:00)</option>
@@ -52,7 +52,7 @@
                 type="number"
                 step="0.01"
                 min="0"
-                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-[#0d141b] dark:text-white font-medium transition-all"
                 placeholder="0"
               />
             </div>
@@ -66,7 +66,7 @@
             <textarea
               v-model="openStoreShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -74,7 +74,7 @@
           <button
             type="submit"
             :disabled="openingStoreShift || !openStoreShiftForm.shiftType"
-            class="w-full px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg v-if="openingStoreShift" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -134,7 +134,7 @@
                 step="0.01"
                 min="0.01"
                 required
-                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-[#0d141b] dark:text-white font-medium transition-all"
                 placeholder="0"
               />
             </div>
@@ -148,7 +148,7 @@
             <textarea
               v-model="openShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white font-medium transition-all"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-[#0d141b] dark:text-white font-medium transition-all"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -156,7 +156,7 @@
           <button
             type="submit"
             :disabled="openingShift || !openShiftForm.modalAwal || openShiftForm.modalAwal <= 0"
-            class="w-full px-6 py-3 bg-primary hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <div v-if="openingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             <span>{{ openingShift ? 'Opening Shift...' : 'Open Cash Shift' }}</span>
@@ -176,7 +176,7 @@
               :class="[
                 'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'today'
-                  ? 'border-primary-600 text-primary-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-[#4c739a] hover:text-[#0d141b] hover:border-slate-300'
               ]"
             >
@@ -187,7 +187,7 @@
               :class="[
                 'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
                 activeTab === 'history'
-                  ? 'border-primary-600 text-primary-600'
+                  ? 'border-emerald-600 text-emerald-600'
                   : 'border-transparent text-[#4c739a] hover:text-[#0d141b] hover:border-slate-300'
               ]"
             >
@@ -230,7 +230,7 @@
         <div class="bg-white rounded-xl shadow-lg p-6">
           <h3 class="text-xl font-bold text-[#0d141b] mb-4">Today's Shifts</h3>
           <div v-if="todayShiftsLoading" class="text-center py-8">
-            <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
           <div v-else-if="todayShifts.length === 0" class="text-center py-8 text-[#4c739a]">
             No shifts today yet
@@ -267,7 +267,7 @@
                 </div>
                 <button
                   @click.stop="viewShiftDetails(shift.id)"
-                  class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition text-sm font-semibold"
+                  class="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm font-semibold"
                 >
                   Detail
                 </button>
@@ -333,7 +333,7 @@
         <div class="bg-white rounded-xl shadow-lg p-6">
           <h3 class="text-xl font-bold text-[#0d141b] mb-4">Store Shift History</h3>
           <div v-if="storeShiftHistoryLoading" class="text-center py-8">
-            <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
           <div v-else-if="storeShiftHistory.length === 0" class="text-center py-8 text-[#4c739a]">
             No shift history yet
@@ -383,7 +383,7 @@
                   <td class="px-4 py-3 whitespace-nowrap">
                     <button
                       @click="viewShiftDetails(shift.id)"
-                      class="px-3 py-1 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition text-xs font-semibold"
+                      class="px-3 py-1 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-xs font-semibold"
                     >
                       Detail
                     </button>
@@ -469,7 +469,7 @@
                 type="checkbox"
                 v-model="shiftDetailFilters.includeOrders"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
               />
               <span class="text-sm text-[#0d141b]">Sales</span>
             </label>
@@ -478,7 +478,7 @@
                 type="checkbox"
                 v-model="shiftDetailFilters.includeStockTransfers"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
               />
               <span class="text-sm text-[#0d141b]">Stock Transfers</span>
             </label>
@@ -487,7 +487,7 @@
                 type="checkbox"
                 v-model="shiftDetailFilters.includeProductAdjustments"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
               />
               <span class="text-sm text-[#0d141b]">Stock Adjustments</span>
             </label>
@@ -516,7 +516,7 @@
 
         <!-- Loading -->
         <div v-if="shiftDetailLoading" class="text-center py-12">
-          <div class="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div class="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
 
         <!-- Orders -->
@@ -667,7 +667,7 @@
               step="0.01"
               min="0"
               required
-              class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg font-semibold"
+              class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-lg font-semibold"
               placeholder="0"
             />
             <p class="text-xs text-[#4c739a] mt-1">Enter the physical cash amount currently in the register</p>
@@ -695,7 +695,7 @@
             <textarea
               v-model="closeShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>

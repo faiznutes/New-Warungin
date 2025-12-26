@@ -1,7 +1,7 @@
 <template>
   <div class="flex-1 overflow-y-auto px-8 pb-8 bg-white h-full">
     <div v-if="loading" class="flex items-center justify-center h-full min-h-[400px]">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
     </div>
     
     <div v-else class="max-w-7xl mx-auto flex flex-col gap-8">
@@ -13,7 +13,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative group">
-            <select v-model="dateRange" class="appearance-none pl-10 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:border-primary/50 transition-colors">
+            <select v-model="dateRange" class="appearance-none pl-10 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer hover:border-emerald-500/50 transition-colors">
               <option value="today">Today</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>

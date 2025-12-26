@@ -21,7 +21,7 @@
     </div>
 
     <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <p class="text-[#4c739a] text-sm font-medium">Loading addon data...</p>
     </div>
 
@@ -29,7 +29,7 @@
       <!-- Active Addons -->
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
         <div class="flex items-center gap-2 mb-6">
-          <span class="material-symbols-outlined text-primary">check_circle</span>
+          <span class="material-symbols-outlined text-emerald-600">check_circle</span>
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Active Addons</h3>
         </div>
 
@@ -41,7 +41,7 @@
           <div
             v-for="addon in activeAddons"
             :key="addon.id"
-            class="group relative bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:border-primary/30 transition-all"
+            class="group relative bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:border-emerald-500/30 transition-all"
           >
             <div class="flex items-start justify-between mb-3">
               <h4 class="font-bold text-[#0d141b] dark:text-white">{{ addon.addonName }}</h4>
@@ -59,7 +59,7 @@
               <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
                 <div
                   class="h-full rounded-full transition-all duration-500"
-                  :class="addon.isLimitReached ? 'bg-red-500' : 'bg-[#137fec]'"
+                  :class="addon.isLimitReached ? 'bg-red-500' : 'bg-emerald-500'"
                   :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }"
                 ></div>
               </div>
@@ -78,7 +78,7 @@
       <!-- Available Addons -->
       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
         <div class="flex items-center gap-2 mb-6">
-          <span class="material-symbols-outlined text-[#137fec]">shopping_bag</span>
+          <span class="material-symbols-outlined text-emerald-600">shopping_bag</span>
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Katalog Addon</h3>
         </div>
 
@@ -91,7 +91,7 @@
             v-for="addon in filteredAvailableAddons"
             :key="addon.id"
             class="flex flex-col bg-white dark:bg-slate-800 border rounded-xl p-5 transition-all hover:shadow-lg hover:-translate-y-1"
-            :class="addon.comingSoon ? 'border-dashed border-slate-200 bg-slate-50/50 opacity-80' : 'border-slate-200 dark:border-slate-700 hover:border-[#137fec]/30'"
+            :class="addon.comingSoon ? 'border-dashed border-slate-200 bg-slate-50/50 opacity-80' : 'border-slate-200 dark:border-slate-700 hover:border-emerald-500/30'"
           >
             <div class="flex items-start justify-between mb-2">
               <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ addon.name }}</h4>
@@ -104,7 +104,7 @@
             
             <div class="flex items-end justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-700">
               <div>
-                <span class="text-xl font-bold text-[#137fec]">{{ formatCurrency(addon.price) }}</span>
+                <span class="text-xl font-bold text-emerald-600">{{ formatCurrency(addon.price) }}</span>
                 <span class="text-xs text-[#4c739a]">/bulan</span>
               </div>
               <div v-if="addon.defaultLimit" class="text-xs font-medium text-[#4c739a] bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">
@@ -122,7 +122,7 @@
               <button
                 v-if="!addon.comingSoon"
                 @click="subscribeAddon(addon)"
-                class="flex-1 px-3 py-2 text-sm bg-[#137fec] text-white hover:bg-blue-600 shadow-sm hover:shadow-blue-500/30 rounded-xl font-bold transition-all"
+                class="flex-1 px-3 py-2 text-sm bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm hover:shadow-emerald-500/30 rounded-xl font-bold transition-all"
               >
                 Beli
               </button>
@@ -150,7 +150,7 @@
            <div>
               <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ selectedAddon.name }}</h3>
               <div class="flex items-center gap-2 mt-2">
-                <span class="text-2xl font-bold text-[#137fec]">{{ formatCurrency(selectedAddon.price) }}</span>
+                <span class="text-2xl font-bold text-emerald-600">{{ formatCurrency(selectedAddon.price) }}</span>
                 <span class="text-[#4c739a]">/bulan</span>
                 <span v-if="selectedAddon.comingSoon" class="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-yellow-50 text-yellow-700 border border-yellow-100 rounded-xl">Coming Soon</span>
               </div>
@@ -179,8 +179,8 @@
             </ul>
           </div>
 
-          <div v-if="selectedAddon.defaultLimit" class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#137fec]">info</span>
+          <div v-if="selectedAddon.defaultLimit" class="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-xl flex items-center gap-3">
+            <span class="material-symbols-outlined text-emerald-600">info</span>
             <p class="text-sm text-[#0d141b] dark:text-white">
               <span class="font-bold">Limit Tambahan:</span> {{ selectedAddon.defaultLimit }} 
               <span v-if="selectedAddon.type === 'ADD_OUTLETS'">outlet</span>
@@ -200,7 +200,7 @@
           <button
             v-if="!selectedAddon.comingSoon"
             @click="subscribeAddon(selectedAddon); showDetailModal = false"
-            class="flex-1 px-4 py-3 bg-[#137fec] text-white rounded-xl hover:bg-blue-600 font-bold transition-all shadow-lg shadow-blue-500/30"
+            class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 font-bold transition-all shadow-lg shadow-emerald-500/30"
           >
             Berlangganan Sekarang
           </button>

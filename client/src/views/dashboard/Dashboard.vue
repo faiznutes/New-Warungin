@@ -10,7 +10,7 @@
         <select
           v-model="dateRange"
           @change="loadStats"
-          class="flex-1 sm:flex-none px-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-slate-800 text-text-primary dark:text-white font-medium cursor-pointer hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
+          class="flex-1 sm:flex-none px-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-slate-800 text-text-primary dark:text-white font-medium cursor-pointer hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
         >
           <option value="today">Today</option>
           <option value="week">This Week</option>
@@ -21,7 +21,7 @@
     </div>
 
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium">Loading data...</div>
     </div>
 
@@ -415,7 +415,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Top Products</h3>
-            <router-link to="/app/products" class="text-primary hover:text-blue-600 text-sm font-medium flex items-center gap-1">
+            <router-link to="/app/products" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1">
               View All
               <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             </router-link>
@@ -450,7 +450,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-[#0d141b] dark:text-white text-lg font-bold">Orders by Status</h3>
-            <router-link to="/app/orders" class="text-primary hover:text-blue-600 text-sm font-medium flex items-center gap-1">
+            <router-link to="/app/orders" class="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1">
               View All
               <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             </router-link>
