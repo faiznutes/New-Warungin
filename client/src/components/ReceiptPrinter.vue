@@ -2,225 +2,210 @@
   <Teleport to="body">
     <div
       v-if="show"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4"
-      @click.self="$emit('close')"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex flex-col overflow-hidden"
     >
-      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-4 sm:p-6">
-          <div class="flex items-center justify-between mb-4 sm:mb-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Print Receipt</h3>
-            <button
-              @click="$emit('close')"
-              class="text-gray-400 hover:text-gray-600 transition p-2"
-            >
-              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Paper Size Selection -->
-          <div class="mb-4 sm:mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Ukuran Kertas</label>
-            <div class="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                @click="selectedPaperSize = '50mm'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
-                :class="selectedPaperSize === '50mm' 
-                  ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+      <!-- Top Navigation -->
+      <nav class="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16">
+            <div class="flex items-center gap-4">
+              <button 
+                @click="$emit('close')"
+                class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="text-sm font-medium">50mm</span>
-                <span class="text-xs text-gray-500">Thermal Kecil</span>
+                <span class="material-symbols-outlined">arrow_back</span>
               </button>
-              <button
-                type="button"
-                @click="selectedPaperSize = '85mm'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
-                :class="selectedPaperSize === '85mm' 
-                  ? 'border-primary-600 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="text-sm font-medium">85mm</span>
-                <span class="text-xs text-gray-500">Thermal Standar</span>
-              </button>
+              <div class="flex items-center gap-3">
+                <div class="bg-primary/10 p-1.5 rounded-xl text-primary">
+                  <span class="material-symbols-outlined">storefront</span>
+                </div>
+                <h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{{ tenantName || tenantInfo?.name || 'Warungin POS' }}</h1>
+              </div>
+              <span class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2 hidden sm:block"></span>
+              <span class="text-sm font-medium text-slate-500 hidden sm:block">Detail Transaksi</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="hidden md:flex flex-col items-end mr-2">
+                <span class="text-sm font-semibold text-slate-900 dark:text-white">{{ receiptData?.cashierName || receiptData?.servedBy || 'Kasir' }}</span>
+                <span class="text-xs text-slate-500">{{ receiptData?.shiftType ? `Shift ${formatShiftType(receiptData.shiftType)}` : 'Kasir' }}</span>
+              </div>
+              <div class="size-9 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                <span class="material-symbols-outlined text-primary text-lg">person</span>
+              </div>
             </div>
           </div>
+        </div>
+      </nav>
 
-          <!-- Template Selection -->
-          <div class="mb-4 sm:mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Template</label>
+      <!-- Main Content Area -->
+      <main class="flex-grow flex flex-col items-center justify-start py-6 px-4 sm:px-6 relative overflow-y-auto">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 receipt-pattern opacity-40 pointer-events-none z-0"></div>
+
+        <!-- Action Toolbar -->
+        <div class="w-full max-w-[420px] flex justify-between items-center mb-6 z-10">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Detail Transaksi</h2>
+          <div class="flex gap-2">
+            <!-- Paper Size Selection (Compact) -->
             <select
-              v-model="selectedTemplate"
-              @change="loadTemplate(selectedTemplate)"
-              class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
+              v-model="selectedPaperSize"
+              class="px-3 py-2 text-sm font-medium text-slate-600 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm focus:ring-2 focus:ring-primary/20 outline-none"
             >
-              <option v-for="template in templates" :key="template.id" :value="template.id">
-                {{ template.name }}
-              </option>
+              <option value="50mm">50mm</option>
+              <option value="85mm">85mm</option>
             </select>
-          </div>
-
-          <!-- Receipt Preview -->
-          <div
-            ref="receiptContent"
-            class="bg-white border-2 border-gray-300 rounded-xl p-4 sm:p-6 receipt-print-container"
-            :class="{
-              'receipt-50mm': selectedPaperSize === '50mm',
-              'receipt-80mm': selectedPaperSize === '85mm' || selectedPaperSize === '80mm',
-              'receipt-a4': selectedPaperSize === 'A4',
-              'receipt-bluetooth': selectedPaperSize === 'Bluetooth'
-            }"
-          >
-            <!-- Receipt Content -->
-            <div v-if="receiptData && template" 
-                 class="receipt-content"
-                 :style="{ fontFamily: getTemplateFontFamily(template.templateType, template.styles), fontSize: getTemplateFontSize(template.templateType, template.styles) }">
-              <!-- Header -->
-              <div v-if="template?.header?.showName || template?.header?.showAddress" 
-                   :class="getTemplateHeaderStyle(template.templateType, template.styles)">
-                <h1 v-if="template?.header?.showName" 
-                    :class="getTemplateTitleStyle(template.templateType)">
-                  {{ props.tenantName || tenantInfo?.name || 'Warungin' }}
-                </h1>
-                <p v-if="template?.header?.showAddress" 
-                   class="text-xs sm:text-sm text-gray-600">
-                  {{ props.tenantAddress || tenantInfo?.address || 'Jl. Contoh No. 123' }}
-                </p>
-                <p v-if="template?.header?.showPhone" 
-                   class="text-xs sm:text-sm text-gray-600 mt-1">
-                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 081234567890' }}
-                </p>
-              </div>
-
-              <!-- Order Info -->
-              <div class="mb-3 sm:mb-4 space-y-1 sm:space-y-2">
-                <div v-if="template?.fields?.showOrderNumber" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">No. Pesanan:</span>
-                  <span class="font-semibold">{{ receiptData.orderNumber }}</span>
-                </div>
-                <div v-if="template?.fields?.showDate" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">Tanggal:</span>
-                  <span>{{ formatDateTime(receiptData.date) }}</span>
-                </div>
-                <div v-if="template?.fields?.showTime" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">Waktu:</span>
-                  <span>{{ formatTime(receiptData.date) }}</span>
-                </div>
-                <div v-if="template?.fields?.showShift && receiptData.shiftType" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">Shift:</span>
-                  <span class="font-semibold capitalize">{{ formatShiftType(receiptData.shiftType) }}</span>
-                </div>
-                <div v-if="template?.fields?.showCashier && (receiptData.cashierName || receiptData.servedBy)" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">Kasir:</span>
-                  <span class="font-semibold">{{ receiptData.cashierName || receiptData.servedBy }}</span>
-                </div>
-                <div v-if="template?.fields?.showCustomer && receiptData.customerName" class="flex justify-between text-xs sm:text-sm">
-                  <span class="text-gray-600">Pelanggan:</span>
-                  <span>{{ receiptData.customerName }}</span>
-                </div>
-              </div>
-
-              <!-- Items -->
-              <div v-if="template?.fields?.showItems" 
-                   class="mb-3 sm:mb-4 border-t border-b py-3 sm:py-4"
-                   :class="getTemplateContentStyle(template.templateType)">
-                <div class="space-y-2">
-                  <div v-for="item in receiptData.items" 
-                       :key="item.name" 
-                       :class="getTemplateItemStyle(template.templateType) + ' last:border-0'">
-                    <div class="flex justify-between items-start mb-1">
-                      <div class="flex-1">
-                        <div class="font-semibold text-sm">{{ item.name }}</div>
-                        <div v-if="item.discount && item.discount > 0" class="text-xs text-red-600 mt-0.5 font-medium">
-                          ✓ Diskon: -{{ formatCurrency(item.discount) }}
-                        </div>
-                        <div v-else-if="isProductDiscounted(item.productId)" class="text-xs text-gray-500 mt-0.5 italic">
-                          (Tidak memenuhi syarat diskon)
-                        </div>
-                      </div>
-                      <div class="text-right ml-2">
-                        <div class="text-sm font-semibold">{{ formatCurrency(item.subtotal) }}</div>
-                        <div class="text-xs text-gray-500">{{ item.quantity }} x {{ formatCurrency(item.price) }}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Totals -->
-              <div class="mb-3 sm:mb-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-                <div class="border-t border-dashed border-gray-400 pt-2 mt-2">
-                  <div v-if="template?.fields?.showSubtotal" class="flex justify-between mb-1">
-                    <span class="font-medium">Subtotal:</span>
-                    <span class="font-semibold">{{ formatCurrency(receiptData.subtotal) }}</span>
-                  </div>
-                  <div v-if="template?.fields?.showDiscount && receiptData.discount > 0" class="flex justify-between mb-1 text-red-600">
-                    <span class="font-medium">Diskon Total:</span>
-                    <span class="font-semibold">-{{ formatCurrency(receiptData.discount) }}</span>
-                  </div>
-                  <div v-if="template?.fields?.showTax" class="flex justify-between mb-1">
-                    <span>Pajak:</span>
-                    <span>{{ formatCurrency(0) }}</span>
-                  </div>
-                </div>
-                <div v-if="template?.fields?.showTotal" 
-                     :class="getTemplateTotalStyle(template.templateType)">
-                  <span>TOTAL:</span>
-                  <span>{{ formatCurrency(receiptData.total) }}</span>
-                </div>
-                <div class="border-t border-dashed border-gray-400 pt-2 mt-2 space-y-1">
-                  <div v-if="template?.fields?.showPaymentMethod" class="flex justify-between text-xs sm:text-sm">
-                    <span class="font-medium">Pembayaran:</span>
-                    <span class="font-semibold">{{ getPaymentMethodLabel(receiptData.paymentMethod) }}</span>
-                  </div>
-                  <div v-if="template?.fields?.showChange && receiptData.change && receiptData.change > 0" class="flex justify-between text-xs sm:text-sm">
-                    <span class="font-medium">Kembalian:</span>
-                    <span class="font-semibold text-green-600">{{ formatCurrency(receiptData.change) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Footer -->
-              <div v-if="template?.footer?.showThankYou || template?.footer?.showContact" 
-                   :class="getTemplateFooterStyle(template.templateType)">
-                <p v-if="template?.footer?.showThankYou" class="mb-1 sm:mb-2 font-semibold text-sm sm:text-base">Terima Kasih!</p>
-                <p v-if="template?.footer?.showContact" class="text-xs sm:text-sm text-gray-600">
-                  {{ props.tenantPhone || tenantInfo?.phone || 'Telp: 081234567890' }}
-                </p>
-              </div>
-            </div>
-
-            <div v-else class="text-center py-8 sm:py-12 text-gray-500">
-              <p>Memuat data receipt...</p>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-6">
-            <button
-              @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
+            <!-- Share Button -->
+            <button 
+              @click="handleShare"
+              class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
             >
-              Tutup
+              <span class="material-symbols-outlined text-[18px]">share</span>
+              <span class="hidden sm:inline">Share</span>
             </button>
-            <button
+            <!-- Print Button -->
+            <button 
               @click="handlePrint"
               :disabled="!receiptData || !template"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              <span class="material-symbols-outlined text-[18px]">print</span>
               Print
             </button>
           </div>
         </div>
-      </div>
+
+        <!-- Receipt Card -->
+        <div 
+          ref="receiptContent"
+          class="w-full max-w-[400px] bg-white relative z-10 shadow-receipt rounded-2xl overflow-hidden transition-all duration-300"
+          :class="{
+            'receipt-50mm': selectedPaperSize === '50mm',
+            'receipt-80mm': selectedPaperSize === '85mm' || selectedPaperSize === '80mm',
+          }"
+        >
+          <div v-if="receiptData && template" class="receipt-content">
+            <!-- Receipt Header -->
+            <div class="flex flex-col items-center pt-8 pb-4 px-8 text-center border-b border-dashed border-slate-200">
+              <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                <span class="material-symbols-outlined text-3xl">local_cafe</span>
+              </div>
+              <h2 v-if="template?.header?.showName" class="text-2xl font-bold text-slate-900 tracking-tight mb-1">
+                {{ tenantName || tenantInfo?.name || 'Warungin' }}
+              </h2>
+              <p v-if="template?.header?.showAddress" class="text-sm text-slate-500 leading-relaxed">
+                {{ tenantAddress || tenantInfo?.address || 'Jl. Contoh No. 123' }}
+              </p>
+              <p v-if="template?.header?.showPhone" class="text-sm text-slate-500">
+                Telp: {{ tenantPhone || tenantInfo?.phone || '081234567890' }}
+              </p>
+            </div>
+
+            <!-- Transaction Meta -->
+            <div class="px-8 py-4 bg-slate-50 border-b border-dashed border-slate-200 flex flex-col gap-2">
+              <div v-if="template?.fields?.showOrderNumber" class="flex justify-between items-center text-xs font-medium text-slate-500">
+                <span>ID Transaksi</span>
+                <span class="font-mono text-slate-900">#{{ receiptData.orderNumber }}</span>
+              </div>
+              <div v-if="template?.fields?.showDate" class="flex justify-between items-center text-xs font-medium text-slate-500">
+                <span>Tanggal</span>
+                <span class="text-slate-900">{{ formatDate(receiptData.date) }}</span>
+              </div>
+              <div v-if="template?.fields?.showTime" class="flex justify-between items-center text-xs font-medium text-slate-500">
+                <span>Waktu</span>
+                <span class="text-slate-900">{{ formatTime(receiptData.date) }} WIB</span>
+              </div>
+              <div v-if="template?.fields?.showCashier && (receiptData.cashierName || receiptData.servedBy)" class="flex justify-between items-center text-xs font-medium text-slate-500">
+                <span>Kasir</span>
+                <span class="text-slate-900">{{ receiptData.cashierName || receiptData.servedBy }}</span>
+              </div>
+              <div v-if="template?.fields?.showCustomer && receiptData.customerName" class="flex justify-between items-center text-xs font-medium text-slate-500">
+                <span>Pelanggan</span>
+                <span class="text-slate-900">{{ receiptData.customerName }}</span>
+              </div>
+            </div>
+
+            <!-- Item List -->
+            <div v-if="template?.fields?.showItems" class="p-8 pb-4">
+              <div class="flex flex-col gap-4">
+                <div 
+                  v-for="item in receiptData.items" 
+                  :key="item.name"
+                  class="flex justify-between items-start gap-4"
+                >
+                  <div class="flex flex-col flex-1">
+                    <span class="text-sm font-semibold text-slate-900">{{ item.name }}</span>
+                    <span class="text-xs text-slate-500">{{ item.quantity }} x {{ formatCurrency(item.price) }}</span>
+                    <span v-if="item.discount && item.discount > 0" class="text-[10px] text-primary italic mt-0.5">
+                      ✓ Diskon: -{{ formatCurrency(item.discount) }}
+                    </span>
+                  </div>
+                  <span class="text-sm font-medium text-slate-900 tabular-nums">{{ formatCurrency(item.subtotal) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="mx-6 border-t border-dashed border-slate-200 my-2"></div>
+
+            <!-- Summary -->
+            <div class="px-8 py-4 space-y-2">
+              <div v-if="template?.fields?.showSubtotal" class="flex justify-between text-sm text-slate-500">
+                <span>Subtotal</span>
+                <span class="font-medium text-slate-900 tabular-nums">{{ formatCurrency(receiptData.subtotal) }}</span>
+              </div>
+              <div v-if="template?.fields?.showTax" class="flex justify-between text-sm text-slate-500">
+                <span>Pajak (10%)</span>
+                <span class="font-medium text-slate-900 tabular-nums">{{ formatCurrency(0) }}</span>
+              </div>
+              <div v-if="template?.fields?.showDiscount && receiptData.discount > 0" class="flex justify-between text-sm text-slate-500">
+                <span>Diskon</span>
+                <span class="font-medium text-green-600 tabular-nums">- {{ formatCurrency(receiptData.discount) }}</span>
+              </div>
+              <div v-if="template?.fields?.showTotal" class="pt-3 mt-2 border-t border-slate-200 flex justify-between items-end">
+                <span class="text-sm font-bold text-slate-900">Total Bayar</span>
+                <span class="text-2xl font-bold text-primary tabular-nums">{{ formatCurrency(receiptData.total) }}</span>
+              </div>
+            </div>
+
+            <!-- Payment Info Badge -->
+            <div v-if="template?.fields?.showPaymentMethod" class="mx-8 mb-6 p-3 bg-primary/5 rounded-xl border border-primary/10 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-xl">{{ getPaymentIcon(receiptData.paymentMethod) }}</span>
+                <span class="text-xs font-bold text-primary uppercase tracking-wide">Lunas via {{ getPaymentMethodLabel(receiptData.paymentMethod) }}</span>
+              </div>
+              <span v-if="receiptData.change && receiptData.change > 0" class="text-xs text-primary/70 font-mono">
+                Kembali: {{ formatCurrency(receiptData.change) }}
+              </span>
+            </div>
+
+            <!-- Receipt Footer -->
+            <div v-if="template?.footer?.showThankYou || template?.footer?.showContact" class="bg-slate-50 border-t border-dashed border-slate-200 p-6 text-center">
+              <div class="flex flex-col items-center gap-2">
+                <p v-if="template?.footer?.showThankYou" class="text-xs font-medium text-slate-900 italic">"Terima kasih telah berbelanja!"</p>
+                <p class="text-[10px] text-slate-500 max-w-[200px]">Simpan struk ini sebagai bukti pembayaran yang sah.</p>
+                
+                <!-- Barcode -->
+                <div class="mt-4 h-12 w-48 opacity-80 barcode-pattern"></div>
+                <span class="text-[10px] text-slate-500 font-mono mt-1 tracking-widest">{{ receiptData.orderNumber }}</span>
+              </div>
+            </div>
+
+            <!-- Paper Tear Effect -->
+            <div class="paper-tear-effect"></div>
+          </div>
+
+          <!-- Loading State -->
+          <div v-else class="text-center py-12 text-slate-500">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Memuat data receipt...</p>
+          </div>
+        </div>
+
+        <!-- Footer Branding -->
+        <div class="mt-8 text-center text-xs text-slate-400">
+          Powered by Warungin Systems © {{ new Date().getFullYear() }}
+        </div>
+      </main>
     </div>
   </Teleport>
 </template>
@@ -231,16 +216,8 @@ import { Teleport } from 'vue';
 import api from '../api';
 import { formatCurrency, formatDateTime } from '../utils/formatters';
 import { useNotification } from '../composables/useNotification';
-import { 
-  getTemplateHeaderStyle, 
-  getTemplateTitleStyle, 
-  getTemplateContentStyle, 
-  getTemplateItemStyle, 
-  getTemplateTotalStyle, 
-  getTemplateFooterStyle 
-} from '../utils/receipt-template-styles';
 
-const { warning } = useNotification();
+const { warning, success } = useNotification();
 
 interface ReceiptItem {
   name: string;
@@ -248,13 +225,13 @@ interface ReceiptItem {
   price: number;
   subtotal: number;
   discount?: number;
-  productId?: string; // For discount tracking
+  productId?: string;
 }
 
 interface DiscountDetail {
   discountName: string;
   discountAmount: number;
-  appliedTo: string[]; // Product IDs yang mendapat diskon
+  appliedTo: string[];
 }
 
 interface ReceiptData {
@@ -262,16 +239,16 @@ interface ReceiptData {
   date: string;
   customerName?: string;
   memberName?: string;
-  shiftType?: string | null; // Pagi, Siang, Sore, Malam
-  cashierName?: string | null; // Nama kasir yang melayani
+  shiftType?: string | null;
+  cashierName?: string | null;
   items: ReceiptItem[];
   subtotal: number;
   discount: number;
   total: number;
   paymentMethod: string;
   change?: number;
-  servedBy?: string; // Legacy - akan diganti dengan cashierName
-  discountDetails?: DiscountDetail[]; // Discount details with appliedTo
+  servedBy?: string;
+  discountDetails?: DiscountDetail[];
 }
 
 interface ReceiptTemplate {
@@ -309,7 +286,7 @@ const emit = defineEmits<{
 
 const templates = ref<ReceiptTemplate[]>([]);
 const selectedTemplate = ref<string>('');
-const selectedPaperSize = ref<'50mm' | '85mm' | 'A4' | 'Bluetooth'>('85mm');
+const selectedPaperSize = ref<'50mm' | '85mm'>('85mm');
 const template = ref<ReceiptTemplate | null>(null);
 const receiptContent = ref<HTMLElement | null>(null);
 const loading = ref(false);
@@ -321,11 +298,12 @@ const formatTime = (date: string) => {
   });
 };
 
-const isProductDiscounted = (productId: string | undefined): boolean => {
-  if (!productId || !receiptData.value?.discountDetails) return false;
-  return receiptData.value.discountDetails.some(d => 
-    d.appliedTo && Array.isArray(d.appliedTo) && d.appliedTo.includes(productId)
-  );
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
 };
 
 const formatShiftType = (shiftType: string | null | undefined): string => {
@@ -353,36 +331,18 @@ const getPaymentMethodLabel = (method: string) => {
   return labels[method] || method;
 };
 
-const getTemplateFontFamily = (templateType: string, styles?: any): string => {
-  const fontMap: Record<string, string> = {
-    CLASSIC: styles?.fontFamily || 'Arial, sans-serif',
-    MODERN: styles?.fontFamily || 'Inter, sans-serif',
-    MINIMAL: styles?.fontFamily || 'Courier New, monospace',
-    PROFESSIONAL: styles?.fontFamily || 'Arial, sans-serif',
-    // Legacy support
-    DEFAULT: styles?.fontFamily || 'Arial, sans-serif',
-    DETAILED: styles?.fontFamily || 'Arial, sans-serif',
-    COMPACT: styles?.fontFamily || 'Courier New, monospace',
+const getPaymentIcon = (method: string) => {
+  const icons: Record<string, string> = {
+    CASH: 'payments',
+    CARD: 'credit_card',
+    E_WALLET: 'wallet',
+    QRIS: 'qr_code_2',
+    BANK_TRANSFER: 'account_balance',
+    SHOPEEPAY: 'wallet',
+    DANA: 'wallet',
+    MIDTRANS: 'qr_code_2',
   };
-  return fontMap[templateType] || 'Arial, sans-serif';
-};
-
-const getTemplateFontSize = (templateType: string, styles?: any): string => {
-  // Use template-specific default if no style provided
-  if (styles?.fontSize) return styles.fontSize;
-  
-  const sizeMap: Record<string, string> = {
-    CLASSIC: '12px',
-    MODERN: '11px',
-    MINIMAL: '9px',
-    PROFESSIONAL: '11px',
-    // Legacy support
-    DEFAULT: '12px',
-    DETAILED: '11px',
-    COMPACT: '11px',
-  };
-  
-  return sizeMap[templateType] || '12px';
+  return icons[method] || 'receipt';
 };
 
 const loadTemplates = async () => {
@@ -404,23 +364,28 @@ const loadTemplate = async (templateId: string) => {
     const response = await api.get(`/receipts/templates/${templateId}`);
     template.value = response.data;
     
-    // Set default fields if not present
     if (template.value) {
       if (!template.value.fields) {
         template.value.fields = {
           showOrderNumber: true,
           showDate: true,
+          showTime: true,
+          showCashier: true,
+          showCustomer: true,
           showItems: true,
           showSubtotal: true,
+          showTax: true,
           showDiscount: true,
           showTotal: true,
           showPaymentMethod: true,
+          showChange: true,
         };
       }
       if (!template.value.header) {
         template.value.header = {
           showName: true,
           showAddress: true,
+          showPhone: true,
         };
       }
       if (!template.value.footer) {
@@ -432,23 +397,18 @@ const loadTemplate = async (templateId: string) => {
     }
   } catch (error: any) {
     console.error('Error loading template:', error);
-    // Use default template config
     template.value = {
       id: 'default',
       name: 'Default Receipt',
-      templateType: 'DEFAULT',
-      paperSize: 'A4',
-      header: {
-        showName: true,
-        showAddress: true,
-      },
-      footer: {
-        showThankYou: true,
-        showContact: true,
-      },
+      templateType: 'MODERN',
+      paperSize: '85mm',
+      header: { showName: true, showAddress: true, showPhone: true },
+      footer: { showThankYou: true, showContact: true },
       fields: {
         showOrderNumber: true,
         showDate: true,
+        showTime: true,
+        showCashier: true,
         showItems: true,
         showSubtotal: true,
         showDiscount: true,
@@ -486,6 +446,34 @@ const loadReceiptData = async () => {
   }
 };
 
+const handleShare = async () => {
+  if (!receiptData.value) return;
+  
+  const shareData = {
+    title: `Receipt #${receiptData.value.orderNumber}`,
+    text: `Receipt from ${props.tenantName || tenantInfo.value?.name || 'Warungin'} - Total: ${formatCurrency(receiptData.value.total)}`,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      await success('Berhasil share receipt!');
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+      }
+    }
+  } else {
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(shareData.text);
+      await success('Link receipt disalin ke clipboard!');
+    } catch (err) {
+      await warning('Browser tidak mendukung fitur share.');
+    }
+  }
+};
+
 const handlePrint = () => {
   if (!receiptContent.value) return;
   printBrowser();
@@ -494,11 +482,7 @@ const handlePrint = () => {
 const printBrowser = async () => {
   if (!receiptContent.value) return;
 
-  // Support multiple paper sizes: 50mm, 80mm, A4, Bluetooth
-  const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 
-                    selectedPaperSize.value === '80mm' || selectedPaperSize.value === '85mm' ? 'THERMAL_80' :
-                    selectedPaperSize.value === 'A4' ? 'A4' :
-                    selectedPaperSize.value === 'Bluetooth' ? 'THERMAL_80' : 'THERMAL_85'; // Bluetooth default to 80mm
+  const paperSize = selectedPaperSize.value === '50mm' ? 'THERMAL_50' : 'THERMAL_80';
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     await warning('Popup blocker terdeteksi. Silakan izinkan popup untuk mencetak struk.');
@@ -507,115 +491,14 @@ const printBrowser = async () => {
 
   const printContent = receiptContent.value.innerHTML;
   
-  // Responsive print styles based on paper size
-  const getPageSize = () => {
-    switch (paperSize) {
-      case 'THERMAL_50':
-        return '50mm';
-      case 'THERMAL_80':
-      case 'THERMAL_85':
-        return '80mm';
-      case 'A4':
-        return 'A4';
-      default:
-        return '80mm'; // Default untuk Bluetooth dan lainnya
-    }
-  };
-
-  const getMaxWidth = () => {
-    switch (paperSize) {
-      case 'THERMAL_50':
-        return '48mm'; // Printable area untuk 50mm
-      case 'THERMAL_80':
-      case 'THERMAL_85':
-        return '72mm'; // Printable area untuk 80mm
-      case 'A4':
-        return '170mm'; // Dengan margin 20mm
-      default:
-        return '72mm';
-    }
-  };
-
-  const getPadding = () => {
-    switch (paperSize) {
-      case 'THERMAL_50':
-        return '2px';
-      case 'THERMAL_80':
-      case 'THERMAL_85':
-        return '4px';
-      case 'A4':
-        return '15mm';
-      default:
-        return '4px';
-    }
-  };
-
-  const getFontSize = () => {
-    // Use template font size if available, otherwise use paper size default
-    if (template.value?.styles?.fontSize) {
-      return template.value.styles.fontSize;
-    }
-    
-    // Template-specific defaults
-    const templateType = template.value?.templateType || 'CLASSIC';
-    const templateSizeMap: Record<string, Record<string, string>> = {
-      CLASSIC: {
-        THERMAL_50: '8px',
-        THERMAL_80: '10px',
-        THERMAL_85: '11px',
-        A4: '12px',
-      },
-      MODERN: {
-        THERMAL_50: '8px',
-        THERMAL_80: '10px',
-        THERMAL_85: '11px',
-        A4: '11px',
-      },
-      MINIMAL: {
-        THERMAL_50: '8px',
-        THERMAL_80: '9px',
-        THERMAL_85: '9px',
-        A4: '10px',
-      },
-      PROFESSIONAL: {
-        THERMAL_50: '8px',
-        THERMAL_80: '10px',
-        THERMAL_85: '11px',
-        A4: '11px',
-      },
-    };
-    
-    // Handle Bluetooth (defaults to THERMAL_80)
-    const effectivePaperSize = (paperSize === 'THERMAL_85' && selectedPaperSize.value === 'Bluetooth') 
-      ? 'THERMAL_80' 
-      : paperSize;
-    
-    return templateSizeMap[templateType]?.[effectivePaperSize] || 
-           (effectivePaperSize === 'THERMAL_50' ? '9px' : 
-            effectivePaperSize === 'A4' ? '11px' : '10px');
-  };
-
-  const getFontFamily = () => {
-    // Use template font family if available
-    if (template.value?.styles?.fontFamily) {
-      return template.value.styles.fontFamily;
-    }
-    // Fallback to template type default
-    const fontMap: Record<string, string> = {
-      CLASSIC: 'Arial, sans-serif',
-      MODERN: 'Inter, sans-serif',
-      MINIMAL: 'Courier New, monospace',
-      PROFESSIONAL: 'Arial, sans-serif',
-      // Legacy support
-      DEFAULT: 'Arial, sans-serif',
-      DETAILED: 'Arial, sans-serif',
-      COMPACT: 'Courier New, monospace',
-    };
-    return fontMap[template.value?.templateType || 'CLASSIC'] || 'Arial, sans-serif';
-  };
+  const getPageSize = () => paperSize === 'THERMAL_50' ? '50mm' : '80mm';
+  const getMaxWidth = () => paperSize === 'THERMAL_50' ? '48mm' : '72mm';
+  const getPadding = () => paperSize === 'THERMAL_50' ? '2px' : '4px';
+  const getFontSize = () => paperSize === 'THERMAL_50' ? '8px' : '10px';
 
   const printStyles = `
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
       * {
         margin: 0;
         padding: 0;
@@ -629,7 +512,7 @@ const printBrowser = async () => {
         body {
           margin: 0;
           padding: 0;
-          font-family: ${getFontFamily()};
+          font-family: 'Inter', sans-serif;
           font-size: ${getFontSize()};
           line-height: 1.4;
         }
@@ -639,24 +522,12 @@ const printBrowser = async () => {
           margin: 0 auto;
           padding: ${getPadding()};
         }
-        .receipt-content {
-          width: 100%;
-        }
-        .no-print {
+        .no-print, .paper-tear-effect {
           display: none !important;
         }
         * {
           color: #000 !important;
           background: transparent !important;
-        }
-        .border-b, .border-t {
-          border-color: #000 !important;
-        }
-      }
-      @media screen {
-        .receipt-print-container {
-          max-width: ${getMaxWidth()};
-          margin: 0 auto;
         }
       }
     </style>
@@ -684,7 +555,6 @@ const printBrowser = async () => {
     printWindow.close();
   }, 250);
 };
-
 
 watch(() => props.show, (newShow) => {
   if (newShow) {
@@ -717,71 +587,76 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.receipt-content {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+/* V3 Design System Colors */
+.bg-primary {
+  background-color: #137fec;
+}
+.text-primary {
+  color: #137fec;
+}
+.border-primary {
+  border-color: #137fec;
 }
 
-.receipt-print-container {
+/* Receipt Pattern Background */
+.receipt-pattern {
+  background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Receipt Card Shadow */
+.shadow-receipt {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06), 
+              0 20px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* Paper Tear Effect */
+.paper-tear-effect {
+  height: 12px;
   width: 100%;
-  max-width: 100%;
+  background-color: white;
+  mask-image: radial-gradient(circle at 10px bottom, transparent 8px, black 9px);
+  mask-size: 20px 20px;
+  mask-repeat: repeat-x;
+  mask-position: bottom;
+  -webkit-mask-image: radial-gradient(circle at 10px bottom, transparent 8px, black 9px);
+  -webkit-mask-size: 20px 20px;
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-position: bottom;
 }
 
-/* Responsive styles for different paper sizes */
+/* Barcode Pattern */
+.barcode-pattern {
+  background-image: repeating-linear-gradient(
+    90deg, 
+    #1e293b 0px, #1e293b 2px, 
+    transparent 2px, transparent 4px, 
+    #1e293b 4px, #1e293b 8px, 
+    transparent 8px, transparent 9px
+  );
+}
+
+/* Responsive Receipt Sizes */
 .receipt-50mm {
-  max-width: 48mm;
-  width: 48mm;
-  font-size: 8px;
-  padding: 2px;
+  max-width: 200px;
 }
 
 .receipt-80mm {
-  max-width: 72mm;
-  width: 72mm;
-  font-size: 10px;
-  padding: 4px;
-}
-
-.receipt-a4 {
-  max-width: 170mm;
-  width: 170mm;
-  font-size: 11px;
-  padding: 15mm;
-  margin: 0 auto;
-}
-
-.receipt-bluetooth {
-  max-width: 72mm; /* Default to 80mm, can be adjusted by printer */
-  width: 72mm;
-  font-size: 10px;
-  padding: 4px;
+  max-width: 400px;
 }
 
 .receipt-content {
-  font-family: 'Courier New', monospace;
+  font-family: 'Inter', sans-serif;
 }
 
-.receipt-50mm .receipt-content {
-  font-size: 8px;
-  line-height: 1.2;
-}
-
-.receipt-80mm .receipt-content {
-  font-size: 10px;
-  line-height: 1.3;
-}
-
-.receipt-a4 .receipt-content {
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.receipt-bluetooth .receipt-content {
-  font-size: 10px;
-  line-height: 1.3;
-}
-
+/* Print Styles */
 @media print {
+  .receipt-pattern,
+  .shadow-receipt {
+    display: none;
+  }
+  
   .receipt-content {
     font-size: inherit;
   }
