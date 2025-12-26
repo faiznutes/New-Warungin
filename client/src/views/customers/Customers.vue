@@ -12,7 +12,7 @@
       <button
         v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         <span>Add Customer</span>
@@ -29,14 +29,14 @@
           @input="handleSearchInput"
           type="text"
           placeholder="Search customers..."
-          class="w-full pl-10 pr-4 py-2.5 bg-[#f6f7f8] dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-[#137fec]"
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         />
       </div>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -47,7 +47,7 @@
       <button
         v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#137fec] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         Add First Customer
@@ -62,7 +62,7 @@
         class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 hover:shadow-md transition-shadow group"
       >
         <div class="flex items-start gap-3 mb-4">
-          <div class="w-12 h-12 bg-[#137fec]/10 rounded-full flex items-center justify-center text-[#137fec] font-bold text-lg flex-shrink-0">
+          <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 font-bold text-lg flex-shrink-0">
             {{ customer.name.charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
@@ -85,7 +85,7 @@
               <span class="material-symbols-outlined text-[16px]">payments</span>
               Total Spent
             </span>
-            <span class="font-bold text-[#137fec]">{{ formatCurrency(customer.totalSpent || 0) }}</span>
+            <span class="font-bold text-emerald-600">{{ formatCurrency(customer.totalSpent || 0) }}</span>
           </div>
         </div>
         
@@ -100,7 +100,7 @@
           </button>
           <button
             @click="viewCustomer(customer)"
-            class="flex-1 px-3 py-2 text-xs font-medium bg-[#137fec]/10 text-[#137fec] rounded-xl hover:bg-[#137fec]/20 transition flex items-center justify-center gap-1"
+            class="flex-1 px-3 py-2 text-xs font-medium bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition flex items-center justify-center gap-1"
           >
             <span class="material-symbols-outlined text-[16px]">visibility</span>
             View

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full bg-[#f6f7f8]">
+  <div class="flex flex-col h-full bg-slate-50">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
@@ -19,7 +19,7 @@
         <p class="text-[#4c739a] text-center max-w-md mb-6">{{ errorMessage || 'Failed to load page. Please try again.' }}</p>
         <button
           @click="retryLoad"
-          class="px-4 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl transition-colors font-medium shadow-lg shadow-blue-500/30"
+          class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-colors font-medium shadow-lg shadow-emerald-500/30"
         >
           Try Again
         </button>
@@ -42,7 +42,7 @@
               <select
                 v-model="marginDisplayFormat"
                 @change="saveMarginFormat"
-                class="appearance-none pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer hover:bg-slate-100 transition-colors"
+                class="appearance-none pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer hover:bg-slate-100 transition-colors"
               >
                 <option value="percentage">Margin %</option>
                 <option value="amount">Margin $</option>
@@ -92,7 +92,7 @@
             <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+              class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
               <span>Add Product</span>
@@ -113,7 +113,7 @@
                   @focus="handleSearchFocus"
                   type="text"
                   placeholder="Search products..."
-                  class="block w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-slate-50 dark:bg-slate-900 text-text-primary dark:text-white focus:bg-white dark:focus:bg-slate-800 transition-all placeholder:text-slate-400"
+                  class="block w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-900 text-text-primary dark:text-white focus:bg-white dark:focus:bg-slate-800 transition-all placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -125,7 +125,7 @@
                 <button
                   @click="filters.category = ''"
                   :class="!filters.category 
-                    ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
                     : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
                   class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
@@ -136,7 +136,7 @@
                   :key="cat"
                   @click="filters.category = cat"
                   :class="filters.category === cat 
-                    ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
                     : 'bg-white dark:bg-slate-800 text-text-secondary dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
                   class="px-4 py-2 text-sm font-bold rounded-xl transition-all"
                 >
@@ -197,7 +197,7 @@
           <div class="w-full bg-blue-100 rounded-full h-2.5 overflow-hidden">
             <div
               class="h-full rounded-full transition-all duration-500 ease-out"
-              :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'bg-red-500' : (productLimit.currentUsage || 0) >= (productLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-primary'"
+              :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'bg-red-500' : (productLimit.currentUsage || 0) >= (productLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-emerald-500'"
               :style="{ width: `${Math.min(100, ((productLimit.currentUsage || 0) / productLimit.limit) * 100)}%` }"
             ></div>
           </div>
@@ -215,7 +215,7 @@
         <!-- Products Grid -->
         <div v-else-if="loading" class="flex items-center justify-center py-24">
           <div class="flex flex-col items-center">
-            <div class="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div class="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <div class="text-slate-500 font-medium animate-pulse">Loading products...</div>
           </div>
         </div>
@@ -229,7 +229,7 @@
           <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
+              class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
               <span>Add Product</span>
@@ -278,7 +278,7 @@
             <div class="p-5 flex flex-col flex-1">
               <div class="mb-4">
                  <div class="flex justify-between items-start gap-2 mb-1">
-                    <p class="text-xs font-semibold text-primary uppercase tracking-wider line-clamp-1">{{ product.category || 'Uncategorized' }}</p>
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider line-clamp-1">{{ product.category || 'Uncategorized' }}</p>
                     <span
                       class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full"
                       :class="getStockStatusClass(product.stock, product.minStock)"
@@ -286,7 +286,7 @@
                       {{ getStockStatusLabel(product.stock, product.minStock) }}
                     </span>
                  </div>
-                 <h3 class="font-bold text-lg text-slate-900 group-hover:text-primary transition-colors line-clamp-2 md:h-14">{{ product.name }}</h3>
+                 <h3 class="font-bold text-lg text-slate-900 group-hover:text-emerald-600 transition-colors line-clamp-2 md:h-14">{{ product.name }}</h3>
               </div>
               
               <div class="mt-auto">
@@ -311,7 +311,7 @@
                       v-if="authStore.user?.role === 'CASHIER'"
                       @click="addToPOS(product)"
                       :disabled="product.stock <= 0 || !product.isActive"
-                      class="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-primary/20"
+                      class="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-emerald-500/20"
                     >
                       <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                       Add to Cart
@@ -321,7 +321,7 @@
                     <template v-else-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
                       <button
                         @click="editProduct(product)"
-                        class="flex-1 px-3 py-2 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl hover:bg-white hover:border-primary hover:text-primary transition-all"
+                        class="flex-1 px-3 py-2 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl hover:bg-white hover:border-emerald-500 hover:text-emerald-600 transition-all"
                       >
                         Edit
                       </button>
@@ -344,7 +344,7 @@
           <button
             @click="loadProducts(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
+            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
           >
             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
             Previous
@@ -355,7 +355,7 @@
           <button
             @click="loadProducts(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-primary transition-colors flex items-center gap-2 font-medium"
+            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
           >
             Next
             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
