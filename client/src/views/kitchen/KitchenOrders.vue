@@ -12,12 +12,12 @@
         <p class="text-[#4c739a] dark:text-[#4c739a] mt-1">Manage orders sent from the cashier.</p>
       </div>
       <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-card">
-        <span class="text-sm font-medium bg-[#137fec]/10 text-[#137fec] px-3 py-1.5 rounded-xl">
+        <span class="text-sm font-medium bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl">
           {{ selectedOrders.length }} orders selected
         </span>
         <select
           v-model="bulkStatus"
-          class="px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#137fec]/20 focus:border-[#137fec] font-medium"
+          class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium"
         >
           <option value="">Select Status</option>
           <option value="COOKING">Cooking</option>
@@ -27,7 +27,7 @@
         <button
           @click="bulkUpdateStatus"
           :disabled="!bulkStatus || bulkUpdating"
-          class="px-4 py-2 bg-[#137fec] text-white rounded-xl hover:bg-[#137fec]-hover transition shadow-lg shadow-primary/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <span v-if="!bulkUpdating" class="material-symbols-outlined text-[18px]">check</span>
           <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -44,8 +44,8 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-[#137fec] border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-[#4c739a] font-medium">Loading orders...</div>
+      <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="text-slate-500 font-medium animate-pulse">Loading orders...</div>
     </div>
 
     <!-- Empty State -->
@@ -65,7 +65,7 @@
         class="bg-white dark:bg-slate-800 rounded-xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
         :class="[
           getStatusClass(order.kitchenStatus),
-          selectedOrders.includes(order.id) ? 'ring-2 ring-[#137fec] ring-offset-2 scale-[1.02]' : ''
+          selectedOrders.includes(order.id) ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.02]' : ''
         ]"
       >
         <div class="flex items-start justify-between mb-4">
@@ -74,7 +74,7 @@
               type="checkbox"
               :checked="selectedOrders.includes(order.id)"
               @change="toggleOrderSelection(order.id)"
-              class="mt-1.5 w-5 h-5 text-[#137fec] border-2 border-slate-300 rounded focus:ring-[#137fec] cursor-pointer"
+              class="mt-1.5 w-5 h-5 text-emerald-600 border-2 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
             />
             <div class="flex-1">
               <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-1">Order #{{ order.orderNumber }}</h3>
@@ -132,10 +132,10 @@
           </div>
         </div>
 
-        <div class="mb-4 p-3 bg-[#137fec]/10 rounded-xl">
+        <div class="mb-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100/50">
           <div class="flex justify-between items-center">
-            <span class="text-sm font-medium text-[#0d141b] dark:text-slate-300">Total:</span>
-            <span class="text-lg font-bold text-[#137fec]">{{ formatCurrency(order.total) }}</span>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Total:</span>
+            <span class="text-lg font-bold text-emerald-600">{{ formatCurrency(order.total) }}</span>
           </div>
         </div>
 

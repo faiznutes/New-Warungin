@@ -11,11 +11,11 @@
       <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="p-6 flex items-center gap-3">
-          <div class="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
+          <div class="h-10 w-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
             <span class="material-symbols-outlined text-2xl">restaurant</span>
           </div>
           <div class="flex flex-col">
-            <router-link to="/app/dashboard" class="text-lg font-bold text-[#0d141b] dark:text-white leading-tight hover:text-primary transition-colors">Warungin</router-link>
+            <router-link to="/app/dashboard" class="text-lg font-bold text-slate-900 dark:text-white leading-tight hover:text-emerald-600 transition-colors">Warungin</router-link>
             <p class="text-xs font-medium text-[#4c739a] dark:text-slate-400 tracking-wide uppercase">Kitchen Display</p>
           </div>
         </div>
@@ -25,7 +25,7 @@
           <router-link
             to="/app/dashboard"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/dashboard' ? 'bg-primary/10 text-primary font-medium' : 'text-[#4c739a] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#0d141b] dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/dashboard' ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/dashboard' }">dashboard</span>
@@ -35,7 +35,7 @@
           <router-link
             to="/app/orders/kitchen"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/orders/kitchen' ? 'bg-primary/10 text-primary font-medium' : 'text-[#4c739a] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#0d141b] dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/orders/kitchen' ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
@@ -49,7 +49,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-slate-200 dark:border-slate-800">
           <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+            <div class="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-sm">
               {{ userInitials }}
             </div>
             <div class="flex flex-col overflow-hidden flex-1">
@@ -88,13 +88,13 @@
             <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400">menu</span>
           </button>
           <div class="flex items-center gap-2 text-sm">
-            <router-link to="/app/dashboard" class="text-[#4c739a] hover:text-primary transition-colors">Home</router-link>
+            <router-link to="/app/dashboard" class="text-slate-500 hover:text-emerald-600 transition-colors">Home</router-link>
             <span class="text-slate-400">/</span>
             <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-[#4c739a] hover:text-primary transition-colors border border-slate-100 dark:border-slate-700">
+          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-slate-500 hover:text-emerald-600 transition-colors border border-slate-100 dark:border-slate-700">
             <span class="material-symbols-outlined">notifications</span>
             <span v-if="pendingOrdersCount > 0" class="absolute top-2 right-2.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
           </button>
