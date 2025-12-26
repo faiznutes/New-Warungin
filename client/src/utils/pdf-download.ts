@@ -1,10 +1,9 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { sanitizeHTML } from './sanitize';
 
 /**
  * Convert HTML to PDF and download directly
  * Note: HTML is sanitized to prevent XSS attacks
+ * Uses dynamic imports for jsPDF and html2canvas to reduce initial bundle size
  */
 export async function downloadPDFFromHTML(
   html: string,
@@ -16,9 +15,15 @@ export async function downloadPDFFromHTML(
   }
 ): Promise<void> {
   try {
+    // Dynamic imports - only load when function is called
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import('jspdf'),
+      import('html2canvas'),
+    ]);
+
     // Sanitize HTML to prevent XSS attacks
     const sanitizedHTML = sanitizeHTML(html, true); // Allow images for PDF
-    
+
     // Create a temporary container
     const container = document.createElement('div');
     container.style.position = 'absolute';
@@ -47,7 +52,7 @@ export async function downloadPDFFromHTML(
     const imgHeight = canvas.height;
     const pdfWidth = options?.format === 'a4' ? 210 : options?.format === 'a3' ? 297 : 216; // mm
     const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
-    
+
     // Create PDF
     const pdf = new jsPDF({
       orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
@@ -80,16 +85,23 @@ function waitForImages(container: HTMLElement): Promise<void> {
       setTimeout(() => resolve(), 5000); // Timeout after 5 seconds
     });
   });
-  return Promise.all(promises).then(() => {});
+  return Promise.all(promises).then(() => { });
 }
 
 /**
  * Alternative: Use iframe method for better rendering
+ * Uses dynamic imports for jsPDF and html2canvas
  */
 export async function downloadPDFFromHTMLIframe(
   html: string,
   filename: string = 'export.pdf'
 ): Promise<void> {
+  // Dynamic imports - only load when function is called
+  const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+    import('jspdf'),
+    import('html2canvas'),
+  ]);
+
   return new Promise((resolve, reject) => {
     try {
       // Create iframe
@@ -108,7 +120,7 @@ export async function downloadPDFFromHTMLIframe(
 
       // Sanitize HTML to prevent XSS attacks
       const sanitizedHTML = sanitizeHTML(html, true); // Allow images for PDF
-      
+
       // Write HTML to iframe
       iframeDoc.open();
       iframeDoc.write(sanitizedHTML);
@@ -159,4 +171,5 @@ export async function downloadPDFFromHTMLIframe(
     }
   });
 }
+
 
