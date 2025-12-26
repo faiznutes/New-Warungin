@@ -15,7 +15,7 @@
           Temukan jawaban, panduan, dan tips untuk memaksimalkan bisnis Anda.
         </p>
         <div class="w-full max-w-2xl">
-          <div class="relative group">
+          <div class="relative group z-30">
             <input
               v-model="searchQuery"
               type="text"

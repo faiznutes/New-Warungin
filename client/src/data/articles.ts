@@ -15,10 +15,10 @@ export const helpArticles: HelpArticle[] = [
     {
         slug: 'cara-setup-awal',
         title: 'Cara Setup Awal Warungin',
-        description: 'Langkah demi langkah menyiapkan outlet pertama Anda.',
+        description: 'Langkah demi langkah menyiapkan outlet pertama Anda, dari registrasi hingga siap jualan.',
         category: 'getting-started',
         icon: 'rocket_launch',
-        tags: ['setup', 'outlet', 'awal', 'mulai', 'registrasi'],
+        tags: ['setup', 'outlet', 'awal', 'mulai', 'registrasi', 'daftar', 'akun'],
         relatedArticles: ['cara-menambah-produk', 'konfigurasi-printer'],
         content: `
 ## Selamat Datang di Warungin!
@@ -83,12 +83,12 @@ A: Ya, semua data terenkripsi dan disimpan di server yang aman.
     },
     {
         slug: 'cara-menambah-produk',
-        title: 'Cara Menambah Produk',
-        description: 'Panduan input produk, varian, dan manajemen stok.',
+        title: 'Cara Menambah Produk & Stok',
+        description: 'Panduan lengkap input produk, varian, harga modal, dan manajemen stok awal.',
         category: 'features',
         icon: 'inventory_2',
-        tags: ['produk', 'stok', 'varian', 'kategori', 'harga'],
-        relatedArticles: ['cara-setup-awal', 'stock-opname'],
+        tags: ['produk', 'stok', 'varian', 'kategori', 'harga', 'barang', 'tambah', 'inventory'],
+        relatedArticles: ['cara-setup-awal', 'stock-opname', 'menggunakan-kasir-pos'],
         content: `
 ## Menambah dan Mengelola Produk
 
@@ -149,7 +149,7 @@ Untuk penyesuaian stok massal:
 ### Import Produk Massal
 
 Untuk menambah banyak produk sekaligus:
-1. Download template Excel
+1. Download template Excel dari menu Import
 2. Isi data produk
 3. Upload file
 4. Review dan konfirmasi
@@ -166,27 +166,64 @@ Untuk menambah banyak produk sekaligus:
     `
     },
     {
+        slug: 'menggunakan-kasir-pos',
+        title: 'Cara Menggunakan Kasir (POS)',
+        description: 'Panduan melakukan transaksi, diskon, hold order, dan cetak struk.',
+        category: 'features',
+        icon: 'point_of_sale',
+        tags: ['kasir', 'pos', 'transaksi', 'jualan', 'bayar', 'struk', 'diskon', 'hold', 'bill'],
+        relatedArticles: ['cara-menambah-produk', 'konfigurasi-printer'],
+        content: `
+## Menggunakan Kasir (POS)
+
+Panduan cara memproses transaksi penjualan sehari-hari.
+
+### Memproses Penjualan
+
+1. Buka menu **POS**
+2. Pilih Outlet (jika punya banyak cabang)
+3. Pilih produk yang dipesan pelanggan (klik gambar/nama produk)
+4. Jika produk memiliki varian, pilih varian yang sesuai
+5. Produk akan masuk ke keranjang belanja di sebelah kanan
+
+### Diskon & Custom Order
+
+- **Diskon**: Klik item di keranjang > Pilih **Diskon** > Masukkan nominal atau persen
+- **Catatan**: Klik item > Masukkan catatan (cth: "Jangan pedas")
+- **Custom Price**: Jika perlu ubah harga manual, klik item > Edit harga (Hanya untuk Admin/Supervisor)
+
+### Pembayaran
+
+1. Klik tombol **Bayar** / **Charge**
+2. Masukkan nominal uang yang diterima pelanggan
+3. Pilih metode pembayaran (Tunai, QRIS, Transfer, dll)
+4. Klik **Selesaikan Transaksi**
+
+### Cetak Struk / Kirim Struk Digital
+
+Setelah transaksi berhasil, Anda bisa:
+- Klik **Print** untuk mencetak ke printer thermal
+- Masukkan Email/WhatsApp pelanggan untuk kirim struk digital (Membutuhkan Addon Delivery & Marketing)
+
+### Fitur Lainnya
+
+- **Hold Order**: Simpan pesanan sementara (misal pelanggan mau tambah menu)
+- **Refund**: Batalkan transaksi yang sudah terjadi (Menu > Riwayat Transaksi > Refund)
+- **Buka Laci**: Buka cash drawer tanpa transaksi
+    `
+    },
+    {
         slug: 'konfigurasi-printer',
         title: 'Konfigurasi Printer Struk',
-        description: 'Cara menghubungkan printer thermal bluetooth/USB.',
+        description: 'Cara menghubungkan printer thermal bluetooth/USB dan setting template struk.',
         category: 'features',
         icon: 'print',
-        tags: ['printer', 'thermal', 'bluetooth', 'usb', 'struk', 'receipt'],
+        tags: ['printer', 'thermal', 'bluetooth', 'usb', 'struk', 'receipt', 'cetak', 'koneksi'],
         relatedArticles: ['cara-setup-awal', 'download-laporan'],
         content: `
 ## Konfigurasi Printer Struk
 
 Panduan lengkap untuk menghubungkan printer thermal ke sistem Warungin.
-
-### Jenis Printer yang Didukung
-
-Warungin mendukung berbagai jenis printer thermal:
-
-| Tipe | Koneksi | Kelebihan |
-|------|---------|-----------|
-| USB | Kabel USB | Stabil, tidak perlu charging |
-| Bluetooth | Wireless | Fleksibel, portable |
-| Network | LAN/WiFi | Bisa dipakai beberapa device |
 
 ### Setup Printer Bluetooth
 
@@ -212,28 +249,16 @@ Warungin mendukung berbagai jenis printer thermal:
 4. Pilih printer dari daftar
 5. Test print
 
-### Setup Printer Network
-
-1. Hubungkan printer ke jaringan WiFi atau LAN
-2. Catat IP address printer (biasanya ada di menu printer atau cetak network info)
-3. Di Warungin, masukkan IP address printer
-4. Test connection
-
-### Troubleshooting
+### Troubleshooting Dasar
 
 **Printer tidak ditemukan?**
 - Pastikan printer menyala dan dalam mode pairing
 - Restart Bluetooth di device Anda
 - Pastikan jarak tidak lebih dari 10 meter
 
-**Print buram atau tidak jelas?**
-- Periksa kertas thermal - pastikan sisi glossy menghadap ke atas
-- Bersihkan head printer dengan cotton bud + alkohol
-- Ganti kertas jika sudah lama tersimpan
-
-**Print terpotong?**
-- Sesuaikan lebar kertas di pengaturan (58mm atau 80mm)
-- Periksa margin di template struk
+**Print buram?**
+- Bersihkan head printer
+- Ganti kertas
 
 ### Template Struk
 
@@ -242,40 +267,27 @@ Anda bisa mengkustomisasi struk di **Pengaturan > Receipt Templates**:
 - Informasi kontak
 - Pesan promosi
 - QR code untuk feedback
-
----
-
-### Rekomendasi Printer
-
-| Budget | Printer | Harga Kisaran |
-|--------|---------|---------------|
-| Entry | Epson TM-T82 | Rp 1.5 - 2 juta |
-| Mid | Xprinter XP-58 | Rp 300 - 500 ribu |
-| Premium | Epson TM-88 | Rp 3 - 5 juta |
     `
     },
     {
         slug: 'download-laporan',
         title: 'Download Laporan Bulanan',
-        description: 'Export laporan penjualan ke Excel/PDF.',
+        description: 'Export laporan penjualan, produk terlaris, dan keuangan ke Excel/PDF.',
         category: 'features',
         icon: 'download',
-        tags: ['laporan', 'report', 'excel', 'pdf', 'export', 'penjualan'],
+        tags: ['laporan', 'report', 'excel', 'pdf', 'export', 'penjualan', 'keuangan', 'bulanan', 'analisis'],
         relatedArticles: ['cara-setup-awal', 'analitik-penjualan'],
         content: `
 ## Export Laporan Penjualan
 
 Panduan lengkap untuk mengunduh laporan penjualan dalam format Excel atau PDF.
 
-### Jenis Laporan yang Tersedia
+### Jenis Laporan
 
 | Laporan | Keterangan |
 |---------|------------|
 | Laporan Penjualan | Ringkasan transaksi harian/mingguan/bulanan |
 | Laporan Produk | Produk terlaris, stok, dll |
-| Laporan Kasir | Performa per kasir |
-| Laporan Keuangan | Profit & Loss, Cash Flow |
-| Laporan Shift | Detail per shift kasir |
 
 ### Cara Download Laporan
 
@@ -307,57 +319,22 @@ Panduan lengkap untuk mengunduh laporan penjualan dalam format Excel atau PDF.
 - Cocok untuk arsip dan sharing
 - Print-ready
 
-### Penjadwalan Laporan Otomatis
-
-Untuk paket PRO dan ENTERPRISE:
-
-1. Buka **Pengaturan > Laporan Otomatis**
-2. Klik **Tambah Jadwal**
-3. Pilih jenis laporan
-4. Set frekuensi (harian, mingguan, bulanan)
-5. Masukkan email penerima
-6. Simpan
-
-Laporan akan dikirim otomatis ke email sesuai jadwal.
-
 ### Tips
 
 > **Pro Tip**: Untuk analisis mendalam, export ke Excel lalu gunakan Pivot Table untuk memfilter data sesuai kebutuhan.
 
 - Download laporan bulanan di awal bulan untuk arsip
 - Bandingkan laporan antar periode untuk melihat trend
-- Gunakan laporan profit/loss untuk evaluasi bisnis
-
----
-
-### Contoh Laporan
-
-**Laporan Penjualan Harian:**
-\`\`\`
-Tanggal: 26 Desember 2024
-Outlet: Warungin Cabang 1
-
-Total Transaksi: 156
-Total Penjualan: Rp 4.850.000
-Rata-rata per Transaksi: Rp 31.089
-
-Top 5 Produk:
-1. Es Kopi Susu - 45 pcs
-2. Nasi Goreng - 32 pcs
-3. Mie Ayam - 28 pcs
-4. Es Teh Manis - 26 pcs
-5. Roti Bakar - 21 pcs
-\`\`\`
     `
     },
     // Troubleshooting Articles
     {
         slug: 'stock-opname',
         title: 'Cara Stock Opname',
-        description: 'Panduan lengkap melakukan stock opname dan penyesuaian stok.',
+        description: 'Panduan lengkap melakukan stock opname dan penyesuaian stok fisik.',
         category: 'troubleshooting',
         icon: 'inventory',
-        tags: ['stock', 'opname', 'inventaris', 'adjustment', 'stok'],
+        tags: ['stock', 'opname', 'inventaris', 'adjustment', 'stok', 'fisik', 'barang', 'hilang'],
         relatedArticles: ['cara-menambah-produk'],
         content: `
 ## Stock Opname
@@ -417,11 +394,11 @@ Stock opname adalah proses menghitung stok fisik barang dan mencocokkannya denga
     },
     {
         slug: 'lupa-password',
-        title: 'Lupa Password',
-        description: 'Cara reset password akun Warungin.',
+        title: 'Cara Reset Password',
+        description: 'Panduan jika Anda lupa password akun Warungin.',
         category: 'troubleshooting',
         icon: 'lock_reset',
-        tags: ['password', 'lupa', 'reset', 'login'],
+        tags: ['password', 'lupa', 'reset', 'login', 'ganti', 'akun'],
         relatedArticles: ['cara-setup-awal'],
         content: `
 ## Reset Password
@@ -448,22 +425,17 @@ Cara mengatasi lupa password akun Warungin.
 
 Jika masih tidak bisa:
 - Email: support@warungin.com
-- WhatsApp: +62 812-xxxx-xxxx
-
-Siapkan informasi:
-- Nama bisnis
-- Email terdaftar
-- Bukti kepemilikan akun (invoice, dll)
+- WhatsApp: Customer Service kami
     `
     },
     // Billing Articles
     {
         slug: 'upgrade-paket',
-        title: 'Cara Upgrade Paket',
-        description: 'Panduan upgrade dari Starter ke PRO atau ENTERPRISE.',
+        title: 'Upgrade Paket & Langganan',
+        description: 'Cara upgrade dari Starter ke PRO atau Enterprise untuk fitur lebih lengkap.',
         category: 'billing',
         icon: 'upgrade',
-        tags: ['upgrade', 'paket', 'langganan', 'subscription', 'billing'],
+        tags: ['upgrade', 'paket', 'langganan', 'subscription', 'billing', 'bayar', 'pro', 'enterprise'],
         relatedArticles: ['download-laporan'],
         content: `
 ## Upgrade Paket Langganan

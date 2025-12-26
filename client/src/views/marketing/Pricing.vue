@@ -271,52 +271,52 @@ useSEO({
 
 const featuredAddons = [
   {
-    id: 'kds',
-    name: 'Kitchen Display (KDS)',
-    description: 'Layar pesanan digital untuk area dapur, menggantikan kertas printer.',
-    price: 49000,
-    icon: 'restaurant',
-    features: ['Real-time Order', 'Timer Masak', 'Status Selesai']
-  },
-  {
-    id: 'accounting',
-    name: 'Akuntansi & Laba Rugi',
-    description: 'Laporan keuangan standar akuntansi otomatis dari transaksi.',
-    price: 99000,
+    id: 'business_analytics',
+    name: 'Business Analytics',
+    description: 'Laporan Laba Rugi lengkap, prediksi penjualan, dan analisis tren bisnis.',
+    price: 250000,
     icon: 'analytics',
-    features: ['Neraca & Laba Rugi', 'Arus Kas', 'Jurnal Otomatis']
+    features: ['Laporan Laba Rugi', 'Prediksi Penjualan', 'Custom Reports']
   },
   {
-    id: 'ingredient',
-    name: 'Manajemen Resep',
-    description: 'Potong stok bahan baku otomatis berdasarkan resep menu yang terjual.',
-    price: 79000,
-    icon: 'inventory_2',
-    features: ['HPP Akurat', 'Varian Resep', 'Kartu Stok Bahan']
+    id: 'delivery_marketing',
+    name: 'Delivery & Marketing',
+    description: 'Manajemen pesanan delivery dan kampanye marketing otomatis via email/SMS.',
+    price: 150000,
+    icon: 'campaign',
+    features: ['Tracking Delivery', 'Email Marketing', 'Customer Engagement']
   },
   {
-    id: 'online',
-    name: 'Toko Online (QR)',
-    description: 'Website pemesanan sendiri untuk pelanggan (QR Order & Delivery).',
-    price: 129000,
-    icon: 'storefront',
-    features: ['Domain Sendiri', 'Pembayaran QRIS', 'Notif WhatsApp']
+    id: 'bulk_import',
+    name: 'Import Massal',
+    description: 'Import produk, stok, dan pelanggan dari Excel/CSV dengan validasi otomatis.',
+    price: 100000,
+    icon: 'upload_file',
+    features: ['Import Excel/CSV', 'Validasi Data', 'Update Stok Massal']
   },
   {
-    id: 'attendance',
-    name: 'Absensi & Gaji',
-    description: 'Catat kehadiran karyawan dengan foto & lokasi GPS.',
-    price: 49000,
-    icon: 'badge',
-    features: ['Slip Gaji Otomatis', 'Shift Kerja', 'Export Excel']
+    id: 'stock_transfer',
+    name: 'Transfer Stok',
+    description: 'Pindahkan stok antar cabang dengan validasi dan riwayat perpindahan lengkap.',
+    price: 80000,
+    icon: 'move_up',
+    features: ['Multi-Store Sync', 'Riwayat Transfer', 'Validasi Stok']
   },
   {
-    id: 'marketplace',
-    name: 'Integrasi Grab/Gojek',
-    description: 'Terima pesanan ojol langsung di satu aplikasi POS.',
-    price: 149000,
-    icon: 'two_wheeler',
-    features: ['Sync Harga Menu', 'Update Stok Otomatis', 'Laporan Gabungan']
+    id: 'supervisor_role',
+    name: 'Supervisor Role',
+    description: 'Akses khusus supervisor untuk memantau dan mengelola cabang tertentu.',
+    price: 60000,
+    icon: 'admin_panel_settings',
+    features: ['Akses Per Cabang', 'Audit Trail', 'Dashboard Khusus']
+  },
+  {
+    id: 'receipt_editor',
+    name: 'Simple Nota Editor',
+    description: 'Kustomisasi tampilan struk belanja dengan logo bisnis dan pesan promo.',
+    price: 50000,
+    icon: 'receipt',
+    features: ['Custom Logo', 'Edit Layout', 'Promo Footer']
   }
 ];
 
