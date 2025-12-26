@@ -17,7 +17,7 @@
       <button
         v-if="canExportReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Export Report</span>
@@ -32,7 +32,7 @@
           <select
             v-model="reportType"
             @change="handleReportTypeChange"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="sales">Sales Report</option>
             <option value="financial">Financial Report</option>
@@ -43,7 +43,7 @@
           <select
             v-model="reportViewType"
             @change="handleReportViewTypeChange"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="full">Full (Revenue + Cost)</option>
             <option value="revenue">Revenue Only</option>
@@ -55,7 +55,7 @@
           <select
             v-model="marginDisplayFormat"
             @change="saveMarginFormat"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="percentage">Percentage (%)</option>
             <option value="amount">Amount</option>
@@ -66,7 +66,7 @@
           <select
             v-model="period"
             @change="setPeriod(period)"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -81,13 +81,13 @@
               v-model="dateRange.from"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
             <input
               v-model="dateRange.to"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
         </div>
@@ -98,12 +98,12 @@
     <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">insights</span>
+          <span class="material-symbols-outlined text-emerald-600">insights</span>
           Analytics
         </h3>
         <button
           @click="loadAnalytics"
-          class="text-sm text-primary hover:text-primary-hover transition flex items-center gap-1"
+          class="text-sm text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1"
         >
           <span class="material-symbols-outlined text-[18px]">refresh</span>
           Refresh
@@ -136,7 +136,7 @@
       
       <div v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0" class="mt-6">
         <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-[18px]">trending_up</span>
+          <span class="material-symbols-outlined text-emerald-600 text-[18px]">trending_up</span>
           Top Products
         </h4>
         <div class="space-y-2">
@@ -146,10 +146,10 @@
             class="flex items-center justify-between p-3 bg-[#f8fafc] dark:bg-slate-900 rounded-xl"
           >
             <div class="flex items-center gap-3">
-              <span class="w-6 h-6 flex items-center justify-center text-xs font-bold bg-primary/10 text-primary rounded">#{{ index + 1 }}</span>
+              <span class="w-6 h-6 flex items-center justify-center text-xs font-bold bg-emerald-50 text-emerald-600 rounded">#{{ index + 1 }}</span>
               <span class="text-sm font-medium text-slate-900 dark:text-white">{{ product.name }}</span>
             </div>
-            <span class="text-sm font-bold text-primary">{{ product.sales || 0 }} sold</span>
+            <span class="text-sm font-bold text-emerald-600">{{ product.sales || 0 }} sold</span>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-16">
       <div class="flex flex-col items-center gap-4">
-        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-slate-500 font-medium">Loading report...</p>
       </div>
     </div>
@@ -196,7 +196,7 @@
             <button
               v-if="reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')"
               @click="showProductDetails = !showProductDetails"
-              class="flex items-center gap-2 px-4 py-2 text-sm bg-primary text-white rounded-xl hover:bg-primary-hover transition font-medium"
+              class="flex items-center gap-2 px-4 py-2 text-sm bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium"
             >
               <span class="material-symbols-outlined text-[18px]">{{ showProductDetails ? 'visibility_off' : 'visibility' }}</span>
               {{ showProductDetails ? 'Hide' : 'Show' }} Product Details
@@ -267,7 +267,7 @@
                         <div
                           v-for="product in productDetails[index]"
                           :key="product.id"
-                          class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary cursor-pointer transition"
+                          class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 cursor-pointer transition"
                           @click="showProductDetailModal(product)"
                         >
                           <div class="flex justify-between items-start mb-2">
@@ -326,7 +326,7 @@
             </div>
             <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price per Unit</p>
-              <p class="text-xl font-bold text-primary">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
+              <p class="text-xl font-bold text-emerald-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
             </div>
             <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
               <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Revenue</p>
@@ -493,14 +493,14 @@ const summaryStats = computed(() => {
   switch (reportType.value) {
     case 'sales':
       return [
-        { label: 'Total Revenue', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-green-600' },
+        { label: 'Total Revenue', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-emerald-600' },
         { label: 'Total Orders', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
         { label: 'Avg per Order', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
         { label: 'Total Items Sold', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
       ];
     case 'financial':
       return [
-        { label: 'Revenue', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-green-600' },
+        { label: 'Revenue', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-emerald-600' },
         { label: 'Cost of Goods', value: formatCurrency(reportData.value.costOfGoods || 0), icon: '💸', color: 'text-red-600' },
         { label: 'Gross Profit', value: formatCurrency(reportData.value.grossProfit || 0), icon: '📈', color: 'text-blue-600' },
         { label: 'Profit Margin', value: `${reportData.value.profitMargin?.toFixed(2) || 0}%`, icon: '📊', color: 'text-purple-600' },
