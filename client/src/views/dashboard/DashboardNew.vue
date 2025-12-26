@@ -525,7 +525,6 @@ onUnmounted(() => {
   }
 });
 </script>
-</script>
 
 <style scoped>
 /* Scrollbar Styles from User HTML */
