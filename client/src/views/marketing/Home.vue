@@ -11,7 +11,7 @@
 
       <div class="container mx-auto px-4 relative z-10">
         <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-6">
             <span class="material-symbols-outlined text-sm">rocket_launch</span>
             Sistem Kasir v3.0
           </div>
@@ -28,7 +28,7 @@
           <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <router-link
               to="/pricing"
-              class="px-8 py-4 bg-primary hover:bg-blue-600 text-white rounded-xl font-bold text-lg shadow-xl shadow-blue-500/20 transition-all transform hover:scale-105"
+              class="px-8 py-4 bg-emerald-500 hover:bg-emerald-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-blue-500/20 transition-all transform hover:scale-105"
             >
               Mulai Gratis 14 Hari
             </router-link>
@@ -73,7 +73,7 @@
           <!-- Feature 1 -->
           <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all group">
             <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <span class="material-symbols-outlined text-primary text-3xl">point_of_sale</span>
+              <span class="material-symbols-outlined text-emerald-600 text-3xl">point_of_sale</span>
             </div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Kasir Cepat</h3>
             <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -108,7 +108,7 @@
 
     <!-- Simple CTA -->
     <section class="py-20 container mx-auto px-4">
-      <div class="bg-primary rounded-3xl p-12 text-center text-white relative overflow-hidden">
+      <div class="bg-emerald-500 rounded-3xl p-12 text-center text-white relative overflow-hidden">
         <div class="relative z-10 max-w-2xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-bold mb-6">Mulai Transformasi Digital Warung Anda</h2>
           <p class="text-blue-100 text-lg mb-8">
@@ -116,7 +116,7 @@
           </p>
           <router-link
             to="/pricing"
-            class="inline-flex items-center justify-center px-8 py-4 bg-white text-primary rounded-xl font-bold text-lg hover:bg-blue-50 transition shadow-lg"
+            class="inline-flex items-center justify-center px-8 py-4 bg-white text-emerald-600 rounded-xl font-bold text-lg hover:bg-blue-50 transition shadow-lg"
           >
             Lihat Paket Harga
           </router-link>

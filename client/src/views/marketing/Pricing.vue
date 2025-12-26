@@ -9,7 +9,7 @@
       </div>
 
       <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto relative z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider mb-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-6">
           <span class="material-symbols-outlined text-sm">payments</span>
           Paket Hemat
         </div>
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Boost Plan (Popular) -->
-        <div class="flex flex-col bg-slate-900 dark:bg-blue-600 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative overflow-hidden">
+        <div class="flex flex-col bg-slate-900 dark:bg-emerald-500 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-slate-900 dark:border-blue-500 relative overflow-hidden">
           <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-purple-500"></div>
           <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
             <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg uppercase tracking-wider">
@@ -121,7 +121,7 @@
             </ul>
             <router-link
               to="/contact"
-              class="w-full px-6 py-4 bg-primary text-white rounded-xl hover:bg-blue-600 transition font-bold text-center shadow-lg shadow-blue-500/25"
+              class="w-full px-6 py-4 bg-emerald-500 text-white rounded-xl hover:bg-emerald-500 transition font-bold text-center shadow-lg shadow-blue-500/25"
             >
               Pilih Paket Boost
             </router-link>
@@ -182,7 +182,7 @@
       <!-- Addons Section -->
       <div class="mt-24 max-w-6xl mx-auto px-4">
         <div class="text-center mb-16">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider mb-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-4">
             <span class="material-symbols-outlined text-sm">extension</span>
             Modular
           </div>
@@ -195,7 +195,7 @@
         </div>
 
         <div v-if="loadingAddons" class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
         </div>
         
         <div v-else>
@@ -205,14 +205,14 @@
             
             <div v-if="unlimitedAddons.length > 0" class="mb-12">
                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary">all_inclusive</span>
+                  <span class="material-symbols-outlined text-emerald-600">all_inclusive</span>
                   Addon Unlimited
                </h3>
                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div
                     v-for="addon in unlimitedAddons"
                     :key="addon.id"
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition shadow-sm"
+                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 transition shadow-sm"
                   >
                      <h4 class="font-bold text-slate-900 dark:text-white mb-2">{{ addon.name }}</h4>
                      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 h-10 line-clamp-2">{{ addon.description }}</p>
@@ -233,14 +233,14 @@
             <!-- Limited Addons -->
             <div v-if="limitedAddons.length > 0" class="mb-12">
                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-primary">bolt</span>
+                  <span class="material-symbols-outlined text-emerald-600">bolt</span>
                   Addon Fitur
                </h3>
                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div
                     v-for="addon in limitedAddons"
                     :key="addon.id"
-                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary/50 transition shadow-sm"
+                    class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 transition shadow-sm"
                   >
                      <h4 class="font-bold text-slate-900 dark:text-white mb-2">{{ addon.name }}</h4>
                      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 h-10 line-clamp-2">{{ addon.description }}</p>

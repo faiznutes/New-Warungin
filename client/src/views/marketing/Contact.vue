@@ -6,12 +6,12 @@
       <div class="lg:col-span-5 flex flex-col gap-8 pt-4">
         <!-- Text Content -->
         <div class="space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-emerald-600 text-xs font-bold uppercase tracking-wider">
             <span class="material-symbols-outlined text-base">support_agent</span>
             Bantuan Masuk
           </div>
           <h1 class="text-[#0d131b] dark:text-white tracking-tight text-4xl lg:text-[40px] font-bold leading-[1.1]">
-            Kami di Sini untuk <span class="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">Membantu</span>
+            Kami di Sini untuk <span class="text-emerald-600 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">Membantu</span>
           </h1>
           <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
             Sepertinya Anda mengalami masalah saat masuk. Silakan hubungi kami untuk mereset kata sandi Anda secara manual atau gunakan kontak di bawah.
@@ -31,28 +31,28 @@
               <h3 class="font-bold text-[#0d131b] dark:text-white">WhatsApp Support</h3>
               <p class="text-sm text-slate-500 dark:text-slate-400">Respon cepat (5-10 menit)</p>
             </div>
-            <span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-600">arrow_forward</span>
           </a>
 
           <!-- Phone -->
-          <a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all flex items-center gap-4" href="#">
-            <div class="size-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+          <a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition-all flex items-center gap-4" href="#">
+            <div class="size-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
               <span class="material-symbols-outlined">call</span>
             </div>
             <div class="flex-1">
               <h3 class="font-bold text-[#0d131b] dark:text-white">Call Center</h3>
               <p class="text-sm text-slate-500 dark:text-slate-400">08:00 - 20:00 WIB</p>
             </div>
-            <span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-600">arrow_forward</span>
           </a>
         </div>
 
         <!-- Abstract Visual -->
-        <div class="hidden lg:block mt-auto relative rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-primary/10 to-blue-600/5 border border-primary/10">
+        <div class="hidden lg:block mt-auto relative rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-primary/10 to-blue-600/5 border border-emerald-500/10">
           <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-primary/5"></div>
           <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-white/90 via-transparent dark:from-slate-900/90">
             <div class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-              <span class="material-symbols-outlined text-primary text-[20px] filled">verified_user</span>
+              <span class="material-symbols-outlined text-emerald-600 text-[20px] filled">verified_user</span>
               Data Anda aman bersama kami.
             </div>
           </div>
@@ -63,7 +63,7 @@
       <div class="lg:col-span-7">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-700 p-6 md:p-8 lg:p-10">
           <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-100 dark:border-slate-700">
-            <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-primary">
+            <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-emerald-600">
               <span class="material-symbols-outlined">mail</span>
             </div>
             <div>
@@ -82,7 +82,7 @@
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
                   placeholder="Masukkan nama lengkap sesuai KTP"
                 />
               </div>
@@ -97,7 +97,7 @@
                   v-model="form.email"
                   type="text"
                   required
-                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
                   placeholder="contoh@email.com atau 0812..."
                 />
               </div>
@@ -114,7 +114,7 @@
                 <input
                   v-model="form.outletId"
                   type="text"
-                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
                   placeholder="Contoh: WRG-00123"
                 />
               </div>
@@ -126,7 +126,7 @@
               <textarea
                 v-model="form.message"
                 required
-                class="w-full min-h-[120px] p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 resize-none transition-all font-display"
+                class="w-full min-h-[120px] p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white placeholder:text-slate-400 resize-none transition-all font-display"
                 placeholder="Jelaskan kendala yang Anda alami..."
               ></textarea>
             </div>
@@ -136,7 +136,7 @@
               <button
                 type="submit"
                 :disabled="loading"
-                class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full h-12 bg-emerald-500 hover:bg-emerald-500 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 <span v-else class="flex items-center gap-2">
@@ -145,7 +145,7 @@
                 </span>
               </button>
               <p class="text-center text-xs text-slate-500 dark:text-slate-400">
-                Dengan mengirimkan formulir ini, Anda setuju dengan <a class="text-primary hover:underline" href="#">Kebijakan Privasi</a> kami.
+                Dengan mengirimkan formulir ini, Anda setuju dengan <a class="text-emerald-600 hover:underline" href="#">Kebijakan Privasi</a> kami.
               </p>
             </div>
           </form>

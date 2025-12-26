@@ -14,7 +14,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-md transition p-8 sm:p-10 space-y-10 border border-slate-200 dark:border-slate-700">
           <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
             <div class="flex items-center gap-4 mb-4">
-              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-lg">
                 1
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Penerimaan Syarat & Ketentuan</h2>
@@ -27,7 +27,7 @@
 
           <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
             <div class="flex items-center gap-4 mb-4">
-              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-lg">
                 2
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Layanan Sistem Kasir</h2>
@@ -45,7 +45,7 @@
 
           <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
             <div class="flex items-center gap-4 mb-4">
-              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-lg">
                 3
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Berlangganan & Pembayaran</h2>
@@ -62,7 +62,7 @@
 
           <section class="border-b border-slate-100 dark:border-slate-700 pb-8 last:border-0 last:pb-0">
             <div class="flex items-center gap-4 mb-4">
-               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-lg">
                 4
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Privasi Data</h2>
@@ -75,7 +75,7 @@
 
           <section>
             <div class="flex items-center gap-4 mb-4">
-               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-primary font-bold text-lg">
+               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0 text-emerald-600 font-bold text-lg">
                 5
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Batasan Tanggung Jawab</h2>

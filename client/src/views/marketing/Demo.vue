@@ -10,7 +10,7 @@
           <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-2 px-4">
             Lihat langsung bagaimana Warungin dapat membantu mengembangkan bisnis UMKM Anda
           </p>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary text-sm font-bold mt-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-emerald-600 text-sm font-bold mt-4">
              <span class="material-symbols-outlined text-[18px]">timer</span>
              Gratis 30 Menit • Tanpa Komitmen
           </div>
@@ -22,7 +22,7 @@
           <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-xl transition p-8 border border-slate-200 dark:border-slate-700">
             <div class="flex items-center space-x-3 mb-6">
               <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-primary text-2xl">edit_document</span>
+                <span class="material-symbols-outlined text-emerald-600 text-2xl">edit_document</span>
               </div>
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Formulir Request Demo</h2>
             </div>
@@ -34,7 +34,7 @@
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                   placeholder="Nama Lengkap Anda"
                 />
               </div>
@@ -44,7 +44,7 @@
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                   placeholder="email@bisnis.com"
                 />
               </div>
@@ -54,7 +54,7 @@
                   v-model="form.businessName"
                   type="text"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                   placeholder="Contoh: Kopi Kenangan Mantan"
                 />
               </div>
@@ -64,7 +64,7 @@
                   v-model="form.phone"
                   type="tel"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                   placeholder="0812-3456-7890"
                 />
               </div>
@@ -73,7 +73,7 @@
                 <input
                   v-model="form.dateTime"
                   type="datetime-local"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                 />
               </div>
               <div>
@@ -81,7 +81,7 @@
                 <textarea
                   v-model="form.message"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition text-slate-900 dark:text-white"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-slate-900 dark:text-white"
                   placeholder="Fitur apa yang ingin Anda lihat spesifik?"
                 ></textarea>
               </div>
@@ -89,7 +89,7 @@
               <button
                 type="submit"
                 :disabled="loading"
-                class="w-full px-6 py-4 bg-primary text-white rounded-xl hover:bg-blue-600 transition disabled:opacity-50 font-bold shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+                class="w-full px-6 py-4 bg-emerald-500 text-white rounded-xl hover:bg-emerald-500 transition disabled:opacity-50 font-bold shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
               >
                 <span v-if="loading" class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
                 {{ loading ? 'Mengirim...' : 'Request Demo Gratis' }}
@@ -102,31 +102,31 @@
             <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700">
               <div class="flex items-center space-x-3 mb-6">
                 <div class="w-12 h-12 bg-white dark:bg-slate-700 rounded-xl flex items-center justify-center shadow-sm">
-                  <span class="material-symbols-outlined text-primary text-2xl">featured_play_list</span>
+                  <span class="material-symbols-outlined text-emerald-600 text-2xl">featured_play_list</span>
                 </div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Apa yang Anda dapatkan?</h2>
               </div>
               <ul class="space-y-4">
                 <li class="flex items-start gap-3">
-                  <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="material-symbols-outlined text-emerald-600 mt-0.5">check_circle</span>
                   <span class="text-slate-600 dark:text-slate-300">Tour lengkap dashboard & fitur POS</span>
                 </li>
                 <li class="flex items-start gap-3">
-                  <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                  <span class="material-symbols-outlined text-emerald-600 mt-0.5">check_circle</span>
                   <span class="text-slate-600 dark:text-slate-300">Konsultasi kebutuhan bisnis spesifik Anda</span>
                 </li>
                 <li class="flex items-start gap-3">
-                   <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                   <span class="material-symbols-outlined text-emerald-600 mt-0.5">check_circle</span>
                   <span class="text-slate-600 dark:text-slate-300">Simulasi manajemen stok & laporan</span>
                 </li>
                 <li class="flex items-start gap-3">
-                   <span class="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                   <span class="material-symbols-outlined text-emerald-600 mt-0.5">check_circle</span>
                   <span class="text-slate-600 dark:text-slate-300">Tanya jawab langsung dengan tim produk</span>
                 </li>
               </ul>
             </div>
 
-            <div class="bg-blue-600 dark:bg-blue-700 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="bg-emerald-500 dark:bg-blue-700 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
                <div class="absolute top-0 right-0 p-4 opacity-10">
                   <span class="material-symbols-outlined text-9xl">rocket_launch</span>
                </div>
@@ -156,11 +156,11 @@
                 Hubungi kami langsung jika ada pertanyaan mendesak.
               </p>
               <div class="space-y-3">
-                <a href="mailto:support@warungin.com" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-primary transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
+                <a href="mailto:support@warungin.com" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-emerald-600 transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
                   <span class="material-symbols-outlined text-slate-400">mail</span>
                   <span class="font-medium">support@warungin.com</span>
                 </a>
-                <a href="tel:+6281234567890" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-primary transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
+                <a href="tel:+6281234567890" class="flex items-center space-x-3 text-slate-600 dark:text-slate-300 hover:text-emerald-600 transition p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-lg">
                   <span class="material-symbols-outlined text-slate-400">call</span>
                   <span class="font-medium">+62 812-3456-7890</span>
                 </a>
