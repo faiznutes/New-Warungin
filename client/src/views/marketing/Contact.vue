@@ -1,166 +1,154 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-50 to-white">
-    <div class="container mx-auto px-4 py-16">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-8 sm:mb-10 md:mb-12">
-          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 px-2">Hubungi Tim Support Warungin - Customer Service Sistem Kasir</h1>
-          <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-2 px-4">
-            Punya pertanyaan tentang Warungin? Tim support kami siap membantu Anda!
-          </p>
-          <p class="text-sm sm:text-base md:text-lg text-gray-500 px-4">
-            Kami tersedia Senin-Jumat 09:00-18:00 WIB untuk membantu kelancaran bisnis Anda
+  <div class="w-full bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] flex justify-center py-12 px-4 md:px-8">
+    <div class="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      
+      <!-- Left Column: Context & Direct Support -->
+      <div class="lg:col-span-5 flex flex-col gap-8 pt-4">
+        <!-- Text Content -->
+        <div class="space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider">
+            <span class="material-symbols-outlined text-base">support_agent</span>
+            Bantuan Masuk
+          </div>
+          <h1 class="text-[#0d131b] dark:text-white tracking-tight text-4xl lg:text-[40px] font-bold leading-[1.1]">
+            Kami di Sini untuk <span class="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">Membantu</span>
+          </h1>
+          <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+            Sepertinya Anda mengalami masalah saat masuk. Silakan hubungi kami untuk mereset kata sandi Anda secara manual atau gunakan kontak di bawah.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          <!-- Contact Form -->
-          <div class="bg-white rounded-xl shadow-xl hover:shadow-2xl transition p-5 sm:p-6 md:p-8 border border-gray-100">
-            <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Formulir Kontak Warungin</h2>
+        <!-- Direct Support Cards -->
+        <div class="flex flex-col gap-4 mt-2">
+          <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Kontak Langsung</p>
+          
+          <!-- WhatsApp -->
+          <a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-md transition-all flex items-center gap-4" href="#">
+            <div class="size-12 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
+              <span class="material-symbols-outlined">chat</span>
             </div>
-            <form @submit.prevent="handleSubmit" class="space-y-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+            <div class="flex-1">
+              <h3 class="font-bold text-[#0d131b] dark:text-white">WhatsApp Support</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Respon cepat (5-10 menit)</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+          </a>
+
+          <!-- Phone -->
+          <a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all flex items-center gap-4" href="#">
+            <div class="size-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+              <span class="material-symbols-outlined">call</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-[#0d131b] dark:text-white">Call Center</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">08:00 - 20:00 WIB</p>
+            </div>
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+          </a>
+        </div>
+
+        <!-- Abstract Visual -->
+        <div class="hidden lg:block mt-auto relative rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-primary/10 to-blue-600/5 border border-primary/10">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-primary/5"></div>
+          <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-white/90 via-transparent dark:from-slate-900/90">
+            <div class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+              <span class="material-symbols-outlined text-primary text-[20px] filled">verified_user</span>
+              Data Anda aman bersama kami.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Form -->
+      <div class="lg:col-span-7">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-700 p-6 md:p-8 lg:p-10">
+          <div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-100 dark:border-slate-700">
+            <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-primary">
+              <span class="material-symbols-outlined">mail</span>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-[#0d131b] dark:text-white">Formulir Bantuan</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Isi detail akun Anda untuk verifikasi manual</p>
+            </div>
+          </div>
+
+          <form @submit.prevent="handleSubmit" class="space-y-6">
+            <!-- Full Name -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Nama Lengkap</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">person</span>
                 <input
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Nama lengkap"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  placeholder="Masukkan nama lengkap sesuai KTP"
                 />
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Email / Nomor HP Terdaftar</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">contact_mail</span>
                 <input
                   v-model="form.email"
-                  type="email"
-                  required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="email@example.com"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">No. Telepon</label>
-                <input
-                  v-model="form.phone"
-                  type="tel"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="0812-3456-7890"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Subjek</label>
-                <input
-                  v-model="form.subject"
                   type="text"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Subjek pesan"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  placeholder="contoh@email.com atau 0812..."
                 />
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Pesan</label>
-                <textarea
-                  v-model="form.message"
-                  required
-                  rows="5"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Tulis pesan Anda di sini..."
-                ></textarea>
+            </div>
+
+            <!-- Outlet ID (Optional) -->
+            <div class="space-y-2">
+              <div class="flex justify-between">
+                <label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Outlet ID</label>
+                <span class="text-xs text-slate-400 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">Opsional</span>
               </div>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">store</span>
+                <input
+                  v-model="form.outletId"
+                  type="text"
+                  class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all font-display"
+                  placeholder="Contoh: WRG-00123"
+                />
+              </div>
+            </div>
+
+            <!-- Message -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Detail Masalah</label>
+              <textarea
+                v-model="form.message"
+                required
+                class="w-full min-h-[120px] p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 resize-none transition-all font-display"
+                placeholder="Jelaskan kendala yang Anda alami..."
+              ></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-2 flex flex-col gap-4">
               <button
                 type="submit"
                 :disabled="loading"
-                class="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl hover:from-primary-700 hover:to-primary-800 transition font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 transform hover:scale-105 disabled:transform-none"
+                class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ loading ? 'Mengirim...' : 'Kirim Pesan' }}
+                <span v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span v-else class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">send</span>
+                    Kirim Permintaan
+                </span>
               </button>
-            </form>
-          </div>
-
-          <!-- Contact Info -->
-          <div class="space-y-6">
-            <div class="bg-gradient-to-br from-white to-primary-50 rounded-xl shadow-xl p-8 border border-primary-100">
-              <div class="flex items-center space-x-3 mb-6">
-                <div class="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900">Kontak & Lokasi Warungin</h2>
-              </div>
-              <div class="space-y-4">
-                <div class="flex items-start space-x-4">
-                  <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                    <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-800">Email</h3>
-                    <p class="text-gray-600">support@warungin.com</p>
-                  </div>
-                </div>
-
-                <div class="flex items-start space-x-4">
-                  <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                    <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-800">Telepon</h3>
-                    <p class="text-gray-600">+62 812-3456-7890</p>
-                  </div>
-                </div>
-
-                <div class="flex items-start space-x-4">
-                  <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                    <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 class="font-semibold text-gray-800">Alamat</h3>
-                    <p class="text-gray-600">Surabaya, Indonesia</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl p-8 border border-primary-300">
-              <div class="flex items-center space-x-3 mb-4">
-                <svg class="w-6 h-6 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 class="text-xl font-bold text-gray-900">Jam Operasional</h3>
-              </div>
-              <div class="space-y-3 text-gray-700">
-                <div class="flex items-center justify-between">
-                  <span class="font-semibold">Senin - Jumat:</span>
-                  <span>09:00 - 18:00 WIB</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="font-semibold">Sabtu:</span>
-                  <span>09:00 - 15:00 WIB</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="font-semibold">Minggu:</span>
-                  <span class="text-gray-500">Tutup</span>
-                </div>
-              </div>
-              <p class="mt-4 text-sm text-gray-600 font-medium">
-                💡 Untuk urgensi di luar jam operasional, kirim email dan kami akan merespon secepat mungkin!
+              <p class="text-center text-xs text-slate-500 dark:text-slate-400">
+                Dengan mengirimkan formulir ini, Anda setuju dengan <a class="text-primary hover:underline" href="#">Kebijakan Privasi</a> kami.
               </p>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -169,14 +157,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { useSEO } from '../../composables/useSEO';
 
+const router = useRouter();
+
 useSEO({
-  title: 'Hubungi Kami - Warungin Support',
-  description: 'Punya pertanyaan tentang Warungin? Tim support kami siap membantu Anda! Hubungi kami melalui email, telepon, atau form kontak. Tersedia Senin-Jumat 09:00-18:00 WIB.',
-  keywords: 'kontak warungin, support warungin, hubungi kami, customer service, bantuan warungin',
+  title: 'Hubungi Bantuan - Warungin Support',
+  description: 'Punya pertanyaan atau kendala? Hubungi tim support Warungin untuk reset password, kendala login, atau pertanyaan lainnya.',
+  keywords: 'kontak warungin, support warungin, help center, lupa password, customer service',
 });
 
 const { success: showSuccess, error: showError } = useNotification();
@@ -187,9 +178,8 @@ onMounted(() => {
 
 const form = ref({
   name: '',
-  email: '',
-  phone: '',
-  subject: '',
+  email: '', // combined field for email/phone
+  outletId: '',
   message: '',
 });
 
@@ -198,9 +188,21 @@ const loading = ref(false);
 const handleSubmit = async () => {
   loading.value = true;
   try {
-    await api.post('/contact', form.value);
-    await showSuccess('Terima kasih! Pesan Anda telah dikirim.');
-    form.value = { name: '', email: '', phone: '', subject: '', message: '' };
+    // Basic formatting for API
+    const isEmail = form.value.email.includes('@');
+    const payload = {
+        name: form.value.name,
+        email: isEmail ? form.value.email : 'contact-form@user.com', // Fallback or handle backend side
+        phone: isEmail ? '' : form.value.email,
+        subject: 'Bantuan Login / Masalah Teknis (Form V3)',
+        message: `${form.value.message}\n\n[User Input Data]\nContact: ${form.value.email}\nOutlet ID: ${form.value.outletId || 'N/A'}`
+    };
+
+    await api.post('/contact', payload);
+    
+    // Redirect to success page as per design flow
+    router.push({ name: 'contact-success' });
+    
   } catch (error: any) {
     console.error('Error submitting contact form:', error);
     await showError(error.response?.data?.message || 'Gagal mengirim pesan. Silakan coba lagi.');
@@ -209,4 +211,3 @@ const handleSubmit = async () => {
   }
 };
 </script>
-

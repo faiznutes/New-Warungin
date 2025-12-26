@@ -9,7 +9,7 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#137fec', // V3 Primary Blue
+          DEFAULT: '#2b7cee', // V3 Primary Blue Updated
           hover: '#0f6bd0',   // Darker shade for hover
           light: '#e7f2fd',   // Lighter shade for bg
           50: '#f0f7fe',
@@ -26,7 +26,7 @@ export default {
         'primary-hover': '#0f6bd0',
         'primary-light': '#e7f2fd',
         'background-light': '#f6f7f8', // V3 Light BG
-        'background-dark': '#101922',  // V3 Dark BG
+        'background-dark': '#101822',  // V3 Dark BG Updated
         'surface-light': '#ffffff',
         'surface-dark': '#1e293b',     // Updated to match V3 sidebar dark mode
         'text-primary': '#0d141b',

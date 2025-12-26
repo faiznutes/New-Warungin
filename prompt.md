@@ -2907,3 +2907,872 @@ design pos
 </script>
 
 </body></html>
+
+
+lupa kata sandi flow 
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Forgot Password Confirmation</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+                        'glow': '0 0 20px rgba(43, 124, 238, 0.15)'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom subtle gradient animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative min-h-screen flex flex-col overflow-hidden">
+<!-- Background Gradient Decoration -->
+<div class="absolute inset-0 pointer-events-none z-0">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-primary/5 dark:to-transparent"></div>
+</div>
+<!-- Header -->
+<header class="relative z-10 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-6 lg:px-10 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">storefront</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="truncate">Masuk</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex-grow flex items-center justify-center px-4 py-12">
+<div class="w-full max-w-lg flex flex-col items-center">
+<!-- Success Card -->
+<div class="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 p-8 md:p-10 text-center animate-fade-in-up">
+<!-- Icon Animation Wrapper -->
+<div class="mx-auto w-20 h-20 mb-6 relative animate-float">
+<div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-20"></div>
+<div class="relative w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 dark:from-primary/20 dark:to-primary/10 rounded-full flex items-center justify-center shadow-glow">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1, 'wght' 600;">mark_email_read</span>
+</div>
+</div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+                        Konfirmasi Pengiriman
+                    </h1>
+<p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed mb-8">
+                        Terima kasih! Kami telah menerima laporan Anda. Tim support Warungin akan segera menghubungi Anda melalui email yang terdaftar untuk proses verifikasi selanjutnya.
+                    </p>
+<div class="flex flex-col gap-3">
+<button class="w-full flex items-center justify-center gap-2 h-11 px-6 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg text-sm font-bold tracking-wide transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 transform active:scale-[0.98]">
+<span>Kembali ke Halaman Masuk</span>
+</button>
+</div>
+<!-- Divider with 'Or' (Optional subtle visual break) -->
+<div class="my-6 flex items-center gap-3 opacity-60">
+<div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
+<span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Bantuan</span>
+<div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
+</div>
+<!-- Secondary Action / Help -->
+<a class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors font-medium group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">support_agent</span>
+<span>Butuh bantuan segera? Hubungi Support</span>
+</a>
+</div>
+<!-- Safe Browsing / Trust Indicator -->
+<div class="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-base">lock</span>
+<span>Proses Anda aman dan terenkripsi</span>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="relative z-10 py-8 text-center px-4">
+<p class="text-slate-400 dark:text-slate-600 text-sm">© 2023 Warungin. All rights reserved.</p>
+</footer>
+</div>
+</body></html>
+
+formulir bantuan akun
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Formulir Bantuan Akun</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2b7cee",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101822",
+              "slate-custom": "#e7ecf3",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "2xl": "1rem",
+              "full": "9999px"
+            },
+            boxShadow: {
+                'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                'glow': '0 0 15px rgba(43, 124, 238, 0.15)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for textarea if needed */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1; 
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased">
+<!-- Background Decoration: Silver-Blue Gradient -->
+<div class="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#f0f4f8_1px,transparent_1px),linear-gradient(to_bottom,#f0f4f8_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] dark:opacity-5"></div>
+<div class="fixed inset-0 -z-20 h-full w-full bg-gradient-to-br from-slate-50 via-slate-100 to-blue-50 dark:from-background-dark dark:via-[#151e2b] dark:to-[#0c1219]"></div>
+<!-- Navigation Bar -->
+<header class="w-full border-b border-slate-200/60 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<!-- Logo -->
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 text-white shadow-glow">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</span>
+</div>
+<!-- Right Action -->
+<div class="hidden md:flex items-center gap-4">
+<a class="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors" href="#">
+                        Kembali ke Beranda
+                    </a>
+<button class="flex items-center justify-center px-4 py-2 rounded-lg bg-slate-100 text-slate-900 text-sm font-bold hover:bg-slate-200 transition-colors dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700">
+                        Masuk
+                    </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 w-full">
+<div class="w-full max-w-[640px] flex flex-col gap-6">
+<!-- Breadcrumbs / Steps -->
+<nav aria-label="Breadcrumb" class="flex items-center justify-center space-x-2 text-sm font-medium mb-4">
+<div class="flex items-center text-slate-400 dark:text-slate-500">
+<span class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-300 dark:border-slate-600 text-xs mr-2">1</span>
+<span class="hidden sm:inline">Verifikasi</span>
+</div>
+<span class="material-symbols-outlined text-base text-slate-300 dark:text-slate-600">chevron_right</span>
+<div class="flex items-center text-slate-400 dark:text-slate-500">
+<span class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-300 dark:border-slate-600 text-xs mr-2">2</span>
+<span class="hidden sm:inline">Metode</span>
+</div>
+<span class="material-symbols-outlined text-base text-slate-300 dark:text-slate-600">chevron_right</span>
+<div class="flex items-center text-primary">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 border border-primary text-primary text-xs mr-2">3</span>
+<span>Isi Formulir</span>
+</div>
+</nav>
+<!-- Card Container -->
+<div class="bg-white dark:bg-[#1e293b] rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-slate-700">
+<!-- Progress Bar -->
+<div class="h-1 w-full bg-slate-100 dark:bg-slate-700">
+<div class="h-full bg-primary w-full rounded-r-full"></div>
+</div>
+<div class="p-8 sm:p-10 flex flex-col gap-8">
+<!-- Page Heading -->
+<div class="flex flex-col gap-2 text-center sm:text-left">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            Formulir Bantuan Akun
+                        </h1>
+<p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+                            Ceritakan kendala masuk Anda, tim kami akan membantu segera untuk memulihkan akses Warungin Anda.
+                        </p>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-5">
+<!-- Row 1: Name & Email -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Nama Lengkap</span>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">person</span>
+</div>
+<input class="w-full rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-4 py-3 transition-colors dark:bg-slate-800/50 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-primary" placeholder="Misal: Budi Santoso" required="" type="text"/>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Email Terdaftar</span>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
+</div>
+<input class="w-full rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-4 py-3 transition-colors dark:bg-slate-800/50 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-primary" placeholder="nama@tokoanda.com" required="" type="email"/>
+</div>
+</label>
+</div>
+<!-- Row 2: Category -->
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Kategori Masalah</span>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">category</span>
+</div>
+<select class="w-full rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:border-primary focus:ring-1 focus:ring-primary pl-10 pr-10 py-3 appearance-none transition-colors dark:bg-slate-800/50 dark:border-slate-600 dark:text-white cursor-pointer">
+<option disabled="" selected="" value="">Pilih kategori masalah Anda</option>
+<option value="forgot_password">Lupa Kata Sandi</option>
+<option value="account_locked">Akun Terkunci</option>
+<option value="otp_issue">Kode OTP Tidak Masuk</option>
+<option value="email_changed">Email Tidak Dikenali</option>
+<option value="other">Lainnya</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">expand_more</span>
+</div>
+</div>
+</label>
+<!-- Row 3: Description -->
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Deskripsi Detail</span>
+<div class="relative">
+<textarea class="w-full rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary p-4 min-h-[140px] resize-none transition-colors dark:bg-slate-800/50 dark:border-slate-600 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-primary" placeholder="Jelaskan kronologi kendala yang Anda alami secara detail agar kami dapat membantu lebih cepat..."></textarea>
+<div class="absolute bottom-3 right-3 pointer-events-none">
+<span class="text-xs text-slate-400 dark:text-slate-500">0/500</span>
+</div>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px] align-middle mr-1">info</span>
+                                Jangan sertakan password Anda dalam formulir ini.
+                            </p>
+</label>
+<!-- Submit Button -->
+<div class="pt-2">
+<button class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-primary hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary shadow-lg shadow-primary/30 transition-all duration-200 active:scale-[0.99]" type="button">
+<span class="absolute left-0 inset-y-0 flex items-center pl-3">
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform duration-200">send</span>
+</span>
+                                Kirim Permintaan Bantuan
+                            </button>
+</div>
+</form>
+</div>
+<!-- Card Footer (Tips/Help) -->
+<div class="bg-slate-50 dark:bg-slate-800/50 px-8 py-4 border-t border-slate-100 dark:border-slate-700 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">headset_mic</span>
+<div class="text-sm text-slate-600 dark:text-slate-400">
+<p class="font-semibold text-slate-800 dark:text-slate-200 mb-1">Butuh respon lebih cepat?</p>
+<p>Anda juga dapat menghubungi layanan pelanggan kami via WhatsApp di <a class="text-primary hover:underline font-medium" href="#">+62 812-3456-7890</a>.</p>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="text-center">
+<a class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-primary transition-colors dark:text-slate-400 dark:hover:text-white" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali ke halaman masuk
+                </a>
+</div>
+</div>
+</main>
+</body></html>
+
+halaman kontak 
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Hubungi Bantuan</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display flex flex-col min-h-screen overflow-x-hidden selection:bg-primary/20 selection:text-primary">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ecf3] dark:border-slate-800 px-6 lg:px-10 py-4 bg-white dark:bg-[#101822] sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#0d131b] dark:text-white">
+<div class="size-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<h2 class="text-[#0d131b] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Warungin</h2>
+</div>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-[#f0f4f8] hover:bg-[#e2e8f0] dark:bg-slate-800 dark:hover:bg-slate-700 text-[#0d131b] dark:text-white text-sm font-bold leading-normal transition-colors">
+<span class="truncate">Kembali ke Login</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow w-full bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] flex justify-center py-12 px-4 md:px-8">
+<div class="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+<!-- Left Column: Context & Direct Support -->
+<div class="lg:col-span-5 flex flex-col gap-8 pt-4">
+<!-- Text Content -->
+<div class="space-y-4">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-primary text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-base">support_agent</span>
+                        Bantuan Masuk
+                    </div>
+<h1 class="text-[#0d131b] dark:text-white tracking-tight text-4xl lg:text-[40px] font-bold leading-[1.1]">
+                        Kami di Sini untuk <span class="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400">Membantu</span>
+</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+                        Sepertinya Anda mengalami masalah saat masuk. Silakan hubungi kami untuk mereset kata sandi Anda secara manual atau gunakan kontak di bawah.
+                    </p>
+</div>
+<!-- Direct Support Cards -->
+<div class="flex flex-col gap-4 mt-2">
+<p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Kontak Langsung</p>
+<!-- WhatsApp -->
+<a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-green-500 dark:hover:border-green-500 hover:shadow-md transition-all flex items-center gap-4" href="#">
+<div class="size-12 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-[#0d131b] dark:text-white">WhatsApp Support</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Respon cepat (5-10 menit)</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+</a>
+<!-- Phone -->
+<a class="group bg-white dark:bg-slate-800/80 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all flex items-center gap-4" href="#">
+<div class="size-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">call</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-[#0d131b] dark:text-white">Call Center</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">08:00 - 20:00 WIB</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">arrow_forward</span>
+</a>
+</div>
+<!-- Abstract Visual -->
+<div class="hidden lg:block mt-auto relative rounded-2xl overflow-hidden h-48 bg-gradient-to-br from-primary/10 to-blue-600/5 border border-primary/10">
+<img class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-overlay" data-alt="Abstract meeting room with glass walls reflecting blue light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTaQ8RVQ3x87mnPBUK4-cETj76pU2wxS79hFv_kR2umR8D0X7HUvhb0wXGfvkDqq73HDCuOokcSOiWTnVKNNX3OxPCN8LyT2b7Hr5ssHGm62wQlHtVKPGomyaZ6V9ZaSVbLeA834CiYmCKojhA_4xnWnknYNg2FyxXEyLOZCeKUwHW4POKXsKdEwUEBDVzngTHFgOyQrUgp-HsVDLfPJcFVIJ2W6y-cVDitj5lkhbAmQ8oHvnDWDYVkIA8rz-5EaSQNfEGO9s9mfM"/>
+<div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-white/90 via-transparent dark:from-slate-900/90">
+<div class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-primary text-[20px] filled">verified_user</span>
+                            Data Anda aman bersama kami.
+                        </div>
+</div>
+</div>
+</div>
+<!-- Right Column: Form -->
+<div class="lg:col-span-7">
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 border border-slate-200 dark:border-slate-700 p-6 md:p-8 lg:p-10">
+<div class="flex items-center gap-3 mb-8 pb-4 border-b border-slate-100 dark:border-slate-700">
+<div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-[#0d131b] dark:text-white">Formulir Bantuan</h2>
+<p class="text-sm text-slate-500 dark:text-slate-400">Isi detail akun Anda untuk verifikasi manual</p>
+</div>
+</div>
+<form class="space-y-6">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Nama Lengkap</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">person</span>
+<input class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Masukkan nama lengkap sesuai KTP" type="text"/>
+</div>
+</div>
+<!-- Contact Info -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Email / Nomor HP Terdaftar</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">contact_mail</span>
+<input class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="contoh@email.com atau 0812..." type="text"/>
+</div>
+</div>
+<!-- Outlet ID (Optional) -->
+<div class="space-y-2">
+<div class="flex justify-between">
+<label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Outlet ID</label>
+<span class="text-xs text-slate-400 font-medium bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">Opsional</span>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">store</span>
+<input class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Contoh: WRG-00123" type="text"/>
+</div>
+</div>
+<!-- Message -->
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-[#0d131b] dark:text-slate-200">Detail Masalah</label>
+<textarea class="w-full min-h-[120px] p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400 resize-none transition-all" placeholder="Jelaskan kendala yang Anda alami..."></textarea>
+</div>
+<!-- Actions -->
+<div class="pt-2 flex flex-col gap-4">
+<button class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">send</span>
+                                Kirim Permintaan
+                            </button>
+<p class="text-center text-xs text-slate-500 dark:text-slate-400">
+                                Dengan mengirimkan formulir ini, Anda setuju dengan <a class="text-primary hover:underline" href="#">Kebijakan Privasi</a> kami.
+                            </p>
+</div>
+</form>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="py-6 text-center text-slate-400 text-sm bg-background-light dark:bg-background-dark">
+<p>© 2024 Warungin POS. All rights reserved.</p>
+</footer>
+</body></html>
+
+pengarahan saat lupa sandi 
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Lupa Kata Sandi</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "primary-dark": "#1a65d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    backgroundImage: {
+                        'silver-blue': 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #dbeafe 100%)',
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display antialiased text-slate-900 bg-background-light dark:bg-background-dark dark:text-white">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-silver-blue dark:bg-slate-900">
+<!-- Navbar -->
+<header class="w-full border-b border-white/50 bg-white/50 backdrop-blur-sm px-6 py-4 dark:border-slate-800 dark:bg-slate-900/80 sticky top-0 z-50">
+<div class="mx-auto flex max-w-7xl items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
+</div>
+<!-- Optional: Right side nav items could go here -->
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex flex-grow items-center justify-center px-4 py-12">
+<div class="w-full max-w-[960px] @container">
+<!-- Card Component -->
+<div class="mx-auto flex flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-slate-800 @2xl:flex-row">
+<!-- Image Section (Left) -->
+<div class="relative h-64 w-full bg-slate-200 @2xl:h-auto @2xl:w-5/12">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Abstract blue and silver gradient lock security illustration" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCE6-jzn6TKuf4FiuPqTqZ2Ow2i7tB1fxt5n3ij9muqgW1r0d584QJGILk1n1r0M7KmoKRlvalTe3ockJO9SXrZOqDbMke6do-leU_fiU0SMZHJGkic_hvcXA44Bv_XXun_RWLiMKk5RZkJavQ3s49T9W8WWVCRlACOwWNBJbL2LsCGGDPr1jF7tmTBwUzAoPlIUNeYuluYENZXhLn2uCIcMX1mdCbvBbTFKFWN1sJGh605aKlrH6rHiRm8wWkIJS8EXgItgJ70pzQ');">
+</div>
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+</div>
+<!-- Content Section (Right) -->
+<div class="flex flex-col justify-center p-8 @2xl:w-7/12 @2xl:p-12">
+<!-- Icon -->
+<div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-slate-700 dark:text-blue-400">
+<span class="material-symbols-outlined text-[32px]">lock_reset</span>
+</div>
+<!-- Text Content -->
+<h1 class="mb-3 text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+                            Lupa Kata Sandi Anda?
+                        </h1>
+<p class="mb-8 text-base font-normal leading-relaxed text-slate-500 dark:text-slate-400">
+                            Demi keamanan data bisnis Anda, pengaturan ulang kata sandi dilakukan secara manual melalui tim bantuan kami. Silakan hubungi kami untuk verifikasi identitas dan pemulihan akun.
+                        </p>
+<!-- Actions -->
+<div class="flex flex-col gap-4">
+<button class="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-semibold text-white transition-all hover:bg-primary-dark focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-800">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+<span>Hubungi Bantuan</span>
+</button>
+<a class="flex h-10 w-full cursor-pointer items-center justify-center rounded-lg bg-transparent px-4 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white" href="#">
+                                Kembali ke Halaman Login
+                            </a>
+</div>
+<!-- Support Info / Microcopy -->
+<div class="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span>Proses aman &amp; terenkripsi</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-6 text-center">
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">
+                © 2024 Warungin. Hak Cipta Dilindungi.
+            </p>
+</footer>
+</div>
+</body></html>
+
+login page 
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Login</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles to ensure consistent font application */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
+<div class="min-h-screen flex items-center justify-center p-4 md:p-6 bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-900 dark:to-slate-900">
+<!-- Main Card Container -->
+<div class="w-full max-w-[900px] bg-white dark:bg-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row relative">
+<!-- Left Section: Branding -->
+<div class="flex-1 p-8 md:p-12 flex flex-col justify-center bg-white dark:bg-slate-800 z-10">
+<div class="mb-8">
+<!-- Logo Placeholder -->
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">storefront</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h1>
+</div>
+<h2 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
+                        Selamat Datang Kembali
+                    </h2>
+<p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+                        Solusi POS Terpercaya untuk UMKM Indonesia. Kelola inventaris, transaksi, dan laporan bisnis Anda dengan lebih efisien dalam satu dashboard.
+                    </p>
+</div>
+<div class="mt-auto hidden md:block">
+<div class="flex items-center gap-2 text-sm text-slate-400">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Aman &amp; Terpercaya</span>
+</div>
+</div>
+</div>
+<!-- Divider Line (Horizontal on Mobile, Vertical on Desktop) -->
+<div class="w-full h-px md:w-px md:h-auto bg-slate-200 dark:bg-slate-700 mx-0"></div>
+<!-- Right Section: Login Form -->
+<div class="flex-1 p-8 md:p-12 flex flex-col justify-center bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
+<div class="mb-6 md:hidden">
+<h3 class="text-lg font-semibold text-slate-900 dark:text-white">Masuk ke Akun Anda</h3>
+</div>
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">Email</label>
+<div class="relative flex items-center">
+<input class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-slate-400 text-base transition-colors" id="email" placeholder="nama@bisnisanda.com" required="" type="email"/>
+<div class="absolute right-4 text-slate-400 pointer-events-none flex items-center">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="password">Kata Sandi</label>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-12 rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 pr-12 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-slate-400 text-base transition-colors" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors flex items-center focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Forgot Password Link -->
+<div class="flex justify-end">
+<a class="text-sm font-medium text-primary hover:text-blue-600 transition-colors" href="#">
+                            Lupa Kata Sandi? Hubungi Kami
+                        </a>
+</div>
+<!-- Submit Button -->
+<button class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group" type="submit">
+<span>Masuk Dashboard</span>
+<span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<div class="mt-8 text-center md:text-left">
+<p class="text-xs text-slate-400 dark:text-slate-500">
+                        © 2024 Warungin Indonesia. Hak Cipta Dilindungi.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Background decorative elements for the "Premium Gradient" feel -->
+<div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-slate-300/20 dark:bg-slate-700/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+</body></html>
+
+flow setelah kirim bantuan 
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Warungin - Forgot Password Confirmation</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+                        'glow': '0 0 20px rgba(43, 124, 238, 0.15)'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom subtle gradient animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative min-h-screen flex flex-col overflow-hidden">
+<!-- Background Gradient Decoration -->
+<div class="absolute inset-0 pointer-events-none z-0">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-primary/5 dark:to-transparent"></div>
+</div>
+<!-- Header -->
+<header class="relative z-10 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-6 lg:px-10 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">storefront</span>
+</div>
+<h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="truncate">Masuk</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex-grow flex items-center justify-center px-4 py-12">
+<div class="w-full max-w-lg flex flex-col items-center">
+<!-- Success Card -->
+<div class="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 p-8 md:p-10 text-center animate-fade-in-up">
+<!-- Icon Animation Wrapper -->
+<div class="mx-auto w-20 h-20 mb-6 relative animate-float">
+<div class="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-20"></div>
+<div class="relative w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 dark:from-primary/20 dark:to-primary/10 rounded-full flex items-center justify-center shadow-glow">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1, 'wght' 600;">mark_email_read</span>
+</div>
+</div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+                        Konfirmasi Pengiriman
+                    </h1>
+<p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed mb-8">
+                        Terima kasih! Kami telah menerima laporan Anda. Tim support Warungin akan segera menghubungi Anda melalui email yang terdaftar untuk proses verifikasi selanjutnya.
+                    </p>
+<div class="flex flex-col gap-3">
+<button class="w-full flex items-center justify-center gap-2 h-11 px-6 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg text-sm font-bold tracking-wide transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 transform active:scale-[0.98]">
+<span>Kembali ke Halaman Masuk</span>
+</button>
+</div>
+<!-- Divider with 'Or' (Optional subtle visual break) -->
+<div class="my-6 flex items-center gap-3 opacity-60">
+<div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
+<span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Bantuan</span>
+<div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
+</div>
+<!-- Secondary Action / Help -->
+<a class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors font-medium group" href="#">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">support_agent</span>
+<span>Butuh bantuan segera? Hubungi Support</span>
+</a>
+</div>
+<!-- Safe Browsing / Trust Indicator -->
+<div class="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-base">lock</span>
+<span>Proses Anda aman dan terenkripsi</span>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="relative z-10 py-8 text-center px-4">
+<p class="text-slate-400 dark:text-slate-600 text-sm">© 2023 Warungin. All rights reserved.</p>
+</footer>
+</div>
+</body></html>
+
