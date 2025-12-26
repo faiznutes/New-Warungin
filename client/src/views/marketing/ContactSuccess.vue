@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen flex flex-col overflow-hidden bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-emerald-500/20 selection:text-emerald-600">
+  <div class="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] font-display text-slate-900 dark:text-white antialiased selection:bg-emerald-500/20 selection:text-emerald-600">
     <!-- Background Gradient Decoration -->
     <div class="absolute inset-0 pointer-events-none z-0">
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-primary/5 dark:to-transparent"></div>

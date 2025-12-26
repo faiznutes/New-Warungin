@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-display">
+  <div class="min-h-screen font-display bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
