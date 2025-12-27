@@ -3,6 +3,15 @@
     <div class="min-h-screen flex items-center justify-center p-4 md:p-6 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
       <!-- Main Card Container -->
       <div class="w-full max-w-[900px] bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col md:flex-row relative">
+        <router-link
+          to="/"
+          class="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-primary dark:text-slate-500 dark:hover:text-primary transition-colors z-20"
+        >
+          <div class="flex items-center gap-2 text-sm font-medium">
+            <span class="md:hidden">Beranda</span>
+            <span class="material-symbols-outlined">home</span>
+          </div>
+        </router-link>
         <!-- Left Section: Branding -->
         <div class="flex-1 p-8 md:p-12 flex flex-col justify-center bg-white dark:bg-slate-800 z-10">
           <div class="mb-8">
