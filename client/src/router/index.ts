@@ -115,7 +115,7 @@ const router = createRouter({
       component: () => import('../views/pos/POS.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        roles: ['CASHIER', 'SUPERVISOR', 'SUPER_ADMIN'],
         fullscreen: true
       },
     },
@@ -126,7 +126,7 @@ const router = createRouter({
       component: () => import('../views/cashier/OpenShift.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        roles: ['CASHIER', 'SUPERVISOR', 'SUPER_ADMIN'],
         fullscreen: true
       },
     },
@@ -137,7 +137,7 @@ const router = createRouter({
       component: () => import('../views/kitchen/KitchenOrders.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['KITCHEN', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        roles: ['KITCHEN', 'SUPERVISOR', 'SUPER_ADMIN'],
         fullscreen: true
       },
     },
@@ -501,7 +501,7 @@ const router = createRouter({
           path: 'orders/kitchen',
           name: 'kitchen-orders',
           component: () => import('../views/kitchen/KitchenOrders.vue'),
-          meta: { roles: ['KITCHEN'] },
+          meta: { roles: ['KITCHEN', 'SUPERVISOR'] },
         },
       ],
     },
