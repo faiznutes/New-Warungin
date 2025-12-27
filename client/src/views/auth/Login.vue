@@ -283,43 +283,10 @@ const handleLogin = async () => {
     } else {
       const userRole = authStore.user?.role;
       
-      if (userRole === 'CASHIER') {
-        try {
-          const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
-          if (selectedStoreId) {
-            const storeShiftResponse = await api.get('/store-shift/current', {
-              params: { outletId: selectedStoreId },
-            });
-            const storeShift = storeShiftResponse.data.data;
-            
-            if (!storeShift) {
-              router.push({ name: 'cash-shift' });
-              return;
-            }
-            
-            try {
-              const cashShiftResponse = await api.get('/cash-shift/current');
-              const cashShift = cashShiftResponse.data.data;
-              
-              if (!cashShift) {
-                router.push({ name: 'cash-shift' });
-                return;
-              }
-            } catch (cashShiftError: any) {
-              if (cashShiftError.response?.status === 404 || !cashShiftError.response?.data?.data) {
-                router.push({ name: 'cash-shift' });
-                return;
-              }
-            }
-          } else {
-            router.push({ name: 'cash-shift' });
-            return;
-          }
-        } catch (error: any) {
-          console.error('Error checking shift:', error);
-          router.push({ name: 'cash-shift' });
-          return;
-        }
+      // CASHIER and KITCHEN always go to /open-shift for shift management
+      if (userRole === 'CASHIER' || userRole === 'KITCHEN') {
+        router.push('/open-shift');
+        return;
       }
       
       if (userRole === 'SUPER_ADMIN') {

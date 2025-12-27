@@ -111,7 +111,7 @@
              </div>
         </div>
 
-        <!-- SCENARIO 2: Store Open, Cash Shift Closed (Main Requirement) -->
+        <!-- SCENARIO 2: Store Open, Cash Shift Closed -->
         <div v-else-if="currentStoreShift && (!currentShift || currentShift.shiftEnd)" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             <!-- Modal Header -->
             <div class="px-8 pt-8 pb-4 text-center">
@@ -210,36 +210,179 @@
             </div>
         </div>
 
-        <!-- SCENARIO 3: Shift Already Active -->
-        <div v-else class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 text-center animate-in fade-in zoom-in-95 duration-300">
-             <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span class="material-symbols-outlined text-4xl">check_circle</span>
+        <!-- SCENARIO 3: Shift Already Active - Show Dashboard -->
+        <div v-else class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+             <!-- Header -->
+             <div class="px-8 pt-8 pb-4">
+                 <div class="flex items-center justify-between">
+                     <div class="flex items-center gap-4">
+                         <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">check_circle</span>
+                         </div>
+                         <div>
+                             <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Shift Aktif</h2>
+                             <p class="text-slate-500 text-sm">Dibuka: {{ formatDateTime(currentShift.shiftStart) }}</p>
+                         </div>
+                     </div>
+                     <span class="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-bold">AKTIF</span>
+                 </div>
              </div>
-             <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Shift Sudah Aktif!</h2>
-             <p class="text-slate-500 mb-8">Anda sudah memiliki shift kasir yang aktif.</p>
-             
-             <div class="grid gap-4">
-                 <button @click="goToPOS" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2">
+
+             <!-- Stats Cards -->
+             <div class="px-8 py-4 grid grid-cols-3 gap-4">
+                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
+                     <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">Modal Awal</p>
+                     <p class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ formatCurrency(currentShift.modalAwal) }}</p>
+                 </div>
+                 <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-100 dark:border-green-800">
+                     <p class="text-xs text-green-600 dark:text-green-400 font-semibold mb-1">Total Penjualan</p>
+                     <p class="text-xl font-bold text-green-700 dark:text-green-300">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
+                 </div>
+                 <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
+                     <p class="text-xs text-purple-600 dark:text-purple-400 font-semibold mb-1">Saldo Seharusnya</p>
+                     <p class="text-xl font-bold text-purple-700 dark:text-purple-300">{{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}</p>
+                 </div>
+             </div>
+
+             <!-- Action Buttons -->
+             <div class="px-8 py-6 grid grid-cols-2 gap-4">
+                 <button @click="goToPOS" class="py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">point_of_sale</span>
                     Masuk ke POS
                  </button>
-                 <button @click="goToDashboard" class="w-full py-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    Ke Dashboard
+                 <button @click="showCloseModal = true" class="py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">lock</span>
+                    Tutup Shift
                  </button>
+             </div>
+
+             <!-- Quick Nav -->
+             <div class="px-8 pb-8 flex gap-3">
+                  <button @click="goToDashboard" class="flex-1 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">dashboard</span>
+                    Dashboard
+                  </button>
+                  <button @click="loadData" class="py-3 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
+                    <span class="material-symbols-outlined text-lg">refresh</span>
+                  </button>
              </div>
         </div>
     </main>
+
+    <!-- Close Shift Modal -->
+    <div
+      v-if="showCloseModal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+      @click.self="showCloseModal = false"
+    >
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tutup Shift</h3>
+            <button @click="showCloseModal = false" class="p-1 hover:bg-slate-100 rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-slate-400">close</span>
+            </button>
+        </div>
+        
+        <!-- Summary -->
+        <div class="mb-6 space-y-3">
+          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
+            <p class="text-xs text-blue-600 font-semibold mb-1">Modal Awal</p>
+            <p class="text-lg font-bold text-blue-700">{{ formatCurrency(currentShift?.modalAwal || 0) }}</p>
+          </div>
+          <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-100 dark:border-green-800">
+            <p class="text-xs text-green-600 font-semibold mb-1">Total Penjualan</p>
+            <p class="text-lg font-bold text-green-700">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</p>
+          </div>
+          <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
+            <p class="text-xs text-purple-600 font-semibold mb-1">Saldo Seharusnya</p>
+            <p class="text-lg font-bold text-purple-700">
+              {{ formatCurrency((currentShift?.modalAwal || 0) + (currentShift?.totalPenjualan || 0)) }}
+            </p>
+          </div>
+        </div>
+
+        <form @submit.prevent="handleCloseShift" class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              Uang Fisik di Laci <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span class="text-slate-400 font-bold">Rp</span>
+                </div>
+                <input
+                  v-model.number="closeShiftForm.uangFisikTutup"
+                  type="number"
+                  min="0"
+                  required
+                  class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  placeholder="0"
+                />
+            </div>
+          </div>
+
+          <!-- Difference Indicator -->
+          <div v-if="closeShiftForm.uangFisikTutup && currentShift">
+            <div 
+                class="rounded-xl p-4 text-center border-2"
+                :class="{
+                    'bg-green-50 border-green-200 text-green-700': calculateSelisih() > 0,
+                    'bg-red-50 border-red-200 text-red-700': calculateSelisih() < 0,
+                    'bg-slate-50 border-slate-200 text-slate-700': calculateSelisih() === 0
+                }"
+            >
+              <p class="text-xs font-semibold mb-1">Selisih</p>
+              <p class="text-xl font-bold">
+                {{ formatCurrency(Math.abs(calculateSelisih())) }}
+                <span class="text-sm font-medium">
+                    {{ calculateSelisih() > 0 ? '(Lebih)' : calculateSelisih() < 0 ? '(Kurang)' : '(Pas)' }}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+              Catatan (Opsional)
+            </label>
+            <textarea
+              v-model="closeShiftForm.catatan"
+              rows="2"
+              class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              placeholder="Tambahkan catatan..."
+            ></textarea>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              @click="showCloseModal = false"
+              class="flex-1 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              :disabled="closingShift || !closeShiftForm.uangFisikTutup"
+              class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <span v-if="closingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              {{ closingShift ? 'Menutup...' : 'Tutup Shift' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
-import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import { formatCurrency } from '../../utils/formatters';
 import api from '../../api';
 
 const router = useRouter();
@@ -253,6 +396,8 @@ const currentShift = ref<any>(null); // Cash Shift
 const currentOutlet = ref<any>(null); // Store Config
 const openingShift = ref(false);
 const processingStore = ref(false);
+const closingShift = ref(false);
+const showCloseModal = ref(false);
 const currentTime = ref('');
 
 const openShiftForm = ref({
@@ -263,6 +408,11 @@ const openShiftForm = ref({
 const storeShiftForm = ref({
     shiftType: '',
     modalAwal: 0
+});
+
+const closeShiftForm = ref({
+  uangFisikTutup: 0,
+  catatan: '',
 });
 
 // Computed
@@ -310,19 +460,31 @@ const updateClock = () => {
     currentTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 };
 
+const formatDateTime = (date: string | Date) => {
+    if (!date) return '-';
+    return new Date(date).toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const calculateSelisih = (): number => {
+    if (!currentShift.value || !closeShiftForm.value.uangFisikTutup) return 0;
+    const saldoSeharusnya = (currentShift.value.modalAwal || 0) + (currentShift.value.totalPenjualan || 0);
+    return closeShiftForm.value.uangFisikTutup - saldoSeharusnya;
+};
+
 const loadData = async () => {
     loading.value = true;
     try {
-        const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId') || authStore.user?.tenantId; // Fallback logic
+        const selectedStoreId = authStore.selectedStoreId || localStorage.getItem('selectedStoreId') || authStore.user?.tenantId;
         
         // 0. Load Outlet Config
         if (selectedStoreId) {
             try {
-                // Assuming we have an endpoint or can get specifics. 
-                // Using /outlets/:id if available or searching via /outlets.
-                // Since api.get('/outlets/:id') might not be exposed, let's try grabbing from outlets list if needed
-                // But typically there should be a `GET /outlets/current` or similar, or just individual get.
-                // Let's try standard REST
                 const res = await api.get(`/outlets/${selectedStoreId}`);
                 currentOutlet.value = res.data?.data || res.data;
             } catch (e) {
@@ -344,11 +506,6 @@ const loadData = async () => {
              const shift = res.data?.data || res.data;
              if (shift && !shift.shiftEnd) {
                  currentShift.value = shift;
-                 // Auto redirect if active
-                 // setTimeout(() => router.push('/pos'), 100); 
-                 // Wait, keep user choice or auto? 
-                 // User reported loop "redirect loop". POS redirects here if NO shift.
-                 // So if we HAVE shift, we should offer to go to POS.
              } else {
                  currentShift.value = null;
              }
@@ -387,11 +544,148 @@ const handleOpenShift = async () => {
             catatan: openShiftForm.value.catatan
         });
         showSuccess('Shift berhasil dibuka! Mengalihkan ke POS...');
-        // Small delay for UX
         setTimeout(() => router.push('/pos'), 800);
     } catch (e: any) {
         showError(e.response?.data?.message || 'Gagal membuka shift');
         openingShift.value = false;
+    }
+};
+
+const handleCloseShift = async () => {
+    if (!closeShiftForm.value.uangFisikTutup && closeShiftForm.value.uangFisikTutup !== 0) {
+        await showError('Uang fisik tutup wajib diisi');
+        return;
+    }
+
+    closingShift.value = true;
+    try {
+        const response = await api.post('/cash-shift/close', {
+            uangFisikTutup: closeShiftForm.value.uangFisikTutup,
+            catatan: closeShiftForm.value.catatan || undefined,
+        });
+
+        await showSuccess('Shift berhasil ditutup');
+        
+        // Generate and show PDF report
+        const shiftData = response.data || currentShift.value;
+        generateShiftReport(shiftData);
+        
+        showCloseModal.value = false;
+        closeShiftForm.value = { uangFisikTutup: 0, catatan: '' };
+        await loadData();
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.message || 'Gagal menutup shift';
+        await showError(errorMessage);
+    } finally {
+        closingShift.value = false;
+    }
+};
+
+const generateShiftReport = (shiftData: any) => {
+    const modalAwal = shiftData?.modalAwal || currentShift.value?.modalAwal || 0;
+    const totalSales = shiftData?.totalPenjualan || currentShift.value?.totalPenjualan || 0;
+    const physicalCash = closeShiftForm.value.uangFisikTutup;
+    const expectedBalance = modalAwal + totalSales;
+    const difference = physicalCash - expectedBalance;
+    const now = new Date();
+    const storeName = authStore.user?.tenantName || 'Store';
+    const cashierName = authStore.user?.name || 'Cashier';
+    
+    const reportHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Shift Report - ${now.toLocaleDateString('id-ID')}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f8f9fa; }
+        .report { max-width: 400px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px dashed #e0e0e0; padding-bottom: 16px; margin-bottom: 16px; }
+        .header h1 { font-size: 20px; font-weight: bold; color: #1a1a1a; }
+        .header p { font-size: 12px; color: #666; margin-top: 4px; }
+        .section { margin-bottom: 16px; }
+        .section-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .row:last-child { border-bottom: none; }
+        .row .label { color: #555; font-size: 13px; }
+        .row .value { font-weight: 600; color: #1a1a1a; font-size: 13px; }
+        .total-row { background: #f8f9fa; margin: 0 -24px; padding: 12px 24px; border-top: 2px solid #e0e0e0; }
+        .total-row .value { font-size: 18px; color: #10b981; }
+        .difference { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; }
+        .difference.positive { background: #d1fae5; color: #065f46; }
+        .difference.negative { background: #fee2e2; color: #991b1b; }
+        .difference.zero { background: #f3f4f6; color: #374151; }
+        .footer { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 2px dashed #e0e0e0; }
+        .footer p { font-size: 11px; color: #888; }
+        .print-btn { display: block; width: 100%; padding: 12px; margin-top: 20px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .print-btn:hover { background: #059669; }
+        @media print { .print-btn { display: none; } body { background: white; } .report { box-shadow: none; } }
+      </style>
+    </head>
+    <body>
+      <div class="report">
+        <div class="header">
+          <h1>LAPORAN TUTUP SHIFT</h1>
+          <p>${storeName}</p>
+          <p>${now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p>${now.toLocaleTimeString('id-ID')}</p>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Informasi Kasir</div>
+          <div class="row">
+            <span class="label">Nama Kasir</span>
+            <span class="value">${cashierName}</span>
+          </div>
+          <div class="row">
+            <span class="label">Waktu Buka</span>
+            <span class="value">${shiftData?.shiftStart ? new Date(shiftData.shiftStart).toLocaleTimeString('id-ID') : '-'}</span>
+          </div>
+          <div class="row">
+            <span class="label">Waktu Tutup</span>
+            <span class="value">${now.toLocaleTimeString('id-ID')}</span>
+          </div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Ringkasan Kas</div>
+          <div class="row">
+            <span class="label">Modal Awal</span>
+            <span class="value">Rp ${modalAwal.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row">
+            <span class="label">Total Penjualan</span>
+            <span class="value">Rp ${totalSales.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row total-row">
+            <span class="label">Saldo Seharusnya</span>
+            <span class="value">Rp ${expectedBalance.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row">
+            <span class="label">Uang Fisik</span>
+            <span class="value">Rp ${physicalCash.toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+        
+        <div class="difference ${difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'zero'}">
+          <strong>Selisih: Rp ${Math.abs(difference).toLocaleString('id-ID')} ${difference > 0 ? '(Lebih)' : difference < 0 ? '(Kurang)' : '(Pas)'}</strong>
+        </div>
+        
+        <div class="footer">
+          <p>Laporan ini dicetak secara otomatis</p>
+          <p>Warungin POS System</p>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()">🖨️ Cetak Laporan</button>
+      </div>
+    </body>
+    </html>
+  `;
+  
+    const printWindow = window.open('', '_blank', 'width=500,height=700');
+    if (printWindow) {
+        printWindow.document.write(reportHtml);
+        printWindow.document.close();
     }
 };
 
@@ -400,5 +694,9 @@ onMounted(() => {
     updateClock();
     clockInterval = setInterval(updateClock, 1000);
     loadData();
+});
+
+onUnmounted(() => {
+    if (clockInterval) clearInterval(clockInterval);
 });
 </script>
