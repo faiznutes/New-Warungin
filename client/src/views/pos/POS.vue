@@ -980,6 +980,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -1002,6 +1003,7 @@ interface CartItem {
 }
 
 const authStore = useAuthStore();
+const router = useRouter();
 const { socket } = useSocket();
 const { success: showSuccess, error: showError, warning: showWarning, confirm: showConfirm } = useNotification();
 
