@@ -2,19 +2,32 @@
   <div class="min-h-screen bg-gradient-to-br from-[#0f151e] via-[#15202e] to-[#1a2332] flex flex-col">
     <!-- Header -->
     <header class="bg-[#1a2332]/80 backdrop-blur-xl border-b border-white/10 px-6 py-4">
-      <div class="max-w-2xl mx-auto flex items-center gap-4">
-        <button
-          @click="goBack"
-          class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div>
-          <h1 class="text-xl font-bold text-white">Buka Shift</h1>
-          <p class="text-sm text-white/50">Mulai shift untuk mengakses POS</p>
+      <div class="max-w-2xl mx-auto flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <button
+            v-if="hasActiveShift"
+            @click="goBack"
+            class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all duration-300"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-xl font-bold text-white">Buka Shift</h1>
+            <p class="text-sm text-white/50">Mulai shift untuk mengakses POS</p>
+          </div>
         </div>
+        
+        <button 
+          @click="handleLogout"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all font-medium text-sm"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Logout
+        </button>
       </div>
     </header>
 
@@ -166,13 +179,29 @@
             </svg>
           </div>
           <h2 class="text-2xl font-bold text-white mb-2">Shift Sudah Aktif!</h2>
-          <p class="text-white/50 mb-6">Anda sudah memiliki shift aktif. Lanjut ke POS.</p>
-          <button
-            @click="goToPOS"
-            class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all duration-300"
-          >
-            Lanjut ke POS
-          </button>
+          <p class="text-white/50 mb-6">Anda sudah memiliki shift aktif.</p>
+          
+          <div class="space-y-3">
+            <button
+              @click="goToPOS"
+              class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Masuk ke POS
+            </button>
+            
+            <button
+              @click="goToDashboard"
+              class="w-full py-4 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+              Ke Dashboard
+            </button>
+          </div>
         </div>
       </div>
     </main>
@@ -180,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
@@ -215,6 +244,19 @@ const goBack = () => {
 const goToPOS = () => {
   router.push('/pos');
 };
+
+const goToDashboard = () => {
+  router.push('/app/dashboard');
+};
+
+const handleLogout = () => {
+  authStore.clearAuth();
+  window.location.replace('/login');
+};
+
+const hasActiveShift = computed(() => {
+  return currentCashShift.value && !currentCashShift.value.shiftEnd;
+});
 
 const loadShiftStatus = async () => {
   loading.value = true;

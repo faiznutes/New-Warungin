@@ -607,6 +607,76 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
 
+  // FORCE CASHIER TO OPEN SHIFT - Check active shift for CASHIER role
+  if (hasToken && authStore.user?.role === 'CASHIER') {
+    // If trying to access anything OTHER than open-shift or login
+    if (to.name !== 'open-shift' && to.name !== 'login') {
+      try {
+        // We need to check shift status if not already known
+        // This relies on the store having the shift status or making a quick API call
+        // For performance, we might want to store this in authStore or localStorage
+        // But for safety, let's check.
+        // NOTE: This might be chatty if we don't cache it.  
+        // Assuming authStore or a composable can tell us quickly.
+
+        // Let's rely on a check. If we don't have a way to synchronously know, 
+        // we might need to let the view handle it OR do an async check here.
+        // Given the requirement "saat login ... buat begini saja full body dan header tanpa sidebar"
+
+        // Let's do a quick API check if we don't know, or better:
+        //Redirect to open-shift, and let open-shift decide if it should redirect BACK to active POS/Dashboard
+        // BUT the user wants "Dashboard button ... IF shift open".
+
+        // So:
+        // 1. If no shift -> Stay on /open-shift
+        // 2. If shift -> Can go to /pos or /app/dashboard
+
+        // Implementation:
+        // We will fetch shift status here if not present.
+
+        // However, to avoid blocking every navigation, we should probably check a flag in authStore
+        // or just let them go to /open-shift first upon login?
+
+        // User request: "saat login atau di page open shift ... jika belum open shift ... agar kasir tidak ke sidebar pos atau dashboard"
+
+        // Best approach: Check shift status.
+        const { default: api } = await import('../api');
+
+        // Check both store and cash shift
+        // Actually, for cashier, cash shift is the blocker.
+        // We can check /cash-shift/current
+
+        // Optimization: prevent infinite loop if checking
+
+        try {
+          const cashResponse = await api.get('/cash-shift/current');
+          const cashShift = cashResponse.data?.data || cashResponse.data;
+
+          if (!cashShift || cashShift.shiftEnd) {
+            // NO ACTIVE SHIFT
+            // Redirect to open-shift
+            next({ name: 'open-shift' });
+            return;
+          }
+          // IF HAS SHIFT, CONTINUE NORMAL FLOW
+        } catch (e: any) {
+          if (e.response?.status === 404) {
+            // 404 means no active shift usually
+            next({ name: 'open-shift' });
+            return;
+          }
+          // If other error, maybe let them pass or show error? 
+          // Safest is to redirect to open-shift to handle the error UI
+          // But if connection error, it might loop.
+          // Let's assume 404 or null.
+          console.error('Error checking shift in guard:', e);
+        }
+      } catch (err) {
+        console.error('Guard shift check error:', err);
+      }
+    }
+  }
+
   // If route requires auth and has token, check authentication
   if (to.meta.requiresAuth && hasToken) {
     // If user object is missing, try to restore session (only if not already clearing)

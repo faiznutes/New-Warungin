@@ -22,20 +22,23 @@
             <span class="material-symbols-outlined text-[20px]">wifi</span>
             <span class="hidden sm:inline">{{ connected ? 'Online' : 'Offline' }}</span>
           </div>
+          
           <button 
-            @click="settingsModalOpen = true"
-            class="flex items-center justify-center rounded-lg h-10 w-10 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#ec6d13] transition-colors shadow-sm"
+            @click="handleLogout"
+            class="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors shadow-sm font-bold text-sm"
           >
-            <span class="material-symbols-outlined">settings</span>
+            <span class="material-symbols-outlined text-[20px]">logout</span>
+            Logout
           </button>
-          <div class="relative">
-             <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#ec6d13] transition-colors shadow-sm">
-                <span class="material-symbols-outlined">notifications</span>
-             </button>
-             <span v-if="orders.length > 0" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
-          </div>
+
+          <!-- Mobile logout icon only -->
+          <button 
+            @click="handleLogout"
+            class="md:hidden flex items-center justify-center rounded-lg h-10 w-10 bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors shadow-sm"
+          >
+            <span class="material-symbols-outlined">logout</span>
+          </button>
         </div>
-        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-slate-200 shadow-sm" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAkfs8FS0OjK93DDDKC8dNKcjBaWWBpdyW4hC0olDXonNv1ngEi_XcyuEUAfFLtONRdRBi57Nt8YuX_ZJP1AOZnDkT1S0mAvAYM1D9gcMP1aKXWXAHiVMtk4gbfmZVacIxR4tiXm7bs5DpAR8ayYAmD7PxUiRZe-UPLzoGPo7Sk2AK-cc5V7TuGOzgqacCWPBk5DXamvjvabIDgeCK0rWvcaxoLI0XTernzmIlAT-wOwFBoHbwYIufOv6H4lRm7zbVBx8mGXDVGDOY");'></div>
       </div>
     </header>
 
@@ -252,6 +255,11 @@ const getElapsedMinutes = (dateStr: string) => {
 // Logic
 const toggleItemCheck = (itemId: string) => {
   checkedItems.value[itemId] = !checkedItems.value[itemId];
+};
+
+const handleLogout = () => {
+  authStore.clearAuth();
+  window.location.replace('/login');
 };
 
 const loadOrders = async () => {
