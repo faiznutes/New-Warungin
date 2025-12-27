@@ -188,6 +188,33 @@
                 </label>
               </div>
 
+              <!-- Shift Configuration -->
+              <div>
+                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">
+                  Shift Configuration
+                </label>
+                <div class="space-y-3">
+                    <div v-for="(shift, index) in storeForm.shiftConfig" :key="index" class="flex gap-2 items-start">
+                        <div class="flex-1 space-y-1">
+                            <input v-model="shift.name" placeholder="Name (e.g. Pagi)" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
+                        </div>
+                        <div class="flex-1 space-y-1">
+                            <input v-model="shift.startTime" type="time" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
+                        </div>
+                        <div class="flex items-center justify-center pt-2">-</div>
+                        <div class="flex-1 space-y-1">
+                            <input v-model="shift.endTime" type="time" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
+                        </div>
+                        <button @click="storeForm.shiftConfig.splice(index, 1)" type="button" class="mt-1 p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                    </div>
+                    <button @click="storeForm.shiftConfig.push({ name: '', startTime: '08:00', endTime: '16:00' })" type="button" class="text-sm text-[#10b981] font-bold hover:underline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">add</span> Add Shift
+                    </button>
+                </div>
+              </div>
+
               <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
                 <button
                   type="button"
@@ -231,6 +258,7 @@ interface Store {
   address?: string;
   phone?: string;
   isActive: boolean;
+  shiftConfig?: { name: string; startTime: string; endTime: string }[];
   createdAt: string;
   updatedAt: string;
 }
@@ -247,6 +275,7 @@ const storeForm = ref({
   address: '',
   phone: '',
   isActive: true,
+  shiftConfig: [] as { name: string; startTime: string; endTime: string }[],
 });
 
 const loadStores = async () => {
@@ -310,6 +339,7 @@ const editStore = (store: Store) => {
     address: store.address || '',
     phone: store.phone || '',
     isActive: store.isActive,
+    shiftConfig: Array.isArray(store.shiftConfig) ? [...store.shiftConfig] : [],
   };
   showCreateModal.value = true;
 };
@@ -339,6 +369,7 @@ const closeModal = () => {
     address: '',
     phone: '',
     isActive: true,
+    shiftConfig: [],
   };
 };
 

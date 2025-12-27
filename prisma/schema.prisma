@@ -405,6 +405,7 @@ model Outlet {
   address   String?
   phone     String?
   isActive  Boolean  @default(true)
+  shiftConfig Json?    // Array of { name: string, startTime: string, endTime: string }
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -17,9 +17,7 @@ const router = Router();
 
 const openShiftSchema = z.object({
   outletId: z.string().min(1, 'Outlet ID wajib diisi'),
-  shiftType: z.enum(['pagi', 'siang', 'sore', 'malam'], {
-    errorMap: () => ({ message: 'Shift type harus salah satu dari: pagi, siang, sore, malam' }),
-  }),
+  shiftType: z.string().min(1, 'Shift type wajib diisi'),
   modalAwal: z.number().min(0).optional(),
   catatan: z.string().optional(),
 });
