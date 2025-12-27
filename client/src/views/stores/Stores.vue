@@ -75,7 +75,9 @@
       >
         <div class="flex items-start justify-between mb-4">
           <div class="flex-1 min-w-0 pr-4">
-            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2 truncate">{{ store.name }}</h3>
+            <router-link :to="`/app/stores/${store.id}`" class="block hover:underline">
+              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2 truncate">{{ store.name }}</h3>
+            </router-link>
             <span
               class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
               :class="store.isActive 
@@ -87,13 +89,13 @@
             </span>
           </div>
           <div v-if="canManageStores" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              @click="editStore(store)"
+            <router-link
+              :to="`/app/stores/${store.id}/edit`"
               class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
               title="Edit Store"
             >
               <span class="material-symbols-outlined text-[20px]">edit</span>
-            </button>
+            </router-link>
             <button
               @click="deleteStore(store)"
               class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"

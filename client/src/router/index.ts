@@ -263,6 +263,24 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
         },
         {
+          path: 'stores',
+          name: 'stores',
+          component: () => import('../views/stores/Stores.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+        },
+        {
+          path: 'stores/:id',
+          name: 'store-detail',
+          component: () => import('../views/stores/StoreDetail.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'] },
+        },
+        {
+          path: 'stores/:id/edit',
+          name: 'edit-store',
+          component: () => import('../views/stores/EditStore.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
+        },
+        {
           path: 'subscription',
           name: 'subscription',
           component: () => import('../views/subscription/Subscription.vue'),

@@ -20,6 +20,16 @@ const updateOutletSchema = z.object({
   address: z.string().optional(),
   phone: z.string().optional(),
   isActive: z.boolean().optional(),
+  shiftConfig: z.array(z.object({
+    name: z.string(),
+    startTime: z.string(),
+    endTime: z.string()
+  })).optional(),
+  operatingHours: z.record(z.string(), z.object({
+    open: z.string(),
+    close: z.string(),
+    isOpen: z.boolean()
+  })).optional(),
 });
 
 /**
