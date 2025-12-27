@@ -14,10 +14,11 @@ prisma.\$connect()
     console.log('connected');
     process.exit(0);
   })
-  .catch(() => {
+  .catch((e) => {
+    console.error('Connection error:', e.message);
     process.exit(1);
   });
-" 2>/dev/null; do
+"; do
   RETRIES=$((RETRIES-1))
   if [ $RETRIES -eq 0 ]; then
     echo "❌ Database connection failed after 30 attempts"

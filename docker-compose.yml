@@ -92,6 +92,7 @@ services:
       - warungin-network
     volumes:
       - ./logs:/app/logs
+      - ./scripts/docker-startup.sh:/app/scripts/docker-startup.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     # Set user to match docker group GID (989) for Docker socket access
     # UID 1001 = nodejs user, GID 989 = docker group
