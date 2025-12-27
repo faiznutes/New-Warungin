@@ -358,25 +358,6 @@
 
                 <!-- TAB: Addons -->
                  <section v-if="activeTab === 'addons'" class="flex flex-col gap-8">
-                    <!-- Active Addons -->
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="material-symbols-outlined text-blue-600">extension</span> Active Addons
-                            </h3>
-                             <button @click="showAddAddonModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">add</span> Add Addon
-                            </button>
-                        </div>
-
-                        <div v-if="activeAddons.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-                             <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
-                                <span class="material-symbols-outlined text-3xl">extension_off</span>
-                            </div>
-                            <p class="text-slate-500 font-medium">No active addons found.</p>
-                        </div>
-                        
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Active Addons</h2>
@@ -2283,7 +2264,6 @@ const loadTenantDetail = async () => {
       console.error('Error loading users:', error);
     }
     
-    try {
     // Load users, stores, points, and billing history in parallel
     try {
       await Promise.all([
