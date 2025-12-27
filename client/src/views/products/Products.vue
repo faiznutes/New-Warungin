@@ -549,7 +549,15 @@ const handleSaveProduct = async (productData: Partial<Product>) => {
     await loadProducts(pagination.value.page);
   } catch (error: any) {
     console.error('Error saving product:', error);
-    await showError(error.response?.data?.message || 'Failed to save product');
+    // Check for validation errors with field details
+    const responseData = error.response?.data;
+    if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
+      // Show field-level errors
+      const errorMessages = responseData.errors.map((e: any) => `${e.path}: ${e.message}`).join('\n');
+      await showError(errorMessages);
+    } else {
+      await showError(responseData?.message || 'Failed to save product');
+    }
   }
 };
 

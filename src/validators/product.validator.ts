@@ -5,7 +5,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   sku: z.string().optional(),
   barcode: z.string().optional(),
-  price: z.number().positive('Harga harus lebih dari 0'),
+  price: z.number().min(1, 'Harga harus minimal 1 rupiah'),
   cost: z.number().min(0, 'Harga pokok tidak boleh negatif').optional().nullable(),
   stock: z.number().int().min(0).default(0),
   minStock: z.number().int().min(0).default(0),

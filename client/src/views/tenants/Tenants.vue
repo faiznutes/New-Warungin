@@ -395,7 +395,14 @@ const saveTenant = async () => {
     closeModal();
     await loadTenants();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Gagal menyimpan tenant');
+    // Check for validation errors with field details
+    const responseData = error.response?.data;
+    if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
+      const errorMessages = responseData.errors.map((e: any) => `${e.path}: ${e.message}`).join('\n');
+      await showError(errorMessages);
+    } else {
+      await showError(responseData?.message || 'Gagal menyimpan tenant');
+    }
   }
 };
 
