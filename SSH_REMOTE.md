@@ -140,20 +140,20 @@ docker compose logs [container_name]
 > [!IMPORTANT]  
 > **Default Terminal HARUS PowerShell** - Jika menggunakan WSL sebagai default terminal, SSH commands akan error dengan "Invalid command line argument: -c". Pastikan VS Code/IDE menggunakan PowerShell sebagai default terminal.
 
-## Docker Status Terakhir (2025-12-27 18:52)
+## Docker Status Terakhir (2025-12-27 19:20)
 
 | Container | Status |
 |-----------|--------|
 | warungin-nginx | ✅ healthy |
 | warungin-frontend | ✅ healthy |
-| warungin-backend | ⏳ starting |
+| warungin-backend | ✅ healthy |
 | warungin-postgres | ✅ healthy |
 | warungin-redis | ✅ healthy |
-| warungin-loki | ⚠️ unhealthy |
-| warungin-cloudflared | ⚠️ unhealthy |
-| warungin-promtail | ❌ not running |
+| warungin-loki | ⚠️ unhealthy (monitoring only) |
+| warungin-cloudflared | ⚠️ unhealthy (tunnel) |
+| warungin-promtail | ⏳ not started |
 
 ---
 
-**Last Updated:** 2025-12-27 18:52
+**Last Updated:** 2025-12-27 19:20
 **Author:** AI Assistant (Antigravity)

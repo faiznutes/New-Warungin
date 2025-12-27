@@ -154,12 +154,7 @@ const router = createRouter({
           component: () => import('../views/dashboard/Dashboard.vue'),
           meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
         },
-        {
-          path: 'dashboard-new',
-          name: 'dashboard-new',
-          component: () => import('../views/dashboard/DashboardNew.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'] },
-        },
+
         {
           path: 'cashier/cash-shift',
           name: 'cash-shift',
