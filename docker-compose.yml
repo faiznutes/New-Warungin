@@ -214,7 +214,7 @@ services:
       - "3100:3100"
     volumes:
       - ./observability/loki/local-config.yaml:/etc/loki/local-config.yaml
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml -validation.allow-structured-metadata=false
     networks:
       - warungin-network
     healthcheck:
