@@ -102,6 +102,7 @@
             </router-link>
 
             <router-link
+              v-if="['SUPERVISOR', 'KITCHEN'].includes(authStore.user?.role)"
               to="/app/orders/kitchen"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
               active-class="bg-[#10b981]/10 text-[#10b981]"
@@ -113,6 +114,7 @@
             </router-link>
 
             <router-link
+              v-if="['CASHIER', 'SUPERVISOR'].includes(authStore.user?.role)"
               to="/pos"
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
               @click="closeSidebarOnMobile"
