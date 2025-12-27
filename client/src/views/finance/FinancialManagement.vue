@@ -1,26 +1,137 @@
 <template>
-  <div class="flex flex-col gap-6">
-    <!-- Header -->
+  <div class="flex flex-col gap-8">
+    <!-- Dashboard Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Financial Management</h1>
-        <p class="text-[#4c739a] dark:text-slate-400">Manage cash flow, expenses, taxes, and bank reconciliation.</p>
+      <div>
+        <nav class="flex items-center gap-2 text-sm text-[#4c739a] dark:text-slate-400 mb-2">
+          <a class="hover:text-primary transition-colors" href="#">Home</a>
+          <span class="text-xs">/</span>
+          <span class="text-[#0d141b] dark:text-white font-medium">Financial Accounts</span>
+        </nav>
+        <h1 class="text-[#0d141b] dark:text-white text-3xl font-bold leading-tight tracking-tight">Accounts & Balances</h1>
+        <p class="text-[#4c739a] dark:text-slate-400 mt-2">Manage your platform's financial health, reconcile transactions, and view reports.</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex gap-3">
+        <button
+          @click="activeTab = 'reconciliation'"
+          class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0d141b] dark:text-white flex items-center gap-2 transition-colors"
+        >
+          <span class="material-symbols-outlined text-[18px]">sync_alt</span>
+          Reconcile
+        </button>
         <button
           @click="showCashFlowModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+          class="px-4 py-2 bg-primary hover:bg-blue-600 rounded-lg text-sm font-medium text-white shadow-lg shadow-blue-500/30 flex items-center gap-2 transition-colors"
         >
-          <span class="material-symbols-outlined text-[20px]">add</span>
-          <span>Record Cash Flow</span>
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          New Record
         </button>
-        <button
-          @click="showExpenseModal = true"
-          class="flex items-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-xl text-sm font-medium text-white shadow-lg shadow-rose-500/30 transition-all font-medium text-sm"
-        >
-          <span class="material-symbols-outlined text-[20px]">remove</span>
-          <span>Record Expense</span>
-        </button>
+      </div>
+    </div>
+
+    <!-- Account Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Revenue Account -->
+      <div class="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
+        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <span class="material-symbols-outlined text-8xl">account_balance_wallet</span>
+        </div>
+        <div class="flex flex-col h-full justify-between relative z-10 gap-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-slate-300 text-xs font-medium uppercase tracking-wide">Revenue Account</p>
+              <p class="text-sm text-slate-400 mt-1">Total Income</p>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold tracking-tight">{{ formatCurrency(cashFlowSummary.totalIncome) }}</h3>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="flex items-center text-green-400 text-xs font-semibold">
+                <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_upward</span> Income
+              </span>
+            </div>
+          </div>
+          <button @click="activeTab = 'cashflow'" class="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-medium transition-colors border border-white/10">View History</button>
+        </div>
+      </div>
+
+      <!-- Expense Account -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-all">
+        <div class="flex justify-between items-start">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <div>
+              <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Expense Account</p>
+              <p class="text-[#0d141b] dark:text-white text-sm font-medium">Operational</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-[#0d141b] dark:text-white text-2xl font-bold tracking-tight">{{ formatCurrency(cashFlowSummary.totalExpenses) }}</h3>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="flex items-center text-red-500 text-xs font-semibold">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_downward</span> Spent
+            </span>
+          </div>
+        </div>
+        <button @click="activeTab = 'expenses'" class="w-full py-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors text-[#4c739a] dark:text-slate-300">View Expenses</button>
+      </div>
+
+      <!-- Net Cash Flow -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-all">
+        <div class="flex justify-between items-start">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-primary">
+              <span class="material-symbols-outlined">account_balance</span>
+            </div>
+            <div>
+              <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Net Cash Flow</p>
+              <p class="text-[#0d141b] dark:text-white text-sm font-medium">Balance</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-2xl font-bold tracking-tight" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-600'">
+            {{ formatCurrency(cashFlowSummary.netCashFlow) }}
+          </h3>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="flex items-center text-emerald-600 text-xs font-semibold" v-if="cashFlowSummary.netCashFlow >= 0">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_upward</span> Profit
+            </span>
+            <span class="flex items-center text-red-600 text-xs font-semibold" v-else>
+              <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_downward</span> Loss
+            </span>
+          </div>
+        </div>
+        <button class="w-full py-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors text-[#4c739a] dark:text-slate-300">View Details</button>
+      </div>
+
+      <!-- Tax Reserve -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-all">
+        <div class="flex justify-between items-start">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600">
+              <span class="material-symbols-outlined">assured_workload</span>
+            </div>
+            <div>
+              <p class="text-[#4c739a] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Tax Reserve</p>
+              <p class="text-[#0d141b] dark:text-white text-sm font-medium">Estimated</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-[#0d141b] dark:text-white text-2xl font-bold tracking-tight">
+            {{ taxCalculation ? formatCurrency(taxCalculation.taxAmount) : 'Rp 0' }}
+          </h3>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="flex items-center text-slate-500 text-xs font-semibold">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">schedule</span> Est.
+            </span>
+          </div>
+        </div>
+        <button @click="activeTab = 'tax'" class="w-full py-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors text-[#4c739a] dark:text-slate-300">Calculate Tax</button>
       </div>
     </div>
 
@@ -31,58 +142,14 @@
         :key="tab"
         @click="activeTab = tab"
         class="px-6 py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap capitalize"
-        :class="activeTab === tab ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-[#4c739a] hover:text-[#0d141b] dark:hover:text-white'"
+        :class="activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-[#4c739a] hover:text-[#0d141b] dark:hover:text-white'"
       >
-        {{ tab.replace(/([A-Z])/g, ' $1').trim() }}
+        {{ tab === 'cashflow' ? 'Overview' : tab.replace(/([A-Z])/g, ' $1').trim() }}
       </button>
     </div>
 
     <!-- Cash Flow Tab -->
     <div v-if="activeTab === 'cashflow'" class="space-y-6 animate-fade-in">
-      <!-- Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
-          <div class="flex justify-between items-start mb-4">
-             <div>
-               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Income</p>
-               <p class="text-[10px] text-slate-400">Incoming funds</p>
-             </div>
-             <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-               <span class="material-symbols-outlined text-[24px]">trending_up</span>
-             </div>
-          </div>
-          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(cashFlowSummary.totalIncome) }}</p>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-red-500/50 transition-colors">
-          <div class="flex justify-between items-start mb-4">
-             <div>
-               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Total Expenses</p>
-               <p class="text-[10px] text-slate-400">Pengeluaran</p>
-             </div>
-             <div class="bg-red-50 dark:bg-red-900/30 p-2 rounded-xl text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform">
-               <span class="material-symbols-outlined text-[24px]">trending_down</span>
-             </div>
-          </div>
-          <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(cashFlowSummary.totalExpenses) }}</p>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-blue-500/50 transition-colors">
-          <div class="flex justify-between items-start mb-4">
-             <div>
-               <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Net Cash Flow</p>
-               <p class="text-[10px] text-slate-400">Selisih</p>
-             </div>
-             <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-               <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
-             </div>
-          </div>
-          <p class="text-2xl font-bold" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-600'">
-            {{ formatCurrency(cashFlowSummary.netCashFlow) }}
-          </p>
-        </div>
-      </div>
-
       <!-- Date Range Filter -->
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
         <div class="flex flex-col sm:flex-row items-center gap-4">

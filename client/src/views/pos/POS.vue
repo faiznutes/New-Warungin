@@ -275,8 +275,8 @@
   <!-- Normal POS Mode (V3 Reskin) -->
   <div v-else class="bg-slate-50 text-slate-900 font-display overflow-hidden h-screen w-screen flex flex-col relative">
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-6 relative z-30 shrink-0">
-      <div class="flex items-center gap-3">
+    <header class="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-4 lg:px-6 z-30 shrink-0 shadow-sm">
+      <div class="flex items-center gap-4">
         <!-- Burger Menu Button -->
         <button 
           @click="showNavSidebar = !showNavSidebar"
@@ -285,32 +285,26 @@
         >
           <span class="material-symbols-outlined">menu</span>
         </button>
-        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-          <span class="material-symbols-outlined text-white text-2xl">point_of_sale</span>
+        <div class="flex items-center gap-2 text-emerald-600">
+          <span class="material-symbols-outlined text-[28px]">point_of_sale</span>
+          <h1 class="text-xl font-bold tracking-tight text-slate-900">Warungin POS 
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full ml-2">CASHIER</span>
+          </h1>
         </div>
-        <div class="hidden md:block">
-          <h1 class="text-xl font-bold text-slate-900 leading-tight">Warungin POS</h1>
-          <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
-             <span class="w-2 h-2 rounded-full" :class="isOnline ? 'bg-emerald-500' : 'bg-red-500'"></span>
-             {{ authStore.user?.tenantName || 'Main Store' }}
-          </div>
+        <div class="h-6 w-px bg-slate-200 mx-2 hidden md:block"></div>
+        <div class="hidden md:flex items-center gap-2 text-sm text-slate-500">
+          <span class="material-symbols-outlined text-[18px] text-slate-400">storefront</span>
+          <span>{{ authStore.user?.tenantName || 'Main Store' }}</span>
         </div>
       </div>
 
-      <!-- Center: Stats & Clock -->
-      <div class="hidden lg:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-        <div class="flex flex-col items-center">
-             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status</span>
-             <span class="text-sm font-bold flex items-center gap-1.5" :class="isOnline ? 'text-emerald-600' : 'text-red-600'">
-               <span class="material-symbols-outlined text-[18px]">{{ isOnline ? 'wifi' : 'wifi_off' }}</span>
-               {{ isOnline ? 'ONLINE' : 'OFFLINE' }}
-             </span>
+      <!-- Center: Status & Clock -->
+      <div class="hidden lg:flex items-center gap-4">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm" :class="isOnline ? 'bg-emerald-50 border border-emerald-100 text-emerald-700' : 'bg-red-50 border border-red-100 text-red-700'">
+          <span class="w-2 h-2 rounded-full animate-pulse" :class="isOnline ? 'bg-emerald-500' : 'bg-red-500'"></span>
+          {{ isOnline ? 'Online' : 'Offline' }}
         </div>
-        <div class="w-px h-8 bg-slate-200"></div>
-        <div class="flex flex-col items-center">
-             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Time</span>
-             <span class="text-sm font-bold text-slate-700 font-mono">{{ currentTime }}</span>
-        </div>
+        <div class="text-slate-900 font-semibold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">{{ currentTime }}</div>
       </div>
 
       <!-- Right: Actions -->
@@ -325,20 +319,17 @@
              <span>{{ heldOrders.length }} Terparkir</span>
           </button>
 
-          <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors relative">
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-         </button>
-         <div class="h-10 pl-1 pr-3 bg-slate-50 rounded-xl flex items-center gap-3 border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm">
+          <button class="flex items-center gap-2 text-slate-900 hover:text-emerald-600 transition-colors p-1 pr-2 rounded-full hover:bg-slate-50 border border-transparent hover:border-slate-200">
+            <div class="h-8 w-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm border border-slate-200 ring-2 ring-white shadow-sm">
               {{ authStore.user?.name?.[0]?.toUpperCase() || 'U' }}
             </div>
-            <div class="hidden md:block text-left">
-               <p class="text-sm font-bold text-slate-900 leading-none">{{ authStore.user?.name || 'Cashier' }}</p>
-               <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-wide mt-1.5">{{ authStore.user?.role || 'Staff' }}</p>
+            <div class="text-sm text-left hidden lg:block">
+               <p class="font-bold leading-none text-slate-800">{{ authStore.user?.name || 'Cashier' }}</p>
+               <p class="text-[10px] text-slate-500 mt-0.5 font-medium">Shift #{{ Math.floor(Math.random() * 999) }}</p>
             </div>
-         </div>
-      </div>
+            <span class="material-symbols-outlined text-slate-400">expand_more</span>
+          </button>
+       </div>
     </header>
 
     <!-- Navigation Sidebar Overlay -->

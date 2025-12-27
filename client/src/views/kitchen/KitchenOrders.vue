@@ -1,447 +1,364 @@
 <template>
-  <div class="flex flex-col gap-8">
-    <!-- Store Selector (only for Admin/Supervisor) -->
-    <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'">
-      <StoreSelector @store-changed="handleStoreChange" />
+  <div class="flex flex-col h-screen bg-slate-100/50 overflow-hidden font-display text-slate-900 mx-auto w-full">
+    <!-- Header -->
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 px-6 py-3 bg-white z-20 shrink-0 shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-1 bg-[#ec6d13]/80"></div>
+      <div class="flex items-center gap-4 text-slate-900">
+        <div class="size-10 flex items-center justify-center bg-[#fff3e0] rounded-lg text-[#ec6d13] border border-orange-100">
+          <span class="material-symbols-outlined">skillet</span>
+        </div>
+        <div>
+          <h2 class="text-slate-900 text-xl font-bold leading-tight tracking-tight">Warungin | Dapur</h2>
+          <p class="text-slate-500 text-xs font-normal">KDS - {{ authStore.user?.role === 'KITCHEN' ? 'Kitchen Staff' : 'Supervisor Mode' }}</p>
+        </div>
+      </div>
+      <div class="flex flex-1 justify-end gap-6 items-center">
+        <div class="hidden md:flex flex-col items-end mr-4">
+          <span class="text-2xl font-bold leading-none text-slate-700">{{ currentTime }}</span>
+          <span class="text-xs text-slate-500 font-medium">{{ currentDate }}</span>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-green-600 text-white text-sm font-bold shadow-md">
+            <span class="material-symbols-outlined text-[20px]">wifi</span>
+            <span class="hidden sm:inline">{{ connected ? 'Online' : 'Offline' }}</span>
+          </div>
+          <button 
+            @click="settingsModalOpen = true"
+            class="flex items-center justify-center rounded-lg h-10 w-10 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#ec6d13] transition-colors shadow-sm"
+          >
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <div class="relative">
+             <button class="flex items-center justify-center rounded-lg h-10 w-10 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-[#ec6d13] transition-colors shadow-sm">
+                <span class="material-symbols-outlined">notifications</span>
+             </button>
+             <span v-if="orders.length > 0" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+          </div>
+        </div>
+        <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-slate-200 shadow-sm" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAkfs8FS0OjK93DDDKC8dNKcjBaWWBpdyW4hC0olDXonNv1ngEi_XcyuEUAfFLtONRdRBi57Nt8YuX_ZJP1AOZnDkT1S0mAvAYM1D9gcMP1aKXWXAHiVMtk4gbfmZVacIxR4tiXm7bs5DpAR8ayYAmD7PxUiRZe-UPLzoGPo7Sk2AK-cc5V7TuGOzgqacCWPBk5DXamvjvabIDgeCK0rWvcaxoLI0XTernzmIlAT-wOwFBoHbwYIufOv6H4lRm7zbVBx8mGXDVGDOY");'></div>
+      </div>
+    </header>
+
+    <!-- Filter Bar -->
+    <div class="px-6 py-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between shrink-0 bg-white/80 backdrop-blur border-b border-slate-200 z-10 sticky top-0">
+      <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide">
+        <button 
+          @click="activeFilter = 'ALL'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
+          :class="activeFilter === 'ALL' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+        >
+          <span class="text-sm font-bold">Semua ({{ orders.length }})</span>
+        </button>
+        <button 
+          @click="activeFilter = 'DINE_IN'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
+           :class="activeFilter === 'DINE_IN' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+        >
+          <span class="material-symbols-outlined text-[18px]">restaurant</span>
+          <span class="text-sm font-medium">Dine In</span>
+        </button>
+        <button 
+          @click="activeFilter = 'TAKE_AWAY'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
+           :class="activeFilter === 'TAKE_AWAY' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+        >
+          <span class="material-symbols-outlined text-[18px]">takeout_dining</span>
+          <span class="text-sm font-medium">Takeaway</span>
+        </button>
+      </div>
+      <div class="flex items-center gap-3 ml-auto">
+        <span class="text-slate-500 text-sm font-medium hidden sm:inline">Urutkan:</span>
+        <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-slate-300 px-3 hover:bg-slate-50 text-slate-700 shadow-sm">
+          <span class="material-symbols-outlined text-[20px] text-slate-500">schedule</span>
+          <span class="text-sm font-medium">Waktu (Lama &gt; Baru)</span>
+          <span class="material-symbols-outlined text-[20px] text-slate-400">arrow_drop_down</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Board -->
+    <div v-if="loading" class="flex-1 flex items-center justify-center">
+        <div class="w-12 h-12 border-4 border-[#ec6d13] border-t-transparent rounded-full animate-spin"></div>
     </div>
     
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Kitchen Orders</h2>
-        <p class="text-[#4c739a] dark:text-[#4c739a] mt-1">Manage orders sent from the cashier.</p>
-      </div>
-      <div v-if="selectedOrders.length > 0" class="flex flex-wrap items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-card">
-        <span class="text-sm font-medium bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl">
-          {{ selectedOrders.length }} orders selected
-        </span>
-        <select
-          v-model="bulkStatus"
-          class="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium"
-        >
-          <option value="">Select Status</option>
-          <option value="COOKING">Cooking</option>
-          <option value="READY">Ready</option>
-          <option value="SERVED">Served</option>
-        </select>
-        <button
-          @click="bulkUpdateStatus"
-          :disabled="!bulkStatus || bulkUpdating"
-          class="px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          <span v-if="!bulkUpdating" class="material-symbols-outlined text-[18px]">check</span>
-          <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          {{ bulkUpdating ? 'Processing...' : 'Update All' }}
-        </button>
-        <button
-          @click="clearSelection"
-          class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium"
-        >
-          Cancel
-        </button>
-      </div>
+    <div v-else-if="filteredOrders.length === 0" class="flex-1 flex flex-col items-center justify-center text-slate-400">
+        <span class="material-symbols-outlined text-[64px] mb-4">skillet_off</span>
+        <p class="text-lg font-medium">Tidak ada pesanan aktif</p>
+        <p class="text-sm">Pesanan baru akan muncul di sini</p>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-slate-500 font-medium animate-pulse">Loading orders...</div>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20">
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-100 dark:border-slate-700/50 p-12 text-center">
-        <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">receipt_long</span>
-        <p class="text-lg font-medium text-[#0d141b] dark:text-white mb-2">No incoming orders</p>
-        <p class="text-[#4c739a] text-sm">Orders from the cashier will appear here.</p>
-      </div>
-    </div>
-
-    <!-- Orders Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="order in orders"
-        :key="order.id"
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-card p-6 border-2 transition-all hover:shadow-lg"
-        :class="[
-          getStatusClass(order.kitchenStatus),
-          selectedOrders.includes(order.id) ? 'ring-2 ring-emerald-500 ring-offset-2 scale-[1.02]' : ''
-        ]"
-      >
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-start gap-3 flex-1">
-            <input
-              type="checkbox"
-              :checked="selectedOrders.includes(order.id)"
-              @change="toggleOrderSelection(order.id)"
-              class="mt-1.5 w-5 h-5 text-emerald-600 border-2 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
-            />
-            <div class="flex-1">
-              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-1">Order #{{ order.orderNumber }}</h3>
-              <p class="text-xs text-[#4c739a] flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">schedule</span>
-                {{ formatDateTime(order.createdAt) }}
-              </p>
-              <div v-if="order.kitchenStatus !== 'SERVED'" class="mt-1.5 flex items-center gap-2">
-                 <div class="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-900/30 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[12px]">timer</span>
-                    {{ getTimeElapsed(order.createdAt) }}
-                 </div>
+    <div v-else class="flex-1 overflow-y-auto px-6 pb-6 pt-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        
+        <!-- Order Card -->
+        <div 
+          v-for="order in filteredOrders" 
+          :key="order.id"
+          class="flex flex-col rounded-xl border-l border-r border-b border-slate-200 bg-white shadow-md hover:shadow-lg transition-shadow h-full animate-fade-in"
+          :class="{
+            'border-t-4 border-t-red-500': getOrderType(order) === 'Dine In',
+            'border-t-4 border-t-orange-500': getOrderType(order) === 'Takeaway',
+            'border-t-4 border-t-blue-500': getOrderType(order) === 'Delivery'
+          }"
+        >
+          <!-- Card Header -->
+          <div 
+            class="flex items-start justify-between p-4 border-b border-slate-100"
+            :class="{
+              'bg-red-50/30': getOrderType(order) === 'Dine In',
+              'bg-orange-50/30': getOrderType(order) === 'Takeaway',
+              'bg-blue-50/30': getOrderType(order) === 'Delivery'
+            }"
+          >
+            <div class="flex flex-col">
+              <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                {{ order.table ? `Meja ${order.table.number}` : getOrderType(order) }}
+                <span 
+                  class="px-2.5 py-1 rounded text-[11px] font-bold border uppercase tracking-wider"
+                  :class="{
+                    'bg-blue-100 text-blue-700 border-blue-200': getOrderType(order) === 'Dine In',
+                    'bg-yellow-100 text-yellow-700 border-yellow-200': getOrderType(order) === 'Takeaway',
+                    'bg-green-100 text-green-700 border-green-200': getOrderType(order) === 'Delivery'
+                  }"
+                >
+                  {{ getOrderType(order) }}
+                </span>
+              </h3>
+              <p class="text-slate-500 text-sm font-mono mt-1 font-medium">#{{ order.orderNumber }} • {{ order.customerName || 'Guest' }}</p>
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <div 
+                class="px-3 py-1.5 rounded-lg border font-bold text-lg font-mono shadow-sm"
+                :class="{
+                  'bg-red-100 border-red-200 text-red-700 animate-pulse': isLate(order.createdAt),
+                  'bg-slate-100 border-slate-200 text-slate-700': !isLate(order.createdAt)
+                }"
+              >
+                {{ formatTime(order.createdAt) }}
               </div>
+              <span class="text-[10px] font-bold text-slate-400">{{ getElapsedMinutes(order.createdAt) }} min ago</span>
             </div>
           </div>
-          <span
-            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-full"
-            :class="getStatusBadgeClass(order.kitchenStatus)"
-          >
-            <span class="material-symbols-outlined text-[14px]">{{ getStatusIcon(order.kitchenStatus) }}</span>
-            {{ getStatusLabel(order.kitchenStatus) }}
-          </span>
-        </div>
 
-        <div class="mb-4 p-3 bg-[#f6f7f8] dark:bg-slate-900 rounded-xl">
-          <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">person</span>
-            Customer
-          </p>
-          <p class="text-sm font-medium text-[#0d141b] dark:text-white">{{ order.customerName || order.temporaryCustomerName || 'Walk-in Customer' }}</p>
-        </div>
+          <!-- Items List -->
+          <div class="p-4 flex-1 flex flex-col gap-4">
+            <div v-for="item in order.items" :key="item.id">
+               <label class="flex items-start gap-3 group cursor-pointer p-2 -mx-2 rounded hover:bg-slate-50 transition-colors select-none">
+                <input 
+                  type="checkbox" 
+                  class="mt-1 w-5 h-5 rounded border-slate-300 text-[#ec6d13] focus:ring-[#ec6d13]/20 transition-all cursor-pointer"
+                  :checked="checkedItems[item.id]"
+                  @change="toggleItemCheck(item.id)"
+                />
+                <div class="flex flex-col" :class="{ 'opacity-50 line-through decoration-slate-400 decoration-2': checkedItems[item.id] }">
+                  <span class="text-lg font-bold text-slate-800 leading-tight">
+                    {{ item.quantity }}x {{ item.productName }}
+                  </span>
+                  <span v-if="item.notes" class="text-sm text-red-600 font-semibold italic mt-1 bg-red-50 px-2 py-0.5 rounded w-fit">
+                    Note: {{ item.notes }}
+                  </span>
+                  <!-- Modifiers if any -->
+                  <div v-if="item.modifiers && item.modifiers.length > 0" class="text-sm text-slate-500 mt-0.5">
+                    <span v-for="mod in item.modifiers" :key="mod.id" class="block">+ {{ mod.name }}</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
 
-        <!-- Shift Info -->
-        <div v-if="order.storeShift" class="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800">
-          <p class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mb-1.5 flex items-center gap-1.5 uppercase tracking-widest">
-            <span class="material-symbols-outlined text-[14px]">local_mall</span>
-            Store Info
-          </p>
-          <p class="text-xs font-bold text-slate-700 dark:text-slate-300">
-            {{ order.storeShift.store.name }}
-          </p>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-            Sales: {{ formatCurrency(order.storeShift.totalSales) }}
-          </p>
-          <p class="text-[10px] text-slate-500 dark:text-slate-400">
-            Shift: {{ order.storeShift.shiftNumber }}
-          </p>
-        </div>
-
-        <div class="mb-4">
-          <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">receipt</span>
-            Items
-          </p>
-          <div class="space-y-2">
-            <div
-              v-for="item in order.items"
-              :key="item.id"
-              class="flex justify-between items-center p-2 bg-[#f6f7f8] dark:bg-slate-900 rounded-xl"
+          <!-- Actions -->
+          <div class="p-4 pt-0 mt-auto">
+            <button 
+              @click="markOrderServed(order)"
+              class="w-full flex items-center justify-center gap-2 h-12 rounded-lg bg-[#ec6d13] hover:bg-[#d56211] text-white font-bold text-base tracking-wide transition-all shadow-md active:scale-[0.98]"
             >
-              <span class="text-sm text-[#0d141b] dark:text-slate-300 font-medium">{{ item.product?.name || item.productName }} × {{ item.quantity }}</span>
-              <span class="text-sm text-[#0d141b] dark:text-white font-bold">{{ formatCurrency(Number(item.price || item.subtotal) * item.quantity) }}</span>
-            </div>
+              <span class="material-symbols-outlined">check_circle</span>
+              Sajikan Semua
+            </button>
           </div>
         </div>
 
-        <div class="mb-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100/50">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Total:</span>
-            <span class="text-lg font-bold text-emerald-600">{{ formatCurrency(order.total) }}</span>
-          </div>
-        </div>
-
-        <div class="flex gap-2">
-          <button
-            v-if="order.kitchenStatus === 'PENDING'"
-            @click="updateStatus(order.id, 'COOKING')"
-            class="flex-1 px-4 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition shadow-lg shadow-orange-500/30 font-semibold text-sm flex items-center justify-center gap-2"
-          >
-            <span class="material-symbols-outlined text-[18px]">skillet</span>
-            Start Cooking
-          </button>
-          <button
-            v-if="order.kitchenStatus === 'COOKING'"
-            @click="updateStatus(order.id, 'READY')"
-            class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-500/30 font-semibold text-sm flex items-center justify-center gap-2"
-          >
-            <span class="material-symbols-outlined text-[18px]">check</span>
-            Ready
-          </button>
-          <button
-            v-if="order.kitchenStatus === 'READY'"
-            @click="updateStatus(order.id, 'SERVED')"
-            class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 font-semibold text-sm flex items-center justify-center gap-2"
-          >
-            <span class="material-symbols-outlined text-[18px]">local_shipping</span>
-            Served
-          </button>
-        </div>
       </div>
     </div>
+    
+    <!-- Settings Modal -->
+    <KitchenSettingsModal 
+      :is-open="settingsModalOpen" 
+      @close="settingsModalOpen = false"
+      @store-changed="loadOrders"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue';
-import api from '../../api';
-import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useAuthStore } from '../../stores/auth';
 import { useSocket } from '../../composables/useSocket';
 import { useNotification } from '../../composables/useNotification';
-import StoreSelector from '../../components/StoreSelector.vue';
+import { useSystemStatus } from '../../composables/useSystemStatus';
+import api from '../../api';
+import KitchenSettingsModal from '../../components/kitchen/KitchenSettingsModal.vue';
 
+// Init
 const authStore = useAuthStore();
 const { socket, connected } = useSocket();
 const { success, error, confirm: confirmDialog } = useNotification();
+const { currentTime } = useSystemStatus();
+
+// State
 const orders = ref<any[]>([]);
-const loading = ref(false);
-const selectedOrders = ref<string[]>([]);
-const bulkStatus = ref<string>('');
-const bulkUpdating = ref(false);
+const loading = ref(true);
+const activeFilter = ref('ALL');
+const settingsModalOpen = ref(false);
+const currentDate = ref('');
+const checkedItems = ref<Record<string, boolean>>({});
 
-const getStatusClass = (status: string) => {
-  const classes: Record<string, string> = {
-    PENDING: 'border-red-300 dark:border-red-800',
-    COOKING: 'border-orange-300 dark:border-orange-800',
-    READY: 'border-green-300 dark:border-green-800',
-    SERVED: 'border-indigo-300 dark:border-indigo-800 shadow-lg shadow-indigo-500/5',
-  };
-  return classes[status] || 'border-slate-200 dark:border-slate-700';
+// Computed
+const filteredOrders = computed(() => {
+  if (activeFilter.value === 'ALL') return orders.value;
+  
+  return orders.value.filter(order => {
+    const type = getOrderType(order);
+    if (activeFilter.value === 'DINE_IN' && type === 'Dine In') return true;
+    if (activeFilter.value === 'TAKE_AWAY' && type === 'Takeaway') return true;
+    return false;
+  });
+});
+
+// Helpers
+const getOrderType = (order: any) => {
+  if (order.table) return 'Dine In';
+  if (order.isDelivery) return 'Delivery';
+  return 'Takeaway';
 };
 
-const getStatusBadgeClass = (status: string) => {
-  const classes: Record<string, string> = {
-    PENDING: 'bg-red-100 text-red-700',
-    COOKING: 'bg-orange-100 text-orange-700',
-    READY: 'bg-green-100 text-green-700',
-    SERVED: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400',
-  };
-  return classes[status] || 'bg-slate-100 text-[#0d141b]';
+const formatTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 };
 
-const getStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    PENDING: 'Pending',
-    COOKING: 'Cooking',
-    READY: 'Ready',
-    SERVED: 'Served',
-  };
-  return labels[status] || status;
+const isLate = (dateStr: string) => {
+  const diffInMinutes = getElapsedMinutes(dateStr);
+  return diffInMinutes > 15; // 15 mins threshhold
 };
 
-const getStatusIcon = (status: string) => {
-  const icons: Record<string, string> = {
-    PENDING: 'pending',
-    COOKING: 'local_fire_department',
-    READY: 'check_circle',
-    SERVED: 'local_shipping',
-  };
-  return icons[status] || 'help';
+const getElapsedMinutes = (dateStr: string) => {
+  const now = new Date();
+  const created = new Date(dateStr);
+  const diffMs = now.getTime() - created.getTime();
+  return Math.floor(diffMs / 60000);
 };
 
-const getTimeElapsed = (date: string | Date) => {
-  const diff = Date.now() - new Date(date).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'Baru';
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours}j ${remainingMinutes}m`;
-};
-
-// Force update for time elapsed
-const ticker = ref(0);
-let tickerInterval: number | null = null;
-
-const handleStoreChange = () => {
-  // Reload orders when store changes
-  loadOrders();
+// Logic
+const toggleItemCheck = (itemId: string) => {
+  checkedItems.value[itemId] = !checkedItems.value[itemId];
 };
 
 const loadOrders = async () => {
-  if (!authStore.isAuthenticated) return; // Don't load if not authenticated
-  
   loading.value = true;
   try {
     const response = await api.get('/orders', {
       params: {
-        sendToKitchen: true, // Only get orders sent from POS
-        kitchenStatus: ['PENDING', 'COOKING', 'READY'], // Only incomplete orders
+        sendToKitchen: true,
+        kitchenStatus: ['PENDING', 'COOKING', 'READY'],
       },
     });
-    orders.value = response.data.data || response.data;
-    // Clear selection when orders reload
-    selectedOrders.value = [];
-  } catch (err: any) {
-    // Suppress errors during logout (401/403)
-    if (err.response?.status === 401 || err.response?.status === 403) {
-      return;
-    }
-    console.error('Error loading orders:', err);
-    if (authStore.isAuthenticated) {
-      error('Failed to load orders', 'Error');
-    }
+    // Sort by oldest first
+    const newOrders = response.data.data || response.data;
+    orders.value = newOrders.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    // Restore checks if possible (optional enhancement, currently simple local state)
+  } catch (err) {
+    console.error('Failed to load orders', err);
   } finally {
     loading.value = false;
   }
 };
 
-const updateStatus = async (orderId: string, status: string) => {
-  try {
-    await api.put(`/orders/${orderId}/kitchen-status`, { status });
-    await loadOrders();
-    
-    // Emit socket event for realtime update
-    if (socket?.connected) {
-      socket.emit('order:update', { orderId, status });
-    }
-    
-    success(`Order status updated to "${getStatusLabel(status)}"`, 'Success');
-  } catch (err: any) {
-    console.error('Error updating status:', err);
-    error(err.response?.data?.message || 'Failed to update status', 'Error');
-  }
-};
-
-const toggleOrderSelection = (orderId: string) => {
-  const index = selectedOrders.value.indexOf(orderId);
-  if (index > -1) {
-    selectedOrders.value.splice(index, 1);
-  } else {
-    selectedOrders.value.push(orderId);
-  }
-};
-
-const clearSelection = () => {
-  selectedOrders.value = [];
-  bulkStatus.value = '';
-};
-
-const bulkUpdateStatus = async () => {
-  if (!bulkStatus.value || selectedOrders.value.length === 0) {
-    return;
-  }
-
+const markOrderServed = async (order: any) => {
   const confirmed = await confirmDialog(
-    `Are you sure you want to update ${selectedOrders.value.length} orders to "${getStatusLabel(bulkStatus.value)}"?`,
-    'Confirm Status Update',
-    'Yes, Update',
-    'Cancel'
+    `Selesaikan pesanan #${order.orderNumber}?`,
+    'Konfirmasi Penyajian',
+    'Ya, Sajikan',
+    'Batal'
   );
 
-  if (!confirmed) {
-    return;
-  }
+  if (!confirmed) return;
 
-  bulkUpdating.value = true;
   try {
-    const response = await api.put('/orders/bulk-update-kitchen', {
-      orderIds: selectedOrders.value,
-      status: bulkStatus.value,
-    });
-
-    success(
-      `Successfully updated ${response.data.updated} orders to "${getStatusLabel(bulkStatus.value)}"`,
-      'Update Successful'
-    );
-    clearSelection();
-    await loadOrders();
-
-    // Emit socket events for realtime update
+    await api.put(`/orders/${order.id}/kitchen-status`, { status: 'SERVED' });
+    
+    // Optimistic update
+    orders.value = orders.value.filter(o => o.id !== order.id);
+    
     if (socket?.connected) {
-      selectedOrders.value.forEach(orderId => {
-        socket.emit('order:update', { orderId, kitchenStatus: bulkStatus.value });
-      });
+      socket.emit('order:update', { orderId: order.id, status: 'SERVED' });
     }
+    
+    success('Pesanan disajikan!', 'Berhasil');
   } catch (err: any) {
-    console.error('Error bulk updating status:', err);
-    error(err.response?.data?.message || 'Failed to update status', 'Error');
-  } finally {
-    bulkUpdating.value = false;
+    error(err.response?.data?.message || 'Gagal update status', 'Error');
   }
 };
 
-// Socket.IO event listeners
-const setupSocketListeners = () => {
-  if (!socket) return;
-
-  socket.on('order:new', () => {
-    // Reload orders when new order comes in
-    loadOrders();
-  });
-
-  socket.on('order:update', (data: any) => {
-    // Update specific order if it exists
-    const index = orders.value.findIndex(o => o.id === data.orderId);
-    if (index !== -1) {
-      orders.value[index] = { ...orders.value[index], ...data };
-    } else {
-      // Reload all orders if order not found
-      loadOrders();
-    }
-  });
-};
-
-// Polling fallback if socket not connected
-// Disabled for Super Admin in Tenant Support to prevent auto-refresh
-let pollInterval: number | null = null;
-
-const startPolling = () => {
-  if (connected.value) return; // Don't poll if socket is connected
-  
-  // Don't poll for Super Admin in Tenant Support mode
-  const authStore = useAuthStore();
-  const isSuperAdminInTenantSupport = authStore.isSuperAdmin && localStorage.getItem('selectedTenantId');
-  if (isSuperAdminInTenantSupport) {
-    return; // Disable polling to prevent auto-refresh
-  }
-  
-  pollInterval = window.setInterval(() => {
-    loadOrders();
-  }, 30000); // Poll every 30 seconds (reduced from 5 seconds)
-};
-
-const stopPolling = () => {
-  if (pollInterval) {
-    clearInterval(pollInterval);
-    pollInterval = null;
-  }
-};
-
-watch(connected, (isConnected) => {
-  if (isConnected) {
-    stopPolling();
-    setupSocketListeners();
-  } else {
-    startPolling();
-  }
-});
+// Lifecycle
+let dateInterval: any;
+let refreshInterval: any;
 
 onMounted(() => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-  // For super admin, ensure selectedTenantId is synced with localStorage
-  if (authStore.isSuperAdmin) {
-    const storedTenantId = localStorage.getItem('selectedTenantId');
-    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
-      authStore.setSelectedTenant(storedTenantId);
-    }
-  }
-  
   loadOrders();
   
-  if (connected.value) {
-    setupSocketListeners();
-  } else {
-    startPolling();
-  }
-
-  // Start ticker for time elapsed
-  tickerInterval = window.setInterval(() => {
-    ticker.value++;
+  // Date clock
+  const updateDate = () => {
+    currentDate.value = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+  };
+  updateDate();
+  dateInterval = setInterval(updateDate, 60000);
+  
+  // Auto refresh elapsed time
+  refreshInterval = setInterval(() => {
+    // Just force update
+    orders.value = [...orders.value]; 
   }, 60000);
+
+  if (socket) {
+    socket.on('order:new', loadOrders);
+    socket.on('order:update', (data: any) => {
+      // If status became SERVED, remove it, else reload/update
+      if (data.status === 'SERVED') {
+        orders.value = orders.value.filter(o => o.id !== data.orderId);
+      } else {
+        loadOrders(); // Simpler to reload to get full structure
+      }
+    });
+  }
+  
+  // Super admin sync check (if applicable)
+  if (authStore.isSuperAdmin) {
+     const storedTenantId = localStorage.getItem('selectedTenantId');
+     if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
+        authStore.setSelectedTenant(storedTenantId);
+        loadOrders();
+     }
+  }
 });
 
 onUnmounted(() => {
-  stopPolling();
-  if (tickerInterval) clearInterval(tickerInterval);
+  clearInterval(dateInterval);
+  clearInterval(refreshInterval);
+  if (socket) {
+    socket.off('order:new');
+    socket.off('order:update');
+  }
 });
 </script>
+
+<style scoped>
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>

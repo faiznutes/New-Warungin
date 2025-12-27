@@ -130,6 +130,17 @@ const router = createRouter({
         fullscreen: true
       },
     },
+    // Fullscreen Kitchen Display Route
+    {
+      path: '/kitchen',
+      name: 'kitchen-display',
+      component: () => import('../views/kitchen/KitchenOrders.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['KITCHEN', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        fullscreen: true
+      },
+    },
     // App Routes - Dynamic Layout based on role
     {
       path: '/app',

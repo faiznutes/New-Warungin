@@ -1,278 +1,284 @@
 <template>
-  <div class="flex flex-col gap-6">
-    <!-- Header -->
-    <div class="flex flex-col gap-1">
-      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Free Points</h1>
-      <p class="text-[#4c739a] dark:text-slate-400">Redeem points for subscriptions or add-ons.</p>
-    </div>
-
-    <!-- Balance Card -->
-    <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
-      <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16"></div>
-      <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <p class="text-amber-100 text-sm mb-1 flex items-center gap-1">
-            <span class="material-symbols-outlined text-[18px]">stars</span>
-            Your Total Points
-          </p>
-          <p class="text-4xl font-bold">{{ balance.currentPoints || 0 }}</p>
-          <p class="text-amber-100 text-sm mt-2">
-            Total earned: {{ balance.totalEarned || 0 }} • Used: {{ balance.totalSpent || 0 }}
-          </p>
-          <p v-if="balance.expirationDays" class="text-amber-100 text-xs mt-1 flex items-center gap-1">
-            <span class="material-symbols-outlined text-[14px]">schedule</span>
-            Points valid for {{ balance.expirationDays }} days (6 months)
-          </p>
-        </div>
-        <div class="flex flex-col gap-3">
-          <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3">
-            <p class="text-xs text-amber-100">Remaining today</p>
-            <p class="text-2xl font-bold">{{ dailyLimit.remaining || 0 }}/5</p>
-          </div>
-          <div v-if="balance.expiringSoon > 0" class="bg-red-500/80 backdrop-blur-sm rounded-xl px-4 py-3">
-            <p class="text-xs text-white">Expiring soon</p>
-            <p class="text-xl font-bold">{{ balance.expiringSoon }} pts</p>
-            <p class="text-xs text-white">(within 30 days)</p>
-          </div>
-        </div>
+  <div class="flex flex-col gap-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Free Points</h1>
+        <p class="text-slate-500 text-base">Redeem points for subscriptions or add-ons.</p>
       </div>
-    </div>
-
-    <!-- Expiration Warning -->
-    <div v-if="balance.expiringSoon > 0" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 flex items-start gap-3">
-      <span class="material-symbols-outlined text-yellow-600 text-[24px] flex-shrink-0">warning</span>
-      <div>
-        <p class="text-sm text-yellow-800 dark:text-yellow-200">
-          <strong>Warning:</strong> You have {{ balance.expiringSoon }} points expiring in the next 30 days. Use them before they expire!
-        </p>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="border-b border-slate-200 dark:border-slate-700">
-      <div class="flex gap-6">
-        <button
-          @click="activeTab = 'earn'"
-          :class="[
-            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
-            activeTab === 'earn'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          ]"
-        >
-          <span class="material-symbols-outlined text-[20px]">add_circle</span>
-          Earn Points
+      <div class="flex gap-3">
+        <button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary hover:border-primary/30 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[20px]">description</span>
+          <span>Panduan</span>
         </button>
-        <button
-          @click="activeTab = 'redeem'"
-          :class="[
-            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
-            activeTab === 'redeem'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          ]"
+        <button 
+          @click="claimReward"
+          :disabled="loading || dailyLimit.remaining === 0"
+          class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors shadow-lg shadow-emerald-500/20"
         >
-          <span class="material-symbols-outlined text-[20px]">redeem</span>
-          Redeem Points
-        </button>
-        <button
-          @click="activeTab = 'history'"
-          :class="[
-            'pb-3 px-1 border-b-2 font-medium transition flex items-center gap-2',
-            activeTab === 'history'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          ]"
-        >
-          <span class="material-symbols-outlined text-[20px]">history</span>
-          History
+          <div v-if="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <span v-else class="material-symbols-outlined text-[20px]">play_circle</span>
+          <span>{{ loading ? 'Processing...' : `Watch Ads (${dailyLimit.remaining})` }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Tab: Earn Points -->
-    <div v-if="activeTab === 'earn'" class="space-y-6">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 rounded-xl">
-            <span class="material-symbols-outlined">videocam</span>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1: Total Points -->
+      <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Your Total Points</p>
+          <div class="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+            <span class="material-symbols-outlined text-primary text-[20px]">stars</span>
           </div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Watch Ads to Earn Points</h2>
         </div>
-        
-        <div v-if="dailyLimit.remaining > 0" class="space-y-4">
-          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-            <p class="text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">info</span>
-              <strong>Info:</strong> You can watch up to 5 ads per day. Each ad gives random points.
-            </p>
-          </div>
+        <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.currentPoints || 0 }}</p>
+        <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
+          <span class="material-symbols-outlined text-[16px]">verified</span>
+          <span>Active Balance</span>
+        </div>
+      </div>
 
-          <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 text-center">
-            <span class="material-symbols-outlined text-[48px] text-primary mb-3">play_circle</span>
-            <p class="text-slate-900 dark:text-white font-medium mb-1">Click "Claim Reward" to watch an ad</p>
-            <p class="text-sm text-slate-500">IronSource ad will appear on a dedicated page</p>
+      <!-- Card 2: Total Earned -->
+      <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Earned</p>
+          <div class="p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-md">
+            <span class="material-symbols-outlined text-orange-500 text-[20px]">trending_up</span>
           </div>
+        </div>
+        <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.totalEarned || 0 }}</p>
+        <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
+          <span class="material-symbols-outlined text-[16px]">history</span>
+          <span>Lifetime</span>
+        </div>
+      </div>
 
-          <button
-            @click="claimReward"
-            :disabled="loading || dailyLimit.remaining === 0"
-            class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30"
+      <!-- Card 3: Total Used -->
+      <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Points Used</p>
+          <div class="p-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-md">
+            <span class="material-symbols-outlined text-purple-500 text-[20px]">shopping_bag</span>
+          </div>
+        </div>
+        <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.totalSpent || 0 }}</p>
+        <div class="flex items-center gap-1 text-slate-500 text-xs font-medium bg-slate-100 dark:bg-slate-700 w-fit px-2 py-0.5 rounded-full">
+          <span class="material-symbols-outlined text-[16px]">redeem</span>
+          <span>Redeemed</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Expiring Soon -->
+      <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Expiring Soon</p>
+          <div class="p-1.5 bg-red-50 dark:bg-red-900/20 rounded-md">
+            <span class="material-symbols-outlined text-red-500 text-[20px]">warning</span>
+          </div>
+        </div>
+        <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.expiringSoon || 0 }}</p>
+        <div class="flex items-center gap-1 text-red-600 text-xs font-medium bg-red-50 dark:bg-red-900/20 w-fit px-2 py-0.5 rounded-full">
+          <span class="material-symbols-outlined text-[16px]">schedule</span>
+          <span>In 30 days</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search (Visual Only for now) -->
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="relative group">
+          <span class="absolute left-3 top-2.5 text-slate-400 material-symbols-outlined text-[20px] group-focus-within:text-primary transition-colors">search</span>
+          <input 
+            class="h-10 pl-10 pr-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-full sm:w-64 transition-all shadow-sm" 
+            placeholder="Search rewards..." 
+            type="text"
+          />
+        </div>
+        <div class="flex gap-2">
+          <button 
+            @click="activeTab = 'redeem'"
+            :class="[
+              'h-10 px-4 rounded-lg border text-sm font-medium transition-colors flex items-center gap-2 shadow-sm',
+              activeTab === 'redeem' ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-slate-50'
+            ]"
           >
-            <div v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            <span class="material-symbols-outlined text-[20px]" v-else>play_arrow</span>
-            {{ loading ? 'Processing...' : `Claim Reward (${dailyLimit.remaining} remaining)` }}
+            <span class="material-symbols-outlined text-[18px]">redeem</span>
+            Redeem
+          </button>
+           <button 
+            @click="activeTab = 'history'"
+            :class="[
+              'h-10 px-4 rounded-lg border text-sm font-medium transition-colors flex items-center gap-2 shadow-sm',
+              activeTab === 'history' ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-slate-50'
+            ]"
+          >
+            <span class="material-symbols-outlined text-[18px]">history</span>
+            History
           </button>
         </div>
+      </div>
 
-        <div v-else class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 text-center">
-          <span class="material-symbols-outlined text-[48px] text-yellow-600 mb-3">schedule</span>
-          <p class="text-yellow-800 dark:text-yellow-200 font-semibold">
-            Daily limit reached. Come back tomorrow to watch more ads!
-          </p>
+      <!-- Rewards Grid -->
+      <div v-if="activeTab === 'redeem'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Watch Ads Card (Special) -->
+        <div class="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5">
+          <div class="aspect-[4/3] w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center relative overflow-hidden">
+             <!-- Background Pattern -->
+             <div class="absolute inset-0 opacity-10 flex flex-wrap gap-4 p-4 transform rotate-12">
+                <span class="material-symbols-outlined text-6xl">play_circle</span>
+                <span class="material-symbols-outlined text-6xl">ad_units</span>
+                <span class="material-symbols-outlined text-6xl">currency_exchange</span>
+             </div>
+             <span class="material-symbols-outlined text-[64px] text-primary relative z-10">play_circle</span>
+             <div v-if="dailyLimit.remaining > 0" class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-emerald-600 text-xs font-bold border border-emerald-200 shadow-sm z-10">
+                Earn Points
+             </div>
+             <div v-else class="absolute top-3 right-3 px-2 py-1 rounded bg-slate-800/90 text-white text-xs font-bold z-10">
+                Limit Reached
+             </div>
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Watch Daily Ads</h3>
+            <p class="text-xs text-slate-500 line-clamp-2">Watch short videos to earn free points. Limit 5 per day.</p>
+            <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
+              <span class="text-primary font-bold text-lg">Free</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Left: {{ dailyLimit.remaining }}/5</span>
+            </div>
+          </div>
+          <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
+             <button 
+              @click="claimReward"
+              :disabled="loading || dailyLimit.remaining === 0"
+              class="px-4 py-2 rounded-lg bg-primary text-white font-bold shadow-lg hover:scale-105 transition-transform"
+            >
+              Watch Now
+            </button>
+          </div>
+        </div>
+
+        <!-- Subscription Plans -->
+        <div 
+          v-for="plan in subscriptionPlans"
+          :key="plan.id"
+          class="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
+        >
+          <div class="aspect-[4/3] w-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+             <span class="material-symbols-outlined text-[64px] text-slate-400 group-hover:text-primary transition-colors">card_membership</span>
+             <div class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-sm">
+                Subscription
+             </div>
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ plan.name }}</h3>
+            <p class="text-xs text-slate-500 line-clamp-2">Redeem points for 1 month of {{ plan.name }} subscription.</p>
+            <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
+              <span class="text-primary font-bold text-lg">{{ plan.pointsRequired }} Pts</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Available</span>
+            </div>
+          </div>
+           <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
+             <button 
+              @click="redeemSubscription(plan)"
+              :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
+              class="px-4 py-2 rounded-lg bg-primary text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
+            >
+              {{ balance.currentPoints >= plan.pointsRequired ? 'Redeem' : 'Not Enough Pts' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Addons -->
+        <div 
+          v-for="addon in availableAddons"
+          :key="addon.id"
+          class="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
+        >
+          <!-- Using a different icon/style for addons -->
+          <div class="aspect-[4/3] w-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+             <span class="material-symbols-outlined text-[64px] text-emerald-400 group-hover:text-emerald-500 transition-colors">extension</span>
+             <div class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-sm">
+                Add-on
+             </div>
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ addon.name }}</h3>
+            <p class="text-xs text-slate-500 line-clamp-2">Activate {{ addon.name }} feature for your store.</p>
+            <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
+              <span class="text-emerald-600 dark:text-emerald-400 font-bold text-lg">{{ addon.pointsRequired }} Pts</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Available</span>
+            </div>
+          </div>
+           <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
+             <button 
+              @click="redeemAddon(addon)"
+              :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
+              class="px-4 py-2 rounded-lg bg-emerald-500 text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
+            >
+              {{ balance.currentPoints >= addon.pointsRequired ? 'Redeem' : 'Not Enough Pts' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tab: Redeem Points -->
-    <div v-if="activeTab === 'redeem'" class="space-y-6">
-      <!-- Subscription Redeem -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-primary/10 text-primary rounded-xl">
-            <span class="material-symbols-outlined">card_membership</span>
-          </div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Subscription</h2>
+      <!-- History Table -->
+      <div v-if="activeTab === 'history'" class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Recent Transactions</h3>
         </div>
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-slate-500">Loading data...</p>
-        </div>
-        <div v-else-if="subscriptionPlans.length === 0" class="text-center py-8">
-          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">inventory_2</span>
-          <p class="text-slate-500">No subscription packages available at this time.</p>
-        </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div
-            v-for="plan in subscriptionPlans"
-            :key="plan.id"
-            class="rounded-xl p-4 border-2 hover:shadow-lg transition"
-            :class="{
-              'border-primary bg-primary/5': balance.currentPoints >= plan.pointsRequired,
-              'border-slate-200 dark:border-slate-700 opacity-60': balance.currentPoints < plan.pointsRequired
-            }"
-          >
-            <h3 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">{{ plan.name }}</h3>
-            <p class="text-slate-500 text-sm mb-4">{{ plan.description }}</p>
-            <div class="flex items-center justify-between">
-              <span class="text-2xl font-bold text-primary">{{ plan.pointsRequired }} pts</span>
-              <button
-                @click="redeemSubscription(plan)"
-                :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
-                class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
+        <div class="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+          <table class="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+            <thead class="bg-slate-50 dark:bg-slate-700/50 text-xs uppercase font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="px-6 py-4" scope="col">Description</th>
+                <th class="px-6 py-4" scope="col">Type</th>
+                <th class="px-6 py-4" scope="col">Date</th>
+                <th class="px-6 py-4" scope="col">Status</th>
+                <th class="px-6 py-4 text-right" scope="col">Points</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+              <tr 
+                v-for="transaction in transactions" 
+                :key="transaction.id"
+                class="hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-colors"
               >
-                {{ redeeming ? 'Processing...' : 'Redeem' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Addon Redeem -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-xl">
-            <span class="material-symbols-outlined">extension</span>
-          </div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Redeem Points for Add-ons</h2>
-        </div>
-        <div v-if="loading" class="text-center py-8">
-          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-slate-500">Loading data...</p>
-        </div>
-        <div v-else-if="availableAddons.length === 0" class="text-center py-8">
-          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">extension_off</span>
-          <p class="text-slate-500">No add-ons available at this time.</p>
-        </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            v-for="addon in availableAddons"
-            :key="addon.id"
-            class="rounded-xl p-4 border-2 hover:shadow-lg transition"
-            :class="{
-              'border-green-500 bg-green-50 dark:bg-green-900/10': balance.currentPoints >= addon.pointsRequired,
-              'border-slate-200 dark:border-slate-700 opacity-60': balance.currentPoints < addon.pointsRequired
-            }"
-          >
-            <h3 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">{{ addon.name }}</h3>
-            <p class="text-slate-500 text-sm mb-4">{{ addon.description }}</p>
-            <div class="flex items-center justify-between">
-              <span class="text-xl font-bold text-green-600">{{ addon.pointsRequired }} pts</span>
-              <button
-                @click="redeemAddon(addon)"
-                :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
-                class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed text-sm font-semibold transition"
-              >
-                {{ redeeming ? 'Processing...' : 'Redeem' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab: History -->
-    <div v-if="activeTab === 'history'">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-        <div class="p-6 border-b border-slate-100 dark:border-slate-700">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-xl">
-              <span class="material-symbols-outlined">history</span>
-            </div>
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Points Transaction History</h2>
-          </div>
-        </div>
-        <div v-if="loading" class="text-center py-12">
-          <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-slate-500">Loading history...</p>
-        </div>
-        <div v-else-if="transactions.length === 0" class="text-center py-16">
-          <span class="material-symbols-outlined text-[48px] text-slate-300 mb-4">receipt_long</span>
-          <p class="text-slate-500">No transactions yet</p>
-        </div>
-        <div v-else class="divide-y divide-slate-100 dark:divide-slate-700">
-          <div
-            v-for="transaction in transactions"
-            :key="transaction.id"
-            class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex-1">
-                <p class="font-semibold text-slate-900 dark:text-white">{{ transaction.description }}</p>
-                <p class="text-sm text-slate-500">{{ formatDate(transaction.createdAt) }}</p>
-                <p v-if="transaction.type === 'EARNED' && transaction.metadata?.expirationDate" class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">schedule</span>
-                  Expires: {{ formatDate(transaction.metadata.expirationDate) }}
-                  <span v-if="getDaysUntilExpiration(transaction.metadata.expirationDate) <= 30" class="text-yellow-600 font-semibold ml-1">
-                    ({{ getDaysUntilExpiration(transaction.metadata.expirationDate) }} days left)
+                <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">
+                  {{ transaction.description }}
+                </td>
+                <td class="px-6 py-4 text-slate-500">
+                  <span 
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase"
+                    :class="transaction.amount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'"
+                  >
+                    {{ transaction.amount > 0 ? 'Earned' : 'Spent' }}
                   </span>
-                </p>
-                <p v-if="transaction.type === 'EXPIRED'" class="text-xs text-red-500 mt-1 flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]">warning</span>
-                  Points have expired
-                </p>
-              </div>
-              <span
-                :class="[
-                  'font-bold text-lg',
-                  transaction.amount > 0 ? 'text-green-600' : transaction.type === 'EXPIRED' ? 'text-red-600' : 'text-red-600'
-                ]"
-              >
-                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }} pts
-              </span>
-            </div>
-          </div>
+                </td>
+                <td class="px-6 py-4 text-slate-500">
+                   {{ formatDate(transaction.createdAt) }}
+                </td>
+                <td class="px-6 py-4">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
+                    <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                    Completed
+                  </span>
+                </td>
+                <td 
+                  class="px-6 py-4 text-right font-bold"
+                  :class="transaction.amount > 0 ? 'text-emerald-600' : 'text-red-500'"
+                >
+                  {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }}
+                </td>
+              </tr>
+              <tr v-if="transactions.length === 0">
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                  No transactions yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
