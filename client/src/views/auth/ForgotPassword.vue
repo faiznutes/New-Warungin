@@ -1,70 +1,73 @@
 <template>
-  <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] font-display">
+  <div class="relative min-h-screen w-full flex flex-col overflow-hidden bg-white dark:bg-slate-900 font-display text-slate-900 dark:text-white antialiased selection:bg-emerald-500/20 selection:text-emerald-600">
     
-    <!-- Navbar (Simplified) -->
-    <header class="w-full border-b border-white/50 bg-white/50 backdrop-blur-sm px-6 py-4 dark:border-slate-800 dark:bg-slate-900/80 sticky top-0 z-50">
-      <div class="mx-auto flex max-w-7xl items-center justify-between">
-        <router-link to="/" class="flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-white">
-            <span class="material-symbols-outlined text-[20px]">storefront</span>
-          </div>
-          <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
-        </router-link>
-      </div>
+    <!-- Background Gradient Decoration -->
+    <div class="absolute inset-0 pointer-events-none z-0">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-emerald-50/50 to-transparent dark:from-emerald-900/10 dark:to-transparent"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm px-6 lg:px-10 py-4">
+      <router-link to="/" class="flex items-center gap-3">
+        <div class="size-8 flex items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
+          <span class="material-symbols-outlined text-2xl">storefront</span>
+        </div>
+        <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Warungin</h2>
+      </router-link>
+      <router-link to="/login" class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <span class="truncate">Masuk</span>
+      </router-link>
     </header>
 
     <!-- Main Content -->
-    <main class="flex flex-grow items-center justify-center px-4 py-12">
-      <div class="w-full max-w-[960px]">
-        <!-- Card Component -->
-        <div class="mx-auto flex flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-slate-800 md:flex-row">
-          <!-- Image Section (Left) -->
-          <div class="relative h-64 w-full bg-slate-200 md:h-auto md:w-5/12">
-            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-emerald-600 mix-blend-normal"></div>
-            <div class="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
-                 <span class="material-symbols-outlined text-9xl text-white/20">lock_reset</span>
-             </div>
-          </div>
+    <main class="relative z-10 flex-grow flex items-center justify-center px-4 py-12">
+      <div class="w-full max-w-lg flex flex-col items-center">
+        <!-- Success Card -->
+        <div class="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 p-8 md:p-10 text-center animate-fade-in-up">
           
-          <!-- Content Section (Right) -->
-          <div class="flex flex-col justify-center p-8 md:w-7/12 md:p-12">
-            <!-- Icon -->
-            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-slate-700 dark:text-blue-400">
-              <span class="material-symbols-outlined text-[32px]">lock_reset</span>
+          <!-- Icon Animation Wrapper -->
+          <div class="mx-auto w-20 h-20 mb-6 relative animate-float">
+            <div class="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping opacity-20"></div>
+            <div class="relative w-full h-full bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-500/20 dark:to-emerald-500/10 rounded-full flex items-center justify-center shadow-glow">
+              <span class="material-symbols-outlined text-4xl text-emerald-600" style="font-variation-settings: 'FILL' 1, 'wght' 600;">lock_reset</span>
             </div>
-            <!-- Text Content -->
-            <h1 class="mb-3 text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
-              Lupa Kata Sandi Anda?
-            </h1>
-            <p class="mb-8 text-base font-normal leading-relaxed text-slate-500 dark:text-slate-400">
-              Demi keamanan data bisnis Anda, pengaturan ulang kata sandi dilakukan secara manual melalui tim bantuan kami. Silakan hubungi kami untuk verifikasi identitas dan pemulihan akun.
-            </p>
-            <!-- Actions -->
-            <div class="flex flex-col gap-4">
-              <router-link to="/contact" class="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 text-sm font-semibold text-white transition-all hover:bg-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 shadow-md hover:shadow-lg">
+          </div>
+
+          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+            Lupa Kata Sandi?
+          </h1>
+          
+          <p class="text-slate-500 dark:text-slate-400 text-base leading-relaxed mb-8">
+            Demi keamanan data bisnis Anda, pengaturan ulang kata sandi dilakukan secara manual melalui tim bantuan kami. Silakan hubungi kami untuk verifikasi identitas.
+          </p>
+
+          <div class="flex flex-col gap-3">
+             <router-link to="/contact" class="flex items-center justify-center gap-2 w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5">
                 <span class="material-symbols-outlined text-[20px]">support_agent</span>
-                <span>Hubungi Bantuan</span>
-              </router-link>
-              <router-link to="/login" class="flex h-10 w-full cursor-pointer items-center justify-center rounded-lg bg-transparent px-4 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white">
-                Kembali ke Halaman Login
-              </router-link>
-            </div>
-            <!-- Support Info / Microcopy -->
-            <div class="mt-8 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-              <span class="material-symbols-outlined text-[16px]">verified_user</span>
-              <span>Proses aman & terenkripsi</span>
-            </div>
+                Hubungi Bantuan
+             </router-link>
+             
+             <router-link to="/login" class="flex items-center justify-center gap-2 w-full py-3.5 bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors">
+                Kembali ke Halaman Masuk
+             </router-link>
+          </div>
+
+          <!-- Trust Indicator -->
+          <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
+            <span class="material-symbols-outlined text-[16px] text-emerald-500">verified_user</span>
+            <span>Proses aman & terenkripsi</span>
           </div>
         </div>
       </div>
     </main>
     
     <!-- Footer -->
-    <footer class="w-full py-6 text-center">
+    <footer class="w-full py-6 text-center relative z-10">
         <p class="text-sm font-normal text-slate-500 dark:text-slate-400">
             © 2024 Warungin. Hak Cipta Dilindungi.
         </p>
     </footer>
+
   </div>
 </template>
 
@@ -76,3 +79,27 @@ useSEO({
   description: 'Panduan reset password akun Warungin.',
 });
 </script>
+
+<style scoped>
+/* Custom animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.shadow-glow {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+</style>

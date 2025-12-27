@@ -333,6 +333,102 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- Ticket Detail Modal -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="showDetailModal"
+          class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          @click.self="showDetailModal = false"
+        >
+          <Transition name="scale">
+            <div
+              v-if="showDetailModal"
+              class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                <div>
+                   <h2 class="text-xl font-bold text-slate-900 dark:text-white">Detail Tiket</h2>
+                   <p class="text-sm text-slate-500 dark:text-slate-400">ID: {{ selectedTicket?.id }}</p>
+                </div>
+                <button
+                  @click="showDetailModal = false"
+                  class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 flex items-center justify-center transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
+              
+              <div v-if="selectedTicket" class="p-6 space-y-6">
+                <!-- Status & Category -->
+                <div class="flex gap-4">
+                  <div class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-0.5">Kategori</span>
+                    <span class="font-medium text-slate-900 dark:text-white capitalize">{{ selectedTicket.category }}</span>
+                  </div>
+                   <div class="px-3 py-1.5 rounded-lg"
+                        :class="{
+                             'bg-yellow-100 text-yellow-700': selectedTicket.status === 'open',
+                             'bg-blue-100 text-blue-700': selectedTicket.status === 'in_progress',
+                             'bg-emerald-100 text-emerald-700': selectedTicket.status === 'resolved',
+                             'bg-slate-100 text-slate-600': selectedTicket.status === 'closed'
+                           }">
+                    <span class="text-xs font-bold uppercase tracking-wider block mb-0.5 opacity-75">Status</span>
+                    <span class="font-bold">{{ getStatusLabel(selectedTicket.status) }}</span>
+                  </div>
+                </div>
+
+                <!-- Subject -->
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ selectedTicket.subject }}</h3>
+                  <div class="flex items-center gap-2 text-sm text-slate-500">
+                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                    <span>Dibuat: {{ formatDate(selectedTicket.createdAt) }}</span>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                   <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2">Deskripsi</h4>
+                   <p class="text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ selectedTicket.description }}</p>
+                </div>
+
+                <!-- Responses (Mockup) -->
+                 <div class="border-t border-slate-100 dark:border-slate-700 pt-6">
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-4">Riwayat Percakapan</h4>
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-emerald-600 text-sm">support_agent</span>
+                            </div>
+                            <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 rounded-r-xl rounded-bl-xl p-3 text-sm">
+                                <p class="font-bold text-slate-900 dark:text-white text-xs mb-1">Support Agent</p>
+                                <p class="text-slate-600 dark:text-slate-300">Halo! Terima kasih telah menghubungi kami. Tiket Anda sedang kami tinjau. Mohon tunggu update selanjutnya.</p>
+                                <p class="text-slate-400 text-[10px] mt-1 text-right">Just now</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+               <div class="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:flex-row gap-3">
+                 <button
+                    @click="showDetailModal = false"
+                    class="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium"
+                  >
+                    Tutup
+                  </button>
+                    <!-- Action Placeholder -->
+                    <button class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30">
+                        Balas
+                    </button>
+               </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -348,6 +444,8 @@ const { success: showSuccess, error: showError } = useNotification();
 const searchQuery = ref('');
 const ticketFilter = ref('all');
 const showTicketModal = ref(false);
+const showDetailModal = ref(false);
+const selectedTicket = ref<any>(null);
 const loadingTickets = ref(false);
 const submitting = ref(false);
 const tickets = ref<any[]>([]);
@@ -450,8 +548,8 @@ const submitTicket = async () => {
 };
 
 const viewTicket = (ticket: any) => {
-  // TODO: Open ticket detail modal or navigate to detail page
-  console.log('View ticket:', ticket);
+  selectedTicket.value = ticket;
+  showDetailModal.value = true;
 };
 
 const getStatusLabel = (status: string) => {

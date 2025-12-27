@@ -31,12 +31,12 @@ echo "[INFO] Removing old backend/frontend images to force rebuild..."
 docker rmi new-warungin-backend new-warungin-frontend 2>/dev/null || true
 
 echo "[INFO] Starting stack with build..."
-docker compose up -d --build --remove-orphans
+docker compose --profile with-redis --profile cloudflare up -d --build --remove-orphans
 
 echo "[INFO] Waiting for services to initialize..."
 sleep 10
 
 echo "[INFO] Checking status..."
-docker compose ps
+docker compose --profile with-redis --profile cloudflare ps
 
 echo "[INFO] Deployment Complete."

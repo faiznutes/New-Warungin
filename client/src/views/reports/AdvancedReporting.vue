@@ -495,6 +495,7 @@ const selectedWidgets = ref<string[]>([]);
 const showTemplateModal = ref(false);
 const showScheduleModal = ref(false);
 const editingTemplate = ref<any>(null);
+const editingScheduleId = ref<string | null>(null);
 const saving = ref(false);
 
 const templateForm = ref({
@@ -579,8 +580,13 @@ const saveSchedule = async () => {
     };
     delete data.recipientsText;
     
-    await api.post('/advanced-reporting/scheduled', data);
-    await showSuccess('Scheduled report created successfully');
+    if (editingScheduleId.value) {
+      await api.put(`/advanced-reporting/scheduled/${editingScheduleId.value}`, data);
+      await showSuccess('Scheduled report updated successfully');
+    } else {
+      await api.post('/advanced-reporting/scheduled', data);
+      await showSuccess('Scheduled report created successfully');
+    }
     closeScheduleModal();
     await loadScheduledReports();
   } catch (error: any) {
@@ -636,13 +642,29 @@ const editTemplate = (template: any) => {
 };
 
 const editSchedule = (report: any) => {
-  console.log('Edit schedule:', report);
+  editingScheduleId.value = report.id;
+  scheduleForm.value = {
+    templateId: report.templateId,
+    schedule: report.schedule,
+    scheduleConfig: { ...report.scheduleConfig },
+    format: report.format,
+    recipientsText: report.recipients ? report.recipients.join('\n') : '',
+  };
+  showScheduleModal.value = true;
 };
 
 const deleteSchedule = async (report: any) => {
   const confirmed = await showConfirm('Are you sure you want to delete this scheduled report?');
   if (!confirmed) return;
-  // TODO: Implement delete schedule
+  
+  try {
+    await api.delete(`/advanced-reporting/scheduled/${report.id}`);
+    await showSuccess('Scheduled report deleted successfully');
+    await loadScheduledReports();
+  } catch (error: any) {
+    console.error('Error deleting schedule:', error);
+    await showError(error.response?.data?.message || 'Failed to delete schedule');
+  }
 };
 
 const addColumn = () => {
@@ -688,6 +710,7 @@ const closeTemplateModal = () => {
 
 const closeScheduleModal = () => {
   showScheduleModal.value = false;
+  editingScheduleId.value = null;
   scheduleForm.value = {
     templateId: '',
     schedule: 'DAILY',

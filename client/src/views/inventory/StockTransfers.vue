@@ -268,6 +268,118 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Detail Modal -->
+    <Teleport to="body">
+      <div v-if="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div class="fixed inset-0 bg-slate-900/75 transition-opacity" aria-hidden="true" @click="showDetailModal = false"></div>
+
+          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+          <div class="relative inline-block align-bottom bg-white dark:bg-slate-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+            <!-- Header -->
+            <div class="bg-white dark:bg-slate-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="modal-title">
+                    Transfer Details
+                  </h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    ID: {{ selectedTransfer?.id }}
+                  </p>
+                </div>
+                <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 transition p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div v-if="selectedTransfer" class="px-4 py-5 sm:p-6">
+              <div class="space-y-6">
+                <!-- Status & Date -->
+                <div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
+                  <div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</span>
+                    <div class="mt-1">
+                      <span :class="{
+                        'px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-500/20': selectedTransfer.status === 'COMPLETED',
+                        'px-2.5 py-1 rounded-lg text-xs font-bold text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-500/20': selectedTransfer.status === 'APPROVED',
+                        'px-2.5 py-1 rounded-lg text-xs font-bold text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-500/20': selectedTransfer.status === 'PENDING',
+                        'px-2.5 py-1 rounded-lg text-xs font-bold text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-500/20': selectedTransfer.status === 'CANCELLED'
+                      }">
+                        {{ getStatusLabel(selectedTransfer.status) }}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</span>
+                    <p class="mt-1 font-medium text-slate-900 dark:text-white">{{ formatDate(selectedTransfer.createdAt) }}</p>
+                  </div>
+                </div>
+
+                <!-- Stores -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">From Store</span>
+                    <p class="mt-1 font-medium text-slate-900 dark:text-white">{{ selectedTransfer.fromOutlet?.name || '-' }}</p>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">To Store</span>
+                    <p class="mt-1 font-medium text-slate-900 dark:text-white">{{ selectedTransfer.toOutlet?.name || '-' }}</p>
+                  </div>
+                </div>
+
+                <!-- Items -->
+                <div>
+                  <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Items</span>
+                  <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                      <thead class="bg-slate-50 dark:bg-slate-900">
+                        <tr>
+                          <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Product</th>
+                          <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr v-for="(item, index) in selectedTransfer.items" :key="index">
+                          <td class="px-4 py-3 text-sm text-slate-900 dark:text-white">
+                            {{ item.product?.name || 'Unknown Product' }}
+                          </td>
+                          <td class="px-4 py-3 text-sm text-slate-900 dark:text-white text-right">
+                            {{ item.quantity }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div v-if="selectedTransfer.notes">
+                  <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Notes</span>
+                  <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                    {{ selectedTransfer.notes }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-slate-50 dark:bg-slate-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 dark:border-slate-700 gap-3">
+              <button
+                type="button"
+                @click="showDetailModal = false"
+                class="w-full inline-flex justify-center px-4 py-2 text-base font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition sm:mt-0 sm:w-auto sm:text-sm"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -284,6 +396,8 @@ const transfers = ref<any[]>([]);
 const stores = ref<any[]>([]);
 const products = ref<any[]>([]);
 const showTransferModal = ref(false);
+const showDetailModal = ref(false);
+const selectedTransfer = ref<any>(null);
 const pagination = ref({
   page: 1,
   limit: 10,
@@ -398,8 +512,8 @@ const cancelTransfer = async (id: string) => {
 };
 
 const viewTransfer = (transfer: any) => {
-  // TODO: Implement view transfer detail modal
-  console.log('View transfer:', transfer);
+  selectedTransfer.value = transfer;
+  showDetailModal.value = true;
 };
 
 onMounted(async () => {

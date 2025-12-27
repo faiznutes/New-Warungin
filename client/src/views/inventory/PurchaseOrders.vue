@@ -301,6 +301,97 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Detail Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showDetailModal && selectedPO"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="showDetailModal = false"
+      >
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div class="p-6">
+             <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl">
+                  <span class="material-symbols-outlined">receipt_long</span>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ selectedPO.orderNumber }}</h3>
+                  <p class="text-sm text-slate-500">{{ formatDate(selectedPO.orderDate) }}</p>
+                </div>
+              </div>
+              <button
+                @click="showDetailModal = false"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition"
+              >
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div class="space-y-6">
+              <!-- Info Grid -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                  <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 text-sm font-bold rounded-full"
+                    :class="getStatusClass(selectedPO.status)"
+                  >
+                    {{ selectedPO.status }}
+                  </span>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Supplier</p>
+                  <p class="font-bold text-slate-900 dark:text-white">{{ selectedPO.supplier.name }}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Expected Date</p>
+                  <p class="font-bold text-slate-900 dark:text-white">{{ selectedPO.expectedDate ? formatDate(selectedPO.expectedDate) : '-' }}</p>
+                </div>
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Amount</p>
+                  <p class="font-bold text-emerald-600 text-lg">Rp {{ formatCurrency(selectedPO.totalAmount) }}</p>
+                </div>
+              </div>
+
+              <!-- Items Table -->
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wider">Order Items</h4>
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+                  <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 dark:bg-slate-900 text-slate-500 font-bold uppercase text-xs">
+                      <tr>
+                        <th class="px-4 py-3">Product</th>
+                        <th class="px-4 py-3 text-right">Qty</th>
+                        <th class="px-4 py-3 text-right">Unit Price</th>
+                        <th class="px-4 py-3 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                      <tr v-for="item in selectedPO.items" :key="item.id" class="bg-white dark:bg-slate-800">
+                        <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">{{ item.product.name }}</td>
+                        <td class="px-4 py-3 text-right text-slate-500">{{ item.quantity }}</td>
+                        <td class="px-4 py-3 text-right text-slate-500">Rp {{ formatCurrency(item.unitPrice) }}</td>
+                        <td class="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">Rp {{ formatCurrency(item.totalPrice) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 rounded-b-2xl flex justify-end">
+            <button
+               @click="showDetailModal = false"
+               class="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -343,6 +434,9 @@ const poForm = ref({
   notes: '',
   items: [{ productId: '', quantity: 1, unitPrice: 0 }],
 });
+
+const showDetailModal = ref(false);
+const selectedPO = ref<PurchaseOrder | null>(null);
 
 const calculateTotal = computed(() => {
   return poForm.value.items.reduce((sum, item) => {
@@ -463,8 +557,8 @@ const cancelPurchaseOrder = async (po: PurchaseOrder) => {
 };
 
 const viewPurchaseOrder = (po: PurchaseOrder) => {
-  // TODO: Implement detail view modal
-  console.log('View PO:', po);
+  selectedPO.value = po;
+  showDetailModal.value = true;
 };
 
 const getStatusClass = (status: string): string => {

@@ -71,8 +71,8 @@
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors flex items-center focus:outline-none"
-                  tabindex="-1"
+                  class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-full p-1"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
                 >
                   <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                 </button>

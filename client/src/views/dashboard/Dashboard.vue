@@ -580,36 +580,29 @@ const getActiveAddons = (): any[] => {
 // NORMALISASI DATA: Setiap data yang masuk akan dinormalisasi menjadi array
 const setActiveAddons = (value: any): void => {
   try {
-    // LOGGING untuk debugging - log tipe dan isi data yang masuk
-    console.log('[Dashboard] setActiveAddons called with:', {
-      type: typeof value,
-      isArray: Array.isArray(value),
-      value: value,
-      hasData: value?.data ? 'yes' : 'no',
-      hasAddons: value?.addons ? 'yes' : 'no'
-    });
+
     
     // NORMALISASI: Pastikan selalu array
     if (Array.isArray(value)) {
       _activeAddons.value = value;
-      console.log('[Dashboard] setActiveAddons: Set as array, length:', value.length);
+
       return;
     }
     if (value && typeof value === 'object') {
       if (Array.isArray(value.data)) {
         _activeAddons.value = value.data;
-        console.log('[Dashboard] setActiveAddons: Extracted from value.data, length:', value.data.length);
+
         return;
       }
       if (Array.isArray(value.addons)) {
         _activeAddons.value = value.addons;
-        console.log('[Dashboard] setActiveAddons: Extracted from value.addons, length:', value.addons.length);
+
         return;
       }
     }
     // FALLBACK: Jika tidak valid, set ke array kosong
     _activeAddons.value = [];
-    console.log('[Dashboard] setActiveAddons: Invalid data, set to empty array');
+
   } catch (error) {
     console.error('[Dashboard] Error in setActiveAddons:', error);
     _activeAddons.value = [];
@@ -803,11 +796,7 @@ const loadCashierStats = async () => {
       : [];
     
     // LOGGING: Log untuk debugging
-    console.log('[Dashboard] loadCashierStats - API Response:', {
-      hasRecentTransactions: !!response.data.recentTransactions,
-      isArray: Array.isArray(response.data.recentTransactions),
-      recentTransactionsLength: recentTransactions.length
-    });
+
     
     cashierStats.value = {
       todayTransactions: response.data.todayTransactions || response.data.todayOrders || 0,
@@ -912,14 +901,7 @@ const loadStats = async () => {
       };
     }
     
-    // LOGGING: Log untuk debugging
-    console.log('[Dashboard] loadStats - API Response:', {
-      hasCharts: !!statsData.charts,
-      topProductsIsArray: Array.isArray(statsData.charts?.topProducts),
-      topProductsLength: Array.isArray(statsData.charts?.topProducts) ? statsData.charts.topProducts.length : 0,
-      salesByStatusIsArray: Array.isArray(statsData.charts?.salesByStatus),
-      salesByStatusLength: Array.isArray(statsData.charts?.salesByStatus) ? statsData.charts.salesByStatus.length : 0
-    });
+
     
     stats.value = statsData;
     renderCharts();
@@ -931,7 +913,7 @@ const loadStats = async () => {
     
     // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
-      console.log('Unauthorized - user may have logged out');
+
       return;
     }
     
@@ -947,7 +929,7 @@ const loadStats = async () => {
       const errorMessage = error.response?.data?.message || 'Gagal memuat statistik';
       // If it's tenant ID required, don't show alert (will be handled by tenant selector)
       if (errorMessage.includes('Tenant ID') || errorMessage.includes('tenant')) {
-        console.log('Tenant ID required - will be handled by tenant selector');
+
         return;
       }
       console.error('[Dashboard] Error loading stats:', error);
@@ -974,33 +956,27 @@ const loadAddons = async () => {
     const response = await api.get('/addons');
     
     // LOGGING: Log response structure untuk debugging
-    console.log('[Dashboard] loadActiveAddons - API Response:', {
-      type: typeof response?.data,
-      isArray: Array.isArray(response?.data),
-      hasData: response?.data?.data ? 'yes' : 'no',
-      hasAddons: response?.data?.addons ? 'yes' : 'no',
-      data: response?.data
-    });
+
     
     // NORMALISASI: Extract addons data with multiple fallbacks
     let addonsData: any = null;
     if (response?.data) {
       if (Array.isArray(response.data)) {
         addonsData = response.data;
-        console.log('[Dashboard] loadActiveAddons: Using response.data as array, length:', addonsData.length);
+
       } else if (response.data.data && Array.isArray(response.data.data)) {
         addonsData = response.data.data;
-        console.log('[Dashboard] loadActiveAddons: Using response.data.data, length:', addonsData.length);
+
       } else if (response.data.addons && Array.isArray(response.data.addons)) {
         addonsData = response.data.addons;
-        console.log('[Dashboard] loadActiveAddons: Using response.data.addons, length:', addonsData.length);
+
       }
     }
     
     // NORMALISASI: Use helper function to safely set (always ensures array)
     if (addonsData) {
       setActiveAddons(addonsData);
-      console.log('[Dashboard] loadActiveAddons: Successfully loaded', addonsData.length, 'addons');
+
     } else {
       console.warn('[Dashboard] loadActiveAddons: No valid addons data found, setting to empty array');
       setActiveAddons([]);

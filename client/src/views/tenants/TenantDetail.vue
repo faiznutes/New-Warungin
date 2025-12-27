@@ -112,136 +112,248 @@
 
                 <!-- TAB: Profile -->
                 <section v-if="activeTab === 'profile'" class="flex flex-col gap-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="material-symbols-outlined text-blue-600">badge</span> Tenant Profile
-                            </h3>
-                            <button @click="activeTab = 'users'" class="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">Manage Users</button>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Tenant Profile</h2>
+                        <span class="text-sm text-slate-500">Last updated: {{ tenant?.updatedAt ? formatDate(tenant.updatedAt) : 'Recently' }}</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
+                            <!-- Item: Owner Name -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">person</span> Owner Name
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ tenant?.name }}
+                                </p>
+                            </div>
+                            <!-- Item: Email -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">mail</span> Email Address
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors break-all">
+                                    {{ tenant?.email }}
+                                </p>
+                            </div>
+                            <!-- Item: Phone -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">call</span> Phone Number
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ tenant?.phone || '-' }}
+                                </p>
+                            </div>
+                            <!-- Item: Address -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">store</span> Business Address
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ tenant?.address || '-' }}
+                                </p>
+                            </div>
+                            <!-- Item: Registration Date -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">calendar_month</span> Registration Date
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ tenant?.createdAt ? formatDate(tenant.createdAt) : '-' }}
+                                </p>
+                            </div>
+                            <!-- Item: Tax ID -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">badge</span> Tax ID (NPWP)
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ (tenant as any)?.taxId || '-' }}
+                                </p>
+                            </div>
+                            <!-- Item: Category -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">category</span> Business Category
+                                </label>
+                                <p class="text-base font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors">
+                                    {{ (tenant as any)?.category || 'F&B Business' }}
+                                </p>
+                            </div>
+                            <!-- Item: Website -->
+                            <div class="flex flex-col gap-1.5 relative group">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">language</span> Website
+                                </label>
+                                <p class="text-base font-medium text-blue-600 dark:text-blue-400 border-b border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-400 transition-colors cursor-pointer">
+                                    {{ (tenant as any)?.website || '-' }}
+                                </p>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                            <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Owner Name</span>
-                                <span class="font-medium text-slate-900 dark:text-white">{{ tenant?.name }}</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Email Address</span>
-                                <span class="font-medium text-slate-900 dark:text-white break-all">{{ tenant?.email }}</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Phone Number</span>
-                                <span class="font-medium text-slate-900 dark:text-white">{{ tenant?.phone || '-' }}</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Account Status</span>
-                                <span class="flex items-center gap-2 font-medium" :class="tenant?.isActive ? 'text-green-600' : 'text-red-600'">
-                                    <span class="flex h-2 w-2 rounded-full" :class="tenant?.isActive ? 'bg-green-600' : 'bg-red-600'"></span>
-                                    {{ tenant?.isActive ? 'Active' : 'Suspended' }}
-                                </span>
-                            </div>
-                             <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Plan</span>
-                                <span class="font-medium text-slate-900 dark:text-white">{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</span>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Stores Count</span>
-                                <span class="font-medium text-slate-900 dark:text-white">{{ tenantStores.length }} Outlet(s)</span>
-                            </div>
+                        <div class="bg-slate-50 dark:bg-slate-800/50 px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between rounded-b-xl">
+                            <span class="text-sm text-slate-500">Need to update sensitive info?</span>
+                            <button class="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">Request Profile Update</button>
                         </div>
                     </div>
                 </section>
 
                 <!-- TAB: Subscription -->
-                <section v-if="activeTab === 'subscription'" class="flex flex-col gap-6">
-                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-blue-600">card_membership</span> Subscription Status
-                                </h3>
-                                <p class="mt-1 text-sm text-slate-500">Manage tenant subscription plan and billing cycle.</p>
-                            </div>
-                             <div class="flex gap-3">
-                                <button @click="showEditPlanModal = true" class="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 rounded-xl font-bold text-sm transition border border-blue-100 dark:border-blue-800">
-                                    Change Plan
-                                </button>
-                                <button @click="showExtendSubscriptionModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition">
-                                    Extend Subscription
-                                </button>
-                                <button @click="showReduceSubscriptionModal = true" class="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm transition">
-                                    Adjust Duration
-                                </button>
-                            </div>
+                <section v-if="activeTab === 'subscription'" class="flex flex-col gap-8">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Subscription Management</h2>
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <span class="text-sm font-medium text-slate-500">System Status: Operational</span>
                         </div>
+                    </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <!-- Plan Card -->
-                            <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl shadow-blue-500/20 relative overflow-hidden">
-                                <div class="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                                <div class="relative z-10">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="opacity-90 font-medium tracking-wide text-sm">CURRENT PLAN</span>
-                                        <span class="material-symbols-outlined opacity-80">verified</span>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="p-6 lg:p-8 flex flex-col lg:flex-row gap-8">
+                            <!-- Plan Info Card -->
+                            <div class="flex-1 lg:max-w-md">
+                                <div class="flex items-start gap-4 mb-6">
+                                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
+                                        <span class="material-symbols-outlined text-[32px]">workspace_premium</span>
                                     </div>
-                                    <h2 class="text-3xl font-black mb-1 capitalize">{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</h2>
-                                    <p class="text-blue-100 text-sm mb-8 font-medium">Billed Monthly</p>
-                                    
-                                    <div class="flex items-center gap-3 mt-auto">
-                                        <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                                            <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-1">
+                                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }} Plan</h3>
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-900/20 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                                Active
+                                            </span>
                                         </div>
-                                        <div>
-                                            <p class="text-xs text-blue-200 font-bold uppercase tracking-wider">Expires On</p>
-                                            <p class="font-bold">{{ subscription?.endDate ? formatDate(subscription.endDate) : (tenant?.subscriptionEnd ? formatDate(tenant.subscriptionEnd) : '-') }}</p>
+                                        <p class="text-slate-500 text-sm leading-relaxed">
+                                            {{ subscription?.plan === 'ENTERPRISE' ? 'Includes unlimited everything and custom API access.' : subscription?.plan === 'PRO' ? 'Includes advanced analytics and priority support.' : 'Core features for small businesses.' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                    <div>
+                                        <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Recurring Payment</span>
+                                        <div class="flex items-baseline gap-1">
+                                            <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ subscription?.plan === 'PRO' ? 'Rp 2.499.000' : subscription?.plan === 'ENTERPRISE' ? 'Rp 4.999.000' : 'Rp 999.000' }}</span>
+                                            <span class="text-sm text-slate-500 font-medium">/ year</span>
                                         </div>
+                                    </div>
+                                    <span class="h-10 w-px bg-slate-200 dark:border-slate-700 mx-2"></span>
+                                    <div class="text-right">
+                                        <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Next Billing</span>
+                                        <span class="text-sm font-bold text-slate-900 dark:text-white">{{ subscription?.subscriptionEnd ? formatDate(subscription.subscriptionEnd) : (tenant?.subscriptionEnd ? formatDate(tenant.subscriptionEnd) : 'N/A') }}</span>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Details -->
-                            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700">
-                                    <div class="flex items-center gap-3 mb-3 text-slate-500 dark:text-slate-400">
-                                        <span class="material-symbols-outlined">schedule</span>
-                                        <span class="text-xs font-bold uppercase tracking-wider">Remaining Time</span>
+
+                            <div class="w-px bg-slate-200 dark:border-slate-700 hidden lg:block"></div>
+
+                            <!-- Subscription Details Grid -->
+                            <div class="flex-1 flex flex-col justify-between gap-6">
+                                <div class="grid grid-cols-2 gap-y-6 gap-x-8 text-sm">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Start Date</p>
+                                        <p class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+                                            {{ subscription?.subscriptionStart ? formatDate(subscription.subscriptionStart) : (tenant?.subscriptionStart ? formatDate(tenant.subscriptionStart) : '-') }}
+                                        </p>
                                     </div>
-                                    <p class="text-2xl font-bold text-slate-900 dark:text-white">
-                                        {{ subscription ? getSubscriptionDuration(subscription) : ((tenant?.subscriptionEnd) ? getDaysRemaining(tenant.subscriptionEnd) : 0) }}
-                                        <span class="text-sm font-medium text-slate-500">Days</span>
-                                    </p>
-                                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 mt-3 overflow-hidden">
-                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 75%"></div> 
-                                        <!-- Note: Ideal width calc is (remaining / total) * 100 but we might lack total duration safely. Static or simple calc is fine. -->
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Billing Cycle</p>
+                                        <p class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                            <span class="material-symbols-outlined text-slate-400 text-[18px]">update</span>
+                                            Yearly (Auto-renew)
+                                        </p>
                                     </div>
-                                </div>
-                                
-                                <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700">
-                                    <div class="flex items-center gap-3 mb-3 text-slate-500 dark:text-slate-400">
-                                        <span class="material-symbols-outlined">history</span>
-                                        <span class="text-xs font-bold uppercase tracking-wider">Start Date</span>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Payment Method</p>
+                                        <div class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                                            <div class="w-8 h-5 bg-slate-100 border border-slate-200 rounded px-1 flex items-center justify-center">
+                                                <span class="text-[10px] font-bold text-slate-600">VISA</span>
+                                            </div>
+                                            •••• 4242
+                                        </div>
                                     </div>
-                                    <p class="text-2xl font-bold text-slate-900 dark:text-white">
-                                         {{ subscription?.startDate ? formatDate(subscription.startDate) : (tenant?.subscriptionStart ? formatDate(tenant.subscriptionStart) : '-') }}
-                                    </p>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-1.5">Days Remaining</p>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-semibold text-slate-900 dark:text-white">{{ daysRemainingDisplay }}</span>
+                                            <div class="w-16 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                                <div class="h-full bg-blue-500 rounded-full" :style="{ width: progressWidth + '%' }"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="md:col-span-2 p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                                    <div>
-                                         <p class="font-bold text-slate-900 dark:text-white">Need to stop subscription?</p>
-                                         <p class="text-sm text-slate-500">This will disable access to premium features.</p>
-                                    </div>
-                                    <button @click="showDeactivateSubscriptionModal = true" class="px-4 py-2 border border-red-200 bg-white text-red-600 hover:bg-red-50 rounded-xl font-bold text-sm transition shadow-sm">
-                                        Deactivate
+                                <div class="flex items-end justify-end mt-auto gap-3">
+                                    <button @click="showDeactivateSubscriptionModal = true" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                        Cancel Subscription
+                                    </button>
+                                    <button @click="showReduceSubscriptionModal = true" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                        Downgrade
+                                    </button>
+                                    <button @click="showExtendSubscriptionModal = true" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px]">upgrade</span> Upgrade Plan
                                     </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                         <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="flex items-center gap-2 p-4 bg-amber-50 text-amber-800 rounded-xl border border-amber-100 text-sm mt-4 font-medium">
-                            <span class="material-symbols-outlined">warning</span>
-                            Temporary Upgrade Active - Subscription will revert to BASIC after expiration.
-                        </p>
-                     </div>
+                    <!-- Billing History Table -->
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Billing History</h3>
+                            <button class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
+                                View all invoices
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </button>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="text-[10px] text-slate-500 uppercase bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                                        <tr>
+                                            <th class="px-6 py-4 font-bold tracking-wider">Invoice ID</th>
+                                            <th class="px-6 py-4 font-bold tracking-wider">Billing Date</th>
+                                            <th class="px-6 py-4 font-bold tracking-wider">Plan Name</th>
+                                            <th class="px-6 py-4 font-bold tracking-wider">Amount</th>
+                                            <th class="px-6 py-4 font-bold tracking-wider">Status</th>
+                                            <th class="px-6 py-4 font-bold tracking-wider text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                        <tr v-if="loadingBilling" v-for="i in 3" :key="i" class="animate-pulse">
+                                            <td colspan="6" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
+                                        </tr>
+                                        <tr v-else-if="billingHistory.length === 0">
+                                            <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic">No billing history available</td>
+                                        </tr>
+                                        <tr v-for="invoice in billingHistory" :key="invoice.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
+                                            <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ invoice.invoiceNumber || invoice.id.substring(0, 8).toUpperCase() }}</td>
+                                            <td class="px-6 py-4 text-slate-500">{{ formatDate(invoice.createdAt) }}</td>
+                                            <td class="px-6 py-4 text-slate-900 dark:text-white font-medium">{{ getPlanName(invoice.planType || invoice.plan) }}</td>
+                                            <td class="px-6 py-4 text-slate-900 dark:text-white">Rp {{ invoice.price?.toLocaleString() || invoice.amount?.toLocaleString() || '0' }}</td>
+                                            <td class="px-6 py-4">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-colors"
+                                                      :class="invoice.status === 'ACTIVE' || invoice.reverted === false ? 'bg-green-50 text-green-700 border border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30' : 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'">
+                                                    <span class="w-1.5 h-1.5 rounded-full" :class="invoice.status === 'ACTIVE' || invoice.reverted === false ? 'bg-green-500' : 'bg-slate-400'"></span>
+                                                    {{ invoice.status === 'ACTIVE' || invoice.reverted === false ? 'Paid' : 'Archived' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-right">
+                                                <button class="text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center justify-center p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Download PDF">
+                                                    <span class="material-symbols-outlined text-[20px]">download</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- TAB: Addons -->
@@ -265,81 +377,139 @@
                         </div>
                         
                         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div v-for="addon in filteredActiveAddons" :key="addon.id" class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow group">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-1">{{ addon.addonName }}</h4>
-                                        <p class="text-xs text-slate-500 line-clamp-2">{{ getAddonDescription(addon) || 'No description available' }}</p>
-                                    </div>
-                                    <span class="px-2 py-1 rounded bg-green-50 text-green-700 border border-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800 text-[10px] uppercase font-bold tracking-wider">Active</span>
-                                </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Active Addons</h2>
+                            <p class="text-sm text-slate-500 mt-1">Manage and configure activated premium features for this tenant.</p>
+                        </div>
+                        <button @click="showAddAddonModal = true" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/20">
+                            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                            Add New Addon
+                        </button>
+                    </div>
 
-                                <!-- Limit Bar if applicable -->
-                                <div v-if="addon.limit" class="mb-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
-                                    <div class="flex items-center justify-between text-xs mb-2">
-                                        <span class="text-slate-500 font-bold uppercase tracking-wider">Usage</span>
-                                        <span class="font-bold" :class="addon.isLimitReached ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'">
-                                            {{ addon.currentUsage }} <span class="text-slate-400">/</span> {{ addon.limit }}
-                                        </span>
+                    <div v-if="filteredActiveAddons.length === 0" class="bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-12 text-center mb-8">
+                        <div class="w-16 h-16 bg-slate-50 dark:bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-slate-400 text-3xl">extension_off</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No active addons</h3>
+                        <p class="text-slate-500 text-sm max-w-xs mx-auto">This tenant doesn't have any premium features activated yet.</p>
+                    </div>
+
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                        <div v-for="addon in filteredActiveAddons" :key="addon.id" 
+                             class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 shadow-card hover:shadow-soft transition-all relative group overflow-hidden flex flex-col h-full">
+                            <div class="absolute top-0 left-0 w-1 h-full transition-colors" :class="getAddonColor(addon, 'border')"></div>
+                            
+                            <div class="flex justify-between items-start mb-4 pl-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" :class="getAddonColor(addon, 'bg')">
+                                        <span class="material-symbols-outlined text-[24px]" :class="getAddonColor(addon, 'text')">{{ getAddonIcon(addon) }}</span>
                                     </div>
-                                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 overflow-hidden">
-                                        <div class="h-1.5 rounded-full transition-all duration-500" 
-                                             :class="addon.isLimitReached ? 'bg-red-500' : 'bg-blue-500'" 
-                                             :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }">
+                                    <div>
+                                        <h3 class="font-bold text-slate-900 dark:text-white leading-tight">{{ addon.addonName }}</h3>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                            <span class="text-xs text-slate-500">Active</span>
                                         </div>
                                     </div>
                                 </div>
+                                <button class="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                    <span class="material-symbols-outlined">more_vert</span>
+                                </button>
+                            </div>
 
-                                <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                                    <div>
-                                        <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Expires On</p>
-                                        <p class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ addon.expiresAt ? formatDate(addon.expiresAt) : 'Never' }}</p>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <button @click="reduceAddon(addon)" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Reduce">
-                                            <span class="material-symbols-outlined text-[20px]">remove_circle</span>
-                                        </button>
-                                        <button @click="extendAddon(addon)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Extend">
-                                            <span class="material-symbols-outlined text-[20px]">add_circle</span>
-                                        </button>
-                                        <button @click="unsubscribeAddon(addon)" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Deactivate">
-                                            <span class="material-symbols-outlined text-[20px]">cancel</span>
-                                        </button>
+                            <p class="text-sm text-slate-500 pl-3 mb-5 leading-relaxed line-clamp-3 flex-1">
+                                {{ getAddonDescription(addon) || 'Advanced features and capabilities for your business operations.' }}
+                            </p>
+
+                            <!-- Limit Bar if applicable -->
+                            <div v-if="addon.limit && addon.limit !== -1" class="pl-3 mb-5">
+                                <div class="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider mb-2">
+                                    <span class="text-slate-400">Usage Status</span>
+                                    <span :class="addon.isLimitReached ? 'text-red-600' : 'text-slate-600 dark:text-slate-400'">
+                                        {{ addon.currentUsage }} / {{ addon.limit }}
+                                    </span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                                    <div class="h-1.5 rounded-full transition-all duration-500" 
+                                         :class="addon.isLimitReached ? 'bg-red-500' : 'bg-primary'" 
+                                         :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }">
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="pl-3 mt-auto pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between text-xs mb-4">
+                                <div>
+                                    <span class="block text-[10px] uppercase tracking-wider font-semibold opacity-70 text-slate-500">Activated</span>
+                                    <span class="font-medium text-slate-900 dark:text-white">{{ addon.subscribedAt ? formatDate(addon.subscribedAt) : 'N/A' }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-[10px] uppercase tracking-wider font-semibold opacity-70 text-slate-500">Status</span>
+                                    <span class="font-medium text-slate-900 dark:text-white">{{ addon.expiresAt ? 'Renews Monthly' : 'Lifetime' }}</span>
+                                </div>
+                            </div>
+
+                            <div class="pl-3 flex gap-2">
+                                <button @click="extendAddon(addon)" class="flex-1 py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors flex items-center justify-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[16px]">settings</span>
+                                    Configure
+                                </button>
+                                <button @click="unsubscribeAddon(addon)" class="py-2 px-3 rounded-lg border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs font-medium transition-colors" title="Deactivate">
+                                    <span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Available Addons -->
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                             <span class="material-symbols-outlined text-blue-600">shopping_bag</span> Available for Purchase
-                        </h3>
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 lg:p-8 shadow-card">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">shopping_bag</span> 
+                                Available for Purchase
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-medium text-slate-500">Filter:</span>
+                                <select v-model="selectedAddonCategory" class="text-xs bg-slate-50 dark:bg-slate-700 border-none rounded-lg focus:ring-0 cursor-pointer">
+                                    <option>All Categories</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div v-for="addon in filteredAvailableAddons" :key="addon.id" 
-                                 class="flex flex-col border border-slate-200 dark:border-slate-700 rounded-xl p-6 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-600 transition-colors group relative overflow-hidden"
+                                 class="flex flex-col border border-slate-200 dark:border-slate-700 rounded-2xl p-6 bg-white dark:bg-slate-800 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-soft transition-all group relative overflow-hidden"
                                  :class="{'opacity-60 grayscale': addon.comingSoon || addon.requiresApi}">
                                 
-                                <div v-if="addon.comingSoon || addon.requiresApi" class="absolute top-3 right-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold uppercase rounded">Coming Soon</div>
+                                <div v-if="addon.comingSoon || addon.requiresApi" class="absolute top-3 right-3 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-500 text-[10px] font-bold uppercase rounded-full">Coming Soon</div>
+                                <div v-else class="absolute top-3 right-3 px-2 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-600 text-[10px] font-bold uppercase rounded-full">Available</div>
                                 
-                                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition-transform">
-                                    <span class="material-symbols-outlined text-[24px]">extension</span>
+                                <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center text-slate-400 mb-6 group-hover:scale-110 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-300">
+                                    <span class="material-symbols-outlined text-[28px]">{{ getAvailableAddonIcon(addon) }}</span>
                                 </div>
+
                                 <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-2">{{ addon.name }}</h4>
-                                <p class="text-sm text-slate-500 mb-6 line-clamp-3 flex-1">{{ addon.description }}</p>
+                                <p class="text-sm text-slate-500 mb-8 leading-relaxed flex-1">{{ addon.description }}</p>
                                 
-                                <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
-                                    <div class="flex items-end gap-1 mb-4">
+                                <div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-700">
+                                    <div class="flex items-baseline gap-1 mb-4">
                                         <span class="text-2xl font-black text-slate-900 dark:text-white">{{ formatCurrency(addon.price) }}</span>
-                                        <span class="text-xs text-slate-500 font-medium mb-1">/mo</span>
+                                        <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">/ {{ addon.type?.includes('ADD_') ? 'item' : 'mo' }}</span>
                                     </div>
                                     <button 
                                         @click="subscribeAddon(addon)"
                                         :disabled="addon.comingSoon || addon.requiresApi"
-                                        class="w-full py-2.5 rounded-xl font-bold text-sm transition shadow-sm bg-slate-900 text-white hover:bg-slate-700 disabled:bg-slate-200 disabled:text-slate-400"
+                                        class="w-full py-3 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2"
+                                        :class="(addon.comingSoon || addon.requiresApi) 
+                                            ? 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500 cursor-not-allowed' 
+                                            : 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20'"
                                     >
-                                        {{ (addon.comingSoon || addon.requiresApi) ? 'Not Available' : 'Subscribe Now' }}
+                                        <span v-if="!(addon.comingSoon || addon.requiresApi)" class="material-symbols-outlined text-sm">shopping_cart</span>
+                                        {{ (addon.comingSoon || addon.requiresApi) ? 'Coming Soon' : 'Subscribe Now' }}
                                     </button>
                                 </div>
                             </div>
@@ -347,116 +517,224 @@
                     </div>
                  </section>
 
-                 <!-- TAB: Points -->
-                 <section v-if="activeTab === 'points'" class="flex flex-col gap-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <div class="flex items-center justify-between mb-8">
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <span class="material-symbols-outlined text-blue-600">stars</span> Reward Points
-                            </h3>
-                             <button @click="showEditPointsModal = true" class="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl font-bold text-sm transition flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">edit</span> Adjust Balance
-                            </button>
-                        </div>
+                <!-- TAB: Reward Points -->
+                <section v-if="activeTab === 'points'" class="flex flex-col gap-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Reward Points Dashboard</h2>
+                        <button @click="showEditPointsModal = true" class="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">edit</span> Adjust Balance
+                        </button>
+                    </div>
 
-                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="p-5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-                                <p class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Current Balance</p>
-                                <p class="text-3xl font-black text-blue-700 dark:text-blue-300">{{ tenantPoints?.currentPoints || 0 }}</p>
-                            </div>
-                             <div class="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
-                                <p class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Total Earned</p>
-                                <p class="text-3xl font-black text-emerald-700 dark:text-emerald-300">{{ tenantPoints?.totalEarned || 0 }}</p>
-                            </div>
-                             <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
-                                <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Total Spent</p>
-                                <p class="text-3xl font-black text-amber-700 dark:text-amber-300">{{ tenantPoints?.totalSpent || 0 }}</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4">Transaction History</h4>
-                            <div v-if="pointTransactions.length === 0" class="text-center py-8 border rounded-xl border-dashed border-slate-200">
-                                <p class="text-slate-400 text-sm">No transactions yet.</p>
-                            </div>
-                            <div v-else class="space-y-3">
-                                <div v-for="tx in pointTransactions" :key="tx.id" class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="tx.amount > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
-                                            <span class="material-symbols-outlined text-[20px]">{{ tx.amount > 0 ? 'arrow_downward' : 'arrow_upward' }}</span>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-slate-900 dark:text-white">{{ tx.description }}</p>
-                                            <p class="text-xs text-slate-500">{{ formatDate(tx.createdAt) }}</p>
-                                        </div>
-                                    </div>
-                                    <span class="text-sm font-bold" :class="tx.amount > 0 ? 'text-emerald-600' : 'text-red-600'">
-                                        {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount }} pts
-                                    </span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Total Points Card -->
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500">Total Reward Points</p>
+                                    <h3 class="text-3xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.currentPoints?.toLocaleString() || 0 }}</h3>
                                 </div>
+                                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <span class="material-symbols-outlined">stars</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">+150</span>
+                                <span class="text-slate-400">this month</span>
+                            </div>
+                        </div>
+
+                        <!-- Loyalty Tier Card -->
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-400/5 rounded-full blur-2xl group-hover:bg-yellow-400/10 transition-colors"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500">Loyalty Tier</p>
+                                    <h3 class="text-3xl font-black text-slate-900 dark:text-white mt-1">{{ (tenantPoints?.currentPoints || 0) > 5000 ? 'Platinum' : (tenantPoints?.currentPoints || 0) > 1000 ? 'Gold' : 'Silver' }}</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                                    <span class="material-symbols-outlined">workspace_premium</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 mb-2 overflow-hidden">
+                                <div class="bg-yellow-400 h-1.5 rounded-full transition-all duration-1000" :style="{ width: Math.min(100, ((tenantPoints?.currentPoints || 0) % 5000) / 50) + '%' }"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span>{{ Math.min(100, Math.floor(((tenantPoints?.currentPoints || 0) % 5000) / 50)) }}% to next level</span>
+                                <span>{{ 5000 - ((tenantPoints?.currentPoints || 0) % 5000) }} pts needed</span>
+                            </div>
+                        </div>
+
+                        <!-- Lifetime Redeemed Card -->
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm relative overflow-hidden group">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl group-hover:bg-purple-500/10 transition-colors"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500">Lifetime Redeemed</p>
+                                    <h3 class="text-3xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.totalSpent?.toLocaleString() || 0 }}</h3>
+                                </div>
+                                <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                                    <span class="material-symbols-outlined">shopping_bag</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-slate-400">Total spent since</span>
+                                <span class="text-slate-600 dark:text-slate-300">{{ tenant?.createdAt ? formatDate(tenant.createdAt) : 'joining' }}</span>
                             </div>
                         </div>
                     </div>
-                 </section>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/50">
+                            <h3 class="font-bold text-slate-900 dark:text-white">Points History</h3>
+                            <div class="flex gap-2">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                                    <input type="text" placeholder="Search history..." class="pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white w-full sm:w-48 placeholder:text-slate-400 transition-all"/>
+                                </div>
+                                <select class="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white cursor-pointer transition-all">
+                                    <option>All Types</option>
+                                    <option>Earned</option>
+                                    <option>Redeemed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50/50 dark:bg-slate-800/30 text-[10px] uppercase text-slate-500 font-bold tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4">Date</th>
+                                        <th class="px-6 py-4">Description</th>
+                                        <th class="px-6 py-4">Type</th>
+                                        <th class="px-6 py-4 text-right">Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    <tr v-if="loadingPoints" v-for="i in 3" :key="i" class="animate-pulse">
+                                        <td colspan="4" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
+                                    </tr>
+                                    <tr v-else-if="pointTransactions.length === 0">
+                                        <td colspan="4" class="px-6 py-12 text-center text-slate-500 italic">No transactions found</td>
+                                    </tr>
+                                    <tr v-for="tx in pointTransactions" :key="tx.id" class="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-slate-500">{{ formatDate(tx.createdAt) }}</td>
+                                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ tx.description }}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase border"
+                                                  :class="tx.amount > 0 ? 'bg-green-50 text-green-700 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30' : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30'">
+                                                <span class="w-1.5 h-1.5 rounded-full" :class="tx.amount > 0 ? 'bg-green-500' : 'bg-red-500'"></span>
+                                                {{ tx.amount > 0 ? 'Earned' : 'Redeemed' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right font-bold" :class="tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                            {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount?.toLocaleString() }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
                  <!-- TAB: Users -->
                  <section v-if="activeTab === 'users'" class="flex flex-col gap-6">
-                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                         <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-blue-600">group</span> Tenant Users
-                                </h3>
-                                <p class="mt-1 text-sm text-slate-500">Manage user access and roles.</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">User Management</h2>
+                            <p class="text-sm text-slate-500 mt-1">Manage and configure staff access for this tenant account.</p>
+                        </div>
+                        <button @click="showCreateUserModal = true" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm shadow-blue-500/20">
+                            <span class="material-symbols-outlined text-[18px]">person_add</span>
+                            Add New User
+                        </button>
+                    </div>
+
+                    <div v-if="userUsage && userUsage.limit !== -1" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm overflow-hidden relative">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined">group</span>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">License Usage</span>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Staff Account Limit</p>
+                                </div>
                             </div>
-                             <button @click="showCreateUserModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">person_add</span> New User
-                            </button>
+                            <div class="text-right">
+                                <span class="text-2xl font-black text-slate-900 dark:text-white">{{ userUsage.currentUsage }}</span>
+                                <span class="text-slate-400 text-sm font-medium ml-1">/ {{ userUsage.limit }} users</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                            <div class="h-2 rounded-full transition-all duration-1000" 
+                                 :class="userUsage.currentUsage >= userUsage.limit ? 'bg-red-500' : 'bg-primary'" 
+                                 :style="{ width: `${Math.min(100, (userUsage.currentUsage / userUsage.limit) * 100)}%` }">
+                            </div>
+                        </div>
+                        <p v-if="userUsage.currentUsage >= userUsage.limit" class="mt-3 text-[10px] font-bold text-red-600 uppercase tracking-wide flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span>
+                            Limit reached! Update subscription to add more users.
+                        </p>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <h3 class="font-bold text-slate-900 dark:text-white">User Directory</h3>
+                            <div class="flex gap-2">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                                    <input type="text" placeholder="Search staff..." class="pl-9 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-700 border-none rounded-lg focus:ring-1 focus:ring-primary outline-none text-slate-900 dark:text-white w-full sm:w-48" />
+                                </div>
+                            </div>
                         </div>
                         
-                        <!-- Limit Warning -->
-                         <div v-if="userUsage && userUsage.limit !== -1" class="mb-6 p-4 rounded-xl border" :class="userUsage.currentUsage >= userUsage.limit ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100'">
-                             <div class="flex items-center justify-between mb-2">
-                                 <span class="text-xs font-bold uppercase tracking-wider" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-700' : 'text-blue-700'">User Limit Usage</span>
-                                 <span class="text-sm font-bold" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-700' : 'text-blue-700'">{{ userUsage.currentUsage }} / {{ userUsage.limit }}</span>
-                             </div>
-                             <div class="w-full bg-white/50 rounded-full h-2 overflow-hidden">
-                                 <div class="h-2 rounded-full" :class="userUsage.currentUsage >= userUsage.limit ? 'bg-red-500' : 'bg-blue-500'" :style="{ width: `${Math.min(100, (userUsage.currentUsage / userUsage.limit) * 100)}%` }"></div>
-                             </div>
-                         </div>
-                        
-                        <!-- Users Table -->
-                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">User Details</th>
-                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700/50 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-3">Staff Profile</th>
+                                        <th class="px-6 py-3">Role & Access</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3 text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                                     <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                                        <td class="p-4">
-                                            <p class="font-bold text-slate-900 dark:text-white text-sm">{{ user.name }}</p>
-                                            <p class="text-xs text-slate-500">{{ user.email }}</p>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400">
+                                                    <span class="material-symbols-outlined text-[20px]">person</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-bold text-slate-900 dark:text-white">{{ user.name }}</p>
+                                                    <p class="text-xs text-slate-500">{{ user.email }}</p>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="p-4">
-                                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border" :class="getRoleClass(user.role)">{{ getRoleLabel(user.role) }}</span>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-colors" :class="getRoleClass(user.role)">
+                                                {{ getRoleLabel(user.role) }}
+                                            </span>
                                         </td>
-                                        <td class="p-4">
-                                             <span class="flex items-center gap-1.5 text-xs font-bold" :class="user.isActive ? 'text-green-600' : 'text-red-600'">
-                                                <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-green-600' : 'bg-red-600'"></span>
+                                        <td class="px-6 py-4">
+                                             <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide" 
+                                                   :class="user.isActive ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'">
+                                                <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-green-500' : 'bg-red-500'"></span>
                                                 {{ user.isActive ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>
-                                        <td class="p-4 text-right">
-                                            <button @click="editUser(user)" class="text-slate-400 hover:text-blue-600 font-bold text-xs transition">Edit</button>
+                                        <td class="px-6 py-4 text-right">
+                                            <button @click="editUser(user)" class="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center ml-auto">
+                                                <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                                            </button>
                                         </td>
                                     </tr>
                                     <tr v-if="tenantUsers.length === 0">
-                                        <td colspan="4" class="p-8 text-center text-slate-500 text-sm">No users found.</td>
+                                        <td colspan="4" class="px-6 py-12 text-center text-slate-400 font-medium italic">
+                                            No staff members found in this account.
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -464,62 +742,90 @@
                     </div>
                  </section>
 
-                 <!-- TAB: Stores -->
-                 <section v-if="activeTab === 'stores'" class="flex flex-col gap-6">
-                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-blue-600">storefront</span> Stores & Outlets
-                                </h3>
-                                <p class="mt-1 text-sm text-slate-500">Manage separate outlet locations.</p>
-                            </div>
-                             <button @click="openCreateStoreModal" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">add_business</span> New Store
-                            </button>
+                <!-- TAB: Stores -->
+                <section v-if="activeTab === 'stores'" class="flex flex-col gap-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Stores & Outlets</h2>
+                            <p class="text-sm text-slate-500">Managing {{ tenantStores.length }} active locations for this tenant.</p>
                         </div>
+                        <button @click="openCreateStoreModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">add_business</span> New Store
+                        </button>
+                    </div>
 
-                         <!-- Limit Warning -->
-                         <div v-if="outletUsage && outletUsage.limit !== -1" class="mb-6 p-4 rounded-xl border" :class="outletUsage.currentUsage >= outletUsage.limit ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100'">
-                             <div class="flex items-center justify-between mb-2">
-                                 <span class="text-xs font-bold uppercase tracking-wider" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-700' : 'text-blue-700'">Outlet Limit Usage</span>
-                                 <span class="text-sm font-bold" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-700' : 'text-blue-700'">{{ outletUsage.currentUsage }} / {{ outletUsage.limit }}</span>
-                             </div>
-                             <div class="w-full bg-white/50 rounded-full h-2 overflow-hidden">
-                                 <div class="h-2 rounded-full" :class="outletUsage.currentUsage >= outletUsage.limit ? 'bg-red-500' : 'bg-blue-500'" :style="{ width: `${Math.min(100, (outletUsage.currentUsage / outletUsage.limit) * 100)}%` }"></div>
-                             </div>
-                         </div>
+                    <div v-if="loadingStores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="i in 3" :key="i" class="h-64 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse"></div>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div v-for="store in tenantStores" :key="store.id" class="group border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition bg-white dark:bg-slate-800 flex flex-col">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
-                                        <span class="material-symbols-outlined">store</span>
-                                    </div>
-                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border" :class="store.isActive !== false ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'">
-                                        {{ store.isActive !== false ? 'Active' : 'Inactive' }}
+                    <div v-else-if="tenantStores.length === 0" class="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                        <div class="w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4 text-slate-400">
+                            <span class="material-symbols-outlined text-4xl">storefront</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No stores found</h3>
+                        <p class="text-slate-500 mb-6">Start by adding the first store location.</p>
+                        <button @click="openCreateStoreModal" class="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors">Add New Store</button>
+                    </div>
+
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="(store, index) in tenantStores" :key="store.id" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 flex flex-col h-full">
+                            <!-- Card Header with Gradient -->
+                            <div class="h-32 relative overflow-hidden" :class="[
+                                index % 3 === 0 ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 
+                                index % 3 === 1 ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 
+                                'bg-gradient-to-br from-amber-500 to-orange-600'
+                            ]">
+                                <div class="absolute inset-0 bg-black/10"></div>
+                                <div class="absolute top-3 right-3">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold text-green-700 dark:text-green-400 shadow-sm uppercase">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                                        Open
                                     </span>
                                 </div>
-                                
-                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">{{ store.name }}</h4>
-                                <p class="text-xs text-slate-500 line-clamp-2 mb-4 h-8">{{ store.address || 'No address provided' }}</p>
-                                
-                                <div class="mt-auto flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                    <button @click="editStore(store)" class="flex-1 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-lg transition border border-slate-200">Edit Details</button>
-                                    <button @click="toggleStoreStatus(store)" class="px-3 py-2 text-xs font-bold rounded-lg transition border" :class="store.isActive !== false ? 'text-red-600 border-red-200 hover:bg-red-50' : 'text-green-600 border-green-200 hover:bg-green-50'">
-                                        {{ store.isActive !== false ? 'Disable' : 'Enable' }}
-                                    </button>
+                                <div class="absolute bottom-3 left-4 right-4">
+                                    <h3 class="text-white font-bold text-lg truncate">{{ store.name }}</h3>
+                                    <p class="text-white/80 text-[11px] truncate flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">location_on</span>
+                                        {{ store.address || 'No address provided' }}
+                                    </p>
                                 </div>
                             </div>
 
-                            <!-- Empty Add Card -->
-                            <button @click="openCreateStoreModal" class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/50 transition cursor-pointer min-h-[200px]">
-                                <span class="material-symbols-outlined text-[32px] mb-2">add_business</span>
-                                <span class="text-sm font-bold">Add New Store</span>
-                            </button>
+                            <!-- Card Body -->
+                            <div class="p-5 flex-1 flex flex-col gap-4">
+                                <div class="grid grid-cols-2 gap-y-4 gap-x-2">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Store ID</span>
+                                        <span class="text-xs font-semibold text-slate-900 dark:text-white">{{ store.id.substring(0, 8).toUpperCase() }}</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Staff</span>
+                                        <span class="text-xs font-semibold text-slate-900 dark:text-white">{{ (store as any).staffCount || 0 }} Employees</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Devices</span>
+                                        <span class="text-xs font-semibold text-slate-900 dark:text-white">{{ (store as any).deviceCount || 0 }} Active POS</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Type</span>
+                                        <span class="text-xs font-semibold text-slate-900 dark:text-white">{{ (store as any).type || 'Main Store' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex items-center gap-3">
+                                <button @click="editStore(store)" class="flex-1 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 text-xs font-bold transition-all">
+                                    Edit
+                                </button>
+                                <button class="flex-1 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all flex items-center justify-center gap-1">
+                                    Manage
+                                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                </button>
+                            </div>
                         </div>
-                     </div>
-                 </section>
+                    </div>
+                </section>
 
             </template>
         </div>
@@ -1007,6 +1313,8 @@ const loadingStores = ref(false);
 const tenantStores = ref<any[]>([]);
 const editingStore = ref<any>(null); // For editing store
 const outletUsage = ref<{ currentUsage: number; limit: number } | null>(null);
+const billingHistory = ref<any[]>([]);
+const loadingBilling = ref(false);
 const selectedUsers = ref<any[]>([]);
 const creatingUser = ref(false);
 const createUserForm = ref({
@@ -1038,6 +1346,7 @@ const extendAddonDays = ref<number>(30);
 const reduceAddonDays = ref<number>(30);
 const selectedAddon = ref<Addon | null>(null);
 const selectedAddonForSubscribe = ref<AvailableAddon | null>(null);
+const selectedAddonCategory = ref('All Categories');
 const activeTab = ref('profile');
 
 const getAddonDaysRemaining = (addon: Addon) => {
@@ -1131,10 +1440,10 @@ const filteredAvailableAddons = computed(() => {
       )
     : [];
   
-  // All addons are shown (can be purchased multiple times)
+  // Filter by category if selected
   const filtered = safeFilter(uniqueAddons, (addon: any) => {
-    // Semua addon selalu ditampilkan (bisa dibeli berkali-kali)
-    return true;
+    if (selectedAddonCategory.value === 'All Categories') return true;
+    return getAddonCategory(addon) === selectedAddonCategory.value;
   });
   
   // Sort: 
@@ -1187,6 +1496,119 @@ const getDaysRemaining = (dateStr: string) => {
   const diffTime = end.getTime() - now.getTime();
   if (diffTime <= 0) return 0;
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+const getAddonIcon = (addon: any) => {
+  const name = (addon.addonName || '').toLowerCase();
+  const type = (addon.addonType || '').toLowerCase();
+  
+  if (name.includes('inventory') || type.includes('inventory')) return 'inventory_2';
+  if (name.includes('kitchen') || type.includes('kitchen') || type.includes('kds')) return 'soup_kitchen';
+  if (name.includes('loyalty') || name.includes('point') || type.includes('loyalty')) return 'loyalty';
+  if (name.includes('account') || name.includes('accounting') || type.includes('accounting')) return 'account_balance';
+  if (name.includes('online') || name.includes('store') || type.includes('online')) return 'shopping_bag';
+  if (name.includes('user') || type.includes('user')) return 'group_add';
+  if (name.includes('outlet') || type.includes('outlet')) return 'add_business';
+  
+  return 'extension';
+};
+
+const getAvailableAddonIcon = (addon: any) => {
+  const name = (addon.name || '').toLowerCase();
+  const type = (addon.type || '').toLowerCase();
+  
+  if (name.includes('inventory') || type.includes('inventory')) return 'inventory_2';
+  if (name.includes('kitchen') || type.includes('kitchen') || type.includes('kds')) return 'soup_kitchen';
+  if (name.includes('loyalty') || name.includes('point') || type.includes('loyalty')) return 'loyalty';
+  if (name.includes('account') || name.includes('accounting') || type.includes('accounting')) return 'account_balance';
+  if (name.includes('online') || name.includes('store') || type.includes('online')) return 'shopping_bag';
+  if (name.includes('user') || type.includes('user')) return 'group_add';
+  if (name.includes('outlet') || type.includes('outlet')) return 'add_business';
+  
+  return 'extension';
+};
+
+const getAddonColor = (addon: any, part: 'bg' | 'text' | 'border') => {
+  const name = (addon.addonName || addon.name || '').toLowerCase();
+  const type = (addon.addonType || addon.type || '').toLowerCase();
+  
+  let color = 'blue'; // default
+  
+  if (name.includes('inventory') || type.includes('inventory')) color = 'blue';
+  else if (name.includes('kitchen') || type.includes('kitchen') || type.includes('kds')) color = 'indigo';
+  else if (name.includes('loyalty') || name.includes('point') || type.includes('loyalty')) color = 'amber';
+  else if (name.includes('account') || name.includes('accounting') || type.includes('accounting')) color = 'teal';
+  else if (name.includes('online') || name.includes('store') || type.includes('online')) color = 'pink';
+  else if (name.includes('user') || type.includes('user')) color = 'purple';
+  else if (name.includes('outlet') || type.includes('outlet')) color = 'emerald';
+
+  const colorMap: Record<string, Record<string, string>> = {
+    blue: {
+      bg: 'bg-blue-50 dark:bg-blue-900/20',
+      text: 'text-blue-600 dark:text-blue-400',
+      border: 'bg-blue-500/80 group-hover:bg-blue-500'
+    },
+    indigo: {
+      bg: 'bg-indigo-50 dark:bg-indigo-900/20',
+      text: 'text-indigo-600 dark:text-indigo-400',
+      border: 'bg-indigo-500/80 group-hover:bg-indigo-500'
+    },
+    amber: {
+      bg: 'bg-amber-50 dark:bg-amber-900/20',
+      text: 'text-amber-600 dark:text-amber-400',
+      border: 'bg-amber-500/80 group-hover:bg-amber-500'
+    },
+    teal: {
+      bg: 'bg-teal-50 dark:bg-teal-900/20',
+      text: 'text-teal-600 dark:text-teal-400',
+      border: 'bg-teal-500/80 group-hover:bg-teal-500'
+    },
+    pink: {
+      bg: 'bg-pink-50 dark:bg-pink-900/20',
+      text: 'text-pink-600 dark:text-pink-400',
+      border: 'bg-pink-500/80 group-hover:bg-pink-500'
+    },
+    purple: {
+      bg: 'bg-purple-50 dark:bg-purple-900/20',
+      text: 'text-purple-600 dark:text-purple-400',
+      border: 'bg-purple-500/80 group-hover:bg-purple-500'
+    },
+    emerald: {
+      bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+      text: 'text-emerald-600 dark:text-emerald-400',
+      border: 'bg-emerald-500/80 group-hover:bg-emerald-500'
+    }
+  };
+  
+  return colorMap[color][part];
+};
+
+const getAddonCategory = (addon: any) => {
+  const name = (addon.addonName || addon.name || '').toLowerCase();
+  const type = (addon.addonType || addon.type || '').toLowerCase();
+  
+  // Operations: Inventory, Kitchen, Outlets, Users, Products
+  if (name.includes('inventory') || type.includes('inventory') || 
+      name.includes('kitchen') || type.includes('kitchen') || type.includes('kds') ||
+      name.includes('outlet') || type.includes('outlet') ||
+      name.includes('user') || type.includes('user') ||
+      name.includes('product') || type.includes('product')) {
+    return 'Operations';
+  }
+  
+  // Marketing: Loyalty, Online Store
+  if (name.includes('loyalty') || name.includes('point') || type.includes('loyalty') ||
+      name.includes('online') || name.includes('store') || type.includes('online')) {
+    return 'Marketing';
+  }
+  
+  // Advanced: Accounting, Analytics
+  if (name.includes('account') || name.includes('accounting') || type.includes('accounting') ||
+      name.includes('analytic') || type.includes('reporting')) {
+    return 'Advanced';
+  }
+  
+  return 'Operations'; // default to Operations
 };
 
 const getPlanBadgeClass = (plan: string) => {
@@ -1394,6 +1816,23 @@ const loadTenantPoints = async () => {
   }
 };
 
+const loadBillingHistory = async () => {
+  if (!tenant.value?.id) return;
+  
+  loadingBilling.value = true;
+  try {
+    // Current backend has subscriptionHistory table in Prisma
+    const response = await api.get(`/tenants/${tenant.value.id}/billing-history`);
+    billingHistory.value = response.data || [];
+  } catch (error: any) {
+    console.error('Error loading billing history:', error);
+    // Silent fail for history, just keep it empty
+    billingHistory.value = [];
+  } finally {
+    loadingBilling.value = false;
+  }
+};
+
 const handleUpdatePoints = async () => {
   if (!tenant.value?.id) return;
   
@@ -1445,6 +1884,63 @@ const toggleStoreStatus = async (store: any) => {
     await showError(error.response?.data?.message || `Gagal ${action} store`);
   }
 };
+
+// Helper to get remaining days display
+const daysRemainingDisplay = computed(() => {
+  let isExpiredState = false;
+  
+  // Priority 1: Use daysRemaining from backend subscription object
+  if (subscription.value && subscription.value.isExpired !== undefined) {
+     isExpiredState = subscription.value.isExpired;
+  } 
+  // Priority 2: Calculate from tenant.subscriptionEnd
+  else if (tenant.value?.subscriptionEnd) {
+     isExpiredState = new Date(tenant.value.subscriptionEnd) <= new Date();
+  }
+  
+  if (isExpiredState) return 'Expired';
+
+  const sub = subscription.value as any;
+  if (sub && sub.daysRemaining === 0) {
+    const hours = String(sub.hoursRemaining || 0).padStart(2, '0');
+    const minutes = String(sub.minutesRemaining || 0).padStart(2, '0');
+    const seconds = String(sub.secondsRemaining || 0).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  
+  const days = sub?.daysRemaining || (tenant.value?.subscriptionEnd ? getDaysRemaining(tenant.value.subscriptionEnd) : 0);
+  return `${days} ${days === 1 ? 'Day' : 'Days'}`;
+});
+
+const totalDurationDays = computed(() => {
+  const start = subscription.value?.subscriptionStart || tenant.value?.subscriptionStart;
+  const end = subscription.value?.subscriptionEnd || tenant.value?.subscriptionEnd;
+  
+  if (start && end) {
+    const startTime = new Date(start).getTime();
+    const endTime = new Date(end).getTime();
+    const diff = endTime - startTime;
+    return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  }
+  return 365; // Fallback
+});
+
+const progressWidth = computed(() => {
+  const end = subscription.value?.subscriptionEnd || tenant.value?.subscriptionEnd;
+  const start = subscription.value?.subscriptionStart || tenant.value?.subscriptionStart;
+  
+  if (!end || !start) return 0;
+  
+  const endTime = new Date(end).getTime();
+  const startTime = new Date(start).getTime();
+  const nowTime = currentTime.value.getTime();
+  
+  const total = endTime - startTime;
+  const remaining = endTime - nowTime;
+  
+  if (total <= 0) return 0;
+  return Math.min(100, Math.max(0, (remaining / total) * 100));
+});
 
 // Bulk user operations
 const isUserSelected = (userId: string) => {
@@ -1539,12 +2035,12 @@ const bulkDeactivateUsers = async () => {
 
 const getRoleClass = (role: string) => {
   const classes: Record<string, string> = {
-    ADMIN_TENANT: 'bg-purple-100 text-purple-800',
-    SUPERVISOR: 'bg-blue-100 text-blue-800',
-    CASHIER: 'bg-green-100 text-green-800',
-    KITCHEN: 'bg-orange-100 text-orange-800',
+    ADMIN_TENANT: 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800',
+    SUPERVISOR: 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800',
+    CASHIER: 'bg-green-50 text-green-700 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
+    KITCHEN: 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800',
   };
-  return classes[role] || 'bg-[#f6f7f8] text-gray-800';
+  return classes[role] || 'bg-slate-50 text-slate-700 border-slate-100 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700';
 };
 
 const getRoleLabel = (role: string) => {
@@ -1710,9 +2206,9 @@ const loadTenantDetail = async () => {
           const totalSeconds = Math.floor(diffTime / 1000);
           const totalMinutes = Math.floor(totalSeconds / 60);
           const totalHours = Math.floor(totalMinutes / 60);
-          const days = Math.floor(totalHours / 24);
+          const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           
-          subscription.value.daysRemaining = days;
+          subscription.value.daysRemaining = days > 1 ? days : 0;
           subscription.value.hoursRemaining = totalHours % 24;
           subscription.value.minutesRemaining = totalMinutes % 60;
           subscription.value.secondsRemaining = totalSeconds % 60;
@@ -1744,9 +2240,9 @@ const loadTenantDetail = async () => {
           const totalSeconds = Math.floor(diffTime / 1000);
           const totalMinutes = Math.floor(totalSeconds / 60);
           const totalHours = Math.floor(totalMinutes / 60);
-          const days = Math.floor(totalHours / 24);
+          const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           
-          subscription.value.daysRemaining = days;
+          subscription.value.daysRemaining = days > 1 ? days : 0;
           subscription.value.hoursRemaining = totalHours % 24;
           subscription.value.minutesRemaining = totalMinutes % 60;
           subscription.value.secondsRemaining = totalSeconds % 60;
@@ -1788,16 +2284,18 @@ const loadTenantDetail = async () => {
     }
     
     try {
-      await loadStores();
-    } catch (error) {
-      console.error('Error loading stores:', error);
-    }
-    
-    // Load tenant points (for super admin) (don't fail if error)
+    // Load users, stores, points, and billing history in parallel
     try {
-      await loadTenantPoints();
+      await Promise.all([
+        loadUsers(),
+        loadStores(),
+        loadTenantPoints(),
+        loadBillingHistory()
+      ]);
     } catch (error) {
-      console.error('Error loading tenant points:', error);
+      console.error('Error loading parallel data (users, stores, points, billing):', error);
+      // Individual load functions already handle their own errors,
+      // but this catch ensures any Promise.all rejection is logged.
     }
   } catch (error: any) {
     console.error('Error in onMounted:', error);
@@ -2357,9 +2855,9 @@ const startCountdown = () => {
         const totalSeconds = Math.floor(diffTime / 1000);
         const totalMinutes = Math.floor(totalSeconds / 60);
         const totalHours = Math.floor(totalMinutes / 60);
-        const days = Math.floor(totalHours / 24);
+        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
-        subscription.value.daysRemaining = days;
+        subscription.value.daysRemaining = days > 1 ? days : 0; // Use 0 for specifically the last 24h to trigger H:M:S display
         subscription.value.hoursRemaining = totalHours % 24;
         subscription.value.minutesRemaining = totalMinutes % 60;
         subscription.value.secondsRemaining = totalSeconds % 60;

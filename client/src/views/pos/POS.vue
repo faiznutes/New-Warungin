@@ -470,33 +470,33 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-hidden flex flex-col lg:grid lg:grid-cols-[90px_1fr_420px] bg-slate-50">
        <!-- 1. Categories Sidebar -->
-       <aside class="hidden lg:flex flex-col items-center py-6 bg-white border-r border-slate-200 gap-4 overflow-y-auto no-scrollbar">
-          <!-- Refresh Button -->
-          <button @click="refreshProducts" :disabled="loading" class="w-12 h-12 rounded-xl bg-slate-50 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500 transition-all flex items-center justify-center mb-4 group shadow-sm">
-             <span class="material-symbols-outlined text-2xl group-hover:rotate-180 transition-transform duration-500" :class="{ 'animate-spin': loading }">refresh</span>
-          </button>
-          
+       <!-- 1. Categories Sidebar -->
+       <aside class="hidden lg:flex flex-col items-center py-6 nav-emerald-tint border-r border-emerald-100/60 gap-4 overflow-y-auto no-scrollbar z-20">
           <button 
             v-for="cat in categories" 
             :key="cat"
             @click="selectedCategory = cat === 'SEMUA' ? '' : cat"
-            class="flex flex-col items-center group w-full px-2"
+            class="group flex flex-col items-center gap-1 w-[70px] py-3 rounded-xl transition-all relative"
+            :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'category-active bg-white shadow-sm text-emerald-600' : 'hover:bg-white hover:shadow-sm hover:text-emerald-500 text-slate-400'"
           >
-             <div 
-               class="w-12 h-12 rounded-xl flex items-center justify-center mb-1.5 transition-all duration-300 relative overflow-hidden"
-               :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-500'"
-             >
-                <span class="material-symbols-outlined text-2xl relative z-10">
-                  {{ cat === 'SEMUA' ? 'apps' : 'category' }}
-                </span>
-             </div>
+             <span class="material-symbols-outlined text-2xl relative z-10 transition-transform group-hover:scale-110">
+               {{ getCategoryIcon(cat) }}
+             </span>
              <span 
-               class="text-[10px] font-bold text-center w-full truncate px-1 transition-colors"
-               :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'text-emerald-600' : 'text-slate-400 group-hover:text-emerald-500'"
+               class="text-[10px] font-medium text-center w-full truncate px-1 transition-colors group-hover:font-bold"
+               :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'font-bold' : ''"
              >
                {{ cat === 'SEMUA' ? 'All' : cat }}
              </span>
           </button>
+          
+          <div class="mt-auto flex flex-col items-center gap-4 w-full px-2">
+            <div class="h-px w-10 bg-emerald-200/50"></div>
+            <button class="group flex flex-col items-center gap-1 w-full py-2 hover:bg-red-50 rounded-xl transition-all">
+                <span class="material-symbols-outlined text-red-400 group-hover:text-red-500">logout</span>
+                <span class="text-[10px] font-medium text-red-400 group-hover:text-red-500">Logout</span>
+            </button>
+          </div>
        </aside>
 
        <!-- Mobile Categories (Horizontal Scroll) -->
@@ -521,6 +521,7 @@
                 <input 
                   v-model="searchQuery" 
                   type="text" 
+                  aria-label="Search products"
                   placeholder="Search menu, sku or barcode..." 
                   class="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium placeholder:text-slate-400"
                 >
@@ -538,18 +539,27 @@
                   v-for="product in filteredProducts" 
                   :key="product.id"
                   @click="addToCart(product)"
-                  class="bg-white rounded-2xl p-3 shadow-card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group border border-transparent hover:border-emerald-500/30 overflow-hidden relative"
+                  @keydown.enter="addToCart(product)"
+                  @keydown.space.prevent="addToCart(product)"
+                  role="button"
+                  tabindex="0"
+                  class="bg-white border border-slate-200 rounded-2xl overflow-hidden cursor-pointer product-card-hover group transition-all duration-200 shadow-sm relative focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
                 >
                    <!-- Image -->
-                   <div class="aspect-[4/3] rounded-xl bg-slate-100 mb-3 overflow-hidden relative">
+                   <div class="relative aspect-square w-full overflow-hidden bg-slate-100">
                       <img 
                         v-if="product.image" 
                         :src="product.image" 
-                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         alt="Product"
                       >
                       <div v-else class="w-full h-full flex items-center justify-center text-3xl">
                         {{ product.emoji || '📦' }}
+                      </div>
+                      
+                      <!-- Category Badge -->
+                      <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-md text-xs font-bold text-slate-700 shadow-sm">
+                        {{ product.category || 'Item' }}
                       </div>
                       
                       <!-- Add Overlay on Hover -->
@@ -560,16 +570,17 @@
                       </div>
                       
                       <!-- Stock Badge -->
-                       <div v-if="product.stock <= 5" class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/95 shadow-lg backdrop-blur-md border border-slate-100/50" :class="product.stock === 0 ? 'text-red-500' : 'text-amber-600'">
+                       <div v-if="product.stock <= 5" class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/95 shadow-lg backdrop-blur-md border border-slate-100/50" :class="product.stock === 0 ? 'text-red-500' : 'text-amber-600'">
                           {{ product.stock === 0 ? 'Habis' : `${product.stock} Tersisa` }}
                        </div>
                    </div>
 
                    <!-- Info -->
-                   <div class="px-1">
-                      <h3 class="font-bold text-slate-800 leading-tight mb-1.5 line-clamp-2 min-h-[2.5rem] text-[13px]">{{ product.name }}</h3>
-                      <div class="flex items-center justify-between">
-                         <span class="text-emerald-600 font-black text-sm">{{ formatCurrency(product.price) }}</span>
+                   <div class="p-3">
+                      <h3 class="text-slate-800 font-bold text-base truncate mb-2">{{ product.name }}</h3>
+                      <div class="flex justify-between items-end">
+                         <p class="text-slate-400 text-xs font-medium">SKU: {{ product.sku || 'N/A' }}</p>
+                         <p class="text-emerald-600 font-bold text-lg leading-none">{{ formatCurrency(product.price) }}</p>
                       </div>
                    </div>
                    
@@ -583,14 +594,12 @@
        </section>
 
        <!-- 3. Cart Sidebar -->
-       <aside class="bg-white flex flex-col border-l border-slate-200 h-[40vh] lg:h-full relative shadow-2xl lg:shadow-none z-30">
+       <aside class="glass-effect flex flex-col border-l border-slate-200 h-[40vh] lg:h-full relative shadow-2xl lg:shadow-none z-30">
           <!-- Cart Header -->
-          <div class="p-5 border-b border-slate-100 bg-white sticky top-0 z-10">
-             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-extrabold text-slate-800">Current Order</h2>
-                <div class="px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
-                   <span class="text-xs font-bold text-emerald-600">ID #{{ lastOrderReceipt?.orderNumber || 'NEW' }}</span>
-                </div>
+          <div class="p-5 border-b border-slate-100 bg-white/60 sticky top-0 z-10 space-y-3">
+             <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-extrabold text-slate-900">Current Order</h2>
+                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded">#{{ lastOrderReceipt?.orderNumber || 'NEW' }}</span>
              </div>
              
              <!-- Customer Selector (Compact) -->
@@ -598,21 +607,17 @@
                  <button 
                     @click="showCustomerModal = true" 
                     id="customer-selector-btn" 
-                    class="flex-1 py-2.5 px-3 bg-slate-50 border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 rounded-xl flex items-center justify-between group transition-all"
+                    class="flex-1 flex items-center justify-between px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 hover:border-emerald-400 hover:shadow-sm transition-all text-left group"
                  >
-                    <div class="flex items-center gap-2 overflow-hidden">
-                       <div class="w-6 h-6 rounded-full bg-slate-200 group-hover:bg-emerald-200 flex items-center justify-center text-slate-500 group-hover:text-emerald-600 transition-colors">
-                          <span class="material-symbols-outlined text-sm">person</span>
-                       </div>
-                       <span class="text-sm font-semibold text-slate-600 group-hover:text-emerald-700 truncate">
-                          {{ customerName || selectedMember?.name || 'Walk-in Customer' }}
-                       </span>
+                    <div class="flex items-center gap-2">
+                       <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-[20px]">person</span>
+                       <span class="font-medium truncate">{{ customerName || selectedMember?.name || 'Walk-in Customer' }}</span>
                     </div>
-                    <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500 text-sm">edit</span>
+                    <span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
                  </button>
                  <!-- Simple toggle or add -->
-                 <button @click="switchCustomerType(customerType === 'customer' ? 'member' : 'customer')" class="w-10 rounded-xl border border-slate-200 flex items-center justify-center hover:bg-slate-50 text-slate-400 hover:text-emerald-500 transition-colors" title="Switch Type">
-                    <span class="material-symbols-outlined text-xl">swap_horiz</span>
+                 <button @click="switchCustomerType(customerType === 'customer' ? 'member' : 'customer')" class="w-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-primary hover:bg-emerald-50 hover:border-emerald-200 transition-colors shadow-sm" title="Switch Type">
+                    <span class="material-symbols-outlined text-[20px]">person_add</span>
                  </button>
              </div>
              
@@ -636,7 +641,7 @@
           </div>
 
           <!-- Cart Items -->
-          <div class="flex-1 overflow-y-auto p-4 space-y-3">
+          <div class="flex-1 overflow-y-auto p-5 space-y-5">
              <div v-if="cart.length === 0" class="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
                  <span class="material-symbols-outlined text-6xl mb-2">shopping_bag</span>
                  <p class="font-medium">Cart is empty</p>
@@ -645,77 +650,84 @@
              <div 
                v-for="item in cart" 
                :key="item.id"
-               class="flex gap-3 p-2 hover:bg-slate-50 rounded-xl transition-colors group relative border border-transparent hover:border-slate-200"
+               class="flex gap-3 group relative"
              >
                 <!-- Item Image -->
-                <div class="w-14 h-14 rounded-lg bg-slate-100 shrink-0 overflow-hidden">
+                <div class="w-16 h-16 rounded-xl bg-slate-100 shrink-0 border border-slate-100 shadow-sm overflow-hidden">
                    <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
                    <div v-else class="w-full h-full flex items-center justify-center text-xl">{{ item.emoji || '📦' }}</div>
                 </div>
                 
                 <!-- Details -->
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                    <div class="flex justify-between items-start">
-                      <h4 class="font-bold text-slate-800 text-sm truncate pr-2">{{ item.name }}</h4>
-                      <span class="font-bold text-slate-900 text-sm">{{ formatCurrency(item.price * item.quantity) }}</span>
+                      <h4 class="text-slate-800 text-sm font-bold truncate pr-2">{{ item.name }}</h4>
+                      <p class="text-slate-900 font-bold text-sm">{{ formatCurrency(item.price * item.quantity) }}</p>
                    </div>
-                   <p class="text-xs text-slate-400 mb-1.5">{{ formatCurrency(item.price) }} / unit</p>
                    
-                   <!-- Qty Controls -->
-                   <div class="flex items-center gap-3">
-                       <button @click="decreaseQuantity(item.id)" class="w-6 h-6 rounded bg-slate-100 hover:bg-red-100 text-slate-600 hover:text-red-500 flex items-center justify-center transition-colors">
-                          <span class="material-symbols-outlined text-sm font-bold">remove</span>
-                       </button>
-                       <span class="font-bold text-sm text-slate-900 w-4 text-center">{{ item.quantity }}</span>
-                       <button @click="increaseQuantity(item.id)" class="w-6 h-6 rounded bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition-colors">
-                          <span class="material-symbols-outlined text-sm font-bold">add</span>
-                       </button>
+                   <div class="flex justify-between items-end mt-1">
+                      <p class="text-slate-500 text-xs truncate bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 max-w-[120px]">
+                         {{ formatCurrency(item.price) }}/unit
+                      </p>
+                      
+                      <!-- Qty Controls -->
+                      <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-1.5 py-0.5 h-8 shadow-sm">
+                          <button @click="decreaseQuantity(item.id)" class="text-slate-400 hover:text-red-500 flex items-center justify-center w-6 h-full transition-colors">
+                             <span class="material-symbols-outlined text-[16px]">remove</span>
+                          </button>
+                          <span class="text-slate-800 text-sm font-bold w-4 text-center">{{ item.quantity }}</span>
+                          <button @click="increaseQuantity(item.id)" class="text-primary hover:text-emerald-700 flex items-center justify-center w-6 h-full transition-colors">
+                             <span class="material-symbols-outlined text-[16px]">add</span>
+                          </button>
+                      </div>
                    </div>
                 </div>
              </div>
           </div>
 
           <!-- Total & Actions -->
-          <div class="p-5 bg-slate-50 border-t border-slate-200">
-             
-             <!-- Totals -->
-             <div class="space-y-2 mb-4">
-                <div class="flex justify-between text-sm text-slate-500">
+          <div class="px-5 py-3 grid grid-cols-4 gap-2 border-t border-slate-100 bg-slate-50/50 backdrop-blur-sm">
+             <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm" @click="holdOrder">
+                <span class="material-symbols-outlined text-[20px]">pause_circle</span>
+                <span class="text-[10px] font-bold">Hold</span>
+             </button>
+             <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[20px]">percent</span>
+                <span class="text-[10px] font-bold">Discount</span>
+             </button>
+             <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm" @click="toggleSplitBill">
+                <span class="material-symbols-outlined text-[20px]">call_split</span>
+                <span class="text-[10px] font-bold">Split</span>
+             </button>
+             <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 text-slate-500 hover:text-red-500 transition-all shadow-sm" @click="clearCart">
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+                <span class="text-[10px] font-bold">Clear</span>
+             </button>
+          </div>
+          
+          <div class="bg-white border-t border-slate-200 p-5 pb-6 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] relative z-10">
+             <div class="space-y-3 mb-5">
+                <div class="flex justify-between text-slate-500 text-sm font-medium">
                    <span>Subtotal</span>
-                   <span>{{ formatCurrency(subtotal) }}</span>
+                   <span class="text-slate-800">{{ formatCurrency(subtotal) }}</span>
+                </div>
+                <div class="flex justify-between text-slate-500 text-sm font-medium">
+                   <span>Tax (10%)</span>
+                   <span class="text-slate-800">{{ formatCurrency(tax || 0) }}</span>
                 </div>
                 <div class="flex justify-between text-sm text-emerald-600 font-medium" v-if="discount > 0">
                    <span>Discount</span>
                    <span>-{{ formatCurrency(discount) }}</span>
                 </div>
-                <div class="flex justify-between items-end mt-4 pt-4 border-t border-slate-200">
-                   <span class="text-slate-600 font-bold">Total Payment</span>
-                   <span class="text-2xl font-black text-slate-900">{{ formatCurrency(total) }}</span>
+                <div class="h-px w-full bg-slate-100 my-2"></div>
+                <div class="flex justify-between items-center">
+                   <span class="text-slate-900 font-bold text-lg">Total</span>
+                   <span class="text-3xl font-extrabold text-primary-dark">{{ formatCurrency(total) }}</span>
                 </div>
              </div>
-
-             <!-- Action Buttons -->
-             <div class="grid grid-cols-4 gap-2 mb-3">
-                <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="clearCart">
-                   <span class="material-symbols-outlined text-xl group-hover:scale-110">delete</span>
-                   <span class="text-[9px] font-bold uppercase tracking-wider">Hapus</span>
-                </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-amber-500 hover:bg-amber-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="holdOrder">
-                   <span class="material-symbols-outlined text-xl group-hover:scale-110">pause</span>
-                   <span class="text-[9px] font-bold uppercase tracking-wider">Hold</span>
-                </button>
-                 <button class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-slate-700 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md">
-                   <span class="material-symbols-outlined text-xl group-hover:scale-110">percent</span>
-                   <span class="text-[9px] font-bold uppercase tracking-wider">Diskon</span>
-                </button>
-                 <button class="p-3 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-purple-500 hover:bg-purple-50 transition-all flex flex-col items-center justify-center gap-1 group shadow-sm hover:shadow-md" @click="toggleSplitBill">
-                   <span class="material-symbols-outlined text-xl group-hover:scale-110">call_split</span>
-                   <span class="text-[9px] font-bold uppercase tracking-wider">Split</span>
-                </button>
-             </div>
-
+             
              <!-- Kitchen Toggle (F&B Feature) -->
-             <div class="flex items-center justify-between gap-2 mb-4 px-1 py-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm" v-if="authStore.user?.role !== 'KITCHEN'">
+             <div class="flex items-center justify-between gap-2 mb-4 px-1 py-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm" v-if="authStore.user?.role !== 'Cashier' && authStore.user?.role !== 'KITCHEN'">
                 <div class="flex items-center gap-2">
                    <div class="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center">
                       <span class="material-symbols-outlined text-xl">restaurant</span>
@@ -728,14 +740,13 @@
                 </label>
              </div>
 
-             <!-- Pay Button -->
              <button 
                @click="showPaymentModal = true" 
                :disabled="cart.length === 0"
-               class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-bold text-lg shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 hover:shadow-emerald-500/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+               class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transform active:scale-[0.98] transition-all flex justify-between items-center px-6 ring-4 ring-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
              >
-                <span class="material-symbols-outlined">payments</span>
-                Proccess Payment
+                <span>BAYAR</span>
+                <span class="bg-black/10 px-3 py-1 rounded-lg text-base font-bold">{{ formatCurrency(total) }}</span>
              </button>
           </div>
        </aside>
@@ -1271,6 +1282,17 @@ const total = computed(() => {
   return Math.max(0, subtotal.value - discount.value);
 });
 
+const getCategoryIcon = (category: string) => {
+  const map: Record<string, string> = {
+    'SEMUA': 'grid_view', 'ALL': 'grid_view',
+    'MAKANAN': 'restaurant', 'FOOD': 'restaurant', 'FOODS': 'restaurant',
+    'MINUMAN': 'local_cafe', 'DRINK': 'local_cafe', 'DRINKS': 'local_cafe',
+    'SNACK': 'cookie', 'SNACKS': 'cookie',
+    'DESSERT': 'icecream', 'DESSERTS': 'icecream'
+  };
+  return map[category.toUpperCase()] || 'category';
+};
+
 // Methods
 const checkOrientation = () => {
   isPortrait.value = window.innerHeight > window.innerWidth;
@@ -1285,7 +1307,7 @@ const checkOrientation = () => {
     if (orientation && typeof orientation.lock === 'function') {
       (orientation as { lock: (orientation: string) => Promise<void> }).lock('landscape').catch((err: any) => {
         // Lock failed (user may have denied or browser doesn't support)
-        console.log('Orientation lock not available:', err);
+
       });
     } else if (screenAny.lockOrientation) {
       // Fallback for older browsers
@@ -1306,7 +1328,7 @@ const loadTenantFeatures = async () => {
     const features = response.data.features || {};
     isSimpleMode.value = features.simplePosMode === true;
   } catch (error: any) {
-    console.log('Could not load tenant features:', error);
+
     isSimpleMode.value = false;
   }
 };
@@ -1316,7 +1338,7 @@ const loadProducts = async (retryCount = 0) => {
   if (authStore.isSuperAdmin && !authStore.selectedTenantId) {
     const selectedTenantId = localStorage.getItem('selectedTenantId');
     if (!selectedTenantId) {
-      if (!isSimpleMode.value) console.log('Waiting for tenant selection...');
+
       return;
     }
     authStore.setSelectedTenant(selectedTenantId);
@@ -1358,7 +1380,7 @@ const loadProducts = async (retryCount = 0) => {
 
     // If offline, try to load from cache
     if (!isOnline.value) {
-      console.log('Offline: Loading products from cache...');
+
       const cachedProducts = await offlineStorage.getCachedProducts();
       if (cachedProducts && cachedProducts.length > 0) {
         products.value = cachedProducts;
@@ -1391,7 +1413,7 @@ const checkCriticalStock = async () => {
       }
     }
   } catch (error: any) {
-    console.log('Could not check critical stock:', error);
+
   }
 };
 
@@ -2358,5 +2380,22 @@ onUnmounted(() => {
 .slide-left-enter-from,
 .slide-left-leave-to {
   transform: translateX(-100%);
+}
+
+
+.nav-emerald-tint {
+  background: linear-gradient(to bottom, rgba(236, 253, 245, 0.6), rgba(255, 255, 255, 0.4));
+}
+
+.category-active {
+  background: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border-left: 3px solid #10b981;
+  color: #059669;
+}
+
+.product-card-hover:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  border-color: #34d399;
 }
 </style>

@@ -185,11 +185,11 @@ const checkAndActivate = async () => {
     // Check payment status (this will also trigger activation if payment is settled)
     const response = await api.get(`/payment/status/${orderId.value}`);
     
-    console.log('Payment status check result:', response.data);
+
 
     if (response.data.status === 'settlement' || response.data.status === 'capture') {
       activationStatus.value = 'success';
-      console.log('Payment is settled, addon/subscription should be activated');
+
       
       // Wait a bit for activation to complete, then reload if needed
       setTimeout(() => {
@@ -217,12 +217,7 @@ const checkAndActivate = async () => {
 };
 
 onMounted(() => {
-  console.log('Payment callback:', {
-    status: props.status,
-    orderId: props.order_id,
-    transactionStatus: props.transaction_status,
-    statusCode: props.status_code,
-  });
+
 
   // If payment is successful or pending, check status and trigger activation
   // This ensures addon is activated even if webhook is delayed or not called
