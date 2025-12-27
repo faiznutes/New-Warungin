@@ -2183,8 +2183,9 @@ const checkShiftStatus = async () => {
   checkingShift.value = true;
   try {
     const response = await api.get('/cash-shift/current');
+    const data = response.data?.data || response.data;
     // If we get a current shift, it's active
-    hasActiveShift.value = response.data && response.data.id && !response.data.shiftEnd;
+    hasActiveShift.value = data && data.id && !data.shiftEnd;
   } catch (error: any) {
     // 404 means no shift, other errors we treat as no shift
     hasActiveShift.value = false;
