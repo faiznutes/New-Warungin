@@ -149,7 +149,7 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import axios from '../../utils/axios';
+import api from '../../api';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -157,7 +157,7 @@ const store = ref<any>(null);
 
 const fetchStore = async () => {
     try {
-        const response = await axios.get(`/outlets/${route.params.id}`);
+        const response = await api.get(`/outlets/${route.params.id}`);
         store.value = response.data.data;
     } catch (error) {
         console.error('Failed to fetch store details', error);

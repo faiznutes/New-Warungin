@@ -119,7 +119,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from '../../utils/axios';
+import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 
 const route = useRoute();
@@ -140,7 +140,7 @@ const days = [
 
 const fetchStore = async () => {
     try {
-        const response = await axios.get(`/outlets/${route.params.id}`);
+        const response = await api.get(`/outlets/${route.params.id}`);
         const data = response.data.data;
         
         // Initialize operatingHours if missing
@@ -162,7 +162,7 @@ const fetchStore = async () => {
 const saveChanges = async () => {
     isSaving.value = true;
     try {
-        await axios.put(`/outlets/${route.params.id}`, {
+        await api.put(`/outlets/${route.params.id}`, {
             name: form.value.name,
             address: form.value.address,
             phone: form.value.phone,
