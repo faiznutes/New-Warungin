@@ -120,11 +120,11 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from '../../utils/axios';
-import { useToast } from 'vue-toastification';
+import { useNotification } from '../../composables/useNotification';
 
 const route = useRoute();
 const router = useRouter();
-const toast = useToast();
+const { success: showSuccess, error: showError } = useNotification();
 const isSaving = ref(false);
 const form = ref<any>(null);
 
@@ -155,7 +155,7 @@ const fetchStore = async () => {
         };
     } catch (error) {
         console.error('Failed to fetch store', error);
-        toast.error('Failed to load store data');
+        showError('Failed to load store data');
     }
 };
 
@@ -169,11 +169,11 @@ const saveChanges = async () => {
             isActive: form.value.isActive,
             operatingHours: form.value.operatingHours
         });
-        toast.success('Store updated successfully');
+        showSuccess('Store updated successfully');
         router.push(`/app/stores/${route.params.id}`);
     } catch (error) {
         console.error('Failed to save store', error);
-        toast.error('Failed to save changes');
+        showError('Failed to save changes');
     } finally {
         isSaving.value = false;
     }
