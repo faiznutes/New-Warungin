@@ -1,570 +1,528 @@
 <template>
-    <div class="bg-[#f6f7f8] dark:bg-[#101922] min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-display">
-    <div class="max-w-[1600px] mx-auto space-y-6">
-      
-      <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10b981]"></div>
-        <p class="mt-4 text-[#4c739a] dark:text-slate-400 font-medium">Memuat detail tenant...</p>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="hasError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
-        <span class="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
-        <h3 class="text-lg font-bold text-red-800 dark:text-red-200 mb-2">Terjadi Kesalahan</h3>
-        <p class="text-red-600 dark:text-red-300 mb-4">{{ errorMessage }}</p>
-        <button 
-          @click="retryLoad" 
-          class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center gap-2 mx-auto"
-        >
-          <span class="material-symbols-outlined text-[18px]">refresh</span>
-          Coba Lagi
-        </button>
-      </div>
-
-      <div v-else class="space-y-6">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-4">
-            <button 
-              @click="handleBackToTenants" 
-              class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-[#10b981] text-[#4c739a] dark:text-slate-400 hover:text-[#10b981] transition-all shadow-sm group"
-            >
-              <span class="material-symbols-outlined group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
-            </button>
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-100">
-                  {{ tenant?.subscriptionPlan || 'UNKNOWN' }}
-                </span>
-                <span 
-                  class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"
-                  :class="tenant?.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'"
-                >
-                  <span class="material-symbols-outlined text-[10px] icon-filled">{{ tenant?.isActive ? 'check_circle' : 'cancel' }}</span>
-                  {{ tenant?.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </div>
-              <h1 class="text-2xl font-bold text-[#0d141b] dark:text-white leading-tight flex items-center gap-2">
-                {{ tenant?.name }}
-                <span class="material-symbols-outlined text-blue-500 icon-filled text-[20px]" v-if="tenant?.isActive">verified</span>
-              </h1>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-3">
-             <button 
-                @click="loadTenantDetail"
-                class="px-4 py-2 bg-white dark:bg-slate-800 text-[#4c739a] dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold text-sm flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">refresh</span>
-                Refresh
-              </button>
-          </div>
+    <div class="bg-[#f6f7f8] dark:bg-[#101922] min-h-screen font-display flex flex-col h-screen overflow-hidden">
+    <!-- Header -->
+    <header class="h-16 flex items-center justify-between px-6 lg:px-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shrink-0 z-10 sticky top-0">
+        <div class="flex items-center gap-2 text-sm">
+            <a href="#" @click.prevent="handleBackToTenants" class="text-slate-500 hover:text-blue-600 font-medium transition-colors">Tenants</a>
+            <span class="text-slate-300 material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-semibold">{{ tenant?.name || 'Loading...' }}</span>
         </div>
+    </header>
 
-        <!-- Info Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Tenant Profile -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-1">
-             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#10b981]">store</span>
-                   Profil Tenant
-                </h3>
-             </div>
-             
-             <div class="space-y-4">
-                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
-                      <span class="material-symbols-outlined">person</span>
-                   </div>
-                   <div>
-                      <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-0.5">Owner Name</p>
-                      <p class="font-bold text-[#0d141b] dark:text-white">{{ tenant?.name }}</p>
-                   </div>
-                </div>
-                
-                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
-                      <span class="material-symbols-outlined">mail</span>
-                   </div>
-                   <div>
-                      <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-0.5">Email</p>
-                      <p class="font-bold text-[#0d141b] dark:text-white break-all">{{ tenant?.email }}</p>
-                   </div>
-                </div>
+    <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+        <div class="max-w-[1100px] mx-auto flex flex-col gap-6">
+            
+            <!-- Loading State -->
+            <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-slate-500 dark:text-slate-400 font-medium">Memuat detail tenant...</p>
+            </div>
 
-                <div class="flex items-start gap-4 p-3 bg-[#f8fafc] dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                   <div class="bg-white dark:bg-slate-700 p-2 rounded-xl shadow-sm text-blue-600">
-                      <span class="material-symbols-outlined">call</span>
-                   </div>
-                   <div>
-                      <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-0.5">Phone</p>
-                      <p class="font-bold text-[#0d141b] dark:text-white">{{ tenant?.phone || '-' }}</p>
-                   </div>
-                </div>
-             </div>
-          </div>
-
-          <!-- Subscription Status -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-2 flex flex-col">
-             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#10b981]">card_membership</span>
-                   Langganan Aktif
-                </h3>
-                <div class="flex items-center gap-2">
-                   <div class="flex items-start flex-col gap-1">
-                      <div class="flex items-center gap-2">
-                         <span class="px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs uppercase border border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800">
-                           {{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'basic') }}
-                         </span>
-                         <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
-                           {{ subscription ? getSubscriptionDuration(subscription) : ((tenant?.subscriptionEnd) ? getDaysRemaining(tenant.subscriptionEnd) : 0) }} Hari
-                         </span>
-                      </div>
-                      <div class="flex text-xs gap-3 mt-1 text-[#4c739a] dark:text-slate-400 font-medium">
-                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : (subscription?.subscription?.startDate ? formatDate(subscription.subscription.startDate) : (tenant?.subscriptionStart ? formatDate(tenant.subscriptionStart) : '-')) }}</span>
-                         <span>•</span>
-                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : (subscription?.subscription?.endDate ? formatDate(subscription.subscription.endDate) : (tenant?.subscriptionEnd ? formatDate(tenant.subscriptionEnd) : '-')) }}</span>
-                      </div>
-                   </div>
-                </div>
-              <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="text-xs text-[#4c739a] mt-2">
-                ⏰ Upgrade sementara - akan kembali ke BASIC setelah durasi berakhir
-              </p>
-            </div>
-          </div>
-
-          <!-- Active Addons Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                 <span class="material-symbols-outlined text-[#10b981]">extension</span>
-                 Addon Aktif
-              </h3>
-              <button
-                @click="showAddAddonModal = true"
-                class="px-4 py-2 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                Tambah Addon
-              </button>
-            </div>
-            
-            <div v-if="activeAddons.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-              <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">extension_off</span>
-              <p class="text-[#4c739a] dark:text-slate-400 font-medium">No active addons</p>
-            </div>
-            
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div
-                v-for="addon in filteredActiveAddons"
-                :key="addon.id"
-                class="bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:border-blue-300 dark:hover:border-blue-700 transition group"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <div>
-                    <h4 class="font-bold text-[#0d141b] dark:text-white mb-1">{{ addon.addonName }}</h4>
-                    <p class="text-xs text-[#4c739a] dark:text-slate-400 line-clamp-2">{{ getAddonDescription(addon) || 'No description' }}</p>
-                  </div>
-                  <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100 rounded">Active</span>
-                </div>
-
-                <div v-if="addon.limit" class="mb-4 bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-100 dark:border-slate-700">
-                  <div class="flex items-center justify-between text-xs mb-1.5">
-                    <span class="text-[#4c739a] font-bold">Penggunaan</span>
-                    <span class="font-bold" :class="addon.isLimitReached ? 'text-red-500' : 'text-[#0d141b] dark:text-white'">
-                      {{ addon.currentUsage }} / {{ addon.limit }}
-                    </span>
-                  </div>
-                  <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      class="h-1.5 rounded-full transition-all duration-500"
-                      :class="addon.isLimitReached ? 'bg-red-500' : 'bg-blue-500'"
-                      :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }"
-                    ></div>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between text-xs mb-4 p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
-                   <div>
-                      <p class="text-[10px] text-[#4c739a] uppercase font-bold tracking-wider">Berakhir</p>
-                      <p class="font-bold text-[#0d141b] dark:text-white">{{ addon.expiresAt ? formatDate(addon.expiresAt) : '-' }}</p>
-                   </div>
-                   <div class="text-right">
-                      <p class="text-[10px] text-[#4c739a] uppercase font-bold tracking-wider">Sisa</p>
-                      <p 
-                        class="font-bold"
-                        :class="getAddonDaysRemaining(addon) <= 7 ? 'text-red-500' : getAddonDaysRemaining(addon) <= 30 ? 'text-amber-500' : 'text-emerald-500'"
-                      >
-                         {{ getAddonDaysRemaining(addon) }} hari
-                      </p>
-                   </div>
-                </div>
-
-                <div class="flex gap-2">
-                  <button
-                    @click="reduceAddon(addon)"
-                     class="flex-1 px-3 py-2 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-xl transition border border-amber-100"
-                  >
-                    Kurangi
-                  </button>
-                  <button
-                    @click="extendAddon(addon)"
-                    class="flex-1 px-3 py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition border border-blue-100"
-                  >
-                    Perpanjang
-                  </button>
-                  <button
-                    @click="unsubscribeAddon(addon)"
-                    class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition border border-red-100"
-                    title="Nonaktifkan"
-                  >
-                    <span class="material-symbols-outlined text-[16px]">power_settings_new</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Reward Points Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                 <span class="material-symbols-outlined text-[#10b981]">stars</span>
-                 Reward Points
-              </h3>
-              <button
-                @click="showEditPointsModal = true"
-                class="px-4 py-2 bg-slate-100 text-[#4c739a] border border-slate-200 rounded-xl hover:bg-slate-200 transition font-bold text-sm flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">edit</span>
-                Edit Point
-              </button>
-            </div>
-            
-            <div v-if="loadingPoints" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
-            </div>
-            
-            <div v-else class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
-                  <label class="block text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Point Saat Ini</label>
-                  <p class="text-2xl font-extrabold text-blue-700 dark:text-blue-300">{{ tenantPoints?.currentPoints || 0 }}</p>
-                </div>
-                <div class="bg-emerald-50 dark:bg-emerald-900/10 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800">
-                  <label class="block text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Total Diperoleh</label>
-                  <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ tenantPoints?.totalEarned || 0 }}</p>
-                </div>
-                <div class="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-4 border border-amber-100 dark:border-amber-800">
-                  <label class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Total Digunakan</label>
-                  <p class="text-2xl font-extrabold text-amber-700 dark:text-amber-300">{{ tenantPoints?.totalSpent || 0 }}</p>
-                </div>
-              </div>
-              
-              <div>
-                <h4 class="text-sm font-bold text-[#0d141b] dark:text-white mb-3">Riwayat Point</h4>
-                <div v-if="pointTransactions.length === 0" class="text-center py-8 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <p class="text-[#4c739a] dark:text-slate-400 font-medium">Belum ada transaksi point</p>
-                </div>
-                <div v-else class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-                  <div
-                    v-for="transaction in pointTransactions"
-                    :key="transaction.id"
-                    class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-700 transition"
-                  >
-                    <div class="flex-1">
-                      <p class="font-bold text-[#0d141b] dark:text-white text-sm line-clamp-1">{{ transaction.description }}</p>
-                      <p class="text-xs text-[#4c739a] mt-0.5">{{ formatDate(transaction.createdAt) }}</p>
-                    </div>
-                    <span
-                      class="font-bold text-sm ml-4 px-2 py-1 rounded-md"
-                      :class="[
-                        transaction.amount > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                      ]"
-                    >
-                      {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Users Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#10b981]">group</span>
-                   Pengguna Tenant
-                </h3>
-                <p v-if="userUsage" class="text-xs text-[#4c739a] dark:text-slate-400 mt-1 font-medium">
-                  Used: {{ userUsage.currentUsage }} / {{ userUsage.limit === -1 ? 'Unlimited' : userUsage.limit }}
-                  <span v-if="userUsage.limit !== -1" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-500' : 'text-emerald-500'">
-                    ({{ userUsage.limit - userUsage.currentUsage }} available)
-                  </span>
-                </p>
-              </div>
-              <button
-                @click="showCreateUserModal = true"
-                class="px-4 py-2 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">person_add</span>
-                User Baru
-              </button>
-            </div>
-            
-            <div v-if="loadingUsers" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
-            </div>
-            
-            <div v-else-if="tenantUsers.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">group_off</span>
-               <p class="text-[#4c739a] dark:text-slate-400 font-medium">Belum ada pengguna</p>
-            </div>
-            
-            <template v-else>
-              <!-- Bulk Actions -->
-              <div v-if="Array.isArray(selectedUsers) && selectedUsers.length > 0" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 mb-4 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                  <span class="text-sm font-bold text-blue-700 dark:text-blue-300">
-                    {{ selectedUsers.length }} terpilih
-                  </span>
-                  <div class="flex gap-2">
-                     <button
-                       v-if="selectedUsers.some(u => !u.isActive)"
-                       @click="bulkActivateUsers"
-                       class="px-3 py-1.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition text-xs font-bold shadow-sm"
-                     >
-                       Aktifkan ({{ selectedUsers.filter(u => !u.isActive).length }})
-                     </button>
-                     <button
-                       v-if="selectedUsers.some(u => u.isActive)"
-                       @click="bulkDeactivateUsers"
-                       class="px-3 py-1.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition text-xs font-bold shadow-sm"
-                     >
-                       Nonaktifkan ({{ selectedUsers.filter(u => u.isActive).length }})
-                     </button>
-                  </div>
-                </div>
-                <button
-                  @click="selectedUsers = []"
-                  class="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  Batal
+            <!-- Error State -->
+            <div v-else-if="hasError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 text-center">
+                <span class="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
+                <h3 class="text-lg font-bold text-red-800 dark:text-red-200 mb-2">Terjadi Kesalahan</h3>
+                <p class="text-red-600 dark:text-red-300 mb-4">{{ errorMessage }}</p>
+                <button @click="loadTenantDetail" class="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium flex items-center gap-2 mx-auto">
+                    <span class="material-symbols-outlined text-[18px]">refresh</span> Coba Lagi
                 </button>
-              </div>
-              
-              <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-                 <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                    <thead class="bg-slate-50 dark:bg-slate-800">
-                       <tr>
-                          <th class="px-4 py-3 text-left w-10">
-                             <input
-                               type="checkbox"
-                               :checked="Array.isArray(selectedUsers) && Array.isArray(tenantUsers) && selectedUsers.length === tenantUsers.length && tenantUsers.length > 0"
-                               @change="toggleSelectAllUsers"
-                               class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                             />
-                          </th>
-                          <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Nama</th>
-                          <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Email</th>
-                          <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Role</th>
-                          <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</th>
-                          <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Last Login</th>
-                          <th class="px-4 py-3 text-right text-xs font-bold text-[#4c739a] uppercase tracking-wider">Aksi</th>
-                       </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                       <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors" :class="{ 'bg-blue-50/50 dark:bg-blue-900/10': isUserSelected(user.id) }">
-                          <td class="px-4 py-3">
-                             <input
-                               type="checkbox"
-                               :checked="isUserSelected(user.id)"
-                               @change="toggleUserSelection(user)"
-                               class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                             />
-                          </td>
-                          <td class="px-4 py-3">
-                             <div class="text-sm font-bold text-[#0d141b] dark:text-white">{{ user.name }}</div>
-                          </td>
-                          <td class="px-4 py-3">
-                             <div class="text-sm text-[#4c739a] dark:text-slate-400">{{ user.email }}</div>
-                          </td>
-                          <td class="px-4 py-3">
-                             <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border" :class="getRoleClass(user.role)">
-                                {{ getRoleLabel(user.role) }}
-                             </span>
-                          </td>
-                          <td class="px-4 py-3">
-                             <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border" :class="user.isActive ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'">
-                                {{ user.isActive ? 'Aktif' : 'Nonaktif' }}
-                             </span>
-                          </td>
-                          <td class="px-4 py-3">
-                             <div class="text-xs text-[#4c739a] dark:text-slate-400">{{ user.lastLogin ? formatDate(user.lastLogin) : '-' }}</div>
-                          </td>
-                          <td class="px-4 py-3 text-right">
-                             <button @click="editUser(user)" class="p-1 text-[#4c739a] hover:text-[#10b981] transition rounded group">
-                                <span class="material-symbols-outlined text-[20px] group-hover:scale-110">edit</span>
-                             </button>
-                          </td>
-                       </tr>
-                    </tbody>
-                 </table>
-              </div>
+            </div>
+
+            <template v-else>
+                <!-- Hero Card -->
+                <section class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="h-24 bg-gradient-to-r from-slate-100 to-blue-50/50 dark:from-slate-800 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800"></div>
+                    <div class="px-6 pb-6 lg:px-8">
+                        <div class="relative flex flex-col lg:flex-row gap-6 items-start -mt-10">
+                            <!-- Tenant Logo -->
+                            <div class="shrink-0 relative">
+                                <div class="w-28 h-28 rounded-xl bg-white dark:bg-slate-800 shadow-md border-2 border-white dark:border-slate-700 p-1">
+                                    <div class="w-full h-full rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-4xl font-bold text-slate-300 select-none">
+                                        {{ tenant?.name?.charAt(0).toUpperCase() }}
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-1 right-1 translate-x-1/4 translate-y-1/4">
+                                    <span class="flex h-5 w-5 items-center justify-center rounded-full ring-2 ring-white dark:ring-slate-800" :class="tenant?.isActive ? 'bg-green-500' : 'bg-red-500'">
+                                        <span class="material-symbols-outlined text-white text-[12px] font-bold">{{ tenant?.isActive ? 'check' : 'close' }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Info -->
+                            <div class="flex-1 pt-2 lg:pt-11 min-w-0">
+                                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-2">
+                                            {{ tenant?.name }}
+                                            <span v-if="tenant?.isActive" class="material-symbols-outlined text-blue-500 text-[20px] icon-filled">verified</span>
+                                        </h1>
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-slate-500">
+                                            <span class="flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[16px]">tag</span> ID: #{{ tenant?.id?.substring(0, 8) }}
+                                            </span>
+                                            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                            <span class="flex items-center gap-1 font-medium" :class="tenant?.isActive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                                {{ tenant?.isActive ? 'Active' : 'Inactive' }}
+                                            </span>
+                                            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                            <span>{{ tenant?.email }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Quick Stats -->
+                                    <div class="flex items-center gap-6">
+                                        <div class="flex flex-col items-start lg:items-end">
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Stores</span>
+                                            <span class="text-lg font-bold text-slate-900 dark:text-white">{{ tenantStores.length }}</span>
+                                        </div>
+                                        <div class="w-px h-8 bg-slate-200 dark:border-slate-700 hidden lg:block"></div>
+                                        <div class="flex flex-col items-start lg:items-end">
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Plan</span>
+                                            <span class="text-sm font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-center border border-blue-100">
+                                                {{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Actions -->
+                            <div class="w-full lg:w-auto flex items-center gap-3 pt-2 lg:pt-11">
+                                <button @click="loadTenantDetail" class="flex-1 lg:flex-none h-9 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">refresh</span> Refresh
+                                </button>
+                                <!-- More actions can go here -->
+                            </div>
+                        </div>
+                    </div>
+                <!-- Tabs -->
+                <div class="mt-2 px-6 lg:px-8 border-t border-slate-200 dark:border-slate-700">
+                    <div class="flex overflow-x-auto gap-8 no-scrollbar scroll-smooth">
+                        <a v-for="tab in ['profile', 'subscription', 'addons', 'points', 'users', 'stores']" 
+                           :key="tab"
+                           @click.prevent="activeTab = tab" 
+                           class="group relative py-4 flex flex-col items-center justify-center min-w-fit cursor-pointer">
+                            <span class="text-sm tracking-wide transition-colors capitalize" 
+                                  :class="activeTab === tab ? 'font-bold text-blue-600' : 'font-medium text-slate-500 group-hover:text-slate-900 dark:text-slate-400 dark:group-hover:text-white'">
+                                {{ tab }}
+                            </span>
+                            <span class="absolute bottom-0 h-[3px] w-full rounded-t-full transition-colors" 
+                                  :class="activeTab === tab ? 'bg-blue-600' : 'bg-transparent group-hover:bg-slate-200 dark:group-hover:bg-slate-700'"></span>
+                        </a>
+                    </div>
+                </div>
+                </section>
+
+                <!-- TAB: Profile -->
+                <section v-if="activeTab === 'profile'" class="flex flex-col gap-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-600">badge</span> Tenant Profile
+                            </h3>
+                            <button @click="activeTab = 'users'" class="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline">Manage Users</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Owner Name</span>
+                                <span class="font-medium text-slate-900 dark:text-white">{{ tenant?.name }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Email Address</span>
+                                <span class="font-medium text-slate-900 dark:text-white break-all">{{ tenant?.email }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Phone Number</span>
+                                <span class="font-medium text-slate-900 dark:text-white">{{ tenant?.phone || '-' }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Account Status</span>
+                                <span class="flex items-center gap-2 font-medium" :class="tenant?.isActive ? 'text-green-600' : 'text-red-600'">
+                                    <span class="flex h-2 w-2 rounded-full" :class="tenant?.isActive ? 'bg-green-600' : 'bg-red-600'"></span>
+                                    {{ tenant?.isActive ? 'Active' : 'Suspended' }}
+                                </span>
+                            </div>
+                             <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Plan</span>
+                                <span class="font-medium text-slate-900 dark:text-white">{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</span>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Stores Count</span>
+                                <span class="font-medium text-slate-900 dark:text-white">{{ tenantStores.length }} Outlet(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: Subscription -->
+                <section v-if="activeTab === 'subscription'" class="flex flex-col gap-6">
+                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-blue-600">card_membership</span> Subscription Status
+                                </h3>
+                                <p class="mt-1 text-sm text-slate-500">Manage tenant subscription plan and billing cycle.</p>
+                            </div>
+                             <div class="flex gap-3">
+                                <button @click="showEditPlanModal = true" class="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 rounded-xl font-bold text-sm transition border border-blue-100 dark:border-blue-800">
+                                    Change Plan
+                                </button>
+                                <button @click="showExtendSubscriptionModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition">
+                                    Extend Subscription
+                                </button>
+                                <button @click="showReduceSubscriptionModal = true" class="px-4 py-2 bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm transition">
+                                    Adjust Duration
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Plan Card -->
+                            <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-xl shadow-blue-500/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                <div class="relative z-10">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="opacity-90 font-medium tracking-wide text-sm">CURRENT PLAN</span>
+                                        <span class="material-symbols-outlined opacity-80">verified</span>
+                                    </div>
+                                    <h2 class="text-3xl font-black mb-1 capitalize">{{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</h2>
+                                    <p class="text-blue-100 text-sm mb-8 font-medium">Billed Monthly</p>
+                                    
+                                    <div class="flex items-center gap-3 mt-auto">
+                                        <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
+                                            <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-blue-200 font-bold uppercase tracking-wider">Expires On</p>
+                                            <p class="font-bold">{{ subscription?.endDate ? formatDate(subscription.endDate) : (tenant?.subscriptionEnd ? formatDate(tenant.subscriptionEnd) : '-') }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Details -->
+                            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center gap-3 mb-3 text-slate-500 dark:text-slate-400">
+                                        <span class="material-symbols-outlined">schedule</span>
+                                        <span class="text-xs font-bold uppercase tracking-wider">Remaining Time</span>
+                                    </div>
+                                    <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {{ subscription ? getSubscriptionDuration(subscription) : ((tenant?.subscriptionEnd) ? getDaysRemaining(tenant.subscriptionEnd) : 0) }}
+                                        <span class="text-sm font-medium text-slate-500">Days</span>
+                                    </p>
+                                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 mt-3 overflow-hidden">
+                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 75%"></div> 
+                                        <!-- Note: Ideal width calc is (remaining / total) * 100 but we might lack total duration safely. Static or simple calc is fine. -->
+                                    </div>
+                                </div>
+                                
+                                <div class="p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center gap-3 mb-3 text-slate-500 dark:text-slate-400">
+                                        <span class="material-symbols-outlined">history</span>
+                                        <span class="text-xs font-bold uppercase tracking-wider">Start Date</span>
+                                    </div>
+                                    <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                                         {{ subscription?.startDate ? formatDate(subscription.startDate) : (tenant?.subscriptionStart ? formatDate(tenant.subscriptionStart) : '-') }}
+                                    </p>
+                                </div>
+
+                                <div class="md:col-span-2 p-5 rounded-xl bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                    <div>
+                                         <p class="font-bold text-slate-900 dark:text-white">Need to stop subscription?</p>
+                                         <p class="text-sm text-slate-500">This will disable access to premium features.</p>
+                                    </div>
+                                    <button @click="showDeactivateSubscriptionModal = true" class="px-4 py-2 border border-red-200 bg-white text-red-600 hover:bg-red-50 rounded-xl font-bold text-sm transition shadow-sm">
+                                        Deactivate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                         <p v-if="(subscription as any)?.isTemporaryUpgrade && !subscription?.isExpired && (tenant?.subscriptionPlan || subscription?.plan || 'BASIC') !== 'BASIC'" class="flex items-center gap-2 p-4 bg-amber-50 text-amber-800 rounded-xl border border-amber-100 text-sm mt-4 font-medium">
+                            <span class="material-symbols-outlined">warning</span>
+                            Temporary Upgrade Active - Subscription will revert to BASIC after expiration.
+                        </p>
+                     </div>
+                </section>
+
+                <!-- TAB: Addons -->
+                 <section v-if="activeTab === 'addons'" class="flex flex-col gap-8">
+                    <!-- Active Addons -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-600">extension</span> Active Addons
+                            </h3>
+                             <button @click="showAddAddonModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Add Addon
+                            </button>
+                        </div>
+
+                        <div v-if="activeAddons.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                             <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                                <span class="material-symbols-outlined text-3xl">extension_off</span>
+                            </div>
+                            <p class="text-slate-500 font-medium">No active addons found.</p>
+                        </div>
+                        
+                        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div v-for="addon in filteredActiveAddons" :key="addon.id" class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-shadow group">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-1">{{ addon.addonName }}</h4>
+                                        <p class="text-xs text-slate-500 line-clamp-2">{{ getAddonDescription(addon) || 'No description available' }}</p>
+                                    </div>
+                                    <span class="px-2 py-1 rounded bg-green-50 text-green-700 border border-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800 text-[10px] uppercase font-bold tracking-wider">Active</span>
+                                </div>
+
+                                <!-- Limit Bar if applicable -->
+                                <div v-if="addon.limit" class="mb-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="text-slate-500 font-bold uppercase tracking-wider">Usage</span>
+                                        <span class="font-bold" :class="addon.isLimitReached ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'">
+                                            {{ addon.currentUsage }} <span class="text-slate-400">/</span> {{ addon.limit }}
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 overflow-hidden">
+                                        <div class="h-1.5 rounded-full transition-all duration-500" 
+                                             :class="addon.isLimitReached ? 'bg-red-500' : 'bg-blue-500'" 
+                                             :style="{ width: `${Math.min(100, ((addon.currentUsage || 0) / (addon.limit || 1)) * 100)}%` }">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                                    <div>
+                                        <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Expires On</p>
+                                        <p class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ addon.expiresAt ? formatDate(addon.expiresAt) : 'Never' }}</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button @click="reduceAddon(addon)" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Reduce">
+                                            <span class="material-symbols-outlined text-[20px]">remove_circle</span>
+                                        </button>
+                                        <button @click="extendAddon(addon)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Extend">
+                                            <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                                        </button>
+                                        <button @click="unsubscribeAddon(addon)" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Deactivate">
+                                            <span class="material-symbols-outlined text-[20px]">cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Addons -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                             <span class="material-symbols-outlined text-blue-600">shopping_bag</span> Available for Purchase
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-for="addon in filteredAvailableAddons" :key="addon.id" 
+                                 class="flex flex-col border border-slate-200 dark:border-slate-700 rounded-xl p-6 bg-white dark:bg-slate-800 hover:border-blue-400 dark:hover:border-blue-600 transition-colors group relative overflow-hidden"
+                                 :class="{'opacity-60 grayscale': addon.comingSoon || addon.requiresApi}">
+                                
+                                <div v-if="addon.comingSoon || addon.requiresApi" class="absolute top-3 right-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold uppercase rounded">Coming Soon</div>
+                                
+                                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-[24px]">extension</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-lg mb-2">{{ addon.name }}</h4>
+                                <p class="text-sm text-slate-500 mb-6 line-clamp-3 flex-1">{{ addon.description }}</p>
+                                
+                                <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
+                                    <div class="flex items-end gap-1 mb-4">
+                                        <span class="text-2xl font-black text-slate-900 dark:text-white">{{ formatCurrency(addon.price) }}</span>
+                                        <span class="text-xs text-slate-500 font-medium mb-1">/mo</span>
+                                    </div>
+                                    <button 
+                                        @click="subscribeAddon(addon)"
+                                        :disabled="addon.comingSoon || addon.requiresApi"
+                                        class="w-full py-2.5 rounded-xl font-bold text-sm transition shadow-sm bg-slate-900 text-white hover:bg-slate-700 disabled:bg-slate-200 disabled:text-slate-400"
+                                    >
+                                        {{ (addon.comingSoon || addon.requiresApi) ? 'Not Available' : 'Subscribe Now' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </section>
+
+                 <!-- TAB: Points -->
+                 <section v-if="activeTab === 'points'" class="flex flex-col gap-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-600">stars</span> Reward Points
+                            </h3>
+                             <button @click="showEditPointsModal = true" class="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">edit</span> Adjust Balance
+                            </button>
+                        </div>
+
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="p-5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                                <p class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Current Balance</p>
+                                <p class="text-3xl font-black text-blue-700 dark:text-blue-300">{{ tenantPoints?.currentPoints || 0 }}</p>
+                            </div>
+                             <div class="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
+                                <p class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Total Earned</p>
+                                <p class="text-3xl font-black text-emerald-700 dark:text-emerald-300">{{ tenantPoints?.totalEarned || 0 }}</p>
+                            </div>
+                             <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
+                                <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">Total Spent</p>
+                                <p class="text-3xl font-black text-amber-700 dark:text-amber-300">{{ tenantPoints?.totalSpent || 0 }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4">Transaction History</h4>
+                            <div v-if="pointTransactions.length === 0" class="text-center py-8 border rounded-xl border-dashed border-slate-200">
+                                <p class="text-slate-400 text-sm">No transactions yet.</p>
+                            </div>
+                            <div v-else class="space-y-3">
+                                <div v-for="tx in pointTransactions" :key="tx.id" class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="tx.amount > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'">
+                                            <span class="material-symbols-outlined text-[20px]">{{ tx.amount > 0 ? 'arrow_downward' : 'arrow_upward' }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-900 dark:text-white">{{ tx.description }}</p>
+                                            <p class="text-xs text-slate-500">{{ formatDate(tx.createdAt) }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-bold" :class="tx.amount > 0 ? 'text-emerald-600' : 'text-red-600'">
+                                        {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount }} pts
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </section>
+
+                 <!-- TAB: Users -->
+                 <section v-if="activeTab === 'users'" class="flex flex-col gap-6">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                         <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-blue-600">group</span> Tenant Users
+                                </h3>
+                                <p class="mt-1 text-sm text-slate-500">Manage user access and roles.</p>
+                            </div>
+                             <button @click="showCreateUserModal = true" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">person_add</span> New User
+                            </button>
+                        </div>
+                        
+                        <!-- Limit Warning -->
+                         <div v-if="userUsage && userUsage.limit !== -1" class="mb-6 p-4 rounded-xl border" :class="userUsage.currentUsage >= userUsage.limit ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100'">
+                             <div class="flex items-center justify-between mb-2">
+                                 <span class="text-xs font-bold uppercase tracking-wider" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-700' : 'text-blue-700'">User Limit Usage</span>
+                                 <span class="text-sm font-bold" :class="userUsage.currentUsage >= userUsage.limit ? 'text-red-700' : 'text-blue-700'">{{ userUsage.currentUsage }} / {{ userUsage.limit }}</span>
+                             </div>
+                             <div class="w-full bg-white/50 rounded-full h-2 overflow-hidden">
+                                 <div class="h-2 rounded-full" :class="userUsage.currentUsage >= userUsage.limit ? 'bg-red-500' : 'bg-blue-500'" :style="{ width: `${Math.min(100, (userUsage.currentUsage / userUsage.limit) * 100)}%` }"></div>
+                             </div>
+                         </div>
+                        
+                        <!-- Users Table -->
+                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">User Details</th>
+                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                        <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                                        <td class="p-4">
+                                            <p class="font-bold text-slate-900 dark:text-white text-sm">{{ user.name }}</p>
+                                            <p class="text-xs text-slate-500">{{ user.email }}</p>
+                                        </td>
+                                        <td class="p-4">
+                                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border" :class="getRoleClass(user.role)">{{ getRoleLabel(user.role) }}</span>
+                                        </td>
+                                        <td class="p-4">
+                                             <span class="flex items-center gap-1.5 text-xs font-bold" :class="user.isActive ? 'text-green-600' : 'text-red-600'">
+                                                <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-green-600' : 'bg-red-600'"></span>
+                                                {{ user.isActive ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <button @click="editUser(user)" class="text-slate-400 hover:text-blue-600 font-bold text-xs transition">Edit</button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="tenantUsers.length === 0">
+                                        <td colspan="4" class="p-8 text-center text-slate-500 text-sm">No users found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                 </section>
+
+                 <!-- TAB: Stores -->
+                 <section v-if="activeTab === 'stores'" class="flex flex-col gap-6">
+                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 lg:p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-blue-600">storefront</span> Stores & Outlets
+                                </h3>
+                                <p class="mt-1 text-sm text-slate-500">Manage separate outlet locations.</p>
+                            </div>
+                             <button @click="openCreateStoreModal" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">add_business</span> New Store
+                            </button>
+                        </div>
+
+                         <!-- Limit Warning -->
+                         <div v-if="outletUsage && outletUsage.limit !== -1" class="mb-6 p-4 rounded-xl border" :class="outletUsage.currentUsage >= outletUsage.limit ? 'bg-red-50 border-red-100' : 'bg-blue-50 border-blue-100'">
+                             <div class="flex items-center justify-between mb-2">
+                                 <span class="text-xs font-bold uppercase tracking-wider" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-700' : 'text-blue-700'">Outlet Limit Usage</span>
+                                 <span class="text-sm font-bold" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-700' : 'text-blue-700'">{{ outletUsage.currentUsage }} / {{ outletUsage.limit }}</span>
+                             </div>
+                             <div class="w-full bg-white/50 rounded-full h-2 overflow-hidden">
+                                 <div class="h-2 rounded-full" :class="outletUsage.currentUsage >= outletUsage.limit ? 'bg-red-500' : 'bg-blue-500'" :style="{ width: `${Math.min(100, (outletUsage.currentUsage / outletUsage.limit) * 100)}%` }"></div>
+                             </div>
+                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-for="store in tenantStores" :key="store.id" class="group border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:shadow-md transition bg-white dark:bg-slate-800 flex flex-col">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
+                                        <span class="material-symbols-outlined">store</span>
+                                    </div>
+                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border" :class="store.isActive !== false ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'">
+                                        {{ store.isActive !== false ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </div>
+                                
+                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">{{ store.name }}</h4>
+                                <p class="text-xs text-slate-500 line-clamp-2 mb-4 h-8">{{ store.address || 'No address provided' }}</p>
+                                
+                                <div class="mt-auto flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                    <button @click="editStore(store)" class="flex-1 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 rounded-lg transition border border-slate-200">Edit Details</button>
+                                    <button @click="toggleStoreStatus(store)" class="px-3 py-2 text-xs font-bold rounded-lg transition border" :class="store.isActive !== false ? 'text-red-600 border-red-200 hover:bg-red-50' : 'text-green-600 border-green-200 hover:bg-green-50'">
+                                        {{ store.isActive !== false ? 'Disable' : 'Enable' }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Empty Add Card -->
+                            <button @click="openCreateStoreModal" class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50/50 transition cursor-pointer min-h-[200px]">
+                                <span class="material-symbols-outlined text-[32px] mb-2">add_business</span>
+                                <span class="text-sm font-bold">Add New Store</span>
+                            </button>
+                        </div>
+                     </div>
+                 </section>
+
             </template>
-          </div>
-          <!-- Stores Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                   <span class="material-symbols-outlined text-[#10b981]">storefront</span>
-                   Store / Outlet
-                </h3>
-                <p v-if="outletUsage" class="text-xs text-[#4c739a] dark:text-slate-400 mt-1 font-medium">
-                  Used: {{ outletUsage.currentUsage }} / {{ outletUsage.limit === -1 ? 'Unlimited' : outletUsage.limit }}
-                  <span v-if="outletUsage.limit !== -1" :class="outletUsage.currentUsage >= outletUsage.limit ? 'text-red-500' : 'text-emerald-500'">
-                    ({{ outletUsage.limit - outletUsage.currentUsage }} available)
-                  </span>
-                </p>
-              </div>
-              <button
-                @click="openCreateStoreModal"
-                class="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">add_business</span>
-                Buat Toko
-              </button>
-            </div>
-
-            <div v-if="outletUsage && outletUsage.limit !== undefined && outletUsage.limit !== -1" class="mb-6 bg-blue-50 dark:bg-slate-700/30 border border-blue-100 dark:border-slate-600 rounded-xl p-4">
-              <div class="flex items-center justify-between mb-2">
-                 <p class="font-bold text-blue-800 dark:text-blue-300 text-sm">Limit Outlet Usage</p>
-                 <span class="text-blue-600 dark:text-blue-400 text-xs font-bold">{{ Math.round(((outletUsage.currentUsage || 0) / outletUsage.limit) * 100) }}%</span>
-              </div>
-              <div class="w-full bg-blue-200 dark:bg-slate-600 rounded-full h-2">
-                <div
-                  class="h-2 rounded-full transition-all duration-500"
-                  :class="(outletUsage.currentUsage || 0) >= outletUsage.limit ? 'bg-red-500' : (outletUsage.currentUsage || 0) >= (outletUsage.limit * 0.8) ? 'bg-amber-500' : 'bg-blue-600'"
-                  :style="{ width: `${Math.min(100, ((outletUsage.currentUsage || 0) / outletUsage.limit) * 100)}%` }"
-                ></div>
-              </div>
-            </div>
-
-            <div v-if="loadingStores" class="flex items-center justify-center py-12">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10b981]"></div>
-            </div>
-            
-            <div v-else-if="tenantStores.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">domain_disabled</span>
-            </div>
-            
-            <div v-else class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-               <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                  <thead class="bg-slate-50 dark:bg-slate-800">
-                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Nama</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Alamat</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Telepon</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-[#4c739a] uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-right text-xs font-bold text-[#4c739a] uppercase tracking-wider">Aksi</th>
-                     </tr>
-                  </thead>
-                  <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                     <tr v-for="store in tenantStores" :key="store.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <td class="px-4 py-3">
-                           <div class="text-sm font-bold text-[#0d141b] dark:text-white">{{ store.name }}</div>
-                        </td>
-                        <td class="px-4 py-3">
-                           <div class="text-sm text-[#4c739a] dark:text-slate-400 line-clamp-1">{{ store.address || '-' }}</div>
-                        </td>
-                        <td class="px-4 py-3">
-                           <div class="text-sm text-[#4c739a] dark:text-slate-400">{{ store.phone || '-' }}</div>
-                        </td>
-                        <td class="px-4 py-3">
-                           <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border" :class="store.isActive !== false ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'">
-                              {{ store.isActive !== false ? 'Aktif' : 'Nonaktif' }}
-                           </span>
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                           <button 
-                             @click="toggleStoreStatus(store)" 
-                             class="text-xs font-bold hover:underline transition"
-                             :class="store.isActive !== false ? 'text-orange-600' : 'text-emerald-600'"
-                           >
-                             {{ store.isActive !== false ? 'Nonaktifkan' : 'Aktifkan' }}
-                           </button>
-                           <button 
-                             @click="editStore(store)" 
-                             class="text-xs font-bold text-blue-600 hover:underline transition ml-3"
-                           >
-                             Edit
-                           </button>
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-            </div>
-          </div>
-
-          <!-- Available Addons Card -->
-          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 lg:col-span-3">
-             <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-6 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#10b981]">shopping_bag</span>
-                Addon Tersedia
-             </h3>
-             
-            <div v-if="filteredAvailableAddons.length === 0" class="text-center py-12 bg-slate-50 dark:bg-slate-700/30 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-               <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">check_circle</span>
-               <p class="text-[#4c739a] dark:text-slate-400 font-medium">Semua addon sudah aktif</p>
-            </div>
-            
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                v-for="addon in filteredAvailableAddons"
-                :key="addon.id"
-                class="border rounded-xl p-5 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all group flex flex-col h-full bg-white dark:bg-slate-800"
-                :class="addon.comingSoon || addon.requiresApi ? 'border-slate-200 bg-slate-50 opacity-75' : 'border-slate-200 dark:border-slate-700'"
-              >
-                <div class="flex items-start justify-between mb-2">
-                   <div class="p-2 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-110 transition-transform mb-2">
-                      <span class="material-symbols-outlined">{{ addon.comingSoon ? 'hourglass_top' : 'extension' }}</span>
-                   </div>
-                   <span v-if="addon.comingSoon || addon.requiresApi" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-100 rounded">Coming Soon</span>
-                </div>
-                
-                <h4 class="font-bold text-[#0d141b] dark:text-white text-lg mb-1">{{ addon.name }}</h4>
-                <p class="text-sm text-[#4c739a] dark:text-slate-400 mb-4 flex-1">{{ addon.description }}</p>
-                
-                <div class="mt-auto">
-                   <div class="flex items-end gap-1 mb-4">
-                      <span class="text-xl font-extrabold text-[#10b981]">{{ formatCurrency(addon.price) }}</span>
-                      <span class="text-xs text-[#4c739a] mb-1 font-medium">/bulan</span>
-                   </div>
-                   
-                   <button
-                     v-if="!addon.comingSoon && !addon.requiresApi"
-                     @click="subscribeAddon(addon)"
-                     class="w-full px-4 py-2.5 bg-[#10b981] text-white rounded-xl hover:bg-blue-600 transition font-bold text-sm shadow-md shadow-blue-500/20"
-                   >
-                     Berlangganan
-                   </button>
-                   <button
-                     v-else
-                     disabled
-                     class="w-full px-4 py-2.5 bg-slate-200 text-slate-500 rounded-xl cursor-not-allowed font-bold text-sm"
-                   >
-                     Segera Hadir
-                   </button>
-                </div>
-              </div>
-            </div>
-          </div>
-      </div>
+        </div>
     </div>
     <!-- Edit Plan Modal -->
     <Teleport to="body">
@@ -939,8 +897,6 @@
           </div>
        </div>
     </Teleport>
-    </div>
-    </div>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
@@ -1081,6 +1037,7 @@ const extendAddonDays = ref<number>(30);
 const reduceAddonDays = ref<number>(30);
 const selectedAddon = ref<Addon | null>(null);
 const selectedAddonForSubscribe = ref<AvailableAddon | null>(null);
+const activeTab = ref('profile');
 
 const getAddonDaysRemaining = (addon: Addon) => {
   if (!addon.expiresAt) return 0;
