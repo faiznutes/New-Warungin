@@ -2221,11 +2221,11 @@ watch(
   { immediate: false }
 );
 
-onMounted(() => {
+onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   
   // Check shift status first
-  checkShiftStatus();
+  await checkShiftStatus();
   
   // For super admin, ensure selectedTenantId is synced with localStorage
   if (authStore.isSuperAdmin) {
@@ -2262,34 +2262,37 @@ onMounted(() => {
     window.addEventListener('resize', checkOrientation);
     window.addEventListener('orientationchange', checkOrientation);
   }
-  
-  if (authStore.isSuperAdmin) {
-    const selectedTenantId = localStorage.getItem('selectedTenantId');
-    if (selectedTenantId) {
-      authStore.setSelectedTenant(selectedTenantId);
-      setTimeout(() => {
-        loadTenantFeatures();
-        loadProducts();
-        loadMembers();
-        loadDiscounts();
-      }, 100);
-    } else {
-      setTimeout(() => {
-        const tenantId = localStorage.getItem('selectedTenantId');
-        if (tenantId) {
-          authStore.setSelectedTenant(tenantId);
+
+  // Only load data if shift is active or not required
+  if (hasActiveShift.value) {
+    if (authStore.isSuperAdmin) {
+      const selectedTenantId = localStorage.getItem('selectedTenantId');
+      if (selectedTenantId) {
+        authStore.setSelectedTenant(selectedTenantId);
+        setTimeout(() => {
           loadTenantFeatures();
           loadProducts();
           loadMembers();
           loadDiscounts();
-        }
-      }, 500);
+        }, 100);
+      } else {
+        setTimeout(() => {
+          const tenantId = localStorage.getItem('selectedTenantId');
+          if (tenantId) {
+            authStore.setSelectedTenant(tenantId);
+            loadTenantFeatures();
+            loadProducts();
+            loadMembers();
+            loadDiscounts();
+          }
+        }, 500);
+      }
+    } else {
+      loadTenantFeatures();
+      loadProducts();
+      loadMembers();
+      loadDiscounts();
     }
-  } else {
-    loadTenantFeatures();
-    loadProducts();
-    loadMembers();
-    loadDiscounts();
   }
   
   const tenantIdForSocket = authStore.isSuperAdmin 
