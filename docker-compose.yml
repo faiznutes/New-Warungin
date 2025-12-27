@@ -236,18 +236,19 @@ services:
     depends_on:
       loki:
         condition: service_started
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9080/ready || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Healthcheck disabled
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9080/ready || exit 1" ]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
 
-  # Cloudflare Tunnel - untuk public access via Cloudflare
-  # Setup: 
-  # 1. Buat tunnel di Cloudflare Dashboard (Zero Trust > Networks > Tunnels)
-  # 2. Copy TUNNEL_TOKEN dan set di .env file
-  # 3. Configure Public Hostname: http://nginx:80 (jika di Docker) atau http://localhost:80 (jika di host)
-  # 4. Jalankan dengan: docker compose --profile cloudflare up -d cloudflared
+    # Cloudflare Tunnel - untuk public access via Cloudflare
+    # Setup: 
+    # 1. Buat tunnel di Cloudflare Dashboard (Zero Trust > Networks > Tunnels)
+    # 2. Copy TUNNEL_TOKEN dan set di .env file
+    # 3. Configure Public Hostname: http://nginx:80 (jika di Docker) atau http://localhost:80 (jika di host)
+    # 4. Jalankan dengan: docker compose --profile cloudflare up -d cloudflared
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: warungin-cloudflared
