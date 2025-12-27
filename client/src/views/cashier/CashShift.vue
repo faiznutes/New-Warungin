@@ -909,12 +909,17 @@ const handleCloseShift = async () => {
 
   closingShift.value = true;
   try {
-    await api.post('/cash-shift/close', {
+    const response = await api.post('/cash-shift/close', {
       uangFisikTutup: closeShiftForm.value.uangFisikTutup,
       catatan: closeShiftForm.value.catatan || undefined,
     });
 
     await showSuccess('Shift berhasil ditutup');
+    
+    // Generate and show PDF report
+    const shiftData = response.data || currentShift.value;
+    generateShiftReport(shiftData);
+    
     showCloseModal.value = false;
     closeShiftForm.value = { uangFisikTutup: 0, catatan: '' };
     await loadCurrentShift();
@@ -924,6 +929,115 @@ const handleCloseShift = async () => {
     await showError(errorMessage);
   } finally {
     closingShift.value = false;
+  }
+};
+
+const generateShiftReport = (shiftData: any) => {
+  const modalAwal = shiftData?.modalAwal || currentShift.value?.modalAwal || 0;
+  const totalSales = shiftData?.totalPenjualan || currentShift.value?.totalPenjualan || 0;
+  const physicalCash = closeShiftForm.value.uangFisikTutup;
+  const expectedBalance = modalAwal + totalSales;
+  const difference = physicalCash - expectedBalance;
+  const now = new Date();
+  const storeName = authStore.user?.tenantName || 'Store';
+  const cashierName = authStore.user?.name || 'Cashier';
+  
+  const reportHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Shift Report - ${now.toLocaleDateString('id-ID')}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f8f9fa; }
+        .report { max-width: 400px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px dashed #e0e0e0; padding-bottom: 16px; margin-bottom: 16px; }
+        .header h1 { font-size: 20px; font-weight: bold; color: #1a1a1a; }
+        .header p { font-size: 12px; color: #666; margin-top: 4px; }
+        .section { margin-bottom: 16px; }
+        .section-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .row:last-child { border-bottom: none; }
+        .row .label { color: #555; font-size: 13px; }
+        .row .value { font-weight: 600; color: #1a1a1a; font-size: 13px; }
+        .total-row { background: #f8f9fa; margin: 0 -24px; padding: 12px 24px; border-top: 2px solid #e0e0e0; }
+        .total-row .value { font-size: 18px; color: #10b981; }
+        .difference { padding: 12px; border-radius: 8px; text-align: center; margin-top: 16px; }
+        .difference.positive { background: #d1fae5; color: #065f46; }
+        .difference.negative { background: #fee2e2; color: #991b1b; }
+        .difference.zero { background: #f3f4f6; color: #374151; }
+        .footer { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 2px dashed #e0e0e0; }
+        .footer p { font-size: 11px; color: #888; }
+        .print-btn { display: block; width: 100%; padding: 12px; margin-top: 20px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .print-btn:hover { background: #059669; }
+        @media print { .print-btn { display: none; } body { background: white; } .report { box-shadow: none; } }
+      </style>
+    </head>
+    <body>
+      <div class="report">
+        <div class="header">
+          <h1>LAPORAN TUTUP SHIFT</h1>
+          <p>${storeName}</p>
+          <p>${now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p>${now.toLocaleTimeString('id-ID')}</p>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Informasi Kasir</div>
+          <div class="row">
+            <span class="label">Nama Kasir</span>
+            <span class="value">${cashierName}</span>
+          </div>
+          <div class="row">
+            <span class="label">Waktu Buka</span>
+            <span class="value">${shiftData?.shiftStart ? new Date(shiftData.shiftStart).toLocaleTimeString('id-ID') : '-'}</span>
+          </div>
+          <div class="row">
+            <span class="label">Waktu Tutup</span>
+            <span class="value">${now.toLocaleTimeString('id-ID')}</span>
+          </div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Ringkasan Kas</div>
+          <div class="row">
+            <span class="label">Modal Awal</span>
+            <span class="value">Rp ${modalAwal.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row">
+            <span class="label">Total Penjualan</span>
+            <span class="value">Rp ${totalSales.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row total-row">
+            <span class="label">Saldo Seharusnya</span>
+            <span class="value">Rp ${expectedBalance.toLocaleString('id-ID')}</span>
+          </div>
+          <div class="row">
+            <span class="label">Uang Fisik</span>
+            <span class="value">Rp ${physicalCash.toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+        
+        <div class="difference ${difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'zero'}">
+          <strong>Selisih: Rp ${Math.abs(difference).toLocaleString('id-ID')} ${difference > 0 ? '(Lebih)' : difference < 0 ? '(Kurang)' : '(Pas)'}</strong>
+        </div>
+        
+        <div class="footer">
+          <p>Laporan ini dicetak secara otomatis</p>
+          <p>Warungin POS System</p>
+        </div>
+        
+        <button class="print-btn" onclick="window.print()">🖨️ Cetak Laporan</button>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  // Open in new window for printing
+  const printWindow = window.open('', '_blank', 'width=500,height=700');
+  if (printWindow) {
+    printWindow.document.write(reportHtml);
+    printWindow.document.close();
   }
 };
 

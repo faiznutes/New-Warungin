@@ -76,7 +76,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-            <tr v-for="ticket in tickets" :key="ticket.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+            <tr v-for="ticket in filteredTickets" :key="ticket.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
               <td class="px-6 py-4">
                 <span class="text-sm font-mono font-medium text-[#0d141b] dark:text-white">{{ ticket.id }}</span>
                 <div class="text-[10px] text-slate-400 mt-0.5">{{ ticket.timeAgo }}</div>
@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const searchQuery = ref('');
 const statusFilter = ref('');
@@ -227,4 +227,30 @@ const tickets = ref([
       assignedTo: { name: 'Mike T.', initials: 'MT' } 
   }
 ]);
+
+const filteredTickets = computed(() => {
+  return tickets.value.filter(ticket => {
+    // Filter by Status
+    if (statusFilter.value && ticket.status.toLowerCase().replace(' ', '-') !== statusFilter.value) {
+      return false;
+    }
+    
+    // Filter by Priority
+    if (priorityFilter.value && ticket.priority.toLowerCase() !== priorityFilter.value) {
+      return false;
+    }
+    
+    // Filter by Search (ID, Tenant, Subject)
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase();
+      return (
+        ticket.id.toLowerCase().includes(query) ||
+        ticket.tenant.toLowerCase().includes(query) ||
+        ticket.subject.toLowerCase().includes(query)
+      );
+    }
+    
+    return true;
+  });
+});
 </script>

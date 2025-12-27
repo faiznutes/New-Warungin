@@ -119,6 +119,17 @@ const router = createRouter({
         fullscreen: true
       },
     },
+    // Fullscreen Open Shift Route (no nav, dedicated shift opening page)
+    {
+      path: '/open-shift',
+      name: 'open-shift',
+      component: () => import('../views/cashier/OpenShift.vue'),
+      meta: {
+        requiresAuth: true,
+        roles: ['CASHIER', 'ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'],
+        fullscreen: true
+      },
+    },
     // App Routes - Dynamic Layout based on role
     {
       path: '/app',

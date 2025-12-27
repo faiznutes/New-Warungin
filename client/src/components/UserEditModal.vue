@@ -50,7 +50,9 @@
                     v-model="form.role"
                     required
                     class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    :disabled="form.role === 'SUPER_ADMIN'"
                   >
+                    <option v-if="form.role === 'SUPER_ADMIN'" value="SUPER_ADMIN">Super Admin</option>
                     <option value="ADMIN_TENANT">Admin</option>
                     <option v-if="hasSupervisorRole" value="SUPERVISOR">Supervisor</option>
                     <option value="CASHIER">Kasir</option>

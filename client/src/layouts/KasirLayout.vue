@@ -82,6 +82,7 @@
           </router-link>
 
           <router-link
+            v-if="authStore.user?.role === 'KITCHEN' || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPERVISOR'"
             to="/app/orders/kitchen"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
             active-class="bg-emerald-50 text-emerald-600 font-bold"

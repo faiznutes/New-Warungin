@@ -121,13 +121,13 @@
                            {{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'basic') }}
                          </span>
                          <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs border border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
-                           {{ subscription ? getSubscriptionDuration(subscription) : 0 }} Hari
+                           {{ subscription ? getSubscriptionDuration(subscription) : ((tenant?.subscriptionEnd) ? getDaysRemaining(tenant.subscriptionEnd) : 0) }} Hari
                          </span>
                       </div>
                       <div class="flex text-xs gap-3 mt-1 text-[#4c739a] dark:text-slate-400 font-medium">
-                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : (subscription?.subscription?.startDate ? formatDate(subscription.subscription.startDate) : '-') }}</span>
+                         <span>Mulai: {{ subscription?.startDate ? formatDate(subscription.startDate) : (subscription?.subscription?.startDate ? formatDate(subscription.subscription.startDate) : (tenant?.subscriptionStart ? formatDate(tenant.subscriptionStart) : '-')) }}</span>
                          <span>•</span>
-                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : (subscription?.subscription?.endDate ? formatDate(subscription.subscription.endDate) : '-') }}</span>
+                         <span>Berakhir: {{ subscription?.endDate ? formatDate(subscription.endDate) : (subscription?.subscription?.endDate ? formatDate(subscription.subscription.endDate) : (tenant?.subscriptionEnd ? formatDate(tenant.subscriptionEnd) : '-')) }}</span>
                       </div>
                    </div>
                 </div>
@@ -1220,6 +1220,15 @@ const getPlanName = (plan: string) => {
     ENTERPRISE: 'Max',
   };
   return planNames[plan] || plan;
+};
+
+const getDaysRemaining = (dateStr: string) => {
+  if (!dateStr) return 0;
+  const end = new Date(dateStr);
+  const now = new Date();
+  const diffTime = end.getTime() - now.getTime();
+  if (diffTime <= 0) return 0;
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
 const getPlanBadgeClass = (plan: string) => {

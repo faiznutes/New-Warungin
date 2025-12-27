@@ -1,4 +1,41 @@
 <template>
+  <!-- Shift Guard Overlay - Blocks POS if no active shift -->
+  <div v-if="shiftRequired && (checkingShift || !hasActiveShift)" class="fixed inset-0 bg-gradient-to-br from-[#1a2332] via-[#15202e] to-[#0f151e] flex items-center justify-center z-[100]">
+    <!-- Loading State -->
+    <div v-if="checkingShift" class="text-center">
+      <div class="w-16 h-16 mx-auto mb-4 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+      <p class="text-white/70 text-lg">Memeriksa status shift...</p>
+    </div>
+    
+    <!-- No Shift Open -->
+    <div v-else class="text-center max-w-md mx-4 p-8">
+      <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full flex items-center justify-center">
+        <svg class="w-12 h-12 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-3">Shift Belum Dibuka</h2>
+      <p class="text-gray-400 mb-8">Untuk mengakses POS, Anda harus membuka shift kasir terlebih dahulu.</p>
+      <button
+        @click="goToShiftPage"
+        class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02]"
+      >
+        <span class="flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+          </svg>
+          Buka Shift Sekarang
+        </span>
+      </button>
+      <button
+        @click="handleLogout"
+        class="w-full mt-4 py-3 px-6 bg-transparent border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400 font-medium rounded-xl transition-all duration-300"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+
   <!-- Simple POS Mode -->
   <div v-if="isSimpleMode" class="min-h-screen p-4 bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e]">
     <!-- Orientation Warning (Portrait) -->
@@ -1018,6 +1055,12 @@ const isSyncing = ref(false);
 const pendingSyncCount = ref(0);
 let clockInterval: any;
 
+// Shift Guard State
+const shiftRequired = ref(true); // Enable shift guard
+const hasActiveShift = ref(false);
+const checkingShift = ref(true);
+
+
 // Computed
 const categories = computed(() => {
   const categoriesList = safeMap(products.value, (p: any) => p?.category).filter(Boolean);
@@ -1060,7 +1103,7 @@ const subtotal = computed(() => {
   return safeReduce(cart.value, (sum: number, item: any) => sum + (item?.price || 0) * (item?.quantity || 0), 0);
 });
 
-const sendToKitchen = ref(false);
+
 
 // Separated Discount Calculations to mirror Backend Service
 const promotionDiscounts = computed(() => {
@@ -2033,11 +2076,111 @@ const printReceiptAndClose = async () => {
   }
 };
 
+// Hold Order Functions
+const holdOrder = async () => {
+  // If cart is empty, show held orders modal instead
+  if (cart.value.length === 0) {
+    showHeldOrdersModal.value = true;
+    return;
+  }
+  
+  // Prompt for a name for this held order
+  const holdName = customerName.value || customerInput.value || `Order ${new Date().toLocaleTimeString()}`;
+  
+  const heldOrder = {
+    id: Date.now().toString(),
+    checkName: holdName,
+    items: [...cart.value],
+    total: total.value,
+    customer: customerName.value || customerInput.value,
+    memberId: selectedMember.value?.id,
+    date: new Date().toISOString(),
+  };
+  
+  heldOrders.value.push(heldOrder);
+  localStorage.setItem('pos_held_orders', JSON.stringify(heldOrders.value));
+  
+  // Clear the cart
+  cart.value = [];
+  customerInput.value = '';
+  customerName.value = '';
+  selectedMember.value = null;
+  selectedMemberId.value = '';
+  estimatedDiscount.value = 0;
+  quickDiscount.value = 0;
+  
+  showSuccess(`Order "${holdName}" parked successfully`);
+};
+
+const deleteHeldOrder = async (order: any) => {
+  const confirmed = await showConfirm(`Delete held order "${order.checkName}"?`);
+  if (!confirmed) return;
+  
+  heldOrders.value = heldOrders.value.filter((o: any) => o.id !== order.id);
+  localStorage.setItem('pos_held_orders', JSON.stringify(heldOrders.value));
+  showSuccess('Held order deleted');
+};
+
+const restoreHeldOrder = (order: any) => {
+  // If there are items in cart, ask to merge or replace
+  if (cart.value.length > 0) {
+    showConfirm(`Current cart has items. Replace with held order "${order.checkName}"?`).then(confirmed => {
+      if (confirmed) {
+        performRestore(order);
+      }
+    });
+  } else {
+    performRestore(order);
+  }
+};
+
+const performRestore = (order: any) => {
+  cart.value = [...order.items];
+  customerName.value = order.customer || '';
+  if (order.memberId) {
+    selectedMemberId.value = order.memberId;
+    handleMemberSelect();
+  }
+  
+  // Remove from held orders
+  heldOrders.value = heldOrders.value.filter((o: any) => o.id !== order.id);
+  localStorage.setItem('pos_held_orders', JSON.stringify(heldOrders.value));
+  
+  showHeldOrdersModal.value = false;
+  showSuccess(`Order "${order.checkName}" restored`);
+};
+
 // Handle logout
 const handleLogout = () => {
   showNavSidebar.value = false;
   authStore.clearAuth();
   window.location.replace('/login');
+};
+
+// Check if shift is open before allowing POS access
+const checkShiftStatus = async () => {
+  if (!shiftRequired.value) {
+    hasActiveShift.value = true;
+    checkingShift.value = false;
+    return;
+  }
+  
+  checkingShift.value = true;
+  try {
+    const response = await api.get('/cash-shift/current');
+    // If we get a current shift, it's active
+    hasActiveShift.value = response.data && response.data.id && !response.data.shiftEnd;
+  } catch (error: any) {
+    // 404 means no shift, other errors we treat as no shift
+    hasActiveShift.value = false;
+  } finally {
+    checkingShift.value = false;
+  }
+};
+
+// Redirect to shift page
+const goToShiftPage = () => {
+  router.push('/open-shift');
 };
 
 // Watch for tenantId changes
@@ -2065,6 +2208,9 @@ watch(
 
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Check shift status first
+  checkShiftStatus();
   
   // For super admin, ensure selectedTenantId is synced with localStorage
   if (authStore.isSuperAdmin) {
