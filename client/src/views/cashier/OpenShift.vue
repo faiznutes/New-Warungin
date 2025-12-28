@@ -480,12 +480,16 @@ const loadData = async () => {
         try {
              const res = await api.get('/cash-shift/current');
              const shift = res.data?.data || res.data;
-             if (shift && !shift.shiftEnd) {
+             // Check both status and shiftEnd to ensure shift is truly active
+             if (shift && shift.status === 'open' && !shift.shiftEnd) {
                  currentShift.value = shift;
              } else {
                  currentShift.value = null;
              }
-        } catch (e) { currentShift.value = null; }
+        } catch (e) { 
+            console.warn('Error loading cash shift:', e);
+            currentShift.value = null; 
+        }
 
     } finally {
         loading.value = false;
