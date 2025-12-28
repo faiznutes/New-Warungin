@@ -799,9 +799,12 @@
           </div>
           
           <!-- Infinite Scroll End Message -->
-          <div v-if="useInfiniteScrollMode && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
+          <div v-else-if="useInfiniteScrollMode && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
             Semua produk telah dimuat
           </div>
+          
+          <!-- Default state (no infinite scroll indicators) -->
+          <div v-else></div>
         </div>
       </div>
     </section>
