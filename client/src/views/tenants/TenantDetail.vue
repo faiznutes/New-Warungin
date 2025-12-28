@@ -311,9 +311,11 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                        <tr v-if="loadingBilling" v-for="i in 3" :key="i" class="animate-pulse">
-                                            <td colspan="6" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
-                                        </tr>
+                                        <template v-if="loadingBilling">
+                                            <tr v-for="i in 3" :key="i" class="animate-pulse">
+                                                <td colspan="6" class="px-6 py-4"><div class="h-4 bg-slate-100 dark:bg-slate-700 rounded w-full"></div></td>
+                                            </tr>
+                                        </template>
                                         <tr v-else-if="billingHistory.length === 0">
                                             <td colspan="6" class="px-6 py-12 text-center text-slate-500 italic font-medium">Belum ada riwayat tagihan</td>
                                         </tr>

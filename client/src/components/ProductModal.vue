@@ -21,7 +21,7 @@
           </button>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form @submit.prevent="handleSubmit(false)" class="space-y-6">
           <div class="space-y-4">
              <div>
                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Nama Produk <span class="text-red-500">*</span></label>
@@ -119,9 +119,46 @@
                 type="text"
                 class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
                 placeholder="Contoh: Makanan, Minuman"
+                @blur="generateSkuSuggestion"
               />
             </div>
 
+            <div>
+              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+                SKU (Kode Produk)
+                <button
+                  v-if="!form.sku"
+                  type="button"
+                  @click="generateSkuSuggestion"
+                  class="ml-2 text-[10px] text-emerald-600 hover:text-emerald-700 font-normal underline"
+                  title="Generate SKU otomatis"
+                >
+                  Auto-generate
+                </button>
+              </label>
+              <div class="relative">
+                <input
+                  v-model="form.sku"
+                  type="text"
+                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
+                  placeholder="Kode unik produk (opsional)"
+                  maxlength="50"
+                />
+                <button
+                  v-if="form.sku"
+                  type="button"
+                  @click="generateSkuSuggestion"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  title="Generate ulang SKU"
+                >
+                  <span class="material-symbols-outlined text-[18px]">refresh</span>
+                </button>
+              </div>
+              <p v-if="form.sku" class="text-[10px] text-slate-400 mt-1">SKU: {{ form.sku }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Jenis Produk</label>
               <div class="flex items-center h-12 px-4 border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-white transition-colors cursor-pointer" @click="form.isConsignment = !form.isConsignment">
@@ -211,15 +248,49 @@
                 </div>
               </div>
 
-              <!-- Action Buttons -->
-              <div class="flex flex-col sm:flex-row gap-3 mb-2">
+              <!-- Drag & Drop Zone -->
+              <div
+                v-if="!form.image"
+                ref="dropZone"
+                @drop.prevent="handleDrop"
+                @dragover.prevent="isDragging = true"
+                @dragenter.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                :class="[
+                  'border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer',
+                  isDragging
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 scale-[1.02]'
+                    : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/5'
+                ]"
+                @click="openFileInput"
+              >
+                <div class="flex flex-col items-center gap-3">
+                  <span class="material-symbols-outlined text-5xl" :class="isDragging ? 'text-emerald-500' : 'text-slate-400'">
+                    {{ isDragging ? 'cloud_upload' : 'image' }}
+                  </span>
+                  <div>
+                    <p class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      {{ isDragging ? 'Lepaskan untuk mengunggah' : 'Seret & lepas gambar di sini' }}
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                      atau klik untuk memilih dari galeri
+                    </p>
+                  </div>
+                  <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                    Format: JPG, PNG, WebP (Maks. 5MB)
+                  </p>
+                </div>
+              </div>
+
+              <!-- Action Buttons (shown when image exists) -->
+              <div v-if="form.image" class="flex flex-col sm:flex-row gap-3 mb-2">
                 <button
                   type="button"
                   @click="openFileInput"
                   class="flex-1 px-5 py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 font-bold"
                 >
                   <span class="material-symbols-outlined text-[20px]">image</span>
-                  <span>Pilih dari Galeri</span>
+                  <span>Ganti Gambar</span>
                 </button>
                 <button
                   type="button"
@@ -320,13 +391,23 @@
             </div>
           </div>
 
-          <div class="flex space-x-3 pt-6 border-t border-slate-100 dark:border-slate-700 mt-8">
+          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-slate-100 dark:border-slate-700 mt-8">
             <button
               type="button"
               @click="$emit('close')"
               class="flex-1 px-5 py-3.5 border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition shadow-sm"
             >
               Batal
+            </button>
+            <button
+              v-if="!editingProduct"
+              type="button"
+              :disabled="saving"
+              @click="handleSubmit(true)"
+              class="flex-1 px-5 py-3.5 bg-white text-emerald-600 border border-emerald-200 font-bold rounded-xl hover:bg-emerald-50 transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[20px]">playlist_add</span>
+              Simpan & Input Lagi
             </button>
             <button
               type="submit"
@@ -369,6 +450,7 @@ interface Product {
   stock: number;
   minStock: number;
   category?: string;
+  sku?: string;
   image?: string;
   emoji?: string;
   isActive: boolean;
@@ -386,7 +468,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   close: [];
-  save: [product: Partial<Product>];
+  save: [product: Partial<Product>, keepOpen?: boolean];
 }>();
 
 const form = ref<Partial<Product>>({
@@ -397,6 +479,7 @@ const form = ref<Partial<Product>>({
   stock: 0,
   minStock: 0,
   category: '',
+  sku: '',
   image: '',
   emoji: '',
   isActive: true,
@@ -406,6 +489,8 @@ const form = ref<Partial<Product>>({
 const saving = ref(false);
 const editingProduct = computed(() => !!props.product);
 const fileInput = ref<HTMLInputElement | null>(null);
+const dropZone = ref<HTMLDivElement | null>(null);
+const isDragging = ref(false);
 const showUrlInput = ref(false);
 const showCropper = ref(false);
 const selectedImageSrc = ref('');
@@ -437,6 +522,7 @@ watch(() => props.product, (newProduct) => {
       description: newProduct.description || '',
       price: typeof newProduct.price === 'string' ? parseFloat(newProduct.price) : newProduct.price || 0,
       cost: typeof (newProduct as any).cost === 'string' ? parseFloat((newProduct as any).cost) : (newProduct as any).cost || undefined,
+      sku: (newProduct as any).sku || '',
       stock: newProduct.stock || 0,
       minStock: newProduct.minStock || 0,
       category: newProduct.category || '',
@@ -460,6 +546,7 @@ watch(() => props.product, (newProduct) => {
       stock: 0,
       minStock: 0,
       category: '',
+      sku: '',
       image: '',
       emoji: '',
       isActive: true,
@@ -469,9 +556,14 @@ watch(() => props.product, (newProduct) => {
   }
 }, { immediate: true });
 
-watch(() => props.show, (newShow) => {
-  if (!newShow) {
-    // Reset form when modal closes
+// Watch name changes to auto-generate SKU (only for new products)
+watch(() => form.value.name, () => {
+  if (!editingProduct.value && !form.value.sku && form.value.name && form.value.name.length >= 3) {
+    generateSkuSuggestion();
+  }
+});
+
+const resetForm = () => {
     form.value = {
       name: '',
       description: '',
@@ -480,6 +572,7 @@ watch(() => props.show, (newShow) => {
       stock: 0,
       minStock: 0,
       category: '',
+      sku: '',
       image: '',
       emoji: '',
       isActive: true,
@@ -487,6 +580,14 @@ watch(() => props.show, (newShow) => {
     };
     imageType.value = 'image';
     priceSuggestions.value = null;
+};
+
+defineExpose({ resetForm });
+
+watch(() => props.show, (newShow) => {
+  if (!newShow) {
+    // Reset form when modal closes
+    resetForm();
   }
 });
 
@@ -522,12 +623,7 @@ const openUrlInput = () => {
   showUrlInput.value = true;
 };
 
-const handleFileSelect = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  
-  if (!file) return;
-
+const processFile = async (file: File) => {
   // Validate file type
   if (!file.type.startsWith('image/')) {
     await showError('File harus berupa gambar');
@@ -548,11 +644,26 @@ const handleFileSelect = async (event: Event) => {
     showCropper.value = true;
   };
   reader.readAsDataURL(file);
+};
+
+const handleFileSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  
+  if (!file) return;
+  await processFile(file);
 
   // Reset input
   if (fileInput.value) {
     fileInput.value.value = '';
   }
+};
+
+const handleDrop = async (event: DragEvent) => {
+  isDragging.value = false;
+  const file = event.dataTransfer?.files[0];
+  if (!file) return;
+  await processFile(file);
 };
 
 const handleImageCropped = (imageDataUrl: string) => {
@@ -596,7 +707,38 @@ const applyPrice = (price: number) => {
   form.value.price = Math.round(price);
 };
 
-const handleSubmit = () => {
+const generateSkuSuggestion = () => {
+  if (!form.value.name) return;
+  
+  // Generate SKU from product name and category
+  const name = form.value.name.trim();
+  const category = form.value.category?.trim() || '';
+  
+  // Take first 3 letters of category (if exists) + first 3 letters of name + random 3 digits
+  let sku = '';
+  
+  if (category) {
+    const catPrefix = category
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .substring(0, 3)
+      .toUpperCase();
+    sku += catPrefix + '-';
+  }
+  
+  const namePrefix = name
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .substring(0, 3)
+    .toUpperCase();
+  sku += namePrefix;
+  
+  // Add 3 random digits
+  const randomDigits = Math.floor(100 + Math.random() * 900);
+  sku += '-' + randomDigits;
+  
+  form.value.sku = sku;
+};
+
+const handleSubmit = (keepOpen = false) => {
   saving.value = true;
   
   // Prepare data - ensure emoji/image are properly set based on type
@@ -611,7 +753,7 @@ const handleSubmit = () => {
     submitData.emoji = '';
   }
   
-  emit('save', submitData);
+  emit('save', submitData, keepOpen);
   setTimeout(() => {
     saving.value = false;
   }, 500);

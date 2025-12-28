@@ -7,6 +7,8 @@ export interface Toast {
   title?: string;
   message: string;
   duration?: number;
+  undoAction?: () => void | Promise<void>;
+  undoLabel?: string;
 }
 
 // Modal Types
@@ -84,8 +86,8 @@ export function useNotification() {
   };
 
   // Toast triggers
-  const success = (message: string, title?: string, duration = 3000) => {
-    addToast({ type: 'success', message, title, duration });
+  const success = (message: string, title?: string, duration = 3000, undoAction?: () => void | Promise<void>, undoLabel = 'Undo') => {
+    addToast({ type: 'success', message, title, duration, undoAction, undoLabel });
     return Promise.resolve(true);
   };
 

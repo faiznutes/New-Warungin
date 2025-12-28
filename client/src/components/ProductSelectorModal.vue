@@ -30,7 +30,7 @@
               <input
                 v-model="filters.search"
                 type="text"
-                placeholder="Search products..."
+                placeholder="Cari produk..."
                 class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
               />
             </div>
@@ -42,7 +42,7 @@
               v-model="filters.category"
               class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
-              <option value="">All Categories</option>
+              <option value="">Semua Kategori</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
             </select>
             <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
@@ -54,11 +54,11 @@
               v-model="filters.sortBy"
               class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
-              <option value="name">Name A-Z</option>
-              <option value="name-desc">Name Z-A</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
-              <option value="stock">Stock: High to Low</option>
+              <option value="name">Nama A-Z</option>
+              <option value="name-desc">Nama Z-A</option>
+              <option value="price-asc">Harga: Rendah ke Tinggi</option>
+              <option value="price-desc">Harga: Tinggi ke Rendah</option>
+              <option value="stock">Stok: Tinggi ke Rendah</option>
             </select>
             <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">sort</span>
           </div>
@@ -67,9 +67,9 @@
         <!-- Selected Count -->
         <div class="mt-4 flex items-center justify-between">
           <div class="text-sm text-slate-600 font-medium">
-            <span class="text-emerald-600 font-bold">{{ selectedProducts.length }}</span> selected
+            <span class="text-emerald-600 font-bold">{{ selectedProducts.length }}</span> terpilih
             <span v-if="filteredProducts.length > 0" class="text-slate-400">
-              from {{ filteredProducts.length }} available
+              dari {{ filteredProducts.length }} tersedia
             </span>
           </div>
           <button
@@ -77,7 +77,7 @@
             @click="clearSelection"
             class="text-xs font-bold text-red-500 hover:text-red-700 hover:underline transition"
           >
-            Clear Selection
+            Hapus Pilihan
           </button>
         </div>
       </div>
@@ -86,14 +86,14 @@
       <div class="flex-1 overflow-y-auto p-5 bg-slate-50 custom-scrollbar">
         <div v-if="loading" class="flex flex-col items-center justify-center py-20">
           <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <div class="text-slate-500 font-medium animate-pulse">Loading products...</div>
+          <div class="text-slate-500 font-medium animate-pulse">Memuat produk...</div>
         </div>
 
         <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center py-20">
           <div class="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mb-4">
              <span class="material-symbols-outlined text-[40px] text-slate-400">inventory_2</span>
           </div>
-          <p class="text-slate-500 font-medium">No products found</p>
+          <p class="text-slate-500 font-medium">Produk tidak ditemukan</p>
         </div>
 
         <div v-else class="space-y-3">
@@ -124,7 +124,7 @@
                   <div class="mt-1 flex items-center gap-3 text-xs font-medium text-slate-500">
                     <span v-if="product.category" class="bg-slate-100 px-2 py-0.5 rounded-md">{{ product.category }}</span>
                     <span :class="product.stock > 0 ? 'text-emerald-600' : 'text-red-500'">
-                      Stock: {{ product.stock }}
+                      Stok: {{ product.stock }}
                     </span>
                   </div>
                 </div>
@@ -140,14 +140,14 @@
       <!-- Footer -->
       <div class="p-6 bg-white border-t border-slate-100 flex items-center justify-between gap-4 sticky bottom-0 z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
         <div class="text-sm font-bold text-slate-600 hidden sm:block">
-          <span class="text-emerald-600 text-lg">{{ selectedProducts.length }}</span> items selected
+          <span class="text-emerald-600 text-lg">{{ selectedProducts.length }}</span> item terpilih
         </div>
         <div class="flex flex-1 sm:flex-none gap-3">
           <button
             @click="handleCancel"
             class="flex-1 sm:w-32 px-4 py-3 border border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition"
           >
-            Cancel
+            Batal
           </button>
           <button
             @click="handleConfirm"
@@ -155,7 +155,7 @@
             class="flex-1 sm:w-48 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-[20px]">check</span>
-            <span>Confirm ({{ selectedProducts.length }})</span>
+            <span>Konfirmasi ({{ selectedProducts.length }})</span>
           </button>
         </div>
       </div>
@@ -186,8 +186,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: 'Select Products',
-  subtitle: 'Choose products to add',
+  title: 'Pilih Produk',
+  subtitle: 'Pilih produk untuk ditambahkan',
   selectedProductIds: () => [],
   allowMultiple: true,
 });

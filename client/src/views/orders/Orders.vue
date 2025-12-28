@@ -1,5 +1,22 @@
 <template>
   <div class="flex flex-col gap-6 font-display p-6 lg:p-8 bg-slate-50 min-h-screen">
+    <!-- Pull to Refresh Indicator -->
+    <div
+      v-if="pullDistance > 0 || isRefreshing"
+      class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center transition-all duration-200"
+      :style="{ transform: `translateY(${Math.min(pullDistance, 80)}px)`, opacity: Math.min(pullDistance / 80, 1) }"
+    >
+      <div class="bg-white dark:bg-slate-800 rounded-full shadow-lg px-4 py-2 flex items-center gap-2 border border-slate-200 dark:border-slate-700">
+        <div
+          v-if="isRefreshing"
+          class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
+        ></div>
+        <span v-else class="material-symbols-outlined text-emerald-500">arrow_downward</span>
+        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
+          {{ isRefreshing ? 'Memuat ulang...' : 'Tarik untuk refresh' }}
+        </span>
+      </div>
+    </div>
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
@@ -23,6 +40,45 @@
           <span class="material-symbols-outlined text-[20px]">delete_sweep</span>
           <span>Clear Cancelled</span>
         </button>
+        <ExportButton
+          :data="orders"
+          filename="orders-export"
+          @export="handleExport"
+        />
+        
+        <!-- Columns Toggle -->
+        <div class="relative group">
+           <button @click="showColumnMenu = !showColumnMenu" class="px-3 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition flex items-center gap-2 text-sm font-bold shadow-sm">
+              <span class="material-symbols-outlined text-[18px]">view_column</span>
+              Columns
+           </button>
+           <div v-if="showColumnMenu" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div class="space-y-2">
+                 <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" :checked="isColumnVisible('orderInfo')" @change="toggleColumn('orderInfo')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-slate-700">Order Info</span>
+                 </label>
+                 <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" :checked="isColumnVisible('customer')" @change="toggleColumn('customer')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-slate-700">Customer</span>
+                 </label>
+                 <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" :checked="isColumnVisible('total')" @change="toggleColumn('total')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-slate-700">Total</span>
+                 </label>
+                 <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" :checked="isColumnVisible('status')" @change="toggleColumn('status')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-slate-700">Status</span>
+                 </label>
+                 <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" :checked="isColumnVisible('date')" @change="toggleColumn('date')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-slate-700">Date</span>
+                 </label>
+              </div>
+           </div>
+           <!-- Backdrop for closing menu -->
+           <div v-if="showColumnMenu" @click="showColumnMenu = false" class="fixed inset-0 z-40"></div>
+        </div>
       </div>
     </div>
 
@@ -32,6 +88,7 @@
        <div class="relative flex-1">
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
           <input
+            ref="searchInputRef"
             v-model="filters.search"
             @focus="handleSearchFocus"
             @input="handleSearchInput"
@@ -40,6 +97,16 @@
             class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 hover:border-slate-200 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
           />
        </div>
+
+       <!-- Clear Filters Button -->
+       <button
+         v-if="hasActiveFilters"
+         @click="clearAllFilters"
+         class="flex items-center gap-2 px-4 py-3 text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-200 whitespace-nowrap"
+       >
+         <span class="material-symbols-outlined text-[18px]">clear_all</span>
+         Hapus Filter
+       </button>
 
        <div class="w-px bg-slate-100 mx-2 hidden xl:block"></div>
 
@@ -83,12 +150,17 @@
       <p class="text-slate-500 font-medium animate-pulse">Loading orders...</p>
     </div>
 
-    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+    <div v-else-if="orders.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200 animate-scale-in">
       <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
         <span class="material-symbols-outlined text-[40px] text-slate-300">shopping_bag</span>
       </div>
-      <h3 class="text-xl font-bold text-slate-900 mb-2">No Orders Found</h3>
-      <p class="text-slate-500 text-center max-w-md">Try adjusting your filters or search criteria.</p>
+      <h3 class="text-xl font-bold text-slate-900 mb-2">Belum Ada Pesanan</h3>
+      <p class="text-slate-500 text-center max-w-md mb-6">Pesanan yang masuk atau transaksi baru akan muncul di sini.</p>
+      
+      <router-link to="/app/pos" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+         <span class="material-symbols-outlined">add_circle</span>
+         Buat Pesanan Baru
+      </router-link>
     </div>
 
     <!-- Orders List -->
@@ -123,7 +195,22 @@
                 <p class="text-xs text-slate-500">{{ formatDateTime(order.createdAt) }}</p>
               </div>
             </div>
+            <div v-if="canEditOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')" class="relative group/status" @click.stop>
+                <select
+                    :value="order.status"
+                    @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
+                    class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transition-all"
+                    :class="getStatusClass(order.status)"
+                >
+                    <option value="PENDING" class="bg-white text-slate-900">Pending</option>
+                    <option value="PROCESSING" class="bg-white text-slate-900">Processing</option>
+                    <option value="COMPLETED" class="bg-white text-slate-900">Selesai</option>
+                    <option value="CANCELLED" class="bg-white text-slate-900">Batalkan</option>
+                </select>
+                <span class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] opacity-50 group-hover/status:opacity-100 transition-opacity">▼</span>
+            </div>
             <span
+              v-else
               class="px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider"
               :class="getStatusClass(order.status)"
             >
@@ -189,7 +276,7 @@
       <!-- Desktop Table View -->
       <div class="hidden lg:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-50 border-b border-slate-100">
+          <thead class="bg-slate-50 border-b border-slate-100 sticky top-0 z-10 shadow-sm">
             <tr>
               <th class="p-4 w-12">
                 <input
@@ -199,11 +286,11 @@
                   class="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
                 />
               </th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Order Info</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Total</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+              <th v-if="isColumnVisible('orderInfo')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Order Info</th>
+              <th v-if="isColumnVisible('customer')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer</th>
+              <th v-if="isColumnVisible('total')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Total</th>
+              <th v-if="isColumnVisible('status')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+              <th v-if="isColumnVisible('date')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
               <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
@@ -222,30 +309,45 @@
                   class="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
                 />
               </td>
-              <td class="p-4">
+              <td v-if="isColumnVisible('orderInfo')" class="p-4">
                 <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{{ order.orderNumber }}</div>
                 <div v-if="order.sendToKitchen" class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1 font-medium">
                    <span class="material-symbols-outlined text-[14px]">soup_kitchen</span>
                    Kitchen
                 </div>
               </td>
-              <td class="p-4">
+              <td v-if="isColumnVisible('customer')" class="p-4">
                  <div class="font-medium text-slate-700">
                     {{ order.member?.name || order.customer?.name || order.temporaryCustomerName || 'Walk-in' }}
                  </div>
               </td>
-              <td class="p-4 font-bold text-slate-900">
+              <td v-if="isColumnVisible('total')" class="p-4 font-bold text-slate-900">
                  {{ formatCurrency(Number(order.total)) }}
               </td>
-              <td class="p-4">
+              <td v-if="isColumnVisible('status')" class="p-4">
+                 <div v-if="canEditOrders && (order.status === 'PENDING' || order.status === 'PROCESSING')" class="relative group/status w-max" @click.stop>
+                    <select
+                        :value="order.status"
+                        @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
+                        class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transition-all"
+                        :class="getStatusClass(order.status)"
+                    >
+                        <option value="PENDING" class="bg-white text-slate-900">Pending</option>
+                        <option value="PROCESSING" class="bg-white text-slate-900">Processing</option>
+                        <option value="COMPLETED" class="bg-white text-slate-900">Selesai</option>
+                        <option value="CANCELLED" class="bg-white text-slate-900">Batalkan</option>
+                    </select>
+                    <span class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] opacity-50 group-hover/status:opacity-100 transition-opacity">▼</span>
+                 </div>
                  <span
+                    v-else
                     class="px-3 py-1 text-xs font-bold rounded-full border"
                     :class="getStatusClass(order.status)"
                   >
                     {{ getStatusLabel(order.status) }}
                   </span>
               </td>
-              <td class="p-4 text-sm text-slate-500">
+              <td v-if="isColumnVisible('date')" class="p-4 text-sm text-slate-500">
                  {{ formatDateTime(order.createdAt) }}
               </td>
               <td class="p-4 text-right">
@@ -443,11 +545,14 @@ import { useAuthStore } from '../../stores/auth';
 import TenantSelectorModal from '../../components/TenantSelectorModal.vue';
 import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
+import ExportButton from '../../components/ExportButton.vue';
+import { exportToCSV, exportToPDF } from '../../utils/exportUtils';
 import ReceiptPrinter from '../../components/ReceiptPrinter.vue';
 import OrderEditModal from '../../components/OrderEditModal.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { useNotification } from '../../composables/useNotification';
 import { usePermissions } from '../../composables/usePermissions';
+import { usePullToRefresh } from '../../composables/usePullToRefresh';
 
 interface OrderItem {
   id?: string;
@@ -501,19 +606,74 @@ const loading = ref(false);
 const showReceiptModal = ref(false);
 const selectedOrderForReceipt = ref<Order | null>(null);
 const selectedOrders = ref<Order[]>([]);
-const filters = ref({
-  search: '',
-  status: '',
-  month: '',
-  startDate: '',
-  endDate: '',
+
+// Filter persistence key
+const FILTER_STORAGE_KEY = 'orders_filters';
+
+// Initialize filters from localStorage or defaults
+const loadFiltersFromStorage = () => {
+  try {
+    const saved = localStorage.getItem(FILTER_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        search: parsed.search || '',
+        status: parsed.status || '',
+        month: parsed.month || '',
+        startDate: parsed.startDate || '',
+        endDate: parsed.endDate || '',
+      };
+    }
+  } catch (e) {
+    console.warn('Failed to load filters from storage:', e);
+  }
+  return {
+    search: '',
+    status: '',
+    month: '',
+    startDate: '',
+    endDate: '',
+  };
+};
+
+const filters = ref(loadFiltersFromStorage());
+
+// Save filters to localStorage whenever they change
+watch(filters, (newFilters) => {
+  try {
+    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(newFilters));
+  } catch (e) {
+    console.warn('Failed to save filters to storage:', e);
+  }
+}, { deep: true });
+
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return !!(filters.value.search || filters.value.status || filters.value.month || filters.value.startDate || filters.value.endDate);
 });
+
+// Clear all filters
+const clearAllFilters = () => {
+  filters.value = {
+    search: '',
+    status: '',
+    month: '',
+    startDate: '',
+    endDate: '',
+  };
+  loadOrders(1);
+};
 const pagination = ref({
   page: 1,
   limit: 10,
   total: 0,
   totalPages: 0,
 });
+
+const searchInputRef = ref<HTMLInputElement | null>(null);
+const handleGlobalFocusSearch = () => {
+    searchInputRef.value?.focus();
+};
 
 // Debounce to prevent rate limiting
 let loadOrdersTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -1114,6 +1274,45 @@ onMounted(() => {
   if (!needsTenantSelection.value) {
     loadOrders(1);
   }
+
+  window.addEventListener('focus-search', handleGlobalFocusSearch);
 });
+
+onUnmounted(() => {
+  window.removeEventListener('focus-search', handleGlobalFocusSearch);
+});
+
+
+
+
+const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+   const data = orders.value.map(o => ({
+      OrderNumber: o.orderNumber,
+      Customer: o.customer?.name || o.temporaryCustomerName || 'Walk-in',
+      Total: o.total,
+      Status: o.status,
+      Date: new Date(o.createdAt).toLocaleDateString()
+   }));
+   
+   if (format === 'csv') exportToCSV(data, 'orders-export');
+   if (format === 'excel') exportToCSV(data, 'orders-export');
+   if (format === 'pdf') exportToPDF(data, 'orders-export', 'Daftar Pesanan');
+};
+
+const showColumnMenu = ref(false);
+const visibleColumns = ref<string[]>(JSON.parse(localStorage.getItem('ordersVisibleColumns') || '["orderInfo", "customer", "total", "status", "date"]'));
+
+const isColumnVisible = (col: string) => visibleColumns.value.includes(col);
+
+const toggleColumn = (col: string) => {
+  if (visibleColumns.value.includes(col)) {
+    if (visibleColumns.value.length > 1) { // Prevent hiding all columns
+        visibleColumns.value = visibleColumns.value.filter(c => c !== col);
+    }
+  } else {
+    visibleColumns.value.push(col);
+  }
+  localStorage.setItem('ordersVisibleColumns', JSON.stringify(visibleColumns.value));
+};
 </script>
 

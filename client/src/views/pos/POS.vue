@@ -519,6 +519,7 @@
              <div class="relative">
                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
                 <input 
+                  ref="searchInputRef"
                   v-model="searchQuery" 
                   type="text" 
                   aria-label="Search products"
@@ -530,7 +531,10 @@
 
           <!-- Grid -->
           <div class="flex-1 overflow-y-auto p-4 lg:p-6 pt-2">
-             <div v-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center h-64 text-slate-400">
+             <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 pb-20 lg:pb-0">
+                <SkeletonLoader v-for="i in 8" :key="i" type="product-card" />
+             </div>
+             <div v-else-if="filteredProducts.length === 0" class="flex flex-col items-center justify-center h-64 text-slate-400">
                 <span class="material-symbols-outlined text-5xl mb-2">search_off</span>
                 <p>No products found</p>
              </div>
@@ -975,6 +979,34 @@
         </div>
     </div>
 
+    <!-- Transaction Success Modal -->
+    <div v-if="showSuccessOverlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-bounce-in flex flex-col relative">
+             <div class="p-8 flex flex-col items-center justify-center text-center">
+                <div class="size-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 shadow-inner ring-8 ring-emerald-50 dark:ring-emerald-900/10">
+                    <span class="material-symbols-outlined text-6xl text-emerald-500 animate-pulse">check_circle</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Transaksi Berhasil!</h3>
+                <p class="text-slate-500 mb-8">Pembayaran telah dikonfirmasi.</p>
+
+                <!-- Change Info -->
+                <div v-if="lastOrderReceipt?.change > 0" class="w-full bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-100 dark:border-emerald-800/30 mb-8">
+                    <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Kembalian</p>
+                    <p class="text-3xl font-black text-emerald-700 dark:text-emerald-400">{{ formatCurrency(lastOrderReceipt.change) }}</p>
+                </div>
+                
+                <div class="flex flex-col gap-3 w-full">
+                    <button @click="printReceiptAndClose" class="w-full py-3.5 bg-slate-800 text-white font-bold rounded-xl shadow-lg hover:bg-slate-700 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">print</span>
+                        Cetak Struk
+                    </button>
+                    <button @click="closeSuccessOverlay" class="w-full py-3.5 bg-emerald-50 text-emerald-600 font-bold rounded-xl border border-emerald-200 hover:bg-emerald-100 transition-all">
+                        Transaksi Baru
+                    </button>
+                </div>
+             </div>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -992,6 +1024,7 @@ import { syncManager } from '../../utils/sync-manager';
 import PaymentModal from '../../components/PaymentModal.vue';
 import ReceiptPrinter from '../../components/ReceiptPrinter.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
+import SkeletonLoader from '../../components/SkeletonLoader.vue';
 
 interface CartItem {
   id: string;
@@ -1016,7 +1049,8 @@ const cart = ref<CartItem[]>([]);
 const loading = ref(false);
 const processing = ref(false);
 const searchQuery = ref('');
-const selectedCategory = ref<string>('');
+const searchInputRef = ref<HTMLInputElement | null>(null);
+const selectedCategory = ref<string>('SEMUA');
 const quickDiscount = ref<number>(0);
 const discountType = ref<'amount' | 'percent'>('amount');
 const showCashInput = ref(false);
@@ -1030,6 +1064,16 @@ const members = ref<any[]>([]);
 const sendToKitchen = ref(false);
 const showPaymentModal = ref(false);
 const showReceiptModal = ref(false);
+
+// Watch for customer changes to persist preference (Smart Default)
+watch([customerType, customerName, selectedMember], () => {
+    const data = {
+        type: customerType.value,
+        name: customerName.value,
+        member: selectedMember.value
+    };
+    localStorage.setItem('pos_last_customer', JSON.stringify(data));
+}, { deep: true });
 const showSuccessOverlay = ref(false);
 const currentTime = ref('');
 const showCustomerModal = ref(false);
@@ -1142,7 +1186,7 @@ const promotionDiscounts = computed(() => {
           if (applicableProductIds.includes(item.id)) {
             const itemSubtotal = (item.price || 0) * (item.quantity || 0);
             if (d.discountValueType === 'PERCENTAGE') {
-              let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+              const evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
               discountAmount += evalAmt;
             } else {
               discountAmount += Number(d.discountValue);
@@ -1193,7 +1237,7 @@ const promotionDiscounts = computed(() => {
             && !globalProductsWithDiscount.has(item.id)) {
           const itemSubtotal = (item.price || 0) * (item.quantity || 0);
           if (d.discountValueType === 'PERCENTAGE') {
-            let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+            const evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
             // Note: maxDiscountAmount usually applies per rule, not per product for PRODUCT_BASED in backend
             discountAmount += evalAmt;
           } else {
@@ -1221,7 +1265,7 @@ const promotionDiscounts = computed(() => {
           if ((item.quantity || 0) >= minQuantity) {
             const itemSubtotal = (item.price || 0) * (item.quantity || 0);
             if (d.discountValueType === 'PERCENTAGE') {
-              let evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
+              const evalAmt = (itemSubtotal * Number(d.discountValue)) / 100;
               discountAmount += evalAmt;
             } else {
               discountAmount += Number(d.discountValue) * (item.quantity || 0);
@@ -1725,13 +1769,15 @@ const processPaymentSimple = async (paymentMethod: string) => {
       transactionData,
     };
 
+    let order: any = null;
+
     if (isOnline.value) {
       // Online: Create order and transaction normally
       const orderResponse = await api.post('/orders', orderData);
-      const order = orderResponse.data;
+      order = orderResponse.data;
       transactionData.orderId = order.id;
       await api.post('/transactions', transactionData);
-      showSuccess('Payment successful!');
+      // showSuccess('Payment successful!'); // Handled by overlay
     } else {
       // Offline: Store locally
       await offlineStorage.storeOrder(fullOrderData);
@@ -1750,12 +1796,39 @@ const processPaymentSimple = async (paymentMethod: string) => {
       pendingSyncCount.value = await syncManager.getPendingCount();
     }
     
+    // Prepare Receipt Data for Overlay
+    const receiptData = {
+      orderNumber: order?.orderNumber || 'OFFLINE-' + Date.now().toString().slice(-6),
+      date: new Date(),
+      customerName: customerName.value || 'Pelanggan',
+      memberName: selectedMember.value?.name || null,
+      items: cart.value.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        subtotal: item.price * item.quantity,
+      })),
+      subtotal: total.value,
+      discount: discount.value,
+      total: transactionData.amount,
+      paymentMethod: transactionData.paymentMethod,
+      cashAmount: transactionData.cashAmount,
+      change: transactionData.change || 0,
+      servedBy: authStore.user?.name || 'Cashier',
+    };
+    
+    lastOrderReceipt.value = receiptData;
+    showSuccessOverlay.value = true;
+    
     // Clear sendToKitchen after success
     sendToKitchen.value = false;
     
     // Reset cash input
     showCashInput.value = false;
     cashAmount.value = 0;
+    
+    // Clear smart default for customer
+    localStorage.removeItem('pos_last_customer');
     
     clearCart();
     if (isOnline.value) {
@@ -2052,6 +2125,7 @@ const processPayment = async (paymentData: { paymentMethod: string; cashAmount?:
 
     // showReceiptModal.value = true;
     showSuccessOverlay.value = true;
+    localStorage.removeItem('pos_last_customer'); // Clear smart default for customer
     clearCart();
     // Don't modify estimatedDiscount directly here, it will be reset by clearCart
     await loadProducts();
@@ -2199,6 +2273,23 @@ const goToShiftPage = () => {
   router.push('/open-shift');
 };
 
+// Watch for customer state to save to localStorage (Smart Default)
+watch([customerName, customerType, selectedMember], () => {
+  if (customerType.value === 'member' && selectedMember.value) {
+    localStorage.setItem('pos_last_customer', JSON.stringify({
+      type: 'member',
+      member: selectedMember.value,
+    }));
+  } else if (customerType.value === 'customer' && customerName.value.trim()) {
+    localStorage.setItem('pos_last_customer', JSON.stringify({
+      type: 'customer',
+      name: customerName.value.trim(),
+    }));
+  } else {
+    localStorage.removeItem('pos_last_customer'); // Clear if no valid customer/member selected
+  }
+}, { deep: true });
+
 // Watch for tenantId changes
 watch(
   () => {
@@ -2328,6 +2419,24 @@ onMounted(async () => {
   }
 
   // Clock Logic
+  // Restore Saved Customer (Smart Default)
+  try {
+    const savedCustomer = localStorage.getItem('pos_last_customer');
+    if (savedCustomer) {
+        const parsed = JSON.parse(savedCustomer);
+        if (parsed.type === 'member' && parsed.member) {
+            customerType.value = 'member';
+            selectedMember.value = parsed.member;
+            selectedMemberId.value = parsed.member.id;
+        } else if (parsed.name) {
+            customerType.value = 'customer';
+            customerName.value = parsed.name;
+        }
+    }
+  } catch (e) {
+    console.error('Failed to restore customer', e);
+  }
+
   // Clock Logic
   const updateClock = () => {
     const now = new Date();
@@ -2343,6 +2452,19 @@ onUnmounted(() => {
     window.removeEventListener('resize', checkOrientation);
     window.removeEventListener('orientationchange', checkOrientation);
   }
+});
+
+
+const handleFocusSearch = () => {
+    searchInputRef.value?.focus();
+};
+
+onMounted(() => {
+  window.addEventListener('focus-search', handleFocusSearch);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('focus-search', handleFocusSearch);
 });
 </script>
 

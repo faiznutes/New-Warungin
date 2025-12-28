@@ -6,8 +6,8 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Discounts & Promos</h1>
-        <p class="text-slate-500 font-medium">Create and manage your store promotions.</p>
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight leading-tight">Diskon & Promo</h1>
+        <p class="text-slate-500 font-medium">Buat dan kelola promosi toko Anda.</p>
       </div>
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
@@ -15,7 +15,7 @@
         class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
-        <span>Add Discount</span>
+        <span>Tambah Diskon</span>
       </button>
     </div>
 
@@ -28,7 +28,7 @@
           @focus="handleSearchFocus"
           @input="handleSearchInput"
           type="text"
-          placeholder="Search discounts..."
+          placeholder="Cari diskon..."
           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
         />
       </div>
@@ -37,20 +37,20 @@
     <!-- Discounts Table -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-       <p class="text-slate-500 font-medium animate-pulse">Loading discounts...</p>
+       <p class="text-slate-500 font-medium animate-pulse">Memuat diskon...</p>
     </div>
 
     <div v-else-if="discounts.length === 0" class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
       <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
         <span class="material-symbols-outlined text-[40px] text-slate-300">percent</span>
       </div>
-      <h3 class="text-xl font-bold text-slate-900 mb-2">No Discounts Yet</h3>
-      <p class="text-slate-500 text-center max-w-md">Create your first discount to start offering promotions.</p>
+      <h3 class="text-xl font-bold text-slate-900 mb-2">Belum Ada Diskon</h3>
+      <p class="text-slate-500 text-center max-w-md">Buat diskon pertama Anda untuk mulai menawarkan promosi.</p>
       <button 
         @click="showCreateModal = true"
         class="mt-6 text-emerald-600 font-bold hover:text-emerald-700 hover:underline"
       >
-        Create Now
+        Buat Sekarang
       </button>
     </div>
 
@@ -59,12 +59,12 @@
         <table class="w-full text-left border-collapse">
           <thead class="bg-slate-50 border-b border-slate-100">
             <tr>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Discount Name</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Value</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Period</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Diskon</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tipe</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nilai</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Periode</th>
               <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+              <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
@@ -87,10 +87,10 @@
               <td class="p-4">
                 <div class="text-sm font-medium text-slate-500">
                   <div v-if="discount.startDate || discount.endDate" class="flex flex-col">
-                    <span v-if="discount.startDate" class="text-xs">From: {{ formatDate(discount.startDate) }}</span>
-                    <span v-if="discount.endDate" class="text-xs">To: {{ formatDate(discount.endDate) }}</span>
+                    <span v-if="discount.startDate" class="text-xs">Dari: {{ formatDate(discount.startDate) }}</span>
+                    <span v-if="discount.endDate" class="text-xs">Sampai: {{ formatDate(discount.endDate) }}</span>
                   </div>
-                  <span v-else class="text-slate-400 italic">No time limit</span>
+                  <span v-else class="text-slate-400 italic">Tanpa batas waktu</span>
                 </div>
               </td>
               <td class="p-4">
@@ -99,7 +99,7 @@
                   :class="discount.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-200'"
                 >
                   <span class="w-1.5 h-1.5 rounded-full" :class="discount.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
-                  {{ discount.isActive ? 'Active' : 'Inactive' }}
+                  {{ discount.isActive ? 'Aktif' : 'Tidak Aktif' }}
                 </span>
               </td>
               <td class="p-4 text-right">
@@ -114,7 +114,7 @@
                   <button
                     @click="deleteDiscount(discount.id)"
                     class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition"
-                    title="Delete"
+                    title="Hapus"
                   >
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
@@ -136,7 +136,7 @@
         <!-- Modal Header -->
         <div class="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
           <h3 class="text-xl font-bold text-slate-900">
-            {{ editingDiscount ? 'Edit Discount' : 'New Discount' }}
+            {{ editingDiscount ? 'Edit Diskon' : 'Diskon Baru' }}
           </h3>
           <button
             @click="closeModal"
@@ -150,12 +150,12 @@
           <div class="space-y-6">
             <!-- Name -->
             <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2">Discount Name</label>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Nama Diskon</label>
               <input
                 v-model="discountForm.name"
                 type="text"
                 required
-                placeholder="e.g., Summer Sale 20%"
+                placeholder="Cth. Diskon Lebaran 20%"
                 class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
               />
             </div>
@@ -163,7 +163,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                <!-- Discount Type -->
                <div>
-                  <label class="block text-sm font-bold text-slate-700 mb-2">Discount Type</label>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">Tipe Diskon</label>
                   <div class="relative">
                      <select
                         v-model="discountForm.discountType"
@@ -171,10 +171,10 @@
                         @change="handleDiscountTypeChange"
                         class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
                      >
-                        <option value="AMOUNT_BASED">Based on Total Amount</option>
-                        <option value="BUNDLE">Bundle (Buy Together)</option>
-                        <option value="PRODUCT_BASED">Product Specific</option>
-                        <option value="QUANTITY_BASED">Quantity Based (Buy X Get Y)</option>
+                        <option value="AMOUNT_BASED">Berdasarkan Total Transaksi</option>
+                        <option value="BUNDLE">Bundle (Beli Bersama)</option>
+                        <option value="PRODUCT_BASED">Spesifik Produk</option>
+                        <option value="QUANTITY_BASED">Berdasarkan Jumlah Item</option>
                      </select>
                      <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">expand_more</span>
                   </div>
@@ -182,7 +182,7 @@
                
                <!-- Value Type -->
                <div>
-                  <label class="block text-sm font-bold text-slate-700 mb-2">Value Type</label>
+                  <label class="block text-sm font-bold text-slate-700 mb-2">Tipe Nilai</label>
                   <div class="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
                      <button 
                         type="button" 
@@ -190,7 +190,7 @@
                         class="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
                         :class="discountForm.discountValueType === 'PERCENTAGE' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                      >
-                        Percentage (%)
+                        Persentase (%)
                      </button>
                      <button 
                         type="button" 
@@ -198,7 +198,7 @@
                         class="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
                         :class="discountForm.discountValueType === 'FIXED' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
                      >
-                        Fixed (Rp)
+                        Nominal (Rp)
                      </button>
                   </div>
                </div>
@@ -207,7 +207,7 @@
             <!-- Discount Value -->
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-2">
-                Discount Value <span class="text-slate-400 font-normal">{{ discountForm.discountValueType === 'PERCENTAGE' ? '(%)' : '(Rp)' }}</span>
+                Nilai Diskon <span class="text-slate-400 font-normal">{{ discountForm.discountValueType === 'PERCENTAGE' ? '(%)' : '(Rp)' }}</span>
               </label>
               <div class="relative">
                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
@@ -230,7 +230,7 @@
             <div v-if="discountForm.discountType === 'BUNDLE'" class="bg-indigo-50/50 dark:bg-indigo-900/10 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800 space-y-4">
               <div>
                 <label class="block text-sm font-bold text-slate-700 mb-2">
-                  Select Bundle Products <span class="text-red-500">*</span>
+                  Pilih Produk Bundle <span class="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -239,28 +239,28 @@
                 >
                   <span class="text-sm font-medium text-slate-700">
                     <span v-if="discountForm.bundleProducts.length === 0" class="text-slate-400">
-                       Click to select products...
+                       Klik untuk memilih produk...
                     </span>
                     <span v-else class="text-indigo-700 dark:text-indigo-400 font-bold">
-                      {{ discountForm.bundleProducts.length }} products selected
+                      {{ discountForm.bundleProducts.length }} produk terpilih
                     </span>
                   </span>
                   <span class="material-symbols-outlined text-slate-400 group-hover:text-indigo-500">add_circle</span>
                 </button>
                 <p class="mt-2 text-xs text-slate-500">
-                  Customers must buy ALL selected products to get the discount.
+                  Pelanggan harus membeli SEMUA produk terpilih agar diskon berlaku.
                 </p>
               </div>
               
               <div v-if="discountForm.bundleProducts.length > 0">
-                 <label class="block text-sm font-bold text-slate-700 mb-2">Which product is discounted?</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Produk mana yang didiskon?</label>
                  <div class="relative">
                     <select
                       v-model="discountForm.bundleDiscountProduct"
                       required
                       class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-medium appearance-none"
                     >
-                      <option value="">Select a product from bundle</option>
+                      <option value="">Pilih produk dalam bundle</option>
                       <option
                         v-for="productId in discountForm.bundleProducts"
                         :key="productId"
@@ -277,7 +277,7 @@
             <!-- PRODUCT_BASED -->
             <div v-if="discountForm.discountType === 'PRODUCT_BASED'" class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
               <label class="block text-sm font-bold text-slate-700 mb-2">
-                Applicable Products <span class="text-red-500">*</span>
+                Produk yang Berlaku <span class="text-red-500">*</span>
               </label>
               <button
                 type="button"
@@ -286,10 +286,10 @@
               >
                 <span class="text-sm font-medium text-slate-700">
                   <span v-if="discountForm.applicableProducts.length === 0" class="text-slate-400">
-                    Click to select products...
+                    Klik untuk memilih produk...
                   </span>
                   <span v-else class="text-emerald-700 font-bold">
-                    {{ discountForm.applicableProducts.length }} products selected
+                    {{ discountForm.applicableProducts.length }} produk terpilih
                   </span>
                 </span>
                 <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500">inventory_2</span>
@@ -300,28 +300,28 @@
             <div v-if="discountForm.discountType === 'QUANTITY_BASED'" class="bg-amber-50/50 p-5 rounded-xl border border-amber-100 space-y-4">
               <div class="grid grid-cols-2 gap-4">
                  <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Select By</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Pilih Berdasarkan</label>
                     <div class="relative">
                        <select
                          v-model="productSelectionType"
                          class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none appearance-none"
                        >
-                         <option value="CATEGORY">Category</option>
-                         <option value="PRODUCTS">Specific Products</option>
+                         <option value="CATEGORY">Kategori</option>
+                         <option value="PRODUCTS">Produk Spesifik</option>
                        </select>
                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined text-[18px]">expand_more</span>
                     </div>
                  </div>
                  
                  <div v-if="productSelectionType === 'CATEGORY'">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Category</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kategori</label>
                     <div class="relative">
                        <select
                          v-model="selectedCategory"
                          @change="handleCategoryChange"
                          class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none appearance-none"
                        >
-                         <option value="">Select Category</option>
+                         <option value="">Pilih Kategori</option>
                          <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
                        </select>
                        <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined text-[18px]">expand_more</span>
@@ -329,14 +329,14 @@
                  </div>
                  
                  <div v-if="productSelectionType === 'PRODUCTS'" class="col-span-2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Products</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Produk</label>
                     <button
                       type="button"
                       @click="openProductSelector('QUANTITY_BASED')"
                       class="w-full px-4 py-2 text-left bg-white border border-amber-200 rounded-lg hover:bg-amber-50 transition flex items-center justify-between"
                     >
                       <span class="text-sm font-bold text-amber-700">
-                         {{ discountForm.applicableProducts.length > 0 ? `${discountForm.applicableProducts.length} products` : 'Select products' }}
+                         {{ discountForm.applicableProducts.length > 0 ? `${discountForm.applicableProducts.length} produk` : 'Pilih produk' }}
                       </span>
                       <span class="material-symbols-outlined text-amber-400">add</span>
                     </button>
@@ -344,7 +344,7 @@
               </div>
               
               <div>
-                 <label class="block text-sm font-bold text-slate-700 mb-2">Minimum Quantity</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Jumlah Minimum</label>
                  <input
                     v-model.number="discountForm.minQuantity"
                     type="number"
@@ -353,14 +353,14 @@
                     placeholder="e.g. 3"
                     class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-amber-500 outline-none font-bold"
                  />
-                 <p class="mt-1 text-xs text-slate-500">Buy at least this amount to get discount.</p>
+                 <p class="mt-1 text-xs text-slate-500">Beli minimal jumlah ini untuk dapat diskon.</p>
               </div>
             </div>
 
             <!-- AMOUNT_BASED -->
              <div v-if="discountForm.discountType === 'AMOUNT_BASED'" class="grid grid-cols-2 gap-4">
                <div>
-                 <label class="block text-sm font-bold text-slate-700 mb-2">Min Total (Rp)</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Min. Total (Rp)</label>
                  <input
                    v-model.number="discountForm.minAmount"
                    type="number"
@@ -370,13 +370,13 @@
                  />
                </div>
                <div>
-                 <label class="block text-sm font-bold text-slate-700 mb-2">Min Items</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Min. Item</label>
                  <input
                    v-model.number="discountForm.minQuantity"
                    type="number"
                    min="1"
                    class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
-                   placeholder="Optional"
+                   placeholder="Opsional"
                  />
                </div>
             </div>
@@ -384,7 +384,7 @@
             <!-- Dates -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                 <label class="block text-sm font-bold text-slate-700 mb-2">StartDate</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Mulai</label>
                  <input
                    v-model="discountForm.startDate"
                    type="datetime-local"
@@ -392,7 +392,7 @@
                  />
               </div>
               <div>
-                 <label class="block text-sm font-bold text-slate-700 mb-2">EndDate</label>
+                 <label class="block text-sm font-bold text-slate-700 mb-2">Tanggal Berakhir</label>
                  <input
                    v-model="discountForm.endDate"
                    type="datetime-local"
@@ -404,18 +404,18 @@
             <!-- Options -->
             <div class="space-y-4 pt-4 border-t border-slate-100">
                <div class="flex items-center justify-between">
-                  <label class="text-sm font-bold text-slate-700">Applicable To</label>
+                  <label class="text-sm font-bold text-slate-700">Berlaku Untuk</label>
                   <select
                      v-model="discountForm.applicableTo"
                      class="px-3 py-2 bg-slate-50 rounded-lg text-sm font-medium border-none outline-none"
                   >
-                     <option value="ALL">Everyone</option>
-                     <option value="MEMBER_ONLY">Members Only</option>
+                     <option value="ALL">Semua Orang</option>
+                     <option value="MEMBER_ONLY">Hanya Member</option>
                   </select>
                </div>
                
                <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl cursor-pointer" @click="discountForm.isActive = !discountForm.isActive">
-                  <span class="text-sm font-bold text-slate-700">Active Status</span>
+                  <span class="text-sm font-bold text-slate-700">Status Aktif</span>
                   <div class="w-12 h-6 rounded-full relative transition-colors duration-300" :class="discountForm.isActive ? 'bg-emerald-500' : 'bg-slate-300'">
                      <div class="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300" :class="discountForm.isActive ? 'left-7' : 'left-1'"></div>
                   </div>
@@ -432,13 +432,13 @@
             @click="closeModal"
             class="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition"
           >
-            Cancel
+            Batal
           </button>
           <button
             @click="saveDiscount"
             class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95"
           >
-            {{ editingDiscount ? 'Update Discount' : 'Create Discount' }}
+            {{ editingDiscount ? 'Update Diskon' : 'Buat Diskon' }}
           </button>
         </div>
       </div>

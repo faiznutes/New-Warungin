@@ -31,10 +31,17 @@
       </button>
       <button
         @click="handleExport('pdf')"
-        class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-xl flex items-center space-x-2"
+        class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
       >
         <span>📑</span>
         <span>Export PDF</span>
+      </button>
+      <button
+        @click="handleExport('email')"
+        class="w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-xl flex items-center space-x-2 border-t border-gray-100"
+      >
+        <span>✉️</span>
+        <span>Kirim ke Email</span>
       </button>
     </div>
   </div>
@@ -56,13 +63,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: 'export', format: 'csv' | 'excel' | 'pdf'): void;
+  (e: 'export', format: 'csv' | 'excel' | 'pdf' | 'email'): void;
 }>();
 
 const showMenu = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
 
-const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+const handleExport = (format: 'csv' | 'excel' | 'pdf' | 'email') => {
   showMenu.value = false;
   emit('export', format);
 };

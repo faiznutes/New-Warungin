@@ -236,8 +236,47 @@
             </div>
           </div>
 
-          <!-- Export Format -->
+          <!-- Action Mode Selection -->
           <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Aksi</label>
+            <div class="grid grid-cols-2 gap-4">
+              <button
+                type="button"
+                @click="shareMode = false"
+                class="px-6 py-6 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
+                :class="!shareMode 
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
+              >
+                <div v-if="!shareMode" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                    <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px]">download</span>
+                <div class="text-center">
+                    <span class="block text-sm font-bold">Unduh File</span>
+                </div>
+              </button>
+              <button
+                type="button"
+                @click="shareMode = true"
+                class="px-6 py-6 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
+                :class="shareMode 
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
+              >
+                <div v-if="shareMode" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                    <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px]">share</span>
+                <div class="text-center">
+                    <span class="block text-sm font-bold">Buat Link Berbagi</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Export Format (only show if download mode) -->
+          <div v-if="!shareMode">
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Format File</label>
             <div class="grid grid-cols-2 gap-3">
               <button
@@ -275,6 +314,37 @@
             </div>
           </div>
 
+          <!-- Share Link Section -->
+          <div v-if="shareMode" class="pt-6 border-t border-slate-100 dark:border-slate-700 space-y-4">
+            <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-emerald-600 text-[24px]">link</span>
+                <div class="flex-1">
+                  <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2">Link Berbagi</h4>
+                  <p class="text-xs text-slate-600 dark:text-slate-400 mb-3">Salin link ini untuk dibagikan dengan tim atau stakeholder.</p>
+                  <div class="flex gap-2">
+                    <input
+                      :value="shareableLink"
+                      readonly
+                      class="flex-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      @click="copyShareLink"
+                      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-sm transition flex items-center gap-2"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">{{ linkCopied ? 'check' : 'content_copy' }}</span>
+                      {{ linkCopied ? 'Tersalin!' : 'Salin' }}
+                    </button>
+                  </div>
+                  <p v-if="linkCopied" class="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    Link berhasil disalin ke clipboard!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="flex gap-4 pt-6 border-t border-slate-100 dark:border-slate-700">
             <button
@@ -285,6 +355,7 @@
               Batal
             </button>
             <button
+              v-if="!shareMode"
               type="submit"
               :disabled="exporting"
               class="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
@@ -292,6 +363,17 @@
                <div v-if="exporting" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span class="material-symbols-outlined text-[20px]" v-else>download</span>
               {{ exporting ? 'Mengekspor...' : 'Mulai Export' }}
+            </button>
+            <button
+              v-else
+              type="button"
+              @click="generateShareLink"
+              :disabled="generatingLink"
+              class="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
+            >
+               <div v-if="generatingLink" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span class="material-symbols-outlined text-[20px]" v-else>link</span>
+              {{ generatingLink ? 'Membuat Link...' : 'Buat Link Berbagi' }}
             </button>
           </div>
         </form>
@@ -330,6 +412,10 @@ const emit = defineEmits<{
 }>();
 
 const exporting = ref(false);
+const shareMode = ref(false);
+const shareableLink = ref('');
+const linkCopied = ref(false);
+const generatingLink = ref(false);
 
 const exportForm = ref({
   exportType: 'report' as 'report' | 'analytics' | 'both',
@@ -340,6 +426,70 @@ const exportForm = ref({
   format: 'PDF' as 'CSV' | 'PDF',
   template: 'contemporary' as 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
 });
+
+const generateShareLink = async () => {
+  generatingLink.value = true;
+  linkCopied.value = false;
+  
+  try {
+    // Build shareable URL with report parameters
+    const baseUrl = window.location.origin;
+    const params = new URLSearchParams({
+      reportType: exportForm.value.reportType || props.reportType,
+      period: exportForm.value.period || props.defaultPeriod,
+      exportType: exportForm.value.exportType || 'report',
+      view: 'shared',
+    });
+    
+    if (exportForm.value.period !== 'all') {
+      params.append('startDate', exportForm.value.startDate);
+      params.append('endDate', exportForm.value.endDate);
+    }
+    
+    // Generate shareable link
+    shareableLink.value = `${baseUrl}/app/reports?${params.toString()}`;
+    
+    // Auto copy to clipboard
+    await copyShareLink();
+    
+    await showSuccess('Link berbagi berhasil dibuat dan disalin!');
+  } catch (error: any) {
+    console.error('Error generating share link:', error);
+    await showError('Gagal membuat link berbagi');
+  } finally {
+    generatingLink.value = false;
+  }
+};
+
+const copyShareLink = async () => {
+  if (!shareableLink.value) return;
+  
+  try {
+    await navigator.clipboard.writeText(shareableLink.value);
+    linkCopied.value = true;
+    setTimeout(() => {
+      linkCopied.value = false;
+    }, 3000);
+  } catch (error) {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = shareableLink.value;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      linkCopied.value = true;
+      setTimeout(() => {
+        linkCopied.value = false;
+      }, 3000);
+    } catch (err) {
+      await showError('Gagal menyalin link');
+    }
+    document.body.removeChild(textArea);
+  }
+};
 
 const handleExport = async () => {
   exporting.value = true;

@@ -1,8 +1,10 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex w-full">
+    <!-- Skip to Content Link -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[60] bg-blue-600 text-white px-4 py-2 rounded-lg font-bold shadow-lg">Skip to content</a>
     <!-- Sidebar -->
     <aside
-      class="w-64 bg-white shadow-xl fixed h-full z-50 transition-transform duration-300 ease-in-out"
+      class="w-64 bg-white shadow-xl fixed h-full z-50 transition-transform duration-300 ease-in-out print:hidden"
       :class="{ 
         '-translate-x-full lg:translate-x-0': !sidebarOpen && windowWidth < 1024,
         'translate-x-0': sidebarOpen || windowWidth >= 1024
@@ -16,8 +18,57 @@
           </router-link>
         </div>
 
+        <!-- Menu Search -->
+        <div class="px-4 py-3 border-b border-gray-200 flex-shrink-0">
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">search</span>
+            <input
+              v-model="menuSearchQuery"
+              type="text"
+              placeholder="Cari menu..."
+              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            />
+            <button
+              v-if="menuSearchQuery"
+              @click="menuSearchQuery = ''"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <span class="material-symbols-outlined text-slate-400 text-[16px]">close</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Navigation -->
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto overscroll-contain">
+          <!-- Search Results (when searching) -->
+          <div v-if="menuSearchQuery.trim()" class="mb-4">
+            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+              Hasil Pencarian ({{ filteredMenuItems.length }})
+            </div>
+            <div class="space-y-1">
+              <router-link
+                v-for="item in filteredMenuItems"
+                :key="item.path"
+                :to="item.path"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                @click="closeSidebarOnMobile(); menuSearchQuery = ''"
+              >
+                <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-emerald-600">
+                  {{ getMenuIcon(item.path) }}
+                </span>
+                <span class="font-medium flex-1" v-html="highlightMatch(item.label, menuSearchQuery)"></span>
+                <span class="ml-auto text-xs text-slate-400 font-medium capitalize">{{ item.section }}</span>
+              </router-link>
+            </div>
+            <div v-if="filteredMenuItems.length === 0" class="text-center py-8 text-slate-400">
+              <span class="material-symbols-outlined text-[32px] mb-2 block">search_off</span>
+              <p class="text-sm font-medium">Tidak ada menu ditemukan</p>
+            </div>
+          </div>
+
+          <!-- Regular Menu (when not searching) -->
+          <template v-else>
           <!-- Operasional Section -->
           <div class="mb-2">
             <button
@@ -63,6 +114,20 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
                 <span class="font-medium">Produk</span>
+                <span v-if="criticalStockCount > 0" class="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm shadow-red-500/20 animate-pulse">{{ criticalStockCount }}</span>
+              </router-link>
+
+              <router-link
+                v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'SUPERVISOR'"
+                to="/app/products/adjustments"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
+                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                @click="closeSidebarOnMobile"
+              >
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                <span class="font-medium">Penyesuaian Stok</span>
               </router-link>
 
               <router-link
@@ -76,6 +141,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 <span class="font-medium">Pesanan & Transaksi</span>
+                <span v-if="pendingOrdersCount > 0" class="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm shadow-red-500/20 animate-pulse">{{ pendingOrdersCount }}</span>
               </router-link>
 
               <router-link
@@ -275,7 +341,37 @@
               </router-link>
             </div>
           </div>
+          </template>
         </nav>
+
+        <!-- Recent Items / Quick Links -->
+        <div v-if="recentItems.length > 0" class="px-4 py-3 border-t border-gray-200 flex-shrink-0">
+          <div class="mb-2">
+            <div class="flex items-center justify-between px-2 mb-2">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Akses Cepat</span>
+              <button
+                @click="clearRecentItems"
+                class="text-[10px] text-gray-400 hover:text-gray-600 transition-colors"
+                title="Hapus semua"
+              >
+                Hapus
+              </button>
+            </div>
+            <div class="space-y-1">
+              <router-link
+                v-for="item in recentItems"
+                :key="item.path"
+                :to="item.path"
+                class="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
+                active-class="bg-emerald-50 text-emerald-600"
+                @click="closeSidebarOnMobile"
+              >
+                <span class="material-symbols-outlined text-[18px] flex-shrink-0">{{ item.icon }}</span>
+                <span class="font-medium truncate flex-1">{{ item.name }}</span>
+              </router-link>
+            </div>
+          </div>
+        </div>
 
         <!-- User Section -->
         <div class="p-4 border-t border-gray-200 flex-shrink-0">
@@ -287,6 +383,9 @@
               <p class="text-sm font-medium text-gray-900 truncate">{{ userName }}</p>
               <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
             </div>
+            <router-link to="/app/settings/preferences" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Preferensi">
+               <span class="material-symbols-outlined text-[20px]">settings</span>
+            </router-link>
           </div>
           <button
             @click="handleLogout"
@@ -311,7 +410,7 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col lg:ml-64 w-full">
       <!-- Top Bar -->
-      <header class="bg-white shadow-sm sticky top-0 z-30">
+      <header class="bg-white shadow-sm sticky top-0 z-30 print:hidden">
         <div class="flex items-center justify-between px-4 py-4">
           <button
             @click="sidebarOpen = !sidebarOpen"
@@ -327,21 +426,41 @@
               {{ pageTitle }}
             </h1>
           </div>
-          <!-- Notification Button for Admin Tenant -->
-          <button
-            v-if="userRole === 'ADMIN_TENANT'"
-            @click="showInfoModal = true"
-            class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
-            title="Informasi Penting"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span
-              v-if="hasUnreadInfo"
-              class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
-            ></span>
-          </button>
+          <div class="flex items-center space-x-2">
+            <!-- Global Search Trigger -->
+            <button
+               @click="openGlobalSearch"
+               class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all group"
+               title="Cari (Ctrl+K)"
+            >
+               <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">search</span>
+               <span class="hidden md:inline text-xs font-bold text-slate-400 group-hover:text-emerald-600">Cari <span class="bg-slate-100 px-1 rounded ml-1 text-[9px]">Ctrl+K</span></span>
+            </button>
+
+            <!-- Help Button -->
+            <button
+              @click="showHelpModal = true"
+              class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all group"
+              title="Bantuan"
+            >
+              <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">help</span>
+            </button>
+
+            <!-- Notification Button for Admin Tenant -->
+            <button
+              v-if="userRole === 'ADMIN_TENANT'"
+              @click="showInfoModal = true"
+              class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
+              title="Informasi Penting"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span
+                v-if="hasUnreadInfo"
+                class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
+              ></span>
+            </button>
           <!-- Tenant Selector for Super Admin -->
           <div v-if="authStore.isSuperAdmin && authStore.tenants.length > 0" class="hidden md:flex items-center space-x-2">
             <select
@@ -355,14 +474,78 @@
               </option>
             </select>
           </div>
+
+          <!-- Store Selector (for Admin Tenant & Supervisor) -->
+          <div v-if="shouldShowStoreSelector" class="hidden md:flex items-center space-x-2 animate-in fade-in duration-300">
+             <div class="relative">
+                <select
+                  v-model="selectedStoreId"
+                  @change="handleStoreChange"
+                  class="pl-9 pr-8 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white min-w-[160px] appearance-none cursor-pointer font-bold text-slate-700"
+                >
+                  <option value="">Semua Store</option>
+                  <option v-for="store in stores" :key="store.id" :value="store.id">
+                    {{ store.name }}
+                  </option>
+                </select>
+                <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-600">
+                   <span class="material-symbols-outlined text-[18px]">storefront</span>
+                </div>
+                <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                   <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                </div>
+             </div>
+          </div>
+          
+          <!-- Store Indicator (for Cashier / Kitchen / Staff) -->
+          <div v-if="!shouldShowStoreSelector && currentStoreName" class="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600">
+             <span class="material-symbols-outlined text-[18px] text-emerald-600">store</span>
+             <span>{{ currentStoreName }}</span>
+          </div>
+
           <div class="w-8 lg:hidden"></div>
         </div>
       </header>
 
       <!-- Page Content -->
-      <main class="flex-1 p-4 md:p-6 w-full overflow-x-hidden">
+      <main 
+        id="main-content" 
+        ref="mainContentRef"
+        class="flex-1 p-4 md:p-6 w-full overflow-x-hidden pb-24 lg:pb-6 focus:outline-none touch-pan-y" 
+        tabindex="-1"
+      >
         <router-view />
       </main>
+
+      <!-- Mobile Bottom Navigation -->
+      <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-[10px] font-medium safe-area-bottom print:hidden">
+        <router-link to="/app/dashboard" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+          <span class="material-symbols-outlined text-2xl">dashboard</span>
+          <span>Home</span>
+        </router-link>
+        
+        <router-link to="/app/orders" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+          <span class="material-symbols-outlined text-2xl">receipt_long</span>
+          <span>Pesanan</span>
+        </router-link>
+        
+        <router-link to="/app/pos" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px] -mt-8">
+           <div class="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 border-4 border-gray-50">
+              <span class="material-symbols-outlined text-3xl">point_of_sale</span>
+           </div>
+           <span class="font-bold text-emerald-600 mt-1">POS</span>
+        </router-link>
+
+        <router-link to="/app/products" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+          <span class="material-symbols-outlined text-2xl">inventory_2</span>
+          <span>Produk</span>
+        </router-link>
+
+        <button @click="sidebarOpen = true" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+           <span class="material-symbols-outlined text-2xl">menu</span>
+           <span>Menu</span>
+        </button>
+      </div>
     </div>
     
     <!-- Admin Info Modal -->
@@ -371,21 +554,86 @@
       @close="handleInfoModalClose"
       @dont-show-today="handleDontShowToday"
     />
+    
+    <!-- Keyboard Shortcuts Modal -->
+    <KeyboardShortcutsModal
+      :show="showShortcutsModal"
+      @close="showShortcutsModal = false"
+    />
+
+    <!-- Global Search Modal -->
+    <GlobalSearch ref="globalSearchRef" />
+    
+    <!-- Help Modal -->
+    <HelpModal
+      :show="showHelpModal"
+      :help-content="currentHelp"
+      @close="showHelpModal = false"
+    />
+    
+    <!-- Offline Indicator -->
+    <OfflineIndicator />
+    
+    <!-- Welcome Tour -->
+    <WelcomeTour />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { usePermissions } from '../composables/usePermissions';
 import api from '../api';
 import AdminInfoModal from '../components/AdminInfoModal.vue';
+import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal.vue';
+import GlobalSearch from '../components/GlobalSearch.vue';
+import HelpModal from '../components/HelpModal.vue';
+import OfflineIndicator from '../components/OfflineIndicator.vue';
+import WelcomeTour from '../components/WelcomeTour.vue';
+import { useStockAlerts } from '../composables/useStockAlerts';
+import { useHelp } from '../composables/useHelp';
+import { useRecentItems } from '../composables/useRecentItems';
 
 const router = useRouter();
 const route = useRoute();
+const { recentItems, addRecentItem } = useRecentItems();
 const authStore = useAuthStore();
 const { canManageProducts, canViewReports, canEditOrders, canManageCustomers } = usePermissions();
+const { criticalStockCount, fetchCriticalStock } = useStockAlerts();
+
+// Pending orders count for badge (Kitchen role)
+const pendingOrdersCount = ref(0);
+let pendingOrdersInterval: ReturnType<typeof setInterval> | null = null;
+
+const fetchPendingOrdersCount = async () => {
+  // Only fetch for KITCHEN role or if user has kitchen access
+  if (userRole.value !== 'KITCHEN' && userRole.value !== 'ADMIN_TENANT' && userRole.value !== 'SUPERVISOR') {
+    return;
+  }
+  
+  try {
+    const response = await api.get('/orders', {
+      params: {
+        status: 'PENDING',
+        limit: 1,
+        page: 1,
+      }
+    });
+    
+    // Get total count from pagination or data length
+    if (response.data.pagination?.total !== undefined) {
+      pendingOrdersCount.value = response.data.pagination.total;
+    } else if (Array.isArray(response.data.data)) {
+      pendingOrdersCount.value = response.data.data.length;
+    } else {
+      pendingOrdersCount.value = 0;
+    }
+  } catch (error) {
+    console.error('Failed to fetch pending orders count:', error);
+    pendingOrdersCount.value = 0;
+  }
+};
 
 // Watch for permission changes to update menu visibility
 watch(() => authStore.user, (newUser) => {
@@ -487,7 +735,85 @@ const activeAddons = computed({
 
 const userRole = computed(() => authStore.user?.role || '');
 const showInfoModal = ref(false);
+const showShortcutsModal = ref(false);
+const showHelpModal = ref(false);
 const hasUnreadInfo = ref(false);
+const menuSearchQuery = ref('');
+const { currentHelp } = useHelp();
+const mainContentRef = ref<HTMLElement | null>(null);
+
+// Menu items structure for search
+const menuItems = computed(() => {
+  const items: Array<{ path: string; label: string; section: string; icon?: string }> = [];
+  
+  // Operasional
+  items.push({ path: '/app/dashboard', label: 'Dashboard', section: 'operasional' });
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || (userRole.value === 'SUPERVISOR' && canManageProducts.value) || (userRole.value === 'CASHIER' && canManageProducts.value)) {
+    items.push({ path: '/app/products', label: 'Produk', section: 'operasional' });
+  }
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || userRole.value === 'SUPERVISOR') {
+    items.push({ path: '/app/products/adjustments', label: 'Penyesuaian Stok', section: 'operasional' });
+  }
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || (userRole.value === 'SUPERVISOR' && canEditOrders.value) || userRole.value === 'CASHIER') {
+    items.push({ path: '/app/orders', label: 'Pesanan & Transaksi', section: 'operasional' });
+  }
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || (userRole.value === 'SUPERVISOR' && canManageCustomers.value) || (userRole.value === 'CASHIER' && canManageCustomers.value)) {
+    items.push({ path: '/app/customers', label: 'Pelanggan', section: 'operasional' });
+  }
+  
+  // Laporan
+  if ((userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || (userRole.value === 'SUPERVISOR' && canViewReports.value) || (userRole.value === 'CASHIER' && canViewReports.value)) && userRole.value !== 'KITCHEN') {
+    items.push({ path: '/app/reports', label: 'Laporan', section: 'laporan' });
+    items.push({ path: '/app/reports/global', label: 'Laporan Global', section: 'laporan' });
+    items.push({ path: '/app/reports/advanced', label: 'Laporan Lanjutan', section: 'laporan' });
+  }
+  
+  // Manajemen
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || userRole.value === 'SUPERVISOR') {
+    items.push({ path: '/app/users', label: 'Pengguna', section: 'manajemen' });
+  }
+  if (userRole.value === 'ADMIN_TENANT') {
+    items.push({ path: '/app/stores', label: 'Kelola Store', section: 'manajemen' });
+  }
+  
+  // Pengaturan
+  if (userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN') {
+    items.push({ path: '/app/settings/preferences', label: 'Preferensi', section: 'pengaturan' });
+    items.push({ path: '/app/settings/system', label: 'Pengaturan Sistem', section: 'pengaturan' });
+  }
+  
+  return items;
+});
+
+// Filter menu items based on search query
+const filteredMenuItems = computed(() => {
+  if (!menuSearchQuery.value.trim()) {
+    return menuItems.value;
+  }
+  
+  const query = menuSearchQuery.value.toLowerCase().trim();
+  return menuItems.value.filter(item => 
+    item.label.toLowerCase().includes(query) ||
+    item.path.toLowerCase().includes(query) ||
+    item.section.toLowerCase().includes(query)
+  );
+});
+
+// Auto-expand sections when searching
+watch(menuSearchQuery, (query) => {
+  if (query.trim()) {
+    const matchedSections = new Set(filteredMenuItems.value.map(item => item.section));
+    Object.keys(expandedMenus.value).forEach(key => {
+      expandedMenus.value[key as keyof typeof expandedMenus.value] = matchedSections.has(key);
+    });
+  }
+});
+
+// Global Search
+const globalSearchRef = ref<any>(null);
+const openGlobalSearch = () => {
+  globalSearchRef.value?.open();
+};
 
 // Menu expand/collapse state - all closed by default
 const expandedMenus = ref({
@@ -515,6 +841,32 @@ const toggleMenu = (menuKey: keyof typeof expandedMenus.value) => {
   
   // Save to localStorage
   localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus.value));
+};
+
+// Get menu icon based on path
+const getMenuIcon = (path: string): string => {
+  const iconMap: Record<string, string> = {
+    '/app/dashboard': 'dashboard',
+    '/app/products': 'inventory_2',
+    '/app/products/adjustments': 'inventory',
+    '/app/orders': 'receipt_long',
+    '/app/customers': 'person',
+    '/app/reports': 'assessment',
+    '/app/reports/global': 'bar_chart',
+    '/app/reports/advanced': 'analytics',
+    '/app/users': 'group',
+    '/app/stores': 'store',
+    '/app/settings/preferences': 'settings',
+    '/app/settings/system': 'tune',
+  };
+  return iconMap[path] || 'link';
+};
+
+// Highlight matched text in search results
+const highlightMatch = (text: string, query: string): string => {
+  if (!query.trim()) return text;
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(regex, '<mark class="bg-emerald-200 dark:bg-emerald-900/50 text-emerald-900 dark:text-emerald-200 rounded px-0.5">$1</mark>');
 };
 
 // Auto-expand menu based on current route
@@ -795,8 +1147,119 @@ const toggleSubmenu = (menu: string) => {
          }, 100);
 };
 
+const handleKeydown = (e: KeyboardEvent) => {
+  // Show Shortcuts Modal: Shift + ?
+  if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target instanceof HTMLInputElement)) {
+    e.preventDefault();
+    showShortcutsModal.value = !showShortcutsModal.value;
+  }
+  
+  // Close Modal: Esc
+  if (e.key === 'Escape') {
+    if (showShortcutsModal.value) {
+      showShortcutsModal.value = false;
+    }
+  }
+  
+  // Internal Focus Search: Ctrl + K
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent('focus-search'));
+  }
+};
+
+// Store Selection Logic
+const stores = ref<any[]>([]);
+const selectedStoreId = ref<string>(localStorage.getItem('selectedStoreId') || '');
+
+const shouldShowStoreSelector = computed(() => {
+  if (userRole.value === 'ADMIN_TENANT') return true;
+  if (userRole.value === 'SUPERVISOR') return true;
+  if (userRole.value === 'SUPER_ADMIN' && selectedTenant.value) return true;
+  return false;
+});
+
+const currentStoreName = computed(() => {
+   if (selectedStoreId.value) {
+      const s = stores.value.find(st => st.id === selectedStoreId.value);
+      if (s) return s.name;
+   }
+   // Fallback for cashier/kitchen if assignedStoreId is available in permissions
+   const perms = (authStore.user as any)?.permissions;
+   if (perms?.assignedStoreId && stores.value.length > 0) {
+      const s = stores.value.find(st => st.id === perms.assignedStoreId);
+      if (s) return s.name;
+   }
+   return '';
+});
+
+const loadStores = async () => {
+  try {
+    const response = await api.get('/outlets'); 
+    const allStores = response.data.data || [];
+
+    stores.value = allStores.filter((s: any) => s.isActive !== false);
+
+    if (userRole.value === 'SUPERVISOR') {
+       const permissions = authStore.user?.permissions as any;
+       const allowedStoreIds = permissions?.allowedStoreIds || [];
+       if (allowedStoreIds.length > 0) {
+          stores.value = stores.value.filter(s => allowedStoreIds.includes(s.id));
+       }
+    }
+    
+    // Validate selectedStoreId
+    if (shouldShowStoreSelector.value) {
+        if (selectedStoreId.value && !stores.value.find(s => s.id === selectedStoreId.value)) {
+           selectedStoreId.value = '';
+           localStorage.removeItem('selectedStoreId');
+        }
+    } else {
+        // For cashier/kitchen, ensure we have the store name
+        // No action needed as stores are loaded and computed will find name
+    }
+  } catch (error) {
+    console.error('Error loading stores:', error);
+  }
+};
+
+const handleStoreChange = () => {
+  if (selectedStoreId.value) {
+    localStorage.setItem('selectedStoreId', selectedStoreId.value);
+  } else {
+    localStorage.removeItem('selectedStoreId');
+  }
+  window.location.reload(); 
+};
+
+watch(selectedTenant, () => {
+   if (authStore.isSuperAdmin) {
+      loadStores();
+   }
+});
+
 onMounted(async () => {
+  window.addEventListener('keydown', handleKeydown);
   windowWidth.value = window.innerWidth;
+  
+  if (authStore.isSuperAdmin) {
+    await authStore.fetchTenants();
+    selectedTenant.value = authStore.selectedTenantId || '';
+  }
+  
+  // Load stores for all users to support indicator or selector
+  await loadStores();
+
+  if (canManageProducts.value) {
+      fetchCriticalStock();
+  }
+  
+  // Fetch pending orders count for badge
+  fetchPendingOrdersCount();
+  // Poll every 30 seconds for new orders
+  pendingOrdersInterval = setInterval(() => {
+    fetchPendingOrdersCount();
+  }, 30000);
   
   // Load menu state
   loadMenuState();
@@ -816,6 +1279,21 @@ onMounted(async () => {
   await loadAddons();
   window.addEventListener('resize', handleResize);
   
+  // Setup swipe to go back (mobile only)
+  await nextTick();
+  if (mainContentRef.value && window.innerWidth < 1024) {
+    useSwipe(mainContentRef.value, {
+      onSwipeRight: () => {
+        // Swipe right to go back
+        if (window.history.length > 1) {
+          router.back();
+        }
+      },
+      threshold: 150, // Require 150px swipe
+      velocityThreshold: 0.4,
+    });
+  }
+  
   // Fetch tenants if super admin
   if (authStore.isSuperAdmin) {
     await authStore.fetchTenants();
@@ -825,12 +1303,24 @@ onMounted(async () => {
 });
 
 // Watch route changes to auto-expand menu
-watch(() => route.path, () => {
+// Watch route changes to add to recent items and auto-expand menu
+watch(() => route.path, (newPath) => {
+  // Add to recent items
+  if (newPath && !newPath.includes('/login')) {
+    addRecentItem(newPath);
+  }
+  // Auto-expand menu
   autoExpandMenu();
 }, { immediate: true });
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
+  window.removeEventListener('keydown', handleKeydown);
+  if (pendingOrdersInterval) {
+    clearInterval(pendingOrdersInterval);
+    pendingOrdersInterval = null;
+  }
+  // syncManager.cleanup(); // If applicable
 });
 
 const handleLogout = () => {

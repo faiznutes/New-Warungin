@@ -173,6 +173,36 @@
       </div>
     </div>
 
+    <!-- Store Comparison Section (For Multi-Store) -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+       <div class="flex items-center justify-between mb-6">
+         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Perbandingan Performa Toko</h3>
+         <button class="text-sm text-[#4c739a] hover:text-[#10b981] font-medium flex items-center gap-1">
+            <span class="material-symbols-outlined text-[18px]">download</span> Export
+         </button>
+       </div>
+       <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+             <thead class="text-xs text-[#4c739a] uppercase bg-slate-50 dark:bg-slate-700/30">
+                <tr>
+                   <th class="px-6 py-3 font-bold rounded-l-xl">Nama Toko</th>
+                   <th class="px-6 py-3 font-bold text-right">Pendapatan</th>
+                   <th class="px-6 py-3 font-bold text-right">Pesanan</th>
+                   <th class="px-6 py-3 font-bold text-right rounded-r-xl">Rata-rata Order</th>
+                </tr>
+             </thead>
+             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                <tr v-for="store in storeComparison" :key="store.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/20 transition-colors">
+                   <td class="px-6 py-4 font-bold text-[#0d141b] dark:text-white">{{ store.name }}</td>
+                   <td class="px-6 py-4 text-right font-medium text-[#10b981]">{{ formatCurrency(store.revenue) }}</td>
+                   <td class="px-6 py-4 text-right text-[#4c739a]">{{ store.orders }}</td>
+                   <td class="px-6 py-4 text-right text-[#0d141b] dark:text-white font-medium">{{ formatCurrency(store.revenue / store.orders) }}</td>
+                </tr>
+             </tbody>
+          </table>
+       </div>
+    </div>
+
     <!-- Custom Reports -->
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
       <div class="flex items-center justify-between mb-6">
@@ -368,6 +398,7 @@ const predictions = ref<Prediction>({
 });
 
 const topProducts = ref<TopProduct[]>([]);
+const storeComparison = ref<any[]>([]); // Mock data container
 const customReports = ref<CustomReport[]>([]);
 const loading = ref(false);
 const addonError = ref<string | null>(null);
@@ -391,7 +422,7 @@ const loadAnalytics = async () => {
 
   loading.value = true;
   try {
-    const [predictionsRes, productsRes, reportsRes] = await Promise.all([
+    const [predictionsRes, productsRes, reportsRes, storeComparisonRes] = await Promise.all([
       api.get('/analytics/predictions', { 
         params: { method: forecastMethod.value } 
       }).catch(() => ({ data: { nextMonth: 0, trend: 0, accuracy: 85 } })),
@@ -400,11 +431,18 @@ const loadAnalytics = async () => {
       authStore.isSuperAdmin 
         ? Promise.resolve({ data: { data: [] } })
         : api.get('/analytics/custom-reports').catch(() => ({ data: { data: [] } })),
+      // Mock Store Comparison Load
+      new Promise(resolve => setTimeout(() => resolve([
+         { id: '1', name: 'Warung Pusat', revenue: 45000000, orders: 1250 },
+         { id: '2', name: 'Cabang Utara', revenue: 28500000, orders: 840 },
+         { id: '3', name: 'Cabang Selatan', revenue: 32100000, orders: 920 },
+      ]), 800))
     ]);
 
     predictions.value = predictionsRes.data;
     topProducts.value = productsRes.data || [];
     customReports.value = reportsRes.data?.data || reportsRes.data || [];
+    storeComparison.value = (storeComparisonRes as any) || []; // TypeScript workaround
   } catch (error: any) {
     console.error('Error loading analytics:', error);
     if (error.response?.status === 403) {

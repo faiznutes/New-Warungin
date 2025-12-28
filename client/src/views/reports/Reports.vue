@@ -26,7 +26,8 @@
 
     <!-- Report Type & Period Filter -->
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- Simple View: Basic Filters -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Laporan</label>
           <div class="relative">
@@ -40,39 +41,6 @@
                 <option value="financial">Laporan Keuangan</option>
             </select>
             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
-          </div>
-        </div>
-        
-        <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tampilan Data</label>
-          <div class="relative">
-             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">view_column</span>
-            <select
-                v-model="reportViewType"
-                @change="handleReportViewTypeChange"
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
-            >
-                <option value="full">Lengkap (Pendapatan + Modal)</option>
-                <option value="revenue">Hanya Pendapatan</option>
-                <option value="profit">Hanya Keuntungan</option>
-            </select>
-             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
-          </div>
-        </div>
-
-        <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Format Margin</label>
-           <div class="relative">
-             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">percent</span>
-            <select
-                v-model="marginDisplayFormat"
-                @change="saveMarginFormat"
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
-            >
-                <option value="percentage">Persentase (%)</option>
-                <option value="amount">Nominal (Rp)</option>
-            </select>
-             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
           </div>
         </div>
 
@@ -93,29 +61,96 @@
              <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
           </div>
         </div>
+      </div>
 
-        <div v-if="period !== 'all'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rentang Tanggal</label>
-          <div class="flex gap-2">
-            <input
-              v-model="dateRange.from"
-              type="date"
-              @change="handleDateRangeChange"
-              class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-            />
-            <input
-              v-model="dateRange.to"
-              type="date"
-              @change="handleDateRangeChange"
-              class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-            />
+      <!-- Advanced Options Toggle -->
+      <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+        <button
+          @click="showAdvancedOptions = !showAdvancedOptions"
+          class="w-full flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors group"
+        >
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-600 transition-colors text-[20px]">tune</span>
+            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Opsi Lanjutan</span>
+            <span class="text-xs text-slate-400 font-medium">(Opsional)</span>
           </div>
-        </div>
+          <span
+            class="material-symbols-outlined text-slate-400 transition-transform duration-200"
+            :class="{ 'rotate-180': showAdvancedOptions }"
+          >
+            expand_more
+          </span>
+        </button>
+
+        <!-- Advanced Options Content -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 max-h-0"
+          enter-to-class="opacity-100 max-h-[500px]"
+          leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 max-h-[500px]"
+          leave-to-class="opacity-0 max-h-0"
+        >
+          <div v-show="showAdvancedOptions" class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tampilan Data</label>
+                <div class="relative">
+                   <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">view_column</span>
+                  <select
+                      v-model="reportViewType"
+                      @change="handleReportViewTypeChange"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                  >
+                      <option value="full">Lengkap (Pendapatan + Modal)</option>
+                      <option value="revenue">Hanya Pendapatan</option>
+                      <option value="profit">Hanya Keuntungan</option>
+                  </select>
+                   <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Format Margin</label>
+                 <div class="relative">
+                   <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">percent</span>
+                  <select
+                      v-model="marginDisplayFormat"
+                      @change="saveMarginFormat"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                  >
+                      <option value="percentage">Persentase (%)</option>
+                      <option value="amount">Nominal (Rp)</option>
+                  </select>
+                   <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <div v-if="period !== 'all'">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rentang Tanggal</label>
+                <div class="flex gap-2">
+                  <input
+                    v-model="dateRange.from"
+                    type="date"
+                    @change="handleDateRangeChange"
+                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                  />
+                  <input
+                    v-model="dateRange.to"
+                    type="date"
+                    @change="handleDateRangeChange"
+                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
       </div>
     </div>
 
-    <!-- Analytics Section -->
-    <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+    <!-- Analytics Section (Advanced) -->
+    <div v-if="analyticsData && !loading && showAdvancedOptions" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <span class="material-symbols-outlined text-emerald-600">insights</span>
@@ -508,6 +543,7 @@ const showProductDetails = ref(false);
 const selectedProductDetail = ref<any>(null);
 const productDetails = ref<Record<number, any[]>>({});
 const isLoadingReport = ref(false);
+const showAdvancedOptions = ref(false);
 
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
   (localStorage.getItem('marginDisplayFormat') as 'percentage' | 'amount') || 'percentage'

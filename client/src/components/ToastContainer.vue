@@ -18,6 +18,7 @@
           :key="toast.id"
           v-bind="toast"
           @close="removeToast(toast.id)"
+          @undo="removeToast(toast.id)"
         />
       </TransitionGroup>
     </div>

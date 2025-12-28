@@ -447,6 +447,12 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'BUSINESS_ANALYTICS' },
         },
         {
+          path: 'settings/preferences',
+          name: 'preferences',
+          component: () => import('../views/settings/Preferences.vue'),
+          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN', 'SUPER_ADMIN'] },
+        },
+        {
           path: 'settings/store',
           name: 'store-settings',
           component: () => import('../views/settings/StoreSettings.vue'),

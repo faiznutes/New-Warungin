@@ -20,7 +20,7 @@ export function exportToCSV(data: any[], filename: string, headers?: string[], o
 
   // Get headers from first object if not provided
   const csvHeaders = headers || Object.keys(data[0]);
-  
+
   // Create CSV content
   const csvContent = [
     csvHeaders.join(','),
@@ -38,7 +38,7 @@ export function exportToCSV(data: any[], filename: string, headers?: string[], o
   ].join('\n');
 
   // Create blob and download
-  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob(['\uFEFF' + 'sep=,\n' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
   link.setAttribute('href', url);
@@ -68,7 +68,7 @@ export async function exportToPDF(data: any[], filename: string, title: string, 
   }
 
   const csvHeaders = headers || Object.keys(data[0]);
-  
+
   // Create HTML table with better styling
   const html = `
     <!DOCTYPE html>
@@ -181,14 +181,14 @@ export async function exportToPDF(data: any[], filename: string, title: string, 
         </div>
         <div class="info-row">
           <span><strong>Tanggal Export:</strong></span>
-          <span>${new Date().toLocaleDateString('id-ID', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}</span>
+          <span>${new Date().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })}</span>
         </div>
         <div class="info-row">
           <span><strong>Total Data:</strong></span>
@@ -206,15 +206,15 @@ export async function exportToPDF(data: any[], filename: string, title: string, 
           ${data.map(row => `
             <tr>
               ${csvHeaders.map(header => {
-                const value = row[header] || '';
-                // Format currency if it looks like a number
-                const formattedValue = typeof value === 'string' && value.includes('Rp') 
-                  ? value 
-                  : (typeof value === 'number' && header.toLowerCase().includes('harga') || header.toLowerCase().includes('total') || header.toLowerCase().includes('revenue'))
-                    ? formatCurrency(value)
-                    : value;
-                return `<td>${formattedValue}</td>`;
-              }).join('')}
+    const value = row[header] || '';
+    // Format currency if it looks like a number
+    const formattedValue = typeof value === 'string' && value.includes('Rp')
+      ? value
+      : (typeof value === 'number' && header.toLowerCase().includes('harga') || header.toLowerCase().includes('total') || header.toLowerCase().includes('revenue'))
+        ? formatCurrency(value)
+        : value;
+    return `<td>${formattedValue}</td>`;
+  }).join('')}
             </tr>
           `).join('')}
         </tbody>
@@ -264,7 +264,7 @@ export function formatDataForExport(data: any[], fieldMap?: Record<string, strin
     Object.keys(item).forEach(key => {
       const displayKey = fieldMap?.[key] || key;
       let value = item[key];
-      
+
       // Handle nested objects
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         // Try to extract name or id
@@ -276,12 +276,12 @@ export function formatDataForExport(data: any[], fieldMap?: Record<string, strin
           value = JSON.stringify(value);
         }
       }
-      
+
       // Handle arrays
       if (Array.isArray(value)) {
         value = value.join(', ');
       }
-      
+
       formatted[displayKey] = value;
     });
     return formatted;

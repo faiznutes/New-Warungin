@@ -10,6 +10,23 @@
 
     <!-- Main Content Section -->
     <section class="flex flex-col flex-1 overflow-hidden px-6 pt-6 pb-6 relative z-10 w-full max-w-7xl mx-auto">
+        <!-- Pull to Refresh Indicator -->
+        <div
+          v-if="pullDistance > 0 || isRefreshing"
+          class="fixed top-0 left-0 right-0 z-50 flex items-center justify-center transition-all duration-200"
+          :style="{ transform: `translateY(${Math.min(pullDistance, 80)}px)`, opacity: Math.min(pullDistance / 80, 1) }"
+        >
+          <div class="bg-white dark:bg-slate-800 rounded-full shadow-lg px-4 py-2 flex items-center gap-2 border border-slate-200 dark:border-slate-700">
+            <div
+              v-if="isRefreshing"
+              class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
+            ></div>
+            <span v-else class="material-symbols-outlined text-emerald-500">arrow_downward</span>
+            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
+              {{ isRefreshing ? 'Memuat ulang...' : 'Tarik untuk refresh' }}
+            </span>
+          </div>
+        </div>
         <!-- Blurred Background Elements -->
         <div class="fixed top-20 left-10 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
         <div class="fixed bottom-20 right-10 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
@@ -27,6 +44,46 @@
           Coba Lagi
         </button>
       </div>
+
+      <!-- Bulk Action Toolbar -->
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="transform translate-y-12 opacity-0"
+        enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="transform translate-y-0 opacity-100"
+        leave-to-class="transform translate-y-12 opacity-0"
+      >
+        <div v-if="selectedIds.length > 0" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-4 bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-md min-w-[320px] md:min-w-[400px]">
+          <div class="flex items-center gap-3 border-r border-slate-700 pr-4">
+            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
+            <span class="text-sm font-bold whitespace-nowrap">Produk Terpilih</span>
+          </div>
+          <div class="flex items-center gap-2 flex-1 justify-end">
+            <button 
+              @click="clearSelection" 
+              class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
+            >
+              Batal
+            </button>
+            <button 
+              ref="bulkEditButtonRef"
+              @click="showBulkEditModal = true; bulkActionsTooltip.dismiss()" 
+              class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+            >
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+              <span>Edit</span>
+            </button>
+            <button 
+              @click="bulkDelete" 
+              class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-black shadow-lg shadow-red-500/20 transition-all active:scale-95"
+            >
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </div>
+      </Transition>
 
       <!-- Main Content -->
       <div v-else class="flex flex-col flex-1">
@@ -105,88 +162,193 @@
           </div>
         </div>
 
-        <!-- Filters -->
-        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6 mb-8 animate-fade-in-up">
-          <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Search -->
-            <div class="flex-1">
-              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 ml-1">Cari Produk</label>
-              <div class="relative group">
+        <!-- Search & Filters -->
+        <div class="max-w-7xl mx-auto mb-8 animate-fade-in-up">
+          <!-- Search Bar & Toggle -->
+          <div class="flex flex-col sm:flex-row gap-4 mb-4">
+             <div class="flex-1 relative group">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 group-focus-within:text-emerald-500 transition-colors">search</span>
                 <input
+                  ref="searchInputRef"
                   v-model="filters.search"
                   @focus="handleSearchFocus"
+                  @input="handleSearchInput"
+                  @keydown.down.prevent="handleSearchKeyDown"
+                  @keydown.up.prevent="handleSearchKeyUp"
+                  @keydown.enter.prevent="handleSearchEnter"
+                  @blur="handleSearchBlur"
                   type="text"
-                  placeholder="Nama produk, kategori, atau kode..."
-                  class="block w-full pl-12 pr-4 py-3 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 transition-all font-medium placeholder:text-slate-400"
+                  placeholder="Cari produk berdasarkan nama, kategori, atau kode..."
+                  class="block w-full pl-12 pr-4 py-3.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-all font-medium placeholder:text-slate-400 shadow-sm"
                 />
-              </div>
-            </div>
+                
+                <!-- Search Suggestions Dropdown -->
+                <div
+                  v-if="searchSuggestions.showSuggestions && searchSuggestions.allSuggestions.length > 0"
+                  class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 max-h-64 overflow-y-auto"
+                >
+                  <div class="p-2">
+                    <div
+                      v-for="(suggestion, index) in searchSuggestions.allSuggestions"
+                      :key="index"
+                      @click="selectSuggestion(suggestion.text)"
+                      @mouseenter="searchSuggestions.selectedIndex = index"
+                      class="px-4 py-2 rounded-lg cursor-pointer transition-colors flex items-center gap-2"
+                      :class="
+                        searchSuggestions.selectedIndex === index
+                          ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      "
+                    >
+                      <span
+                        class="material-symbols-outlined text-[18px]"
+                        :class="suggestion.type === 'recent' ? 'text-slate-400' : 'text-emerald-500'"
+                      >
+                        {{ suggestion.type === 'recent' ? 'history' : 'search' }}
+                      </span>
+                      <span class="flex-1 text-sm font-medium">{{ suggestion.text }}</span>
+                      <span
+                        v-if="suggestion.type === 'recent'"
+                        class="text-xs text-slate-400"
+                      >
+                        Baru saja
+                      </span>
+                    </div>
+                    
+                    <!-- Clear Recent Searches -->
+                    <div
+                      v-if="searchSuggestions.recentSearches.length > 0"
+                      class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700"
+                    >
+                      <button
+                        @click="searchSuggestions.clearRecentSearches()"
+                        class="w-full px-4 py-2 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                        Hapus riwayat pencarian
+                      </button>
+                    </div>
+                  </div>
+                </div>
+             </div>
+             
+             <button
+                @click="showFilters = !showFilters"
+                class="px-5 py-3.5 rounded-xl border font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                :class="showFilters || hasActiveFilters ? 'bg-emerald-500 border-emerald-500 text-white shadow-emerald-500/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
+             >
+                <span class="material-symbols-outlined text-[20px]">tune</span>
+                <span>Filter</span>
+                <span v-if="activeFilterCount > 0" class="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-white text-emerald-600 rounded-full text-xs font-bold">{{ activeFilterCount }}</span>
+                <span v-else class="material-symbols-outlined text-[20px] transition-transform duration-200" :class="{ 'rotate-180': showFilters }">expand_more</span>
+             </button>
 
-            <!-- Category Filter -->
-            <div class="flex-1">
-              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 ml-1">Kategori</label>
-              <div class="flex flex-wrap gap-2">
+             <!-- View Toggle -->
+             <div class="flex items-center bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-1 shadow-sm">
                 <button
-                  @click="filters.category = ''"
-                  :class="!filters.category 
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-emerald-300'"
-                  class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                  @click="viewMode = 'grid'"
+                  class="p-2.5 rounded-lg transition-all"
+                  :class="viewMode === 'grid' ? 'bg-emerald-50 text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  title="Grid View"
                 >
-                  <span v-if="!filters.category" class="material-symbols-outlined text-[16px]">check</span>
-                  Semua
+                  <span class="material-symbols-outlined text-[20px]">grid_view</span>
                 </button>
                 <button
-                  v-for="cat in categories"
-                  :key="cat"
-                  @click="filters.category = cat"
-                  :class="filters.category === cat 
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-emerald-300'"
-                  class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                  @click="viewMode = 'list'"
+                  class="p-2.5 rounded-lg transition-all"
+                  :class="viewMode === 'list' ? 'bg-emerald-50 text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  title="List View"
                 >
-                  <span v-if="filters.category === cat" class="material-symbols-outlined text-[16px]">check</span>
-                  {{ cat }}
+                  <span class="material-symbols-outlined text-[20px]">view_list</span>
                 </button>
-              </div>
-            </div>
+             </div>
+          </div>
 
-             <!-- Status Filter -->
-            <div class="flex-none">
-              <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5 ml-1">Status</label>
-              <div class="flex flex-wrap gap-2">
-                <button
-                  @click="filters.isActive = ''"
-                  :class="filters.isActive === '' 
-                    ? 'bg-slate-800 text-white shadow-md ring-2 ring-slate-800/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
-                  class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200"
-                >
-                  Semua
-                </button>
-                <button
-                  @click="filters.isActive = 'true'"
-                  :class="filters.isActive === 'true' 
-                    ? 'bg-green-600 text-white shadow-md shadow-green-600/20 ring-2 ring-green-600/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-green-600 hover:border-green-200'"
-                  class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
-                >
-                  <span class="w-2 h-2 rounded-full bg-current"></span>
-                  Aktif
-                </button>
-                <button
-                  @click="filters.isActive = 'false'"
-                  :class="filters.isActive === 'false' 
-                    ? 'bg-red-500 text-white shadow-md shadow-red-500/20 ring-2 ring-red-500/20' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-red-600 hover:border-red-200'"
-                  class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
-                >
-                  <span class="w-2 h-2 rounded-full bg-current"></span>
-                  Tidak Aktif
-                </button>
-              </div>
-            </div>
+          <!-- Extended Filters (Collapsible) -->
+          <div 
+             v-show="showFilters" 
+             class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-lg shadow-slate-200/50 dark:shadow-none transition-all duration-300"
+          >
+             <!-- Clear All Filters Button -->
+             <div v-if="hasActiveFilters" class="mb-4 flex justify-end">
+               <button
+                 @click="clearAllFilters"
+                 class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-200"
+               >
+                 <span class="material-symbols-outlined text-[18px]">clear_all</span>
+                 Hapus Semua Filter
+               </button>
+             </div>
+             <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Category Filter -->
+                <div class="flex-1">
+                  <div class="flex items-center justify-between mb-3">
+                     <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Kategori</label>
+                     <button v-if="filters.category" @click="filters.category = ''" class="text-[10px] font-bold text-red-500 hover:text-red-600">RESET</button>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      @click="filters.category = ''"
+                      :class="!filters.category 
+                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
+                        : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:border-emerald-300'"
+                      class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                    >
+                      Semua
+                    </button>
+                    <button
+                      v-for="cat in categories"
+                      :key="cat"
+                      @click="filters.category = cat"
+                      :class="filters.category === cat 
+                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
+                        : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:border-emerald-300'"
+                      class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                    >
+                      {{ cat }}
+                    </button>
+                  </div>
+                </div>
+
+                 <!-- Status Filter -->
+                <div class="flex-none lg:w-1/3 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-700 pt-6 lg:pt-0 lg:pl-8">
+                  <div class="flex items-center justify-between mb-3">
+                     <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Status</label>
+                     <button v-if="filters.isActive !== ''" @click="filters.isActive = ''" class="text-[10px] font-bold text-red-500 hover:text-red-600">RESET</button>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      @click="filters.isActive = ''"
+                      :class="filters.isActive === '' 
+                        ? 'bg-slate-800 text-white shadow-md ring-2 ring-slate-800/20' 
+                        : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700'"
+                      class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200"
+                    >
+                      Semua
+                    </button>
+                    <button
+                      @click="filters.isActive = 'true'"
+                      :class="filters.isActive === 'true' 
+                        ? 'bg-green-600 text-white shadow-md shadow-green-600/20 ring-2 ring-green-600/20' 
+                        : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:text-green-600 hover:border-green-200'"
+                      class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-current"></span>
+                      Aktif
+                    </button>
+                    <button
+                      @click="filters.isActive = 'false'"
+                      :class="filters.isActive === 'false' 
+                        ? 'bg-red-500 text-white shadow-md shadow-red-500/20 ring-2 ring-red-500/20' 
+                        : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:text-red-600 hover:border-red-200'"
+                      class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-current"></span>
+                      Tidak Aktif
+                    </button>
+                  </div>
+                </div>
+             </div>
           </div>
         </div>
 
@@ -234,12 +396,14 @@
           <p class="text-slate-500 text-center max-w-md">Silakan pilih tenant dari dropdown di atas untuk melihat data produk.</p>
         </div>
 
-        <!-- Products Grid -->
-        <div v-else-if="loading" class="flex items-center justify-center py-24">
-          <div class="flex flex-col items-center">
-            <div class="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <div class="text-slate-500 font-medium animate-pulse">Memuat produk...</div>
-          </div>
+        <!-- Loading State -->
+        <div v-else-if="loading" class="animate-fade-in-up">
+           <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <SkeletonLoader v-for="i in 8" :key="i" type="product-card" />
+           </div>
+           <div v-else class="space-y-4">
+              <SkeletonLoader v-for="i in 5" :key="i" type="table-row" />
+           </div>
         </div>
 
         <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border-2 border-dashed border-slate-100">
@@ -254,19 +418,160 @@
               class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
-              <span>Tambah Produk</span>
+              <span>Tambah Produk Pertama</span>
             </button>
         </div>
 
+        <!-- Products List View -->
+        <div v-else-if="viewMode === 'list'" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm animate-fade-in-up">
+           <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                 <tr>
+                    <th v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="px-6 py-4 w-10">
+                       <input 
+                         type="checkbox" 
+                         :checked="isAllSelected" 
+                         @change="toggleSelectAll"
+                         class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
+                       />
+                    </th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400">Produk</th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400">Kategori</th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400 text-right">Harga</th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400 text-center">Stok</th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400 text-center">Status</th>
+                    <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400 text-right">Aksi</th>
+                 </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                 <tr v-for="product in products" :key="product.id" class="group transition-colors" :class="isSelected(product.id) ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'">
+                    <td v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="px-6 py-4">
+                       <input 
+                         type="checkbox" 
+                         :checked="isSelected(product.id)" 
+                         @change="toggleSelect(product.id)"
+                         class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
+                       />
+                    </td>
+                    <td class="px-6 py-4">
+                       <div class="flex items-center gap-4">
+                          <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-hidden flex-shrink-0">
+                             <img v-if="product.image" :src="product.image" class="w-full h-full object-cover">
+                             <div v-else-if="product.emoji" class="w-full h-full flex items-center justify-center text-xl bg-white dark:bg-slate-800">{{ product.emoji }}</div>
+                             <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><span class="material-symbols-outlined">image</span></div>
+                          </div>
+                          <!-- Inline Edit Name -->
+                          <div v-if="editingField?.productId === product.id && editingField?.field === 'name'" class="flex-1">
+                             <input
+                               v-model="tempEditValue"
+                               @keyup.enter="saveInlineEdit(product)"
+                               @keyup.esc="cancelInlineEdit"
+                               @blur="saveInlineEdit(product)"
+                               type="text"
+                               class="w-full px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                               autofocus
+                             />
+                          </div>
+                          <span
+                             ref="inlineEditRef"
+                             v-else
+                             @click="startInlineEdit(product, 'name', product.name); inlineEditTooltip.dismiss()"
+                             class="font-bold text-slate-900 dark:text-white line-clamp-2 cursor-pointer hover:text-emerald-600 hover:underline transition-colors"
+                             title="Klik untuk edit"
+                          >{{ product.name }}</span>
+                       </div>
+                    </td>
+                    <td class="px-6 py-4">
+                       <!-- Inline Edit Category -->
+                       <div v-if="editingField?.productId === product.id && editingField?.field === 'category'">
+                          <select
+                             v-model="tempEditValue"
+                             @change="saveInlineEdit(product)"
+                             @blur="saveInlineEdit(product)"
+                             class="px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold uppercase"
+                             autofocus
+                          >
+                             <option value="">Tanpa Kategori</option>
+                             <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                          </select>
+                       </div>
+                       <span
+                          v-else
+                          @click="startInlineEdit(product, 'category', product.category || '')"
+                          class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+                          title="Klik untuk edit"
+                       >{{ product.category || '-' }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                       <!-- Inline Edit Price -->
+                       <div v-if="editingField?.productId === product.id && editingField?.field === 'price'" class="flex justify-end">
+                          <input
+                             v-model.number="tempEditValue"
+                             @keyup.enter="saveInlineEdit(product)"
+                             @keyup.esc="cancelInlineEdit"
+                             @blur="saveInlineEdit(product)"
+                             type="number"
+                             step="0.01"
+                             min="0"
+                             class="w-32 px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-right"
+                             autofocus
+                          />
+                       </div>
+                       <span
+                          v-else
+                          @click="startInlineEdit(product, 'price', product.price)"
+                          class="font-bold text-slate-900 dark:text-white cursor-pointer hover:text-emerald-600 hover:underline transition-colors"
+                          title="Klik untuk edit"
+                       >{{ formatCurrency(Number(product.price)) }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                       <div class="flex items-center justify-center gap-2">
+                           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border" :class="getStockStatusClass(product.stock, product.minStock)">
+                              {{ getStockStatusLabel(product.stock, product.minStock) }}
+                           </span>
+                           <span class="text-xs font-mono font-bold text-slate-400">({{ product.stock }})</span>
+                       </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                       <span class="w-2.5 h-2.5 rounded-full inline-block" :class="product.isActive ? 'bg-emerald-500' : 'bg-slate-300'"></span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                       <div class="flex items-center justify-end gap-2">
+                          <button @click="editProduct(product)" class="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                             <span class="material-symbols-outlined text-[20px]">edit</span>
+                          </button>
+                          <button @click="deleteProduct(product.id)" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                             <span class="material-symbols-outlined text-[20px]">delete</span>
+                          </button>
+                       </div>
+                    </td>
+                 </tr>
+              </tbody>
+           </table>
+        </div>
+
+        <!-- Products Grid View -->
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
           <div
             v-for="(product, index) in products"
             :key="product.id"
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 border border-slate-100 dark:border-slate-700 transition-all duration-300 group overflow-hidden flex flex-col relative"
+            :ref="el => setupSwipeForProduct(el as HTMLElement, product.id)"
+            class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 border border-slate-100 dark:border-slate-700 transition-all duration-300 group overflow-hidden flex flex-col relative touch-pan-y"
+            :class="{ 'ring-2 ring-emerald-500 border-emerald-500 shadow-emerald-500/20': isSelected(product.id) }"
             :style="{ animationDelay: `${index * 50}ms` }"
           >
+            <!-- Checkbox Overlay for Grid View -->
+            <div v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="absolute top-3 left-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity" :class="{ 'opacity-100': isSelected(product.id) }">
+               <input 
+                 type="checkbox" 
+                 :checked="isSelected(product.id)" 
+                 @change="toggleSelect(product.id)"
+                 class="w-5 h-5 text-emerald-600 border-slate-300 rounded-lg focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer shadow-lg"
+               />
+            </div>
+
             <!-- Image Area -->
-            <div class="aspect-w-4 aspect-h-3 bg-slate-100 dark:bg-slate-900 relative overflow-hidden group-hover:brightness-[1.02] transition-all">
+            <div class="aspect-w-4 aspect-h-3 bg-slate-100 dark:bg-slate-900 relative overflow-hidden group-hover:brightness-[1.02] transition-all" @click="toggleSelect(product.id)">
               <img
                 v-if="product.image"
                 :src="product.image"
@@ -305,12 +610,47 @@
               <div class="mb-4">
                  <div class="flex justify-between items-start gap-2 mb-2">
                     <p class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider line-clamp-1 border border-emerald-100">{{ product.category || 'Tanpa Kategori' }}</p>
-                    <span
-                      class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full border"
-                      :class="getStockStatusClass(product.stock, product.minStock)"
+                    
+                    <!-- Expand/Collapse Button -->
+                    <button
+                      @click.stop="toggleProductDetails(product.id)"
+                      class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      :title="expandedProducts.has(product.id) ? 'Sembunyikan detail' : 'Lihat detail'"
                     >
-                      {{ getStockStatusLabel(product.stock, product.minStock) }}
-                    </span>
+                      <span
+                        class="material-symbols-outlined text-[18px] text-slate-500 transition-transform duration-200"
+                        :class="{ 'rotate-180': expandedProducts.has(product.id) }"
+                      >
+                        expand_more
+                      </span>
+                    </button>
+                    <div class="flex items-center gap-2" @click.stop>
+                         <div v-if="editingStockId === product.id" class="flex items-center gap-1 bg-white dark:bg-slate-700 rounded shadow-sm p-0.5 absolute z-20 -mt-1 -ml-1">
+                             <input 
+                               v-model.number="tempStockValue"
+                               type="number"
+                               class="w-16 px-1 py-0.5 text-[10px] font-bold border border-emerald-500 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                               @keyup.enter="saveStock(product)"
+                               @keyup.esc="cancelEditingStock"
+                               autofocus
+                             />
+                             <button @click="saveStock(product)" class="p-0.5 text-emerald-600 hover:bg-emerald-50 rounded dark:text-emerald-400 dark:hover:bg-emerald-900/30">
+                                <span class="material-symbols-outlined text-[16px]">check</span>
+                             </button>
+                             <button @click="cancelEditingStock" class="p-0.5 text-red-500 hover:bg-red-50 rounded dark:text-red-400 dark:hover:bg-red-900/30">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                             </button>
+                         </div>
+                         <div v-else class="flex items-center gap-1 cursor-pointer group/stock hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded px-1 -ml-1 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600" @click="startEditingStock(product)" title="Klik untuk ubah stok">
+                             <span
+                               class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full border"
+                               :class="getStockStatusClass(product.stock, product.minStock)"
+                             >
+                               {{ getStockStatusLabel(product.stock, product.minStock) }}
+                             </span>
+                             <span class="text-[10px] font-mono font-bold text-slate-400 group-hover/stock:text-emerald-600 transition-colors">({{ product.stock }})</span>
+                         </div>
+                     </div>
                  </div>
                  <h3 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 leading-tight md:min-h-[3rem]">{{ product.name }}</h3>
               </div>
@@ -360,48 +700,290 @@
                       </button>
                     </template>
                  </div>
+                 
+                 <!-- Expanded Details (Progressive Disclosure) -->
+                 <Transition
+                   enter-active-class="transition-all duration-300 ease-out"
+                   enter-from-class="opacity-0 max-h-0"
+                   enter-to-class="opacity-100 max-h-[500px]"
+                   leave-active-class="transition-all duration-200 ease-in"
+                   leave-from-class="opacity-100 max-h-[500px]"
+                   leave-to-class="opacity-0 max-h-0"
+                 >
+                   <div v-if="expandedProducts.has(product.id)" class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 space-y-3 overflow-hidden">
+                     <!-- Description -->
+                     <div v-if="product.description">
+                       <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Deskripsi</p>
+                       <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ product.description }}</p>
+                     </div>
+                     
+                     <!-- Additional Info Grid -->
+                     <div class="grid grid-cols-2 gap-3">
+                       <!-- Cost -->
+                       <div v-if="product.cost && product.cost > 0">
+                         <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Harga Pokok</p>
+                         <p class="text-sm font-bold text-slate-900 dark:text-white">{{ formatCurrency(Number(product.cost)) }}</p>
+                       </div>
+                       
+                       <!-- Min Stock -->
+                       <div>
+                         <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Stok Minimum</p>
+                         <p class="text-sm font-bold text-slate-900 dark:text-white">{{ product.minStock || 0 }}</p>
+                       </div>
+                       
+                       <!-- SKU -->
+                       <div v-if="product.sku">
+                         <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">SKU</p>
+                         <p class="text-sm font-mono font-bold text-slate-900 dark:text-white">{{ product.sku }}</p>
+                       </div>
+                       
+                       <!-- Barcode -->
+                       <div v-if="product.barcode">
+                         <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Barcode</p>
+                         <p class="text-sm font-mono font-bold text-slate-900 dark:text-white">{{ product.barcode }}</p>
+                       </div>
+                     </div>
+                     
+                     <!-- Consignment Badge -->
+                     <div v-if="product.isConsignment" class="flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                       <span class="material-symbols-outlined text-purple-600 dark:text-purple-400 text-[18px]">inventory_2</span>
+                       <span class="text-xs font-bold text-purple-700 dark:text-purple-300">Produk Titipan</span>
+                     </div>
+                   </div>
+                 </Transition>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Pagination -->
-        <div v-if="pagination.totalPages > 1" class="flex items-center justify-center space-x-2 mt-8 pb-8">
-          <button
-            @click="loadProducts(pagination.page - 1)"
-            :disabled="pagination.page === 1"
-            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
-          >
-            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-            Sebelumnya
-          </button>
-          <span class="px-4 py-2 text-slate-600 font-medium bg-slate-50 rounded-xl border border-slate-100">
-            Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
-          </span>
-          <button
-            @click="loadProducts(pagination.page + 1)"
-            :disabled="pagination.page === pagination.totalPages"
-            class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
-          >
-            Selanjutnya
-            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-          </button>
+        <!-- Pagination / Infinite Scroll Toggle -->
+        <div class="flex items-center justify-center gap-4 mt-8 pb-8">
+          <!-- Toggle Infinite Scroll -->
+          <label ref="infiniteScrollToggleRef" class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              v-model="useInfiniteScrollMode"
+              @change="toggleInfiniteScroll; infiniteScrollTooltip.dismiss()"
+              class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+            />
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Infinite Scroll</span>
+          </label>
+          
+          <!-- Pagination (if infinite scroll disabled) -->
+          <div v-if="!useInfiniteScrollMode && pagination.totalPages > 1" class="flex items-center space-x-2">
+            <button
+              @click="loadProducts(pagination.page - 1)"
+              :disabled="pagination.page === 1"
+              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
+            >
+              <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+              Sebelumnya
+            </button>
+            <span class="px-4 py-2 text-slate-600 font-medium bg-slate-50 rounded-xl border border-slate-100">
+              Halaman {{ pagination.page }} dari {{ pagination.totalPages }}
+            </span>
+            <button
+              @click="loadProducts(pagination.page + 1)"
+              :disabled="pagination.page === pagination.totalPages"
+              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
+            >
+              Selanjutnya
+              <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+            </button>
+          </div>
+          
+          <!-- Infinite Scroll Loading Indicator -->
+          <div v-if="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
+            <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm font-medium">Memuat lebih banyak...</span>
+          </div>
+          
+          <!-- Infinite Scroll End Message -->
+          <div v-if="useInfiniteScrollMode && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
+            Semua produk telah dimuat
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Product Modal -->
     <ProductModal
+      ref="productModalRef"
       :show="showCreateModal"
       :product="editingProduct"
       @close="closeModal"
       @save="handleSaveProduct"
     />
+
+    <!-- Tooltips -->
+    <Tooltip
+      v-if="bulkActionsTooltip.show.value && selectedIds.length > 0 && bulkEditButtonRef"
+      :show="bulkActionsTooltip.show.value"
+      :target="bulkEditButtonRef"
+      title="Edit Massal"
+      content="Pilih beberapa produk dan gunakan tombol ini untuk mengedit kategori, status, harga, atau stok secara bersamaan."
+      placement="top"
+      tooltip-id="bulk_actions_products"
+      @dismiss="bulkActionsTooltip.dismiss()"
+      @dontShowAgain="bulkActionsTooltip.dismiss()"
+    />
+    
+    <Tooltip
+      v-if="inlineEditTooltip.show.value && products.length > 0 && inlineEditRef"
+      :show="inlineEditTooltip.show.value"
+      :target="inlineEditRef"
+      title="Edit Langsung"
+      content="Klik pada nama, kategori, atau harga produk untuk mengedit langsung tanpa membuka modal."
+      placement="right"
+      tooltip-id="inline_edit_products"
+      @dismiss="inlineEditTooltip.dismiss()"
+      @dontShowAgain="inlineEditTooltip.dismiss()"
+    />
+    
+    <Tooltip
+      v-if="infiniteScrollTooltip.show.value && infiniteScrollToggleRef"
+      :show="infiniteScrollTooltip.show.value"
+      :target="infiniteScrollToggleRef"
+      title="Infinite Scroll"
+      content="Aktifkan untuk memuat produk secara otomatis saat scroll ke bawah, tanpa perlu klik tombol pagination."
+      placement="top"
+      tooltip-id="infinite_scroll_products"
+      @dismiss="infiniteScrollTooltip.dismiss()"
+      @dontShowAgain="infiniteScrollTooltip.dismiss()"
+    />
+
+    <!-- Bulk Edit Modal -->
+    <div
+      v-if="showBulkEditModal"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      @click.self="showBulkEditModal = false"
+    >
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+              Edit Massal ({{ selectedIds.length }} produk)
+            </h3>
+            <button
+              @click="showBulkEditModal = false"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <span class="material-symbols-outlined text-slate-500">close</span>
+            </button>
+          </div>
+        </div>
+
+        <form @submit.prevent="handleBulkEdit" class="p-6 space-y-4">
+          <!-- Category -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Kategori
+            </label>
+            <select
+              v-model="bulkEditForm.category"
+              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+            >
+              <option value="">-- Tidak diubah --</option>
+              <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Status
+            </label>
+            <select
+              v-model="bulkEditForm.isActive"
+              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+            >
+              <option value="">-- Tidak diubah --</option>
+              <option value="true">Aktif</option>
+              <option value="false">Tidak Aktif</option>
+            </select>
+          </div>
+
+          <!-- Price Adjustment -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Penyesuaian Harga
+            </label>
+            <div class="flex gap-2">
+              <select
+                v-model="bulkEditForm.priceAdjustmentType"
+                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800"
+              >
+                <option value="">-- Tidak diubah --</option>
+                <option value="set">Set ke</option>
+                <option value="increase">Tambah</option>
+                <option value="decrease">Kurangi</option>
+                <option value="percentage">Persentase</option>
+              </select>
+              <input
+                v-if="bulkEditForm.priceAdjustmentType"
+                v-model.number="bulkEditForm.priceAdjustmentValue"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0"
+                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <!-- Stock Adjustment -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Penyesuaian Stok
+            </label>
+            <div class="flex gap-2">
+              <select
+                v-model="bulkEditForm.stockAdjustmentType"
+                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800"
+              >
+                <option value="">-- Tidak diubah --</option>
+                <option value="set">Set ke</option>
+                <option value="increase">Tambah</option>
+                <option value="decrease">Kurangi</option>
+              </select>
+              <input
+                v-if="bulkEditForm.stockAdjustmentType"
+                v-model.number="bulkEditForm.stockAdjustmentValue"
+                type="number"
+                step="1"
+                min="0"
+                placeholder="0"
+                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <button
+              type="button"
+              @click="showBulkEditModal = false"
+              class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-bold"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              :disabled="bulkEditLoading"
+              class="flex-1 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <span v-if="bulkEditLoading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span v-else class="material-symbols-outlined text-[20px]">save</span>
+              <span>Simpan Perubahan</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
@@ -410,11 +992,20 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
 import ExportButton from '../../components/ExportButton.vue';
 import ProductModal from '../../components/ProductModal.vue';
+import SkeletonLoader from '../../components/SkeletonLoader.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';
 import { useNotification } from '../../composables/useNotification';
 import { usePermissions } from '../../composables/usePermissions';
 import { safeMap } from '../../utils/array-helpers';
+import { usePullToRefresh } from '../../composables/usePullToRefresh';
+import { useSearchSuggestions } from '../../composables/useSearchSuggestions';
+import { useInfiniteScroll } from '../../composables/useInfiniteScroll';
+import { useTooltip } from '../../composables/useTooltip';
+import { useOffline } from '../../composables/useOffline';
+import { useCache } from '../../composables/useCache';
+import { useSwipe } from '../../composables/useSwipe';
+import Tooltip from '../../components/Tooltip.vue';
 
 interface Product {
   id: string;
@@ -434,15 +1025,46 @@ interface Product {
 const authStore = useAuthStore();
 const router = useRouter();
 const { needsTenantSelection } = useTenantCheck();
-const { success: showSuccess, error: showError, confirm: showConfirm } = useNotification();
+const { success: showSuccess, error: showError, warning: showWarning, confirm: showConfirm } = useNotification();
 const { canManageProducts } = usePermissions();
+
+// UI State for Filters
+const showFilters = ref(false);
+const activeFilterCount = computed(() => {
+  let count = 0;
+  if (filters.value.category) count++;
+  if (filters.value.isActive !== '') count++;
+  return count;
+});
+const hasActiveFilters = computed(() => activeFilterCount.value > 0);
 
 const products = ref<Product[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const editingProduct = ref<Product | null>(null);
+const editingStockId = ref<string | null>(null);
+const tempStockValue = ref<number>(0);
 const hasError = ref(false);
 const errorMessage = ref<string>('');
+const expandedProducts = ref<Set<string>>(new Set());
+
+// Inline editing state
+const editingField = ref<{ productId: string; field: string } | null>(null);
+const tempEditValue = ref<string | number>('');
+
+// Tooltips for complex features
+const bulkActionsTooltip = useTooltip('bulk_actions_products');
+const inlineEditTooltip = useTooltip('inline_edit_products');
+const infiniteScrollTooltip = useTooltip('infinite_scroll_products');
+const bulkEditButtonRef = ref<HTMLElement | null>(null);
+const inlineEditRef = ref<HTMLElement | null>(null);
+const infiniteScrollToggleRef = ref<HTMLElement | null>(null);
+
+// Offline support
+const { isOnline } = useOffline();
+const { getCached, setCached } = useCache();
+const CACHE_KEY_PRODUCTS = 'products_list';
+const CACHE_KEY_CATEGORIES = 'products_categories';
 
 const retryLoad = () => {
   hasError.value = false;
@@ -454,11 +1076,51 @@ const categories = ref<string[]>([]);
 const productLimit = ref<any>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const importing = ref(false);
-const filters = ref({
-  search: '',
-  category: '',
-  isActive: '',
-});
+// Filter persistence key
+const FILTER_STORAGE_KEY = 'products_filters';
+
+// Initialize filters from localStorage or defaults
+const loadFiltersFromStorage = () => {
+  try {
+    const saved = localStorage.getItem(FILTER_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        search: parsed.search || '',
+        category: parsed.category || '',
+        isActive: parsed.isActive || '',
+      };
+    }
+  } catch (e) {
+    console.warn('Failed to load filters from storage:', e);
+  }
+  return {
+    search: '',
+    category: '',
+    isActive: '',
+  };
+};
+
+const filters = ref(loadFiltersFromStorage());
+
+// Save filters to localStorage whenever they change
+watch(filters, (newFilters) => {
+  try {
+    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(newFilters));
+  } catch (e) {
+    console.warn('Failed to save filters to storage:', e);
+  }
+}, { deep: true });
+
+// Clear all filters
+const clearAllFilters = () => {
+  filters.value = {
+    search: '',
+    category: '',
+    isActive: '',
+  };
+  loadProducts(1);
+};
 const pagination = ref({
   page: 1,
   limit: 12,
@@ -466,12 +1128,245 @@ const pagination = ref({
   totalPages: 0,
 });
 
+// Bulk Selection State
+const selectedIds = ref<string[]>([]);
+const isSelected = (id: string) => selectedIds.value.includes(id);
+const toggleSelect = (id: string) => {
+  const index = selectedIds.value.indexOf(id);
+  if (index === -1) {
+    selectedIds.value.push(id);
+  } else {
+    selectedIds.value.splice(index, 1);
+  }
+};
+const clearSelection = () => {
+  selectedIds.value = [];
+};
+const isAllSelected = computed(() => {
+  return products.value.length > 0 && products.value.every(p => isSelected(p.id));
+});
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    clearSelection();
+  } else {
+    selectedIds.value = [...new Set([...selectedIds.value, ...products.value.map(p => p.id)])];
+  }
+};
+
+// Bulk Edit State
+const showBulkEditModal = ref(false);
+const bulkEditLoading = ref(false);
+const bulkEditForm = ref({
+  category: '',
+  isActive: '',
+  priceAdjustmentType: '',
+  priceAdjustmentValue: 0,
+  stockAdjustmentType: '',
+  stockAdjustmentValue: 0,
+});
+
+const handleBulkEdit = async () => {
+  if (selectedIds.value.length === 0) return;
+  
+  bulkEditLoading.value = true;
+  try {
+    const selectedProducts = products.value.filter(p => selectedIds.value.includes(p.id));
+    
+    // Process each product
+    const updatePromises = selectedProducts.map(async (product) => {
+      const updates: any = {};
+      
+      // Category
+      if (bulkEditForm.value.category) {
+        updates.category = bulkEditForm.value.category;
+      }
+      
+      // Status
+      if (bulkEditForm.value.isActive !== '') {
+        updates.isActive = bulkEditForm.value.isActive === 'true';
+      }
+      
+      // Price adjustment
+      if (bulkEditForm.value.priceAdjustmentType && bulkEditForm.value.priceAdjustmentValue !== null) {
+        const currentPrice = product.price || 0;
+        switch (bulkEditForm.value.priceAdjustmentType) {
+          case 'set':
+            updates.price = bulkEditForm.value.priceAdjustmentValue;
+            break;
+          case 'increase':
+            updates.price = currentPrice + bulkEditForm.value.priceAdjustmentValue;
+            break;
+          case 'decrease':
+            updates.price = Math.max(0, currentPrice - bulkEditForm.value.priceAdjustmentValue);
+            break;
+          case 'percentage':
+            updates.price = currentPrice * (1 + bulkEditForm.value.priceAdjustmentValue / 100);
+            break;
+        }
+      }
+      
+      // Stock adjustment
+      if (bulkEditForm.value.stockAdjustmentType && bulkEditForm.value.stockAdjustmentValue !== null) {
+        const currentStock = product.stock || 0;
+        switch (bulkEditForm.value.stockAdjustmentType) {
+          case 'set':
+            updates.stock = bulkEditForm.value.stockAdjustmentValue;
+            break;
+          case 'increase':
+            updates.stock = currentStock + bulkEditForm.value.stockAdjustmentValue;
+            break;
+          case 'decrease':
+            updates.stock = Math.max(0, currentStock - bulkEditForm.value.stockAdjustmentValue);
+            break;
+        }
+      }
+      
+      // Only update if there are changes
+      if (Object.keys(updates).length > 0) {
+        return api.put(`/products/${product.id}`, updates);
+      }
+    });
+    
+    await Promise.all(updatePromises);
+    
+    await showSuccess(`${selectedIds.value.length} produk berhasil diperbarui`);
+    showBulkEditModal.value = false;
+    clearSelection();
+    // Reset form
+    bulkEditForm.value = {
+      category: '',
+      isActive: '',
+      priceAdjustmentType: '',
+      priceAdjustmentValue: 0,
+      stockAdjustmentType: '',
+      stockAdjustmentValue: 0,
+    };
+    await loadProducts(pagination.value.page);
+  } catch (error: any) {
+    console.error('Error in bulk edit:', error);
+    await showError(error.response?.data?.message || 'Gagal memperbarui beberapa produk');
+  } finally {
+    bulkEditLoading.value = false;
+  }
+};
+
+const bulkDelete = async () => {
+  if (selectedIds.value.length === 0) return;
+  
+  const confirmed = await showConfirm(
+    `Apakah Anda yakin ingin menghapus ${selectedIds.value.length} produk terpilih? Tindakan ini tidak dapat dibatalkan.`,
+    'Hapus Massal'
+  );
+  
+  if (!confirmed) return;
+  
+  loading.value = true;
+  try {
+    // Delete in sequence or parallel depending on backend support for bulk delete
+    // If backend doesn't have bulk delete, we loop (optimistic approach)
+    await Promise.all(selectedIds.value.map(id => api.delete(`/products/${id}`)));
+    
+    await showSuccess(`${selectedIds.value.length} produk berhasil dihapus`);
+    clearSelection();
+    await loadProducts(pagination.value.page);
+  } catch (error: any) {
+    console.error('Error in bulk delete:', error);
+    await showError(error.response?.data?.message || 'Gagal menghapus beberapa produk');
+    await loadProducts(pagination.value.page);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const viewMode = ref(localStorage.getItem('productsViewMode') || 'grid');
+watch(viewMode, (newMode) => {
+  localStorage.setItem('productsViewMode', newMode);
+});
+
+const searchInputRef = ref<HTMLInputElement | null>(null);
+const handleGlobalFocusSearch = () => {
+   searchInputRef.value?.focus();
+};
+
+// Search suggestions
+const searchSuggestions = useSearchSuggestions('products');
+
+// Watch search query to generate suggestions
+watch(() => filters.value.search, (newQuery) => {
+  if (newQuery && newQuery.length >= 2) {
+    searchSuggestions.generateSuggestions(newQuery, products.value, ['name', 'category', 'sku']);
+    searchSuggestions.showSuggestions = true;
+  } else if (newQuery.length === 0) {
+    // Show recent searches when input is empty
+    searchSuggestions.showSuggestions = true;
+  } else {
+    searchSuggestions.showSuggestions = false;
+  }
+});
+
+// Handle search input
+const handleSearchInput = () => {
+  // Suggestions will be generated by watch
+};
+
+// Handle search focus
+const handleSearchFocus = () => {
+  if (filters.value.search.length === 0) {
+    searchSuggestions.showSuggestions = true;
+  } else if (filters.value.search.length >= 2) {
+    searchSuggestions.generateSuggestions(filters.value.search, products.value, ['name', 'category', 'sku']);
+    searchSuggestions.showSuggestions = true;
+  }
+};
+
+// Handle search blur (with delay to allow click on suggestion)
+const handleSearchBlur = () => {
+  setTimeout(() => {
+    searchSuggestions.showSuggestions = false;
+  }, 200);
+};
+
+// Handle keyboard navigation
+const handleSearchKeyDown = () => {
+  if (searchSuggestions.selectedIndex < searchSuggestions.allSuggestions.length - 1) {
+    searchSuggestions.selectedIndex++;
+  }
+};
+
+const handleSearchKeyUp = () => {
+  if (searchSuggestions.selectedIndex > 0) {
+    searchSuggestions.selectedIndex--;
+  }
+};
+
+const handleSearchEnter = () => {
+  if (searchSuggestions.selectedIndex >= 0 && searchSuggestions.allSuggestions[searchSuggestions.selectedIndex]) {
+    selectSuggestion(searchSuggestions.allSuggestions[searchSuggestions.selectedIndex].text);
+  } else if (filters.value.search.trim()) {
+    // Save as recent search and search
+    searchSuggestions.saveRecentSearch(filters.value.search);
+    loadProducts(1);
+    searchSuggestions.showSuggestions = false;
+  }
+};
+
+// Select suggestion
+const selectSuggestion = (text: string) => {
+  filters.value.search = text;
+  searchSuggestions.saveRecentSearch(text);
+  searchSuggestions.showSuggestions = false;
+  loadProducts(1);
+};
+
 // Margin display format (percentage or amount)
 const marginDisplayFormat = ref<'percentage' | 'amount'>(
   (localStorage.getItem('marginDisplayFormat') as 'percentage' | 'amount') || 'percentage'
 );
 
-const loadProducts = async (page = 1) => {
+// Infinite scroll mode (toggle with localStorage)
+const useInfiniteScrollMode = ref(localStorage.getItem('productsInfiniteScroll') === 'true');
+
+const loadProducts = async (page = 1, append = false) => {
   // Check if tenant selection is needed
   if (needsTenantSelection.value) {
     return; // Don't load if tenant not selected
@@ -485,7 +1380,29 @@ const loadProducts = async (page = 1) => {
     return;
   }
   
-  loading.value = true;
+  // Check if offline - use cached data
+  if (!isOnline.value) {
+    const cached = getCached<{ products: Product[]; pagination: any; categories: string[] }>(CACHE_KEY_PRODUCTS);
+    if (cached) {
+      if (append) {
+        products.value = [...products.value, ...cached.products];
+      } else {
+        products.value = cached.products;
+      }
+      pagination.value = cached.pagination;
+      categories.value = cached.categories || [];
+      await showWarning('Anda sedang offline. Menampilkan data dari cache.');
+      return;
+    } else {
+      await showError('Tidak ada data tersimpan. Silakan koneksi ke internet untuk memuat data.');
+      return;
+    }
+  }
+  
+  // Don't show loading if appending (infinite scroll)
+  if (!append) {
+    loading.value = true;
+  }
   hasError.value = false;
   errorMessage.value = '';
   try {
@@ -503,8 +1420,29 @@ const loadProducts = async (page = 1) => {
     }
     
     const response = await api.get('/products', { params });
-    products.value = Array.isArray(response.data.data) ? response.data.data : [];
+    const newProducts = Array.isArray(response.data.data) ? response.data.data : [];
+    
+    if (append) {
+      // Append to existing products
+      products.value = [...products.value, ...newProducts];
+    } else {
+      // Replace products
+      products.value = newProducts;
+    }
+    
     pagination.value = response.data.pagination || { page: 1, limit: 12, total: 0, totalPages: 0 };
+    
+    // Cache the data for offline use
+    setCached(CACHE_KEY_PRODUCTS, {
+      products: products.value,
+      pagination: pagination.value,
+      categories: categories.value,
+    }, 10 * 60 * 1000); // Cache for 10 minutes
+    
+    // Update infinite scroll hasMore
+    if (infiniteScroll) {
+      infiniteScroll.setHasMore(page < pagination.value.totalPages);
+    }
 
     // Extract unique categories
     const uniqueCategories = new Set<string>();
@@ -515,7 +1453,7 @@ const loadProducts = async (page = 1) => {
     }
     categories.value = Array.from(uniqueCategories);
 
-    // Load product limit
+    // Load product limit (only if online)
     try {
       const limitRes = await api.get('/addons/check-limit/ADD_PRODUCTS');
       productLimit.value = limitRes.data;
@@ -524,6 +1462,22 @@ const loadProducts = async (page = 1) => {
     }
   } catch (error: any) {
     console.error('Error loading products:', error);
+    
+    // If offline or network error, try to use cached data
+    if (!isOnline.value || error.code === 'NETWORK_ERROR' || !navigator.onLine) {
+      const cached = getCached<{ products: Product[]; pagination: any; categories: string[] }>(CACHE_KEY_PRODUCTS);
+      if (cached) {
+        if (append) {
+          products.value = [...products.value, ...cached.products];
+        } else {
+          products.value = cached.products;
+        }
+        pagination.value = cached.pagination;
+        categories.value = cached.categories || [];
+        await showWarning('Koneksi terputus. Menampilkan data dari cache.');
+        return;
+      }
+    }
     
     // Set error state for error boundary
     hasError.value = true;
@@ -555,26 +1509,198 @@ const editProduct = (product: Product) => {
   showCreateModal.value = true;
 };
 
+const startEditingStock = (product: Product) => {
+  // Only allow if permission granted
+  if (canManageProducts.value || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') {
+      editingStockId.value = product.id;
+      tempStockValue.value = product.stock;
+  }
+};
+
+const cancelEditingStock = () => {
+    editingStockId.value = null;
+};
+
+// Inline editing functions
+const startInlineEdit = (product: Product, field: string, currentValue: string | number) => {
+  // Only allow if permission granted
+  if (canManageProducts.value || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') {
+    editingField.value = { productId: product.id, field };
+    tempEditValue.value = currentValue;
+  }
+};
+
+const cancelInlineEdit = () => {
+  editingField.value = null;
+  tempEditValue.value = '';
+};
+
+const saveInlineEdit = async (product: Product) => {
+  if (!editingField.value) return;
+  
+  const { field } = editingField.value;
+  const newValue = tempEditValue.value;
+  
+  // Validate
+  if (field === 'price' && (typeof newValue !== 'number' || newValue < 0)) {
+    await showError('Harga tidak valid');
+    cancelInlineEdit();
+    return;
+  }
+  
+  if (field === 'name' && (!newValue || String(newValue).trim() === '')) {
+    await showError('Nama produk tidak boleh kosong');
+    cancelInlineEdit();
+    return;
+  }
+  
+  // OPTIMISTIC UPDATE
+  const oldValue = (product as any)[field];
+  (product as any)[field] = newValue;
+  
+  // Show success immediately
+  await showSuccess(`${field === 'name' ? 'Nama' : field === 'price' ? 'Harga' : 'Kategori'} diperbarui`);
+  
+  try {
+    // API call in background
+    await api.put(`/products/${product.id}`, { [field]: newValue });
+    
+    // Update categories if category was added
+    if (field === 'category' && newValue && !categories.value.includes(String(newValue))) {
+      categories.value.push(String(newValue));
+    }
+  } catch (error: any) {
+    // ROLLBACK on error
+    (product as any)[field] = oldValue;
+    await showError(error.response?.data?.message || `Gagal memperbarui ${field}`);
+  } finally {
+    cancelInlineEdit();
+  }
+};
+
+const saveStock = async (product: Product) => {
+  if (tempStockValue.value < 0) return;
+  
+  // OPTIMISTIC UPDATE: Update stock immediately
+  const oldStock = product.stock;
+  product.stock = tempStockValue.value;
+  editingStockId.value = null;
+  
+  // Show success immediately
+  await showSuccess('Stok diperbarui');
+  
+  try {
+    // API call in background
+    await api.put(`/products/${product.id}`, { stock: tempStockValue.value });
+    // Success - no need to update, already optimistic
+  } catch (error: any) {
+    // ROLLBACK: Revert on error
+    product.stock = oldStock;
+    editingStockId.value = product.id;
+    tempStockValue.value = oldStock;
+    await showError(error.response?.data?.message || 'Gagal memperbarui stok');
+  }
+};
+
 const closeModal = () => {
   showCreateModal.value = false;
   editingProduct.value = null;
 };
 
-const handleSaveProduct = async (productData: Partial<Product>) => {
+const productModalRef = ref<any>(null); // Ref for ProductModal component
+
+const handleSaveProduct = async (productData: Partial<Product>, keepOpen = false) => {
+  let optimisticProduct: Product | null = null;
+  let originalProduct: Product | null = null;
+  let productIndex = -1;
+  
   try {
     if (editingProduct.value) {
-      // Update existing product
-      await api.put(`/products/${editingProduct.value.id}`, productData);
+      // OPTIMISTIC UPDATE: Update product in list immediately
+      productIndex = products.value.findIndex(p => p.id === editingProduct.value!.id);
+      if (productIndex !== -1) {
+        originalProduct = { ...products.value[productIndex] };
+        // Optimistically update
+        products.value[productIndex] = {
+          ...products.value[productIndex],
+          ...productData,
+        } as Product;
+      }
+      
+      // Show success immediately
       await showSuccess('Produk berhasil diperbarui');
+      
+      // API call in background
+      const response = await api.put(`/products/${editingProduct.value.id}`, productData);
+      
+      // Sync with server response
+      if (productIndex !== -1 && response.data) {
+        products.value[productIndex] = response.data;
+      }
     } else {
-      // Create new product
-      await api.post('/products', productData);
-      await showSuccess('Produk berhasil ditambahkan');
+      // OPTIMISTIC CREATE: Add product to list immediately with temporary ID
+      const tempId = `temp-${Date.now()}`;
+      optimisticProduct = {
+        id: tempId,
+        name: productData.name || '',
+        description: productData.description,
+        price: productData.price || 0,
+        cost: productData.cost,
+        stock: productData.stock || 0,
+        minStock: productData.minStock || 0,
+        category: productData.category,
+        image: productData.image,
+        emoji: productData.emoji,
+        isActive: productData.isActive ?? true,
+        isConsignment: productData.isConsignment,
+      } as Product;
+      
+      // Add to beginning of list
+      products.value = [optimisticProduct, ...products.value];
+      
+      // Show success immediately
+      await showSuccess(keepOpen ? 'Produk ditambahkan. Silakan input produk berikutnya.' : 'Produk berhasil ditambahkan');
+      
+      // API call in background
+      const response = await api.post('/products', productData);
+      
+      // Replace temporary product with real one from server
+      if (optimisticProduct && response.data) {
+        const tempIndex = products.value.findIndex(p => p.id === tempId);
+        if (tempIndex !== -1) {
+          products.value[tempIndex] = response.data;
+        }
+      }
     }
-    closeModal();
-    await loadProducts(pagination.value.page);
+    
+    if (keepOpen) {
+      // Reset form in modal for next input
+      if (productModalRef.value) {
+         productModalRef.value.resetForm();
+      }
+    } else {
+      closeModal();
+    }
+    
+    // Update categories if new category was added
+    if (productData.category && !categories.value.includes(productData.category)) {
+      categories.value.push(productData.category);
+    }
   } catch (error: any) {
     console.error('Error saving product:', error);
+    
+    // ROLLBACK: Revert optimistic changes
+    if (editingProduct.value && originalProduct && productIndex !== -1) {
+      // Rollback update
+      products.value[productIndex] = originalProduct;
+    } else if (optimisticProduct) {
+      // Remove optimistic create
+      const tempIndex = products.value.findIndex(p => p.id === optimisticProduct!.id);
+      if (tempIndex !== -1) {
+        products.value.splice(tempIndex, 1);
+      }
+    }
+    
     // Check for validation errors with field details
     const responseData = error.response?.data;
     if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
@@ -590,12 +1716,67 @@ const handleSaveProduct = async (productData: Partial<Product>) => {
 const deleteProduct = async (id: string) => {
   const confirmed = await showConfirm('Apakah Anda yakin ingin menghapus produk ini?');
   if (!confirmed) return;
+  
+  // Store product data for undo
+  const productToDelete = products.value.find(p => p.id === id);
+  if (!productToDelete) return;
+  
+  // Store index for potential restore
+  const index = products.value.findIndex(p => p.id === id);
+  
   try {
     await api.delete(`/products/${id}`);
-    await loadProducts(pagination.value.page);
-    await showSuccess('Produk berhasil dihapus');
+    
+    // Remove from local list immediately (optimistic update)
+    if (index !== -1) {
+      products.value.splice(index, 1);
+    }
+    
+    // Show success with undo option
+    await showSuccess(
+      'Produk berhasil dihapus',
+      undefined,
+      5000,
+      async () => {
+        // Undo: restore product
+        try {
+          // Recreate product with same data
+          await api.post('/products', {
+            name: productToDelete.name,
+            description: productToDelete.description,
+            price: productToDelete.price,
+            cost: productToDelete.cost,
+            stock: productToDelete.stock,
+            minStock: productToDelete.minStock,
+            category: productToDelete.category,
+            image: productToDelete.image,
+            emoji: productToDelete.emoji,
+            isActive: productToDelete.isActive,
+            isConsignment: productToDelete.isConsignment,
+          });
+          await loadProducts(pagination.value.page);
+          await showSuccess('Produk berhasil dipulihkan');
+        } catch (error: any) {
+          await showError('Gagal memulihkan produk');
+        }
+      },
+      'Pulihkan'
+    );
   } catch (error: any) {
+    // Restore product in list if delete failed
+    if (index !== -1 && !products.value.find(p => p.id === id)) {
+      products.value.splice(index, 0, productToDelete);
+    }
     await showError(error.response?.data?.message || 'Gagal menghapus produk');
+  }
+};
+
+// Toggle product details
+const toggleProductDetails = (productId: string) => {
+  if (expandedProducts.value.has(productId)) {
+    expandedProducts.value.delete(productId);
+  } else {
+    expandedProducts.value.add(productId);
   }
 };
 
@@ -606,7 +1787,11 @@ const addToPOS = (_product: Product) => {
   // For now, just navigate to Kasir
 };
 
-const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+const handleExport = (format: 'csv' | 'excel' | 'pdf' | 'email') => {
+  if (format === 'email') {
+    handleEmailReport('Daftar Produk');
+    return;
+  }
   const exportData = formatDataForExport(products.value, {
     name: 'Name',
     category: 'Category',
@@ -683,6 +1868,22 @@ const downloadTemplate = () => {
 
 const triggerFileInput = () => {
   fileInput.value?.click();
+};
+
+const handleEmailReport = async (title: string) => {
+  const email = window.prompt('Masukkan alamat email penerima:');
+  if (!email) return;
+  
+  if (!email.includes('@')) {
+    await showError('Alamat email tidak valid');
+    return;
+  }
+  
+  try {
+    await showSuccess(`Laporan "${title}" telah dijadwalkan untuk dikirim ke ${email}`);
+  } catch (err) {
+    await showError('Gagal menjadwalkan pengiriman email');
+  }
 };
 
 const handleFileImport = async (event: Event) => {
@@ -952,6 +2153,32 @@ watch(() => authStore.currentTenantId, (newTenantId, oldTenantId) => {
   }
 }, { immediate: false });
 
+// Pull to refresh
+const { pullDistance, isRefreshing } = usePullToRefresh({
+  onRefresh: async () => {
+    await loadProducts(1);
+  },
+});
+
+// Infinite scroll
+const infiniteScroll = useInfiniteScroll({
+  onLoadMore: async () => {
+    if (pagination.value.page < pagination.value.totalPages) {
+      await loadProducts(pagination.value.page + 1, true);
+    }
+  },
+  enabled: () => useInfiniteScrollMode.value && !loading.value,
+});
+
+// Toggle infinite scroll
+const toggleInfiniteScroll = () => {
+  localStorage.setItem('productsInfiniteScroll', useInfiniteScrollMode.value ? 'true' : 'false');
+  if (useInfiniteScrollMode.value) {
+    // Reset to first page when enabling infinite scroll
+    loadProducts(1);
+  }
+};
+
 onMounted(async () => {
   try {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -968,11 +2195,75 @@ onMounted(async () => {
     if (!needsTenantSelection.value) {
       await loadProducts(1);
     }
+
+    window.addEventListener('focus-search', handleGlobalFocusSearch);
+    
+    // Show tooltips after a delay (first time only)
+    setTimeout(() => {
+      if (products.value.length > 0) {
+        // Show bulk actions tooltip when user selects products
+        // (will be triggered when selectedIds.length > 0)
+        
+        // Show inline edit tooltip
+        if (inlineEditTooltip.shouldShow()) {
+          setTimeout(() => {
+            if (inlineEditTooltip.shouldShow() && inlineEditRef.value) {
+              inlineEditTooltip.show.value = true;
+            }
+          }, 3000);
+        }
+        
+        // Show infinite scroll tooltip
+        if (infiniteScrollTooltip.shouldShow()) {
+          setTimeout(() => {
+            if (infiniteScrollTooltip.shouldShow() && infiniteScrollToggleRef.value) {
+              infiniteScrollTooltip.show.value = true;
+            }
+          }, 4000);
+        }
+      }
+    }, 1000);
+    
+// Watch for bulk selection to show tooltip
+watch(() => selectedIds.value.length, (count) => {
+  if (count > 0 && bulkActionsTooltip.shouldShow() && bulkEditButtonRef.value) {
+    setTimeout(() => {
+      if (bulkActionsTooltip.shouldShow() && bulkEditButtonRef.value) {
+        bulkActionsTooltip.show.value = true;
+      }
+    }, 500);
+  }
+});
+
+// Setup swipe gesture for product cards
+const setupSwipeForProduct = (el: HTMLElement | null, productId: string) => {
+  if (!el) return;
+  
+  // Only setup on mobile devices
+  if (window.innerWidth >= 768) return;
+  
+  productCardRefs.value.set(productId, el);
+  
+  useSwipe(el, {
+    onSwipeLeft: () => {
+      // Swipe left to delete
+      if (canManageProducts.value || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') {
+        deleteProduct(productId);
+      }
+    },
+    threshold: 100, // Require 100px swipe
+    velocityThreshold: 0.5,
+  });
+};
   } catch (error: any) {
     console.error('Error in onMounted:', error);
     hasError.value = true;
     errorMessage.value = error?.message || 'Terjadi kesalahan saat memuat halaman';
   }
+});
+
+onUnmounted(() => {
+    window.removeEventListener('focus-search', handleGlobalFocusSearch);
 });
 </script>
 

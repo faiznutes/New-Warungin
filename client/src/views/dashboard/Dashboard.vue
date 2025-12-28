@@ -121,7 +121,7 @@
       <!-- Charts & Tables Row -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Revenue Chart -->
-        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 flex flex-col h-full">
+        <div v-if="showSalesChart" class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 flex flex-col h-full animate-in fade-in zoom-in duration-300">
           <div class="flex items-center justify-between mb-6 flex-shrink-0">
             <div>
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pertumbuhan Pendapatan</h3>
@@ -131,9 +131,6 @@
               <span class="flex items-center gap-1 text-xs text-slate-500">
                 <span class="w-2.5 h-2.5 rounded-full bg-primary"></span> Revenue
               </span>
-              <!-- <span class="flex items-center gap-1 text-xs text-slate-500">
-                <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Profit
-              </span> -->
             </div>
           </div>
           <div class="flex flex-col flex-1 min-h-[250px] overflow-hidden">
@@ -142,9 +139,16 @@
              </div>
           </div>
         </div>
+        <div v-else class="lg:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-6 flex items-center justify-center text-slate-400">
+           <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2">bar_chart_off</span>
+              <p class="text-sm font-medium">Grafik Penjualan disembunyikan</p>
+              <router-link to="/app/settings/preferences" class="text-xs text-primary hover:underline mt-1 block">Ubah Preferensi</router-link>
+           </div>
+        </div>
 
         <!-- Produk Terlaris -->
-        <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 flex flex-col">
+        <div v-if="showTopProducts" class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 flex flex-col animate-in fade-in zoom-in duration-300 delay-100">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Produk Terlaris</h3>
             <router-link to="/app/products" class="text-sm text-primary hover:text-primary-hover font-medium">Lihat Semua</router-link>
@@ -169,6 +173,12 @@
                 Data produk tidak tersedia.
             </div>
           </div>
+        </div>
+        <div v-else class="lg:col-span-1 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-6 flex items-center justify-center text-slate-400">
+           <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2">inventory_2</span>
+              <p class="text-sm font-medium">Produk Terlaris disembunyikan</p>
+           </div>
         </div>
       </div>
 
@@ -226,10 +236,14 @@ import { formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
+import { useShiftReminder } from '../../composables/useShiftReminder';
 
 const route = useRoute();
 const authStore = useAuthStore();
-const { showNotification } = useNotification();
+const { showNotification, warning: showWarning } = useNotification();
+
+// Shift reminder
+const { shiftDurationHours, shouldShowReminder, startChecking, stopChecking } = useShiftReminder();
 
 const loading = ref(true);
 const stats = ref<any>(null);
@@ -238,6 +252,8 @@ const currentLangganan = ref<any>(null);
 const dateRange = ref('week');
 const revenueChartRef = ref<HTMLCanvasElement | null>(null);
 let revenueChart: Chart | null = null;
+const showSalesChart = ref(localStorage.getItem('user_showSalesChart') !== 'false');
+const showTopProducts = ref(localStorage.getItem('user_showTopProducts') !== 'false');
 
 const tenantName = computed(() => {
   return authStore.user?.tenant?.name || authStore.user?.name || 'User';
@@ -508,9 +524,43 @@ watch(dateRange, async () => {
     });
 });
 
+// Check subscription expiry warning (7 days before)
+const checkSubscriptionExpiry = () => {
+  if (!currentLangganan.value?.subscription?.endDate) return;
+  
+  const endDate = new Date(currentLangganan.value.subscription.endDate);
+  const now = new Date();
+  const diffTime = endDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Show warning if 7 days or less remaining
+  if (diffDays <= 7 && diffDays > 0) {
+    showWarning(
+      `Langganan Anda akan berakhir dalam ${diffDays} hari. Silakan perpanjang untuk melanjutkan layanan.`,
+      'Peringatan Langganan'
+    );
+  } else if (diffDays <= 0 && !currentLangganan.value.isExpired) {
+    showWarning(
+      'Langganan Anda telah berakhir. Silakan perpanjang untuk melanjutkan layanan.',
+      'Langganan Berakhir'
+    );
+  }
+};
+
 onMounted(async () => {
   try {
     await Promise.all([loadStats(), loadLangganan(), loadRecentOrders()]);
+    
+    // Check subscription expiry after loading
+    nextTick(() => {
+      checkSubscriptionExpiry();
+    });
+    
+    // Start shift reminder checking (only for relevant roles)
+    const role = authStore.user?.role;
+    if (role === 'CASHIER' || role === 'SUPERVISOR' || role === 'ADMIN_TENANT') {
+      startChecking();
+    }
   } finally {
     loading.value = false;
     nextTick(() => {
@@ -519,10 +569,16 @@ onMounted(async () => {
   }
 });
 
+// Watch for subscription changes
+watch(() => currentLangganan.value, () => {
+  checkSubscriptionExpiry();
+}, { deep: true });
+
 onUnmounted(() => {
   if (revenueChart) {
     revenueChart.destroy();
   }
+  stopChecking();
 });
 </script>
 

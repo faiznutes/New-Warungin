@@ -3,8 +3,8 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="flex flex-col gap-1">
-        <h1 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Free Points</h1>
-        <p class="text-slate-500 text-base">Redeem points for subscriptions or add-ons.</p>
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Poin Gratis</h1>
+        <p class="text-slate-500 text-base">Tukarkan poin untuk langganan atau add-on.</p>
       </div>
       <div class="flex gap-3">
         <button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary hover:border-primary/30 transition-all shadow-sm">
@@ -18,7 +18,7 @@
         >
           <div v-if="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           <span v-else class="material-symbols-outlined text-[20px]">play_circle</span>
-          <span>{{ loading ? 'Processing...' : `Watch Ads (${dailyLimit.remaining})` }}</span>
+          <span>{{ loading ? 'Memproses...' : `Tonton Iklan (${dailyLimit.remaining})` }}</span>
         </button>
       </div>
     </div>
@@ -28,7 +28,7 @@
       <!-- Card 1: Total Points -->
       <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
         <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Your Total Points</p>
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Poin Anda</p>
           <div class="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-md">
             <span class="material-symbols-outlined text-primary text-[20px]">stars</span>
           </div>
@@ -36,14 +36,14 @@
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.currentPoints || 0 }}</p>
         <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">verified</span>
-          <span>Active Balance</span>
+          <span>Saldo Aktif</span>
         </div>
       </div>
 
       <!-- Card 2: Total Earned -->
       <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
         <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Earned</p>
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Diperoleh</p>
           <div class="p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-md">
             <span class="material-symbols-outlined text-orange-500 text-[20px]">trending_up</span>
           </div>
@@ -51,14 +51,14 @@
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.totalEarned || 0 }}</p>
         <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">history</span>
-          <span>Lifetime</span>
+          <span>Seumur Hidup</span>
         </div>
       </div>
 
       <!-- Card 3: Total Used -->
       <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
         <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Points Used</p>
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Poin Digunakan</p>
           <div class="p-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-md">
             <span class="material-symbols-outlined text-purple-500 text-[20px]">shopping_bag</span>
           </div>
@@ -66,14 +66,14 @@
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.totalSpent || 0 }}</p>
         <div class="flex items-center gap-1 text-slate-500 text-xs font-medium bg-slate-100 dark:bg-slate-700 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">redeem</span>
-          <span>Redeemed</span>
+          <span>Ditukarkan</span>
         </div>
       </div>
 
       <!-- Card 4: Expiring Soon -->
       <div class="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2">
         <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Expiring Soon</p>
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Segera Kadaluwarsa</p>
           <div class="p-1.5 bg-red-50 dark:bg-red-900/20 rounded-md">
             <span class="material-symbols-outlined text-red-500 text-[20px]">warning</span>
           </div>
@@ -81,7 +81,7 @@
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.expiringSoon || 0 }}</p>
         <div class="flex items-center gap-1 text-red-600 text-xs font-medium bg-red-50 dark:bg-red-900/20 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">schedule</span>
-          <span>In 30 days</span>
+          <span>Dalam 30 hari</span>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
           <span class="absolute left-3 top-2.5 text-slate-400 material-symbols-outlined text-[20px] group-focus-within:text-primary transition-colors">search</span>
           <input 
             class="h-10 pl-10 pr-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-full sm:w-64 transition-all shadow-sm" 
-            placeholder="Search rewards..." 
+            placeholder="Cari reward..." 
             type="text"
           />
         </div>
@@ -106,7 +106,7 @@
             ]"
           >
             <span class="material-symbols-outlined text-[18px]">redeem</span>
-            Redeem
+            Tukar
           </button>
            <button 
             @click="activeTab = 'history'"
@@ -116,7 +116,7 @@
             ]"
           >
             <span class="material-symbols-outlined text-[18px]">history</span>
-            History
+            Riwayat
           </button>
         </div>
       </div>
@@ -134,18 +134,18 @@
              </div>
              <span class="material-symbols-outlined text-[64px] text-primary relative z-10">play_circle</span>
              <div v-if="dailyLimit.remaining > 0" class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-emerald-600 text-xs font-bold border border-emerald-200 shadow-sm z-10">
-                Earn Points
+                Dapat Poin
              </div>
              <div v-else class="absolute top-3 right-3 px-2 py-1 rounded bg-slate-800/90 text-white text-xs font-bold z-10">
-                Limit Reached
+                Batas Tercapai
              </div>
           </div>
           <div class="p-4 flex flex-col gap-2 flex-1">
-            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Watch Daily Ads</h3>
-            <p class="text-xs text-slate-500 line-clamp-2">Watch short videos to earn free points. Limit 5 per day.</p>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Tonton Iklan Harian</h3>
+            <p class="text-xs text-slate-500 line-clamp-2">Tonton video pendek untuk dapat poin gratis. Batas 5 per hari.</p>
             <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
-              <span class="text-primary font-bold text-lg">Free</span>
-              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Left: {{ dailyLimit.remaining }}/5</span>
+              <span class="text-primary font-bold text-lg">Gratis</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Sisa: {{ dailyLimit.remaining }}/5</span>
             </div>
           </div>
           <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
@@ -154,7 +154,7 @@
               :disabled="loading || dailyLimit.remaining === 0"
               class="px-4 py-2 rounded-lg bg-primary text-white font-bold shadow-lg hover:scale-105 transition-transform"
             >
-              Watch Now
+              Tonton Sekarang
             </button>
           </div>
         </div>
@@ -168,15 +168,15 @@
           <div class="aspect-[4/3] w-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
              <span class="material-symbols-outlined text-[64px] text-slate-400 group-hover:text-primary transition-colors">card_membership</span>
              <div class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-sm">
-                Subscription
+                Langganan
              </div>
           </div>
           <div class="p-4 flex flex-col gap-2 flex-1">
             <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ plan.name }}</h3>
-            <p class="text-xs text-slate-500 line-clamp-2">Redeem points for 1 month of {{ plan.name }} subscription.</p>
+            <p class="text-xs text-slate-500 line-clamp-2">Tukarkan poin untuk 1 bulan langganan {{ plan.name }}.</p>
             <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
               <span class="text-primary font-bold text-lg">{{ plan.pointsRequired }} Pts</span>
-              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Available</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Tersedia</span>
             </div>
           </div>
            <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
@@ -185,7 +185,7 @@
               :disabled="balance.currentPoints < plan.pointsRequired || redeeming"
               class="px-4 py-2 rounded-lg bg-primary text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
             >
-              {{ balance.currentPoints >= plan.pointsRequired ? 'Redeem' : 'Not Enough Pts' }}
+              {{ balance.currentPoints >= plan.pointsRequired ? 'Tukar' : 'Poin Kurang' }}
             </button>
           </div>
         </div>
@@ -205,10 +205,10 @@
           </div>
           <div class="p-4 flex flex-col gap-2 flex-1">
             <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ addon.name }}</h3>
-            <p class="text-xs text-slate-500 line-clamp-2">Activate {{ addon.name }} feature for your store.</p>
+            <p class="text-xs text-slate-500 line-clamp-2">Aktifkan fitur {{ addon.name }} untuk toko Anda.</p>
             <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
               <span class="text-emerald-600 dark:text-emerald-400 font-bold text-lg">{{ addon.pointsRequired }} Pts</span>
-              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Available</span>
+              <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Tersedia</span>
             </div>
           </div>
            <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 items-center justify-center gap-2 hidden group-hover:flex backdrop-blur-[2px] transition-all">
@@ -217,7 +217,7 @@
               :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
               class="px-4 py-2 rounded-lg bg-emerald-500 text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
             >
-              {{ balance.currentPoints >= addon.pointsRequired ? 'Redeem' : 'Not Enough Pts' }}
+              {{ balance.currentPoints >= addon.pointsRequired ? 'Tukar' : 'Poin Kurang' }}
             </button>
           </div>
         </div>
@@ -226,17 +226,17 @@
       <!-- History Table -->
       <div v-if="activeTab === 'history'" class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Recent Transactions</h3>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Transaksi Terakhir</h3>
         </div>
         <div class="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
           <table class="w-full text-left text-sm text-slate-600 dark:text-slate-400">
             <thead class="bg-slate-50 dark:bg-slate-700/50 text-xs uppercase font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
               <tr>
-                <th class="px-6 py-4" scope="col">Description</th>
-                <th class="px-6 py-4" scope="col">Type</th>
-                <th class="px-6 py-4" scope="col">Date</th>
+                <th class="px-6 py-4" scope="col">Deskripsi</th>
+                <th class="px-6 py-4" scope="col">Tipe</th>
+                <th class="px-6 py-4" scope="col">Tanggal</th>
                 <th class="px-6 py-4" scope="col">Status</th>
-                <th class="px-6 py-4 text-right" scope="col">Points</th>
+                <th class="px-6 py-4 text-right" scope="col">Poin</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -253,7 +253,7 @@
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase"
                     :class="transaction.amount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'"
                   >
-                    {{ transaction.amount > 0 ? 'Earned' : 'Spent' }}
+                    {{ transaction.amount > 0 ? 'Diperoleh' : 'Digunakan' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-slate-500">
@@ -262,7 +262,7 @@
                 <td class="px-6 py-4">
                   <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
                     <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                    Completed
+                    Selesai
                   </span>
                 </td>
                 <td 
@@ -274,7 +274,7 @@
               </tr>
               <tr v-if="transactions.length === 0">
                 <td colspan="5" class="px-6 py-12 text-center text-slate-500">
-                  No transactions yet
+                  Belum ada transaksi
                 </td>
               </tr>
             </tbody>

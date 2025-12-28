@@ -785,11 +785,49 @@
         </form>
       </div>
     </div>
+
+    <!-- Shift Closed Success Modal -->
+    <div v-if="showShiftClosedModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 animate-fade-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-bounce-in flex flex-col relative">
+             <div class="p-8 flex flex-col items-center justify-center text-center">
+                <div class="size-24 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-6 shadow-inner ring-8 ring-red-50 dark:ring-red-900/10">
+                    <span class="material-symbols-outlined text-6xl text-red-500 animate-pulse">lock</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Shift Ditutup</h3>
+                <p class="text-slate-500 mb-8">Shift kasir telah berhasil ditutup.</p>
+
+                <!-- Summary Info -->
+                <div class="w-full bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700 mb-8 space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Saldo Akhir</span>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(lastClosedShiftData?.physicalCash) }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">Selisih</span>
+                         <span :class="getSelisihClass(lastClosedShiftData?.selisih)" class="font-bold">
+                            {{ formatCurrency(lastClosedShiftData?.selisih) }}
+                         </span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-3 w-full">
+                    <button @click="generateShiftReport(lastClosedShiftData)" class="w-full py-3.5 bg-slate-800 text-white font-bold rounded-xl shadow-lg hover:bg-slate-700 transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">print</span>
+                        Lihat Laporan
+                    </button>
+                    <button @click="finishCloseShift" class="w-full py-3.5 bg-red-50 text-red-600 font-bold rounded-xl border border-red-200 hover:bg-red-100 transition-all">
+                        Kembali ke Dashboard
+                    </button>
+                </div>
+             </div>
+        </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import { formatCurrency } from '../../utils/formatters';
@@ -797,6 +835,7 @@ import { useAuthStore } from '../../stores/auth';
 
 const { success: showSuccess, error: showError } = useNotification();
 const authStore = useAuthStore();
+const router = useRouter();
 
 const loading = ref(true);
 const currentShift = ref<any>(null);
@@ -805,6 +844,8 @@ const openingShift = ref(false);
 const openingStoreShift = ref(false);
 const closingShift = ref(false);
 const showCloseModal = ref(false);
+const showShiftClosedModal = ref(false);
+const lastClosedShiftData = ref<any>(null);
 const activeTab = ref<'today' | 'history'>('today');
 const todayShifts = ref<any[]>([]);
 const todayShiftsLoading = ref(false);
@@ -982,11 +1023,20 @@ const handleCloseShift = async () => {
 
     await showSuccess('Shift berhasil ditutup');
     
-    // Generate and show PDF report
-    const shiftData = response.data || currentShift.value;
-    generateShiftReport(shiftData);
+    // Capture data for Success Modal
+    const saldoSeharusnya = (currentShift.value.modalAwal || 0) + (currentShift.value.totalPenjualan || 0);
+    const selisih = closeShiftForm.value.uangFisikTutup - saldoSeharusnya;
+
+    lastClosedShiftData.value = {
+        ...currentShift.value,
+        ...response.data,
+        physicalCash: closeShiftForm.value.uangFisikTutup,
+        selisih: selisih
+    };
     
     showCloseModal.value = false;
+    showShiftClosedModal.value = true;
+
     closeShiftForm.value = { uangFisikTutup: 0, catatan: '' };
     await loadCurrentShift();
     await loadShiftHistory();
@@ -998,10 +1048,16 @@ const handleCloseShift = async () => {
   }
 };
 
+const finishCloseShift = () => {
+    showShiftClosedModal.value = false;
+    router.push('/app/dashboard');
+};
+
 const generateShiftReport = (shiftData: any) => {
   const modalAwal = shiftData?.modalAwal || currentShift.value?.modalAwal || 0;
   const totalSales = shiftData?.totalPenjualan || currentShift.value?.totalPenjualan || 0;
-  const physicalCash = closeShiftForm.value.uangFisikTutup;
+  // Use passed data if available, otherwise form
+  const physicalCash = shiftData?.physicalCash ?? closeShiftForm.value.uangFisikTutup;
   const expectedBalance = modalAwal + totalSales;
   const difference = physicalCash - expectedBalance;
   const now = new Date();
@@ -1234,6 +1290,14 @@ onMounted(async () => {
     loadTodayShifts(),
   ]);
   loading.value = false;
+
+  // Smart Default: Pre-fill Modal Awal from last shift
+  if (!currentShift.value && shiftHistory.value.length > 0) {
+      const lastShift = shiftHistory.value[0];
+      if (lastShift && lastShift.uangFisikTutup) {
+          openShiftForm.value.modalAwal = lastShift.uangFisikTutup;
+      }
+  }
 
   // Auto-refresh current shift data every 30 seconds
   pollingInterval.value = setInterval(() => {

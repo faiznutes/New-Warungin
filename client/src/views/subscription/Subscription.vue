@@ -6,14 +6,14 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Subscription</h2>
-        <p class="text-[#4c739a] dark:text-[#94a3b8] mt-1">Manage your subscription plan and account status.</p>
+        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Langganan</h2>
+        <p class="text-[#4c739a] dark:text-[#94a3b8] mt-1">Kelola paket langganan dan status akun Anda.</p>
       </div>
       <router-link
         to="/pricing"
         class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[#4c739a] hover:text-emerald-600 hover:border-emerald-500 rounded-xl text-sm font-medium transition-all shadow-sm hover:shadow-sm"
       >
-        <span>View Plan Details</span>
+        <span>Lihat Detail Paket</span>
         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
       </router-link>
     </div>
@@ -23,14 +23,14 @@
       <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-full mb-4">
         <span class="material-symbols-outlined text-4xl text-slate-400">storefront</span>
       </div>
-      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">Select a Tenant First</h3>
-      <p class="text-[#4c739a] text-sm text-center max-w-md">Please select a tenant from the dropdown above to view subscription information.</p>
+      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">Pilih Tenant Terlebih Dahulu</h3>
+      <p class="text-[#4c739a] text-sm text-center max-w-md">Silakan pilih tenant dari dropdown di atas untuk melihat informasi langganan.</p>
     </div>
 
     <!-- Loading State -->
     <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
       <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <div class="text-[#4c739a] font-medium text-sm">Loading subscription data...</div>
+      <div class="text-[#4c739a] font-medium text-sm">Memuat data langganan...</div>
     </div>
 
     <div v-else class="flex flex-col gap-8">
@@ -45,13 +45,13 @@
               <div class="flex items-center gap-3 mb-4">
                 <span class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border border-white/30">
                   <span class="material-symbols-outlined text-[16px]">verified</span>
-                  Current Plan
+                  Paket Saat Ini
                 </span>
                 <span
                   class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xl"
                   :class="subscription?.isExpired ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
                 >
-                  {{ subscription?.isExpired ? 'Expired' : 'Active' }}
+                  {{ subscription?.isExpired ? 'Kedaluwarsa' : 'Aktif' }}
                 </span>
               </div>
               

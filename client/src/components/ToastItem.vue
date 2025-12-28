@@ -17,6 +17,14 @@
         <div class="ml-3 w-0 flex-1 pt-0.5">
           <p class="text-sm font-bold text-gray-900 dark:text-white" v-if="title">{{ title }}</p>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 leading-snug">{{ message }}</p>
+          <!-- Undo Button -->
+          <button
+            v-if="undoAction"
+            @click="handleUndo"
+            class="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 underline"
+          >
+            {{ undoLabel || 'Undo' }}
+          </button>
         </div>
         <div class="ml-4 flex flex-shrink-0">
           <button
@@ -50,11 +58,22 @@ const props = defineProps<{
   title?: string;
   message: string;
   duration?: number;
+  undoAction?: () => void | Promise<void>;
+  undoLabel?: string;
 }>();
 
 const emit = defineEmits<{
   (e: 'close'): void;
+  (e: 'undo'): void;
 }>();
+
+const handleUndo = async () => {
+  if (props.undoAction) {
+    await props.undoAction();
+  }
+  emit('undo');
+  closeToast();
+};
 
 const show = ref(false);
 const progress = ref(100);
