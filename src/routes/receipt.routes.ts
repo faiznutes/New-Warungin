@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import receiptService from '../services/receipt.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -71,8 +71,10 @@ router.get(
 
 router.post(
   '/templates',
+  '/templates',
   authGuard,
   checkReceiptEditorAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createTemplateSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -89,6 +91,7 @@ router.put(
   '/templates/:id',
   authGuard,
   checkReceiptEditorAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -104,6 +107,7 @@ router.post(
   '/templates/:id/set-default',
   authGuard,
   checkReceiptEditorAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -119,6 +123,7 @@ router.delete(
   '/templates/:id',
   authGuard,
   checkReceiptEditorAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

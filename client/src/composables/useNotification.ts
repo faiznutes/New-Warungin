@@ -1,5 +1,15 @@
 import { ref } from 'vue';
 
+// Toast Types
+export interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title?: string;
+  message: string;
+  duration?: number;
+}
+
+// Modal Types
 interface NotificationOptions {
   type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
   title?: string;
@@ -9,7 +19,8 @@ interface NotificationOptions {
 }
 
 // Global state
-const showNotification = ref(false);
+const toasts = ref<Toast[]>([]);
+const showNotification = ref(false); // Modal visibility
 const notificationOptions = ref<NotificationOptions>({
   type: 'info',
   message: '',
@@ -17,7 +28,7 @@ const notificationOptions = ref<NotificationOptions>({
 
 let resolvePromise: ((value: boolean) => void) | null = null;
 
-// Global handlers (used in App.vue)
+// Modal Handlers
 export const handleNotificationConfirm = () => {
   if (resolvePromise) {
     resolvePromise(true);
@@ -42,8 +53,23 @@ export const handleNotificationClose = () => {
   showNotification.value = false;
 };
 
+// Toast Handlers
+const addToast = (toast: Omit<Toast, 'id'>) => {
+  const id = Math.random().toString(36).substring(2, 9);
+  toasts.value.push({ ...toast, id });
+  return id;
+};
+
+const removeToast = (id: string) => {
+  const index = toasts.value.findIndex((t) => t.id === id);
+  if (index !== -1) {
+    toasts.value.splice(index, 1);
+  }
+};
+
 export function useNotification() {
-  const notify = (options: NotificationOptions): Promise<boolean> => {
+  // Legacy modal trigger (internal use for confirm)
+  const notifyModal = (options: NotificationOptions): Promise<boolean> => {
     return new Promise((resolve) => {
       notificationOptions.value = {
         type: options.type || 'info',
@@ -57,29 +83,59 @@ export function useNotification() {
     });
   };
 
-  const success = (message: string, title?: string) => {
-    return notify({ type: 'success', message, title });
+  // Toast triggers
+  const success = (message: string, title?: string, duration = 3000) => {
+    addToast({ type: 'success', message, title, duration });
+    return Promise.resolve(true);
   };
 
-  const error = (message: string, title?: string) => {
-    return notify({ type: 'error', message, title });
+  const error = (message: string, title?: string, duration = 5000) => {
+    addToast({ type: 'error', message, title, duration });
+    return Promise.resolve(true);
   };
 
-  const warning = (message: string, title?: string) => {
-    return notify({ type: 'warning', message, title });
+  const warning = (message: string, title?: string, duration = 4000) => {
+    addToast({ type: 'warning', message, title, duration });
+    return Promise.resolve(true);
   };
 
-  const info = (message: string, title?: string) => {
-    return notify({ type: 'info', message, title });
+  const info = (message: string, title?: string, duration = 3000) => {
+    addToast({ type: 'info', message, title, duration });
+    return Promise.resolve(true);
   };
 
+  // Confirm remains as Modal
   const confirm = (message: string, title?: string, confirmText = 'Ya', cancelText = 'Batal'): Promise<boolean> => {
-    return notify({ type: 'confirm', message, title, confirmText, cancelText });
+    return notifyModal({ type: 'confirm', message, title, confirmText, cancelText });
+  };
+
+  // Original notify method - checking use case
+  // If called directly, we check type. type 'confirm' -> Modal. Others -> Toast.
+  const notify = (options: NotificationOptions): Promise<boolean> => {
+    if (options.type === 'confirm') {
+      return notifyModal(options);
+    } else {
+      // Map legacy notify calls to toasts
+      const type = (options.type as Toast['type']) || 'info';
+      addToast({
+        type,
+        title: options.title,
+        message: options.message,
+      });
+      return Promise.resolve(true);
+    }
   };
 
   return {
+    // Toast State & Methods
+    toasts,
+    removeToast,
+
+    // Modal State & Methods (for App.vue)
     showNotification,
     notificationOptions,
+
+    // Public API
     notify,
     success,
     error,

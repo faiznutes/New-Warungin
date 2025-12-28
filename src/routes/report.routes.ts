@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
@@ -35,7 +35,7 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const user = (req as any).user;
-      
+
       // Only Super Admin can access global reports
       if (user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Access denied. Super Admin only.' });
@@ -44,12 +44,12 @@ router.get(
       const { startDate, endDate } = req.query;
       let start = startDate ? new Date(startDate as string) : undefined;
       let end = endDate ? new Date(endDate as string) : undefined;
-      
+
       // If end date is provided, set time to end of day to include all subscriptions created on that day
       if (end) {
         end.setHours(23, 59, 59, 999);
       }
-      
+
       // If start date is provided, set time to start of day
       if (start) {
         start.setHours(0, 0, 0, 0);
@@ -90,7 +90,9 @@ router.get(
  */
 router.get(
   '/tenant',
+  '/tenant',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
@@ -104,9 +106,9 @@ router.get(
           where: { id: tenantId },
           select: { subscriptionPlan: true },
         });
-        
+
         const isProOrMax = tenant?.subscriptionPlan === 'PRO' || tenant?.subscriptionPlan === 'MAX';
-        
+
         // Check addon for export (if not PRO/MAX)
         let hasExportAddon = false;
         if (!isProOrMax) {
@@ -126,10 +128,10 @@ router.get(
             hasExportAddon = false;
           }
         }
-        
+
         if (!isProOrMax && !hasExportAddon) {
-          return res.status(403).json({ 
-            message: 'Export Laporan memerlukan paket PRO/MAX atau addon Export Laporan' 
+          return res.status(403).json({
+            message: 'Export Laporan memerlukan paket PRO/MAX atau addon Export Laporan'
           });
         }
       }
@@ -138,7 +140,7 @@ router.get(
       const end = endDate ? new Date(endDate as string) : undefined;
       const type = (reportType as string) || 'sales';
       const periodType = (period as string) || 'all';
-      
+
       const userRole = (req as any).user.role;
       const userPermissions = (req as any).user.permissions;
 
@@ -206,7 +208,9 @@ router.get(
  */
 router.get(
   '/',
+  '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
@@ -241,7 +245,7 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
-      
+
       // Only Super Admin can access global reports
       if (user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Access denied. Super Admin only.' });
@@ -252,10 +256,10 @@ router.get(
       const end = endDate ? new Date(endDate as string) : undefined;
 
       const report = await reportService.getGlobalReport(start, end);
-      
+
       // Generate HTML for PDF
       const html = reportService.generateGlobalReportPDF(report, start, end);
-      
+
       // Set headers for PDF download
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
@@ -290,6 +294,7 @@ router.get(
 router.get(
   '/multi',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {

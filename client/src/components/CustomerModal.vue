@@ -1,86 +1,120 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-    @click.self="$emit('close')"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
   >
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-bold text-gray-900">
-            {{ editingCustomer ? 'Edit Pelanggan' : 'Tambah Pelanggan' }}
-          </h3>
-          <button
-            @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 transition"
-          >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+    <!-- Backdrop -->
+    <div 
+      class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"
+      @click="$emit('close')"
+    ></div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nama *</label>
-            <input
-              v-model="form.name"
-              type="text"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Masukkan nama pelanggan"
-            />
-          </div>
+    <!-- Modal Content -->
+    <div 
+      class="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl transform transition-all duration-300 animate-scale-in overflow-hidden flex flex-col max-h-[90vh]"
+    >
+      <!-- Header -->
+      <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm flex items-center justify-between sticky top-0 z-10">
+        <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          {{ editingCustomer ? 'Edit Pelanggan' : 'Tambah Pelanggan Baru' }}
+        </h3>
+        <button
+          @click="$emit('close')"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-all duration-200"
+        >
+          <span class="material-symbols-outlined text-[24px]">close</span>
+        </button>
+      </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+      <!-- Scrollable Body -->
+      <div class="p-6 md:p-8 overflow-y-auto custom-scrollbar">
+        <form @submit.prevent="handleSubmit" class="space-y-6">
+          <!-- Name Input -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+              Nama Lengkap <span class="text-red-500">*</span>
+            </label>
+            <div class="relative group">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">person</span>
               <input
-                v-model="form.email"
-                type="email"
-                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="email@example.com"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
-              <input
-                v-model="form.phone"
-                type="tel"
-                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="081234567890"
+                v-model="form.name"
+                type="text"
+                required
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                placeholder="Contoh: Budi Santoso"
               />
             </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-            <textarea
-              v-model="form.address"
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="Masukkan alamat pelanggan"
-            ></textarea>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Email Input -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                Email
+              </label>
+              <div class="relative group">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">mail</span>
+                <input
+                  v-model="form.email"
+                  type="email"
+                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                  placeholder="budi@example.com"
+                />
+              </div>
+            </div>
+
+            <!-- Phone Input -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                Nomor Telepon
+              </label>
+              <div class="relative group">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">call</span>
+                <input
+                  v-model="form.phone"
+                  type="tel"
+                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                  placeholder="08123456789"
+                />
+              </div>
+            </div>
           </div>
 
-          <div class="flex space-x-3 pt-4">
-            <button
-              type="button"
-              @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              :disabled="saving"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ saving ? 'Menyimpan...' : (editingCustomer ? 'Update' : 'Simpan') }}
-            </button>
+          <!-- Address Input -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+              Alamat
+            </label>
+            <div class="relative group">
+              <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
+              <textarea
+                v-model="form.address"
+                rows="3"
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400 resize-none"
+                placeholder="Masukkan alamat lengkap pelanggan..."
+              ></textarea>
+            </div>
           </div>
         </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm flex justify-end gap-3 rounded-b-3xl">
+        <button
+          type="button"
+          @click="$emit('close')"
+          class="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+        >
+          Batal
+        </button>
+        <button
+          @click="handleSubmit"
+          :disabled="saving"
+          class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+        >
+          <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <span>{{ saving ? 'Menyimpan...' : (editingCustomer ? 'Simpan Perubahan' : 'Tambah Pelanggan') }}</span>
+        </button>
       </div>
     </div>
   </div>
@@ -151,6 +185,7 @@ watch(() => props.show, (newShow) => {
 });
 
 const handleSubmit = () => {
+  if (!form.value.name) return; // Simple validation
   saving.value = true;
   emit('save', { ...form.value });
   setTimeout(() => {
@@ -158,4 +193,20 @@ const handleSubmit = () => {
   }, 500);
 };
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+</style>
 

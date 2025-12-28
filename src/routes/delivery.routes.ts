@@ -1,13 +1,18 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
+import { checkDeliveryMarketingAddon } from '../middlewares/plan-feature-guard';
 import deliveryService from '../services/delivery.service';
 import logger from '../utils/logger';
 import { handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
+router.use(authGuard);
+// Webhook bypasses addon check? No, webhook is public.
+// But wait, webhook route is at the bottom. I should apply check separately or move webhook out.
+// Webhook route doesn't use authGuard.
+// So I will apply authGuard and addon check to protected routes ONLY.
 
 const createCourierSchema = z.object({
   courier: z.string().min(1),
@@ -53,7 +58,9 @@ const trackShipmentSchema = z.object({
  */
 router.get(
   '/orders',
-  authGuard,
+  '/orders',
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -100,7 +107,9 @@ router.get(
  */
 router.post(
   '/orders/:orderId/process',
-  authGuard,
+  '/orders/:orderId/process',
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: processDeliverySchema }),
   async (req: Request, res: Response) => {
     try {
@@ -115,7 +124,9 @@ router.post(
 
 router.post(
   '/couriers',
-  authGuard,
+  '/couriers',
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCourierSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -176,7 +187,9 @@ router.post(
  */
 router.post(
   '/orders/:orderId/create-shipment',
-  authGuard,
+  '/orders/:orderId/create-shipment',
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: createShipmentSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -241,7 +254,8 @@ router.post(
  */
 router.post(
   '/track',
-  authGuard,
+  '/track',
+  checkDeliveryMarketingAddon,
   validate({ body: trackShipmentSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -305,7 +319,7 @@ router.post(
 
       // Verify webhook signature if provided
       // In production, verify webhook signature from courier service
-      
+
       // Process webhook data
       await deliveryService.processCourierWebhook(courier, webhookData);
 

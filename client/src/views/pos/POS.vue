@@ -3,7 +3,7 @@
   <div v-if="shiftRequired && (checkingShift || !hasActiveShift)" class="fixed inset-0 bg-gradient-to-br from-[#1a2332] via-[#15202e] to-[#0f151e] flex items-center justify-center z-[100]">
     <!-- Loading State -->
     <div v-if="checkingShift" class="text-center">
-      <div class="w-16 h-16 mx-auto mb-4 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+      <div class="w-16 h-16 mx-auto mb-4 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
       <p class="text-white/70 text-lg">Memeriksa status shift...</p>
     </div>
     
@@ -18,7 +18,7 @@
       <p class="text-gray-400 mb-8">Untuk mengakses POS, Anda harus membuka shift kasir terlebih dahulu.</p>
       <button
         @click="goToShiftPage"
-        class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02]"
+        class="w-full py-4 px-6 bg-gradient-to-r from-primary to-blue-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02]"
       >
         <span class="flex items-center justify-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,9 +47,9 @@
         <svg class="w-16 h-16 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Rotate Device</h2>
-        <p class="text-gray-600 mb-4">Simple POS Mode requires landscape orientation</p>
-        <p class="text-sm text-gray-500">Please rotate your device to landscape position</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Putar Perangkat</h2>
+        <p class="text-gray-600 mb-4">Mode POS Sederhana memerlukan orientasi lanskap</p>
+        <p class="text-sm text-gray-500">Silakan putar perangkat Anda ke posisi lanskap</p>
       </div>
     </div>
 
@@ -63,14 +63,14 @@
         <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <span class="text-sm font-semibold text-yellow-800">You are offline — transactions saved locally</span>
+        <span class="text-sm font-semibold text-yellow-800">Anda sedang offline — transaksi disimpan lokal</span>
       </div>
       <div
         v-else-if="isSyncing"
-        class="mb-2 p-3 bg-emerald-50 dark:bg-emerald-900/10 border-l-4 border-emerald-500 rounded-xl flex items-center gap-2"
+        class="mb-2 p-3 bg-emerald-50 dark:bg-emerald-900/10 border-l-4 border-primary rounded-xl flex items-center gap-2"
       >
-        <div class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Syncing Data... ({{ pendingSyncCount }} pending)</span>
+        <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-xs font-bold text-blue-700 dark:text-emerald-400 uppercase tracking-widest">Sinkronisasi Data... ({{ pendingSyncCount }} tertunda)</span>
       </div>
       <div
         v-else-if="pendingSyncCount > 0"
@@ -79,12 +79,12 @@
         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span class="text-sm font-semibold text-green-800">Sync complete! ({{ pendingSyncCount }} pending)</span>
+        <span class="text-sm font-semibold text-green-800">Sinkronisasi selesai! ({{ pendingSyncCount }} tertunda)</span>
       </div>
       
       <div class="bg-white rounded-xl shadow-md p-4 mb-4">
         <h1 class="text-3xl font-bold text-gray-900 text-center">SIMPLE POS</h1>
-        <p class="text-center text-gray-600 mt-1">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
+        <p class="text-center text-gray-600 mt-1">{{ new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}</p>
       </div>
 
       <div class="flex-1 grid grid-cols-3 gap-4 overflow-hidden">
@@ -98,7 +98,7 @@
               @click="selectedCategory = category"
               class="w-full py-6 px-4 text-lg font-bold rounded-xl transition-all"
               :class="selectedCategory === category 
-                ? 'bg-emerald-500 text-white shadow-lg scale-105' 
+                ? 'bg-primary text-white shadow-lg scale-105' 
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'"
             >
               {{ category === 'SEMUA' ? 'ALL' : (category || 'ALL') }}
@@ -110,10 +110,10 @@
         <div class="bg-white rounded-xl shadow-md p-4 overflow-y-auto">
           <h2 class="text-xl font-bold text-gray-900 mb-4 text-center">PRODUCTS</h2>
           <div v-if="loading" class="flex items-center justify-center py-12">
-            <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
           <div v-else-if="filteredProductsSimple.length === 0" class="text-center py-12 text-gray-500">
-            <p>No products found</p>
+            <p>Produk tidak ditemukan</p>
           </div>
           <div v-else class="grid grid-cols-2 gap-3">
             <button
@@ -126,12 +126,12 @@
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                 : isInCart(product.id)
                   ? 'bg-green-500 text-white shadow-lg'
-                  : 'bg-emerald-500 text-white hover:bg-emerald-500 shadow-md'"
+                  : 'bg-primary text-white hover:bg-primary shadow-md'"
             >
               <div class="text-3xl mb-2">{{ product.emoji || '📦' }}</div>
               <div class="text-sm font-semibold">{{ product.name }}</div>
               <div class="text-xs mt-1 opacity-90">{{ formatCurrency(product.price) }}</div>
-              <div v-if="product.stock <= 0" class="text-xs mt-1 text-red-200">OUT OF STOCK</div>
+              <div v-if="product.stock <= 0" class="text-xs mt-1 text-red-200">STOK HABIS</div>
             </button>
           </div>
         </div>
@@ -173,19 +173,19 @@
               </div>
             </div>
             <div v-if="cart.length === 0" class="text-center py-12 text-gray-400">
-              <p>Cart is empty</p>
+              <p>Keranjang kosong</p>
             </div>
           </div>
 
           <div class="border-t-2 border-gray-300 pt-4 mb-4">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xl font-bold text-gray-700">TOTAL:</span>
-              <span class="text-2xl font-bold text-emerald-500">{{ formatCurrency(total) }}</span>
+              <span class="text-2xl font-bold text-primary">{{ formatCurrency(total) }}</span>
             </div>
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Quick Discount</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Diskon Cepat</label>
             <div class="flex space-x-2">
               <input
                 v-model.number="quickDiscount"
@@ -206,7 +206,7 @@
 
           <!-- Cash Amount Input (only for CASH payment) -->
           <div v-if="showCashInput" class="mb-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Cash Amount</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Tunai</label>
             <input
               v-model.number="cashAmount"
               type="number"
@@ -221,7 +221,7 @@
                 <span class="font-bold">{{ formatCurrency(total) }}</span>
               </div>
               <div class="flex justify-between text-green-700 font-bold">
-                <span>Change:</span>
+                <span>Kembalian:</span>
                 <span>{{ formatCurrency(Math.max(0, cashAmount - total)) }}</span>
               </div>
             </div>
@@ -230,14 +230,14 @@
                 @click="showCashInput = false; cashAmount = 0"
                 class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium"
               >
-                Cancel
+                Batal
               </button>
               <button
                 @click="processPaymentSimple('CASH')"
                 :disabled="!cashAmount || cashAmount < total || processing"
                 class="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Pay
+                Bayar
               </button>
             </div>
           </div>
@@ -254,7 +254,7 @@
             <button
               @click="processPaymentSimple('QRIS')"
               :disabled="cart.length === 0 || processing || showCashInput"
-              class="w-full py-6 bg-emerald-500 text-white rounded-xl font-bold text-xl hover:bg-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full py-6 bg-primary text-white rounded-xl font-bold text-xl hover:bg-primary-hover transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               📱 QRIS
             </button>
@@ -280,15 +280,15 @@
         <!-- Burger Menu Button -->
         <button 
           @click="showNavSidebar = !showNavSidebar"
-          class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition-colors"
+          class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-primary flex items-center justify-center transition-colors"
           aria-label="Toggle navigation"
         >
           <span class="material-symbols-outlined">menu</span>
         </button>
-        <div class="flex items-center gap-2 text-emerald-600">
+        <div class="flex items-center gap-2 text-primary">
           <span class="material-symbols-outlined text-[28px]">point_of_sale</span>
           <h1 class="text-xl font-bold tracking-tight text-slate-900">Warungin POS 
-            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full ml-2">CASHIER</span>
+            <span class="text-xs font-semibold text-blue-700 bg-emerald-50 border border-blue-100 px-2 py-0.5 rounded-full ml-2">CASHIER</span>
           </h1>
         </div>
         <div class="h-6 w-px bg-slate-200 mx-2 hidden md:block"></div>
@@ -300,8 +300,8 @@
 
       <!-- Center: Status & Clock -->
       <div class="hidden lg:flex items-center gap-4">
-        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm" :class="isOnline ? 'bg-emerald-50 border border-emerald-100 text-emerald-700' : 'bg-red-50 border border-red-100 text-red-700'">
-          <span class="w-2 h-2 rounded-full animate-pulse" :class="isOnline ? 'bg-emerald-500' : 'bg-red-500'"></span>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm" :class="isOnline ? 'bg-green-50 border border-green-100 text-green-700' : 'bg-red-50 border border-red-100 text-red-700'">
+          <span class="w-2 h-2 rounded-full animate-pulse" :class="isOnline ? 'bg-green-500' : 'bg-red-500'"></span>
           {{ isOnline ? 'Online' : 'Offline' }}
         </div>
         <div class="text-slate-900 font-semibold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">{{ currentTime }}</div>
@@ -309,7 +309,7 @@
 
       <!-- Right: Actions -->
        <div class="flex items-center gap-3">
-          <!-- Held Orders Button -->
+          <!-- Pesanan Terparkir Button -->
           <button 
             v-if="heldOrders.length > 0"
             @click="showHeldOrdersModal = true"
@@ -319,8 +319,8 @@
              <span>{{ heldOrders.length }} Terparkir</span>
           </button>
 
-          <button class="flex items-center gap-2 text-slate-900 hover:text-emerald-600 transition-colors p-1 pr-2 rounded-full hover:bg-slate-50 border border-transparent hover:border-slate-200">
-            <div class="h-8 w-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm border border-slate-200 ring-2 ring-white shadow-sm">
+          <button class="flex items-center gap-2 text-slate-900 hover:text-primary transition-colors p-1 pr-2 rounded-full hover:bg-slate-50 border border-transparent hover:border-slate-200">
+            <div class="h-8 w-8 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-sm border border-slate-200 ring-2 ring-white shadow-sm">
               {{ authStore.user?.name?.[0]?.toUpperCase() || 'U' }}
             </div>
             <div class="text-sm text-left hidden lg:block">
@@ -352,7 +352,7 @@
           <!-- Sidebar Header -->
           <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
                 <span class="material-symbols-outlined text-white text-2xl">storefront</span>
               </div>
               <div>
@@ -374,7 +374,7 @@
             
             <router-link 
               to="/app/dashboard" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
             >
               <span class="material-symbols-outlined">dashboard</span>
@@ -383,17 +383,17 @@
             
             <router-link 
               to="/pos" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-primary mb-1"
               @click="showNavSidebar = false"
             >
               <span class="material-symbols-outlined">point_of_sale</span>
               <span class="font-medium">POS</span>
-              <span class="ml-auto text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full">Active</span>
+              <span class="ml-auto text-xs bg-primary text-white px-2 py-0.5 rounded-full">Active</span>
             </router-link>
             
             <router-link 
               to="/app/orders" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
               v-if="authStore.user?.role !== 'Cashier'"
             >
@@ -403,7 +403,7 @@
             
             <router-link 
               to="/app/products" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
               v-if="authStore.user?.role !== 'Cashier'"
             >
@@ -413,7 +413,7 @@
             
             <router-link 
               to="/app/customers" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
               v-if="authStore.user?.role !== 'Cashier'"
             >
@@ -423,7 +423,7 @@
             
             <router-link 
               to="/app/reports" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
               v-if="authStore.user?.role !== 'Cashier'"
             >
@@ -436,7 +436,7 @@
             
             <router-link 
               to="/app/cashier/cash-shift" 
-              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors mb-1"
+              class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-primary transition-colors mb-1"
               @click="showNavSidebar = false"
             >
               <span class="material-symbols-outlined">payments</span>
@@ -447,12 +447,12 @@
           <!-- User Section -->
           <div class="p-4 border-t border-slate-200 dark:border-slate-700">
             <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 font-bold">
+              <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-emerald-900/50 flex items-center justify-center text-primary font-bold">
                 {{ authStore.user?.name?.[0]?.toUpperCase() || 'U' }}
               </div>
               <div class="flex-1 min-w-0">
                 <p class="font-bold text-slate-900 dark:text-white truncate">{{ authStore.user?.name || 'User' }}</p>
-                <p class="text-xs text-emerald-600 font-bold uppercase">{{ authStore.user?.role || 'Staff' }}</p>
+                <p class="text-xs text-primary font-bold uppercase">{{ authStore.user?.role || 'Staff' }}</p>
               </div>
             </div>
             <button 
@@ -471,13 +471,13 @@
     <main class="flex-1 overflow-hidden flex flex-col lg:grid lg:grid-cols-[90px_1fr_420px] bg-slate-50">
        <!-- 1. Categories Sidebar -->
        <!-- 1. Categories Sidebar -->
-       <aside class="hidden lg:flex flex-col items-center py-6 nav-emerald-tint border-r border-emerald-100/60 gap-4 overflow-y-auto no-scrollbar z-20">
+       <aside class="hidden lg:flex flex-col items-center py-6 nav-emerald-tint border-r border-blue-100/60 gap-4 overflow-y-auto no-scrollbar z-20">
           <button 
             v-for="cat in categories" 
             :key="cat"
             @click="selectedCategory = cat === 'SEMUA' ? '' : cat"
-            class="group flex flex-col items-center gap-1 w-[70px] py-3 rounded-xl transition-all relative"
-            :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'category-active bg-white shadow-sm text-emerald-600' : 'hover:bg-white hover:shadow-sm hover:text-emerald-500 text-slate-400'"
+            class="group flex flex-col items-center gap-1 w-[70px] py-3 rounded-xl transition-all relative transform duration-200"
+            :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'category-active bg-white shadow-md shadow-emerald-500/10 text-primary scale-105' : 'hover:bg-white hover:shadow-sm hover:text-primary text-slate-400 hover:scale-105'"
           >
              <span class="material-symbols-outlined text-2xl relative z-10 transition-transform group-hover:scale-110">
                {{ getCategoryIcon(cat) }}
@@ -506,7 +506,7 @@
              :key="cat"
              @click="selectedCategory = cat === 'SEMUA' ? '' : cat"
              class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors"
-             :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'"
+             :class="(selectedCategory === cat || (cat === 'SEMUA' && !selectedCategory)) ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600'"
           >
              {{ cat === 'SEMUA' ? 'All' : cat }}
           </button>
@@ -523,7 +523,7 @@
                   type="text" 
                   aria-label="Search products"
                   placeholder="Search menu, sku or barcode..." 
-                  class="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none font-medium placeholder:text-slate-400"
+                  class="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-primary focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none font-medium placeholder:text-slate-400"
                 >
              </div>
           </div>
@@ -543,7 +543,7 @@
                   @keydown.space.prevent="addToCart(product)"
                   role="button"
                   tabindex="0"
-                  class="bg-white border border-slate-200 rounded-2xl overflow-hidden cursor-pointer product-card-hover group transition-all duration-200 shadow-sm relative focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+                  class="bg-white border border-slate-200 rounded-2xl overflow-hidden cursor-pointer product-card-hover group transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 relative focus:outline-none focus:ring-4 focus:ring-emerald-500/30 hover:-translate-y-1"
                 >
                    <!-- Image -->
                    <div class="relative aspect-square w-full overflow-hidden bg-slate-100">
@@ -558,14 +558,14 @@
                       </div>
                       
                       <!-- Category Badge -->
-                      <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-md text-xs font-bold text-slate-700 shadow-sm">
+                      <div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-700 shadow-sm border border-slate-100">
                         {{ product.category || 'Item' }}
                       </div>
                       
                       <!-- Add Overlay on Hover -->
-                      <div class="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                            <span class="material-symbols-outlined text-emerald-600 font-bold">add</span>
+                      <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 backdrop-blur-[1px]">
+                         <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300">
+                            <span class="material-symbols-outlined text-primary font-bold text-2xl">add</span>
                          </div>
                       </div>
                       
@@ -580,12 +580,12 @@
                       <h3 class="text-slate-800 font-bold text-base truncate mb-2">{{ product.name }}</h3>
                       <div class="flex justify-between items-end">
                          <p class="text-slate-400 text-xs font-medium">SKU: {{ product.sku || 'N/A' }}</p>
-                         <p class="text-emerald-600 font-bold text-lg leading-none">{{ formatCurrency(product.price) }}</p>
+                         <p class="text-primary font-bold text-lg leading-none">{{ formatCurrency(product.price) }}</p>
                       </div>
                    </div>
                    
                    <!-- In Cart Indicator -->
-                    <div v-if="isInCart(product.id)" class="absolute top-3 left-3 w-7 h-7 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/40 z-10 border-2 border-white animate-bounce-in">
+                    <div v-if="isInCart(product.id)" class="absolute top-3 left-3 w-7 h-7 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/40 z-10 border-2 border-white animate-bounce-in">
                        <span class="material-symbols-outlined text-[16px] font-black">check</span>
                     </div>
                 </div>
@@ -598,8 +598,8 @@
           <!-- Cart Header -->
           <div class="p-5 border-b border-slate-100 bg-white/60 sticky top-0 z-10 space-y-3">
              <div class="flex items-center justify-between mb-2">
-                <h2 class="text-lg font-extrabold text-slate-900">Current Order</h2>
-                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded">#{{ lastOrderReceipt?.orderNumber || 'NEW' }}</span>
+                <h2 class="text-lg font-extrabold text-slate-900">Pesanan Saat Ini</h2>
+                <span class="text-xs font-semibold text-blue-700 bg-emerald-50 border border-blue-100 px-2 py-1 rounded">#{{ lastOrderReceipt?.orderNumber || 'NEW' }}</span>
              </div>
              
              <!-- Customer Selector (Compact) -->
@@ -611,7 +611,7 @@
                  >
                     <div class="flex items-center gap-2">
                        <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-[20px]">person</span>
-                       <span class="font-medium truncate">{{ customerName || selectedMember?.name || 'Walk-in Customer' }}</span>
+                       <span class="font-medium truncate">{{ customerName || selectedMember?.name || 'Pelanggan Umum' }}</span>
                     </div>
                     <span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
                  </button>
@@ -624,19 +624,19 @@
              <!-- Customer Input Expansion (Simple implementation) -->
              <div v-if="showCustomerModal" class="absolute top-full left-0 right-0 p-4 bg-white shadow-xl border-b border-slate-200 z-20">
                 <div class="flex gap-2 mb-2">
-                   <button @click="switchCustomerType('customer')" :class="customerType === 'customer' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Customer</button>
-                   <button @click="switchCustomerType('member')" :class="customerType === 'member' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Member</button>
+                   <button @click="switchCustomerType('customer')" :class="customerType === 'customer' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Pelanggan</button>
+                   <button @click="switchCustomerType('member')" :class="customerType === 'member' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100'" class="flex-1 py-2 rounded-lg text-xs font-bold">Member</button>
                 </div>
                 <div v-if="customerType === 'customer'">
-                   <input v-model="customerInput" @blur="handleCustomerInput" placeholder="Name" class="w-full p-2 border rounded-lg text-sm mb-2" />
+                   <input v-model="customerInput" @blur="handleCustomerInput" placeholder="Nama" class="w-full p-2 border rounded-lg text-sm mb-2" />
                 </div>
                 <div v-else>
                    <select v-model="selectedMemberId" @change="handleMemberSelect" class="w-full p-2 border rounded-lg text-sm mb-2">
-                      <option value="">Select Member</option>
+                      <option value="">Pilih Member</option>
                       <option v-for="m in members" :key="m.id" :value="m.id">{{ m.name }}</option>
                    </select>
                 </div>
-                <button @click="showCustomerModal = false" class="w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-bold">Done</button>
+                <button @click="showCustomerModal = false" class="w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-bold">Selesai</button>
              </div>
           </div>
 
@@ -644,8 +644,8 @@
           <div class="flex-1 overflow-y-auto p-5 space-y-5">
              <div v-if="cart.length === 0" class="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
                  <span class="material-symbols-outlined text-6xl mb-2">shopping_bag</span>
-                 <p class="font-medium">Cart is empty</p>
-                 <p class="text-xs">Scan barcode or select item</p>
+                 <p class="font-medium">Keranjang kosong</p>
+                 <p class="text-xs">Pindai barcode atau pilih item</p>
              </div>
              <div 
                v-for="item in cart" 
@@ -676,7 +676,7 @@
                              <span class="material-symbols-outlined text-[16px]">remove</span>
                           </button>
                           <span class="text-slate-800 text-sm font-bold w-4 text-center">{{ item.quantity }}</span>
-                          <button @click="increaseQuantity(item.id)" class="text-primary hover:text-emerald-700 flex items-center justify-center w-6 h-full transition-colors">
+                          <button @click="increaseQuantity(item.id)" class="text-primary hover:text-blue-700 flex items-center justify-center w-6 h-full transition-colors">
                              <span class="material-symbols-outlined text-[16px]">add</span>
                           </button>
                       </div>
@@ -689,19 +689,19 @@
           <div class="px-5 py-3 grid grid-cols-4 gap-2 border-t border-slate-100 bg-slate-50/50 backdrop-blur-sm">
              <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm" @click="holdOrder">
                 <span class="material-symbols-outlined text-[20px]">pause_circle</span>
-                <span class="text-[10px] font-bold">Hold</span>
+                <span class="text-[10px] font-bold">Tahan</span>
              </button>
              <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[20px]">percent</span>
-                <span class="text-[10px] font-bold">Discount</span>
+                <span class="text-[10px] font-bold">Diskon</span>
              </button>
              <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-primary hover:bg-emerald-50 hover:text-primary text-slate-500 transition-all shadow-sm" @click="toggleSplitBill">
                 <span class="material-symbols-outlined text-[20px]">call_split</span>
-                <span class="text-[10px] font-bold">Split</span>
+                <span class="text-[10px] font-bold">Pisah</span>
              </button>
              <button class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 text-slate-500 hover:text-red-500 transition-all shadow-sm" @click="clearCart">
                 <span class="material-symbols-outlined text-[20px]">delete</span>
-                <span class="text-[10px] font-bold">Clear</span>
+                <span class="text-[10px] font-bold">Hapus</span>
              </button>
           </div>
           
@@ -715,8 +715,8 @@
                    <span>Tax (10%)</span>
                    <span class="text-slate-800">{{ formatCurrency(tax || 0) }}</span>
                 </div>
-                <div class="flex justify-between text-sm text-emerald-600 font-medium" v-if="discount > 0">
-                   <span>Discount</span>
+                <div class="flex justify-between text-sm text-primary font-medium" v-if="discount > 0">
+                   <span>Diskon</span>
                    <span>-{{ formatCurrency(discount) }}</span>
                 </div>
                 <div class="h-px w-full bg-slate-100 my-2"></div>
@@ -736,14 +736,14 @@
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                    <input type="checkbox" v-model="sendToKitchen" class="sr-only peer">
-                   <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+                   <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
                 </label>
              </div>
 
              <button 
                @click="showPaymentModal = true" 
                :disabled="cart.length === 0"
-               class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transform active:scale-[0.98] transition-all flex justify-between items-center px-6 ring-4 ring-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
+               class="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary-hover hover:to-blue-500 text-white font-bold text-lg py-4 rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transform active:scale-[0.98] transition-all flex justify-between items-center px-6 ring-4 ring-emerald-50 disabled:opacity-50 disabled:cursor-not-allowed"
              >
                 <span>BAYAR</span>
                 <span class="bg-black/10 px-3 py-1 rounded-lg text-base font-bold">{{ formatCurrency(total) }}</span>
@@ -754,26 +754,26 @@
 
     <!-- Success Overlay (New) -->
      <div v-if="showSuccessOverlay" class="absolute inset-0 z-50 bg-white/50 backdrop-blur-md flex items-center justify-center">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border-2 border-emerald-100 transform scale-100 animate-bounce-in">
-           <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-              <span class="material-symbols-outlined text-5xl text-emerald-500 animate-pulse">check_circle</span>
-              <div class="absolute inset-0 rounded-full border-4 border-emerald-200 animate-ping opacity-20"></div>
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border-2 border-green-100 transform scale-100 animate-bounce-in">
+           <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+              <span class="material-symbols-outlined text-5xl text-green-500 animate-pulse">check_circle</span>
+              <div class="absolute inset-0 rounded-full border-4 border-green-200 animate-ping opacity-20"></div>
            </div>
            
-           <h2 class="text-2xl font-black text-slate-800 mb-2">Payment Successful!</h2>
-           <p class="text-slate-500 mb-8 font-medium">Transaction #{{ lastOrderReceipt?.orderNumber }} has been completed</p>
+           <h2 class="text-2xl font-black text-slate-800 mb-2">Pembayaran Berhasil!</h2>
+           <p class="text-slate-500 mb-8 font-medium">Transaction #{{ lastOrderReceipt?.orderNumber }} telah selesai</p>
            
            <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-              <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Change Due</p>
+              <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Kembalian</p>
               <p class="text-4xl font-black text-slate-900">{{ formatCurrency(lastOrderReceipt?.change || 0) }}</p>
            </div>
            
            <div class="space-y-3">
               <button @click="printReceiptAndClose" class="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20">
-                 <span class="material-symbols-outlined">print</span> Print Receipt
+                 <span class="material-symbols-outlined">print</span> Cetak Struk
               </button>
               <button @click="closeSuccessOverlay" class="w-full py-3.5 bg-white text-slate-600 border-2 border-slate-100 rounded-xl font-bold hover:bg-slate-50 transition">
-                 New Order
+                 Pesanan Baru
               </button>
            </div>
         </div>
@@ -809,7 +809,7 @@
             <div class="p-2 bg-red-50 rounded-xl">
                <span class="material-symbols-outlined text-red-600">warning</span>
             </div>
-            <h3 class="text-xl font-bold text-[#0d141b]">Low Stock Alert</h3>
+            <h3 class="text-xl font-bold text-[#0d141b]">Peringatan Stok Rendah</h3>
           </div>
           <button
             @click="dismissLowStockModal"
@@ -821,7 +821,7 @@
         
         <div class="mb-6">
           <p class="text-[#4c739a] mb-4">
-            There are <span class="font-bold text-red-600">{{ criticalStockProducts.length }}</span> products that need immediate attention:
+            Ada <span class="font-bold text-red-600">{{ criticalStockProducts.length }}</span> produk yang perlu perhatian segera:
           </p>
           <div class="max-h-64 overflow-y-auto space-y-3 pr-1">
             <div
@@ -840,10 +840,10 @@
                 </div>
               </div>
               <button
-                @click="goToRestock(product.id)"
+                @click="goToIsiUlang(product.id)"
                 class="px-3 py-1.5 bg-white border border-slate-100 dark:border-slate-700 text-[#0d141b] rounded-xl text-sm font-semibold hover:border-primary hover:text-primary transition-colors shadow-sm"
               >
-                Restock
+                Isi Ulang
               </button>
             </div>
           </div>
@@ -854,23 +854,23 @@
             @click="dismissLowStockModal"
             class="flex-1 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-semibold"
           >
-            Dismiss
+            Tutup
           </button>
           <button
             @click="goToStockAlerts"
-            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-primary/20 font-semibold"
+            class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 font-semibold"
           >
-            View All Alerts
+            Lihat Semua Peringatan
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Held Orders Modal -->
+    <!-- Pesanan Terparkir Modal -->
     <div v-if="showHeldOrdersModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-slide-up">
             <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Held Orders</h3>
+                <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Pesanan Terparkir</h3>
                 <button @click="showHeldOrdersModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors">
                     <span class="material-symbols-outlined text-slate-500">close</span>
                 </button>
@@ -878,7 +878,7 @@
             <div class="p-6 max-h-[60vh] overflow-y-auto space-y-4">
                 <div v-if="heldOrders.length === 0" class="text-center py-8 text-slate-500">
                     <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
-                    <p>No held orders found.</p>
+                    <p>Tidak ada pesanan terparkir.</p>
                 </div>
                 <div v-for="order in heldOrders" :key="order.id" class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
                     <div>
@@ -890,26 +890,26 @@
                         <button @click="deleteHeldOrder(order)" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete">
                             <span class="material-symbols-outlined">delete</span>
                         </button>
-                        <button @click="restoreHeldOrder(order)" class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-emerald-600 transition-colors shadow-lg shadow-primary/20">
-                            Resume
+                        <button @click="restoreHeldOrder(order)" class="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20">
+                            Lanjutkan
                         </button>
                     </div>
                 </div>
             </div>
             <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-end">
                 <button @click="showHeldOrdersModal = false" class="px-6 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-white hover:shadow-sm border border-transparent hover:border-slate-200 transition-all">
-                    Close
+                    Tutup
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Split Bill Modal -->
+    <!-- Pisah Tagihan Modal -->
     <div v-if="showSplitBillModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fade-in">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                 <div>
-                    <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Split Bill</h3>
+                    <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">Pisah Tagihan</h3>
                     <p class="text-xs text-slate-500 mt-1">Distribusi item untuk pembayaran terpisah</p>
                 </div>
                 <div class="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
@@ -924,7 +924,7 @@
                     <div v-for="(scat, idx) in splitCarts" :key="idx" class="flex-1 flex flex-col border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/30">
                         <div class="p-4 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
                             <span class="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest">BILL {{ String.fromCharCode(65 + idx) }}</span>
-                            <span class="text-xs font-bold text-emerald-600">{{ formatCurrency(scat.reduce((sum, i) => sum + i.price * i.quantity, 0)) }}</span>
+                            <span class="text-xs font-bold text-primary">{{ formatCurrency(scat.reduce((sum, i) => sum + i.price * i.quantity, 0)) }}</span>
                         </div>
                         <div class="flex-1 overflow-y-auto p-4 space-y-2">
                              <div v-for="(item, iidx) in scat" :key="item.id + iidx" class="p-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between group">
@@ -932,7 +932,7 @@
                                     <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ item.name }}</p>
                                     <p class="text-[10px] text-slate-500">{{ item.quantity }} x {{ formatCurrency(item.price) }}</p>
                                 </div>
-                                <button @click="moveItemToSplit(iidx, idx, idx === 0 ? 1 : 0)" class="p-2 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors">
+                                <button @click="moveItemToSplit(iidx, idx, idx === 0 ? 1 : 0)" class="p-2 text-primary hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors">
                                     <span class="material-symbols-outlined text-lg">{{ idx === 0 ? 'arrow_forward' : 'arrow_back' }}</span>
                                 </button>
                              </div>
@@ -942,7 +942,7 @@
 
                 <!-- Mode Equal: Simple Input -->
                 <div v-else class="flex-1 flex flex-col items-center justify-center p-12 text-center">
-                    <div class="size-20 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-6">
+                    <div class="size-20 rounded-full bg-blue-100 flex items-center justify-center text-primary mb-6">
                         <span class="material-symbols-outlined text-4xl">payments</span>
                     </div>
                     <h4 class="text-lg font-bold mb-2">Split Sama Rata</h4>
@@ -957,9 +957,9 @@
                         <button @click="splitParts++" class="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-slate-600">+</button>
                     </div>
                     
-                    <div class="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-700/30 w-full max-w-xs">
-                        <p class="text-xs text-emerald-600 font-bold mb-1">Per Bagian</p>
-                        <p class="text-xl font-black text-emerald-700 dark:text-emerald-400">{{ formatCurrency(total / splitParts) }}</p>
+                    <div class="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-blue-100 dark:border-emerald-700/30 w-full max-w-xs">
+                        <p class="text-xs text-primary font-bold mb-1">Per Bagian</p>
+                        <p class="text-xl font-black text-blue-700 dark:text-emerald-400">{{ formatCurrency(total / splitParts) }}</p>
                     </div>
                 </div>
             </div>
@@ -968,7 +968,7 @@
                 <button @click="showSplitBillModal = false" class="px-6 py-2.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-colors">
                     Batalkan
                 </button>
-                <button @click="confirmSplitBill" class="px-8 py-2.5 bg-emerald-500 text-white rounded-xl font-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all">
+                <button @click="confirmSplitBill" class="px-8 py-2.5 bg-primary text-white rounded-xl font-black shadow-lg shadow-emerald-500/30 hover:bg-primary-hover transition-all">
                     Konfirmasi Split
                 </button>
             </div>
@@ -1424,7 +1424,7 @@ const dismissLowStockModal = () => {
   localStorage.setItem(`lowStockDismissed_${new Date().toDateString()}`, 'true');
 };
 
-const goToRestock = (productId: string) => {
+const goToIsiUlang = (productId: string) => {
   dismissLowStockModal();
   window.location.href = `/app/products?highlight=${productId}`;
 };
@@ -2084,7 +2084,7 @@ const printReceiptAndClose = async () => {
     // ReceiptPrinter usually has a print button.
     // If we want to auto print or print on demand, we need access to its print function.
     // Let's assume for now we just show the old modal if they want to print?
-    // The user design "Print Receipt" button implies immediate print.
+    // The user design "Cetak Struk" button implies immediate print.
     // I'll check ReceiptPrinter.vue later. For now, let's just make it visible.
     showReceiptModal.value = true;
     showSuccessOverlay.value = false;
@@ -2331,7 +2331,7 @@ onMounted(async () => {
   // Clock Logic
   const updateClock = () => {
     const now = new Date();
-    currentTime.value = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    currentTime.value = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   };
   updateClock();
   clockInterval = setInterval(updateClock, 1000);

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 animate-fade-in font-display">
     <!-- Tenant Selector for Super Admin -->
     <TenantSelector @tenant-changed="handleTenantChange" />
     
@@ -11,83 +11,103 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Reports</h1>
-        <p class="text-[#4c739a] dark:text-slate-400">Sales analysis and store performance.</p>
+        <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Laporan</h1>
+        <p class="text-slate-500 dark:text-slate-400 font-medium">Analisis penjualan dan performa toko Anda.</p>
       </div>
       <button
         v-if="canExportReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
-        <span>Export Report</span>
+        <span>Ekspor Laporan</span>
       </button>
     </div>
 
     <!-- Report Type & Period Filter -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Report Type</label>
-          <select
-            v-model="reportType"
-            @change="handleReportTypeChange"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-          >
-            <option value="sales">Sales Report</option>
-            <option value="financial">Financial Report</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Laporan</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">description</span>
+            <select
+                v-model="reportType"
+                @change="handleReportTypeChange"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+            >
+                <option value="sales">Laporan Penjualan</option>
+                <option value="financial">Laporan Keuangan</option>
+            </select>
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
+        
         <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">View Type</label>
-          <select
-            v-model="reportViewType"
-            @change="handleReportViewTypeChange"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-          >
-            <option value="full">Full (Revenue + Cost)</option>
-            <option value="revenue">Revenue Only</option>
-            <option value="profit">Profit Only</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tampilan Data</label>
+          <div class="relative">
+             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">view_column</span>
+            <select
+                v-model="reportViewType"
+                @change="handleReportViewTypeChange"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+            >
+                <option value="full">Lengkap (Pendapatan + Modal)</option>
+                <option value="revenue">Hanya Pendapatan</option>
+                <option value="profit">Hanya Keuntungan</option>
+            </select>
+             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
+
         <div v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Margin Format</label>
-          <select
-            v-model="marginDisplayFormat"
-            @change="saveMarginFormat"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-          >
-            <option value="percentage">Percentage (%)</option>
-            <option value="amount">Amount</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Format Margin</label>
+           <div class="relative">
+             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">percent</span>
+            <select
+                v-model="marginDisplayFormat"
+                @change="saveMarginFormat"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+            >
+                <option value="percentage">Persentase (%)</option>
+                <option value="amount">Nominal (Rp)</option>
+            </select>
+             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
+
         <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Period</label>
-          <select
-            v-model="period"
-            @change="setPeriod(period)"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="all">All Time</option>
-          </select>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Periode</label>
+           <div class="relative">
+             <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">calendar_month</span>
+            <select
+                v-model="period"
+                @change="setPeriod(period)"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+            >
+                <option value="daily">Harian</option>
+                <option value="weekly">Mingguan</option>
+                <option value="monthly">Bulanan</option>
+                <option value="all">Semua Waktu</option>
+            </select>
+             <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+          </div>
         </div>
+
         <div v-if="period !== 'all'">
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Range</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rentang Tanggal</label>
           <div class="flex gap-2">
             <input
               v-model="dateRange.from"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
             />
             <input
               v-model="dateRange.to"
               type="date"
               @change="handleDateRangeChange"
-              class="flex-1 px-3 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
             />
           </div>
         </div>
@@ -95,99 +115,127 @@
     </div>
 
     <!-- Analytics Section -->
-    <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
-      <div class="flex items-center justify-between mb-4">
+    <div v-if="analyticsData && !loading" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+      <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <span class="material-symbols-outlined text-emerald-600">insights</span>
-          Analytics
+          Analitik Cerdas
         </h3>
         <button
           @click="loadAnalytics"
-          class="text-sm text-emerald-600 hover:text-emerald-700 transition flex items-center gap-1"
+          class="text-sm text-emerald-600 hover:text-emerald-700 font-bold transition flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800"
         >
           <span class="material-symbols-outlined text-[18px]">refresh</span>
-          Refresh
+          Segarkan
         </button>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-          <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Next Month Prediction</p>
-          <p class="text-2xl font-bold text-blue-900 dark:text-blue-200">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="relative overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg shadow-blue-500/20 group hover:-translate-y-1 transition-transform cursor-default">
+           <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+          <p class="text-xs font-bold text-blue-100 uppercase tracking-wider mb-2 relative z-10">Prediksi Bulan Depan</p>
+          <p class="text-3xl font-black text-white relative z-10 tracking-tight">
             {{ formatCurrency(analyticsData.predictions?.nextMonth || 0) }}
           </p>
+          <p class="text-xs text-blue-100 mt-2 flex items-center gap-1 relative z-10">
+             <span class="material-symbols-outlined text-[16px]">auto_graph</span>
+             Berdasarkan tren historis
+          </p>
         </div>
-        <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
-          <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Sales Trend</p>
+
+        <div class="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm group hover:-translate-y-1 transition-transform cursor-default">
+          <div class="flex items-center gap-3 mb-2">
+              <div class="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                  <span class="material-symbols-outlined">trending_up</span>
+              </div>
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tren Penjualan</p>
+          </div>
           <p 
-            class="text-2xl font-bold"
-            :class="(analyticsData.predictions?.trend || 0) >= 0 ? 'text-green-700' : 'text-red-700'"
+            class="text-3xl font-black tracking-tight"
+            :class="(analyticsData.predictions?.trend || 0) >= 0 ? 'text-emerald-600' : 'text-red-500'"
           >
             {{ (analyticsData.predictions?.trend || 0) >= 0 ? '+' : '' }}{{ (analyticsData.predictions?.trend || 0).toFixed(2) }}%
           </p>
+            <p class="text-xs text-slate-400 mt-2 font-medium">Dibandingkan periode sebelumnya</p>
         </div>
-        <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
-          <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1">Prediction Accuracy</p>
-          <p class="text-2xl font-bold text-purple-900 dark:text-purple-200">
+
+        <div class="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm group hover:-translate-y-1 transition-transform cursor-default">
+             <div class="flex items-center gap-3 mb-2">
+              <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                  <span class="material-symbols-outlined">verified</span>
+              </div>
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Akurasi Prediksi</p>
+          </div>
+          <p class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             {{ analyticsData.predictions?.accuracy || 0 }}%
           </p>
+          <p class="text-xs text-slate-400 mt-2 font-medium">Tingkat kepercayaan model</p>
         </div>
       </div>
       
-      <div v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0" class="mt-6">
-        <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-600 text-[18px]">trending_up</span>
-          Top Products
+      <div v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0" class="mt-8">
+        <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-wide">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Produk Terlaris
         </h4>
-        <div class="space-y-2">
+        <div class="space-y-3">
           <div
             v-for="(product, index) in analyticsData.topProducts.slice(0, 5)"
             :key="product.id"
-            class="flex items-center justify-between p-3 bg-[#f8fafc] dark:bg-slate-900 rounded-xl"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors group"
           >
-            <div class="flex items-center gap-3">
-              <span class="w-6 h-6 flex items-center justify-center text-xs font-bold bg-emerald-50 text-emerald-600 rounded">#{{ index + 1 }}</span>
-              <span class="text-sm font-medium text-slate-900 dark:text-white">{{ product.name }}</span>
+            <div class="flex items-center gap-4">
+              <span 
+                class="w-8 h-8 flex items-center justify-center text-sm font-bold rounded-lg transition-colors group-hover:scale-110"
+                :class="index < 3 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
+              >
+                #{{ index + 1 }}
+              </span>
+              <span class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{{ product.name }}</span>
             </div>
-            <span class="text-sm font-bold text-emerald-600">{{ product.sales || 0 }} sold</span>
+            <span class="text-sm font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-800 px-3 py-1 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">{{ product.sales || 0 }} terjual</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-16">
+    <div v-if="loading" class="flex items-center justify-center py-20">
       <div class="flex flex-col items-center gap-4">
-        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-slate-500 font-medium">Loading report...</p>
+         <div class="relative w-16 h-16">
+            <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        <p class="text-slate-500 font-medium animate-pulse">Memuat laporan...</p>
       </div>
     </div>
 
     <!-- Report Content -->
-    <div v-else-if="reportData" class="space-y-6">
+    <div v-else-if="reportData" class="space-y-8 animate-fade-in-up">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
           v-for="(stat, index) in summaryStats"
           :key="index"
-          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6"
+          class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-all group"
         >
-          <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center justify-between mb-3">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">{{ stat.label }}</p>
-            <span class="text-2xl">{{ stat.icon || '📊' }}</span>
+            <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 text-2xl group-hover:scale-110 transition-transform duration-300">
+               {{ stat.icon }}
+            </div>
           </div>
-          <p :class="['text-3xl font-bold', stat.color || 'text-slate-900 dark:text-white']">{{ stat.value }}</p>
+          <p :class="['text-3xl font-black tracking-tight', stat.color || 'text-slate-900 dark:text-white']">{{ stat.value }}</p>
         </div>
       </div>
 
       <!-- Report Details Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Report Details</h3>
-              <p class="text-sm text-slate-500 mt-1">
-                Period: {{ getPeriodLabel(period) }} 
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Detail Laporan</h3>
+              <p class="text-sm text-slate-500 mt-1 font-medium">
+                Periode: {{ getPeriodLabel(period) }} 
                 <span v-if="period !== 'all'">
                   ({{ formatDate(dateRange.from) }} - {{ formatDate(dateRange.to) }})
                 </span>
@@ -196,21 +244,20 @@
             <button
               v-if="reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN')"
               @click="showProductDetails = !showProductDetails"
-              class="flex items-center gap-2 px-4 py-2 text-sm bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium"
+              class="flex items-center gap-2 px-4 py-2 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-600 transition font-bold shadow-sm"
             >
               <span class="material-symbols-outlined text-[18px]">{{ showProductDetails ? 'visibility_off' : 'visibility' }}</span>
-              {{ showProductDetails ? 'Hide' : 'Show' }} Product Details
+              {{ showProductDetails ? 'Sembunyikan Detail Produk' : 'Tampilkan Detail Produk' }}
             </button>
-          </div>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scrollbar">
           <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
             <thead>
-              <tr class="bg-[#f8fafc] dark:bg-slate-900/50">
+              <tr class="bg-slate-50 dark:bg-slate-900/50">
                 <th
                   v-for="header in reportHeaders"
                   :key="header"
-                  class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider"
+                  class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                 >
                   {{ header }}
                 </th>
@@ -222,7 +269,7 @@
                   <td
                     v-for="(cell, cellIndex) in row"
                     :key="cellIndex"
-                    class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white"
+                    class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300"
                   >
                     {{ cell }}
                   </td>
@@ -230,24 +277,24 @@
                 <!-- Shift Info Row -->
                 <tr
                   v-if="reportType === 'sales' && byDate[index]?.orders && byDate[index].orders.length > 0 && byDate[index].orders[0]?.storeShift"
-                  class="bg-blue-50 dark:bg-blue-900/20"
+                  class="bg-blue-50/50 dark:bg-blue-900/10 border-b border-blue-100 dark:border-blue-900/30"
                 >
                   <td :colspan="reportHeaders.length" class="px-6 py-3">
-                    <div class="flex flex-wrap items-center gap-4 text-sm">
+                    <div class="flex flex-wrap items-center gap-6 text-sm">
                       <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-blue-600 text-[18px]">schedule</span>
-                        <span class="text-slate-600">Shift:</span>
-                        <span class="font-semibold text-slate-900 dark:text-white capitalize">{{ byDate[index].orders[0].storeShift.shiftType || 'N/A' }}</span>
+                        <span class="text-slate-500 font-medium">Shift:</span>
+                        <span class="font-bold text-slate-900 dark:text-white capitalize badge bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{{ byDate[index].orders[0].storeShift.shiftType || 'N/A' }}</span>
                       </div>
                       <div v-if="byDate[index].orders[0].storeShift.opener" class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-blue-600 text-[18px]">person</span>
-                        <span class="text-slate-600">Opened by:</span>
-                        <span class="font-semibold text-slate-900 dark:text-white">{{ byDate[index].orders[0].storeShift.opener.name || 'N/A' }}</span>
+                        <span class="text-slate-500 font-medium">Dibuka oleh:</span>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ byDate[index].orders[0].storeShift.opener.name || 'N/A' }}</span>
                       </div>
                       <div v-if="byDate[index].orders[0].storeShift.openedAt" class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-blue-600 text-[18px]">calendar_today</span>
-                        <span class="text-slate-600">Opened:</span>
-                        <span class="font-semibold text-slate-900 dark:text-white">{{ formatDateTime(byDate[index].orders[0].storeShift.openedAt) }}</span>
+                        <span class="text-slate-500 font-medium">Waktu Buka:</span>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ formatDateTime(byDate[index].orders[0].storeShift.openedAt) }}</span>
                       </div>
                     </div>
                   </td>
@@ -255,41 +302,41 @@
                 <!-- Product Details Row -->
                 <tr
                   v-if="showProductDetails && reportType === 'sales' && (authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN') && productDetails[index]"
-                  class="bg-slate-50 dark:bg-slate-900/50"
+                  class="bg-slate-50/80 dark:bg-slate-900/80 animate-fade-in"
                 >
-                  <td :colspan="reportHeaders.length" class="px-6 py-4">
-                    <div class="space-y-3">
-                      <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">inventory_2</span>
-                        Product Details:
+                  <td :colspan="reportHeaders.length" class="px-6 py-6 ring-1 ring-inset ring-slate-100 dark:ring-slate-700">
+                    <div class="space-y-4">
+                      <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-emerald-500 text-[18px]">inventory_2</span>
+                        Detail Produk Terjual:
                       </h4>
-                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         <div
                           v-for="product in productDetails[index]"
                           :key="product.id"
-                          class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 cursor-pointer transition"
+                          class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all transform hover:-translate-y-1"
                           @click="showProductDetailModal(product)"
                         >
-                          <div class="flex justify-between items-start mb-2">
-                            <span class="text-sm font-bold text-slate-900 dark:text-white">{{ product.name }}</span>
-                            <span class="text-xs font-bold bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">x{{ product.quantity }}</span>
+                          <div class="flex justify-between items-start mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
+                            <span class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1" :title="product.name">{{ product.name }}</span>
+                            <span class="text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg">x{{ product.quantity }}</span>
                           </div>
-                          <div class="space-y-1 text-xs">
+                          <div class="space-y-1.5 text-xs font-medium">
                             <div class="flex justify-between">
-                              <span class="text-slate-500">Selling Price:</span>
-                              <span class="font-medium text-slate-900 dark:text-white">{{ formatCurrency(product.sellingPrice) }}</span>
+                              <span class="text-slate-500">Harga Jual:</span>
+                              <span class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(product.sellingPrice) }}</span>
                             </div>
                             <div v-if="product.cost && product.cost > 0" class="flex justify-between">
-                              <span class="text-slate-500">Cost:</span>
-                              <span class="font-medium text-red-600">{{ formatCurrency(product.cost) }}</span>
+                              <span class="text-slate-500">Modal:</span>
+                              <span class="font-bold text-red-500">{{ formatCurrency(product.cost) }}</span>
                             </div>
                             <div v-if="product.cost && product.cost > 0" class="flex justify-between">
-                              <span class="text-slate-500">Profit:</span>
-                              <span class="font-medium text-green-600">{{ formatCurrency(product.profit) }}</span>
+                              <span class="text-slate-500">Untung:</span>
+                              <span class="font-bold text-emerald-600">{{ formatCurrency(product.profit) }}</span>
                             </div>
-                            <div v-if="product.cost && product.cost > 0" class="flex justify-between pt-1 border-t border-slate-200 dark:border-slate-700">
+                            <div v-if="product.cost && product.cost > 0" class="flex justify-between pt-2 mt-1 border-t border-slate-100 dark:border-slate-700/50">
                               <span class="text-slate-500">Margin:</span>
-                              <span class="font-bold text-green-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
+                              <span class="font-black text-emerald-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
                             </div>
                           </div>
                         </div>
@@ -306,81 +353,107 @@
       <!-- Product Detail Modal -->
       <div
         v-if="selectedProductDetail"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in"
         @click.self="selectedProductDetail = null"
       >
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ selectedProductDetail.name }}</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-scale-in border border-white/20">
+          <div class="flex justify-between items-start mb-6">
+             <div class="flex items-center gap-3">
+                 <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-xl">
+                    <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+                  </div>
+                <div>
+                   <h3 class="text-lg font-black text-slate-900 dark:text-white leading-tight">{{ selectedProductDetail.name }}</h3>
+                   <span class="text-xs text-slate-500 font-medium">Detail Transaksi Produk</span>
+                </div>
+            </div>
             <button
               @click="selectedProductDetail = null"
-              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition"
+              class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition text-slate-400 hover:text-slate-600"
             >
-              <span class="material-symbols-outlined text-slate-500">close</span>
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
+          
           <div class="space-y-4">
-            <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Quantity Sold</p>
-              <p class="text-xl font-bold text-slate-900 dark:text-white">{{ selectedProductDetail.quantity }} units</p>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jumlah Terjual</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ selectedProductDetail.quantity }} unit</p>
+              </div>
+              <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Harga Satuan</p>
+                 <p class="text-xl font-black text-emerald-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
+              </div>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price per Unit</p>
-              <p class="text-xl font-bold text-emerald-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
+
+            <div class="p-5 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Pendapatan</p>
+              <p class="text-3xl font-black text-slate-900 dark:text-white">{{ formatCurrency(selectedProductDetail.sellingPrice) }}</p>
             </div>
-            <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
-              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Revenue</p>
-              <p class="text-xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(selectedProductDetail.sellingPrice) }}</p>
-            </div>
+
             <div
               v-if="selectedProductDetail.cost && selectedProductDetail.cost > 0"
-              class="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-4"
+              class="border-t-2 border-dashed border-slate-200 dark:border-slate-700 pt-4 space-y-3"
             >
-              <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Cost per Unit</p>
-                <p class="text-xl font-bold text-red-600">{{ formatCurrency(selectedProductDetail.cost / selectedProductDetail.quantity) }}</p>
+              <div class="grid grid-cols-2 gap-3">
+                  <div class="p-3 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                    <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Total Modal</p>
+                    <p class="text-lg font-bold text-red-600">{{ formatCurrency(selectedProductDetail.cost) }}</p>
+                  </div>
+                  <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                    <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Total Untung</p>
+                    <p class="text-lg font-bold text-emerald-600">{{ formatCurrency(selectedProductDetail.profit) }}</p>
+                  </div>
               </div>
-              <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Total Cost</p>
-                <p class="text-xl font-bold text-red-600">{{ formatCurrency(selectedProductDetail.cost) }}</p>
-              </div>
-              <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Total Profit</p>
-                <p class="text-2xl font-bold text-green-600">{{ formatCurrency(selectedProductDetail.profit) }}</p>
-              </div>
-              <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Margin</p>
-                <p class="text-2xl font-bold text-green-600">
+              
+              <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-between">
+                <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">Margin Keuntungan</span>
+                <span class="text-2xl font-black text-emerald-600">
                   {{ formatProductMargin(
                     selectedProductDetail.sellingPrice,
                     selectedProductDetail.cost,
                     selectedProductDetail.profit
                   ) }}
-                </p>
+                </span>
               </div>
             </div>
+            
             <div
               v-else
               class="border-t border-slate-200 dark:border-slate-700 pt-4"
             >
-              <p class="text-sm text-slate-500 italic text-center">No cost data available for this product</p>
+              <div class="flex flex-col items-center justify-center p-4 text-center bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                 <span class="material-symbols-outlined text-slate-300 mb-1">money_off</span>
+                 <p class="text-xs text-slate-500 italic">Data modal tidak tersedia untuk produk ini</p>
+              </div>
             </div>
+            
+             <button
+              @click="selectedProductDetail = null"
+              class="w-full py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white rounded-xl font-bold transition-colors text-sm"
+            >
+              Tutup
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Loading Reports Permission Check -->
-    <div v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
-      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">bar_chart</span>
-      <p class="text-slate-500 font-medium">Loading reports...</p>
+    <div v-else-if="canViewReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="flex flex-col items-center justify-center py-20 bg-white/50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4 animate-bounce">bar_chart</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white">Menyiapkan Laporan</h3>
+      <p class="text-slate-500 font-medium mt-1">Silakan pilih parameter laporan di atas...</p>
     </div>
 
     <!-- Access Denied -->
-    <div v-else class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
-      <span class="material-symbols-outlined text-[64px] text-slate-300 mb-4">lock</span>
-      <p class="text-slate-900 dark:text-white font-bold">Access Denied</p>
-      <p class="text-slate-500 text-sm mt-2">You don't have permission to view reports</p>
+    <div v-else class="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
+        <span class="material-symbols-outlined text-[48px] text-red-500">lock</span>
+      </div>
+      <p class="text-xl font-black text-slate-900 dark:text-white">Akses Ditolak</p>
+      <p class="text-slate-500 text-sm mt-2 font-medium">Anda tidak memiliki izin untuk melihat laporan ini.</p>
     </div>
 
     <!-- Export Modal -->
@@ -493,17 +566,17 @@ const summaryStats = computed(() => {
   switch (reportType.value) {
     case 'sales':
       return [
-        { label: 'Total Revenue', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-emerald-600' },
-        { label: 'Total Orders', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
-        { label: 'Avg per Order', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
-        { label: 'Total Items Sold', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
+        { label: 'Total Pendapatan', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-emerald-600' },
+        { label: 'Total Pesanan', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
+        { label: 'Rata-rata / Pesanan', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
+        { label: 'Item Terjual', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
       ];
     case 'financial':
       return [
-        { label: 'Revenue', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-emerald-600' },
-        { label: 'Cost of Goods', value: formatCurrency(reportData.value.costOfGoods || 0), icon: '💸', color: 'text-red-600' },
-        { label: 'Gross Profit', value: formatCurrency(reportData.value.grossProfit || 0), icon: '📈', color: 'text-blue-600' },
-        { label: 'Profit Margin', value: `${reportData.value.profitMargin?.toFixed(2) || 0}%`, icon: '📊', color: 'text-purple-600' },
+        { label: 'Pendapatan', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-emerald-600' },
+        { label: 'Total Modal', value: formatCurrency(reportData.value.costOfGoods || 0), icon: '💸', color: 'text-red-600' },
+        { label: 'Keuntungan Kotor', value: formatCurrency(reportData.value.grossProfit || 0), icon: '📈', color: 'text-blue-600' },
+        { label: 'Margin Keuntungan', value: `${reportData.value.profitMargin?.toFixed(2) || 0}%`, icon: '📊', color: 'text-purple-600' },
       ];
     default:
       return [];
@@ -513,9 +586,9 @@ const summaryStats = computed(() => {
 const reportHeaders = computed(() => {
   switch (reportType.value) {
     case 'sales':
-      return ['Date', 'Total Revenue', 'Transactions', 'Avg per Transaction'];
+      return ['Tanggal', 'Total Pendapatan', 'Transaksi', 'Rata-rata Transaksi'];
     case 'financial':
-      return ['Date', 'Revenue', 'Cost of Goods', 'Gross Profit', 'Profit Margin'];
+      return ['Tanggal', 'Pendapatan', 'Total Modal', 'Keuntungan Kotor', 'Margin Keuntungan'];
     default:
       return [];
   }
@@ -596,7 +669,7 @@ const reportRows = computed(() => {
         }
         
         return [[
-          'Summary',
+          'Total',
           formatCurrency(revenue),
           formatCurrency(costOfGoods),
           formatCurrency(grossProfit),
@@ -630,7 +703,7 @@ const loadReport = async () => {
   
   if (!authStore.isSuperAdmin && !authStore.user?.tenantId) {
     console.error('Tenant ID not available');
-    await showError('Tenant ID not available. Please log in again.');
+    await showError('Tenant ID tidak tersedia. Silakan login kembali.');
     return;
   }
   
@@ -720,7 +793,7 @@ const loadReport = async () => {
   } catch (error: any) {
     console.error('Error loading report:', error);
     if (error.response?.status !== 401 && error.response?.status !== 403) {
-      await showError('Failed to load report');
+      await showError('Gagal memuat laporan');
     }
   } finally {
     loading.value = false;
@@ -797,3 +870,7 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+/* Scoped styles if necessary */
+</style>

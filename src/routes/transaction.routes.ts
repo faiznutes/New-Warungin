@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import transactionService from '../services/transaction.service';
 import { requireTenantId } from '../utils/tenant';
@@ -77,19 +77,20 @@ const createTransactionSchema = z.object({
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: createTransactionSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userId = (req as any).user.id;
-      
+
       const transaction = await transactionService.createTransaction(
         req.body,
         userId,
         tenantId
       );
-      
+
       res.status(201).json(transaction);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to create transaction', 'CREATE_TRANSACTION');
@@ -138,13 +139,14 @@ router.post(
 router.get(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
-      
+
       const result = await transactionService.getTransactions(tenantId, page, limit);
       res.json(result);
     } catch (error: unknown) {
@@ -183,16 +185,17 @@ router.get(
 router.get(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const transaction = await transactionService.getTransactionById(req.params.id, tenantId);
-      
+
       if (!transaction) {
         return res.status(404).json({ message: 'Transaction not found' });
       }
-      
+
       res.json(transaction);
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to fetch transaction', 'GET_TRANSACTION');

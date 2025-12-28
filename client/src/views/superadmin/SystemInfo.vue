@@ -1,35 +1,38 @@
 <template>
-  <div class="w-full bg-gradient-to-br from-[#f8f9fa] via-[#eef2f6] to-[#dce5f2] dark:from-[#101822] dark:via-[#15202e] dark:to-[#0f151e] min-h-screen py-12 px-4 md:px-8">
-    <div class="max-w-[1200px] mx-auto space-y-12">
+  <div class="w-full bg-slate-50 dark:bg-slate-900 min-h-screen py-8 px-4 md:px-8 font-display animate-fade-in">
+    <div class="max-w-[1200px] mx-auto space-y-8">
       
       <!-- Premium Header Section -->
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-slate-200/60 dark:border-slate-700/60">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-slate-200 dark:border-slate-700">
         <div class="space-y-4 max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-800">
             <span class="material-symbols-outlined text-base">verified</span>
-            Platform Status: Active & Optimized
+            Status Platform: Aktif & Teroptimasi
           </div>
-          <h1 class="text-[#0d131b] dark:text-white tracking-tight text-4xl lg:text-5xl font-black leading-[1.1]">
-            Informasi <span class="text-emerald-600 bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 to-blue-500">Sistem & Ekosistem</span>
+          <h1 class="text-slate-900 dark:text-white tracking-tight text-4xl lg:text-5xl font-black leading-[1.1]">
+            Informasi <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Sistem & Ekosistem</span>
           </h1>
-          <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
+          <p class="text-slate-500 dark:text-slate-400 text-lg leading-relaxed font-medium">
             Dibalik layar teknologi Warungin yang dirancang untuk kecepatan, keamanan, dan skalabilitas bisnis Anda. 
             Pelajari spesifikasi teknis dan fitur eksklusif tiap paket kami.
           </p>
         </div>
         
         <!-- Live Monitor Widget (Aesthetic) -->
-        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/20 dark:shadow-none flex items-center gap-5">
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/20 dark:shadow-none flex items-center gap-5 hover:-translate-y-1 transition-transform duration-500">
           <div class="relative">
-            <div class="size-16 rounded-full border-4 border-emerald-500/20 flex items-center justify-center">
-              <span class="material-symbols-outlined text-emerald-500 text-3xl animate-pulse">speed</span>
+            <div class="size-16 rounded-full border-4 border-blue-100 dark:border-blue-900/30 flex items-center justify-center">
+              <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl animate-pulse">speed</span>
             </div>
             <div class="absolute -top-1 -right-1 size-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800"></div>
           </div>
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Uptime Rate</p>
-            <p class="text-2xl font-black text-[#0d131b] dark:text-white">99.99%</p>
-            <p class="text-[10px] text-emerald-500 font-bold">Real-time Optimization</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Rate Uptime</p>
+            <p class="text-2xl font-black text-slate-900 dark:text-white">99.99%</p>
+            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+               <span class="material-symbols-outlined text-[12px]">bolt</span>
+               Optimasi Real-time
+            </p>
           </div>
         </div>
       </div>
@@ -45,29 +48,32 @@
                 :key="key"
                 @click="activeCategory = key"
                 :class="[
-                  'flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group text-left',
+                  'flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group text-left relative overflow-hidden',
                   activeCategory === key 
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 translate-x-2' 
-                    : 'hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30 translate-x-1' 
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-transparent hover:border-slate-200 dark:hover:border-slate-600'
                 ]"
               >
                 <div :class="[
-                  'size-10 rounded-lg flex items-center justify-center transition-colors',
-                  activeCategory === key ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700 group-hover:bg-emerald-50'
+                  'size-10 rounded-lg flex items-center justify-center transition-colors shadow-sm',
+                  activeCategory === key ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
                 ]">
-                  <span class="material-symbols-outlined text-[20px]">{{ menuIcons[key] }}</span>
+                  <span class="material-symbols-outlined text-[22px]">{{ menuIcons[key] }}</span>
                 </div>
-                <span class="font-bold flex-1">{{ label }}</span>
-                <span v-if="activeCategory === key" class="material-symbols-outlined text-[18px]">arrow_forward_ios</span>
+                <span class="font-bold flex-1 z-10">{{ label }}</span>
+                <span v-if="activeCategory === key" class="material-symbols-outlined text-[18px] z-10">arrow_forward_ios</span>
               </button>
             </div>
 
             <!-- Promotion Card -->
-            <div class="mt-8 p-5 rounded-2xl bg-gradient-to-br from-indigo-900 to-blue-800 text-white relative overflow-hidden group">
-              <div class="absolute -right-4 -bottom-4 size-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-              <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Upgrade Info</p>
-              <h4 class="font-bold text-sm mb-3 leading-snug">Butuh fitur kustom untuk perusahaan Anda?</h4>
-              <button class="w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg text-xs font-bold transition-colors">
+            <div class="mt-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900 to-blue-900 text-white relative overflow-hidden group shadow-lg">
+              <div class="absolute -right-4 -bottom-4 size-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+              <div class="absolute top-0 right-0 p-3 opacity-20">
+                 <span class="material-symbols-outlined text-4xl">rocket_launch</span>
+              </div>
+              <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest mb-2">Info Upgrade</p>
+              <h4 class="font-bold text-lg mb-4 leading-snug relative z-10">Butuh fitur kustom untuk perusahaan Anda?</h4>
+              <button class="w-full py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold transition-all border border-white/10 relative z-10 hover:shadow-lg">
                 Konsultasi Enterprise
               </button>
             </div>
@@ -80,48 +86,54 @@
             <div :key="activeCategory" class="space-y-8">
               
               <!-- CATEGORY: TECHNOLOGIES -->
-              <div v-if="activeCategory === 'tech'" class="space-y-6">
+              <div v-if="activeCategory === 'tech'" class="space-y-6 animate-fade-in-up">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- Frontend Section -->
-                  <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative group overflow-hidden">
+                  <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative group overflow-hidden transition-all hover:shadow-md hover:-translate-y-1">
                     <div class="absolute top-0 right-0 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity">
-                      <span class="material-symbols-outlined text-[100px]">web</span>
+                      <span class="material-symbols-outlined text-[120px]">web</span>
                     </div>
-                    <div class="flex items-center gap-4 mb-6">
-                      <div class="size-12 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
-                        <span class="material-symbols-outlined">layers</span>
+                    <div class="flex items-center gap-4 mb-8 relative z-10">
+                       <div class="size-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
+                        <span class="material-symbols-outlined text-[28px]">layers</span>
                       </div>
                       <div>
-                        <h3 class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-xs">Modern UI Engine</h3>
-                        <p class="text-xl font-bold">Frontend Stack</p>
+                        <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-1">Modern UI Engine</h3>
+                        <p class="text-2xl font-black text-slate-800 dark:text-white">Frontend Stack</p>
                       </div>
                     </div>
-                    <ul class="space-y-4">
-                      <li v-for="item in techStack.frontend" :key="item.name" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0 pb-3">
-                        <span class="text-sm font-semibold text-slate-500">{{ item.name }}</span>
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-300">{{ item.version }}</span>
+                    <ul class="space-y-3 relative z-10">
+                      <li v-for="item in techStack.frontend" :key="item.name" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors border border-slate-100 dark:border-slate-700/50 group/item">
+                        <div class="flex items-center gap-3">
+                           <span class="material-symbols-outlined text-slate-400 group-hover/item:text-blue-500 text-[18px] transition-colors">check_circle</span>
+                           <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ item.name }}</span>
+                        </div>
+                        <span class="text-xs font-black text-slate-900 dark:text-white bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm">{{ item.version }}</span>
                       </li>
                     </ul>
                   </div>
 
                   <!-- Backend Section -->
-                  <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative group overflow-hidden">
+                  <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm relative group overflow-hidden transition-all hover:shadow-md hover:-translate-y-1">
                     <div class="absolute top-0 right-0 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity">
-                      <span class="material-symbols-outlined text-[100px]">dns</span>
+                      <span class="material-symbols-outlined text-[120px]">dns</span>
                     </div>
-                    <div class="flex items-center gap-4 mb-6">
-                      <div class="size-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
-                        <span class="material-symbols-outlined">terminal</span>
+                    <div class="flex items-center gap-4 mb-8 relative z-10">
+                       <div class="size-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm">
+                        <span class="material-symbols-outlined text-[28px]">terminal</span>
                       </div>
                       <div>
-                        <h3 class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-xs">High Performance</h3>
-                        <p class="text-xl font-bold">Backend Core</p>
+                        <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-1">High Performance</h3>
+                        <p class="text-2xl font-black text-slate-800 dark:text-white">Backend Core</p>
                       </div>
                     </div>
-                    <ul class="space-y-4">
-                      <li v-for="item in techStack.backend" :key="item.name" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors border-b border-slate-100 dark:border-slate-700 last:border-0 pb-3">
-                        <span class="text-sm font-semibold text-slate-500">{{ item.name }}</span>
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-300">{{ item.version }}</span>
+                    <ul class="space-y-3 relative z-10">
+                      <li v-for="item in techStack.backend" :key="item.name" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/50 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-colors border border-slate-100 dark:border-slate-700/50 group/item">
+                         <div class="flex items-center gap-3">
+                           <span class="material-symbols-outlined text-slate-400 group-hover/item:text-indigo-500 text-[18px] transition-colors">check_circle</span>
+                           <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ item.name }}</span>
+                        </div>
+                        <span class="text-xs font-black text-slate-900 dark:text-white bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-sm">{{ item.version }}</span>
                       </li>
                     </ul>
                   </div>
@@ -129,54 +141,58 @@
               </div>
 
               <!-- CATEGORY: SERVICES -->
-              <div v-if="activeCategory === 'docker'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div v-for="service in services" :key="service.name" class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:-translate-y-1 transition-all">
-                  <div class="flex items-start justify-between mb-4">
-                    <div :class="['size-12 rounded-xl flex items-center justify-center', service.bg]">
-                      <span :class="['material-symbols-outlined', service.color]">{{ service.icon }}</span>
+              <div v-if="activeCategory === 'docker'" class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up">
+                <div v-for="service in services" :key="service.name" class="bg-white dark:bg-slate-800 p-7 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:-translate-y-1 transition-all hover:shadow-lg">
+                  <div class="flex items-start justify-between mb-6">
+                    <div :class="['size-14 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:rotate-6 transition-transform', service.bg]">
+                      <span :class="['material-symbols-outlined text-[28px]', service.color]">{{ service.icon }}</span>
                     </div>
                     <div class="flex flex-col items-end">
-                      <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
-                      <div class="flex gap-0.5 mt-1">
-                        <div class="size-1 bg-emerald-500 rounded-full"></div>
-                        <div class="size-1 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">Aktif</span>
+                      <div class="flex gap-1 mt-2">
+                        <div class="size-1.5 bg-emerald-500 rounded-full"></div>
+                        <div class="size-1.5 bg-emerald-500 rounded-full animate-pulse delay-75"></div>
+                        <div class="size-1.5 bg-emerald-500 rounded-full animate-pulse delay-150"></div>
                       </div>
                     </div>
                   </div>
-                  <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">{{ service.name }}</h3>
-                  <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-4">{{ service.description }}</p>
-                  <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-400">
-                      <span>LOAD CAPACITY</span>
-                      <span>{{ service.load }}%</span>
+                  <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">{{ service.name }}</h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6 font-medium">{{ service.description }}</p>
+                  <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                      <span>Kapasitas Load</span>
+                      <span class="text-slate-900 dark:text-white">{{ service.load }}%</span>
                     </div>
-                    <div class="mt-2 h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                      <div class="h-full bg-emerald-500 rounded-full transition-all duration-1000" :style="{ width: service.load + '%' }"></div>
+                    <div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-1000" :style="{ width: service.load + '%' }"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- CATEGORY: ROLES -->
-              <div v-if="activeCategory === 'features'" class="space-y-6">
-                <div v-for="role in roles" :key="role.name" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group">
-                  <div :class="['p-6 flex items-center gap-4 border-b border-slate-100 dark:border-slate-700 transition-colors', role.headerBg]">
-                    <div :class="['size-14 rounded-2xl flex items-center justify-center text-white shadow-lg', role.iconBg]">
-                      <span class="material-symbols-outlined text-[32px]">{{ role.icon }}</span>
+              <div v-if="activeCategory === 'features'" class="space-y-6 animate-fade-in-up">
+                <div v-for="role in roles" :key="role.name" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                  <div :class="['p-8 flex items-center gap-6 border-b border-slate-100 dark:border-slate-700 transition-colors relative overflow-hidden', role.headerBg]">
+                    <div class="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-white/20 to-transparent"></div>
+                    <div :class="['size-16 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-3 group-hover:rotate-0 transition-transform duration-500 shrink-0', role.iconBg]">
+                      <span class="material-symbols-outlined text-[36px]">{{ role.icon }}</span>
                     </div>
                     <div>
-                      <div class="flex items-center gap-3">
-                        <h3 class="text-2xl font-black text-slate-800 dark:text-white">{{ role.name }}</h3>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-500 uppercase">Role Access</span>
+                      <div class="flex items-center gap-3 mb-1">
+                        <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ role.name }}</h3>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-white/50 backdrop-blur text-slate-600 uppercase tracking-wide border border-white/20">Akses Role</span>
                       </div>
-                      <p class="text-sm text-slate-500 dark:text-slate-400 italic">"{{ role.tagline }}"</p>
+                      <p class="text-slate-600 dark:text-slate-300 font-medium italic">"{{ role.tagline }}"</p>
                     </div>
                   </div>
                   <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-                      <div v-for="feature in role.features" :key="feature" class="flex items-center gap-3 group/item">
-                        <div :class="['size-2 rounded-full transition-all group-hover/item:scale-150', role.bulletColor]"></div>
-                        <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">{{ feature }}</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                      <div v-for="feature in role.features" :key="feature" class="flex items-center gap-3.5 group/item">
+                        <div class="size-6 rounded-full bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                           <div :class="['size-2.5 rounded-full transition-all group-hover/item:scale-125', role.bulletColor]"></div>
+                        </div>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover/item:text-slate-900 dark:group-hover/item:text-white transition-colors">{{ feature }}</span>
                       </div>
                     </div>
                   </div>
@@ -184,61 +200,63 @@
               </div>
 
               <!-- CATEGORY: SUBSCRIPTIONS -->
-              <div v-if="activeCategory === 'plans'" class="space-y-8">
+              <div v-if="activeCategory === 'plans'" class="space-y-8 animate-fade-in-up">
                 <!-- Plans Comparison -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div v-for="plan in subscriptionPlans" :key="plan.id" 
                     :class="[
-                      'relative p-8 rounded-3xl border-2 transition-all duration-500 flex flex-col',
+                      'relative p-8 rounded-3xl border-2 transition-all duration-500 flex flex-col hover:-translate-y-2',
                       plan.popular 
-                        ? 'bg-emerald-950 border-emerald-500 shadow-2xl shadow-emerald-500/20 scale-105 z-10' 
-                        : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-emerald-500/50'
+                        ? 'bg-gradient-to-br from-slate-900 to-slate-800 border-slate-900 shadow-2xl shadow-slate-900/20 text-white z-10 scale-105' 
+                        : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700/50 hover:shadow-xl'
                     ]">
-                    <div v-if="plan.popular" class="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg shadow-emerald-500/40 uppercase tracking-widest">Paling Populer</div>
+                    <div v-if="plan.popular" class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg shadow-blue-500/30 uppercase tracking-widest ring-4 ring-white dark:ring-slate-900">Paling Populer</div>
                     <div class="mb-8">
-                      <h3 :class="['text-sm font-black uppercase tracking-[0.2em] mb-4', plan.popular ? 'text-emerald-400' : 'text-slate-400']">{{ plan.name }}</h3>
+                      <h3 :class="['text-sm font-black uppercase tracking-[0.2em] mb-4', plan.popular ? 'text-blue-400' : 'text-slate-400']">{{ plan.name }}</h3>
                       <div class="flex items-baseline gap-1">
-                        <span :class="['text-3xl font-black', plan.popular ? 'text-white' : 'text-slate-900 dark:text-white']">{{ plan.price }}</span>
+                        <span :class="['text-4xl font-black', plan.popular ? 'text-white' : 'text-slate-900 dark:text-white']">{{ plan.price }}</span>
                         <span :class="['text-xs font-bold opacity-60', plan.popular ? 'text-white' : 'text-slate-900 dark:text-white']">/bulan</span>
                       </div>
-                      <p :class="['text-xs mt-3 leading-relaxed', plan.popular ? 'text-emerald-100/60' : 'text-slate-500']">{{ plan.description }}</p>
+                      <p :class="['text-xs mt-4 leading-relaxed font-medium', plan.popular ? 'text-slate-300' : 'text-slate-500']">{{ plan.description }}</p>
                     </div>
                     <div class="flex-1 space-y-4">
-                       <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-100 dark:border-slate-700 pb-2">Fitur Utama</p>
-                       <div v-for="f in plan.points" :key="f" class="flex items-center gap-3">
-                         <span :class="['material-symbols-outlined text-[18px]', plan.popular ? 'text-emerald-400' : 'text-emerald-500']">check_circle</span>
+                       <p class="text-[10px] font-black uppercase tracking-widest border-b pb-3 mb-4" :class="plan.popular ? 'text-slate-500 border-slate-700' : 'text-slate-400 border-slate-100 dark:border-slate-700'">Fitur Utama</p>
+                       <div v-for="f in plan.points" :key="f" class="flex items-start gap-3">
+                         <span :class="['material-symbols-outlined text-[18px] mt-0.5', plan.popular ? 'text-emerald-400' : 'text-blue-600']">check_circle</span>
                          <span :class="['text-xs font-bold', plan.popular ? 'text-white' : 'text-slate-700 dark:text-slate-300']">{{ f }}</span>
                        </div>
                     </div>
-                    <button :class="['mt-8 w-full py-3 rounded-xl font-black text-xs transition-all', plan.popular ? 'bg-emerald-500 text-white hover:bg-emerald-400' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 dark:text-white']">
-                      Pilih Paket
+                    <button :class="['mt-8 w-full py-4 rounded-xl font-black text-xs transition-all tracking-wide uppercase', plan.popular ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 dark:text-white text-slate-700']">
+                      Lihat Detail Paket
                     </button>
                   </div>
                 </div>
 
                 <!-- Addons Section -->
-                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-12">
+                <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mt-12 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900">
                   <div class="flex items-center justify-between mb-8">
                     <div>
-                      <h3 class="text-2xl font-black text-slate-800 dark:text-white">Ekstensi & Addons</h3>
-                      <p class="text-sm text-slate-500 dark:text-slate-400">Optimalkan fungsi Warungin sesuai kebutuhan spesifik bisnis Anda.</p>
+                      <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Ekstensi & Addons</h3>
+                      <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">Optimalkan fungsi Warungin sesuai kebutuhan spesifik bisnis Anda.</p>
                     </div>
-                    <div class="hidden sm:block">
-                      <span class="material-symbols-outlined text-4xl text-slate-200 dark:text-slate-700">extension</span>
+                    <div class="hidden sm:block p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl">
+                      <span class="material-symbols-outlined text-4xl text-indigo-500">extension</span>
                     </div>
                   </div>
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div v-for="addon in addons" :key="addon.name" class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-700/50 hover:border-emerald-500/30 transition-all group">
+                    <div v-for="addon in addons" :key="addon.name" class="p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all group shadow-sm hover:shadow-lg hover:-translate-y-1">
                       <div class="flex items-center gap-4 mb-4">
-                        <div class="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                          <span class="material-symbols-outlined text-[20px]">{{ addon.icon }}</span>
+                        <div class="size-12 rounded-xl bg-slate-50 dark:bg-slate-700 shadow-sm flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 text-slate-600 dark:text-slate-300">
+                          <span class="material-symbols-outlined text-[24px]">{{ addon.icon }}</span>
                         </div>
-                        <h4 class="font-bold text-slate-800 dark:text-white">{{ addon.name }}</h4>
+                        <h4 class="font-bold text-slate-900 dark:text-white leading-tight">{{ addon.name }}</h4>
                       </div>
-                      <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{{ addon.description }}</p>
-                      <div class="mt-4 flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400">{{ addon.price }}</span>
-                        <span class="material-symbols-outlined text-slate-300 group-hover:text-emerald-500 transition-colors">add_circle</span>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium min-h-[40px]">{{ addon.description }}</p>
+                      <div class="mt-4 flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <span class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">{{ addon.price }}</span>
+                        <button class="rotate-0 group-hover:rotate-90 transition-transform duration-300">
+                           <span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors">add_circle</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -254,7 +272,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const activeCategory = ref('tech');
 
@@ -331,41 +349,41 @@ const roles = [
     name: 'Super Admin',
     tagline: 'Orkestrator Kendali Utama Platform',
     icon: 'security',
-    iconBg: 'bg-indigo-600',
-    headerBg: 'bg-indigo-50/50 dark:bg-indigo-950/20',
-    bulletColor: 'bg-indigo-400',
+    iconBg: 'bg-gradient-to-br from-slate-800 to-black',
+    headerBg: 'bg-slate-50',
+    bulletColor: 'bg-slate-600',
     features: [
       'Manajemen Ekosistem Tenant',
       'Kontrol Lisensi & Billing Global',
       'Audit Trail & System Integrity Logs',
       'Konfigurasi Addon Platform',
       'Global Revenue & Growth Analytics',
-      'Platform Health Monitoring'
+      'Monitor Kesehatan Platform'
     ]
   },
   {
     name: 'Admin Tenant (Owner)',
     tagline: 'Nahkoda Bisnis & Strategi Produk',
     icon: 'real_estate_agent',
-    iconBg: 'bg-emerald-600',
-    headerBg: 'bg-emerald-50/50 dark:bg-emerald-950/20',
-    bulletColor: 'bg-emerald-400',
+    iconBg: 'bg-gradient-to-br from-blue-600 to-blue-800',
+    headerBg: 'bg-blue-50',
+    bulletColor: 'bg-blue-600',
     features: [
       'Inventory & Procurement Management',
-      'Pengaturan Harga & Smart Discount',
+      'Pengaturan Harga & Diskon Pintar',
       'Manajemen Staf & Hak Akses',
       'Laporan Laba/Rugi Komprehensif',
       'Konfigurasi Outlet & Hardware',
-      'Analisis Tren Market & Pelanggan'
+      'Analisis Tren Pasar & Pelanggan'
     ]
   },
   {
     name: 'Supervisor',
     tagline: 'Penjaga Operasional & Integritas Shift',
     icon: 'verified_user',
-    iconBg: 'bg-blue-600',
-    headerBg: 'bg-blue-50/50 dark:bg-blue-950/20',
-    bulletColor: 'bg-blue-400',
+    iconBg: 'bg-gradient-to-br from-violet-600 to-violet-800',
+    headerBg: 'bg-violet-50',
+    bulletColor: 'bg-violet-600',
     features: [
       'Otorisasi Void & Refund Transaksi',
       'Manajemen Cashbox & Tutup Shift',
@@ -379,9 +397,9 @@ const roles = [
     name: 'Kasir (Cashier)',
     tagline: 'Garda Depan Pelayanan Transaksi',
     icon: 'point_of_sale',
-    iconBg: 'bg-amber-500',
-    headerBg: 'bg-amber-50/50 dark:bg-amber-950/20',
-    bulletColor: 'bg-amber-400',
+    iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+    headerBg: 'bg-emerald-50',
+    bulletColor: 'bg-emerald-500',
     features: [
       'Smart POS Interface (Fast Checkout)',
       'Manajemen Keranjang & Hold Order',
@@ -395,16 +413,16 @@ const roles = [
     name: 'Kitchen (Dapur)',
     tagline: 'Maestro Eksekusi Hidangan',
     icon: 'soup_kitchen',
-    iconBg: 'bg-rose-500',
-    headerBg: 'bg-rose-50/50 dark:bg-rose-950/20',
-    bulletColor: 'bg-rose-400',
+    iconBg: 'bg-gradient-to-br from-orange-500 to-orange-700',
+    headerBg: 'bg-orange-50',
+    bulletColor: 'bg-orange-500',
     features: [
       'Kitchen Display System (KDS)',
       'Update Status Pesanan Real-time',
       'Antrian Pesanan Berdasarkan Prioritas',
       'Notifikasi Bahan Baku Menipis',
       'Integrasi Printer Order',
-      'Tracking Waktu Persiapan (Lead Time)'
+      'Tracking Waktu Persiapan'
     ]
   }
 ];
@@ -413,7 +431,7 @@ const subscriptionPlans = [
   {
     id: 'basic',
     name: 'BASIC (Starter)',
-    price: 'Rp 99rb',
+    price: 'Rp 149rb',
     description: 'Opsi terbaik untuk UMKM yang baru memulai digitalisasi bisnis.',
     points: [
       'Hingga 50 Produk Aktif',
@@ -428,7 +446,7 @@ const subscriptionPlans = [
   {
     id: 'pro',
     name: 'PRO (Growth)',
-    price: 'Rp 249rb',
+    price: 'Rp 299rb',
     description: 'Solusi lengkap untuk akselerasi bisnis dengan fitur manajemen stok lanjut.',
     points: [
       'Unlimited Produk & Kategori',
@@ -443,7 +461,7 @@ const subscriptionPlans = [
   {
     id: 'enterprise',
     name: 'ENTERPRISE',
-    price: 'Rp 599rb',
+    price: 'Rp 499rb',
     description: 'Kendali penuh untuk skema bisnis besar (Franchise/Chain) tanpa batas.',
     points: [
       'Unlimited User & Outlet',
@@ -495,6 +513,11 @@ const addons = [
     price: 'GRATIS (Pro+)'
   }
 ];
+
+onMounted(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
 </script>
 
 <style scoped>
@@ -511,27 +534,5 @@ const addons = [
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-20px);
-}
-
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* Custom scrollbar for better UX */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.2);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.4);
 }
 </style>

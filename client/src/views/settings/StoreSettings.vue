@@ -1,70 +1,82 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-8 animate-fade-in font-display">
     <!-- Header -->
     <div class="flex flex-col gap-1">
-      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Store Settings</h1>
-      <p class="text-[#4c739a] dark:text-slate-400">Manage your store information and settings.</p>
+      <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Pengaturan Toko</h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">Kelola informasi dan pengaturan toko Anda.</p>
     </div>
 
     <!-- Store Information Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-xl">
-          <span class="material-symbols-outlined">store</span>
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 sm:p-8">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl shadow-sm">
+          <span class="material-symbols-outlined text-[24px]">store</span>
         </div>
-        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Store Information</h3>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Store Name</label>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Informasi Toko</h3>
+          <p class="text-sm font-medium text-slate-500">Detail identitas dan kontak toko</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Toko</label>
           <input
             v-model="storeInfo.name"
             type="text"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+            placeholder="Masukkan nama toko"
           />
         </div>
         <div>
-          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Phone</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telepon</label>
           <input
             v-model="storeInfo.phone"
             type="tel"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+            placeholder="0812..."
           />
         </div>
         <div>
-          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Email</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
           <input
             v-model="storeInfo.email"
             type="email"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
+            placeholder="email@toko.com"
           />
         </div>
         <div class="md:col-span-2">
-          <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Address</label>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat</label>
           <textarea
             v-model="storeInfo.address"
             rows="3"
-            class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white resize-none"
+            placeholder="Alamat lengkap toko..."
           ></textarea>
         </div>
       </div>
     </div>
 
     <!-- Feature Toggles Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
-          <span class="material-symbols-outlined">toggle_on</span>
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl shadow-sm">
+          <span class="material-symbols-outlined text-[24px]">toggle_on</span>
         </div>
-        <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Additional Features</h3>
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Fitur Tambahan</h3>
+          <p class="text-sm font-medium text-slate-500">Konfigurasi fitur operasional toko</p>
+        </div>
       </div>
       <div class="space-y-4">
-        <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#4c739a]">touch_app</span>
+        <div class="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
+          <div class="flex items-center gap-4">
+            <div class="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm text-slate-400">
+               <span class="material-symbols-outlined">touch_app</span>
+            </div>
             <div>
-              <label class="text-sm font-medium text-[#0d141b] dark:text-white">Simple POS Mode</label>
-              <p class="text-xs text-[#4c739a]">Enable simplified cashier mode with large buttons</p>
+              <label class="block text-sm font-bold text-slate-900 dark:text-white">Mode Kasir Simpel</label>
+              <p class="text-xs text-slate-500 mt-0.5">Aktifkan mode kasir sederhana dengan tombol besar</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -74,15 +86,17 @@
               class="sr-only peer"
               @change="updateFeatures"
             />
-            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            <div class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300/30 dark:peer-focus:ring-blue-800/30 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
           </label>
         </div>
-        <div class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900 rounded-xl">
-          <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#4c739a]">mail</span>
+        <div class="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
+          <div class="flex items-center gap-4">
+            <div class="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm text-slate-400">
+               <span class="material-symbols-outlined">mail</span>
+            </div>
             <div>
-              <label class="text-sm font-medium text-[#0d141b] dark:text-white">Daily Email Backup</label>
-              <p class="text-xs text-[#4c739a]">Send daily reports automatically via email</p>
+              <label class="block text-sm font-bold text-slate-900 dark:text-white">Backup Email Harian</label>
+              <p class="text-xs text-slate-500 mt-0.5">Kirim laporan harian secara otomatis via email</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -92,47 +106,49 @@
               class="sr-only peer"
               @change="updateFeatures"
             />
-            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            <div class="w-12 h-7 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300/30 dark:peer-focus:ring-blue-800/30 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </div>
     </div>
 
     <!-- Receipt Template Management Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-green-50 text-green-600 rounded-xl">
-            <span class="material-symbols-outlined">receipt_long</span>
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl shadow-sm">
+            <span class="material-symbols-outlined text-[24px]">receipt_long</span>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Receipt Templates</h3>
-            <p class="text-sm text-[#4c739a]">Manage receipt templates for different paper sizes</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Template Struk</h3>
+            <p class="text-sm font-medium text-slate-500">Kelola template struk untuk berbagai ukuran kertas</p>
           </div>
         </div>
         <button
           @click="showTemplateManager = true"
-          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+          class="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30 px-5 py-2.5 rounded-xl transition-all font-bold text-sm border border-emerald-200 dark:border-emerald-800"
         >
           <span class="material-symbols-outlined text-[20px]">settings</span>
-          <span>Manage Templates</span>
+          <span>Kelola Template</span>
         </button>
       </div>
-      <div class="text-sm text-[#4c739a] space-y-1 pl-11">
-        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Templates for A4, Thermal 58mm, or Thermal 80mm</p>
-        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Customize header, footer, and displayed fields</p>
-        <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">check_circle</span> Support for Browser, Thermal, and Bluetooth printing</p>
+      <div class="text-sm text-slate-500 space-y-2 pl-0 sm:pl-[72px]">
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Template untuk A4, Thermal 58mm, atau Thermal 80mm</p>
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Kustomisasi header, footer, dan kolom yang ditampilkan</p>
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Dukungan untuk pencetakan Browser, Thermal, dan Bluetooth</p>
       </div>
     </div>
 
     <!-- Save Button -->
-    <div class="flex justify-end">
+    <div class="flex justify-end pt-4">
       <button
         @click="saveSettings"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium"
+        :disabled="saving"
+        class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:scale-95 font-bold disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        <span class="material-symbols-outlined text-[20px]">save</span>
-        Save Settings
+        <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        <span class="material-symbols-outlined text-[20px]" v-else>save</span>
+        <span>{{ saving ? 'Menyimpan...' : 'Simpan Pengaturan' }}</span>
       </button>
     </div>
 
@@ -171,6 +187,7 @@ const features = ref({
   simplePosMode: false,
   email_backup_enabled: true,
 });
+const saving = ref(false);
 
 const loadSettings = async () => {
   if (!authStore.isAuthenticated) return;
@@ -195,13 +212,12 @@ const loadSettings = async () => {
       email_backup_enabled: tenantFeatures.email_backup_enabled !== false, // Default true
     };
   } catch (error: any) {
-    // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
     console.error('Error loading settings:', error);
     if (authStore.isAuthenticated && error.response?.status !== 404) {
-      await showError('Failed to load store settings');
+      await showError('Gagal memuat pengaturan toko');
     }
   }
 };
@@ -213,21 +229,21 @@ const updateFeatures = async () => {
     await api.put('/tenant/profile', {
       features: features.value,
     });
-    await showSuccess('Features updated successfully');
+    await showSuccess('Fitur berhasil diperbarui');
   } catch (error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
     console.error('Error updating features:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to update features';
+    const errorMessage = error.response?.data?.message || 'Gagal memperbarui fitur';
     await showError(errorMessage);
-    // Revert on error
     await loadSettings();
   }
 };
 
 const saveSettings = async () => {
   if (!authStore.isAuthenticated) return;
+  saving.value = true;
   
   try {
     await api.put('/tenant/profile', {
@@ -236,17 +252,17 @@ const saveSettings = async () => {
       receiptFooter: receiptSettings.value.footer,
       features: features.value,
     });
-    await showSuccess('Settings saved successfully');
-    // Reload settings to get updated data
+    await showSuccess('Pengaturan berhasil disimpan');
     await loadSettings();
   } catch (error: any) {
-    // Suppress errors during logout (401/403)
     if (error.response?.status === 401 || error.response?.status === 403) {
       return;
     }
     console.error('Error saving settings:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to save settings';
+    const errorMessage = error.response?.data?.message || 'Gagal menyimpan pengaturan';
     await showError(errorMessage);
+  } finally {
+    saving.value = false;
   }
 };
 

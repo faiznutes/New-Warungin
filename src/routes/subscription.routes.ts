@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import subscriptionService from '../services/subscription.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -24,7 +24,7 @@ router.get(
       res.json(result);
     } catch (error: any) {
       logger.error('Error in /subscriptions/current:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
+      res.status(500).json({
         message: error.message || 'Failed to load subscription',
         error: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
@@ -35,12 +35,13 @@ router.get(
 router.post(
   '/extend',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: extendSubscriptionSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only ADMIN_TENANT and SUPER_ADMIN can extend subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin or super admin can extend subscription' });
@@ -84,12 +85,13 @@ const reduceSubscriptionSchema = z.object({
 router.post(
   '/upgrade',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: upgradeSubscriptionSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only ADMIN_TENANT and SUPER_ADMIN can upgrade subscription
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin or super admin can upgrade subscription' });
@@ -111,12 +113,13 @@ router.post(
 router.post(
   '/reduce',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   validate({ body: reduceSubscriptionSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can reduce subscription
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can reduce subscription' });
@@ -145,7 +148,7 @@ router.get(
         skip: (page - 1) * limit,
         take: limit,
       });
-      
+
       const total = await prisma.subscriptionHistory.count({
         where: { tenantId },
       });
@@ -172,11 +175,12 @@ router.get(
 router.post(
   '/revert-temporary',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: Request, res: Response) => {
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can trigger manual revert
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can trigger revert' });
@@ -204,7 +208,7 @@ router.put(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can update subscription
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can update subscription' });
@@ -212,7 +216,7 @@ router.put(
 
       const subscriptionId = req.params.id;
       const { plan, amount, status, purchasedBy } = req.body;
-      
+
       // Check if subscription exists
       const subscription = await prisma.subscription.findUnique({
         where: { id: subscriptionId },
@@ -251,14 +255,14 @@ router.delete(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can delete subscription
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can delete subscription' });
       }
 
       const subscriptionId = req.params.id;
-      
+
       // Check if subscription exists
       const subscription = await prisma.subscription.findUnique({
         where: { id: subscriptionId },
@@ -352,14 +356,14 @@ router.post(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can bulk delete subscriptions
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can bulk delete subscriptions' });
       }
 
       const { ids } = req.body;
-      
+
       if (!Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ message: 'IDs array is required' });
       }
@@ -431,7 +435,7 @@ router.post(
         }
       }
 
-      res.json({ 
+      res.json({
         message: `${result.count} subscription(s) deleted successfully`,
         deletedCount: result.count,
       });

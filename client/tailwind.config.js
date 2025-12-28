@@ -9,28 +9,39 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#10b981', // V3 Emerald Primary
-          hover: '#059669',   // Darker shade for hover (emerald-600)
-          light: '#d1fae5',   // Lighter shade for bg (emerald-100)
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',     // Base emerald-500
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
+          DEFAULT: '#2563eb', // Royal Blue (Blue-600)
+          hover: '#1d4ed8',   // Blue-700
+          light: '#dbeafe',   // Blue-100
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
-        'primary-hover': '#059669',
-        'primary-light': '#d1fae5',
-        'background-light': '#f6f7f8', // V3 Light BG
-        'background-dark': '#101822',  // V3 Dark BG Updated
+        // Role-Based Colors
+        'role-super-admin': '#2563eb',  // Blue
+        'role-admin-tenant': '#dc2626', // Red
+        'role-supervisor': '#f97316',   // Orange
+        'role-cashier': '#10b981',      // Green
+        'role-kitchen': '#8b5cf6',      // Purple
+
+        // Semantic Colors matches Roles
+        'primary-hover': '#1d4ed8',
+        'primary-light': '#dbeafe',
+
+        'background-light': '#f9fafb', // Gray-50
+        'background-dark': '#1f2937',  // Gray-800
         'surface-light': '#ffffff',
-        'surface-dark': '#1e293b',     // Updated to match V3 sidebar dark mode
-        'text-primary': '#0d141b',
-        'text-secondary': '#4c739a',
+        'surface-dark': '#111827',     // Gray-900 (Sidebar/Cards)
+
+        'text-primary': '#111827',     // Gray-900
+        'text-secondary': '#6b7280',   // Gray-500
+        'text-muted': '#9ca3af',       // Gray-400
       },
       fontFamily: {
         "display": ["Inter", "sans-serif"]

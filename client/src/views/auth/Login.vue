@@ -190,7 +190,7 @@ const handleLogin = async () => {
     const trimmedPassword = password.value.trim();
     
     if (!trimmedEmail || !trimmedPassword) {
-      await showWarning('Email and password are required');
+      await showWarning('Email dan kata sandi wajib diisi');
       loading.value = false;
       return;
     }
@@ -260,7 +260,7 @@ const handleLogin = async () => {
           authStore.setSelectedStore(storeToSelect);
           localStorage.setItem('selectedStoreId', storeToSelect);
         } else if (activeOutlets.length === 0) {
-          await showWarning('No stores available. Please contact admin to create a store first.');
+          await showWarning('Tidak ada toko yang tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.');
         } else if (user.role === 'SUPERVISOR' && Array.isArray(permissions?.allowedStoreIds) && permissions.allowedStoreIds.length > 1) {
           const allowedStoreIds = permissions.allowedStoreIds;
           const allowedOutlets = activeOutlets.filter((o: any) => allowedStoreIds.includes(o.id));
@@ -298,13 +298,13 @@ const handleLogin = async () => {
   } catch (error: any) {
     if (error.response?.status === 429) {
       const retryAfter = error.response?.data?.retryAfter;
-      let message = error.response?.data?.message || error.response?.data?.error || 'Too many login attempts';
+      let message = error.response?.data?.message || error.response?.data?.error || 'Terlalu banyak percobaan login';
       
       if (retryAfter) {
         const minutes = Math.ceil(retryAfter / 60);
-        message = `${message}. Please try again in ${minutes} minutes.`;
+        message = `${message}. Silakan coba lagi dalam ${minutes} menit.`;
       } else {
-        message = `${message}. Please wait before trying again.`;
+        message = `${message}. Silakan tunggu sebelum mencoba lagi.`;
       }
       
       await showError(message);
@@ -319,9 +319,9 @@ const handleLogin = async () => {
         errorMessage.includes('ditetapkan') ||
         errorMessage.includes('diizinkan')
       )) {
-        await showWarning(errorMessage, 'Store Inactive');
+        await showWarning(errorMessage, 'Toko Tidak Aktif');
       } else {
-        await showError(errorMessage || 'Access denied');
+        await showError(errorMessage || 'Akses ditolak');
       }
     } else {
       const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message;
@@ -329,7 +329,7 @@ const handleLogin = async () => {
       if (errorMessage) {
         await showError(errorMessage);
       } else {
-        await showError('Invalid email or password');
+        await showError('Email atau kata sandi tidak valid');
       }
     }
     console.error('Login error:', error);

@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import gdprService from '../services/gdpr.service';
 import logger from '../utils/logger';
 import { requireTenantId } from '../utils/tenant';
@@ -92,6 +92,7 @@ router.post(
 router.get(
   '/export-tenant',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   requireTenantId,
   async (req: AuthRequest, res: Response) => {
     try {

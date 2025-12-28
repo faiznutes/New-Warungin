@@ -18,7 +18,7 @@ export class OrderService {
     // Handle sendToKitchen filter (from query params)
     const sendToKitchen = (query as any).sendToKitchen;
     const kitchenStatus = (query as any).kitchenStatus;
-    
+
     // Handle kitchenStatus filter (array or single value)
     let kitchenStatusWhere: any = undefined;
     if (kitchenStatus) {
@@ -31,7 +31,7 @@ export class OrderService {
 
     // Filter by store permissions
     let outletFilter: any = outletId ? { outletId } : {};
-    
+
     // CASHIER dan KITCHEN: otomatis filter berdasarkan assignedStoreId
     if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && userPermissions?.assignedStoreId) {
       const assignedStoreId = userPermissions.assignedStoreId;
@@ -263,10 +263,10 @@ export class OrderService {
 
     // Apply manual order discount (if any)
     const manualDiscount = data.discount || 0;
-    
+
     // Calculate final total
     const total = subtotalAfterAutoDiscount - memberDiscount - manualDiscount;
-    
+
     // CRITICAL FIX: Validate that total is not negative after discounts
     if (total < 0) {
       throw new Error(
@@ -276,7 +276,7 @@ export class OrderService {
         `Final Total: ${total}`
       );
     }
-    
+
     // Validate that total discount doesn't exceed subtotal
     const totalDiscount = autoDiscount + memberDiscount + manualDiscount;
     if (totalDiscount > subtotal) {
@@ -298,25 +298,25 @@ export class OrderService {
         },
         orderBy: { createdAt: 'desc' },
       });
-      
+
       // If order exists with same items in last 5 minutes, return existing order
       if (existingOrder) {
         const existingItems = await prisma.orderItem.findMany({
           where: { orderId: existingOrder.id },
         });
-        
+
         // Ensure both are arrays before comparison
         const itemsArray = Array.isArray(data.items) ? data.items : [];
         const existingItemsArray = Array.isArray(existingItems) ? existingItems : [];
-        
-        const isDuplicate = itemsArray.every((item: any) => 
-          existingItemsArray.some((ei: any) => 
-            ei && item && ei.productId === item.productId && 
+
+        const isDuplicate = itemsArray.every((item: any) =>
+          existingItemsArray.some((ei: any) =>
+            ei && item && ei.productId === item.productId &&
             ei.quantity === item.quantity &&
             Math.abs(Number(ei.price) - item.price) < 0.01
           )
         ) && existingItemsArray.length === itemsArray.length;
-        
+
         if (isDuplicate) {
           logger.warn(`Duplicate order detected (idempotency key: ${idempotencyKey}), returning existing order ${existingOrder.id}`);
           return existingOrder;
@@ -440,7 +440,7 @@ export class OrderService {
 
           // Get cost from product (if available)
           const cost = product.cost ? Number(product.cost) : null;
-          
+
           // Calculate profit = (price - cost) * quantity (only if cost exists)
           const itemPrice = item?.price || 0;
           const itemQuantity = item?.quantity || 0;
@@ -484,7 +484,7 @@ export class OrderService {
           })),
         });
         // Store discount details in notes with special marker
-        orderNotes = orderNotes 
+        orderNotes = orderNotes
           ? `${orderNotes}\n\n__DISCOUNT_DETAILS__:${discountInfo}`
           : `__DISCOUNT_DETAILS__:${discountInfo}`;
       }
@@ -598,7 +598,7 @@ export class OrderService {
 
     // Emit order created event
     const { emitToTenant } = await import('../socket/socket');
-    emitToTenant(tenantId, 'order:created', {
+    emitToTenant(tenantId, 'order:new', {
       orderId: order.id,
       orderNumber: order.orderNumber,
     });
@@ -658,10 +658,10 @@ export class OrderService {
         // Restore stock for removed items
         const currentItemsArray = Array.isArray(currentOrder.items) ? currentOrder.items : [];
         const newItemsArray = Array.isArray(data.items) ? data.items : [];
-        
+
         const currentItemIds = new Set(currentItemsArray.map((item: any) => item?.productId).filter(Boolean));
         const newItemIds = new Set(newItemsArray.map((item: any) => item?.productId).filter(Boolean));
-        
+
         // Items to remove (in current but not in new)
         const itemsToRemove = currentItemsArray.filter((item: any) => item && !newItemIds.has(item.productId));
         for (const item of itemsToRemove) {
@@ -716,7 +716,7 @@ export class OrderService {
 
             // Get cost from product (if available)
             const cost = product.cost ? Number(product.cost) : null;
-            
+
             // Calculate profit = (price - cost) * quantity (only if cost exists)
             const itemPrice = item?.price || 0;
             const itemQuantity = item?.quantity || 0;
@@ -829,38 +829,38 @@ export class OrderService {
     if ((data.status === 'CANCELLED' || data.status === 'REFUNDED') && order.status !== 'CANCELLED' && order.status !== 'REFUNDED') {
       if (orderWithItems?.items && orderWithItems.items.length > 0) {
         const rollbackStartTime = Date.now();
-        
+
         try {
           // Restore stock atomically within a transaction
           await prisma.$transaction(async (tx) => {
             const stockUpdates: Array<{ productId: string; newStock: number }> = [];
-            
+
             for (const item of orderWithItems.items) {
               if (!item?.productId || !item?.quantity) continue;
-              
+
               // Get current product stock
               const product = await tx.product.findFirst({
                 where: { id: item.productId, tenantId },
                 select: { id: true, stock: true },
               });
-              
+
               if (!product) {
                 logger.warn(`Product ${item.productId} not found when restoring stock for order ${id}`);
                 continue;
               }
-              
+
               // Calculate new stock (add back the quantity)
               const newStock = product.stock + item.quantity;
-              
+
               // Update stock atomically
               await tx.product.update({
                 where: { id: item.productId, tenantId },
                 data: { stock: newStock },
               });
-              
+
               stockUpdates.push({ productId: item.productId, newStock });
             }
-            
+
             // Emit socket events after transaction completes (outside transaction for better performance)
             if (stockUpdates.length > 0) {
               const { emitToTenant } = await import('../socket/socket');
@@ -875,7 +875,7 @@ export class OrderService {
             timeout: (env.ORDER_TRANSACTION_TIMEOUT * 1000) / 2, // Half of order timeout for stock restore
             isolationLevel: 'ReadCommitted',
           });
-          
+
           // Track successful rollback
           const rollbackDuration = (Date.now() - rollbackStartTime) / 1000;
           stockRollbackDuration.observe({ tenant_id: tenantId }, rollbackDuration);
@@ -885,7 +885,7 @@ export class OrderService {
           const rollbackDuration = (Date.now() - rollbackStartTime) / 1000;
           stockRollbackDuration.observe({ tenant_id: tenantId }, rollbackDuration);
           stockRollbackTotal.inc({ status: 'failure', tenant_id: tenantId });
-          
+
           logger.error(`Failed to restore stock for order ${id}:`, error);
           throw error; // Re-throw to prevent order status update if stock restore fails
         }
@@ -902,6 +902,13 @@ export class OrderService {
           },
         },
       },
+    });
+
+    // Emit status update event
+    const { emitToTenant } = await import('../socket/socket');
+    emitToTenant(tenantId, 'order:update', {
+      orderId: order.id,
+      status: data.status,
     });
 
     // Invalidate analytics cache after order status update

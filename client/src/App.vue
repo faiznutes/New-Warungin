@@ -28,6 +28,7 @@
         @cancel="handleCancel"
         @close="handleClose"
       />
+      <ToastContainer />
       <PWAInstallPrompt />
     </template>
   </div>
@@ -37,6 +38,7 @@
 import { ref, onMounted, onErrorCaptured } from 'vue';
 import { useAuthStore } from './stores/auth';
 import NotificationModal from './components/NotificationModal.vue';
+import ToastContainer from './components/ToastContainer.vue';
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue';
 import { useNotification } from './composables/useNotification';
 import {

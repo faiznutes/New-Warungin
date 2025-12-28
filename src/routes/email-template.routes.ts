@@ -4,8 +4,9 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { checkDeliveryMarketingAddon } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import emailTemplateService from '../services/email-template.service';
@@ -58,6 +59,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -97,6 +99,7 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -158,6 +161,8 @@ router.post(
   '/',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createTemplateSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -223,6 +228,8 @@ router.put(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: updateTemplateSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -265,6 +272,8 @@ router.delete(
   '/:id',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -326,6 +335,7 @@ router.post(
   '/:id/render',
   authGuard,
   subscriptionGuard,
+  checkDeliveryMarketingAddon,
   validate({ body: z.object({ variables: z.record(z.string()) }) }),
   async (req: Request, res: Response) => {
     try {

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
@@ -28,7 +28,9 @@ const createPromoSchema = z.object({
 
 router.get(
   '/campaigns',
+  '/campaigns',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -84,7 +86,9 @@ router.get(
  */
 router.post(
   '/campaigns',
+  '/campaigns',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -99,7 +103,9 @@ router.post(
 
 router.post(
   '/campaigns/:campaignId/send',
+  '/campaigns/:campaignId/send',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -107,7 +113,7 @@ router.post(
       // For now, accept campaign data in request body for EMAIL campaigns
       const campaignData = req.body.campaignData;
       const result = await marketingService.sendCampaign(
-        tenantId, 
+        tenantId,
         req.params.campaignId,
         campaignData
       );
@@ -121,7 +127,9 @@ router.post(
 // Direct email campaign send endpoint (for immediate sending)
 router.post(
   '/campaigns/send-email',
+  '/campaigns/send-email',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -129,14 +137,14 @@ router.post(
       if (req.body.type !== 'EMAIL') {
         return res.status(400).json({ message: 'This endpoint is only for EMAIL campaigns' });
       }
-      
+
       const result = await marketingService.sendEmailCampaign(tenantId, {
         name: req.body.name,
         content: req.body.content,
         subject: req.body.subject || req.body.name,
         target: req.body.target,
       });
-      
+
       res.json({
         message: 'Email campaign sent successfully',
         sent: result.sent,
@@ -151,7 +159,9 @@ router.post(
 // Direct SMS campaign send endpoint
 router.post(
   '/campaigns/send-sms',
+  '/campaigns/send-sms',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -159,13 +169,13 @@ router.post(
       if (req.body.type !== 'SMS' && req.body.type !== 'WHATSAPP') {
         return res.status(400).json({ message: 'This endpoint is only for SMS/WhatsApp campaigns' });
       }
-      
+
       const result = await marketingService.sendSMSCampaign(tenantId, {
         name: req.body.name,
         content: req.body.content,
         target: req.body.target,
       });
-      
+
       res.json({
         message: 'SMS campaign sent successfully',
         sent: result.sent,
@@ -180,19 +190,21 @@ router.post(
 // Direct push notification campaign send endpoint
 router.post(
   '/campaigns/send-push',
+  '/campaigns/send-push',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema.extend({ title: z.string().optional() }) }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
-      
+
       const result = await marketingService.sendPushNotificationCampaign(tenantId, {
         name: req.body.name,
         content: req.body.content,
         target: req.body.target,
         title: req.body.title || req.body.name,
       });
-      
+
       res.json({
         message: 'Push notification campaign sent successfully',
         sent: result.sent,
@@ -206,7 +218,9 @@ router.post(
 
 router.post(
   '/promos',
+  '/promos',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createPromoSchema }),
   async (req: Request, res: Response) => {
     try {

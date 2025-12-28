@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
@@ -157,6 +157,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createSupplierSchema }),
@@ -200,6 +201,7 @@ router.post(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: updateSupplierSchema }),
@@ -237,6 +239,7 @@ router.put(
 router.delete(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   async (req: Request, res: Response) => {

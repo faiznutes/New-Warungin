@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import discountService from '../services/discount.service';
 import { validate } from '../middlewares/validator';
@@ -145,9 +145,9 @@ router.get(
       });
 
       if (!discount) {
-        return res.status(404).json({ 
+        return res.status(404).json({
           error: 'NOT_FOUND',
-          message: 'Diskon tidak ditemukan' 
+          message: 'Diskon tidak ditemukan'
         });
       }
 
@@ -209,43 +209,43 @@ router.post(
         applicableTo: req.body.applicableTo || 'ALL',
         isActive: req.body.isActive !== undefined ? Boolean(req.body.isActive) : true,
       };
-      
+
       // Handle minAmount
       if (req.body.minAmount !== undefined && req.body.minAmount !== null) {
         discountData.minAmount = new Decimal(req.body.minAmount);
       }
-      
+
       // Handle minQuantity
       if (req.body.minQuantity !== undefined && req.body.minQuantity !== null) {
         discountData.minQuantity = Number(req.body.minQuantity);
       }
-      
+
       // Handle applicableProducts - null if not provided or empty
       if (req.body.applicableProducts !== undefined) {
         discountData.applicableProducts = Array.isArray(req.body.applicableProducts) && req.body.applicableProducts.length > 0
           ? req.body.applicableProducts
           : null;
       }
-      
+
       // Handle bundleProducts - null if not provided or empty
       if (req.body.bundleProducts !== undefined) {
         discountData.bundleProducts = Array.isArray(req.body.bundleProducts) && req.body.bundleProducts.length > 0
           ? req.body.bundleProducts
           : null;
       }
-      
+
       // Handle bundleDiscountProduct - only if bundleProducts exist and product ID is provided
       if (req.body.bundleDiscountProduct && typeof req.body.bundleDiscountProduct === 'string' && req.body.bundleDiscountProduct.trim() !== '') {
         discountData.bundleDiscountProduct = req.body.bundleDiscountProduct.trim();
       } else {
         discountData.bundleDiscountProduct = null;
       }
-      
+
       // Handle dates
       if (req.body.startDate && req.body.startDate !== '') {
         discountData.startDate = new Date(req.body.startDate);
       }
-      
+
       if (req.body.endDate && req.body.endDate !== '') {
         discountData.endDate = new Date(req.body.endDate);
       }
@@ -282,23 +282,23 @@ router.post(
         tenantId,
         body: req.body,
       });
-      
+
       // Check if it's a Prisma validation error
       if (error.code === 'P2002') {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: 'VALIDATION_ERROR',
           message: 'Data tidak valid. Field yang diisi mungkin duplikat atau tidak valid.',
         });
       }
-      
+
       if (error.code === 'P2003') {
         return res.status(400).json({
-          error: 'VALIDATION_ERROR', 
+          error: 'VALIDATION_ERROR',
           message: 'Field referensi tidak valid. Pastikan tenant ID dan product ID valid.',
         });
       }
-      
-      res.status(500).json({ 
+
+      res.status(500).json({
         error: 'SERVER_ERROR',
         message: error.message || 'Gagal membuat diskon. Silakan coba lagi.',
         ...(process.env.NODE_ENV === 'development' && { details: error.message })
@@ -344,7 +344,7 @@ router.put(
 
       // Prepare update data with proper type conversions
       const updateData: any = {};
-      
+
       if (req.body.name !== undefined) {
         updateData.name = String(req.body.name).trim();
       }
@@ -363,28 +363,28 @@ router.put(
       if (req.body.isActive !== undefined) {
         updateData.isActive = Boolean(req.body.isActive);
       }
-      
+
       // Handle optional fields
       if (req.body.minAmount !== undefined) {
         updateData.minAmount = req.body.minAmount !== null ? new Decimal(req.body.minAmount) : null;
       }
-      
+
       if (req.body.minQuantity !== undefined) {
         updateData.minQuantity = req.body.minQuantity !== null ? Number(req.body.minQuantity) : null;
       }
-      
+
       if (req.body.applicableProducts !== undefined) {
         updateData.applicableProducts = Array.isArray(req.body.applicableProducts) && req.body.applicableProducts.length > 0
           ? req.body.applicableProducts
           : null;
       }
-      
+
       if (req.body.bundleProducts !== undefined) {
         updateData.bundleProducts = Array.isArray(req.body.bundleProducts) && req.body.bundleProducts.length > 0
           ? req.body.bundleProducts
           : null;
       }
-      
+
       // Handle bundleDiscountProduct
       if (req.body.bundleDiscountProduct !== undefined) {
         if (req.body.bundleDiscountProduct && typeof req.body.bundleDiscountProduct === 'string' && req.body.bundleDiscountProduct.trim() !== '') {
@@ -393,11 +393,11 @@ router.put(
           updateData.bundleDiscountProduct = null;
         }
       }
-      
+
       if (req.body.startDate !== undefined) {
         updateData.startDate = req.body.startDate && req.body.startDate !== '' ? new Date(req.body.startDate) : null;
       }
-      
+
       if (req.body.endDate !== undefined) {
         updateData.endDate = req.body.endDate && req.body.endDate !== '' ? new Date(req.body.endDate) : null;
       }

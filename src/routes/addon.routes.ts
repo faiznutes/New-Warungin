@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import addonService from '../services/addon.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -41,7 +41,7 @@ router.get(
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 50; // Default 50 for addons (usually small list)
       const result = await addonService.getTenantAddons(tenantId, page, limit);
-      
+
       // NORMALISASI: Ensure data is always an array
       // REVIEW API: Konsistenkan response structure - selalu return { data: [], pagination: {} }
       if (result && result.data) {
@@ -49,7 +49,7 @@ router.get(
       } else {
         result.data = [];
       }
-      
+
       // LOGGING: Log response structure untuk debugging (hanya di development)
       if (process.env.NODE_ENV === 'development') {
         logger.info('GET /addons response:', {
@@ -59,7 +59,7 @@ router.get(
           dataLength: Array.isArray(result.data) ? result.data.length : 0
         });
       }
-      
+
       res.json(result);
     } catch (error: any) {
       logger.error('Error getting tenant addons:', { error: error.message, stack: error.stack });
@@ -80,12 +80,13 @@ router.get(
 router.post(
   '/subscribe',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: subscribeAddonSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only ADMIN_TENANT and SUPER_ADMIN can subscribe to addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin or super admin can subscribe to addons' });
@@ -100,7 +101,7 @@ router.post(
 
       // For SUPER_ADMIN, addon is activated immediately without payment
       // For ADMIN_TENANT, this endpoint is called after payment webhook (or direct for testing)
-      
+
       // Prepare data for service
       const addonData = {
         addonId: req.body.addonId,
@@ -112,7 +113,7 @@ router.post(
       };
 
       const addon = await addonService.subscribeAddon(tenantId, addonData);
-      
+
       // Log for Super Admin direct activation
       if (userRole === 'SUPER_ADMIN') {
         logger.info(`✅ Super Admin activated addon for tenant ${tenantId}:`, {
@@ -121,7 +122,7 @@ router.post(
           addonType: addonData.addonType,
         });
       }
-      
+
       res.status(201).json(addon);
     } catch (error: any) {
       logger.error('Error subscribing addon:', { error: error.message, stack: error.stack });
@@ -133,11 +134,12 @@ router.post(
 router.post(
   '/unsubscribe/:addonId',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin can unsubscribe from addons' });
       }
@@ -172,12 +174,13 @@ const extendAddonSchema = z.object({
 router.post(
   '/extend',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: extendAddonSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only ADMIN_TENANT and SUPER_ADMIN can extend addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin or super admin can extend addons' });
@@ -199,12 +202,13 @@ const reduceAddonSchema = z.object({
 router.post(
   '/reduce',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   validate({ body: reduceAddonSchema }),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
-      
+
       // Only SUPER_ADMIN can reduce addons
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can reduce addons' });
@@ -228,7 +232,7 @@ router.put(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can update addon
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can update addon' });
@@ -236,7 +240,7 @@ router.put(
 
       const addonId = req.params.id;
       const { status, purchasedBy } = req.body;
-      
+
       // Check if addon exists
       const addon = await prisma.tenantAddon.findUnique({
         where: { id: addonId },
@@ -273,14 +277,14 @@ router.delete(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can delete addon
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can delete addon' });
       }
 
       const addonId = req.params.id;
-      
+
       // Check if addon exists
       const addon = await prisma.tenantAddon.findUnique({
         where: { id: addonId },
@@ -313,14 +317,14 @@ router.post(
     try {
       const authReq = req as any;
       const userRole = authReq.role || authReq.user?.role;
-      
+
       // Only SUPER_ADMIN can bulk delete addons
       if (userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only super admin can bulk delete addons' });
       }
 
       const { ids } = req.body;
-      
+
       if (!Array.isArray(ids) || ids.length === 0) {
         return res.status(400).json({ message: 'IDs array is required' });
       }
@@ -332,7 +336,7 @@ router.post(
         },
       });
 
-      res.json({ 
+      res.json({
         message: `${result.count} addon(s) deleted successfully`,
         deletedCount: result.count,
       });

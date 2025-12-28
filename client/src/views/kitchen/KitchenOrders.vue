@@ -1,15 +1,15 @@
 <template>
   <div class="flex flex-col h-screen bg-slate-100/50 overflow-hidden font-display text-slate-900 mx-auto w-full">
     <!-- Header -->
-    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 px-6 py-3 bg-white z-20 shrink-0 shadow-sm relative overflow-hidden">
-      <div class="absolute top-0 left-0 w-full h-1 bg-[#ec6d13]/80"></div>
+    <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 px-6 py-4 bg-white z-20 shrink-0 shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
       <div class="flex items-center gap-4 text-slate-900">
-        <div class="size-10 flex items-center justify-center bg-[#fff3e0] rounded-lg text-[#ec6d13] border border-orange-100">
+        <div class="size-10 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 border border-indigo-100 shadow-sm">
           <span class="material-symbols-outlined">skillet</span>
         </div>
         <div>
           <h2 class="text-slate-900 text-xl font-bold leading-tight tracking-tight">Warungin | Dapur</h2>
-          <p class="text-slate-500 text-xs font-normal">KDS - {{ authStore.user?.role === 'KITCHEN' ? 'Kitchen Staff' : 'Supervisor Mode' }}</p>
+          <p class="text-slate-500 text-xs font-medium">KDS - {{ authStore.user?.role === 'KITCHEN' ? 'Kitchen Staff' : 'Supervisor Mode' }}</p>
         </div>
       </div>
       <div class="flex flex-1 justify-end gap-6 items-center">
@@ -47,23 +47,23 @@
       <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide">
         <button 
           @click="activeFilter = 'ALL'"
-          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
-          :class="activeFilter === 'ALL' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-all duration-200"
+          :class="activeFilter === 'ALL' ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-500/20' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-600/50 hover:bg-indigo-50 hover:text-indigo-600'"
         >
           <span class="text-sm font-bold">Semua ({{ orders.length }})</span>
         </button>
         <button 
           @click="activeFilter = 'DINE_IN'"
-          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
-           :class="activeFilter === 'DINE_IN' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-all duration-200"
+           :class="activeFilter === 'DINE_IN' ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-500/20' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-600/50 hover:bg-indigo-50 hover:text-indigo-600'"
         >
           <span class="material-symbols-outlined text-[18px]">restaurant</span>
           <span class="text-sm font-medium">Dine In</span>
         </button>
         <button 
           @click="activeFilter = 'TAKE_AWAY'"
-          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-colors"
-           :class="activeFilter === 'TAKE_AWAY' ? 'bg-[#ec6d13] text-white border-[#ec6d13] shadow-orange-500/10' : 'bg-white border-slate-300 text-slate-600 hover:border-[#ec6d13]/50 hover:bg-orange-50 hover:text-[#ec6d13]'"
+          class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg px-4 shadow-sm border transition-all duration-200"
+           :class="activeFilter === 'TAKE_AWAY' ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-500/20' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-600/50 hover:bg-indigo-50 hover:text-indigo-600'"
         >
           <span class="material-symbols-outlined text-[18px]">takeout_dining</span>
           <span class="text-sm font-medium">Takeaway</span>
@@ -173,7 +173,7 @@
           <div class="p-4 pt-0 mt-auto">
             <button 
               @click="markOrderServed(order)"
-              class="w-full flex items-center justify-center gap-2 h-12 rounded-lg bg-[#ec6d13] hover:bg-[#d56211] text-white font-bold text-base tracking-wide transition-all shadow-md active:scale-[0.98]"
+              class="w-full flex items-center justify-center gap-2 h-12 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base tracking-wide transition-all shadow-md active:scale-[0.98] shadow-indigo-500/20"
             >
               <span class="material-symbols-outlined">check_circle</span>
               Sajikan Semua

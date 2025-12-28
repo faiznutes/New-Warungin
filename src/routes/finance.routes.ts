@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import financeService from '../services/finance.service';
 import { checkBusinessAnalyticsAddon } from '../middlewares/addon-guard';
@@ -47,10 +47,11 @@ const router = Router();
 router.get(
   '/summary',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response, next) => {
     try {
       const userRole = (req as any).user?.role;
-      
+
       // For Super Admin, return platform financial summary (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
         const startDate = req.query.startDate as string;
@@ -58,7 +59,7 @@ router.get(
         const summary = await financeService.getPlatformFinancialSummary(startDate, endDate);
         return res.json(summary);
       }
-      
+
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
@@ -122,18 +123,21 @@ router.get(
 router.get(
   '/profit-loss',
   authGuard,
+  '/profit-loss',
+  authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response, next) => {
     try {
       const userRole = (req as any).user?.role;
-      
+
       // For Super Admin, return platform revenue profit-loss (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
         const startDate = req.query.startDate as string;
         const endDate = req.query.endDate as string;
         const shouldExport = req.query.export === 'true';
         const profitLoss = await financeService.getPlatformProfitLoss(startDate, endDate);
-        
+
         // If export requested, generate PDF
         if (shouldExport) {
           const { generatePDF } = await import('../services/pdf.service');
@@ -144,34 +148,34 @@ router.get(
             tenantId: 'platform',
             tenantName: 'Platform Revenue',
           });
-          
+
           res.setHeader('Content-Type', 'application/pdf');
           res.setHeader('Content-Disposition', `attachment; filename=laporan-laba-rugi-platform-${startDate || 'all'}-${endDate || 'all'}.pdf`);
           res.send(pdfBuffer);
           return;
         }
-        
+
         return res.json(profitLoss);
       }
-      
+
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
       const shouldExport = req.query.export === 'true';
-      
+
       const profitLoss = await financeService.getProfitLoss(tenantId, startDate, endDate);
-      
+
       // If export requested, generate PDF
       if (shouldExport) {
         const { generatePDF } = await import('../services/pdf.service');
         const prisma = (await import('../config/database')).default;
-        
+
         // Get tenant name for PDF
         const tenant = await prisma.tenant.findUnique({
           where: { id: tenantId },
           select: { name: true },
         });
-        
+
         const pdfBuffer = await generatePDF('profit-loss', {
           profitLoss,
           startDate,
@@ -179,13 +183,13 @@ router.get(
           tenantId,
           tenantName: tenant?.name || 'Tenant',
         });
-        
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=laporan-laba-rugi-${startDate || 'all'}-${endDate || 'all'}.pdf`);
         res.send(pdfBuffer);
         return;
       }
-      
+
       res.json(profitLoss);
     } catch (error: any) {
       next(error);
@@ -233,11 +237,13 @@ router.get(
  */
 router.get(
   '/balance-sheet',
+  '/balance-sheet',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response, next) => {
     try {
       const userRole = (req as any).user?.role;
-      
+
       // For Super Admin, return platform balance sheet (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
         const startDate = req.query.startDate as string;
@@ -245,7 +251,7 @@ router.get(
         const balanceSheet = await financeService.getPlatformBalanceSheet(startDate, endDate);
         return res.json(balanceSheet);
       }
-      
+
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
@@ -299,11 +305,13 @@ router.get(
  */
 router.get(
   '/cash-flow',
+  '/cash-flow',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response, next) => {
     try {
       const userRole = (req as any).user?.role;
-      
+
       // For Super Admin, return platform cash flow (subscriptions & addons)
       if (userRole === 'SUPER_ADMIN') {
         const startDate = req.query.startDate as string;
@@ -311,7 +319,7 @@ router.get(
         const cashFlow = await financeService.getPlatformCashFlow(startDate, endDate);
         return res.json(cashFlow);
       }
-      
+
       const tenantId = requireTenantId(req);
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;

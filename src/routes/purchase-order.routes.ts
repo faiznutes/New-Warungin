@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
@@ -159,6 +159,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createPurchaseOrderSchema }),
@@ -166,13 +167,13 @@ router.post(
     try {
       const tenantId = requireTenantId(req);
       const userId = requireUserId(req);
-      
+
       // Convert expectedDate from string to Date if provided
       const purchaseOrderData = {
         ...req.body,
         expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
       };
-      
+
       const purchaseOrder = await purchaseOrderService.createPurchaseOrder(
         tenantId,
         userId,
@@ -212,6 +213,7 @@ router.post(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: updatePurchaseOrderSchema }),
@@ -219,14 +221,14 @@ router.put(
     try {
       const tenantId = requireTenantId(req);
       const userId = requireUserId(req);
-      
+
       // Convert dates from string to Date if provided
       const updateData = {
         ...req.body,
         expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
         receivedDate: req.body.receivedDate ? new Date(req.body.receivedDate) : undefined,
       };
-      
+
       const purchaseOrder = await purchaseOrderService.updatePurchaseOrder(
         req.params.id,
         tenantId,
@@ -269,6 +271,7 @@ router.put(
 router.post(
   '/:id/receive',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   async (req: Request, res: Response) => {
@@ -310,6 +313,7 @@ router.post(
 router.post(
   '/:id/cancel',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   async (req: Request, res: Response) => {

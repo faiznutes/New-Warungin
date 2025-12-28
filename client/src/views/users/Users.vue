@@ -11,7 +11,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95 font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         <span>Add User</span>
@@ -19,16 +19,16 @@
     </div>
 
     <!-- User Limit Info with Progress Bar -->
-    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 rounded-xl p-5">
+    <div v-if="userLimit && userLimit.limit !== undefined && userLimit.limit !== -1" class="bg-primary-50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-800 rounded-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <div>
           <p class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-[20px] text-emerald-600">group</span>
+            <span class="material-symbols-outlined text-[20px] text-primary">group</span>
             User Limit
           </p>
           <p class="text-sm text-[#4c739a] dark:text-[#4c739a] mt-1">
             {{ userLimit.currentUsage || 0 }} / {{ userLimit.limit }} active users
-            <span class="font-bold" :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'text-red-600' : 'text-emerald-600'">
+            <span class="font-bold" :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'text-red-600' : 'text-primary'">
               ({{ userLimit.limit - (userLimit.currentUsage || 0) }} available)
             </span>
           </p>
@@ -37,7 +37,7 @@
       <div class="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-2">
         <div
           class="h-2 rounded-full transition-all"
-          :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'bg-red-500' : (userLimit.currentUsage || 0) >= (userLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-emerald-500'"
+          :class="(userLimit.currentUsage || 0) >= userLimit.limit ? 'bg-red-500' : (userLimit.currentUsage || 0) >= (userLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-primary'"
           :style="{ width: `${Math.min(100, ((userLimit.currentUsage || 0) / userLimit.limit) * 100)}%` }"
         ></div>
       </div>
@@ -53,7 +53,7 @@
     <!-- Loading -->
     <div v-else-if="loading" class="flex items-center justify-center py-16">
       <div class="flex flex-col items-center gap-4">
-        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         <p class="text-[#4c739a] font-medium text-sm">Loading users...</p>
       </div>
     </div>
@@ -65,7 +65,7 @@
       <p class="text-[#4c739a] text-center max-w-md mb-4 px-4">Add your first user to get started.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-xl shadow-lg shadow-primary/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">person_add</span>
         Add First User
@@ -90,8 +90,8 @@
             <tr v-for="user in users" :key="user.id" class="hover:bg-[#f6f7f8] dark:hover:bg-slate-700/50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center border border-emerald-100 dark:border-emerald-800">
-                    <span class="material-symbols-outlined text-emerald-600 text-[18px]">person</span>
+                  <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-full flex items-center justify-center border border-primary-100 dark:border-primary-800">
+                    <span class="material-symbols-outlined text-primary text-[18px]">person</span>
                   </div>
                   <span class="text-sm font-semibold text-[#0d141b] dark:text-white">{{ user.name }}</span>
                 </div>
@@ -111,10 +111,10 @@
                 <span
                   class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full border"
                   :class="user.isActive 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                    ? 'bg-primary-50 text-primary border-primary-100 dark:bg-primary-900/20 dark:text-primary-400 dark:border-primary-800' 
                     : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-primary' : 'bg-red-500'"></span>
                   {{ user.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
@@ -127,7 +127,7 @@
                 <div class="flex items-center justify-end gap-2">
                   <button
                     @click="editUser(user)"
-                    class="p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                    class="p-2 text-[#4c739a] hover:text-primary hover:bg-primary-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
                     title="Edit User"
                   >
                     <span class="material-symbols-outlined text-[18px]">edit</span>
@@ -248,10 +248,11 @@ const loadUsers = async (page = 1) => {
 
 const getRoleClass = (role: string) => {
   const classes: Record<string, string> = {
-    ADMIN_TENANT: 'bg-purple-100 text-purple-700',
-    SUPERVISOR: 'bg-blue-100 text-blue-700',
-    CASHIER: 'bg-green-100 text-green-700',
-    KITCHEN: 'bg-orange-100 text-orange-700',
+    SUPER_ADMIN: 'bg-role-super-admin/10 text-role-super-admin border-role-super-admin/20',
+    ADMIN_TENANT: 'bg-role-admin-tenant/10 text-role-admin-tenant border-role-admin-tenant/20',
+    SUPERVISOR: 'bg-role-supervisor/10 text-role-supervisor border-role-supervisor/20',
+    CASHIER: 'bg-role-cashier/10 text-role-cashier border-role-cashier/20',
+    KITCHEN: 'bg-role-kitchen/10 text-role-kitchen border-role-kitchen/20',
   };
   return classes[role] || 'bg-slate-100 text-slate-600';
 };

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import customerService from '../services/customer.service';
 import { createCustomerSchema, updateCustomerSchema, getCustomersQuerySchema } from '../validators/customer.validator';
@@ -53,6 +53,7 @@ const router = Router();
 router.get(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ query: getCustomersQuerySchema }),
   async (req: Request, res: Response) => {
@@ -91,6 +92,7 @@ router.get(
 router.get(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
@@ -144,6 +146,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: createCustomerSchema }),
   async (req: Request, res: Response) => {
@@ -204,6 +207,7 @@ router.post(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: updateCustomerSchema }),
   async (req: Request, res: Response) => {
@@ -242,6 +246,7 @@ router.put(
 router.delete(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {

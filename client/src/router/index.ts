@@ -222,6 +222,36 @@ const router = createRouter({
           component: () => import('../views/settings/SystemSettings.vue'),
           meta: { roles: ['SUPER_ADMIN'] },
         },
+        {
+          path: 'settings/style-guide',
+          name: 'style-guide',
+          component: () => import('../views/settings/FormStyleGuide.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'settings/table-style-guide',
+          name: 'table-style-guide',
+          component: () => import('../views/settings/TableStyleGuide.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'settings/loading-states-guide',
+          name: 'loading-states-guide',
+          component: () => import('../views/settings/LoadingStatesGuide.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'settings/advanced-components-guide',
+          name: 'advanced-components-guide',
+          component: () => import('../views/settings/AdvancedComponentsGuide.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
+        {
+          path: 'settings/additional-components-guide',
+          name: 'additional-components-guide',
+          component: () => import('../views/settings/AdditionalComponentsGuide.vue'),
+          meta: { roles: ['SUPER_ADMIN'] },
+        },
         // Tenant & Super Admin
         {
           path: 'products',

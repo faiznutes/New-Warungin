@@ -4,8 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
-import { AuthRequest } from '../middlewares/auth';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import dailyBackupService from '../services/daily-backup.service';
 import prisma from '../config/database';
 import logger from '../utils/logger';
@@ -27,13 +26,10 @@ const router = Router();
 router.get(
   '/critical',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // Only SUPER_ADMIN can access
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can access critical backups' });
-        return;
-      }
+      const threeDaysAgo = new Date();
 
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
@@ -169,9 +165,10 @@ router.get(
 router.get(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     const startTime = Date.now();
-    logger.info('Backup route called', { 
+    logger.info('Backup route called', {
       role: req.role,
       query: req.query,
     });
@@ -183,7 +180,7 @@ router.get(
           elapsed: Date.now() - startTime,
         });
         try {
-          res.status(504).json({ 
+          res.status(504).json({
             error: 'TIMEOUT',
             message: 'Request timeout. Please try again.',
           });
@@ -274,7 +271,7 @@ router.get(
           stack: dbError.stack,
           timeout: dbError.message?.includes('timeout'),
         });
-        
+
         // Return empty result instead of throwing error
         backupLogs = [];
         total = 0;
@@ -283,12 +280,12 @@ router.get(
       // Ensure response is always sent
       clearTimeout(responseTimeout);
       const elapsed = Date.now() - startTime;
-      logger.info('Backup route completed', { 
+      logger.info('Backup route completed', {
         elapsed: `${elapsed}ms`,
         count: backupLogs.length,
         total,
       });
-      
+
       if (!res.headersSent) {
         res.json({
           data: backupLogs || [],
@@ -330,14 +327,9 @@ router.get(
 router.post(
   '/:tenantId/regenerate',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // Only SUPER_ADMIN can regenerate backups
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can regenerate backups' });
-        return;
-      }
-
       const { tenantId } = req.params;
       const result = await dailyBackupService.regenerateBackup(tenantId);
 
@@ -371,14 +363,9 @@ router.post(
 router.post(
   '/:backupId/resend-email',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // Only SUPER_ADMIN can resend emails
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can resend backup emails' });
-        return;
-      }
-
       const { backupId } = req.params;
       const result = await dailyBackupService.resendBackupEmail(backupId);
 
@@ -410,14 +397,9 @@ router.post(
 router.get(
   '/:backupId/download',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // Only SUPER_ADMIN can download backups
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can download backups' });
-        return;
-      }
-
       const { backupId } = req.params;
       const backupLog = await prisma.backupLog.findUnique({
         where: { id: backupId },
@@ -462,14 +444,9 @@ router.get(
 router.get(
   '/:backupId/view',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // Only SUPER_ADMIN can view backups
-      if (req.role !== 'SUPER_ADMIN') {
-        res.status(403).json({ message: 'Only super admin can view backups' });
-        return;
-      }
-
       const { backupId } = req.params;
       const backupLog = await prisma.backupLog.findUnique({
         where: { id: backupId },

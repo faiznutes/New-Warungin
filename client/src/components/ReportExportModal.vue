@@ -1,127 +1,140 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Export Laporan</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in border border-white/20">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-4">
+              <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl">
+                  <span class="material-symbols-outlined text-[28px]">download</span>
+              </div>
+              <div>
+                   <h3 class="text-2xl font-black text-slate-900 dark:text-white leading-tight">Ekspor Laporan</h3>
+                   <p class="text-sm text-slate-500 font-medium">Unduh data laporan dalam format PDF atau CSV.</p>
+              </div>
+          </div>
           <button
             @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 transition p-2"
+            class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition text-slate-400 hover:text-slate-600"
           >
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <span class="material-symbols-outlined text-[24px]">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="handleExport" class="space-y-4 sm:space-y-6">
+        <form @submit.prevent="handleExport" class="space-y-6">
           <!-- Export Type Selection -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Export</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Data yang Diekspor</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
                 type="button"
                 @click="exportForm.exportType = 'report'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'report' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="text-sm">Laporan</span>
+                <div v-if="exportForm.exportType === 'report'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                    <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px]">description</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Laporan</span>
               </button>
               <button
                 type="button"
                 @click="exportForm.exportType = 'analytics'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'analytics' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                   : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <span class="text-sm">Analytics</span>
+                 <div v-if="exportForm.exportType === 'analytics'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                    <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px]">analytics</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Analitik</span>
               </button>
               <button
                 type="button"
                 @click="exportForm.exportType = 'both'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'both' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="text-sm">Keduanya</span>
+                 <div v-if="exportForm.exportType === 'both'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                    <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px]">folder_zip</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Keduanya</span>
               </button>
             </div>
           </div>
 
           <!-- Report Type (only show if export type is report or both) -->
-          <div v-if="exportForm.exportType === 'report' || exportForm.exportType === 'both'">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Laporan</label>
-            <select
-              v-model="exportForm.reportType"
-              required
-              class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="sales">Laporan Penjualan</option>
-              <option value="product">Laporan Produk</option>
-              <option value="customers">Laporan Pelanggan</option>
-              <option value="inventory">Laporan Inventori</option>
-              <option value="financial">Laporan Keuangan</option>
-            </select>
+          <div v-if="exportForm.exportType === 'report' || exportForm.exportType === 'both'" class="animate-fade-in">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tipe Laporan</label>
+            <div class="relative">
+                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px]">category</span>
+                <select
+                  v-model="exportForm.reportType"
+                  required
+                  class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                >
+                  <option value="sales">Laporan Penjualan</option>
+                  <option value="product">Laporan Produk</option>
+                  <option value="customers">Laporan Pelanggan</option>
+                  <option value="inventory">Laporan Inventori</option>
+                  <option value="financial">Laporan Keuangan</option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none">expand_more</span>
+            </div>
           </div>
 
           <!-- Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Periode Waktu</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
                 type="button"
                 @click="exportForm.period = 'daily'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'daily' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Harian
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'weekly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'weekly' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Mingguan
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'monthly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'monthly' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Bulanan
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'all'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'all' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Semua
               </button>
@@ -129,164 +142,156 @@
           </div>
 
           <!-- Date Range (if not 'all') -->
-          <div v-if="exportForm.period !== 'all'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div v-if="exportForm.period !== 'all'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
-              <input
-                v-model="exportForm.startDate"
-                type="date"
-                required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-              />
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dari Tanggal</label>
+               <div class="relative">
+                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+                <input
+                    v-model="exportForm.startDate"
+                    type="date"
+                    required
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                />
+               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
-              <input
-                v-model="exportForm.endDate"
-                type="date"
-                required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-              />
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sampai Tanggal</label>
+               <div class="relative">
+                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+                <input
+                    v-model="exportForm.endDate"
+                    type="date"
+                    required
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                />
+               </div>
             </div>
           </div>
 
           <!-- Template Selection (only for PDF) -->
-          <div v-if="exportForm.format === 'PDF'">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Template</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-              <button
+          <div v-if="exportForm.format === 'PDF'" class="animate-fade-in">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Template PDF</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              <!-- Helper component or direct button loops would be cleaner but verbose here -->
+               <button
                 type="button"
                 @click="exportForm.template = 'clean'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'clean' || exportForm.template === 'minimalist'
-                  ? 'border-gray-800 bg-gray-900 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-gray-400 bg-white'"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'clean'
+                  ? 'border-slate-800 bg-slate-900 text-white' 
+                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Clean</span>
-                <span class="text-xs opacity-75">Sederhana</span>
+                <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Clean</span>
               </button>
-              <button
+              
+               <button
                 type="button"
                 @click="exportForm.template = 'contemporary'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'contemporary' || exportForm.template === 'modern' || exportForm.template === 'classic'
-                  ? 'border-blue-600 bg-blue-600 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-blue-300 bg-white'"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'contemporary'
+                  ? 'border-blue-600 bg-blue-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Contemporary</span>
-                <span class="text-xs opacity-75">Modern</span>
+                 <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Modern</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'vibrant'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'vibrant' || exportForm.template === 'colorful'
-                  ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-pink-600 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-purple-300 bg-white'"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'vibrant'
+                  ? 'border-purple-600 bg-purple-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-purple-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Vibrant</span>
-                <span class="text-xs opacity-75">Berwarna</span>
+                 <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Vibrant</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'professional'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'professional' || exportForm.template === 'elegant'
-                  ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold' 
-                  : 'border-gray-300 hover:border-emerald-300 bg-white'"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'professional'
+                  ? 'border-emerald-600 bg-emerald-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Professional</span>
-                <span class="text-xs opacity-75">Hijau</span>
+                 <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Pro</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'executive'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
                 :class="exportForm.template === 'executive'
-                  ? 'border-amber-600 bg-amber-50 text-amber-900 font-semibold' 
-                  : 'border-gray-300 hover:border-amber-300 bg-white'"
+                  ? 'border-amber-600 bg-amber-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-amber-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Executive</span>
-                <span class="text-xs opacity-75">Premium</span>
+                 <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Premium</span>
               </button>
             </div>
           </div>
 
           <!-- Export Format -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Format Export</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Format File</label>
             <div class="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 @click="exportForm.format = 'CSV'"
                 :disabled="exportForm.exportType === 'analytics'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-4 py-4 rounded-xl border-2 transition flex flex-col items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
                 :class="exportForm.format === 'CSV' 
-                  ? 'border-green-500 bg-green-50 text-green-700 font-semibold' 
-                  : 'border-gray-300 hover:border-green-300'"
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span class="text-sm">CSV</span>
-                <span class="text-xs text-gray-500">Excel Compatible</span>
-                <span v-if="exportForm.exportType === 'analytics'" class="text-xs text-red-500">Tidak tersedia</span>
+                <div class="p-2 rounded-full" :class="exportForm.format === 'CSV' ? 'bg-blue-200 dark:bg-blue-800' : 'bg-slate-100 dark:bg-slate-700'">
+                    <span class="material-symbols-outlined text-[24px]">table_chart</span>
+                </div>
+                <div class="text-center">
+                    <span class="block text-sm font-bold">CSV / Excel</span>
+                    <span v-if="exportForm.exportType === 'analytics'" class="block text-[10px] text-red-500 font-bold mt-1">Tidak tersedia untuk Analitik</span>
+                </div>
               </button>
               <button
                 type="button"
                 @click="exportForm.format = 'PDF'"
-                class="px-4 py-3 rounded-xl border-2 transition flex flex-col items-center space-y-2"
+                class="px-4 py-4 rounded-xl border-2 transition flex flex-col items-center gap-2 group"
                 :class="exportForm.format === 'PDF' 
-                  ? 'border-red-500 bg-red-50 text-red-700 font-semibold' 
-                  : 'border-gray-300 hover:border-red-300'"
+                  ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400' 
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-red-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-                <span class="text-sm">PDF</span>
-                <span class="text-xs text-gray-500">Print Ready</span>
+                 <div class="p-2 rounded-full" :class="exportForm.format === 'PDF' ? 'bg-red-200 dark:bg-red-800' : 'bg-slate-100 dark:bg-slate-700'">
+                    <span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
+                 </div>
+                <div class="text-center">
+                    <span class="block text-sm font-bold">PDF Document</span>
+                </div>
               </button>
             </div>
           </div>
 
-          <!-- Summary -->
-          <div class="bg-gray-50 rounded-xl p-4">
-            <h4 class="font-semibold text-gray-900 mb-2">Ringkasan Export</h4>
-            <div class="space-y-1 text-sm text-gray-600">
-              <div class="flex justify-between">
-                <span>Tipe:</span>
-                <span class="font-medium">{{ getReportTypeLabel(exportForm.reportType) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Periode:</span>
-                <span class="font-medium">{{ getPeriodLabel(exportForm.period) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Format:</span>
-                <span class="font-medium">{{ exportForm.format }}</span>
-              </div>
-              <div v-if="exportForm.format === 'PDF'" class="flex justify-between">
-                <span>Template:</span>
-                <span class="font-medium">{{ getTemplateLabel(exportForm.template) }}</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Actions -->
-          <div class="flex space-x-3 pt-4 border-t">
+          <div class="flex gap-4 pt-6 border-t border-slate-100 dark:border-slate-700">
             <button
               type="button"
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
+              class="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-bold text-sm"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="exporting"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              class="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
             >
-              {{ exporting ? 'Mengekspor...' : 'Export' }}
+               <div v-if="exporting" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span class="material-symbols-outlined text-[20px]" v-else>download</span>
+              {{ exporting ? 'Mengekspor...' : 'Mulai Export' }}
             </button>
           </div>
         </form>
@@ -335,34 +340,6 @@ const exportForm = ref({
   format: 'PDF' as 'CSV' | 'PDF',
   template: 'contemporary' as 'clean' | 'contemporary' | 'vibrant' | 'professional' | 'executive' | 'minimalist' | 'modern' | 'classic' | 'colorful' | 'elegant',
 });
-
-const getReportTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    sales: 'Laporan Penjualan',
-    product: 'Laporan Produk',
-    customers: 'Laporan Pelanggan',
-    inventory: 'Laporan Inventori',
-    financial: 'Laporan Keuangan',
-  };
-  return labels[type] || type;
-};
-
-  const getTemplateLabel = (template: string) => {
-    const labels: Record<string, string> = {
-      clean: 'Clean & Simple',
-      contemporary: 'Contemporary',
-      vibrant: 'Vibrant',
-      professional: 'Professional',
-      executive: 'Executive',
-      // Legacy support
-      minimalist: 'Clean & Simple',
-      modern: 'Contemporary',
-      classic: 'Contemporary',
-      colorful: 'Vibrant',
-      elegant: 'Professional',
-    };
-    return labels[template] || template;
-  };
 
 const handleExport = async () => {
   exporting.value = true;
@@ -525,3 +502,6 @@ watch(() => props.show, (newShow) => {
 });
 </script>
 
+<style scoped>
+/* Scoped styles */
+</style>

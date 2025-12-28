@@ -1,114 +1,113 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-8 animate-fade-in font-display">
     <!-- Header -->
     <div class="flex flex-col gap-1">
-      <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Password Settings</h1>
-      <p class="text-[#4c739a] dark:text-slate-400">Change your password and manage password policies.</p>
+      <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Pengaturan Kata Sandi</h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">Ubah kata sandi dan kelola kebijakan keamanan akun Anda.</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Change Password Card -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-primary rounded-xl">
-            <span class="material-symbols-outlined">lock</span>
+      <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 sm:p-8">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl shadow-sm">
+            <span class="material-symbols-outlined text-[24px]">lock</span>
           </div>
-          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Change Password</h3>
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ubah Kata Sandi</h3>
+            <p class="text-sm font-medium text-slate-500">Perbarui kata sandi keamanan Anda</p>
+          </div>
         </div>
 
-        <form @submit.prevent="updatePassword" class="space-y-4">
+        <form @submit.prevent="updatePassword" class="space-y-6">
           <div>
-            <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Current Password *</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kata Sandi Saat Ini <span class="text-red-500">*</span></label>
             <input
               v-model="passwordForm.currentPassword"
               type="password"
               required
-              placeholder="Enter current password"
-              class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+              placeholder="Masukkan kata sandi saat ini"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">New Password *</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Kata Sandi Baru <span class="text-red-500">*</span></label>
             <input
               v-model="passwordForm.newPassword"
               type="password"
               required
-              placeholder="Enter new password"
-              class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+              placeholder="Masukkan kata sandi baru"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
             />
-            <p class="text-xs text-[#4c739a] mt-1.5">
-              Min 8 characters with uppercase, lowercase, number, and symbol
+            <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">info</span>
+              Min 8 karakter, huruf besar, kecil, angka, dan simbol
             </p>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-[#0d141b] uppercase tracking-wider mb-2">Confirm New Password *</label>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Konfirmasi Kata Sandi Baru <span class="text-red-500">*</span></label>
             <input
               v-model="passwordForm.confirmPassword"
               type="password"
               required
-              placeholder="Confirm new password"
-              class="w-full px-4 py-3 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-[#0d141b] dark:text-white"
+              placeholder="Ulangi kata sandi baru"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 dark:text-white"
             />
-            <p v-if="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword" class="text-xs text-red-600 mt-1">
-              Passwords do not match
+            <p v-if="passwordForm.newPassword && passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword" class="text-xs text-red-600 font-bold mt-2 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">cancel</span>
+              Kata sandi tidak cocok
             </p>
-          </div>
-
-          <div v-if="passwordError" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-center gap-2">
-            <span class="material-symbols-outlined text-red-600 text-[20px]">error</span>
-            <p class="text-sm text-red-800 dark:text-red-200">{{ passwordError }}</p>
-          </div>
-
-          <div v-if="passwordSuccess" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-2">
-            <span class="material-symbols-outlined text-green-600 text-[20px]">check_circle</span>
-            <p class="text-sm text-green-800 dark:text-green-200">{{ passwordSuccess }}</p>
           </div>
 
           <button
             type="submit"
             :disabled="updating || passwordForm.newPassword !== passwordForm.confirmPassword"
-            class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
+            class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold text-sm transform active:scale-95 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none"
           >
-            <span class="material-symbols-outlined text-[20px]">lock_reset</span>
-            {{ updating ? 'Updating...' : 'Update Password' }}
+            <div v-if="updating" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span class="material-symbols-outlined text-[20px]" v-else>lock_reset</span>
+            {{ updating ? 'Memperbarui...' : 'Perbarui Kata Sandi' }}
           </button>
         </form>
       </div>
 
       <!-- Password Policy Info Card -->
-      <div class="bg-[#eef2ff] dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
-            <span class="material-symbols-outlined">policy</span>
+      <div class="bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 rounded-2xl p-6 sm:p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl">
+            <span class="material-symbols-outlined text-[24px]">policy</span>
           </div>
-          <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-100">Password Policy</h3>
+          <div>
+              <h3 class="text-xl font-bold text-indigo-900 dark:text-indigo-100">Kebijakan Kata Sandi</h3>
+              <p class="text-sm font-medium text-indigo-600/70 dark:text-indigo-300/70">Standar keamanan yang harus dipenuhi</p>
+          </div>
         </div>
-        <ul class="space-y-3 text-sm text-indigo-800 dark:text-indigo-200">
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Minimum 8 characters</span>
+        <ul class="space-y-4 text-sm font-medium text-indigo-900 dark:text-indigo-200">
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Minimal 8 karakter</span>
           </li>
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Must contain uppercase letter (A-Z)</span>
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Harus mengandung huruf besar (A-Z)</span>
           </li>
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Must contain lowercase letter (a-z)</span>
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Harus mengandung huruf kecil (a-z)</span>
           </li>
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Must contain number (0-9)</span>
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Harus mengandung angka (0-9)</span>
           </li>
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Must contain symbol (!@#$%^&*)</span>
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Harus mengandung simbol (!@#$%^&*)</span>
           </li>
-          <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-indigo-600 text-[18px]">check_circle</span>
-            <span>Cannot reuse previously used passwords</span>
+          <li class="flex items-center gap-3 p-3 bg-white/50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span class="material-symbols-outlined text-indigo-600 text-[20px]">check_circle</span>
+            <span>Tidak boleh menggunakan kata sandi lama</span>
           </li>
         </ul>
       </div>
@@ -119,10 +118,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
 
+const { success: showSuccess, error: showError } = useNotification();
 const updating = ref(false);
-const passwordError = ref('');
-const passwordSuccess = ref('');
 
 const passwordForm = ref({
   currentPassword: '',
@@ -132,13 +131,11 @@ const passwordForm = ref({
 
 const updatePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    passwordError.value = 'Passwords do not match';
+    await showError('Kata sandi baru tidak cocok');
     return;
   }
 
   updating.value = true;
-  passwordError.value = '';
-  passwordSuccess.value = '';
 
   try {
     await api.post('/password/update', {
@@ -147,7 +144,7 @@ const updatePassword = async () => {
       confirmPassword: passwordForm.value.confirmPassword,
     });
 
-    passwordSuccess.value = 'Password updated successfully';
+    await showSuccess('Kata sandi berhasil diperbarui');
     passwordForm.value = {
       currentPassword: '',
       newPassword: '',
@@ -155,7 +152,7 @@ const updatePassword = async () => {
     };
   } catch (error: any) {
     console.error('Error updating password:', error);
-    passwordError.value = error.response?.data?.message || 'Failed to update password';
+    await showError(error.response?.data?.message || 'Gagal memperbarui kata sandi');
   } finally {
     updating.value = false;
   }

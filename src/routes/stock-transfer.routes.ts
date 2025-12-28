@@ -146,6 +146,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createStockTransferSchema }),
@@ -158,7 +159,7 @@ router.post(
         userId,
         req.body
       );
-      
+
       // Log audit for SPV actions
       await logAction(
         req as AuthRequest,
@@ -173,7 +174,7 @@ router.post(
         },
         'SUCCESS'
       );
-      
+
       res.status(201).json(transfer);
     } catch (error: unknown) {
       await logAction(
@@ -219,6 +220,7 @@ router.post(
 router.post(
   '/:id/receive',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {
@@ -231,7 +233,7 @@ router.post(
         userId,
         receivedDate
       );
-      
+
       // Log audit for SPV actions
       await logAction(
         req as AuthRequest,
@@ -244,7 +246,7 @@ router.post(
         },
         'SUCCESS'
       );
-      
+
       res.json(transfer);
     } catch (error: unknown) {
       await logAction(
@@ -282,13 +284,14 @@ router.post(
 router.post(
   '/:id/cancel',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
       const transfer = await stockTransferService.cancelStockTransfer(req.params.id, tenantId);
-      
+
       // Log audit for SPV actions
       await logAction(
         req as AuthRequest,
@@ -300,7 +303,7 @@ router.post(
         },
         'SUCCESS'
       );
-      
+
       res.json(transfer);
     } catch (error: unknown) {
       await logAction(

@@ -1,65 +1,71 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-4 sm:mb-6">
-          <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Export Laporan Global</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in border border-white/20">
+      <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-4">
+              <div class="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl">
+                  <span class="material-symbols-outlined text-[28px]">public</span>
+              </div>
+              <div>
+                   <h3 class="text-2xl font-black text-slate-900 dark:text-white leading-tight">Ekspor Laporan Global</h3>
+                   <p class="text-sm text-slate-500 font-medium">Analisis komprehensif seluruh sistem.</p>
+              </div>
+          </div>
           <button
             @click="$emit('close')"
-            class="text-gray-400 hover:text-gray-600 transition p-2"
+            class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition text-slate-400 hover:text-slate-600"
           >
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <span class="material-symbols-outlined text-[24px]">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="handleExport" class="space-y-4 sm:space-y-6">
+        <form @submit.prevent="handleExport" class="space-y-6">
           <!-- Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Periode</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Periode Waktu</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <button
                 type="button"
                 @click="exportForm.period = 'daily'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'daily' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30' 
+                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Harian
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'weekly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'weekly' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30' 
+                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Mingguan
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'monthly'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                 class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'monthly' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30' 
+                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Bulanan
               </button>
               <button
                 type="button"
                 @click="exportForm.period = 'custom'"
-                class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl border-2 transition"
+                class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'custom' 
-                  ? 'border-primary-500 bg-primary-50 text-primary-700 font-semibold' 
-                  : 'border-gray-300 hover:border-primary-300'"
+                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30' 
+                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Kustom
               </button>
@@ -67,127 +73,142 @@
           </div>
 
           <!-- Date Range (if custom) -->
-          <div v-if="exportForm.period === 'custom'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div v-if="exportForm.period === 'custom'" class="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
-              <input
-                v-model="exportForm.startDate"
-                type="date"
-                required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-              />
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dari Tanggal</label>
+               <div class="relative">
+                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+                <input
+                    v-model="exportForm.startDate"
+                    type="date"
+                    required
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                />
+               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
-              <input
-                v-model="exportForm.endDate"
-                type="date"
-                required
-                class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-              />
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Sampai Tanggal</label>
+               <div class="relative">
+                 <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">calendar_today</span>
+                <input
+                    v-model="exportForm.endDate"
+                    type="date"
+                    required
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                />
+               </div>
             </div>
           </div>
 
           <!-- Template Selection -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Template</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-              <button
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Pilih Template PDF</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+               <button
                 type="button"
                 @click="exportForm.template = 'clean'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'clean' || exportForm.template === 'minimalist'
-                  ? 'border-gray-800 bg-gray-900 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-gray-400 bg-white'"
+                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'clean'
+                   ? 'border-slate-800 bg-slate-900 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-slate-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Clean</span>
-                <span class="text-xs opacity-75">Sederhana</span>
+                 <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Clean</span>
               </button>
-              <button
+              
+               <button
                 type="button"
                 @click="exportForm.template = 'contemporary'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'contemporary' || exportForm.template === 'modern' || exportForm.template === 'classic'
-                  ? 'border-blue-600 bg-blue-600 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-blue-300 bg-white'"
+                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'contemporary'
+                   ? 'border-blue-600 bg-blue-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Contemporary</span>
-                <span class="text-xs opacity-75">Modern</span>
+                  <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Modern</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'vibrant'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'vibrant' || exportForm.template === 'colorful'
-                  ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-pink-600 text-white font-semibold' 
-                  : 'border-gray-300 hover:border-purple-300 bg-white'"
+                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'vibrant'
+                   ? 'border-purple-600 bg-purple-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-purple-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Vibrant</span>
-                <span class="text-xs opacity-75">Berwarna</span>
+                  <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Vibrant</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'professional'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
-                :class="exportForm.template === 'professional' || exportForm.template === 'elegant'
-                  ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold' 
-                  : 'border-gray-300 hover:border-emerald-300 bg-white'"
+                class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
+                :class="exportForm.template === 'professional'
+                   ? 'border-emerald-600 bg-emerald-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Professional</span>
-                <span class="text-xs opacity-75">Hijau</span>
+                  <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Pro</span>
               </button>
-              <button
+
+               <button
                 type="button"
                 @click="exportForm.template = 'executive'"
-                class="px-3 sm:px-4 py-2 sm:py-3 rounded-xl border-2 transition flex flex-col items-center space-y-1 sm:space-y-2 text-xs sm:text-sm"
+                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
                 :class="exportForm.template === 'executive'
-                  ? 'border-amber-600 bg-amber-50 text-amber-900 font-semibold' 
-                  : 'border-gray-300 hover:border-amber-300 bg-white'"
+                   ? 'border-amber-600 bg-amber-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-amber-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
-                <span class="font-medium">Executive</span>
-                <span class="text-xs opacity-75">Premium</span>
+                  <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
+                <span class="text-xs font-bold">Premium</span>
               </button>
             </div>
           </div>
 
           <!-- Summary -->
-          <div class="bg-gray-50 rounded-xl p-4">
-            <h4 class="font-semibold text-gray-900 mb-2">Ringkasan Export</h4>
-            <div class="space-y-1 text-sm text-gray-600">
-              <div class="flex justify-between">
-                <span>Periode:</span>
-                <span class="font-medium">{{ getPeriodLabel(exportForm.period) }}</span>
+          <div class="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/30">
+            <h4 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                 <span class="material-symbols-outlined text-indigo-500">info</span>
+                Ringkasan Ekspor
+            </h4>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between items-center pb-2 border-b border-indigo-100 dark:border-indigo-800/30">
+                <span class="text-slate-500 font-medium">Periode:</span>
+                <span class="font-bold text-slate-900 dark:text-white">{{ getPeriodLabel(exportForm.period) }}</span>
               </div>
-              <div v-if="exportForm.period === 'custom'" class="flex justify-between">
-                <span>Tanggal:</span>
-                <span class="font-medium">{{ exportForm.startDate }} - {{ exportForm.endDate }}</span>
+              <div v-if="exportForm.period === 'custom'" class="flex justify-between items-center pb-2 border-b border-indigo-100 dark:border-indigo-800/30">
+                <span class="text-slate-500 font-medium">Tanggal:</span>
+                <span class="font-bold text-slate-900 dark:text-white">{{ exportForm.startDate }} - {{ exportForm.endDate }}</span>
               </div>
-              <div class="flex justify-between">
-                <span>Format:</span>
-                <span class="font-medium">PDF</span>
+              <div class="flex justify-between items-center pb-2 border-b border-indigo-100 dark:border-indigo-800/30">
+                <span class="text-slate-500 font-medium">Format:</span>
+                <span class="font-bold text-slate-900 dark:text-white badge bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-2 rounded">PDF Document</span>
               </div>
-              <div class="flex justify-between">
-                <span>Template:</span>
-                <span class="font-medium">{{ getTemplateLabel(exportForm.template) }}</span>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-medium">Template:</span>
+                <span class="font-bold text-slate-900 dark:text-white">{{ getTemplateLabel(exportForm.template) }}</span>
               </div>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex space-x-3 pt-4 border-t">
+          <div class="flex gap-4 pt-6 border-t border-slate-100 dark:border-slate-700">
             <button
               type="button"
               @click="$emit('close')"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition text-sm sm:text-base"
+              class="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition font-bold text-sm"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="exporting"
-              class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+               class="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2"
             >
-              {{ exporting ? 'Mengekspor...' : 'Export PDF' }}
+              <div v-if="exporting" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span class="material-symbols-outlined text-[20px]" v-else>download</span>
+              {{ exporting ? 'Mengekspor...' : 'Ekspor PDF' }}
             </button>
           </div>
         </form>
@@ -334,3 +355,6 @@ watch(() => props.show, (newShow) => {
 });
 </script>
 
+<style scoped>
+/* Scoped styles */
+</style>

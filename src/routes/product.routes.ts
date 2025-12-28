@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import productService from '../services/product.service';
 import productAdjustmentService, { createProductAdjustmentSchema } from '../services/product-adjustment.service';
@@ -161,6 +161,7 @@ router.get(
 router.post(
   '/adjustments',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   validate({ body: createProductAdjustmentSchema as any }),
   async (req: AuthRequest, res: Response) => {
@@ -305,6 +306,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   validateImageUpload, // Validate image upload security
   validate({ body: createProductSchema }),
@@ -423,6 +425,7 @@ router.get(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validateImageUpload, // Validate image upload security
   validate({ body: updateProductSchema }),
   async (req: AuthRequest, res: Response) => {
@@ -466,6 +469,7 @@ router.put(
 router.delete(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -533,6 +537,7 @@ router.delete(
 router.put(
   '/:id/stock',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

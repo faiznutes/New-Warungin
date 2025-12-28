@@ -49,3 +49,8 @@ export const checkPlanFeatureGuard = (featureName: string) => {
  * Middleware specifically for Inventory Management feature
  */
 export const checkInventoryAccess = checkPlanFeatureGuard('manajemen-stok');
+
+/**
+ * Middleware for Delivery & Marketing addon
+ */
+export const checkDeliveryMarketingAddon = checkPlanFeatureGuard('Delivery & Marketing');

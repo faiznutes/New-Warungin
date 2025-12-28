@@ -1,243 +1,322 @@
 <template>
-  <div class="flex flex-col gap-6">
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col gap-1">
-        <h1 class="text-[#0d141b] dark:text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight">Store Management</h1>
-        <p class="text-[#4c739a] dark:text-[#4c739a]">Manage your stores and outlets.</p>
-      </div>
-      <button
-        v-if="canManageStores"
-        @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#10b981] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
-      >
-        <span class="material-symbols-outlined text-[20px]">add</span>
-        <span>Add Store</span>
-      </button>
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 font-display">
+    <!-- Decorative Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Outlet Limit Info with Progress Bar -->
-    <div v-if="outletLimit && outletLimit.limit !== undefined && outletLimit.limit !== -1" class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-200 dark:border-blue-800">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 rounded-xl">
-            <span class="material-symbols-outlined">storefront</span>
-          </div>
-          <div>
-            <p class="font-bold text-[#0d141b] dark:text-white">Outlet Limit</p>
-            <p class="text-sm text-[#4c739a] dark:text-[#4c739a]">
-              {{ outletLimit.currentUsage || 0 }} / {{ outletLimit.limit }} outlets
-              <span class="font-semibold" :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'text-red-600' : 'text-green-600'">
-                ({{ outletLimit.limit - (outletLimit.currentUsage || 0) }} available)
-              </span>
-            </p>
-          </div>
+    <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 max-w-7xl mx-auto">
+      <!-- Header Section -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex flex-col gap-2 animate-fade-in-down">
+          <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+            Manajemen Toko
+          </h1>
+          <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">
+            Kelola toko dan outlet Anda dalam satu dashboard
+          </p>
         </div>
+        
+        <button
+          v-if="canManageStores"
+          @click="showCreateModal = true"
+          class="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-6 py-3 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-bold text-sm tracking-wide flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add_business</span>
+          <span>Tambah Toko</span>
+        </button>
       </div>
-      <div class="w-full bg-blue-200 dark:bg-blue-900/50 rounded-full h-2">
-        <div
-          class="h-2 rounded-full transition-all"
-          :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-500' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-yellow-500' : 'bg-[#10b981]'"
-          :style="{ width: `${Math.min(100, ((outletLimit.currentUsage || 0) / outletLimit.limit) * 100)}%` }"
-        ></div>
-      </div>
-    </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex items-center justify-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-[#10b981] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div class="text-[#4c739a] font-medium text-sm">Loading stores...</div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="stores.length === 0" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-      <span class="material-symbols-outlined text-[64px] text-slate-300 dark:text-slate-600 mb-4">store</span>
-      <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2">No Stores Yet</h3>
-      <p class="text-[#4c739a] text-center max-w-md mb-4 px-4">Start by adding your first store.</p>
-      <button
-        v-if="canManageStores"
-        @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-[#10b981] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
+      <!-- Outlet Limit Info with Progress Bar -->
+      <div 
+        v-if="outletLimit && outletLimit.limit !== undefined && outletLimit.limit !== -1" 
+        class="relative overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-md p-6 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm animate-fade-in-up"
       >
-        <span class="material-symbols-outlined text-[20px]">add</span>
-        Add First Store
-      </button>
-    </div>
-
-    <!-- Store Cards Grid -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        v-for="store in stores"
-        :key="store.id"
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6 hover:shadow-md transition-all duration-300 group"
-      >
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1 min-w-0 pr-4">
-            <router-link :to="`/app/stores/${store.id}`" class="block hover:underline">
-              <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-2 truncate">{{ store.name }}</h3>
-            </router-link>
-            <span
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border"
-              :class="store.isActive 
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
-                : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'"
-            >
-              <span class="w-1.5 h-1.5 rounded-full" :class="store.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
-              {{ store.isActive ? 'Active' : 'Inactive' }}
-            </span>
+        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+        
+        <div class="relative flex flex-col sm:flex-row items-center justify-between gap-6 mb-4">
+          <div class="flex items-center gap-4 w-full">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-inner">
+              <span class="material-symbols-outlined text-2xl">storefront</span>
+            </div>
+            <div>
+              <p class="font-bold text-slate-900 dark:text-white text-lg">Batas Outlet</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                Paket Anda saat ini mendukung hingga <span class="text-slate-900 dark:text-white font-bold">{{ outletLimit.limit }}</span> outlet
+              </p>
+            </div>
           </div>
-          <div v-if="canManageStores" class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <router-link
-              :to="`/app/stores/${store.id}/edit`"
-              class="p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              title="Edit Store"
+          
+          <div class="flex items-center gap-2 whitespace-nowrap bg-slate-50 dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-700">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-300">
+              {{ outletLimit.currentUsage || 0 }} / {{ outletLimit.limit }}
+            </span>
+            <span 
+              class="text-xs font-bold px-2 py-0.5 rounded-md"
+              :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'"
             >
-              <span class="material-symbols-outlined text-[20px]">edit</span>
-            </router-link>
-            <button
-              @click="deleteStore(store)"
-              class="p-2 text-[#4c739a] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-              title="Delete Store"
-            >
-              <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
+              {{ outletLimit.limit - (outletLimit.currentUsage || 0) }} Tersedia
+            </span>
           </div>
         </div>
         
-        <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
-          <div v-if="store.address" class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-[18px] text-[#4c739a] mt-0.5">location_on</span>
-            <span class="flex-1 text-sm text-[#0d141b] dark:text-slate-300">{{ store.address }}</span>
-          </div>
-          <div v-if="store.phone" class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[18px] text-[#4c739a]">call</span>
-            <span class="text-sm text-[#0d141b] dark:text-slate-300">{{ store.phone }}</span>
+        <div class="w-full bg-slate-100 dark:bg-slate-700/50 rounded-full h-3 overflow-hidden shadow-inner">
+          <div
+            class="h-full rounded-full transition-all duration-1000 ease-out relative"
+            :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-gradient-to-r from-red-500 to-red-600' : (outletLimit.currentUsage || 0) >= (outletLimit.limit * 0.8) ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-blue-500 to-indigo-600'"
+            :style="{ width: `${Math.min(100, ((outletLimit.currentUsage || 0) / outletLimit.limit) * 100)}%` }"
+          >
+            <div class="absolute inset-0 bg-white/30 w-full h-full animate-shimmer" style="background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)"></div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Create/Edit Modal -->
-    <Teleport to="body">
-      <div
-        v-if="showCreateModal || editingStore"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        @click.self="closeModal"
-      >
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-bold text-[#0d141b] dark:text-white">
-                {{ editingStore ? 'Edit Store' : 'Add New Store' }}
+      <!-- Loading State -->
+      <div v-if="loading" class="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <div class="relative w-16 h-16">
+          <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <p class="mt-4 text-slate-500 font-medium animate-pulse">Memuat toko...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="stores.length === 0" class="flex flex-col items-center justify-center py-24 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 animate-scale-in">
+        <div class="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
+          <span class="material-symbols-outlined text-[48px] text-slate-400">store_off</span>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Belum Ada Toko</h3>
+        <p class="text-slate-500 dark:text-slate-400 text-center max-w-md mb-8 leading-relaxed">
+          Mulai operasional bisnis Anda dengan menambahkan toko pertama.
+        </p>
+        <button
+          v-if="canManageStores"
+          @click="showCreateModal = true"
+          class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-dashed border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all font-bold flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined">add_business</span>
+          Tambah Toko Pertama
+        </button>
+      </div>
+
+      <!-- Store Cards Grid -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-for="(store, index) in stores"
+          :key="store.id"
+          class="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/60 p-6 hover:shadow-xl hover:border-emerald-500/30 dark:hover:border-emerald-500/30 transition-all duration-300 animate-scale-in flex flex-col"
+          :style="{ animationDelay: `${index * 50}ms` }"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1 min-w-0 pr-4">
+              <router-link :to="`/app/stores/${store.id}`" class="block group/link">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 truncate group-hover/link:text-emerald-600 dark:group-hover/link:text-emerald-400 transition-colors">
+                  {{ store.name }}
+                </h3>
+              </router-link>
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-sm"
+                :class="store.isActive 
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                  : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'"
+              >
+                <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="store.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                {{ store.isActive ? 'Aktif' : 'Tidak Aktif' }}
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+              <router-link
+                v-if="canManageStores"
+                :to="`/app/stores/${store.id}/edit`"
+                class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all"
+                title="Ubah Toko"
+              >
+                <span class="material-symbols-outlined text-[20px]">edit</span>
+              </router-link>
+              <button
+                v-if="canManageStores"
+                @click="deleteStore(store)"
+                class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all"
+                title="Hapus Toko"
+              >
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700 mt-auto">
+            <div v-if="store.address" class="flex items-start gap-3 text-slate-500 dark:text-slate-400">
+              <span class="material-symbols-outlined text-[18px] mt-0.5 text-slate-400">location_on</span>
+              <span class="flex-1 text-sm font-medium line-clamp-2">{{ store.address }}</span>
+            </div>
+            <div v-if="store.phone" class="flex items-center gap-3 text-slate-500 dark:text-slate-400">
+              <span class="material-symbols-outlined text-[18px] text-slate-400">call</span>
+              <span class="text-sm font-medium">{{ store.phone }}</span>
+            </div>
+          </div>
+
+          <div class="pt-4 mt-2">
+            <router-link 
+              :to="`/app/stores/${store.id}`"
+              class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-white hover:shadow-md hover:text-emerald-600 dark:hover:bg-slate-700 dark:hover:text-emerald-400 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+            >
+              <span>Lihat Detail</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </router-link>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create/Edit Modal -->
+      <Teleport to="body">
+        <div
+          v-if="showCreateModal || editingStore"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        >
+          <!-- Backdrop -->
+          <div 
+            class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"
+            @click="closeModal"
+          ></div>
+
+          <!-- Modal Content -->
+          <div class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-3xl shadow-2xl transform transition-all duration-300 overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm flex items-center justify-between sticky top-0 z-10">
+              <h3 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                {{ editingStore ? 'Ubah Toko' : 'Tambah Toko Baru' }}
               </h3>
               <button
                 @click="closeModal"
-                class="p-2 text-[#4c739a] hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-all duration-200"
               >
-                <span class="material-symbols-outlined">close</span>
+                <span class="material-symbols-outlined text-[24px]">close</span>
               </button>
             </div>
 
-            <form @submit.prevent="handleSubmit" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">
-                  Store Name <span class="text-red-500">*</span>
-                </label>
-                <input
-                  v-model="storeForm.name"
-                  type="text"
-                  required
-                  placeholder="e.g. Branch A"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
-                />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">
-                  Address
-                </label>
-                <textarea
-                  v-model="storeForm.address"
-                  rows="3"
-                  placeholder="Full store address"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
-                ></textarea>
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">
-                  Phone Number
-                </label>
-                <input
-                  v-model="storeForm.phone"
-                  type="tel"
-                  placeholder="081234567890"
-                  class="w-full px-4 py-3 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981]"
-                />
-              </div>
-
-              <div v-if="editingStore" class="flex items-center gap-3 p-3 bg-[#f6f7f8] dark:bg-slate-900 rounded-xl">
-                <input
-                  v-model="storeForm.isActive"
-                  type="checkbox"
-                  id="isActive"
-                  class="w-5 h-5 text-[#10b981] border-slate-300 rounded focus:ring-[#10b981]"
-                />
-                <label for="isActive" class="text-sm font-medium text-[#0d141b] dark:text-slate-300">
-                  Store is Active
-                </label>
-              </div>
-
-              <!-- Shift Configuration -->
-              <div>
-                <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">
-                  Shift Configuration
-                </label>
-                <div class="space-y-3">
-                    <div v-for="(shift, index) in storeForm.shiftConfig" :key="index" class="flex gap-2 items-start">
-                        <div class="flex-1 space-y-1">
-                            <input v-model="shift.name" placeholder="Name (e.g. Pagi)" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
-                        </div>
-                        <div class="flex-1 space-y-1">
-                            <input v-model="shift.startTime" type="time" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
-                        </div>
-                        <div class="flex items-center justify-center pt-2">-</div>
-                        <div class="flex-1 space-y-1">
-                            <input v-model="shift.endTime" type="time" class="w-full px-3 py-2 bg-[#f6f7f8] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
-                        </div>
-                        <button @click="storeForm.shiftConfig.splice(index, 1)" type="button" class="mt-1 p-1.5 text-red-500 hover:bg-red-50 rounded-lg">
-                            <span class="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                    </div>
-                    <button @click="storeForm.shiftConfig.push({ name: '', startTime: '08:00', endTime: '16:00' })" type="button" class="text-sm text-[#10b981] font-bold hover:underline flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[16px]">add</span> Add Shift
-                    </button>
+            <!-- Scrollable Body -->
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+              <form @submit.prevent="handleSubmit" class="space-y-5">
+                <!-- Name Input -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                    Nama Toko <span class="text-red-500">*</span>
+                  </label>
+                  <div class="relative group">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">store</span>
+                    <input
+                      v-model="storeForm.name"
+                      required
+                      placeholder="Contoh: Cabang Jakarta Pusat"
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
-                <button
-                  type="button"
-                  @click="closeModal"
-                  class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 text-[#0d141b] dark:text-slate-300 rounded-xl hover:bg-[#f6f7f8] dark:hover:bg-slate-700 transition font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  :disabled="processing"
-                  class="flex-1 px-4 py-2.5 bg-[#10b981] text-white rounded-xl hover:bg-[#10b981]-hover transition disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30"
-                >
-                  {{ processing ? 'Saving...' : editingStore ? 'Update' : 'Save' }}
-                </button>
-              </div>
-            </form>
+                <!-- Address Input -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                    Alamat Lengkap
+                  </label>
+                  <div class="relative group">
+                    <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
+                    <textarea
+                      v-model="storeForm.address"
+                      rows="3"
+                      placeholder="Masukan alamat lengkap toko..."
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 resize-none"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Phone Input -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                    Nomor Telepon
+                  </label>
+                  <div class="relative group">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">call</span>
+                    <input
+                      v-model="storeForm.phone"
+                      type="tel"
+                      placeholder="081234567890"
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+
+                <div v-if="editingStore" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-500/30 transition-colors cursor-pointer" @click="storeForm.isActive = !storeForm.isActive">
+                  <div class="relative flex items-center">
+                    <input
+                      v-model="storeForm.isActive"
+                      type="checkbox"
+                      id="isActive"
+                      class="peer sr-only"
+                    />
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                  </div>
+                  <label class="text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                    Status Toko Aktif
+                  </label>
+                </div>
+
+                <!-- Shift Configuration -->
+                <div class="space-y-3 pt-2">
+                  <label class="flex items-center justify-between text-sm font-bold text-slate-700 dark:text-slate-300">
+                    <span>Konfigurasi Shift</span>
+                    <button @click="storeForm.shiftConfig.push({ name: '', startTime: '08:00', endTime: '16:00' })" type="button" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">
+                      <span class="material-symbols-outlined text-[14px]">add</span> Tambah
+                    </button>
+                  </label>
+                  
+                  <div class="space-y-3">
+                      <div v-for="(shift, index) in storeForm.shiftConfig" :key="index" class="flex gap-2 items-start bg-slate-50 dark:bg-slate-900/30 p-2 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                          <div class="flex-1 space-y-1">
+                              <input v-model="shift.name" placeholder="Nama (e.g. Pagi)" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+                          </div>
+                          <div class="w-24 space-y-1">
+                              <input v-model="shift.startTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-center" />
+                          </div>
+                          <div class="flex items-center justify-center pt-2 text-slate-400">-</div>
+                          <div class="w-24 space-y-1">
+                              <input v-model="shift.endTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-center" />
+                          </div>
+                          <button @click="storeForm.shiftConfig.splice(index, 1)" type="button" class="mt-1 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                              <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                      </div>
+                      <div v-if="storeForm.shiftConfig.length === 0" class="text-center py-4 text-slate-400 text-sm italic bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                        Belum ada shift yang dikonfigurasi
+                      </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm flex justify-end gap-3 rounded-b-3xl">
+              <button
+                type="button"
+                @click="closeModal"
+                class="px-5 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+              >
+                Batal
+              </button>
+              <button
+                @click="handleSubmit"
+                :disabled="processing"
+                class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+              >
+                <span v-if="processing" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>{{ processing ? 'Menyimpan...' : (editingStore ? 'Simpan Perubahan' : 'Tambah Toko') }}</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </Teleport>
+      </Teleport>
+    </div>
   </div>
 </template>
 
@@ -300,66 +379,76 @@ const loadStores = async () => {
     const response = await api.get('/outlets', { params });
     stores.value = response.data.data || [];
     
-    // Load outlet limit
+    // Check limit
     try {
-      const limitRes = await api.get('/addons/check-limit/ADD_OUTLETS');
-      outletLimit.value = limitRes.data;
-    } catch (e) {
-      // Ignore if no addon
-      outletLimit.value = null;
+      const limitResponse = await api.get('/outlets/check-limit');
+      outletLimit.value = limitResponse.data;
+    } catch (err) {
+      console.error('Failed to check outlet limit', err);
     }
-  } catch (error: any) {
-    await showError(error.response?.data?.message || 'Failed to load stores');
+  } catch (error) {
+    console.error('Failed to load stores:', error);
+    showError('Gagal memuat daftar toko');
   } finally {
     loading.value = false;
   }
 };
 
 const handleSubmit = async () => {
+  if (!storeForm.value.name) {
+    showError('Nama toko wajib diisi');
+    return;
+  }
+  
   processing.value = true;
   try {
+    const payload = {
+      ...storeForm.value,
+      // Ensure tenantId is included for SUPER_ADMIN
+      ...(authStore.isSuperAdmin && authStore.selectedTenantId ? { tenantId: authStore.selectedTenantId } : {})
+    };
+    
     if (editingStore.value) {
-      await api.put(`/outlets/${editingStore.value.id}`, storeForm.value);
-      await showSuccess('Store updated successfully');
+      await api.put(`/outlets/${editingStore.value.id}`, payload);
+      showSuccess('Toko berhasil diperbarui');
     } else {
-      await api.post('/outlets', storeForm.value);
-      await showSuccess('Store added successfully');
+      await api.post('/outlets', payload);
+      showSuccess('Toko berhasil ditambahkan');
     }
+    
     closeModal();
-    await loadStores();
+    loadStores();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Failed to save store');
+    console.error('Failed to save store:', error);
+    showError(error.response?.data?.message || 'Gagal menyimpan toko');
   } finally {
     processing.value = false;
   }
 };
 
-const editStore = (store: Store) => {
+const editStore = (store: Store) => { // Kept for compatibility if needed, though mostly using router link
   editingStore.value = store;
   storeForm.value = {
     name: store.name,
     address: store.address || '',
     phone: store.phone || '',
     isActive: store.isActive,
-    shiftConfig: Array.isArray(store.shiftConfig) ? [...store.shiftConfig] : [],
+    shiftConfig: store.shiftConfig ? [...store.shiftConfig] : [],
   };
   showCreateModal.value = true;
 };
 
 const deleteStore = async (store: Store) => {
-  const confirmed = await showConfirm(
-    `Delete store "${store.name}"?`,
-    'This action cannot be undone. The store will be deactivated if it has orders.'
-  );
-  
+  const confirmed = await showConfirm(`Apakah Anda yakin ingin menghapus toko "${store.name}"? Data yang dihapus tidak dapat dikembalikan.`);
   if (!confirmed) return;
-
+  
   try {
     await api.delete(`/outlets/${store.id}`);
-    await showSuccess('Store deleted successfully');
-    await loadStores();
+    showSuccess('Toko berhasil dihapus');
+    loadStores();
   } catch (error: any) {
-    await showError(error.response?.data?.message || 'Failed to delete store');
+    console.error('Failed to delete store:', error);
+    showError(error.response?.data?.message || 'Gagal menghapus toko');
   }
 };
 
@@ -376,16 +465,22 @@ const closeModal = () => {
 };
 
 onMounted(() => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-  // For super admin, ensure selectedTenantId is synced with localStorage
-  if (authStore.isSuperAdmin) {
-    const storedTenantId = localStorage.getItem('selectedTenantId');
-    if (storedTenantId && storedTenantId !== authStore.selectedTenantId) {
-      authStore.setSelectedTenant(storedTenantId);
-    }
-  }
-  
   loadStores();
 });
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+</style>

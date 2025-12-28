@@ -1,276 +1,290 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-8 animate-fade-in font-display">
     <!-- Header -->
-    <div class="flex flex-col">
-      <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Subscription Plans</h2>
-      <p class="text-[#4c739a] dark:text-slate-400 mt-1">Choose the plan that fits your business needs</p>
+    <div class="flex flex-col gap-1">
+      <h2 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Paket Berlangganan</h2>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">Pilih paket yang sesuai dengan kebutuhan bisnis Anda.</p>
     </div>
 
     <!-- Current Plan Banner -->
     <div
       v-if="currentPlan"
-      class="p-5 rounded-xl border-l-4"
+      class="p-6 rounded-2xl border-l-4 shadow-sm backdrop-blur-md"
       :class="getPlanBannerClass(currentPlan.plan)"
     >
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h3 class="font-bold text-lg mb-1">Current Plan: {{ getPlanName(currentPlan.plan) }}</h3>
-          <p class="text-sm" v-if="currentPlan.daysRemaining > 0">
-            Valid until {{ formatDate(currentPlan.subscriptionEnd) }} 
-            ({{ currentPlan.daysRemaining }} days remaining)
+          <h3 class="font-bold text-lg mb-1 flex items-center gap-2">
+             Paket Saat Ini: 
+             <span class="uppercase tracking-wider px-2 py-0.5 rounded-lg text-xs font-black bg-white/50 border border-white/20">{{ getPlanName(currentPlan.plan) }}</span>
+          </h3>
+          <p class="text-sm font-medium opacity-80" v-if="currentPlan.daysRemaining > 0">
+            Berlaku hingga <span class="font-bold">{{ formatDate(currentPlan.subscriptionEnd) }}</span> 
+            ({{ currentPlan.daysRemaining }} hari tersisa)
           </p>
-          <p class="text-sm text-red-600 font-semibold" v-else>
-            Plan has expired. Please renew or upgrade.
+          <p class="text-sm text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg inline-block mt-1" v-else>
+            Paket telah berakhir. Silakan perbarui atau upgrade.
           </p>
         </div>
         <div class="text-right">
-          <p class="text-2xl font-bold" :class="getPlanTextClass(currentPlan.plan)">
+          <p class="text-3xl font-black tracking-tight" :class="getPlanTextClass(currentPlan.plan)">
             {{ getPlanPrice(currentPlan.plan) }}
           </p>
-          <p class="text-sm text-[#4c739a]">per month</p>
+          <p class="text-xs font-bold uppercase tracking-wider opacity-60">per bulan</p>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
-      <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-[#4c739a]">Loading plans...</p>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-slate-500 font-bold text-sm uppercase tracking-wider">Memuat paket...</p>
     </div>
 
     <!-- Plans Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- BASIC Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6"
-        :class="currentPlan?.plan === 'BASIC' ? 'border-primary ring-2 ring-primary/20' : 'border-slate-100 dark:border-slate-700'"
+        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-sm border-2 p-6 flex flex-col transition-all hover:shadow-xl hover:-translate-y-1 relative overflow-hidden"
+        :class="currentPlan?.plan === 'BASIC' ? 'border-blue-500 ring-4 ring-blue-500/10' : 'border-slate-100 dark:border-slate-700'"
       >
-        <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">🎟️ BASIC</h3>
-          <p class="text-[#4c739a] mb-4">Small Business</p>
-          <div class="mb-4">
-            <span class="text-3xl font-bold text-[#0d141b] dark:text-white">Rp 149k</span>
-            <span class="text-[#4c739a]">/month</span>
+        <div class="text-center mb-8 relative z-10">
+          <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+             🎟️
+          </div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-1">BASIC</h3>
+          <p class="text-slate-500 text-sm font-medium mb-4">Usaha Kecil (UMKM)</p>
+          <div class="py-4 border-t border-b border-slate-100 dark:border-slate-700">
+            <span class="text-3xl font-black text-slate-900 dark:text-white">Rp 149rb</span>
+            <span class="text-slate-400 text-xs font-bold uppercase">/bulan</span>
           </div>
         </div>
-        <ul class="space-y-3 mb-6">
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">1 store</span>
+        <ul class="space-y-4 mb-8 flex-1 relative z-10">
+          <li class="flex items-start gap-3">
+            <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">1 toko (cabang)</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">4 user (1 admin + 2 kasir + 1 kitchen)</span>
+          <li class="flex items-start gap-3">
+            <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">4 pengguna (1 admin + 2 kasir + 1 dapur)</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Simple POS Mode</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Mode Kasir Simpel</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Offline-first</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Offline-first (Bisa tanpa internet)</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Reminder stok habis</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Pengingat stok menipis</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Auto-backup email</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Auto-backup ke email</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Price suggestion</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Saran Harga Cerdas</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">PWA + Auto landscape</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">PWA + Auto landscape</span>
           </li>
         </ul>
         <button
           @click="handleUpgrade('BASIC')"
           :disabled="currentPlan?.plan === 'BASIC' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition relative z-10"
           :class="currentPlan?.plan === 'BASIC' 
-            ? 'bg-slate-100 text-[#4c739a] cursor-not-allowed' 
-            : 'bg-slate-600 text-white hover:bg-slate-700'"
+            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' 
+            : 'bg-slate-800 text-white hover:bg-slate-900 shadow-lg shadow-slate-500/20'"
         >
-          <span class="material-symbols-outlined text-[20px]">check_circle</span>
-          {{ currentPlan?.plan === 'BASIC' ? 'Current Plan' : 'Choose BASIC' }}
+          <span class="material-symbols-outlined text-[20px]" v-if="currentPlan?.plan === 'BASIC'">check_circle</span>
+          {{ currentPlan?.plan === 'BASIC' ? 'Paket Saat Ini' : 'Pilih BASIC' }}
         </button>
       </div>
 
       <!-- PRO Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6 relative"
-        :class="currentPlan?.plan === 'PRO' ? 'border-primary ring-2 ring-primary/20' : 'border-primary/30'"
+        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-xl border-2 p-6 flex flex-col transition-all hover:shadow-2xl hover:-translate-y-2 relative overflow-hidden transform scale-105 z-10"
+        :class="currentPlan?.plan === 'PRO' ? 'border-blue-500 ring-4 ring-blue-500/20' : 'border-blue-500/30'"
       >
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 pointer-events-none"></div>
         <div
           v-if="currentPlan?.plan !== 'PRO'"
-          class="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl-lg rounded-tr-2xl text-xs font-bold"
+          class="absolute top-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-1.5 rounded-bl-2xl text-[10px] font-black tracking-widest uppercase shadow-md"
         >
-          POPULAR
+          POPULER
         </div>
-        <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">⚡ PRO</h3>
-          <p class="text-[#4c739a] mb-4">Medium-Large Business</p>
-          <div class="mb-4">
-            <span class="text-3xl font-bold text-primary">Rp 299k</span>
-            <span class="text-[#4c739a]">/month</span>
+        <div class="text-center mb-8 relative z-10">
+          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+             ⚡
+          </div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-1">PRO</h3>
+          <p class="text-blue-600 dark:text-blue-400 text-sm font-bold mb-4">Bisnis Menengah - Besar</p>
+          <div class="py-4 border-t border-b border-blue-100 dark:border-blue-900/30 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl">
+            <span class="text-4xl font-black text-blue-600 dark:text-blue-400">Rp 299rb</span>
+            <span class="text-slate-400 text-xs font-bold uppercase">/bulan</span>
           </div>
         </div>
-        <ul class="space-y-3 mb-6">
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Maksimal 3 store</span>
+        <ul class="space-y-4 mb-8 flex-1 relative z-10">
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Maksimal 3 toko (cabang)</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">10 user</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">10 pengguna</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700"><strong>Semua fitur BASIC</strong></span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Semua fitur BASIC</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Multi-store sederhana</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Multi-store sederhana</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Transfer stok antar store</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Transfer stok antar toko</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Laporan per store + gabungan</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Laporan per toko + gabungan</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Restock suggestion otomatis</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Saran Restock Otomatis</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Supervisor cabang role</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Role Supervisor Cabang</span>
           </li>
         </ul>
         <button
           @click="handleUpgrade('PRO')"
           :disabled="currentPlan?.plan === 'PRO' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition relative z-10"
           :class="currentPlan?.plan === 'PRO' 
-            ? 'bg-primary/20 text-primary cursor-not-allowed' 
-            : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/30'"
+            ? 'bg-blue-50/50 text-blue-400 cursor-not-allowed border border-blue-100' 
+            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30'"
         >
-          <span class="material-symbols-outlined text-[20px]">rocket_launch</span>
-          {{ currentPlan?.plan === 'PRO' ? 'Current Plan' : 'Choose PRO' }}
+          <span class="material-symbols-outlined text-[20px]" v-if="currentPlan?.plan !== 'PRO'">rocket_launch</span>
+          <span class="material-symbols-outlined text-[20px]" v-else>check_circle</span>
+          {{ currentPlan?.plan === 'PRO' ? 'Paket Saat Ini' : 'Pilih PRO' }}
         </button>
       </div>
 
       <!-- MAX Plan -->
       <div
-        class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 p-6"
-        :class="currentPlan?.plan === 'ENTERPRISE' ? 'border-purple-500 ring-2 ring-purple-200' : 'border-slate-100 dark:border-slate-700'"
+        class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-sm border-2 p-6 flex flex-col transition-all hover:shadow-xl hover:-translate-y-1 relative overflow-hidden"
+        :class="currentPlan?.plan === 'ENTERPRISE' ? 'border-purple-500 ring-4 ring-purple-500/10' : 'border-slate-100 dark:border-slate-700'"
       >
-        <div class="text-center mb-6">
-          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white mb-2">🔴 MAX</h3>
-          <p class="text-[#4c739a] mb-4">Large Business / Semi Enterprise</p>
-          <div class="mb-4">
-            <span class="text-3xl font-bold text-purple-600">Custom</span>
-            <span class="text-[#4c739a] block text-sm mt-1">Contact sales</span>
+        <div class="text-center mb-8 relative z-10">
+          <div class="w-16 h-16 bg-purple-50 dark:bg-purple-900/30 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+             🔴
+          </div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-1">MAX</h3>
+          <p class="text-purple-600 dark:text-purple-400 text-sm font-medium mb-4">Enterprise</p>
+          <div class="py-4 border-t border-b border-slate-100 dark:border-slate-700">
+             <span class="text-3xl font-black text-slate-900 dark:text-white">Custom</span>
+             <span class="text-slate-400 text-xs font-bold uppercase block mt-1">Hubungi Sales</span>
           </div>
         </div>
-        <ul class="space-y-3 mb-6">
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Unlimited store</span>
+        <ul class="space-y-4 mb-8 flex-1 relative z-10">
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Unlimited toko</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Unlimited user</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Unlimited pengguna</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700"><strong>Semua fitur PRO</strong></span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Semua fitur PRO</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Custom fitur</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Fitur Kustom</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Prioritas support</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Support Prioritas</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Import massal produk & stok</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Impor massal produk & stok</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">Custom laporan sederhana</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Laporan kustom sederhana</span>
           </li>
-          <li class="flex items-start">
-            <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span class="text-sm text-gray-700">API internal terbatas</span>
+          <li class="flex items-start gap-3">
+             <div class="p-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full mt-0.5 shrink-0">
+                <span class="material-symbols-outlined text-[14px] font-bold">check</span>
+            </div>
+            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">API internal terbatas</span>
           </li>
         </ul>
         <button
           @click="handleUpgrade('ENTERPRISE')"
           :disabled="currentPlan?.plan === 'ENTERPRISE' || upgrading"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium transition"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition relative z-10"
           :class="currentPlan?.plan === 'ENTERPRISE' 
-            ? 'bg-purple-100 text-purple-700 cursor-not-allowed' 
+            ? 'bg-purple-50 text-purple-400 cursor-not-allowed border border-purple-100' 
             : 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-500/30'"
         >
           <span class="material-symbols-outlined text-[20px]">support_agent</span>
-          {{ currentPlan?.plan === 'ENTERPRISE' ? 'Current Plan' : 'Contact Sales' }}
+          {{ currentPlan?.plan === 'ENTERPRISE' ? 'Paket Saat Ini' : 'Hubungi Sales' }}
         </button>
       </div>
     </div>
@@ -278,18 +292,21 @@
     <!-- Limit Warning Banner -->
     <div
       v-if="limitWarning"
-      class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-5 rounded-xl"
+      class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-6 rounded-2xl shadow-sm animate-fade-in-up"
     >
-      <div class="flex items-start gap-3">
-        <span class="material-symbols-outlined text-amber-600">warning</span>
+      <div class="flex items-start gap-4">
+        <div class="bg-amber-100 dark:bg-amber-900/50 p-2.5 rounded-xl text-amber-600 shrink-0">
+            <span class="material-symbols-outlined text-[24px]">warning</span>
+        </div>
         <div class="flex-1">
-          <h3 class="font-bold text-amber-800 dark:text-amber-200 mb-1">Limit Almost Reached</h3>
-          <p class="text-sm text-amber-700 dark:text-amber-300">{{ limitWarning }}</p>
+          <h3 class="text-lg font-bold text-amber-800 dark:text-amber-200 mb-1">Limit Hampir Habis</h3>
+          <p class="text-sm font-medium text-amber-700 dark:text-amber-300">{{ limitWarning }}</p>
           <button
-            @click="$router.push('/app/settings/subscription')"
-            class="mt-2 text-sm text-amber-800 dark:text-amber-200 underline hover:text-amber-900 dark:hover:text-amber-100 font-medium"
+            @click="handleUpgrade('PRO')"
+            class="mt-3 text-sm text-white bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg font-bold shadow-sm transition inline-flex items-center gap-2"
           >
-            Upgrade now →
+            Upgrade Sekarang
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
           </button>
         </div>
       </div>
@@ -331,20 +348,20 @@ const getPlanPrice = (plan: string) => {
 
 const getPlanBannerClass = (plan: string) => {
   const classes: Record<string, string> = {
-    BASIC: 'bg-gray-50 border-gray-400',
-    PRO: 'bg-primary-50 border-primary-400',
-    ENTERPRISE: 'bg-purple-50 border-purple-400',
+    BASIC: 'bg-slate-50 border-slate-400 text-slate-700 dark:bg-slate-800 dark:border-slate-500 dark:text-slate-200',
+    PRO: 'bg-blue-50 border-blue-500 text-blue-900 dark:bg-blue-900/30 dark:border-blue-500 dark:text-blue-100',
+    ENTERPRISE: 'bg-purple-50 border-purple-500 text-purple-900 dark:bg-purple-900/30 dark:border-purple-500 dark:text-purple-100',
   };
-  return classes[plan] || 'bg-gray-50 border-gray-400';
+  return classes[plan] || 'bg-slate-50 border-slate-400';
 };
 
 const getPlanTextClass = (plan: string) => {
   const classes: Record<string, string> = {
-    BASIC: 'text-gray-900',
-    PRO: 'text-primary-600',
-    ENTERPRISE: 'text-purple-600',
+    BASIC: 'text-slate-900 dark:text-white',
+    PRO: 'text-blue-600 dark:text-blue-400',
+    ENTERPRISE: 'text-purple-600 dark:text-purple-400',
   };
-  return classes[plan] || 'text-gray-900';
+  return classes[plan] || 'text-slate-900';
 };
 
 const formatDate = (date: string | Date) => {
@@ -386,7 +403,7 @@ const checkLimits = async () => {
     if (outletsLimit.limit !== undefined && outletsLimit.limit !== -1) {
       const usagePercent = (outletsLimit.currentUsage || 0) / outletsLimit.limit;
       if (usagePercent >= 0.8) {
-        limitWarning.value = `Anda telah menggunakan ${outletsLimit.currentUsage || 0}/${outletsLimit.limit} store. Pertimbangkan untuk upgrade ke paket yang lebih tinggi atau beli addon tambahan.`;
+        limitWarning.value = `Anda telah menggunakan ${outletsLimit.currentUsage || 0}/${outletsLimit.limit} toko. Pertimbangkan untuk upgrade ke paket yang lebih tinggi atau beli addon tambahan.`;
       }
     } else if (usersLimit.limit !== undefined && usersLimit.limit !== -1) {
       const usagePercent = (usersLimit.currentUsage || 0) / usersLimit.limit;
@@ -408,7 +425,7 @@ const handleUpgrade = async (newPlan: string) => {
   const confirmed = await showConfirm(
     `Upgrade ke Paket ${getPlanName(newPlan)}?`,
     `Anda akan mengupgrade dari ${getPlanName(currentPlan.value?.plan || 'BASIC')} ke ${getPlanName(newPlan)}.`,
-    'Upgrade',
+    'Ya, Upgrade',
     'Batal'
   );
 

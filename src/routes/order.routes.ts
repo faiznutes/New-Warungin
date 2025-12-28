@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import orderService from '../services/order.service';
 import { createOrderSchema, updateOrderStatusSchema, getOrdersQuerySchema, updateOrderSchema } from '../validators/order.validator';
@@ -305,6 +305,7 @@ router.post(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: updateOrderSchema }),
   async (req: Request, res: Response) => {
     try {

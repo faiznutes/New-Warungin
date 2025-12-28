@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import rewardPointService from '../services/reward-point.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
@@ -206,7 +206,7 @@ router.get(
     try {
       const tenantId = requireTenantId(req);
       logger.info('[Rewards Config] Request from tenantId:', tenantId);
-      
+
       const config = rewardPointService.getPointConfig();
       const redemptions = rewardPointService.getAvailableRedemptions();
 
@@ -243,7 +243,7 @@ router.post(
       res.json({
         success: true,
         expiredPoints,
-        message: expiredPoints > 0 
+        message: expiredPoints > 0
           ? `${expiredPoints} point telah kadaluarsa`
           : 'Tidak ada point yang kadaluarsa',
       });
@@ -260,6 +260,7 @@ router.post(
 router.get(
   '/tenant/:tenantId/balance',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response) => {
     try {
       const user = (req as any).user;
@@ -283,6 +284,7 @@ router.get(
 router.get(
   '/tenant/:tenantId/transactions',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response) => {
     try {
       const user = (req as any).user;
@@ -307,6 +309,7 @@ router.get(
 router.post(
   '/tenant/:tenantId/update',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: AuthRequest, res: Response) => {
     try {
       const user = (req as any).user;
@@ -336,6 +339,7 @@ router.post(
 router.post(
   '/user/:userId/update',
   authGuard,
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: AuthRequest, res: Response) => {
     try {
       const user = (req as any).user;

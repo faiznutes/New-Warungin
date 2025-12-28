@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
 import settingsService from '../services/settings.service';
 
 const router = Router();
@@ -16,10 +16,11 @@ const router = Router();
 router.get(
   '/system',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: Request, res: Response, next) => {
     try {
       const user = (req as any).user;
-      
+
       if (user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Access denied. Super Admin only.' });
       }
@@ -44,10 +45,11 @@ router.get(
 router.put(
   '/system',
   authGuard,
+  roleGuard('SUPER_ADMIN'),
   async (req: Request, res: Response, next) => {
     try {
       const user = (req as any).user;
-      
+
       if (user.role !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Access denied. Super Admin only.' });
       }

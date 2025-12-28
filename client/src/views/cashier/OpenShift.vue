@@ -60,30 +60,32 @@
         </div>
 
         <!-- SCENARIO 1: Store Shift Closed -->
-        <div v-else-if="!currentStoreShift" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-             <div class="px-8 pt-8 pb-4 text-center">
-                 <div class="size-16 mx-auto bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-5">
-                     <span class="material-symbols-outlined text-3xl">store</span>
-                 </div>
-                 <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Shift Toko Belum Dibuka</h1>
-                 <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed">
-                     Shift toko belum aktif.
-                     <span v-if="canOpenStoreShift">Silakan buka shift toko terlebih dahulu.</span>
-                     <span v-else>Hubungi Supervisor untuk membuka operasional toko.</span>
-                 </p>
-             </div>
+        <div v-else-if="!currentStoreShift" class="max-w-2xl mx-auto w-full animate-fade-in-up">
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 p-8 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+            <div class="text-center mb-8">
+              <div class="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <span class="material-symbols-outlined text-[40px] text-blue-600 dark:text-blue-400">storefront</span>
+              </div>
+              <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Buka Shift Toko</h2>
+              <p class="text-slate-500 dark:text-slate-400">
+                Shift toko belum aktif.
+                <span v-if="canOpenStoreShift">Silakan buka shift toko terlebih dahulu.</span>
+                <span v-else>Hubungi Supervisor untuk membuka operasional toko.</span>
+              </p>
+            </div>
 
              <!-- Open Store Shift Form (If allowed) -->
-             <div v-if="canOpenStoreShift" class="px-8 py-2 pb-8">
-                 <form @submit.prevent="handleOpenStoreShift" class="space-y-5">
+             <div v-if="canOpenStoreShift">
+                 <form @submit.prevent="handleOpenStoreShift" class="space-y-6">
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Pilih Shift Toko <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Pilih Shift Toko <span class="text-red-500">*</span></label>
                         <select 
                             v-model="storeShiftForm.shiftType" 
                             required
-                            class="block w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-sm appearance-none"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 text-slate-900 dark:text-white font-medium transition-all appearance-none"
                         >
-                            <option value="" disabled>-- Pilih Shift --</option>
+                            <option value="" disabled>Pilih Shift</option>
                             <option 
                                 v-for="shift in availableShifts" 
                                 :key="shift.name" 
@@ -94,14 +96,14 @@
                         </select>
                     </div>
 
-                    <button type="submit" :disabled="processingStore || !storeShiftForm.shiftType" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" :disabled="processingStore || !storeShiftForm.shiftType" class="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]">
                         <span v-if="processingStore" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                         <span>{{ processingStore ? 'Membuka...' : 'Buka Shift Toko' }}</span>
                     </button>
                  </form>
              </div>
              
-             <div v-else class="px-8 pb-8">
+             <div v-else>
                  <div class="p-4 bg-yellow-50 text-yellow-800 rounded-xl border border-yellow-200 text-sm text-center">
                      Anda tidak memiliki akses untuk membuka shift toko.
                  </div>
@@ -110,80 +112,54 @@
                  </button>
              </div>
         </div>
+        </div>
 
         <!-- SCENARIO 2: Store Open, Cash Shift Closed -->
-        <div v-else-if="currentStoreShift && (!currentShift || currentShift.shiftEnd)" class="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+        <div v-else-if="currentStoreShift && (!currentShift || currentShift.shiftEnd)" class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-dashed border-slate-300 dark:border-slate-700 p-8 relative overflow-hidden animate-fade-in-up">
             <!-- Modal Header -->
-            <div class="px-8 pt-8 pb-4 text-center">
-                <div class="size-16 mx-auto bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-5">
-                    <span class="material-symbols-outlined text-3xl">point_of_sale</span>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100 dark:border-emerald-800/50 shadow-inner">
+                    <span class="material-symbols-outlined text-[32px] text-emerald-600 dark:text-emerald-500">point_of_sale</span>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Buka Shift Kasir</h1>
-                <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed">
-                    Halo, <span class="font-semibold text-slate-800 dark:text-slate-200">{{ authStore.user?.name }}!</span> Pastikan saldo laci uang tunai sudah sesuai sebelum memulai transaksi.
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Buka Shift Kasir</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">
+                    Halo, <span class="font-bold text-slate-800 dark:text-slate-200">{{ authStore.user?.name }}!</span> Pastikan saldo laci uang tunai sesuai.
                 </p>
             </div>
 
             <!-- Form Content -->
-            <div class="px-8 py-2 pb-8">
-                <form @submit.prevent="handleOpenShift" class="flex flex-col gap-5">
+            <div>
+                <form @submit.prevent="handleOpenShift" class="space-y-6">
                     <!-- Input Group: Saldo Awal -->
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1" for="saldo">
-                            Saldo Awal Kas <span class="text-red-500">*</span>
+                        <label class="block text-sm font-bold text-slate-900 dark:text-white ml-1">
+                            Modal Awal <span class="text-red-500">*</span>
                         </label>
                         <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span class="text-slate-400 font-bold">Rp</span>
-                            </div>
-                            <input 
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+                            <input
                                 v-model.number="openShiftForm.modalAwal"
-                                id="saldo" 
-                                type="number" 
-                                min="0"
+                                type="number"
+                                step="0.01"
+                                min="0.01"
                                 required
-                                autofocus
-                                class="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold text-slate-900 dark:text-white placeholder-slate-300 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-sm group-hover:bg-white dark:group-hover:bg-slate-800" 
-                                placeholder="0" 
+                                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                                placeholder="0"
                             />
-                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-emerald-500" v-if="openShiftForm.modalAwal > 0">check_circle</span>
-                            </div>
                         </div>
-                        <p class="text-xs text-slate-500 dark:text-slate-500 pl-1">Masukkan total uang tunai yang ada di laci kasir.</p>
-                    </div>
-
-                    <!-- Read-only Info Grid -->
-                    <div class="grid grid-cols-2 gap-4 bg-blue-50/50 dark:bg-slate-700/30 rounded-xl p-4 border border-blue-100 dark:border-slate-600/50 border-dashed">
-                        <div>
-                            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Shift Toko</span>
-                            <div class="flex items-center gap-1.5 mt-1">
-                                <span class="material-symbols-outlined text-orange-500 text-sm">wb_sunny</span>
-                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 capitalize">
-                                    {{ getShiftLabel(currentStoreShift.shiftType) }}
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Tanggal</span>
-                            <div class="flex items-center gap-1.5 mt-1">
-                                <span class="material-symbols-outlined text-blue-500 text-sm">calendar_today</span>
-                                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}</span>
-                            </div>
-                        </div>
+                        <p class="text-xs text-slate-500 ml-1">Masukkan jumlah uang tunai yang tersedia di kasir</p>
                     </div>
 
                     <!-- Notes Field -->
-                    <div class="space-y-1.5">
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 ml-1" for="notes">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-slate-900 dark:text-white ml-1">
                             Catatan (Opsional)
                         </label>
                         <textarea 
                             v-model="openShiftForm.catatan"
-                            id="notes" 
                             rows="2" 
                             placeholder="Contoh: Pecahan 50rb kurang..." 
-                            class="block w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none transition-shadow"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
                         ></textarea>
                     </div>
 
@@ -192,11 +168,10 @@
                         <button 
                             type="submit" 
                             :disabled="openingShift"
-                            class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-[#0bb870] hover:from-[#0edb85] hover:to-[#09a363] text-white text-base font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]"
                         >
                             <span v-if="openingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                            <span v-else class="material-symbols-outlined font-bold">lock_open</span>
-                            {{ openingShift ? 'Memproses...' : 'Buka Shift Sekarang' }}
+                            <span>{{ openingShift ? 'Membuka...' : 'Buka Shift Kasir' }}</span>
                         </button>
                         <button 
                             type="button" 
@@ -211,46 +186,49 @@
         </div>
 
         <!-- SCENARIO 3: Shift Already Active - Show Dashboard -->
-        <div v-else class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+        <div v-else class="w-full max-w-3xl bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in-up">
              <!-- Header -->
              <div class="px-8 pt-8 pb-4">
                  <div class="flex items-center justify-between">
                      <div class="flex items-center gap-4">
-                         <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-2xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-3xl">check_circle</span>
+                         <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-[32px] text-white">check_circle</span>
                          </div>
                          <div>
-                             <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Shift Aktif</h2>
-                             <p class="text-slate-500 text-sm">Dibuka: {{ formatDateTime(currentShift.shiftStart) }}</p>
+                             <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Shift Aktif</h2>
+                             <p class="text-slate-500 text-sm flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
+                             </p>
                          </div>
                      </div>
-                     <span class="px-4 py-2 bg-green-600 text-white rounded-full text-sm font-bold">AKTIF</span>
+                     <span class="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-xl text-sm font-bold border border-emerald-200 shadow-sm animate-pulse-slow">AKTIF</span>
                  </div>
              </div>
 
              <!-- Stats Cards -->
-             <div class="px-8 py-4 grid grid-cols-3 gap-4">
-                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
-                     <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">Modal Awal</p>
-                     <p class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ formatCurrency(currentShift.modalAwal) }}</p>
+             <div class="px-8 py-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 border border-blue-100 dark:border-blue-800">
+                     <p class="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-1">Modal Awal</p>
+                     <p class="text-xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(currentShift.modalAwal) }}</p>
                  </div>
-                 <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-100 dark:border-green-800">
-                     <p class="text-xs text-green-600 dark:text-green-400 font-semibold mb-1">Total Penjualan</p>
-                     <p class="text-xl font-bold text-green-700 dark:text-green-300">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
+                 <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-5 border border-emerald-100 dark:border-emerald-800">
+                     <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider mb-1">Total Penjualan</p>
+                     <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
                  </div>
-                 <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
-                     <p class="text-xs text-purple-600 dark:text-purple-400 font-semibold mb-1">Saldo Seharusnya</p>
-                     <p class="text-xl font-bold text-purple-700 dark:text-purple-300">{{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}</p>
+                 <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-5 border border-purple-100 dark:border-purple-800">
+                     <p class="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider mb-1">Saldo Seharusnya</p>
+                     <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}</p>
                  </div>
              </div>
 
              <!-- Action Buttons -->
              <div class="px-8 py-6 grid grid-cols-2 gap-4">
-                 <button @click="goToPOS" class="py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2">
+                 <button @click="goToPOS" class="py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 transform active:scale-[0.98]">
                     <span class="material-symbols-outlined">point_of_sale</span>
                     Masuk ke POS
                  </button>
-                 <button @click="showCloseModal = true" class="py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2">
+                 <button @click="showCloseModal = true" class="py-4 bg-white border border-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-xl font-bold shadow-sm transition-all flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined">lock</span>
                     Tutup Shift
                  </button>
@@ -258,11 +236,11 @@
 
              <!-- Quick Nav -->
              <div class="px-8 pb-8 flex gap-3">
-                  <button @click="goToDashboard" class="flex-1 py-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
+                  <button @click="goToDashboard" class="flex-1 py-3 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
                     <span class="material-symbols-outlined text-lg">dashboard</span>
                     Dashboard
                   </button>
-                  <button @click="loadData" class="py-3 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
+                  <button @click="loadData" class="py-3 px-4 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm">
                     <span class="material-symbols-outlined text-lg">refresh</span>
                   </button>
              </div>
@@ -272,83 +250,81 @@
     <!-- Close Shift Modal -->
     <div
       v-if="showCloseModal"
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-all duration-300"
       @click.self="showCloseModal = false"
     >
-      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-200">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tutup Shift</h3>
-            <button @click="showCloseModal = false" class="p-1 hover:bg-slate-100 rounded-lg transition-colors">
-                <span class="material-symbols-outlined text-slate-400">close</span>
-            </button>
-        </div>
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up border border-slate-200 dark:border-slate-700">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 text-center">Tutup Shift Kasir</h3>
         
-        <!-- Summary -->
-        <div class="mb-6 space-y-3">
-          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
-            <p class="text-xs text-blue-600 font-semibold mb-1">Modal Awal</p>
-            <p class="text-lg font-bold text-blue-700">{{ formatCurrency(currentShift?.modalAwal || 0) }}</p>
+        <div class="mb-4 space-y-2">
+          <div class="bg-blue-50 rounded-xl p-3">
+             <div class="flex justify-between items-center text-sm">
+                 <span class="text-blue-700 font-medium">Modal Awal</span>
+                 <span class="font-bold text-blue-900">{{ formatCurrency(currentShift?.modalAwal || 0) }}</span>
+             </div>
           </div>
-          <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-100 dark:border-green-800">
-            <p class="text-xs text-green-600 font-semibold mb-1">Total Penjualan</p>
-            <p class="text-lg font-bold text-green-700">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</p>
+          <div class="bg-emerald-50 rounded-xl p-3">
+             <div class="flex justify-between items-center text-sm">
+                 <span class="text-emerald-700 font-medium">Total Penjualan</span>
+                 <span class="font-bold text-emerald-900">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</span>
+             </div>
           </div>
-          <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
-            <p class="text-xs text-purple-600 font-semibold mb-1">Saldo Seharusnya</p>
-            <p class="text-lg font-bold text-purple-700">
-              {{ formatCurrency((currentShift?.modalAwal || 0) + (currentShift?.totalPenjualan || 0)) }}
-            </p>
+          <div class="bg-slate-100 rounded-xl p-3 border border-dashed border-slate-300">
+             <div class="flex justify-between items-center text-sm">
+                 <span class="text-slate-600 font-medium">Total Cash (System)</span>
+                 <span class="font-bold text-slate-900">{{ formatCurrency((currentShift?.modalAwal || 0) + (currentShift?.totalPenjualan || 0)) }}</span>
+             </div>
           </div>
         </div>
 
-        <form @submit.prevent="handleCloseShift" class="space-y-5">
-          <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+        <form @submit.prevent="handleCloseShift" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-900 dark:text-white ml-1">
               Uang Fisik di Laci <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span class="text-slate-400 font-bold">Rp</span>
-                </div>
-                <input
-                  v-model.number="closeShiftForm.uangFisikTutup"
-                  type="number"
-                  min="0"
-                  required
-                  class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                  placeholder="0"
-                />
+            <div class="relative group">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+              <input
+                v-model.number="closeShiftForm.uangFisikTutup"
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                placeholder="0"
+              />
             </div>
+            <p class="text-xs text-slate-500 ml-1">Masukkan total uang tunai yang ada di laci kasir</p>
           </div>
 
           <!-- Difference Indicator -->
-          <div v-if="closeShiftForm.uangFisikTutup && currentShift">
+          <div v-if="closeShiftForm.uangFisikTutup && currentShift" class="animate-fade-in-up">
             <div 
-                class="rounded-xl p-4 text-center border-2"
+                class="rounded-xl p-4 text-center border cursor-help transition-all duration-300"
                 :class="{
-                    'bg-green-50 border-green-200 text-green-700': calculateSelisih() > 0,
-                    'bg-red-50 border-red-200 text-red-700': calculateSelisih() < 0,
+                    'bg-green-50 border-green-200 text-green-700 shadow-sm': calculateSelisih() > 0,
+                    'bg-red-50 border-red-200 text-red-700 shadow-sm': calculateSelisih() < 0,
                     'bg-slate-50 border-slate-200 text-slate-700': calculateSelisih() === 0
                 }"
             >
-              <p class="text-xs font-semibold mb-1">Selisih</p>
-              <p class="text-xl font-bold">
+              <p class="text-xs font-bold uppercase tracking-wider mb-1 opacity-80">Selisih</p>
+              <p class="text-2xl font-bold flex items-center justify-center gap-2">
                 {{ formatCurrency(Math.abs(calculateSelisih())) }}
-                <span class="text-sm font-medium">
-                    {{ calculateSelisih() > 0 ? '(Lebih)' : calculateSelisih() < 0 ? '(Kurang)' : '(Pas)' }}
+                <span class="text-sm font-bold px-2 py-0.5 rounded-md bg-white/50 border border-current shadow-sm h-fit">
+                    {{ calculateSelisih() > 0 ? 'LEBIH' : calculateSelisih() < 0 ? 'KURANG' : 'PAS' }}
                 </span>
               </p>
             </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-900 dark:text-white ml-1">
               Catatan (Opsional)
             </label>
             <textarea
               v-model="closeShiftForm.catatan"
               rows="2"
-              class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
               placeholder="Tambahkan catatan..."
             ></textarea>
           </div>
@@ -357,14 +333,14 @@
             <button
               type="button"
               @click="showCloseModal = false"
-              class="flex-1 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium"
+              class="flex-1 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-bold text-slate-600"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="closingShift || !closeShiftForm.uangFisikTutup"
-              class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-[0.98]"
             >
               <span v-if="closingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
               {{ closingShift ? 'Menutup...' : 'Tutup Shift' }}

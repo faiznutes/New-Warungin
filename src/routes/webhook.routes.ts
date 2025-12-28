@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import webhookService from '../services/webhook.service';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';

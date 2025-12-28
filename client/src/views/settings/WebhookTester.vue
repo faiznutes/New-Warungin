@@ -1,17 +1,17 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-8 animate-fade-in font-display">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div class="flex flex-col">
-        <h2 class="text-3xl font-bold text-[#0d141b] dark:text-white tracking-tight">Webhook Tester</h2>
-        <p class="text-[#4c739a] dark:text-slate-400 mt-1">Test, preview, and replay webhook deliveries</p>
+      <div class="flex flex-col gap-1">
+        <h2 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Webhook Tester</h2>
+        <p class="text-slate-500 dark:text-slate-400 font-medium">Uji, pratinjau, dan replay pengiriman webhook secara real-time.</p>
       </div>
       <router-link
         to="/app/settings/webhooks"
-        class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-[#0d141b] rounded-xl hover:bg-slate-200 transition font-medium"
+        class="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-bold text-sm shadow-sm"
       >
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-        Back to Webhooks
+        Kembali ke Webhooks
       </router-link>
     </div>
 
@@ -19,44 +19,52 @@
       <!-- Left: Webhook Selection & Testing -->
       <div class="space-y-6">
         <!-- Webhook Selection -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
-          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Select Webhook</h3>
-          <select
-            v-model="selectedWebhookId"
-            @change="loadWebhookDetails"
-            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-          >
-            <option value="">Select Webhook</option>
-            <option v-for="webhook in webhooks" :key="webhook.id" :value="webhook.id">
-              {{ webhook.url }} ({{ webhook.events.length }} events)
-            </option>
-          </select>
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="p-2.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
+                 <span class="material-symbols-outlined text-[24px]">webhook</span>
+             </div>
+             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pilih Webhook</h3>
+          </div>
+          
+          <div class="relative">
+            <select
+                v-model="selectedWebhookId"
+                @change="loadWebhookDetails"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white appearance-none"
+            >
+                <option value="">Pilih Webhook target...</option>
+                <option v-for="webhook in webhooks" :key="webhook.id" :value="webhook.id">
+                {{ webhook.url }} ({{ webhook.events.length }} events)
+                </option>
+            </select>
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">expand_more</span>
+          </div>
 
-          <div v-if="selectedWebhook" class="mt-4 space-y-3 text-sm">
+          <div v-if="selectedWebhook" class="mt-6 space-y-4 text-sm bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
             <div class="flex items-center justify-between">
-              <span class="text-[#4c739a]">URL:</span>
-              <span class="font-medium text-[#0d141b] dark:text-white">{{ selectedWebhook.url }}</span>
+              <span class="font-bold text-slate-500 uppercase tracking-wider text-xs">Target URL</span>
+              <span class="font-bold text-slate-900 dark:text-white break-all text-right ml-4">{{ selectedWebhook.url }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-[#4c739a]">Status:</span>
+              <span class="font-bold text-slate-500 uppercase tracking-wider text-xs">Status</span>
               <span
-                :class="[
-                  'px-2.5 py-1 rounded-xl text-xs font-bold',
-                  selectedWebhook.isActive
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-slate-100 text-[#4c739a]'
-                ]"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide border"
+                :class="selectedWebhook.isActive 
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                    : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'"
               >
-                {{ selectedWebhook.isActive ? 'Active' : 'Inactive' }}
+                <span class="w-1.5 h-1.5 rounded-full" :class="selectedWebhook.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                {{ selectedWebhook.isActive ? 'Aktif' : 'Tidak Aktif' }}
               </span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-gray-600">Events:</span>
-              <div class="flex flex-wrap gap-1">
+            <div class="flex flex-col gap-2">
+              <span class="font-bold text-slate-500 uppercase tracking-wider text-xs">Langganan Events</span>
+              <div class="flex flex-wrap gap-2">
                 <span
                   v-for="event in selectedWebhook.events"
                   :key="event"
-                  class="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs"
+                  class="px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold shadow-sm"
                 >
                   {{ event }}
                 </span>
@@ -66,197 +74,237 @@
         </div>
 
         <!-- Test Webhook -->
-        <div v-if="selectedWebhook" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 p-6">
-          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white mb-4">Test Webhook</h3>
+        <div v-if="selectedWebhook" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="p-2.5 bg-violet-100 dark:bg-violet-900/30 text-violet-600 rounded-xl">
+                 <span class="material-symbols-outlined text-[24px]">science</span>
+             </div>
+             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Uji Coba Pengiriman</h3>
+          </div>
           
-          <div class="space-y-4">
+          <div class="space-y-5">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Event Type</label>
-              <select
-                v-model="testForm.event"
-                class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="test.event">Test Event</option>
-                <option
-                  v-for="event in selectedWebhook.events"
-                  :key="event"
-                  :value="event"
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tipe Event</label>
+              <div class="relative">
+                <select
+                    v-model="testForm.event"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 text-slate-900 dark:text-white appearance-none"
                 >
-                  {{ event }}
-                </option>
-              </select>
+                    <option value="test.event">Event Uji Coba (test.event)</option>
+                    <option
+                    v-for="event in selectedWebhook.events"
+                    :key="event"
+                    :value="event"
+                    >
+                    {{ event }}
+                    </option>
+                </select>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">expand_more</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-2">Custom Payload (JSON)</label>
-              <textarea
-                v-model="testForm.payload"
-                rows="8"
-                placeholder='{"test": true, "message": "Custom test payload"}'
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-              ></textarea>
-              <p class="text-xs text-[#4c739a] mt-1.5">Leave empty to use default test payload</p>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Payload Kustom (JSON)</label>
+              <div class="relative">
+                <textarea
+                    v-model="testForm.payload"
+                    rows="8"
+                    placeholder='{"test": true, "message": "Custom test payload"}'
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 font-mono text-slate-800 dark:text-slate-200"
+                ></textarea>
+                <div class="absolute right-2 bottom-2">
+                    <button 
+                        v-if="testForm.payload"
+                        @click="testForm.payload = ''"
+                        class="text-xs font-bold text-red-500 hover:text-red-700 bg-white dark:bg-slate-800 px-2 py-1 rounded shadow border border-slate-200 dark:border-slate-700"
+                    >
+                        Clear
+                    </button>
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 mt-2 font-medium flex items-center gap-1">
+                 <span class="material-symbols-outlined text-[14px]">info</span>
+                 Biarkan kosong untuk menggunakan payload standar.
+              </p>
             </div>
 
             <button
               @click="testWebhook"
               :disabled="testing"
-              class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
+              class="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-5 py-3 rounded-xl shadow-lg shadow-violet-500/30 transition-all active:scale-95 font-bold disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              <span class="material-symbols-outlined text-[20px]">send</span>
-              {{ testing ? 'Testing...' : 'Test Webhook' }}
+              <div v-if="testing" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span class="material-symbols-outlined text-[20px]" v-else>send</span>
+              {{ testing ? 'Mengirim...' : 'Kirim Webhook' }}
             </button>
           </div>
         </div>
 
         <!-- Preview Payload -->
-        <div v-if="selectedWebhook" class="bg-white rounded-xl shadow-md p-6">
-          <h2 class="text-xl font-bold text-gray-900 mb-4">Preview Payload</h2>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <pre class="text-xs overflow-x-auto">{{ previewPayload }}</pre>
+        <div v-if="selectedWebhook" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
+          <div class="flex items-center justify-between mb-4">
+             <h2 class="text-lg font-bold text-slate-900 dark:text-white">Pratinjau Payload</h2>
+             <button
+                @click="copyPayload"
+                class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition text-xs font-bold flex items-center gap-1"
+             >
+                <span class="material-symbols-outlined text-[14px]">content_copy</span>
+                Salin
+             </button>
           </div>
-          <button
-            @click="copyPayload"
-            class="mt-3 px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition text-sm"
-          >
-            Copy Payload
-          </button>
+          <div class="bg-slate-900 rounded-xl p-4 overflow-hidden border border-slate-800 shadow-inner">
+            <pre class="text-xs font-mono text-emerald-400 overflow-x-auto custom-scrollbar">{{ previewPayload }}</pre>
+          </div>
         </div>
       </div>
 
       <!-- Right: Delivery History -->
       <div class="space-y-6">
-        <div class="bg-white rounded-xl shadow-md p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold text-gray-900">Delivery History</h2>
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8 min-h-[600px] flex flex-col">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                 <div class="p-2.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl">
+                     <span class="material-symbols-outlined text-[24px]">history</span>
+                 </div>
+                 <h2 class="text-lg font-bold text-slate-900 dark:text-white">Riwayat Pengiriman</h2>
+            </div>
+            
             <button
               v-if="selectedWebhookId"
               @click="loadDeliveries"
-              class="px-3 py-1 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition text-sm"
+              class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+              title="Segarkan Riwayat"
             >
-              Refresh
+              <span class="material-symbols-outlined text-[20px]">refresh</span>
             </button>
           </div>
 
-          <div v-if="!selectedWebhookId" class="flex flex-col items-center justify-center py-16 text-center">
-            <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">webhook</span>
-            <p class="text-[#4c739a]">Select a webhook to view delivery history</p>
+          <div v-if="!selectedWebhookId" class="flex flex-col items-center justify-center flex-1 text-center py-12">
+            <div class="bg-slate-100 dark:bg-slate-700 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-slate-300 text-4xl">webhook</span>
+            </div>
+            <p class="text-slate-500 font-medium">Pilih webhook di sebelah kiri untuk melihat riwayat pengiriman.</p>
           </div>
 
-          <div v-else>
+          <div v-else class="flex flex-col flex-1">
             <!-- Filters -->
-            <div class="mb-4 flex gap-2">
-              <select
-                v-model="deliveryFilter.status"
-                @change="loadDeliveries"
-                class="flex-1 px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 text-sm"
-              >
-                <option value="">All Status</option>
-                <option value="SUCCESS">Success</option>
-                <option value="FAILED">Failed</option>
-                <option value="PENDING">Pending</option>
-              </select>
+            <div class="mb-4">
+              <div class="relative">
+                <select
+                    v-model="deliveryFilter.status"
+                    @change="loadDeliveries"
+                    class="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white appearance-none"
+                >
+                    <option value="">Semua Status</option>
+                    <option value="SUCCESS">Berhasil (Success)</option>
+                    <option value="FAILED">Gagal (Failed)</option>
+                    <option value="PENDING">Pending</option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 material-symbols-outlined">filter_list</span>
+              </div>
             </div>
 
             <!-- Loading State -->
-            <div v-if="loadingDeliveries" class="flex items-center justify-center py-12">
-              <div class="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+            <div v-if="loadingDeliveries" class="flex flex-col items-center justify-center flex-1 py-12">
+              <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Memuat riwayat...</p>
             </div>
 
             <!-- Deliveries List -->
-            <div v-else class="space-y-3">
+            <div v-else class="flex-1 overflow-y-auto custom-scrollbar pr-2 -mr-2 space-y-3 max-h-[600px]">
               <div
                 v-for="delivery in deliveries"
                 :key="delivery.id"
-                class="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition"
+                class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-700 transition group"
               >
-                <div class="flex items-start justify-between mb-2">
+                <div class="flex items-start justify-between mb-3">
                   <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="font-medium text-gray-900">{{ delivery.event }}</span>
+                    <div class="flex items-center gap-2 mb-1.5">
                       <span
-                        :class="[
-                          'px-2 py-1 rounded text-xs font-semibold',
-                          delivery.status === 'SUCCESS'
-                            ? 'bg-green-100 text-green-800'
-                            : delivery.status === 'FAILED'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        ]"
+                        class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider"
+                        :class="delivery.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'"
                       >
-                        {{ delivery.status }}
+                         {{ delivery.status }}
                       </span>
+                      <span class="font-bold text-sm text-slate-900 dark:text-white">{{ delivery.event }}</span>
                     </div>
-                    <p class="text-xs text-gray-500">
-                      {{ formatDateTime(delivery.createdAt) }}
-                    </p>
-                    <p v-if="delivery.responseCode" class="text-xs text-gray-600 mt-1">
-                      Response: {{ delivery.responseCode }}
-                    </p>
-                    <p v-if="delivery.attempts > 0" class="text-xs text-gray-600">
-                      Attempts: {{ delivery.attempts }}
-                    </p>
+                    <div class="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">schedule</span>
+                            {{ formatDateTime(delivery.createdAt) }}
+                        </span>
+                        <span v-if="delivery.responseCode" class="flex items-center gap-1 font-bold" :class="delivery.responseCode >= 200 && delivery.responseCode < 300 ? 'text-emerald-600' : 'text-red-500'">
+                            <span class="material-symbols-outlined text-[14px]">http</span>
+                            {{ delivery.responseCode }}
+                        </span>
+                        <span v-if="delivery.attempts > 0" class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">replay</span>
+                            {{ delivery.attempts }}x
+                        </span>
+                    </div>
                   </div>
                   <button
                     v-if="delivery.status === 'FAILED'"
                     @click="replayDelivery(delivery.id)"
                     :disabled="replaying"
-                    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition text-sm"
-                    title="Replay"
+                    class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition shadow-sm"
+                    title="Replay Pengiriman"
                   >
-                    Replay
+                    <span class="material-symbols-outlined text-[18px]">replay_circle_filled</span>
                   </button>
                 </div>
 
                 <!-- Payload Preview -->
-                <details class="mt-2">
-                  <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-900">
-                    View Payload
+                <details class="group/details mb-2">
+                  <summary class="text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-blue-600 flex items-center gap-1 select-none">
+                    <span class="material-symbols-outlined text-[14px] transition-transform group-open/details:rotate-90">chevron_right</span>
+                    Lihat Payload
                   </summary>
-                  <div class="mt-2 bg-gray-50 rounded p-2">
-                    <pre class="text-xs overflow-x-auto">{{ JSON.stringify(delivery.payload, null, 2) }}</pre>
+                  <div class="mt-2 bg-slate-900 rounded-lg p-3 overflow-hidden">
+                    <pre class="text-xs font-mono text-emerald-400 overflow-x-auto custom-scrollbar">{{ JSON.stringify(delivery.payload, null, 2) }}</pre>
                   </div>
                 </details>
 
                 <!-- Response Preview -->
-                <details v-if="delivery.responseBody" class="mt-2">
-                  <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-900">
-                    View Response
+                <details v-if="delivery.responseBody" class="group/details">
+                  <summary class="text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-blue-600 flex items-center gap-1 select-none">
+                    <span class="material-symbols-outlined text-[14px] transition-transform group-open/details:rotate-90">chevron_right</span>
+                    Lihat Respons
                   </summary>
-                  <div class="mt-2 bg-gray-50 rounded p-2">
-                    <pre class="text-xs overflow-x-auto">{{ delivery.responseBody }}</pre>
+                  <div class="mt-2 bg-slate-900 rounded-lg p-3 overflow-hidden">
+                    <pre class="text-xs font-mono text-amber-400 overflow-x-auto custom-scrollbar">{{ delivery.responseBody }}</pre>
                   </div>
                 </details>
               </div>
 
-              <div v-if="deliveries.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
+              <div v-if="deliveries.length === 0" class="flex flex-col items-center justify-center py-12 text-center bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
                 <span class="material-symbols-outlined text-slate-300 text-4xl mb-3">inbox</span>
-                <p class="text-[#4c739a]">No delivery history yet</p>
+                <p class="text-slate-500 font-medium text-sm">Belum ada riwayat pengiriman untuk filter ini.</p>
               </div>
             </div>
 
             <!-- Pagination -->
             <div
               v-if="deliveryPagination.totalPages > 1"
-              class="mt-4 flex items-center justify-between border-t pt-4"
+              class="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-4"
             >
-              <div class="text-sm text-gray-700">
-                Page {{ deliveryPagination.page }} of {{ deliveryPagination.totalPages }}
+              <div class="text-sm font-bold text-slate-500">
+                Hal {{ deliveryPagination.page }} dari {{ deliveryPagination.totalPages }}
               </div>
               <div class="flex gap-2">
                 <button
                   @click="loadDeliveries(deliveryPagination.page - 1)"
                   :disabled="deliveryPagination.page === 1"
-                  class="px-3 py-1 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="p-2 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 transition"
                 >
-                  Previous
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                 </button>
                 <button
                   @click="loadDeliveries(deliveryPagination.page + 1)"
                   :disabled="deliveryPagination.page === deliveryPagination.totalPages"
-                  class="px-3 py-1 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="p-2 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-300 transition"
                 >
-                  Next
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                 </button>
               </div>
             </div>
@@ -308,7 +356,7 @@ const previewPayload = computed(() => {
       ? JSON.parse(testForm.value.payload)
       : {
           test: true,
-          message: 'This is a test webhook',
+          message: 'Ini adalah payload uji coba',
           timestamp: new Date().toISOString(),
           webhookId: selectedWebhookId.value,
         };
@@ -333,7 +381,7 @@ const loadWebhooks = async () => {
     webhooks.value = response.data.webhooks || [];
   } catch (error: any) {
     console.error('Error loading webhooks:', error);
-    await showError('Gagal memuat webhooks');
+    await showError('Gagal memuat daftar webhook');
   }
 };
 
@@ -368,7 +416,7 @@ const loadDeliveries = async (page = 1) => {
     deliveryPagination.value.page = page;
   } catch (error: any) {
     console.error('Error loading deliveries:', error);
-    await showError('Gagal memuat delivery history');
+    await showError('Gagal memuat riwayat pengiriman');
   } finally {
     loadingDeliveries.value = false;
   }
@@ -390,18 +438,18 @@ const testWebhook = async () => {
       try {
         payload.payload = JSON.parse(testForm.value.payload);
       } catch (e) {
-        await showError('Invalid JSON payload');
+        await showError('Format JSON tidak valid');
         testing.value = false;
         return;
       }
     }
 
     await api.post(`/webhooks/${selectedWebhookId.value}/test`, payload);
-    await showSuccess('Test webhook berhasil dikirim!');
+    await showSuccess('Webhook uji coba berhasil dikirim!');
     await loadDeliveries(deliveryPagination.value.page);
   } catch (error: any) {
     console.error('Error testing webhook:', error);
-    await showError(error.response?.data?.message || 'Gagal mengirim test webhook');
+    await showError(error.response?.data?.message || 'Gagal mengirim webhook uji coba');
   } finally {
     testing.value = false;
   }
@@ -413,11 +461,11 @@ const replayDelivery = async (deliveryId: string) => {
   replaying.value = true;
   try {
     await api.post(`/webhooks/${selectedWebhookId.value}/replay/${deliveryId}`);
-    await showSuccess('Webhook delivery berhasil di-replay!');
+    await showSuccess('Pengiriman ulang webhook berhasil!');
     await loadDeliveries(deliveryPagination.value.page);
   } catch (error: any) {
     console.error('Error replaying delivery:', error);
-    await showError(error.response?.data?.message || 'Gagal replay delivery');
+    await showError(error.response?.data?.message || 'Gagal mengirim ulang webhook');
   } finally {
     replaying.value = false;
   }
@@ -426,9 +474,9 @@ const replayDelivery = async (deliveryId: string) => {
 const copyPayload = async () => {
   try {
     await navigator.clipboard.writeText(previewPayload.value);
-    await showSuccess('Payload berhasil di-copy!');
+    await showSuccess('Payload berhasil disalin!');
   } catch (error) {
-    await showError('Gagal copy payload');
+    await showError('Gagal menyalin payload');
   }
 };
 
@@ -448,3 +496,19 @@ onMounted(async () => {
 });
 </script>
 
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+</style>
