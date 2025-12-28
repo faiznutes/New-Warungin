@@ -10,7 +10,7 @@
     </header>
 
     <div class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scrollbar">
-        <div class="max-w-[1100px] mx-auto flex flex-col gap-6">
+        <div class="w-full flex flex-col gap-6">
             
             <!-- Loading State -->
             <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
