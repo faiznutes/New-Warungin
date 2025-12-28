@@ -1,10 +1,10 @@
 <template>
-  <div class="flex-1 overflow-y-auto px-8 pb-8 bg-white h-full">
-    <div v-if="loading" class="flex items-center justify-center h-full min-h-[400px]">
+  <div class="flex-1 overflow-y-auto bg-white h-full">
+    <div v-if="loading" class="flex items-center justify-center h-full min-h-[400px] px-4">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
     </div>
     
-    <div v-else class="max-w-7xl mx-auto flex flex-col gap-8">
+    <div v-else class="w-full max-w-7xl mx-auto flex flex-col gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
       <!-- Header Section -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div class="flex flex-col">
