@@ -511,7 +511,7 @@
       <main 
         id="main-content" 
         ref="mainContentRef"
-        class="flex-1 p-4 md:p-6 w-full overflow-x-hidden pb-24 lg:pb-6 focus:outline-none touch-pan-y" 
+        class="flex-1 w-full overflow-x-hidden pb-24 lg:pb-6 focus:outline-none touch-pan-y" 
         tabindex="-1"
       >
         <router-view />
