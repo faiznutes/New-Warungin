@@ -71,7 +71,6 @@ router.get(
 
 router.post(
   '/templates',
-  '/templates',
   authGuard,
   checkReceiptEditorAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),

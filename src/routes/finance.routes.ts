@@ -123,8 +123,6 @@ router.get(
 router.get(
   '/profit-loss',
   authGuard,
-  '/profit-loss',
-  authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response, next) => {
@@ -237,7 +235,6 @@ router.get(
  */
 router.get(
   '/balance-sheet',
-  '/balance-sheet',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   async (req: Request, res: Response, next) => {
@@ -304,7 +301,6 @@ router.get(
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router.get(
-  '/cash-flow',
   '/cash-flow',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),

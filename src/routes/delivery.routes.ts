@@ -1,3 +1,4 @@
+import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
@@ -58,7 +59,6 @@ const trackShipmentSchema = z.object({
  */
 router.get(
   '/orders',
-  '/orders',
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: Request, res: Response) => {
@@ -114,6 +114,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
+      if (!req.body || !req.params.orderId) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
       const order = await deliveryService.processDelivery(tenantId, req.params.orderId, req.body);
       res.json(order);
     } catch (error: unknown) {
@@ -131,6 +134,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
+      if (!req.body) {
+        return res.status(400).json({ message: 'Missing request body' });
+      }
       const courier = await deliveryService.setupCourier(tenantId, req.body);
       res.status(201).json(courier);
     } catch (error: unknown) {
@@ -194,6 +200,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
+      if (!req.body || !req.params.orderId) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
       const result = await deliveryService.createShipment(
         tenantId,
         req.params.orderId,
@@ -260,6 +269,9 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
+      if (!req.body) {
+        return res.status(400).json({ message: 'Missing request body' });
+      }
       const tracking = await deliveryService.trackShipment(
         tenantId,
         req.body.trackingNumber,

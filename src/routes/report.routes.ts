@@ -90,7 +90,6 @@ router.get(
  */
 router.get(
   '/tenant',
-  '/tenant',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
@@ -207,7 +206,6 @@ router.get(
  *       - bearerAuth: []
  */
 router.get(
-  '/',
   '/',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),

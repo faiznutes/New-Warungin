@@ -28,7 +28,6 @@ const createPromoSchema = z.object({
 
 router.get(
   '/campaigns',
-  '/campaigns',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   async (req: Request, res: Response) => {
@@ -86,7 +85,6 @@ router.get(
  */
 router.post(
   '/campaigns',
-  '/campaigns',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema }),
@@ -102,7 +100,6 @@ router.post(
 );
 
 router.post(
-  '/campaigns/:campaignId/send',
   '/campaigns/:campaignId/send',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
@@ -126,7 +123,6 @@ router.post(
 
 // Direct email campaign send endpoint (for immediate sending)
 router.post(
-  '/campaigns/send-email',
   '/campaigns/send-email',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
@@ -159,7 +155,6 @@ router.post(
 // Direct SMS campaign send endpoint
 router.post(
   '/campaigns/send-sms',
-  '/campaigns/send-sms',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema }),
@@ -190,7 +185,6 @@ router.post(
 // Direct push notification campaign send endpoint
 router.post(
   '/campaigns/send-push',
-  '/campaigns/send-push',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCampaignSchema.extend({ title: z.string().optional() }) }),
@@ -217,7 +211,6 @@ router.post(
 );
 
 router.post(
-  '/promos',
   '/promos',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),

@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard, AuthRequest } from '../middlewares/auth';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';

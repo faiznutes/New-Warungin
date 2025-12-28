@@ -30,8 +30,6 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const threeDaysAgo = new Date();
-
-      const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       threeDaysAgo.setHours(0, 0, 0, 0);
 

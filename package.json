@@ -31,6 +31,7 @@
     "fix:super-admin": "node scripts/fix-super-admin.js",
     "test:all-logins": "node scripts/test-all-logins.js",
     "reset:all-passwords": "node scripts/reset-all-passwords.js",
+    "reset:superadmin": "node scripts/reset-superadmin.js",
     "prisma:reset": "prisma migrate reset",
     "migrate:supabase": "node scripts/migrate-to-supabase.js",
     "migrate:latest:supabase": "node scripts/migrate-latest-to-supabase.js",
