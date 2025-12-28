@@ -461,6 +461,7 @@
                 class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
               ></span>
             </button>
+          </div>
           <!-- Tenant Selector for Super Admin -->
           <div v-if="authStore.isSuperAdmin && authStore.tenants.length > 0" class="hidden md:flex items-center space-x-2">
             <select
