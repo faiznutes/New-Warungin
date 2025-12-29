@@ -720,6 +720,18 @@ const setActiveAddons = (value: any): void => {
   }
 };
 
+// Helper function to safely call array methods (prevents runtime errors if not array)
+const safeArrayMethod = <T, R>(arr: T[] | any, method: (arr: T[]) => R, fallback: R): R => {
+  try {
+    if (!arr || !Array.isArray(arr)) {
+      return fallback;
+    }
+    return method(arr);
+  } catch (error) {
+    console.error('[AppLayout] safeArrayMethod error:', error);
+    return fallback;
+  }
+};
 
 // Computed property that always returns an array (safer than direct ref access)
 const activeAddons = computed({
@@ -1280,20 +1292,8 @@ onMounted(async () => {
   await loadAddons();
   window.addEventListener('resize', handleResize);
   
-  // Setup swipe to go back (mobile only)
-  await nextTick();
-  if (mainContentRef.value && window.innerWidth < 1024) {
-    useSwipe(mainContentRef.value, {
-      onSwipeRight: () => {
-        // Swipe right to go back
-        if (window.history.length > 1) {
-          router.back();
-        }
-      },
-      threshold: 150, // Require 150px swipe
-      velocityThreshold: 0.4,
-    });
-  }
+  // Setup swipe to go back (mobile only) - disabled, useSwipe not available
+  // If you want swipe-to-go-back, install @vueuse/core and import useSwipe
   
   // Fetch tenants if super admin
   if (authStore.isSuperAdmin) {
