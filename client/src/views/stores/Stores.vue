@@ -6,7 +6,7 @@
       <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 max-w-7xl mx-auto">
+    <div class="relative z-10 p-4 md:p-6 lg:p-8 flex flex-col gap-8 w-full">
       <!-- Header Section -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-2 animate-fade-in-down">

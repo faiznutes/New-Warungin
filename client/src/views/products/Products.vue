@@ -9,7 +9,7 @@
     </div>
 
     <!-- Main Content Section -->
-    <section class="flex flex-col flex-1 overflow-hidden px-6 pt-6 pb-6 relative z-10 w-full max-w-7xl mx-auto">
+    <section class="flex flex-col flex-1 overflow-hidden px-4 md:px-6 pt-6 pb-6 relative z-10 w-full">
         <!-- Pull to Refresh Indicator -->
         <div
           v-if="pullDistance > 0 || isRefreshing"
@@ -163,7 +163,7 @@
         </div>
 
         <!-- Search & Filters -->
-        <div class="max-w-7xl mx-auto mb-8 animate-fade-in-up">
+        <div class="w-full mb-8 animate-fade-in-up">
           <!-- Search Bar & Toggle -->
           <div class="flex flex-col sm:flex-row gap-4 mb-4">
              <div class="flex-1 relative group">

@@ -12,7 +12,7 @@
 
     <!-- Top Navigation Bar (Floating) -->
     <header class="flex-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-50 relative px-6 py-3">
-      <div class="w-full max-w-7xl mx-auto flex items-center justify-between">
+      <div class="w-full flex items-center justify-between">
         <!-- Left: Logo & Branding -->
         <div class="flex items-center gap-3">
           <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">

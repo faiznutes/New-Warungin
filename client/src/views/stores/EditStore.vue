@@ -33,7 +33,7 @@
   
       <div class="layout-container flex h-full grow flex-col animate-fade-in" v-if="form">
           <div class="flex flex-1 justify-center py-8 px-4 sm:px-6 lg:px-8">
-              <div class="layout-content-container flex flex-col max-w-[1200px] flex-1 gap-8">
+              <div class="layout-content-container flex flex-col w-full flex-1 gap-8">
                    <!-- Page Heading -->
                   <div class="flex flex-col gap-2 pb-6 border-b border-slate-200 dark:border-slate-700">
                       <h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white">Edit Detail Toko</h1>
