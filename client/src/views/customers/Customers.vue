@@ -370,7 +370,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
