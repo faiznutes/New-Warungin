@@ -268,7 +268,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useSEO } from '../../composables/useSEO';
 import api from '../../api';
 
@@ -278,7 +278,8 @@ useSEO({
   keywords: 'harga warungin, paket warungin',
 });
 
-const featuredAddons = [
+// Default addon data as fallback
+const defaultAddons = [
   {
     id: 'business_analytics',
     name: 'Business Analytics',
@@ -329,11 +330,36 @@ const featuredAddons = [
   }
 ];
 
+// Reactive state for addons
+const featuredAddons = ref<any[]>(defaultAddons);
+const addonsLoading = ref(true);
+
 const formatAddonPrice = (price: number) => {
   return (price / 1000).toFixed(0);
 };
 
-onMounted(() => {
+onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Load addons from API
+  try {
+    const response = await api.get('/addons/available');
+    if (response.data && response.data.length > 0) {
+      // Map API response to display format, take first 6
+      featuredAddons.value = response.data.slice(0, 6).map((addon: any) => ({
+        id: addon.id,
+        name: addon.name,
+        description: addon.description,
+        price: addon.price || 0,
+        icon: addon.icon || 'extension',
+        features: addon.features || []
+      }));
+    }
+  } catch (error) {
+    // Keep default addons on error
+    console.warn('Failed to load addons from API, using defaults');
+  } finally {
+    addonsLoading.value = false;
+  }
 });
 </script>
