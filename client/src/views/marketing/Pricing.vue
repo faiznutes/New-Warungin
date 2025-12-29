@@ -31,7 +31,10 @@
           <div class="flex flex-col p-6 sm:p-8">
             <div class="mb-6">
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">Starter</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Perfect untuk warung baru mulai 🚀</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                <span>Perfect untuk warung baru mulai</span>
+                <span class="text-base">🚀</span>
+              </p>
             </div>
             <div class="mb-6 pb-6 border-b border-slate-100 dark:border-slate-700">
               <div class="flex items-baseline flex-wrap">
@@ -83,7 +86,10 @@
           <div class="flex flex-col p-6 sm:p-8 relative z-10 h-full">
             <div class="mb-6">
               <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Boost</h2>
-              <p class="text-sm text-slate-400 dark:text-blue-100">Level up bisnis kamu! 💪</p>
+              <p class="text-sm text-slate-400 dark:text-blue-100 flex items-center gap-1">
+                <span>Level up bisnis kamu!</span>
+                <span class="text-base">💪</span>
+              </p>
             </div>
             <div class="mb-6 pb-6 border-b border-slate-800 dark:border-blue-500/30">
               <div class="flex items-baseline flex-wrap">
@@ -133,7 +139,10 @@
           <div class="flex flex-col p-6 sm:p-8">
             <div class="mb-6">
               <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2">Pro Max</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Untuk bisnis skala besar 🏢</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                <span>Untuk bisnis skala besar</span>
+                <span class="text-base">🏢</span>
+              </p>
             </div>
             <div class="mb-6 pb-6 border-b border-slate-100 dark:border-slate-700">
               <div class="flex items-baseline flex-wrap">
