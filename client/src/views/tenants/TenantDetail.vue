@@ -549,7 +549,11 @@ const loadTenantDetail = async () => {
     } catch (error: any) {
         console.error("Error loading tenant detail:", error);
         hasError.value = true;
-        errorMessage.value = error.response?.data?.message || 'Gagal memuat detail tenant';
+        if (error.response?.status === 404) {
+            errorMessage.value = 'Tenant tidak ditemukan. ID mungkin tidak valid atau sudah dihapus.';
+        } else {
+            errorMessage.value = error.response?.data?.message || 'Gagal memuat detail tenant';
+        }
     } finally {
         loading.value = false;
     }
