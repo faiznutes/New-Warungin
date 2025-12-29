@@ -116,45 +116,6 @@
         </button>
       </div>
 
-      <!-- Bulk Action Toolbar -->
-      <Transition
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="transform translate-y-12 opacity-0"
-        enter-to-class="transform translate-y-0 opacity-100"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="transform translate-y-0 opacity-100"
-        leave-to-class="transform translate-y-12 opacity-0"
-      >
-        <div v-if="selectedIds.length > 0" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-4 bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-md min-w-[320px] md:min-w-[400px]">
-          <div class="flex items-center gap-3 border-r border-slate-700 pr-4">
-            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
-            <span class="text-sm font-bold whitespace-nowrap">Pelanggan Terpilih</span>
-          </div>
-          <div class="flex items-center gap-2 flex-1 justify-end">
-            <button 
-              @click="clearSelection" 
-              class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
-            >
-              Batal
-            </button>
-            <button 
-              v-if="hasDeliveryMarketing"
-              @click="showBulkMessageModal = true" 
-              class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/20 transition-all active:scale-95"
-            >
-              <span class="material-symbols-outlined text-[18px]">send</span>
-              <span>Kirim Pesan</span>
-            </button>
-            <button 
-              @click="bulkDelete" 
-              class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-black shadow-lg shadow-red-500/20 transition-all active:scale-95"
-            >
-              <span class="material-symbols-outlined text-[18px]">delete</span>
-              <span>Hapus</span>
-            </button>
-          </div>
-        </div>
-      </Transition>
 
       <!-- Customer Cards Grid -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -272,6 +233,46 @@
       </div>
     </div>
   </div>
+
+  <!-- Bulk Action Toolbar -->
+  <Transition
+    enter-active-class="transition duration-300 ease-out"
+    enter-from-class="transform translate-y-12 opacity-0"
+    enter-to-class="transform translate-y-0 opacity-100"
+    leave-active-class="transition duration-200 ease-in"
+    leave-from-class="transform translate-y-0 opacity-100"
+    leave-to-class="transform translate-y-12 opacity-0"
+  >
+    <div v-if="selectedIds.length > 0" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-4 bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-md min-w-[320px] md:min-w-[400px]">
+      <div class="flex items-center gap-3 border-r border-slate-700 pr-4">
+        <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
+        <span class="text-sm font-bold whitespace-nowrap">Pelanggan Terpilih</span>
+      </div>
+      <div class="flex items-center gap-2 flex-1 justify-end">
+        <button 
+          @click="clearSelection" 
+          class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
+        >
+          Batal
+        </button>
+        <button 
+          v-if="hasDeliveryMarketing"
+          @click="showBulkMessageModal = true" 
+          class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+        >
+          <span class="material-symbols-outlined text-[18px]">send</span>
+          <span>Kirim Pesan</span>
+        </button>
+        <button 
+          @click="bulkDelete" 
+          class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-black shadow-lg shadow-red-500/20 transition-all active:scale-95"
+        >
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+          <span>Hapus</span>
+        </button>
+      </div>
+    </div>
+  </Transition>
 
   <!-- Customer Modal -->
   <CustomerModal
