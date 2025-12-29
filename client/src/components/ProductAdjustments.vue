@@ -151,7 +151,10 @@
 
             <!-- Suggestion -->
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
-              <p class="text-xs font-medium text-blue-900 mb-1">💡 Suggested Reasons:</p>
+              <p class="text-xs font-medium text-blue-900 mb-1 flex items-center gap-1">
+                <span class="text-base">💡</span>
+                <span>Suggested Reasons:</span>
+              </p>
               <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
                 <li>Stocktaking / Stock Audit</li>
                 <li>Return to Supplier</li>
