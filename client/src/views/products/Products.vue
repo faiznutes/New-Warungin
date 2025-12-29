@@ -86,7 +86,7 @@
       </Transition>
 
       <!-- Main Content -->
-      <div v-else class="flex flex-col flex-1">
+      <div class="flex flex-col flex-1">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 animate-fade-in-down">
           <div class="flex flex-col gap-1">
@@ -771,8 +771,7 @@
         </div>
         
         <!-- Pagination Controls (shown when infinite scroll is OFF) -->
-        <template v-if="!useInfiniteScrollMode && pagination.totalPages > 1">
-          <div class="flex items-center justify-center space-x-2 pb-8">
+        <div v-show="!useInfiniteScrollMode && pagination.totalPages > 1" class="flex items-center justify-center space-x-2 pb-8">
             <button
               @click="loadProducts(pagination.page - 1)"
               :disabled="pagination.page === 1"
@@ -792,23 +791,18 @@
               Selanjutnya
               <span class="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
-          </div>
-        </template>
+        </div>
         
         <!-- Infinite Scroll Loading Indicator (shown when infinite scroll is ON and loading) -->
-        <template v-if="useInfiniteScrollMode && infiniteScroll?.isLoading">
-          <div class="flex items-center justify-center gap-2 text-slate-500 pb-8">
+        <div v-show="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center justify-center gap-2 text-slate-500 pb-8">
             <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
             <span class="text-sm font-medium">Memuat lebih banyak...</span>
-          </div>
-        </template>
+        </div>
         
         <!-- Infinite Scroll End Message (shown when infinite scroll is ON and no more data) -->
-        <template v-if="useInfiniteScrollMode && !infiniteScroll?.isLoading && !infiniteScroll?.hasMore && products.length > 0">
-          <div class="flex items-center justify-center text-sm text-slate-500 pb-8">
+        <div v-show="useInfiniteScrollMode && !infiniteScroll?.isLoading && !infiniteScroll?.hasMore && products.length > 0" class="flex items-center justify-center text-sm text-slate-500 pb-8">
             Semua produk telah dimuat
-          </div>
-        </template>
+        </div>
       </div>
     </section>
 
