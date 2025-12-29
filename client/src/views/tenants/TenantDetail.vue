@@ -582,17 +582,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '../../api';
 import { formatDate } from '../../utils/formatters';
-import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
 
 const route = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
-const { success: showSuccess, error: showError, confirm: showConfirm } = useNotification();
+const { success: showSuccess } = useNotification();
 
 const tenantId = route.params.id as string;
 const activeTab = ref('profile');
@@ -606,19 +604,14 @@ const tenantUsers = ref<any[]>([]);
 const tenantPoints = ref<any>(null);
 const subscription = ref<any>(null);
 const billingHistory = ref<any[]>([]);
-const pointTransactions = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
-const availableAddons = ref<any[]>([]);
 
 // Modals state
 const showDeactivateSubscriptionModal = ref(false);
 const showReduceSubscriptionModal = ref(false);
 const showExtendSubscriptionModal = ref(false);
 const showAddAddonModal = ref(false);
-const showCreateUserModal = ref(false);
-const showCreateStoreModal = ref(false);
 
-const selectedAddonCategory = ref('All Categories');
 
 // Computed
 const daysRemainingDisplay = computed(() => {
@@ -638,24 +631,7 @@ const progressWidth = computed(() => {
 });
 
 
-const userUsage = computed(() => {
-    if (!activeAddons.value) return { currentUsage: 0, limit: 5 };
-    const userAddon = activeAddons.value.find((a: any) => a.addonName === 'ADD_USERS');
-    // Default limits based on plan
-    let limit = 2; // BASIC
-    if (tenant.value?.subscriptionPlan === 'PRO') limit = 5;
-    if (tenant.value?.subscriptionPlan === 'ENTERPRISE') limit = 999;
-    
-    if (userAddon) limit += (userAddon.limit || 0);
-    
-    return {
-        currentUsage: tenantUsers.value?.length || 0,
-        limit
-    };
-});
-
 const filteredActiveAddons = computed(() => activeAddons.value || []);
-const filteredAvailableAddons = computed(() => availableAddons.value || []);
 const loadingBilling = ref(false);
 const loadingPoints = ref(false);
 const loadingStores = ref(false);
@@ -719,32 +695,16 @@ const handleBackToTenants = () => {
 };
 
 // Addon helpers
-const getAddonColor = (addon: any, type: string) => {
+const getAddonColor = (_addon: any, type: string) => {
     // Mock
     return type === 'bg' ? 'bg-blue-50' : 'text-blue-500';
 };
-const getAddonIcon = (addon: any) => 'extension';
+const getAddonIcon = (_addon: any) => 'extension';
 const getAddonDescription = (addon: any) => addon.description;
-const getAvailableAddonIcon = (addon: any) => 'shopping_bag';
 
 // Actions with notifications
-const extendAddon = (addon: any) => {
+const extendAddon = (_addon: any) => {
     showSuccess('Fitur konfigurasi addon akan segera tersedia');
-};
-const unsubscribeAddon = (addon: any) => {
-    showSuccess('Fitur ini akan segera tersedia');
-};
-const subscribeAddon = (addon: any) => {
-    showSuccess('Fitur ini akan segera tersedia');
-};
-const editUser = (user: any) => {
-    showSuccess('Fitur edit user akan segera tersedia');
-};
-const editStore = (store: any) => {
-    showSuccess('Fitur edit store akan segera tersedia');
-};
-const openCreateStoreModal = () => {
-    showSuccess('Fitur tambah toko akan segera tersedia');
 };
 
 onMounted(() => {
