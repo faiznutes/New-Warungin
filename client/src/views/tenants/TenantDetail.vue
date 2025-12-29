@@ -418,7 +418,106 @@
                  <!-- Other tabs (Points, Users, Stores) follow similar pattern, omitting for length constraints in this single call but would be fully implemented in real file -->
                  <section v-if="activeTab === 'users'" class="flex flex-col gap-6 animate-fade-in-up">
                     <h2 class="text-xl font-black text-slate-900 dark:text-white">Manajemen Pengguna</h2>
-                     <!-- User table implementation -->
+                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div v-if="tenantUsers.length === 0" class="p-12 text-center">
+                            <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">group</span>
+                            <p class="text-slate-500 font-medium">Belum ada pengguna</p>
+                        </div>
+                        <div v-else class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-[10px] text-slate-500 uppercase bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 font-bold tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4">Nama</th>
+                                        <th class="px-6 py-4">Email</th>
+                                        <th class="px-6 py-4">Role</th>
+                                        <th class="px-6 py-4">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                                    <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                        <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">{{ user.name }}</td>
+                                        <td class="px-6 py-4 text-slate-500">{{ user.email }}</td>
+                                        <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg">{{ user.role }}</span></td>
+                                        <td class="px-6 py-4">
+                                            <span class="flex items-center gap-1.5 text-xs font-bold" :class="user.isActive ? 'text-green-600' : 'text-red-500'">
+                                                <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-green-500' : 'bg-red-500'"></span>
+                                                {{ user.isActive ? 'Aktif' : 'Nonaktif' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                 </section>
+
+                 <!-- TAB: Points -->
+                 <section v-if="activeTab === 'points'" class="flex flex-col gap-6 animate-fade-in-up">
+                    <h2 class="text-xl font-black text-slate-900 dark:text-white">Poin Tenant</h2>
+                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
+                        <div v-if="loadingPoints" class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+                        </div>
+                        <div v-else-if="!tenantPoints" class="text-center py-12">
+                            <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">stars</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Belum Ada Data Poin</h3>
+                            <p class="text-slate-500 font-medium">Tenant ini belum memiliki poin reward aktif.</p>
+                        </div>
+                        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
+                                <span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Total Poin</span>
+                                <p class="text-3xl font-black mt-1">{{ tenantPoints?.totalPoints || 0 }}</p>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Digunakan</span>
+                                <p class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.usedPoints || 0 }}</p>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Tersedia</span>
+                                <p class="text-2xl font-black text-green-600 mt-1">{{ (tenantPoints?.totalPoints || 0) - (tenantPoints?.usedPoints || 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                 </section>
+
+                 <!-- TAB: Stores -->
+                 <section v-if="activeTab === 'stores'" class="flex flex-col gap-6 animate-fade-in-up">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white">Daftar Toko</h2>
+                        <span class="text-sm font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">{{ tenantStores.length }} toko</span>
+                    </div>
+                    <div v-if="loadingStores" class="flex items-center justify-center py-12">
+                        <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+                    </div>
+                    <div v-else-if="tenantStores.length === 0" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-12 text-center">
+                        <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">store</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Belum Ada Toko</h3>
+                        <p class="text-slate-500 font-medium">Tenant ini belum memiliki toko terdaftar.</p>
+                    </div>
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="store in tenantStores" :key="store.id" 
+                             class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all group">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                                    <span class="material-symbols-outlined">storefront</span>
+                                </div>
+                                <span class="flex items-center gap-1.5 text-xs font-bold px-2 py-1 rounded-lg"
+                                      :class="store.isActive ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'">
+                                    <span class="w-1.5 h-1.5 rounded-full" :class="store.isActive ? 'bg-green-500' : 'bg-red-500'"></span>
+                                    {{ store.isActive ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-1">{{ store.name }}</h3>
+                            <p class="text-sm text-slate-500 font-medium flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                {{ store.address || 'Alamat tidak tersedia' }}
+                            </p>
+                            <div v-if="store.phone" class="text-sm text-slate-500 font-medium flex items-center gap-1.5 mt-1">
+                                <span class="material-symbols-outlined text-[16px]">call</span>
+                                {{ store.phone }}
+                            </div>
+                        </div>
+                    </div>
                  </section>
             </template>
         </div>
