@@ -6,7 +6,7 @@
       <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 max-w-7xl mx-auto">
+    <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 w-full">
       <!-- Tenant Selector for Super Admin -->
       <TenantSelector @tenant-changed="handleTenantChange" />
 

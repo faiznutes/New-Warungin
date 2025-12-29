@@ -4,7 +4,7 @@
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
     </div>
     
-    <div v-else class="w-full max-w-7xl mx-auto flex flex-col gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div v-else class="w-full flex flex-col gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
       <!-- Header Section -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div class="flex flex-col">
