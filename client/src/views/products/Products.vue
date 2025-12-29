@@ -770,7 +770,7 @@
           </label>
           
           <!-- Pagination (if infinite scroll disabled) -->
-          <div v-if="!useInfiniteScrollMode && pagination.totalPages > 1" class="flex items-center space-x-2">
+          <div v-show="!useInfiniteScrollMode && pagination.totalPages > 1" class="flex items-center space-x-2">
             <button
               @click="loadProducts(pagination.page - 1)"
               :disabled="pagination.page === 1"
@@ -793,18 +793,14 @@
           </div>
           
           <!-- Infinite Scroll Indicators -->
-          <template v-else>
-            <div v-if="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
-              <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-              <span class="text-sm font-medium">Memuat lebih banyak...</span>
-            </div>
-            
-            <div v-else-if="useInfiniteScrollMode && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
-              Semua produk telah dimuat
-            </div>
-            
-            <div v-else></div>
-          </template>
+          <div v-show="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
+            <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm font-medium">Memuat lebih banyak...</span>
+          </div>
+          
+          <div v-show="useInfiniteScrollMode && !infiniteScroll?.isLoading && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
+            Semua produk telah dimuat
+          </div>
         </div>
       </div>
     </section>
