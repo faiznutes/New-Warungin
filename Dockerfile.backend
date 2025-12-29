@@ -14,7 +14,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install dependencies and clean cache
-RUN npm install --legacy-peer-deps && \
+RUN npm install --legacy-peer-deps --ignore-engines && \
     npm cache clean --force
 
 # Copy source code
@@ -49,8 +49,8 @@ COPY package*.json ./
 COPY prisma ./prisma
 
 # Install production dependencies only and clean cache immediately
-RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
-    npm install prisma@6.19.1 --save-dev && \
+RUN npm install --omit=dev --legacy-peer-deps --ignore-engines --prefer-offline --no-audit && \
+    npm install prisma@6.19.1 --save-dev --ignore-engines && \
     npm cache clean --force && \
     rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
 
