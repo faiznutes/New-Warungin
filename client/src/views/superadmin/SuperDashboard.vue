@@ -9,7 +9,10 @@
     <template v-else>
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Selamat Datang Kembali, {{ authStore.user?.name || 'Admin' }} 👋</h1>
+          <h1 class="text-3xl font-black leading-tight tracking-tight flex items-center gap-2">
+            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Selamat Datang Kembali, {{ authStore.user?.name || 'Admin' }}</span>
+            <span class="text-3xl">👋</span>
+          </h1>
           <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Berikut adalah ringkasan performa platform Anda hari ini.</p>
         </div>
         <div class="flex gap-3">
