@@ -793,7 +793,7 @@
           </div>
           
           <!-- Infinite Scroll Loading Indicator -->
-          <div v-if="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
+          <div v-else-if="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
             <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
             <span class="text-sm font-medium">Memuat lebih banyak...</span>
           </div>
