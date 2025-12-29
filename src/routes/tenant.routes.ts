@@ -18,20 +18,20 @@ const router = Router();
  */
 function logRouteError(error: unknown, context: string, req: any) {
   try {
-  const err = error as Error & { 
-    code?: string; 
-    statusCode?: number; 
-    message?: string;
-    name?: string;
-    stack?: string;
-  };
-  
+    const err = error as Error & {
+      code?: string;
+      statusCode?: number;
+      message?: string;
+      name?: string;
+      stack?: string;
+    };
+
     // Safely extract error info
     const errorInfo: any = {
       message: err.message || 'Unknown error',
       name: err.name || 'Error',
     };
-    
+
     // Only add optional fields if they exist
     if (err.code) errorInfo.code = err.code;
     if (err.statusCode) errorInfo.statusCode = err.statusCode;
@@ -41,7 +41,7 @@ function logRouteError(error: unknown, context: string, req: any) {
     if (req?.method) errorInfo.method = req.method;
     if ((req as AuthRequest)?.userId) errorInfo.userId = (req as AuthRequest).userId;
     if ((req as AuthRequest)?.tenantId) errorInfo.tenantId = (req as AuthRequest).tenantId;
-    
+
     logger.error(`Tenant route error [${context}]:`, errorInfo);
   } catch (logError) {
     // Fallback to console if logger fails
@@ -67,14 +67,14 @@ router.post(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       // Log request for debugging
       logger.info('Tenant creation request', {
         userId: authReq.userId,
         role: userRole,
         body: { ...req.body, name: req.body.name?.substring(0, 20) }, // Log partial name for privacy
       });
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized tenant creation attempt', {
           userId: authReq.userId,
@@ -85,21 +85,21 @@ router.post(
       }
 
       const result = await tenantService.createTenant(req.body);
-      
+
       // Store tenant ID for audit logger
       (req as any).createdTenantId = result.tenant.id;
-      
+
       res.status(201).json(result);
     } catch (error: unknown) {
-      const err = error as Error & { 
-        statusCode?: number; 
-        message?: string; 
+      const err = error as Error & {
+        statusCode?: number;
+        message?: string;
         code?: string;
         issues?: Array<{ path: (string | number)[]; message: string }>;
       };
-      
+
       logRouteError(error, 'CREATE_TENANT', req);
-      
+
       // Handle validation errors (Zod)
       // Note: Validator middleware should catch this first, but handle here as fallback
       if (err.name === 'ZodError' || err.issues || (err as any).errors) {
@@ -113,7 +113,7 @@ router.post(
           })),
         });
       }
-      
+
       // Handle AppError with statusCode
       if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500) {
         return res.status(err.statusCode).json({
@@ -121,11 +121,11 @@ router.post(
           message: err.message || 'Gagal membuat tenant',
         });
       }
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          return res.status(503).json({ 
+          return res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
@@ -135,18 +135,18 @@ router.post(
             error: 'DUPLICATE_ENTRY',
           });
         } else {
-          return res.status(500).json({ 
+          return res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
       }
-      
+
       // Default error
       const statusCode = err.statusCode || 500;
       const message = err.message || 'Gagal membuat tenant';
-      
-      res.status(statusCode).json({ 
+
+      res.status(statusCode).json({
         error: err.name || 'ERROR',
         message,
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
@@ -162,7 +162,7 @@ router.get(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized tenant list access attempt', {
           userId: authReq.userId,
@@ -175,14 +175,14 @@ router.get(
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 100;
       const includeCounts = req.query.includeCounts === 'true';
-      
+
       let result;
       try {
         result = await tenantService.getTenants(page, limit, includeCounts, false); // Disable cache for super admin to always get fresh data
       } catch (serviceError: unknown) {
         const err = serviceError as Error & { code?: string; message?: string };
         logRouteError(serviceError, 'GET_TENANTS_SERVICE', req);
-        
+
         // Handle database connection errors
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
           res.status(503).json({
@@ -191,7 +191,7 @@ router.get(
           });
           return;
         }
-        
+
         // Handle Prisma query errors
         if (err.code?.startsWith('P')) {
           res.status(500).json({
@@ -200,11 +200,11 @@ router.get(
           });
           return;
         }
-        
+
         // Re-throw to be handled by outer catch
         throw serviceError;
       }
-      
+
       // Log for debugging
       logger.info('Tenants list fetched', {
         userId: (req as AuthRequest).userId,
@@ -213,13 +213,13 @@ router.get(
         total: result.pagination?.total || 0,
         dataCount: result.data?.length || 0
       });
-      
+
       // Return just the data array for easier frontend consumption
       res.json(result.data || []);
     } catch (error: unknown) {
       const err = error as Error & { code?: string; message?: string };
       logRouteError(error, 'GET_TENANTS', req);
-      
+
       // Ensure response hasn't been sent
       if (!res.headersSent) {
         // Pass error to Express error handler
@@ -234,6 +234,100 @@ router.get(
   }
 );
 
+// GET /tenants/:id/stores - Get all outlets/stores for a tenant
+router.get(
+  '/:id/stores',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can view tenant stores' });
+      }
+
+      const stores = await prisma.outlet.findMany({
+        where: { tenantId: req.params.id },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      res.json(stores);
+    } catch (error: unknown) {
+      const err = error as Error & { code?: string; message?: string };
+      logRouteError(error, 'GET_TENANT_STORES', req);
+      res.status(500).json({ message: err.message || 'Failed to fetch tenant stores' });
+    }
+  }
+);
+
+// GET /tenants/:id/users - Get all users for a tenant
+router.get(
+  '/:id/users',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can view tenant users' });
+      }
+
+      const users = await prisma.user.findMany({
+        where: { tenantId: req.params.id },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          lastLogin: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      res.json(users);
+    } catch (error: unknown) {
+      const err = error as Error & { code?: string; message?: string };
+      logRouteError(error, 'GET_TENANT_USERS', req);
+      res.status(500).json({ message: err.message || 'Failed to fetch tenant users' });
+    }
+  }
+);
+
+// GET /tenants/:id/subscription - Get active subscription for a tenant
+router.get(
+  '/:id/subscription',
+  authGuard,
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can view tenant subscription' });
+      }
+
+      const subscription = await prisma.subscription.findFirst({
+        where: {
+          tenantId: req.params.id,
+          status: 'ACTIVE',
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Return empty object if no active subscription found
+      res.json(subscription || {});
+    } catch (error: unknown) {
+      const err = error as Error & { code?: string; message?: string };
+      logRouteError(error, 'GET_TENANT_SUBSCRIPTION', req);
+      res.status(500).json({ message: err.message || 'Failed to fetch tenant subscription' });
+    }
+  }
+);
+
 // Delete tenant (only for SUPER_ADMIN) - must be before GET /:id to avoid route conflict
 router.delete(
   '/:id',
@@ -243,7 +337,7 @@ router.delete(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized tenant deletion attempt', {
           userId: authReq.userId,
@@ -258,27 +352,27 @@ router.delete(
     } catch (error: unknown) {
       const err = error as Error & { statusCode?: number; message?: string; code?: string };
       logRouteError(error, 'DELETE_TENANT', req);
-      
+
       if (err.statusCode) {
         return res.status(err.statusCode).json({ message: err.message });
       }
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
+          res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
         return;
       }
-      
+
       res.status(500).json({ message: err.message || 'Failed to delete tenant' });
     }
   }
@@ -291,7 +385,7 @@ router.get(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized tenant detail access attempt', {
           userId: authReq.userId,
@@ -307,7 +401,7 @@ router.get(
       } catch (serviceError: unknown) {
         const err = serviceError as Error & { code?: string; message?: string };
         logRouteError(serviceError, 'GET_TENANT_BY_ID_SERVICE', req);
-        
+
         // Handle database connection errors
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
           res.status(503).json({
@@ -316,7 +410,7 @@ router.get(
           });
           return;
         }
-        
+
         // Handle Prisma query errors
         if (err.code?.startsWith('P')) {
           res.status(500).json({
@@ -325,36 +419,36 @@ router.get(
           });
           return;
         }
-        
+
         throw serviceError;
       }
-      
+
       if (!tenant) {
         res.status(404).json({ message: 'Tenant not found' });
         return;
       }
-      
+
       res.json(tenant);
     } catch (error: unknown) {
       const err = error as Error & { code?: string; message?: string };
       logRouteError(error, 'GET_TENANT_BY_ID', req);
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
+          res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
         return;
       }
-      
+
       res.status(500).json({ message: err.message || 'Failed to fetch tenant' });
     }
   }
@@ -378,7 +472,7 @@ router.put(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized tenant update attempt', {
           userId: authReq.userId,
@@ -393,27 +487,27 @@ router.put(
     } catch (error: unknown) {
       const err = error as Error & { statusCode?: number; message?: string; code?: string };
       logRouteError(error, 'UPDATE_TENANT', req);
-      
+
       if (err.statusCode) {
         return res.status(err.statusCode).json({ message: err.message });
       }
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
+          res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
         return;
       }
-      
+
       res.status(500).json({ message: err.message || 'Failed to update tenant' });
     }
   }
@@ -435,7 +529,7 @@ router.put(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized plan upgrade attempt', {
           userId: authReq.userId,
@@ -455,11 +549,11 @@ router.put(
       }
 
       const currentPlan = tenant.subscriptionPlan || 'BASIC';
-      
+
       // Calculate end date: now + durationDays (duration in days)
       const now = new Date();
       const originalSubscriptionEnd = tenant.subscriptionEnd;
-      
+
       // Always use now as base date for temporary upgrade (ignore current subscription end)
       const endDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
@@ -506,7 +600,7 @@ router.put(
               } : {}),
             } as any,
           });
-          
+
           logger.info(`Subscription created for upgrade/extend tenant ${tenantId}:`, {
             subscriptionId: subscription.id,
             plan: subscriptionPlan,
@@ -576,7 +670,7 @@ router.put(
       } catch (txError: unknown) {
         const err = txError as Error & { code?: string; message?: string };
         logRouteError(txError, 'UPGRADE_PLAN_TRANSACTION', req);
-        
+
         // Handle database errors
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
           res.status(503).json({
@@ -585,7 +679,7 @@ router.put(
           });
           return;
         }
-        
+
         if (err.code?.startsWith('P')) {
           res.status(500).json({
             message: 'Database error occurred during plan upgrade',
@@ -593,7 +687,7 @@ router.put(
           });
           return;
         }
-        
+
         throw txError;
       }
 
@@ -608,27 +702,27 @@ router.put(
     } catch (error: unknown) {
       const err = error as Error & { statusCode?: number; message?: string; code?: string };
       logRouteError(error, 'UPGRADE_PLAN', req);
-      
+
       if (err.statusCode) {
         return res.status(err.statusCode).json({ message: err.message });
       }
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
+          res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
         return;
       }
-      
+
       res.status(500).json({ message: err.message || 'Failed to upgrade plan' });
     }
   }
@@ -644,7 +738,7 @@ router.put(
     try {
       const authReq = req as AuthRequest;
       const userRole = authReq.role || (authReq as any).user?.role;
-      
+
       if (userRole !== 'SUPER_ADMIN') {
         logger.warn('Unauthorized subscription deactivation attempt', {
           userId: authReq.userId,
@@ -655,7 +749,7 @@ router.put(
       }
 
       const tenantId = req.params.id;
-      
+
       // Get current tenant
       const tenant = await tenantService.getTenantById(tenantId);
       if (!tenant) {
@@ -665,7 +759,7 @@ router.put(
       // Deactivate subscription by setting subscriptionEnd to null
       const now = new Date();
       let updatedTenant;
-      
+
       try {
         updatedTenant = await prisma.$transaction(async (tx) => {
           // Delete all temporary subscriptions first
@@ -726,7 +820,7 @@ router.put(
       } catch (txError: unknown) {
         const err = txError as Error & { code?: string; message?: string };
         logRouteError(txError, 'DEACTIVATE_SUBSCRIPTION_TRANSACTION', req);
-        
+
         // Handle database errors
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
           res.status(503).json({
@@ -735,7 +829,7 @@ router.put(
           });
           return;
         }
-        
+
         if (err.code?.startsWith('P')) {
           res.status(500).json({
             message: 'Database error occurred during subscription deactivation',
@@ -743,7 +837,7 @@ router.put(
           });
           return;
         }
-        
+
         throw txError;
       }
 
@@ -757,7 +851,7 @@ router.put(
 
       // Reload tenant data
       const finalTenant = await tenantService.getTenantById(tenantId);
-      
+
       res.json({
         message: 'Langganan berhasil dinonaktifkan',
         tenant: finalTenant,
@@ -765,23 +859,23 @@ router.put(
     } catch (error: unknown) {
       const err = error as Error & { code?: string; message?: string };
       logRouteError(error, 'DEACTIVATE_SUBSCRIPTION', req);
-      
+
       // Handle database errors
       if (err.code?.startsWith('P')) {
         if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({ 
+          res.status(503).json({
             message: 'Database connection failed. Please try again.',
             error: 'DATABASE_CONNECTION_ERROR',
           });
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: 'Database error occurred',
             error: err.code,
           });
         }
         return;
       }
-      
+
       res.status(500).json({ message: err.message || 'Gagal menonaktifkan langganan' });
     }
   }
