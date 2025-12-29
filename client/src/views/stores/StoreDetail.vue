@@ -11,7 +11,7 @@
       </div>
 
       <!-- Content Container -->
-      <div class="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8 flex flex-col gap-8 animate-fade-in" v-if="store">
+      <div class="flex-1 w-full p-4 md:p-8 flex flex-col gap-8 animate-fade-in" v-if="store">
         <!-- Breadcrumbs -->
         <nav class="flex text-sm font-medium text-slate-500 dark:text-slate-400 items-center gap-2">
           <router-link to="/app/dashboard" class="hover:text-emerald-500 transition-colors">Beranda</router-link>

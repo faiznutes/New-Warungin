@@ -1,6 +1,6 @@
 <template>
   <div class="w-full bg-slate-50 dark:bg-slate-900 min-h-screen py-8 px-4 md:px-8 font-display animate-fade-in">
-    <div class="max-w-[1200px] mx-auto space-y-8">
+    <div class="w-full space-y-8">
       
       <!-- Premium Header Section -->
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-slate-200 dark:border-slate-700">
