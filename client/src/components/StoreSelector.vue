@@ -1,7 +1,7 @@
 <template>
   <div v-if="shouldShow" class="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
     <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-      <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+      <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
         <span class="material-symbols-outlined">storefront</span>
       </div>
       
@@ -37,7 +37,7 @@
           @click="loadStores"
           type="button"
           :disabled="loading"
-          class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200"
+          class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200"
           title="Refresh Stores"
         >
           <span class="material-symbols-outlined text-[20px]" :class="{ 'animate-spin': loading }">refresh</span>
@@ -56,8 +56,8 @@
     </div>
     
     <!-- Status indicator -->
-    <div v-if="selectedStoreId && selectedStoreName" class="px-4 mt-2 flex items-center gap-2 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 transition-all animate-in fade-in duration-300">
-       <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+    <div v-if="selectedStoreId && selectedStoreName" class="px-4 mt-2 flex items-center gap-2 text-[11px] font-medium text-blue-600 dark:text-blue-400 transition-all animate-in fade-in duration-300">
+       <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
        <span>Aktif: {{ selectedStoreName }}</span>
     </div>
   </div>

@@ -16,7 +16,7 @@
         <!-- Spotlight Effect -->
         <div
           v-if="currentStep < steps.length"
-          class="absolute rounded-2xl border-4 border-emerald-500 shadow-2xl shadow-emerald-500/50 pointer-events-none transition-all duration-300"
+          class="absolute rounded-2xl border-4 border-blue-500 shadow-2xl shadow-blue-500/50 pointer-events-none transition-all duration-300"
           :style="spotlightStyle"
         ></div>
         
@@ -29,7 +29,7 @@
           >
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-xl">
+                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
                   <span class="material-symbols-outlined text-[24px]">explore</span>
                 </div>
                 <div>
@@ -60,7 +60,7 @@
                 v-for="(step, index) in steps"
                 :key="index"
                 class="flex-1 h-1.5 rounded-full transition-all"
-                :class="index <= currentStep ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-700'"
+                :class="index <= currentStep ? 'bg-blue-500' : 'bg-slate-200 dark:bg-slate-700'"
               ></div>
             </div>
             
@@ -85,14 +85,14 @@
                 <button
                   v-if="currentStep < steps.length - 1"
                   @click="next"
-                  class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-emerald-500/30"
+                  class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-500/30"
                 >
                   Lanjut
                 </button>
                 <button
                   v-else
                   @click="finish"
-                  class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-emerald-500/30"
+                  class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-500/30"
                 >
                   Selesai
                 </button>

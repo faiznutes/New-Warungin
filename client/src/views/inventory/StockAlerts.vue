@@ -46,10 +46,10 @@
         <div class="flex items-center justify-between">
           <div>
             <p class="text-xs font-medium text-[#4c739a] uppercase tracking-wide mb-1">Total Alerts</p>
-            <p class="text-2xl font-bold text-emerald-600">{{ stats.totalAlerts || 0 }}</p>
+            <p class="text-2xl font-bold text-blue-600">{{ stats.totalAlerts || 0 }}</p>
           </div>
-          <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-outlined text-emerald-600">notifications_active</span>
+          <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">notifications_active</span>
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Low Stock Products Table -->
@@ -113,7 +113,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-right">
                 <router-link
                   :to="`/app/inventory/purchase-orders`"
-                  class="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center justify-end gap-1 transition"
+                  class="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center justify-end gap-1 transition"
                 >
                   <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                   Create PO

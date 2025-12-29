@@ -10,7 +10,7 @@
           :value="authStore.selectedTenantId || ''"
           @change="handleTenantChange"
           :disabled="loading"
-          class="w-full px-4 py-2.5 text-sm border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full px-4 py-2.5 text-sm border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 shadow-sm hover:shadow-md transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">{{ placeholder }}</option>
           <option 
@@ -35,7 +35,7 @@
         </div>
         <!-- Loading indicator -->
         <div v-if="loading" class="absolute inset-y-0 right-0 flex items-center pr-10">
-          <div class="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+          <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
       <!-- Clear button (only show when tenant is selected) -->
@@ -53,7 +53,7 @@
     </div>
     <!-- Selected tenant info (subtle) -->
     <div v-if="authStore.selectedTenantId && selectedTenantName" class="mt-2 flex items-center gap-2 text-xs text-gray-600">
-      <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       <span>Menampilkan data: <strong class="text-gray-900">{{ selectedTenantName }}</strong></span>

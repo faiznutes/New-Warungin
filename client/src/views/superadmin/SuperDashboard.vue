@@ -38,7 +38,7 @@
             <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">payments</span>
             </div>
-            <span class="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-emerald-100 dark:ring-emerald-900/30">
+            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
               <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span> 12%
             </span>
           </div>
@@ -56,7 +56,7 @@
             <div class="p-3 bg-violet-100 dark:bg-violet-900/30 text-violet-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">stars</span>
             </div>
-            <span class="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-emerald-100 dark:ring-emerald-900/30">
+            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
               +8%
             </span>
           </div>
@@ -74,7 +74,7 @@
             <div class="p-3 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">extension</span>
             </div>
-            <span class="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-emerald-100 dark:ring-emerald-900/30">
+            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
               +4%
             </span>
           </div>
@@ -92,7 +92,7 @@
             <div class="p-3 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">store</span>
             </div>
-            <span class="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-emerald-100 dark:ring-emerald-900/30">
+            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
               +2%
             </span>
           </div>
@@ -110,7 +110,7 @@
             <div class="p-3 bg-pink-100 dark:bg-pink-900/30 text-pink-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">group</span>
             </div>
-            <span class="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-emerald-100 dark:ring-emerald-900/30">
+            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
               +5%
             </span>
           </div>
@@ -146,11 +146,11 @@
                 </div>
                 <span class="text-sm font-bold text-slate-700 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Laporan Global</span>
               </router-link>
-              <router-link to="/app/tenants/support" class="flex flex-col items-center justify-center gap-4 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-500/50 hover:shadow-lg hover:-translate-y-1 transition-all group">
-                <div class="bg-emerald-50 dark:bg-slate-700 p-4 rounded-full group-hover:bg-emerald-600 group-hover:text-white transition-colors text-emerald-600 shadow-sm">
+              <router-link to="/app/tenants/support" class="flex flex-col items-center justify-center gap-4 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-1 transition-all group">
+                <div class="bg-blue-50 dark:bg-slate-700 p-4 rounded-full group-hover:bg-blue-600 group-hover:text-white transition-colors text-blue-600 shadow-sm">
                   <span class="material-symbols-outlined text-[28px]">support_agent</span>
                 </div>
-                <span class="text-sm font-bold text-slate-700 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Tiket Support</span>
+                <span class="text-sm font-bold text-slate-700 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Tiket Support</span>
               </router-link>
               <router-link to="/app/users" class="flex flex-col items-center justify-center gap-4 p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-orange-500/50 hover:shadow-lg hover:-translate-y-1 transition-all group">
                 <div class="bg-orange-50 dark:bg-slate-700 p-4 rounded-full group-hover:bg-orange-600 group-hover:text-white transition-colors text-orange-600 shadow-sm">
@@ -204,9 +204,9 @@
                     <td class="px-6 py-4">
                       <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide border" 
                         :class="addon.status === 'active' 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                            ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' 
                             : 'bg-slate-50 text-slate-600 border-slate-100 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'">
-                        <span class="w-1.5 h-1.5 rounded-full" :class="addon.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                        <span class="w-1.5 h-1.5 rounded-full" :class="addon.status === 'active' ? 'bg-blue-500' : 'bg-slate-400'"></span>
                         {{ addon.status }}
                       </span>
                     </td>
@@ -261,7 +261,7 @@
                  <!-- Gradient approximation based on active count vs total -->
                  <div class="absolute inset-0 rounded-full opacity-20" 
                       :style="`background: conic-gradient(#22c55e 0% ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}%, #64748b ${stats?.overview?.activeSubscriptions ? Math.round((stats.overview.activeSubscriptions / (stats.overview.totalTenants || 1)) * 100) : 0}% 100%);`"></div>
-                <div class="absolute inset-2 rounded-full border-[6px] border-emerald-500 shadow-lg shadow-emerald-500/20" style="clip-path: circle(100%);"></div>
+                <div class="absolute inset-2 rounded-full border-[6px] border-blue-500 shadow-lg shadow-blue-500/20" style="clip-path: circle(100%);"></div>
                 
                 <div class="absolute inset-6 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center flex-col z-10 shadow-sm">
                   <span class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{{ stats?.overview?.activeSubscriptions || 0 }}</span>
@@ -374,7 +374,7 @@ const getPlanPrice = (plan: string) => {
 
 const getSubscriptionStatusClass = (status: string) => {
   const classes: Record<string, string> = {
-    ACTIVE: 'bg-emerald-100 text-emerald-800',
+    ACTIVE: 'bg-blue-100 text-blue-800',
     EXPIRED: 'bg-red-100 text-red-800',
     CANCELLED: 'bg-slate-100 text-slate-800',
   };
@@ -392,7 +392,7 @@ const getSubscriptionStatusLabel = (status: string) => {
 
 const getSubscriptionStatusColor = (status: string) => {
   const colors: Record<string, string> = {
-    ACTIVE: 'bg-emerald-500',
+    ACTIVE: 'bg-blue-500',
     EXPIRED: 'bg-red-500',
     CANCELLED: 'bg-slate-500',
   };

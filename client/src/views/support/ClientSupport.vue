@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showTicketModal = true"
-        class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium flex items-center gap-2"
+        class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium flex items-center gap-2"
       >
         <span class="material-symbols-outlined text-[20px]">add_circle</span>
         <span>Buat Tiket Support</span>
@@ -30,8 +30,8 @@
       </div>
       <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-outlined text-emerald-500 text-2xl">check_circle</span>
+          <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-500 text-2xl">check_circle</span>
           </div>
           <div>
             <p class="text-sm text-slate-500 dark:text-slate-400">Tiket Selesai</p>
@@ -63,7 +63,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Cari artikel bantuan..."
-            class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+            class="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
           />
         </div>
 
@@ -71,7 +71,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
           <div class="p-5 border-b border-slate-200 dark:border-slate-700">
             <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span class="material-symbols-outlined text-emerald-500">lightbulb</span>
+              <span class="material-symbols-outlined text-blue-500">lightbulb</span>
               Artikel Populer
             </h2>
           </div>
@@ -82,18 +82,18 @@
               :to="`/help/${article.slug}`"
               class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
             >
-              <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-emerald-600">{{ article.icon }}</span>
+              <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-blue-600">{{ article.icon }}</span>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors">{{ article.title }}</h3>
+                <h3 class="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">{{ article.title }}</h3>
                 <p class="text-sm text-slate-500 dark:text-slate-400 truncate">{{ article.description }}</p>
               </div>
-              <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500 transition-colors">chevron_right</span>
+              <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-500 transition-colors">chevron_right</span>
             </router-link>
           </div>
           <div class="p-4 bg-slate-50 dark:bg-slate-900/50">
-            <router-link to="/help" class="text-sm font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+            <router-link to="/help" class="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
               Lihat semua artikel
               <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
             </router-link>
@@ -109,7 +109,7 @@
             </h2>
             <select
               v-model="ticketFilter"
-              class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-700 rounded-lg border-0 focus:ring-2 focus:ring-emerald-500/20"
+              class="px-3 py-1.5 text-sm bg-slate-100 dark:bg-slate-700 rounded-lg border-0 focus:ring-2 focus:ring-blue-500/20"
             >
               <option value="all">Semua</option>
               <option value="open">Aktif</option>
@@ -119,7 +119,7 @@
           
           <!-- Loading -->
           <div v-if="loadingTickets" class="p-8 text-center">
-            <div class="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <div class="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
             <p class="text-slate-500">Memuat tiket...</p>
           </div>
 
@@ -146,7 +146,7 @@
                   :class="{
                     'bg-yellow-500': ticket.status === 'open',
                     'bg-blue-500': ticket.status === 'in_progress',
-                    'bg-emerald-500': ticket.status === 'resolved',
+                    'bg-blue-500': ticket.status === 'resolved',
                     'bg-slate-400': ticket.status === 'closed'
                   }"
                 ></div>
@@ -158,7 +158,7 @@
                       :class="{
                         'bg-yellow-100 text-yellow-700': ticket.status === 'open',
                         'bg-blue-100 text-blue-700': ticket.status === 'in_progress',
-                        'bg-emerald-100 text-emerald-700': ticket.status === 'resolved',
+                        'bg-blue-100 text-blue-700': ticket.status === 'resolved',
                         'bg-slate-100 text-slate-600': ticket.status === 'closed'
                       }"
                     >
@@ -177,16 +177,16 @@
       <!-- Right: Contact & Quick Actions -->
       <div class="space-y-6">
         <!-- Contact Card -->
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
           <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
             <span class="material-symbols-outlined text-2xl">headset_mic</span>
           </div>
           <h2 class="text-xl font-bold mb-2">Butuh Bantuan Langsung?</h2>
-          <p class="text-emerald-100 text-sm mb-4">Tim support kami siap membantu Anda via WhatsApp.</p>
+          <p class="text-blue-100 text-sm mb-4">Tim support kami siap membantu Anda via WhatsApp.</p>
           <a
             href="https://wa.me/6281234567890?text=Halo,%20saya%20butuh%20bantuan%20dengan%20Warungin"
             target="_blank"
-            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-600 rounded-xl font-bold hover:bg-slate-100 transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-blue-600 rounded-xl font-bold hover:bg-slate-100 transition-colors"
           >
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -206,7 +206,7 @@
               <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                 <span class="material-symbols-outlined text-blue-500">rocket_launch</span>
               </div>
-              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-emerald-600">Panduan Memulai</span>
+              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-600">Panduan Memulai</span>
             </router-link>
             <router-link
               to="/help/konfigurasi-printer"
@@ -215,7 +215,7 @@
               <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                 <span class="material-symbols-outlined text-purple-500">print</span>
               </div>
-              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-emerald-600">Setup Printer</span>
+              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-600">Setup Printer</span>
             </router-link>
             <router-link
               to="/help/download-laporan"
@@ -224,7 +224,7 @@
               <div class="w-10 h-10 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                 <span class="material-symbols-outlined text-green-500">download</span>
               </div>
-              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-emerald-600">Export Laporan</span>
+              <span class="font-medium text-slate-700 dark:text-slate-300 group-hover:text-blue-600">Export Laporan</span>
             </router-link>
           </div>
         </div>
@@ -232,7 +232,7 @@
         <!-- Business Hours -->
         <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5">
           <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-500">schedule</span>
+            <span class="material-symbols-outlined text-blue-500">schedule</span>
             Jam Operasional Support
           </h3>
           <div class="space-y-2 text-sm">
@@ -281,7 +281,7 @@
                   <select
                     v-model="newTicket.category"
                     required
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   >
                     <option value="">Pilih Kategori</option>
                     <option value="technical">Masalah Teknis</option>
@@ -298,7 +298,7 @@
                     type="text"
                     required
                     placeholder="Jelaskan masalah Anda secara singkat"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
                 <div>
@@ -308,7 +308,7 @@
                     required
                     rows="4"
                     placeholder="Jelaskan masalah Anda secara detail..."
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
                   ></textarea>
                 </div>
                 <div class="flex gap-3 pt-4">
@@ -322,7 +322,7 @@
                   <button
                     type="submit"
                     :disabled="submitting"
-                    class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all font-medium disabled:opacity-50"
+                    class="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all font-medium disabled:opacity-50"
                   >
                     {{ submitting ? 'Mengirim...' : 'Kirim Tiket' }}
                   </button>
@@ -371,7 +371,7 @@
                         :class="{
                              'bg-yellow-100 text-yellow-700': selectedTicket.status === 'open',
                              'bg-blue-100 text-blue-700': selectedTicket.status === 'in_progress',
-                             'bg-emerald-100 text-emerald-700': selectedTicket.status === 'resolved',
+                             'bg-blue-100 text-blue-700': selectedTicket.status === 'resolved',
                              'bg-slate-100 text-slate-600': selectedTicket.status === 'closed'
                            }">
                     <span class="text-xs font-bold uppercase tracking-wider block mb-0.5 opacity-75">Status</span>
@@ -399,8 +399,8 @@
                     <h4 class="font-bold text-slate-900 dark:text-white mb-4">Riwayat Percakapan</h4>
                     <div class="space-y-4">
                         <div class="flex gap-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-emerald-600 text-sm">support_agent</span>
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-blue-600 text-sm">support_agent</span>
                             </div>
                             <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 rounded-r-xl rounded-bl-xl p-3 text-sm">
                                 <p class="font-bold text-slate-900 dark:text-white text-xs mb-1">Support Agent</p>
@@ -420,7 +420,7 @@
                     Tutup
                   </button>
                     <!-- Action Placeholder -->
-                    <button class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium shadow-lg shadow-emerald-500/30">
+                    <button class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium shadow-lg shadow-blue-500/30">
                         Balas
                     </button>
                </div>

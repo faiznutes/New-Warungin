@@ -19,16 +19,16 @@
           <div class="bg-white dark:bg-slate-800 rounded-full shadow-lg px-4 py-2 flex items-center gap-2 border border-slate-200 dark:border-slate-700">
             <div
               v-if="isRefreshing"
-              class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
+              class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
             ></div>
-            <span v-else class="material-symbols-outlined text-emerald-500">arrow_downward</span>
+            <span v-else class="material-symbols-outlined text-blue-500">arrow_downward</span>
             <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
               {{ isRefreshing ? 'Memuat ulang...' : 'Tarik untuk refresh' }}
             </span>
           </div>
         </div>
         <!-- Blurred Background Elements -->
-        <div class="fixed top-20 left-10 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+        <div class="fixed top-20 left-10 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
         <div class="fixed bottom-20 right-10 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
       <!-- Error Boundary -->
       <div v-if="hasError" class="flex flex-col items-center justify-center py-20">
@@ -39,7 +39,7 @@
         <p class="text-[#4c739a] text-center max-w-md mb-6">{{ errorMessage || 'Gagal memuat halaman. Silakan coba lagi.' }}</p>
         <button
           @click="retryLoad"
-          class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-colors font-medium shadow-lg shadow-emerald-500/30"
+          class="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors font-medium shadow-lg shadow-blue-500/30"
         >
           Coba Lagi
         </button>
@@ -56,7 +56,7 @@
       >
         <div v-if="selectedIds.length > 0" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-4 bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-md min-w-[320px] md:min-w-[400px]">
           <div class="flex items-center gap-3 border-r border-slate-700 pr-4">
-            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
+            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
             <span class="text-sm font-bold whitespace-nowrap">Produk Terpilih</span>
           </div>
           <div class="flex items-center gap-2 flex-1 justify-end">
@@ -69,7 +69,7 @@
             <button 
               ref="bulkEditButtonRef"
               @click="showBulkEditModal = true; bulkActionsTooltip.dismiss()" 
-              class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+              class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/20 transition-all active:scale-95"
             >
               <span class="material-symbols-outlined text-[18px]">edit</span>
               <span>Edit</span>
@@ -102,12 +102,12 @@
               <select
                 v-model="marginDisplayFormat"
                 @change="saveMarginFormat"
-                class="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all"
+                class="appearance-none pl-4 pr-10 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all"
               >
                 <option value="percentage">Margin %</option>
                 <option value="amount">Margin Rp</option>
               </select>
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none group-hover:text-emerald-500 transition-colors">expand_more</span>
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[20px] pointer-events-none group-hover:text-blue-500 transition-colors">expand_more</span>
             </div>
 
             <!-- Action Buttons Group -->
@@ -123,7 +123,7 @@
               
               <button
                 @click="triggerFileInput"
-                class="p-2.5 text-emerald-600 bg-white border border-slate-200 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 transition-all shadow-sm group relative"
+                class="p-2.5 text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-emerald-200 transition-all shadow-sm group relative"
                 title="Impor CSV"
               >
                 <span class="material-symbols-outlined text-[22px]">upload_file</span>
@@ -154,7 +154,7 @@
             <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-[0.98] font-bold text-sm transform hover:-translate-y-0.5"
+              class="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-[0.98] font-bold text-sm transform hover:-translate-y-0.5"
             >
               <span class="material-symbols-outlined text-[20px] font-bold">add</span>
               <span>Tambah Produk</span>
@@ -167,7 +167,7 @@
           <!-- Search Bar & Toggle -->
           <div class="flex flex-col sm:flex-row gap-4 mb-4">
              <div class="flex-1 relative group">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 group-focus-within:text-emerald-500 transition-colors">search</span>
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 group-focus-within:text-blue-500 transition-colors">search</span>
                 <input
                   ref="searchInputRef"
                   v-model="filters.search"
@@ -179,7 +179,7 @@
                   @blur="handleSearchBlur"
                   type="text"
                   placeholder="Cari produk berdasarkan nama, kategori, atau kode..."
-                  class="block w-full pl-12 pr-4 py-3.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-all font-medium placeholder:text-slate-400 shadow-sm"
+                  class="block w-full pl-12 pr-4 py-3.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white transition-all font-medium placeholder:text-slate-400 shadow-sm"
                 />
                 
                 <!-- Search Suggestions Dropdown -->
@@ -196,13 +196,13 @@
                       class="px-4 py-2 rounded-lg cursor-pointer transition-colors flex items-center gap-2"
                       :class="
                         searchSuggestions.selectedIndex === index
-                          ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'
+                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-emerald-300'
                           : 'hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                       "
                     >
                       <span
                         class="material-symbols-outlined text-[18px]"
-                        :class="suggestion.type === 'recent' ? 'text-slate-400' : 'text-emerald-500'"
+                        :class="suggestion.type === 'recent' ? 'text-slate-400' : 'text-blue-500'"
                       >
                         {{ suggestion.type === 'recent' ? 'history' : 'search' }}
                       </span>
@@ -235,11 +235,11 @@
              <button
                 @click="showFilters = !showFilters"
                 class="px-5 py-3.5 rounded-xl border font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
-                :class="showFilters || hasActiveFilters ? 'bg-emerald-500 border-emerald-500 text-white shadow-emerald-500/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                :class="showFilters || hasActiveFilters ? 'bg-blue-500 border-blue-500 text-white shadow-blue-500/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
              >
                 <span class="material-symbols-outlined text-[20px]">tune</span>
                 <span>Filter</span>
-                <span v-if="activeFilterCount > 0" class="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-white text-emerald-600 rounded-full text-xs font-bold">{{ activeFilterCount }}</span>
+                <span v-if="activeFilterCount > 0" class="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-white text-blue-600 rounded-full text-xs font-bold">{{ activeFilterCount }}</span>
                 <span v-else class="material-symbols-outlined text-[20px] transition-transform duration-200" :class="{ 'rotate-180': showFilters }">expand_more</span>
              </button>
 
@@ -248,7 +248,7 @@
                 <button
                   @click="viewMode = 'grid'"
                   class="p-2.5 rounded-lg transition-all"
-                  :class="viewMode === 'grid' ? 'bg-emerald-50 text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  :class="viewMode === 'grid' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
                   title="Grid View"
                 >
                   <span class="material-symbols-outlined text-[20px]">grid_view</span>
@@ -256,7 +256,7 @@
                 <button
                   @click="viewMode = 'list'"
                   class="p-2.5 rounded-lg transition-all"
-                  :class="viewMode === 'list' ? 'bg-emerald-50 text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  :class="viewMode === 'list' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
                   title="List View"
                 >
                   <span class="material-symbols-outlined text-[20px]">view_list</span>
@@ -290,7 +290,7 @@
                     <button
                       @click="filters.category = ''"
                       :class="!filters.category 
-                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
+                        ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-500/20' 
                         : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:border-emerald-300'"
                       class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
                     >
@@ -301,7 +301,7 @@
                       :key="cat"
                       @click="filters.category = cat"
                       :class="filters.category === cat 
-                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20' 
+                        ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-500/20' 
                         : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:border-emerald-300'"
                       class="px-4 py-2 text-sm font-bold rounded-full transition-all duration-200 flex items-center gap-1.5"
                     >
@@ -381,7 +381,7 @@
             </div>
           </div>
           <div class="mt-2 text-right">
-             <span class="text-xs font-semibold" :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'text-red-500' : 'text-emerald-600'">
+             <span class="text-xs font-semibold" :class="(productLimit.currentUsage || 0) >= productLimit.limit ? 'text-red-500' : 'text-blue-600'">
                  {{ productLimit.limit - (productLimit.currentUsage || 0) }} produk tersisa
              </span>
           </div>
@@ -415,7 +415,7 @@
           <button
               v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
               @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-medium text-sm"
+              class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
             >
               <span class="material-symbols-outlined text-[20px]">add</span>
               <span>Tambah Produk Pertama</span>
@@ -432,7 +432,7 @@
                          type="checkbox" 
                          :checked="isAllSelected" 
                          @change="toggleSelectAll"
-                         class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
+                         class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
                        />
                     </th>
                     <th class="px-6 py-4 font-bold text-slate-500 dark:text-slate-400">Produk</th>
@@ -444,13 +444,13 @@
                  </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                 <tr v-for="product in products" :key="product.id" class="group transition-colors" :class="isSelected(product.id) ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'">
+                 <tr v-for="product in products" :key="product.id" class="group transition-colors" :class="isSelected(product.id) ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'">
                     <td v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'" class="px-6 py-4">
                        <input 
                          type="checkbox" 
                          :checked="isSelected(product.id)" 
                          @change="toggleSelect(product.id)"
-                         class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
+                         class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
                        />
                     </td>
                     <td class="px-6 py-4">
@@ -468,7 +468,7 @@
                                @keyup.esc="cancelInlineEdit"
                                @blur="saveInlineEdit(product)"
                                type="text"
-                               class="w-full px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
+                               class="w-full px-2 py-1 border border-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold"
                                autofocus
                              />
                           </div>
@@ -476,7 +476,7 @@
                              ref="inlineEditRef"
                              v-else
                              @click="startInlineEdit(product, 'name', product.name); inlineEditTooltip.dismiss()"
-                             class="font-bold text-slate-900 dark:text-white line-clamp-2 cursor-pointer hover:text-emerald-600 hover:underline transition-colors"
+                             class="font-bold text-slate-900 dark:text-white line-clamp-2 cursor-pointer hover:text-blue-600 hover:underline transition-colors"
                              title="Klik untuk edit"
                           >{{ product.name }}</span>
                        </div>
@@ -488,7 +488,7 @@
                              v-model="tempEditValue"
                              @change="saveInlineEdit(product)"
                              @blur="saveInlineEdit(product)"
-                             class="px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold uppercase"
+                             class="px-2 py-1 border border-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold uppercase"
                              autofocus
                           >
                              <option value="">Tanpa Kategori</option>
@@ -498,7 +498,7 @@
                        <span
                           v-else
                           @click="startInlineEdit(product, 'category', product.category || '')"
-                          class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+                          class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-blue-50 hover:text-blue-600 transition-colors"
                           title="Klik untuk edit"
                        >{{ product.category || '-' }}</span>
                     </td>
@@ -513,14 +513,14 @@
                              type="number"
                              step="0.01"
                              min="0"
-                             class="w-32 px-2 py-1 border border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-right"
+                             class="w-32 px-2 py-1 border border-blue-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-right"
                              autofocus
                           />
                        </div>
                        <span
                           v-else
                           @click="startInlineEdit(product, 'price', product.price)"
-                          class="font-bold text-slate-900 dark:text-white cursor-pointer hover:text-emerald-600 hover:underline transition-colors"
+                          class="font-bold text-slate-900 dark:text-white cursor-pointer hover:text-blue-600 hover:underline transition-colors"
                           title="Klik untuk edit"
                        >{{ formatCurrency(Number(product.price)) }}</span>
                     </td>
@@ -533,11 +533,11 @@
                        </div>
                     </td>
                     <td class="px-6 py-4 text-center">
-                       <span class="w-2.5 h-2.5 rounded-full inline-block" :class="product.isActive ? 'bg-emerald-500' : 'bg-slate-300'"></span>
+                       <span class="w-2.5 h-2.5 rounded-full inline-block" :class="product.isActive ? 'bg-blue-500' : 'bg-slate-300'"></span>
                     </td>
                     <td class="px-6 py-4 text-right">
                        <div class="flex items-center justify-end gap-2">
-                          <button @click="editProduct(product)" class="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                          <button @click="editProduct(product)" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                              <span class="material-symbols-outlined text-[20px]">edit</span>
                           </button>
                           <button @click="deleteProduct(product.id)" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
@@ -557,7 +557,7 @@
             :key="product.id"
             :ref="el => setupSwipeForProduct(el as HTMLElement, product.id)"
             class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 border border-slate-100 dark:border-slate-700 transition-all duration-300 group overflow-hidden flex flex-col relative touch-pan-y"
-            :class="{ 'ring-2 ring-emerald-500 border-emerald-500 shadow-emerald-500/20': isSelected(product.id) }"
+            :class="{ 'ring-2 ring-blue-500 border-blue-500 shadow-blue-500/20': isSelected(product.id) }"
             :style="{ animationDelay: `${index * 50}ms` }"
           >
             <!-- Checkbox Overlay for Grid View -->
@@ -566,7 +566,7 @@
                  type="checkbox" 
                  :checked="isSelected(product.id)" 
                  @change="toggleSelect(product.id)"
-                 class="w-5 h-5 text-emerald-600 border-slate-300 rounded-lg focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer shadow-lg"
+                 class="w-5 h-5 text-blue-600 border-slate-300 rounded-lg focus:ring-blue-500 focus:ring-offset-0 cursor-pointer shadow-lg"
                />
             </div>
 
@@ -609,7 +609,7 @@
             <div class="p-5 flex flex-col flex-1 relative">
               <div class="mb-4">
                  <div class="flex justify-between items-start gap-2 mb-2">
-                    <p class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider line-clamp-1 border border-emerald-100">{{ product.category || 'Tanpa Kategori' }}</p>
+                    <p class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider line-clamp-1 border border-blue-100">{{ product.category || 'Tanpa Kategori' }}</p>
                     
                     <!-- Expand/Collapse Button -->
                     <button
@@ -629,12 +629,12 @@
                              <input 
                                v-model.number="tempStockValue"
                                type="number"
-                               class="w-16 px-1 py-0.5 text-[10px] font-bold border border-emerald-500 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-slate-800 dark:text-white"
+                               class="w-16 px-1 py-0.5 text-[10px] font-bold border border-blue-500 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-slate-800 dark:text-white"
                                @keyup.enter="saveStock(product)"
                                @keyup.esc="cancelEditingStock"
                                autofocus
                              />
-                             <button @click="saveStock(product)" class="p-0.5 text-emerald-600 hover:bg-emerald-50 rounded dark:text-emerald-400 dark:hover:bg-emerald-900/30">
+                             <button @click="saveStock(product)" class="p-0.5 text-blue-600 hover:bg-blue-50 rounded dark:text-blue-400 dark:hover:bg-blue-900/30">
                                 <span class="material-symbols-outlined text-[16px]">check</span>
                              </button>
                              <button @click="cancelEditingStock" class="p-0.5 text-red-500 hover:bg-red-50 rounded dark:text-red-400 dark:hover:bg-red-900/30">
@@ -648,11 +648,11 @@
                              >
                                {{ getStockStatusLabel(product.stock, product.minStock) }}
                              </span>
-                             <span class="text-[10px] font-mono font-bold text-slate-400 group-hover/stock:text-emerald-600 transition-colors">({{ product.stock }})</span>
+                             <span class="text-[10px] font-mono font-bold text-slate-400 group-hover/stock:text-blue-600 transition-colors">({{ product.stock }})</span>
                          </div>
                      </div>
                  </div>
-                 <h3 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2 leading-tight md:min-h-[3rem]">{{ product.name }}</h3>
+                 <h3 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight md:min-h-[3rem]">{{ product.name }}</h3>
               </div>
               
               <div class="mt-auto">
@@ -677,7 +677,7 @@
                       v-if="authStore.user?.role === 'CASHIER'"
                       @click="addToPOS(product)"
                       :disabled="product.stock <= 0 || !product.isActive"
-                      class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-bold text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-bold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
                       Tambah
@@ -687,7 +687,7 @@
                     <template v-else-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
                       <button
                         @click="editProduct(product)"
-                        class="flex-1 px-3 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-white dark:hover:bg-slate-600 hover:border-emerald-500 hover:text-emerald-600 transition-all shadow-sm active:scale-95"
+                        class="flex-1 px-3 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-white dark:hover:bg-slate-600 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm active:scale-95"
                       >
                         Edit
                       </button>
@@ -764,7 +764,7 @@
               type="checkbox"
               v-model="useInfiniteScrollMode"
               @change="toggleInfiniteScroll; infiniteScrollTooltip.dismiss()"
-              class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+              class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
             />
             <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Infinite Scroll</span>
           </label>
@@ -775,7 +775,7 @@
             <button
               @click="loadProducts(pagination.page - 1)"
               :disabled="pagination.page === 1"
-              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
+              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 font-medium"
             >
               <span class="material-symbols-outlined text-[20px]">chevron_left</span>
               Sebelumnya
@@ -786,7 +786,7 @@
             <button
               @click="loadProducts(pagination.page + 1)"
               :disabled="pagination.page === pagination.totalPages"
-              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-2 font-medium"
+              class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 hover:text-blue-600 transition-colors flex items-center gap-2 font-medium"
             >
               Selanjutnya
               <span class="material-symbols-outlined text-[20px]">chevron_right</span>
@@ -795,7 +795,7 @@
         
         <!-- Infinite Scroll Loading Indicator (shown when infinite scroll is ON and loading) -->
         <div v-show="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center justify-center gap-2 text-slate-500 pb-8">
-            <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             <span class="text-sm font-medium">Memuat lebih banyak...</span>
         </div>
         
@@ -881,7 +881,7 @@
             </label>
             <select
               v-model="bulkEditForm.category"
-              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="">-- Tidak diubah --</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -895,7 +895,7 @@
             </label>
             <select
               v-model="bulkEditForm.isActive"
-              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
             >
               <option value="">-- Tidak diubah --</option>
               <option value="true">Aktif</option>
@@ -911,7 +911,7 @@
             <div class="flex gap-2">
               <select
                 v-model="bulkEditForm.priceAdjustmentType"
-                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800"
+                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800"
               >
                 <option value="">-- Tidak diubah --</option>
                 <option value="set">Set ke</option>
@@ -926,7 +926,7 @@
                 step="0.01"
                 min="0"
                 placeholder="0"
-                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -939,7 +939,7 @@
             <div class="flex gap-2">
               <select
                 v-model="bulkEditForm.stockAdjustmentType"
-                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800"
+                class="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800"
               >
                 <option value="">-- Tidak diubah --</option>
                 <option value="set">Set ke</option>
@@ -953,7 +953,7 @@
                 step="1"
                 min="0"
                 placeholder="0"
-                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -969,7 +969,7 @@
             <button
               type="submit"
               :disabled="bulkEditLoading"
-              class="flex-1 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              class="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <span v-if="bulkEditLoading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               <span v-else class="material-symbols-outlined text-[20px]">save</span>

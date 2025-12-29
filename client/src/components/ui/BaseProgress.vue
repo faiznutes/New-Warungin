@@ -78,7 +78,7 @@ const roundedClass = computed(() => {
 const colorClass = computed(() => {
   const colors = {
     primary: 'bg-blue-600',
-    success: 'bg-emerald-600',
+    success: 'bg-blue-600',
     warning: 'bg-amber-600',
     error: 'bg-red-600',
     info: 'bg-indigo-600'

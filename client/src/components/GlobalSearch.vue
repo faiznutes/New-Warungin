@@ -41,7 +41,7 @@
           <!-- Results Section -->
           <div v-if="results.length > 0 || loading" class="max-h-[60vh] overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
             <div v-if="loading" class="flex items-center justify-center py-12">
-               <div class="w-8 h-8 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+               <div class="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
             </div>
             
             <div v-else class="space-y-4">
@@ -54,14 +54,14 @@
                     :key="item.id"
                     :class="[
                       'group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-3 transition-all',
-                      selectedIndex === item.globalIndex ? 'bg-emerald-50 dark:bg-emerald-900/20 ring-1 ring-emerald-500/50' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                      selectedIndex === item.globalIndex ? 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500/50' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
                     ]"
                     @mouseenter="selectedIndex = item.globalIndex"
                     @click="handleItemClick(item)"
                   >
                     <div 
                       class="flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-slate-100 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-sm"
-                      :class="selectedIndex === item.globalIndex ? 'text-emerald-600' : 'text-slate-400'"
+                      :class="selectedIndex === item.globalIndex ? 'text-blue-600' : 'text-slate-400'"
                     >
                       <span class="material-symbols-outlined">{{ item.icon }}</span>
                     </div>
@@ -69,7 +69,7 @@
                       <p class="text-sm font-bold text-slate-900 dark:text-white">{{ item.name }}</p>
                       <p class="text-xs text-slate-500 dark:text-slate-400">{{ item.description }}</p>
                     </div>
-                    <span v-if="selectedIndex === item.globalIndex" class="flex-none text-[10px] font-bold text-emerald-600">ENTER</span>
+                    <span v-if="selectedIndex === item.globalIndex" class="flex-none text-[10px] font-bold text-blue-600">ENTER</span>
                   </li>
                 </ul>
               </div>
@@ -90,9 +90,9 @@
                   <span class="material-symbols-outlined text-3xl">inventory_2</span>
                   <span class="text-[10px] font-bold uppercase tracking-widest">Produk</span>
                 </div>
-                <div class="flex flex-col items-center gap-2 text-emerald-500">
+                <div class="flex flex-col items-center gap-2 text-blue-500">
                   <span class="material-symbols-outlined text-3xl">search</span>
-                  <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Pencarian</span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-blue-600">Pencarian</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
                   <span class="material-symbols-outlined text-3xl">group</span>
@@ -105,7 +105,7 @@
                   v-for="hint in searchHints" 
                   :key="hint"
                   @click="query = hint"
-                  class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-emerald-50 hover:text-emerald-600 transition-colors border border-transparent hover:border-emerald-200"
+                  class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-blue-600 transition-colors border border-transparent hover:border-emerald-200"
                 >
                   {{ hint }}
                 </button>

@@ -33,7 +33,7 @@
     <div v-else-if="insight" class="space-y-4">
       <!-- Today's Summary -->
       <div class="grid grid-cols-2 gap-4">
-        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+        <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-200">
           <p class="text-xs text-gray-600 mb-1">{{ periodLabel }} Transactions</p>
           <p class="text-2xl font-bold text-gray-900">{{ insight.today.transactions }}</p>
           <div class="flex items-center mt-2">

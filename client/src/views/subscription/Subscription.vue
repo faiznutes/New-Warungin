@@ -11,7 +11,7 @@
       </div>
       <router-link
         to="/pricing"
-        class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[#4c739a] hover:text-emerald-600 hover:border-emerald-500 rounded-xl text-sm font-medium transition-all shadow-sm hover:shadow-sm"
+        class="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[#4c739a] hover:text-blue-600 hover:border-blue-500 rounded-xl text-sm font-medium transition-all shadow-sm hover:shadow-sm"
       >
         <span>Lihat Detail Paket</span>
         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -29,7 +29,7 @@
 
     <!-- Loading State -->
     <div v-else-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700/50">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium text-sm">Memuat data langganan...</div>
     </div>
 
@@ -98,12 +98,12 @@
       <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN') && !subscription?.isExpired" class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-600">upgrade</span>
+            <span class="material-symbols-outlined text-blue-600">upgrade</span>
             Upgrade & Perpanjang
           </h3>
           <button
             @click="showExtendSection = !showExtendSection"
-            class="px-4 py-2 text-sm font-medium text-emerald-600 hover:text-white border border-emerald-600 hover:bg-emerald-600 rounded-xl transition-all"
+            class="px-4 py-2 text-sm font-medium text-blue-600 hover:text-white border border-blue-600 hover:bg-blue-600 rounded-xl transition-all"
           >
             {{ showExtendSection ? 'Sembunyikan' : 'Perpanjang Paket Ini' }}
           </button>
@@ -122,15 +122,15 @@
                 @click="extendPlan = plan.id"
                 class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
                 :class="extendPlan === plan.id 
-                  ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20' 
+                  ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' 
                   : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
               >
-                <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-emerald-600">
+                <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-blue-600">
                   <span class="material-symbols-outlined">check_circle</span>
                 </div>
                 
-                <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-emerald-600 transition-colors">{{ plan.name }}</h4>
-                <div class="text-lg font-bold text-emerald-600 mb-2">
+                <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-blue-600 transition-colors">{{ plan.name }}</h4>
+                <div class="text-lg font-bold text-blue-600 mb-2">
                   <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
                     <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
                     <span>
@@ -157,7 +157,7 @@
                   @click="extendDuration = duration.value"
                   class="px-4 py-3 border-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden"
                   :class="extendDuration === duration.value
-                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600'
                     : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 text-[#4c739a]'"
                 >
                   <span class="relative z-10">{{ duration.label }}</span>
@@ -184,7 +184,7 @@
               </div>
               <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
                 <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Pembayaran</span>
-                <span class="text-2xl font-bold text-emerald-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
+                <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
               </div>
             </div>
 
@@ -209,15 +209,15 @@
               @click="selectedPlan = plan.id"
               class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
               :class="selectedPlan === plan.id 
-                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20' 
+                ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' 
                 : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
             >
-              <div v-if="selectedPlan === plan.id" class="absolute top-3 right-3 text-emerald-600">
+              <div v-if="selectedPlan === plan.id" class="absolute top-3 right-3 text-blue-600">
                 <span class="material-symbols-outlined">check_circle</span>
               </div>
-              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-emerald-600 transition-colors">{{ plan.name }}</h4>
+              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-blue-600 transition-colors">{{ plan.name }}</h4>
               
-              <div class="text-lg font-bold text-emerald-600 mb-2">
+              <div class="text-lg font-bold text-blue-600 mb-2">
                 <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
                   <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
                   <span>
@@ -241,43 +241,43 @@
               <!-- Temporary -->
               <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
                 :class="upgradeType === 'temporary' 
-                  ? 'border-emerald-500 bg-emerald-50/30' 
+                  ? 'border-blue-500 bg-blue-50/30' 
                   : 'border-slate-100 dark:border-slate-700'"
               >
                 <div class="flex h-5 items-center">
-                  <input type="radio" v-model="upgradeType" value="temporary" class="h-4 w-4 text-emerald-600 border-slate-300 focus:ring-emerald-500" />
+                  <input type="radio" v-model="upgradeType" value="temporary" class="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
                 </div>
                 <div class="ml-3 text-sm flex-1">
                   <span class="font-bold text-[#0d141b] dark:text-white block">1 Bulan (Coba Dulu)</span>
                   <span class="text-[#4c739a] block text-xs mt-1">Upgrade selama 30 hari, lalu kembali ke paket {{ getPlanName(currentPlan) }} otomatis.</span>
-                  <span class="font-bold text-emerald-600 mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('temporary')) }}</span>
+                  <span class="font-bold text-blue-600 mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('temporary')) }}</span>
                 </div>
               </label>
 
               <!-- Until End -->
               <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
                 :class="upgradeType === 'until_end' 
-                  ? 'border-emerald-500 bg-emerald-50/30' 
+                  ? 'border-blue-500 bg-blue-50/30' 
                   : 'border-slate-100 dark:border-slate-700'"
               >
                 <div class="flex h-5 items-center">
-                  <input type="radio" v-model="upgradeType" value="until_end" class="h-4 w-4 text-emerald-600 border-slate-300 focus:ring-emerald-500" />
+                  <input type="radio" v-model="upgradeType" value="until_end" class="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
                 </div>
                 <div class="ml-3 text-sm flex-1">
                   <span class="font-bold text-[#0d141b] dark:text-white block">Sisa Masa Aktif ({{ subscription?.daysRemaining || 0 }} hari)</span>
                   <span class="text-[#4c739a] block text-xs mt-1">Upgrade permanen sampai masa berlangganan saat ini habis.</span>
-                  <span class="font-bold text-emerald-600 mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('until_end')) }}</span>
+                  <span class="font-bold text-blue-600 mt-2 block">Bayar: {{ formatCurrency(calculateUpgradeAmount('until_end')) }}</span>
                 </div>
               </label>
 
               <!-- Custom -->
               <label class="flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
                 :class="upgradeType === 'custom' 
-                  ? 'border-emerald-500 bg-emerald-50/30' 
+                  ? 'border-blue-500 bg-blue-50/30' 
                   : 'border-slate-100 dark:border-slate-700'"
               >
                 <div class="flex h-5 items-center">
-                  <input type="radio" v-model="upgradeType" value="custom" class="h-4 w-4 text-emerald-600 border-slate-300 focus:ring-emerald-500" />
+                  <input type="radio" v-model="upgradeType" value="custom" class="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500" />
                 </div>
                 <div class="ml-3 text-sm flex-1">
                   <span class="font-bold text-[#0d141b] dark:text-white block mb-2">Durasi Custom (Long Term)</span>
@@ -290,8 +290,8 @@
                       type="button"
                       class="px-2 py-2 border rounded-xl text-xs font-medium transition-all"
                       :class="selectedCustomDuration === duration.value
-                        ? 'border-emerald-500 bg-emerald-500 text-white'
-                        : 'border-slate-200 text-slate-600 hover:border-emerald-500'"
+                        ? 'border-blue-500 bg-blue-500 text-white'
+                        : 'border-slate-200 text-slate-600 hover:border-blue-500'"
                     >
                       {{ duration.label }}
                       <span v-if="duration.discount" class="block text-[9px] mt-0.5" :class="selectedCustomDuration === duration.value ? 'text-white/80' : 'text-green-600'">-{{ duration.discount }}%</span>
@@ -299,7 +299,7 @@
                   </div>
                     <button
                       v-if="upgradeType === 'custom' && selectedCustomDuration" 
-                      class="font-bold text-emerald-600 mt-2"
+                      class="font-bold text-blue-600 mt-2"
                     >
                       Bayar: {{ formatCurrency(calculateUpgradeAmount('custom')) }}
                     </button>
@@ -324,7 +324,7 @@
               </div>
               <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
                 <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Tagihan</span>
-                <span class="text-2xl font-bold text-emerald-600">{{ formatCurrency(calculateUpgradeAmount(upgradeType)) }}</span>
+                <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(calculateUpgradeAmount(upgradeType)) }}</span>
               </div>
           </div>
 
@@ -333,7 +333,7 @@
             v-if="selectedPlan && selectedPlan !== currentPlan && upgradeType && (upgradeType !== 'custom' || selectedCustomDuration)"
             @click="handleUpgrade"
             :disabled="processing"
-            class="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
              <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
              {{ processing ? 'Memproses...' : 'Lanjut Pembayaran Upgrade' }}
@@ -357,14 +357,14 @@
               @click="extendPlan = plan.id"
               class="relative border-2 rounded-xl p-5 cursor-pointer transition-all group"
               :class="extendPlan === plan.id 
-                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20' 
+                ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20' 
                 : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
             >
-              <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-emerald-600">
+              <div v-if="extendPlan === plan.id" class="absolute top-3 right-3 text-blue-600">
                 <span class="material-symbols-outlined">check_circle</span>
               </div>
-              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-emerald-600 transition-colors">{{ plan.name }}</h4>
-              <div class="text-lg font-bold text-emerald-600 mb-2">
+              <h4 class="font-bold text-[#0d141b] dark:text-white mb-1 group-hover:text-blue-600 transition-colors">{{ plan.name }}</h4>
+              <div class="text-lg font-bold text-blue-600 mb-2">
                 <div v-if="plan.originalPrice && plan.discount" class="flex flex-col">
                   <span class="text-xs font-normal text-slate-400 line-through">{{ formatCurrency(plan.originalPrice) }}</span>
                   <span>
@@ -391,7 +391,7 @@
                 @click="extendDuration = duration.value"
                 class="px-4 py-3 border-2 rounded-xl text-sm font-medium transition-all relative overflow-hidden"
                 :class="extendDuration === duration.value
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600'
                   : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 text-[#4c739a]'"
               >
                 <span class="relative z-10">{{ duration.label }}</span>
@@ -418,7 +418,7 @@
               </div>
               <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700 mt-2">
                 <span class="text-base font-bold text-[#0d141b] dark:text-white">Total Tagihan</span>
-                <span class="text-2xl font-bold text-emerald-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
+                <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(calculateExtendTotal()) }}</span>
               </div>
           </div>
 
@@ -426,7 +426,7 @@
           <button
             @click="handleExtend"
             :disabled="!extendPlan || !extendDuration || processing"
-            class="w-full px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full px-6 py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/30 font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
              <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
              {{ processing ? 'Memproses...' : 'Lanjut ke Pembayaran' }}
@@ -436,7 +436,7 @@
 
       <!-- Info Banner -->
       <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 flex items-start gap-4">
-        <div class="bg-emerald-100 dark:bg-slate-700 text-emerald-600 p-2 rounded-xl flex-shrink-0">
+        <div class="bg-blue-100 dark:bg-slate-700 text-blue-600 p-2 rounded-xl flex-shrink-0">
           <span class="material-symbols-outlined">info</span>
         </div>
         <div>
@@ -444,7 +444,7 @@
           <p class="text-xs text-[#4c739a] leading-relaxed mb-3">Pelajari lebih lanjut tentang fitur setiap paket dan addon yang tersedia di halaman pricing kami.</p>
           <router-link
             to="/pricing"
-            class="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1"
+            class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1"
           >
             Buka Halaman Pricing
             <span class="material-symbols-outlined text-[14px]">arrow_forward</span>

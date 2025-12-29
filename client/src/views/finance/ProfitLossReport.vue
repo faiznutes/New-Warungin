@@ -24,7 +24,7 @@
         </div>
         <button
           @click="exportReport"
-          class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-xl text-sm font-medium shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition font-medium text-sm"
+          class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition font-medium text-sm"
         >
           <span class="material-symbols-outlined text-[20px]">download</span>
           <span>Export PDF</span>
@@ -34,7 +34,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <div class="text-[#4c739a] font-medium text-sm">Loading report...</div>
     </div>
 
@@ -60,13 +60,13 @@
     <div v-else-if="profitLoss" class="space-y-6 animate-fade-in">
       <!-- Summary Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-emerald-500/50 transition-colors">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group hover:border-blue-500/50 transition-colors">
           <div class="flex justify-between items-start mb-4">
              <div>
                <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Revenue</p>
                <p class="text-[10px] text-slate-400">Total Income</p>
              </div>
-             <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+             <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                <span class="material-symbols-outlined text-[24px]">payments</span>
              </div>
           </div>
@@ -99,7 +99,7 @@
           <p class="text-2xl font-bold text-[#0d141b] dark:text-white">{{ formatCurrency(profitLoss.grossProfit) }}</p>
           <div class="mt-2 flex items-center gap-1 text-xs text-[#4c739a]">
             <span>Margin:</span>
-            <span class="font-bold text-emerald-600">{{ profitLoss.grossProfitMargin.toFixed(1) }}%</span>
+            <span class="font-bold text-blue-600">{{ profitLoss.grossProfitMargin.toFixed(1) }}%</span>
           </div>
         </div>
 
@@ -163,7 +163,7 @@
           <div class="p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center mb-1">
               <span class="text-base font-extrabold text-[#0d141b] dark:text-white">Gross Profit</span>
-              <span class="text-lg font-extrabold text-emerald-600">{{ formatCurrency(profitLoss.grossProfit) }}</span>
+              <span class="text-lg font-extrabold text-blue-600">{{ formatCurrency(profitLoss.grossProfit) }}</span>
             </div>
             <div class="text-xs text-[#4c739a]">
               Gross Profit Margin: <span class="font-bold text-[#0d141b] dark:text-white">{{ profitLoss.grossProfitMargin.toFixed(2) }}%</span>
@@ -180,11 +180,11 @@
           </div>
 
           <!-- Net Profit -->
-          <div class="p-6 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-xl border-2 border-emerald-500/20">
+          <div class="p-6 bg-blue-500/5 dark:bg-blue-500/10 rounded-xl border-2 border-blue-500/20">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xl font-extrabold text-[#0d141b] dark:text-white">Net Profit</span>
               <span 
-                :class="profitLoss.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'"
+                :class="profitLoss.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'"
                 class="text-2xl font-extrabold"
               >
                 {{ formatCurrency(profitLoss.netProfit) }}
@@ -194,7 +194,7 @@
               Net Profit Margin: 
               <span 
                 class="font-bold"
-                :class="profitLoss.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'"
+                :class="profitLoss.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'"
               >
                 {{ profitLoss.netProfitMargin.toFixed(2) }}%
               </span>

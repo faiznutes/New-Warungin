@@ -5,7 +5,7 @@
       <!-- Mobile Header -->
       <div class="md:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-500">store</span>
+          <span class="material-symbols-outlined text-blue-500">store</span>
           <span class="font-bold text-lg">Detail Toko</span>
         </div>
       </div>
@@ -14,9 +14,9 @@
       <div class="flex-1 w-full p-4 md:p-8 flex flex-col gap-8 animate-fade-in" v-if="store">
         <!-- Breadcrumbs -->
         <nav class="flex text-sm font-medium text-slate-500 dark:text-slate-400 items-center gap-2">
-          <router-link to="/app/dashboard" class="hover:text-emerald-500 transition-colors">Beranda</router-link>
+          <router-link to="/app/dashboard" class="hover:text-blue-500 transition-colors">Beranda</router-link>
           <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-          <router-link to="/app/stores" class="hover:text-emerald-500 transition-colors">Semua Toko</router-link>
+          <router-link to="/app/stores" class="hover:text-blue-500 transition-colors">Semua Toko</router-link>
           <span class="material-symbols-outlined text-[16px]">chevron_right</span>
           <span class="text-slate-800 dark:text-slate-200 truncate max-w-[200px]">{{ store.name }}</span>
         </nav>
@@ -25,8 +25,8 @@
         <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div class="flex items-start gap-5">
             <!-- Store Logo Placeholder -->
-            <div class="h-24 w-24 rounded-3xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 border border-white/50 dark:border-white/10 shadow-lg flex items-center justify-center flex-shrink-0 animate-scale-in">
-               <span class="material-symbols-outlined text-5xl text-emerald-600 dark:text-emerald-400">storefront</span>
+            <div class="h-24 w-24 rounded-3xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/20 border border-white/50 dark:border-white/10 shadow-lg flex items-center justify-center flex-shrink-0 animate-scale-in">
+               <span class="material-symbols-outlined text-5xl text-blue-600 dark:text-blue-400">storefront</span>
             </div>
             <div class="flex flex-col gap-2 pt-1">
               <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ store.name }}</h1>
@@ -35,10 +35,10 @@
                 <span 
                   class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-sm"
                   :class="store.isActive 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                    ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' 
                     : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="store.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                  <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="store.isActive ? 'bg-blue-500' : 'bg-red-500'"></span>
                   {{ store.isActive ? 'Operasional' : 'Tidak Aktif' }}
                 </span>
               </div>
@@ -46,11 +46,11 @@
           </div>
           
           <div class="flex items-center gap-3">
-             <button class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-sm flex items-center gap-2">
+             <button class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm flex items-center gap-2">
               <span class="material-symbols-outlined text-[20px]">visibility</span>
               <span class="hidden sm:inline">Mode Pengguna</span>
             </button>
-            <router-link :to="`/app/stores/${store.id}/edit`" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2 transform hover:-translate-y-0.5 active:scale-95">
+            <router-link :to="`/app/stores/${store.id}/edit`" class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 transform hover:-translate-y-0.5 active:scale-95">
               <span class="material-symbols-outlined text-[20px]">edit_square</span>
               <span>Ubah Profil</span>
             </router-link>
@@ -83,7 +83,7 @@
           <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group opacity-60">
             <div class="flex items-center justify-between mb-2">
               <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pendapatan</p>
-              <div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl group-hover:scale-110 transition-transform">
+              <div class="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-[20px]">payments</span>
               </div>
             </div>
@@ -110,7 +110,7 @@
             <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
               <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-emerald-500">info</span>
+                  <span class="material-symbols-outlined text-blue-500">info</span>
                   <h3 class="font-bold text-slate-900 dark:text-white text-lg">Informasi Umum</h3>
                 </div>
               </div>
@@ -179,7 +179,7 @@
                 <ul class="flex flex-col gap-1" v-if="store.operatingHours">
                   <li v-for="(hours, day) in store.operatingHours" :key="day" class="flex justify-between items-center text-sm py-3 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors border-b last:border-0 border-slate-50 dark:border-slate-700/50">
                     <span class="text-slate-500 dark:text-slate-400 font-medium capitalize flex items-center gap-2">
-                      <span class="w-1.5 h-1.5 rounded-full" :class="hours.isOpen ? 'bg-emerald-400' : 'bg-slate-300'"></span>
+                      <span class="w-1.5 h-1.5 rounded-full" :class="hours.isOpen ? 'bg-blue-400' : 'bg-slate-300'"></span>
                       {{ day }}
                     </span>
                     <span class="font-bold text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-700/50 px-2 py-1 rounded-md text-xs" v-if="hours.isOpen">{{ hours.open }} - {{ hours.close }}</span>
@@ -210,7 +210,7 @@
       <div v-else class="flex flex-col items-center justify-center h-full gap-4">
           <div class="relative w-16 h-16">
             <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
           <p class="text-slate-500 font-medium animate-pulse">Memuat detail toko...</p>
       </div>

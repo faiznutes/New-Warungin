@@ -51,10 +51,10 @@
               <span
                 class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wide border"
                 :class="selectedWebhook.isActive 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                    ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' 
                     : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'"
               >
-                <span class="w-1.5 h-1.5 rounded-full" :class="selectedWebhook.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                <span class="w-1.5 h-1.5 rounded-full" :class="selectedWebhook.isActive ? 'bg-blue-500' : 'bg-slate-400'"></span>
                 {{ selectedWebhook.isActive ? 'Aktif' : 'Tidak Aktif' }}
               </span>
             </div>
@@ -153,7 +153,7 @@
              </button>
           </div>
           <div class="bg-slate-900 rounded-xl p-4 overflow-hidden border border-slate-800 shadow-inner">
-            <pre class="text-xs font-mono text-emerald-400 overflow-x-auto custom-scrollbar">{{ previewPayload }}</pre>
+            <pre class="text-xs font-mono text-blue-400 overflow-x-auto custom-scrollbar">{{ previewPayload }}</pre>
           </div>
         </div>
       </div>
@@ -222,7 +222,7 @@
                     <div class="flex items-center gap-2 mb-1.5">
                       <span
                         class="px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider"
-                        :class="delivery.status === 'SUCCESS' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'"
+                        :class="delivery.status === 'SUCCESS' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'"
                       >
                          {{ delivery.status }}
                       </span>
@@ -233,7 +233,7 @@
                             <span class="material-symbols-outlined text-[14px]">schedule</span>
                             {{ formatDateTime(delivery.createdAt) }}
                         </span>
-                        <span v-if="delivery.responseCode" class="flex items-center gap-1 font-bold" :class="delivery.responseCode >= 200 && delivery.responseCode < 300 ? 'text-emerald-600' : 'text-red-500'">
+                        <span v-if="delivery.responseCode" class="flex items-center gap-1 font-bold" :class="delivery.responseCode >= 200 && delivery.responseCode < 300 ? 'text-blue-600' : 'text-red-500'">
                             <span class="material-symbols-outlined text-[14px]">http</span>
                             {{ delivery.responseCode }}
                         </span>
@@ -261,7 +261,7 @@
                     Lihat Payload
                   </summary>
                   <div class="mt-2 bg-slate-900 rounded-lg p-3 overflow-hidden">
-                    <pre class="text-xs font-mono text-emerald-400 overflow-x-auto custom-scrollbar">{{ JSON.stringify(delivery.payload, null, 2) }}</pre>
+                    <pre class="text-xs font-mono text-blue-400 overflow-x-auto custom-scrollbar">{{ JSON.stringify(delivery.payload, null, 2) }}</pre>
                   </div>
                 </details>
 

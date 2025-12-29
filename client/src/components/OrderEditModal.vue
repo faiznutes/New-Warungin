@@ -23,7 +23,7 @@
 
           <div class="flex-1 overflow-y-auto p-6 bg-white custom-scrollbar">
             <div v-if="loading" class="flex flex-col items-center justify-center py-12">
-               <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+               <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                <p class="text-slate-500 font-medium animate-pulse">Loading order...</p>
             </div>
 
@@ -43,7 +43,7 @@
                   </div>
                   <div>
                     <span class="block text-slate-500 font-medium mb-1">Current Total</span>
-                    <span class="font-bold text-emerald-600 text-lg">{{ formatCurrency(Number(order.total)) }}</span>
+                    <span class="font-bold text-blue-600 text-lg">{{ formatCurrency(Number(order.total)) }}</span>
                   </div>
                 </div>
               </div>
@@ -52,12 +52,12 @@
               <div>
                 <div class="flex items-center justify-between mb-4">
                    <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                      <span class="material-symbols-outlined text-emerald-500">shopping_cart</span>
+                      <span class="material-symbols-outlined text-blue-500">shopping_cart</span>
                       Order Items
                    </h4>
                    <button
                     @click="showAddProduct = true"
-                    class="px-4 py-2 text-sm font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition border border-emerald-100 flex items-center gap-2"
+                    class="px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition border border-blue-100 flex items-center gap-2"
                   >
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     Add Product
@@ -83,7 +83,7 @@
                         <button
                           @click="updateItemQuantity(index, -1)"
                           :disabled="item.quantity <= 1"
-                          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-slate-600 hover:text-emerald-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
+                          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-slate-600 hover:text-blue-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition font-bold"
                         >
                           -
                         </button>
@@ -96,7 +96,7 @@
                         />
                         <button
                           @click="updateItemQuantity(index, 1)"
-                          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-slate-600 hover:text-emerald-600 shadow-sm transition font-bold"
+                          class="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-slate-600 hover:text-blue-600 shadow-sm transition font-bold"
                         >
                           +
                         </button>
@@ -131,7 +131,7 @@
                   </div>
                   <div class="flex justify-between text-xl font-bold border-t border-slate-200 pt-4 mt-2">
                     <span class="text-slate-900">Total</span>
-                    <span class="text-emerald-600">{{ formatCurrency(calculatedTotal) }}</span>
+                    <span class="text-blue-600">{{ formatCurrency(calculatedTotal) }}</span>
                   </div>
                 </div>
               </div>
@@ -151,7 +151,7 @@
               type="button"
               @click="handleSave"
               :disabled="saving || orderItems.length === 0"
-              class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+              class="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
             >
               <div v-if="saving" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>{{ saving ? 'Saving Changes...' : 'Save Changes' }}</span>

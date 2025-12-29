@@ -4,17 +4,17 @@
     <section class="container mx-auto px-4 sm:px-6 py-12 sm:py-16 relative overflow-hidden">
       <!-- Background Gradients -->
       <div class="absolute inset-0 pointer-events-none z-0">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-emerald-50/50 to-transparent dark:from-emerald-400/5 dark:to-transparent"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-400/5 dark:to-transparent"></div>
         <div class="absolute top-1/2 -left-24 w-72 h-72 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-50"></div>
       </div>
 
       <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto relative z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-6">
           <span class="material-symbols-outlined text-sm">payments</span>
           Paket Hemat
         </div>
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 px-2 leading-tight">
-          Investasi Terbaik untuk <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-sky-400">Pertumbuhan Bisnis</span>
+          Investasi Terbaik untuk <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-sky-400">Pertumbuhan Bisnis</span>
         </h1>
         <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl px-4 leading-relaxed">
           Pilih paket yang sesuai dengan fase bisnis Anda. Mulai dari Rp 149rb/bulan, 
@@ -73,8 +73,8 @@
         </div>
 
         <!-- Boost Plan (Popular) -->
-        <div class="flex flex-col bg-slate-900 dark:bg-slate-800 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-emerald-500 dark:border-emerald-500 relative z-20">
-          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-emerald-400 to-indigo-500 rounded-t-lg"></div>
+        <div class="flex flex-col bg-slate-900 dark:bg-slate-800 rounded-2xl shadow-2xl hover:shadow-2xl transition-all duration-300 transform lg:scale-105 border-4 border-blue-500 dark:border-blue-500 relative z-20">
+          <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-t-lg"></div>
           <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-full text-center z-30">
             <span class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-1.5 rounded-full text-xs font-bold shadow-xl uppercase tracking-wider border-2 border-slate-900 transform scale-110">
               ⭐ Paling Populer
@@ -83,9 +83,9 @@
           <div class="flex flex-col p-6 sm:p-8 relative z-10 h-full">
             <div class="mb-6">
               <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Boost</h2>
-              <p class="text-sm text-slate-400 dark:text-emerald-100">Level up bisnis kamu! 💪</p>
+              <p class="text-sm text-slate-400 dark:text-blue-100">Level up bisnis kamu! 💪</p>
             </div>
-            <div class="mb-6 pb-6 border-b border-slate-800 dark:border-emerald-500/30">
+            <div class="mb-6 pb-6 border-b border-slate-800 dark:border-blue-500/30">
               <div class="flex items-baseline flex-wrap">
                 <span class="text-4xl sm:text-5xl font-bold text-white">Rp 299</span>
                 <span class="text-xl text-slate-400 dark:text-emerald-200 ml-1">rb</span>
@@ -96,32 +96,32 @@
             <ul class="space-y-4 mb-8 flex-1">
                <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                <span class="text-slate-300 dark:text-emerald-50 text-sm">2 Outlet</span>
+                <span class="text-slate-300 dark:text-blue-50 text-sm">2 Outlet</span>
               </li>
               <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                <span class="text-slate-300 dark:text-emerald-50 text-sm">10 User</span>
+                <span class="text-slate-300 dark:text-blue-50 text-sm">10 User</span>
               </li>
               <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                <span class="text-slate-300 dark:text-emerald-50 text-sm">Limit produk 200</span>
+                <span class="text-slate-300 dark:text-blue-50 text-sm">Limit produk 200</span>
               </li>
               <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                <span class="text-slate-300 dark:text-emerald-50 text-sm">Manajemen Inventori</span>
+                <span class="text-slate-300 dark:text-blue-50 text-sm">Manajemen Inventori</span>
               </li>
               <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                <span class="text-slate-300 dark:text-emerald-50 text-sm">Member & Diskon</span>
+                <span class="text-slate-300 dark:text-blue-50 text-sm">Member & Diskon</span>
               </li>
               <li class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-400 text-[20px]">check_circle</span>
-                 <span class="text-slate-300 dark:text-emerald-50 text-sm">Support Prioritas</span>
+                 <span class="text-slate-300 dark:text-blue-50 text-sm">Support Prioritas</span>
               </li>
             </ul>
             <router-link
               to="/contact"
-              class="w-full px-6 py-4 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-bold text-center shadow-lg shadow-emerald-500/25"
+              class="w-full px-6 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-bold text-center shadow-lg shadow-blue-500/25"
             >
               Pilih Paket Boost
             </router-link>
@@ -182,7 +182,7 @@
       <!-- Addons Section -->
       <div class="mt-24 max-w-6xl mx-auto px-4">
         <div class="text-center mb-16">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 text-xs font-bold uppercase tracking-wider mb-4">
             <span class="material-symbols-outlined text-sm">extension</span>
             Modular
           </div>
@@ -198,10 +198,10 @@
            <div
              v-for="addon in featuredAddons"
              :key="addon.id"
-             class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-lg transition group"
+             class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:shadow-lg transition group"
            >
               <div class="flex items-start justify-between mb-4">
-                 <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined text-2xl">{{ addon.icon }}</span>
                  </div>
                  <div class="text-right">

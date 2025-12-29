@@ -31,7 +31,7 @@
                 v-model="filters.search"
                 type="text"
                 placeholder="Cari produk..."
-                class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -40,7 +40,7 @@
           <div class="relative">
             <select
               v-model="filters.category"
-              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
+              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
               <option value="">Semua Kategori</option>
               <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -52,7 +52,7 @@
           <div class="relative">
             <select
               v-model="filters.sortBy"
-              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
+              class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 rounded-xl transition-all outline-none font-medium appearance-none"
             >
               <option value="name">Nama A-Z</option>
               <option value="name-desc">Nama Z-A</option>
@@ -67,7 +67,7 @@
         <!-- Selected Count -->
         <div class="mt-4 flex items-center justify-between">
           <div class="text-sm text-slate-600 font-medium">
-            <span class="text-emerald-600 font-bold">{{ selectedProducts.length }}</span> terpilih
+            <span class="text-blue-600 font-bold">{{ selectedProducts.length }}</span> terpilih
             <span v-if="filteredProducts.length > 0" class="text-slate-400">
               dari {{ filteredProducts.length }} tersedia
             </span>
@@ -85,7 +85,7 @@
       <!-- Product List -->
       <div class="flex-1 overflow-y-auto p-5 bg-slate-50 custom-scrollbar">
         <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-          <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
           <div class="text-slate-500 font-medium animate-pulse">Memuat produk...</div>
         </div>
 
@@ -101,11 +101,11 @@
             v-for="product in filteredProducts"
             :key="product.id"
             class="flex items-center gap-4 p-4 bg-white hover:bg-slate-50 rounded-2xl cursor-pointer border-2 transition-all duration-200 group"
-            :class="isSelected(product.id) ? 'border-emerald-500 shadow-md shadow-emerald-500/10' : 'border-transparent hover:border-slate-200 shadow-sm'"
+            :class="isSelected(product.id) ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-transparent hover:border-slate-200 shadow-sm'"
           >
             <div 
                class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors"
-               :class="isSelected(product.id) ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 group-hover:border-emerald-400'"
+               :class="isSelected(product.id) ? 'bg-blue-500 border-blue-500' : 'border-slate-300 group-hover:border-blue-400'"
             >
                <span v-if="isSelected(product.id)" class="material-symbols-outlined text-white text-[16px]">check</span>
             </div>
@@ -120,10 +120,10 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between">
                 <div>
-                  <p class="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{{ product.name }}</p>
+                  <p class="font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{{ product.name }}</p>
                   <div class="mt-1 flex items-center gap-3 text-xs font-medium text-slate-500">
                     <span v-if="product.category" class="bg-slate-100 px-2 py-0.5 rounded-md">{{ product.category }}</span>
-                    <span :class="product.stock > 0 ? 'text-emerald-600' : 'text-red-500'">
+                    <span :class="product.stock > 0 ? 'text-blue-600' : 'text-red-500'">
                       Stok: {{ product.stock }}
                     </span>
                   </div>
@@ -140,7 +140,7 @@
       <!-- Footer -->
       <div class="p-6 bg-white border-t border-slate-100 flex items-center justify-between gap-4 sticky bottom-0 z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.02)]">
         <div class="text-sm font-bold text-slate-600 hidden sm:block">
-          <span class="text-emerald-600 text-lg">{{ selectedProducts.length }}</span> item terpilih
+          <span class="text-blue-600 text-lg">{{ selectedProducts.length }}</span> item terpilih
         </div>
         <div class="flex flex-1 sm:flex-none gap-3">
           <button
@@ -152,7 +152,7 @@
           <button
             @click="handleConfirm"
             :disabled="selectedProducts.length === 0"
-            class="flex-1 sm:w-48 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2"
+            class="flex-1 sm:w-48 px-4 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined text-[20px]">check</span>
             <span>Konfirmasi ({{ selectedProducts.length }})</span>

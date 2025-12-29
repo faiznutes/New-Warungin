@@ -8,7 +8,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- No Active Store Shift - Show Open Store Shift Form -->
@@ -67,7 +67,7 @@
             <textarea
               v-model="openStoreShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>
@@ -121,8 +121,8 @@
       <!-- Cash Shift Form -->
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-dashed border-slate-300 dark:border-slate-700 p-8 relative overflow-hidden">
         <div class="text-center mb-8">
-          <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100 dark:border-emerald-800/50 shadow-inner">
-            <span class="material-symbols-outlined text-[32px] text-emerald-600 dark:text-emerald-500">payments</span>
+          <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100 dark:border-blue-800/50 shadow-inner">
+            <span class="material-symbols-outlined text-[32px] text-blue-600 dark:text-blue-500">payments</span>
           </div>
           <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Buka Shift Kasir</h2>
           <p class="text-slate-500 dark:text-slate-400 text-sm">Silakan buka shift kasir untuk memulai transaksi penjualan</p>
@@ -134,14 +134,14 @@
               Modal Awal <span class="text-red-500">*</span>
             </label>
             <div class="relative group">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-blue-600 transition-colors">Rp</span>
               <input
                 v-model.number="openShiftForm.modalAwal"
                 type="number"
                 step="0.01"
                 min="0.01"
                 required
-                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
                 placeholder="0"
               />
             </div>
@@ -155,7 +155,7 @@
             <textarea
               v-model="openShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
               placeholder="Tambahkan catatan jika perlu..."
             ></textarea>
           </div>
@@ -163,7 +163,7 @@
           <button
             type="submit"
             :disabled="openingShift || !openShiftForm.modalAwal || openShiftForm.modalAwal <= 0"
-            class="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]"
+            class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]"
           >
             <div v-if="openingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             <span>{{ openingShift ? 'Membuka Shift...' : 'Buka Shift Kasir' }}</span>
@@ -263,7 +263,7 @@
                       :class="[
                         'px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider border',
                         shift.status === 'open' 
-                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' 
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-emerald-300 border-emerald-200 dark:border-blue-800' 
                           : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                       ]"
                     >
@@ -300,9 +300,9 @@
       <!-- Tab Content: Riwayat Shift -->
       <div v-if="activeTab === 'history'" class="space-y-6">
         <!-- Current Cash Shift Card (if active) -->
-        <div v-if="currentShift" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 rounded-2xl shadow-sm p-6 sm:p-8 border border-emerald-100 dark:border-emerald-800 relative overflow-hidden group">
+        <div v-if="currentShift" class="bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-900/30 dark:to-green-900/30 rounded-2xl shadow-sm p-6 sm:p-8 border border-blue-100 dark:border-blue-800 relative overflow-hidden group">
           <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-             <span class="material-symbols-outlined text-[120px] text-emerald-600">point_of_sale</span>
+             <span class="material-symbols-outlined text-[120px] text-blue-600">point_of_sale</span>
           </div>
           
           <div class="flex items-center justify-between mb-6 relative z-10">
@@ -313,23 +313,23 @@
                 Dibuka: {{ formatDateTime(currentShift.shiftStart) }}
               </p>
             </div>
-            <span class="px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-emerald-600/20 uppercase tracking-widest">
+            <span class="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-600/20 uppercase tracking-widest">
               OPEN
             </span>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 relative z-10">
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-emerald-100 dark:border-emerald-800 shadow-sm">
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-blue-100 dark:border-blue-800 shadow-sm">
               <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider font-semibold">Modal Awal</p>
               <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(currentShift.modalAwal) }}</p>
             </div>
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-emerald-100 dark:border-emerald-800 shadow-sm">
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-blue-100 dark:border-blue-800 shadow-sm">
               <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider font-semibold">Total Penjualan</p>
               <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
             </div>
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-emerald-100 dark:border-emerald-800 shadow-sm">
+            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-5 border border-blue-100 dark:border-blue-800 shadow-sm">
               <p class="text-xs text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider font-semibold">Total Cash (System)</p>
-              <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}
               </p>
             </div>
@@ -407,7 +407,7 @@
                       :class="[
                         'px-2.5 py-0.5 text-xs font-bold rounded-full border',
                         shift.status === 'open' 
-                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' 
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-emerald-300 border-emerald-200 dark:border-blue-800' 
                           : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                       ]"
                     >
@@ -512,30 +512,30 @@
             Tampilkan Data:
           </p>
           <div class="flex flex-wrap gap-3">
-            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors select-none">
+            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition-colors select-none">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeOrders"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
               />
               <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Penjualan</span>
             </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors select-none">
+            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition-colors select-none">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeStockTransfers"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
               />
               <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Transfer Stok</span>
             </label>
-            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition-colors select-none">
+            <label class="flex items-center gap-2 cursor-pointer bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition-colors select-none">
               <input
                 type="checkbox"
                 v-model="shiftDetailFilters.includeProductAdjustments"
                 @change="loadShiftDetails(selectedShiftId)"
-                class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
               />
               <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Penyesuaian Stok</span>
             </label>
@@ -725,14 +725,14 @@
               Physical Cash at Register <span class="text-red-500">*</span>
             </label>
             <div class="relative group">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-blue-600 transition-colors">Rp</span>
               <input
                 v-model.number="closeShiftForm.uangFisikTutup"
                 type="number"
                 step="0.01"
                 min="0"
                 required
-                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
                 placeholder="0"
               />
             </div>
@@ -761,7 +761,7 @@
             <textarea
               v-model="closeShiftForm.catatan"
               rows="3"
-              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              class="w-full px-4 py-2 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Additional notes..."
             ></textarea>
           </div>

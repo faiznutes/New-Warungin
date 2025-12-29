@@ -14,7 +14,7 @@
         <!-- Logo -->
         <div class="p-6 border-b border-gray-200 flex-shrink-0">
           <router-link to="/app/dashboard" class="flex items-center hover:opacity-90 transition-opacity group">
-            <span class="text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">Warungin</span>
+            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">Warungin</span>
           </router-link>
         </div>
 
@@ -26,7 +26,7 @@
               v-model="menuSearchQuery"
               type="text"
               placeholder="Cari menu..."
-              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
             <button
               v-if="menuSearchQuery"
@@ -50,11 +50,11 @@
                 v-for="item in filteredMenuItems"
                 :key="item.path"
                 :to="item.path"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile(); menuSearchQuery = ''"
               >
-                <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-emerald-600">
+                <span class="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-blue-600">
                   {{ getMenuIcon(item.path) }}
                 </span>
                 <span class="font-medium flex-1" v-html="highlightMatch(item.label, menuSearchQuery)"></span>
@@ -92,9 +92,9 @@
             >
               <router-link
                 to="/app/dashboard"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
-                exact-active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
+                exact-active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,8 +106,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageProducts) || (userRole === 'CASHIER' && canManageProducts)"
                 to="/app/products"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,8 +120,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || userRole === 'SUPERVISOR'"
                 to="/app/products/adjustments"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,8 +133,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canEditOrders) || userRole === 'CASHIER'"
                 to="/app/orders"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,8 +147,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageCustomers) || (userRole === 'CASHIER' && canManageCustomers)"
                 to="/app/customers"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,8 +182,8 @@
             >
               <router-link
                 to="/app/reports"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,8 +196,8 @@
               <div v-if="hasBusinessAnalytics" class="ml-4 mt-1 space-y-1">
                 <router-link
                   to="/app/analytics"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
-                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group text-sm"
+                  active-class="bg-blue-50 text-blue-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,8 +208,8 @@
 
                 <router-link
                   to="/app/finance"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
-                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group text-sm"
+                  active-class="bg-blue-50 text-blue-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,8 +220,8 @@
 
                 <router-link
                   to="/app/profit-loss"
-                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
-                  active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                  class="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group text-sm"
+                  active-class="bg-blue-50 text-blue-600 font-semibold"
                   @click="closeSidebarOnMobile"
                 >
                   <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,8 +256,8 @@
             >
               <router-link
                 to="/app/users"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,8 +269,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/stores"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,8 +304,8 @@
             >
               <router-link
                 to="/app/subscription"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -317,8 +317,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT'"
                 to="/app/addons"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,8 +330,8 @@
               <router-link
                 v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || userRole === 'SUPER_ADMIN'"
                 to="/app/rewards"
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 group"
-                active-class="bg-emerald-50 text-emerald-600 font-semibold"
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
+                active-class="bg-blue-50 text-blue-600 font-semibold"
                 @click="closeSidebarOnMobile"
               >
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,8 +362,8 @@
                 v-for="item in recentItems"
                 :key="item.path"
                 :to="item.path"
-                class="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 group text-sm"
-                active-class="bg-emerald-50 text-emerald-600"
+                class="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 text-gray-600 hover:bg-blue-50 hover:text-blue-600 group text-sm"
+                active-class="bg-blue-50 text-blue-600"
                 @click="closeSidebarOnMobile"
               >
                 <span class="material-symbols-outlined text-[18px] flex-shrink-0">{{ item.icon }}</span>
@@ -376,14 +376,14 @@
         <!-- User Section -->
         <div class="p-4 border-t border-gray-200 flex-shrink-0">
           <div class="flex items-center space-x-3 mb-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-emerald-700 font-semibold text-sm">{{ userInitials }}</span>
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-blue-700 font-semibold text-sm">{{ userInitials }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate">{{ userName }}</p>
               <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
             </div>
-            <router-link to="/app/settings/preferences" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Preferensi">
+            <router-link to="/app/settings/preferences" class="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition-colors" title="Preferensi">
                <span class="material-symbols-outlined text-[20px]">settings</span>
             </router-link>
           </div>
@@ -430,17 +430,17 @@
             <!-- Global Search Trigger -->
             <button
                @click="openGlobalSearch"
-               class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all group"
+               class="flex items-center gap-2 px-3 py-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all group"
                title="Cari (Ctrl+K)"
             >
                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">search</span>
-               <span class="hidden md:inline text-xs font-bold text-slate-400 group-hover:text-emerald-600">Cari <span class="bg-slate-100 px-1 rounded ml-1 text-[9px]">Ctrl+K</span></span>
+               <span class="hidden md:inline text-xs font-bold text-slate-400 group-hover:text-blue-600">Cari <span class="bg-slate-100 px-1 rounded ml-1 text-[9px]">Ctrl+K</span></span>
             </button>
 
             <!-- Help Button -->
             <button
               @click="showHelpModal = true"
-              class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all group"
+              class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all group"
               title="Bantuan"
             >
               <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">help</span>
@@ -482,14 +482,14 @@
                 <select
                   v-model="selectedStoreId"
                   @change="handleStoreChange"
-                  class="pl-9 pr-8 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white min-w-[160px] appearance-none cursor-pointer font-bold text-slate-700"
+                  class="pl-9 pr-8 py-2 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[160px] appearance-none cursor-pointer font-bold text-slate-700"
                 >
                   <option value="">Semua Store</option>
                   <option v-for="store in stores" :key="store.id" :value="store.id">
                     {{ store.name }}
                   </option>
                 </select>
-                <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-600">
+                <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-blue-600">
                    <span class="material-symbols-outlined text-[18px]">storefront</span>
                 </div>
                 <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
@@ -500,7 +500,7 @@
           
           <!-- Store Indicator (for Cashier / Kitchen / Staff) -->
           <div v-if="!shouldShowStoreSelector && currentStoreName" class="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-600">
-             <span class="material-symbols-outlined text-[18px] text-emerald-600">store</span>
+             <span class="material-symbols-outlined text-[18px] text-blue-600">store</span>
              <span>{{ currentStoreName }}</span>
           </div>
 
@@ -520,24 +520,24 @@
 
       <!-- Mobile Bottom Navigation -->
       <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] text-[10px] font-medium safe-area-bottom print:hidden">
-        <router-link to="/app/dashboard" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+        <router-link to="/app/dashboard" active-class="text-blue-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
           <span class="material-symbols-outlined text-2xl">dashboard</span>
           <span>Home</span>
         </router-link>
         
-        <router-link to="/app/orders" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+        <router-link to="/app/orders" active-class="text-blue-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
           <span class="material-symbols-outlined text-2xl">receipt_long</span>
           <span>Pesanan</span>
         </router-link>
         
-        <router-link to="/app/pos" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px] -mt-8">
-           <div class="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 border-4 border-gray-50">
+        <router-link to="/app/pos" active-class="text-blue-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px] -mt-8">
+           <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/30 border-4 border-gray-50">
               <span class="material-symbols-outlined text-3xl">point_of_sale</span>
            </div>
-           <span class="font-bold text-emerald-600 mt-1">POS</span>
+           <span class="font-bold text-blue-600 mt-1">POS</span>
         </router-link>
 
-        <router-link to="/app/products" active-class="text-emerald-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
+        <router-link to="/app/products" active-class="text-blue-600" class="flex flex-col items-center gap-1 p-2 text-slate-400 min-w-[60px]">
           <span class="material-symbols-outlined text-2xl">inventory_2</span>
           <span>Produk</span>
         </router-link>
@@ -867,7 +867,7 @@ const getMenuIcon = (path: string): string => {
 const highlightMatch = (text: string, query: string): string => {
   if (!query.trim()) return text;
   const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-  return text.replace(regex, '<mark class="bg-emerald-200 dark:bg-emerald-900/50 text-emerald-900 dark:text-emerald-200 rounded px-0.5">$1</mark>');
+  return text.replace(regex, '<mark class="bg-emerald-200 dark:bg-blue-900/50 text-blue-900 dark:text-emerald-200 rounded px-0.5">$1</mark>');
 };
 
 // Auto-expand menu based on current route

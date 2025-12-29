@@ -12,7 +12,7 @@
       <button
         v-if="authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Tambah Diskon</span>
@@ -29,14 +29,14 @@
           @input="handleSearchInput"
           type="text"
           placeholder="Cari diskon..."
-          class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
+          class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
         />
       </div>
     </div>
 
     <!-- Discounts Table -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-       <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+       <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
        <p class="text-slate-500 font-medium animate-pulse">Memuat diskon...</p>
     </div>
 
@@ -48,7 +48,7 @@
       <p class="text-slate-500 text-center max-w-md">Buat diskon pertama Anda untuk mulai menawarkan promosi.</p>
       <button 
         @click="showCreateModal = true"
-        class="mt-6 text-emerald-600 font-bold hover:text-emerald-700 hover:underline"
+        class="mt-6 text-blue-600 font-bold hover:text-blue-700 hover:underline"
       >
         Buat Sekarang
       </button>
@@ -78,7 +78,7 @@
                 </span>
               </td>
               <td class="p-4">
-                <div class="font-bold text-emerald-600">
+                <div class="font-bold text-blue-600">
                   {{ discount.discountValueType === 'PERCENTAGE' 
                     ? `${discount.discountValue}%` 
                     : formatCurrency(Number(discount.discountValue)) }}
@@ -96,9 +96,9 @@
               <td class="p-4">
                 <span
                   class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border"
-                  :class="discount.isActive ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-slate-100 text-slate-500 border-slate-200'"
+                  :class="discount.isActive ? 'bg-blue-50 text-blue-700 border-blue-100' : 'bg-slate-100 text-slate-500 border-slate-200'"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full" :class="discount.isActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" :class="discount.isActive ? 'bg-blue-500' : 'bg-slate-400'"></span>
                   {{ discount.isActive ? 'Aktif' : 'Tidak Aktif' }}
                 </span>
               </td>
@@ -106,7 +106,7 @@
                 <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     @click="editDiscount(discount)"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-emerald-600 transition"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition"
                     title="Edit"
                   >
                     <span class="material-symbols-outlined text-[20px]">edit</span>
@@ -156,7 +156,7 @@
                 type="text"
                 required
                 placeholder="Cth. Diskon Lebaran 20%"
-                class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
+                class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium"
               />
             </div>
 
@@ -169,7 +169,7 @@
                         v-model="discountForm.discountType"
                         required
                         @change="handleDiscountTypeChange"
-                        class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium appearance-none"
+                        class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium appearance-none"
                      >
                         <option value="AMOUNT_BASED">Berdasarkan Total Transaksi</option>
                         <option value="BUNDLE">Bundle (Beli Bersama)</option>
@@ -219,7 +219,7 @@
                    required
                    min="0"
                    :step="discountForm.discountValueType === 'PERCENTAGE' ? '1' : '1000'"
-                   class="w-full pl-12 pr-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-bold text-lg"
+                   class="w-full pl-12 pr-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-bold text-lg"
                  />
               </div>
             </div>
@@ -258,7 +258,7 @@
                     <select
                       v-model="discountForm.bundleDiscountProduct"
                       required
-                      class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-medium appearance-none"
+                      class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-blue-500 outline-none font-medium appearance-none"
                     >
                       <option value="">Pilih produk dalam bundle</option>
                       <option
@@ -275,24 +275,24 @@
             </div>
 
             <!-- PRODUCT_BASED -->
-            <div v-if="discountForm.discountType === 'PRODUCT_BASED'" class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+            <div v-if="discountForm.discountType === 'PRODUCT_BASED'" class="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
               <label class="block text-sm font-bold text-slate-700 mb-2">
                 Produk yang Berlaku <span class="text-red-500">*</span>
               </label>
               <button
                 type="button"
                 @click="openProductSelector('PRODUCT_BASED')"
-                class="w-full px-4 py-3 text-left bg-white border border-emerald-200 rounded-xl hover:bg-emerald-50 hover:border-emerald-300 transition flex items-center justify-between group"
+                class="w-full px-4 py-3 text-left bg-white border border-emerald-200 rounded-xl hover:bg-blue-50 hover:border-emerald-300 transition flex items-center justify-between group"
               >
                 <span class="text-sm font-medium text-slate-700">
                   <span v-if="discountForm.applicableProducts.length === 0" class="text-slate-400">
                     Klik untuk memilih produk...
                   </span>
-                  <span v-else class="text-emerald-700 font-bold">
+                  <span v-else class="text-blue-700 font-bold">
                     {{ discountForm.applicableProducts.length }} produk terpilih
                   </span>
                 </span>
-                <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500">inventory_2</span>
+                <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-500">inventory_2</span>
               </button>
             </div>
 
@@ -365,7 +365,7 @@
                    v-model.number="discountForm.minAmount"
                    type="number"
                    min="0"
-                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium"
                    placeholder="0"
                  />
                </div>
@@ -375,7 +375,7 @@
                    v-model.number="discountForm.minQuantity"
                    type="number"
                    min="1"
-                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium"
                    placeholder="Opsional"
                  />
                </div>
@@ -388,7 +388,7 @@
                  <input
                    v-model="discountForm.startDate"
                    type="datetime-local"
-                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium text-sm"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium text-sm"
                  />
               </div>
               <div>
@@ -396,7 +396,7 @@
                  <input
                    v-model="discountForm.endDate"
                    type="datetime-local"
-                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-emerald-500 rounded-xl transition-all outline-none font-medium text-sm"
+                   class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-white focus:bg-white border focus:border-blue-500 rounded-xl transition-all outline-none font-medium text-sm"
                  />
               </div>
             </div>
@@ -416,7 +416,7 @@
                
                <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl cursor-pointer" @click="discountForm.isActive = !discountForm.isActive">
                   <span class="text-sm font-bold text-slate-700">Status Aktif</span>
-                  <div class="w-12 h-6 rounded-full relative transition-colors duration-300" :class="discountForm.isActive ? 'bg-emerald-500' : 'bg-slate-300'">
+                  <div class="w-12 h-6 rounded-full relative transition-colors duration-300" :class="discountForm.isActive ? 'bg-blue-500' : 'bg-slate-300'">
                      <div class="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300" :class="discountForm.isActive ? 'left-7' : 'left-1'"></div>
                   </div>
                </div>
@@ -436,7 +436,7 @@
           </button>
           <button
             @click="saveDiscount"
-            class="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95"
+            class="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition transform active:scale-95"
           >
             {{ editingDiscount ? 'Update Diskon' : 'Buat Diskon' }}
           </button>

@@ -23,7 +23,7 @@
       <button
         v-if="!addonError"
         @click="showCustomReportModal = true"
-        class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#10b981]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all"
+        class="flex items-center gap-2 px-4 py-2.5 bg-[#10b981] hover:bg-[#10b981]-hover rounded-xl text-sm font-medium text-white shadow-lg shadow-blue-500/30 transition-all"
       >
         <span class="material-symbols-outlined text-[20px]">add_chart</span>
         <span>Create Custom Report</span>
@@ -55,17 +55,17 @@
              <p class="text-xs font-bold text-[#4c739a] uppercase tracking-wider mb-1">Sales Trend</p>
              <p class="text-[10px] text-[#4c739a]">vs Last Month</p>
           </div>
-          <div class="bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+          <div class="bg-blue-50 dark:bg-blue-900/30 p-2 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
              <span class="material-symbols-outlined text-[24px]">trending_up</span>
           </div>
         </div>
         <div class="flex items-baseline gap-2">
-          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white" :class="predictions.trend > 0 ? 'text-emerald-600' : 'text-red-600'">
+          <h3 class="text-2xl font-bold text-[#0d141b] dark:text-white" :class="predictions.trend > 0 ? 'text-blue-600' : 'text-red-600'">
             {{ predictions.trend > 0 ? '+' : '' }}{{ predictions.trend }}%
           </h3>
           <span 
             class="text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5"
-            :class="predictions.trend > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'"
+            :class="predictions.trend > 0 ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'"
           >
             <span class="material-symbols-outlined text-[10px]">{{ predictions.trend > 0 ? 'arrow_upward' : 'arrow_downward' }}</span>
             {{ Math.abs(predictions.trend) }}%
@@ -142,7 +142,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Top 10 Produk</h3>
-          <span class="text-xs text-[#10b981] bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-xl font-bold">Best Sellers</span>
+          <span class="text-xs text-[#10b981] bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-xl font-bold">Best Sellers</span>
         </div>
         
         <div class="space-y-4">
@@ -160,7 +160,7 @@
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
                <div
-                  class="bg-[#10b981] h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-emerald-600"
+                  class="bg-[#10b981] h-full rounded-full transition-all duration-1000 ease-out group-hover:bg-blue-600"
                   :style="{ width: `${(product.sales / (topProducts[0]?.sales || 1)) * 100}%` }"
                 ></div>
             </div>
@@ -337,7 +337,7 @@
             </button>
             <button
               @click="saveCustomReport"
-              class="flex-1 px-4 py-2.5 bg-[#10b981] hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
+              class="flex-1 px-4 py-2.5 bg-[#10b981] hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               Simpan Report
             </button>

@@ -43,10 +43,10 @@
         <!-- Selected Tenant Info Badge -->
         <div v-if="selectedTenant" class="mt-3 flex items-center gap-2">
           <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 flex items-center gap-2">
-             <span class="material-symbols-outlined text-emerald-500 text-[18px]">verified</span>
+             <span class="material-symbols-outlined text-blue-500 text-[18px]">verified</span>
              <span class="text-sm text-[#0d141b] dark:text-white font-medium">{{ selectedTenant.name }}</span>
              <span class="w-px h-3 bg-slate-300 dark:bg-slate-600 mx-1"></span>
-             <span class="text-xs font-bold uppercase tracking-wider" :class="selectedTenant.isActive === false ? 'text-red-600' : 'text-emerald-600'">
+             <span class="text-xs font-bold uppercase tracking-wider" :class="selectedTenant.isActive === false ? 'text-red-600' : 'text-blue-600'">
                 {{ selectedTenant.isActive === false ? 'Tidak Aktif' : 'Aktif' }}
              </span>
           </div>
@@ -57,7 +57,7 @@
       <div v-else-if="authStore.user?.role === 'ADMIN_TENANT' && authStore.user?.tenantId">
         <label class="block text-xs font-bold text-[#0d141b] dark:text-white uppercase tracking-wider mb-2">Tenant Anda</label>
         <div class="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
-          <span class="material-symbols-outlined text-emerald-500">store</span>
+          <span class="material-symbols-outlined text-blue-500">store</span>
           <span class="text-sm font-bold text-[#0d141b] dark:text-white">{{ authStore.user.tenantName || 'Tenant Anda' }}</span>
         </div>
       </div>

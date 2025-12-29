@@ -47,9 +47,9 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">Total Sales</p>
                     <p class="text-2xl font-black text-blue-600">Rp 45.2M</p>
                   </div>
-                  <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                  <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                     <p class="text-sm text-slate-600 dark:text-slate-400">Orders</p>
-                    <p class="text-2xl font-black text-emerald-600">1,234</p>
+                    <p class="text-2xl font-black text-blue-600">1,234</p>
                   </div>
                   <div class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
                     <p class="text-sm text-slate-600 dark:text-slate-400">Customers</p>
@@ -86,7 +86,7 @@
       <!-- Progress Bars Section -->
       <section class="space-y-6">
         <div class="flex items-center gap-4 mb-6">
-           <span class="material-symbols-outlined text-3xl text-emerald-600">trending_up</span>
+           <span class="material-symbols-outlined text-3xl text-blue-600">trending_up</span>
            <h2 class="text-2xl font-black text-slate-900 dark:text-white">Progress Bars</h2>
         </div>
         

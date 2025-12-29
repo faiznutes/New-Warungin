@@ -27,7 +27,7 @@
           <div v-if="customer" class="p-6 md:p-8 overflow-y-auto custom-scrollbar">
             <!-- Profile Section -->
             <div class="flex flex-col items-center text-center mb-8">
-              <div class="w-24 h-24 mb-4 rounded-3xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-4xl shadow-inner border border-white/50 dark:border-white/10">
+              <div class="w-24 h-24 mb-4 rounded-3xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-4xl shadow-inner border border-white/50 dark:border-white/10">
                 {{ customer.name.charAt(0).toUpperCase() }}
               </div>
               <h4 class="text-2xl font-bold text-slate-900 dark:text-white mb-1">{{ customer.name }}</h4>
@@ -51,7 +51,7 @@
               </div>
               <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700/50 text-center">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Belanja</span>
-                <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ formatCurrency(customer.totalSpent || 0) }}</span>
+                <span class="text-2xl font-black text-blue-600 dark:text-blue-400">{{ formatCurrency(customer.totalSpent || 0) }}</span>
               </div>
             </div>
 
@@ -69,7 +69,7 @@
           <div class="px-6 py-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm flex gap-3 rounded-b-3xl">
              <button
               @click="$emit('edit', customer!)"
-              class="flex-1 px-5 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 shadow-lg shadow-emerald-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
+              class="flex-1 px-5 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 shadow-lg shadow-blue-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <span class="material-symbols-outlined text-[20px]">edit_square</span>
               Edit Profil

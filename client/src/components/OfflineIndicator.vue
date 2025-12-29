@@ -39,19 +39,19 @@
   >
     <div
       v-if="isOnline && wasOffline && !dismissed"
-      class="fixed top-0 left-0 right-0 z-[200] bg-emerald-500 text-white px-4 py-3 shadow-lg"
+      class="fixed top-0 left-0 right-0 z-[200] bg-blue-500 text-white px-4 py-3 shadow-lg"
     >
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-[20px]">wifi</span>
           <div>
             <p class="font-bold text-sm">Koneksi kembali tersedia</p>
-            <p class="text-xs text-emerald-100">Data akan disinkronkan secara otomatis.</p>
+            <p class="text-xs text-blue-100">Data akan disinkronkan secara otomatis.</p>
           </div>
         </div>
         <button
           @click="dismiss"
-          class="p-1 hover:bg-emerald-600 rounded-lg transition-colors"
+          class="p-1 hover:bg-blue-600 rounded-lg transition-colors"
         >
           <span class="material-symbols-outlined text-[18px]">close</span>
         </button>

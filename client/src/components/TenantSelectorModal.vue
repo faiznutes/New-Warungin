@@ -19,7 +19,7 @@
       </div>
 
       <div v-if="loading" class="flex flex-col items-center justify-center py-10">
-        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
         <p class="text-slate-500 font-medium">Loading tenants...</p>
       </div>
 
@@ -33,13 +33,13 @@
           v-for="tenant in tenants"
           :key="tenant.id"
           @click="handleSelect(tenant.id)"
-          class="w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-white hover:border-emerald-500 hover:bg-emerald-50/50 hover:shadow-md transition-all duration-200 group"
+          class="w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-white hover:border-blue-500 hover:bg-blue-50/50 hover:shadow-md transition-all duration-200 group"
         >
           <div class="flex items-center justify-between">
-             <div class="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{{ tenant.name }}</div>
-             <span class="material-symbols-outlined text-slate-300 group-hover:text-emerald-500 transition-colors">arrow_forward</span>
+             <div class="font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{{ tenant.name }}</div>
+             <span class="material-symbols-outlined text-slate-300 group-hover:text-blue-500 transition-colors">arrow_forward</span>
           </div>
-          <div class="text-sm text-slate-500 mt-1 font-medium group-hover:text-emerald-600/70">{{ tenant.email || tenant.slug }}</div>
+          <div class="text-sm text-slate-500 mt-1 font-medium group-hover:text-blue-600/70">{{ tenant.email || tenant.slug }}</div>
         </button>
       </div>
 

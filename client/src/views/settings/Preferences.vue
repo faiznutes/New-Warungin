@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8 animate-fade-in font-display">
     <div class="flex flex-col gap-1">
-      <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">Preferensi Pengguna</h1>
+      <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">Preferensi Pengguna</h1>
       <p class="text-slate-500 dark:text-slate-400 font-medium">Sesuaikan pengalaman penggunaan aplikasi Anda.</p>
     </div>
 
@@ -105,7 +105,7 @@
           class="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <div class="flex items-center gap-4">
-            <div class="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl">
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-2xl">
               <span class="material-symbols-outlined text-[24px]">dashboard</span>
             </div>
             <div class="text-left">
@@ -134,14 +134,14 @@
                 <span class="font-bold text-slate-700 dark:text-slate-200">Ringkasan Penjualan (Grafik)</span>
                 <div class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" v-model="settings.showSalesChart" class="sr-only peer">
-                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
                 </div>
               </label>
               <label class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 cursor-pointer hover:border-emerald-200 transition-colors">
                 <span class="font-bold text-slate-700 dark:text-slate-200">Produk Terlaris</span>
                 <div class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" v-model="settings.showTopProducts" class="sr-only peer">
-                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-500"></div>
+                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
                 </div>
               </label>
             </div>
@@ -152,7 +152,7 @@
 
     <!-- Save Button -->
     <div class="flex justify-end">
-      <button @click="saveSettings" :disabled="saved" class="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed">
+      <button @click="saveSettings" :disabled="saved" class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed">
         <span v-if="saved" class="material-symbols-outlined">check</span>
         <span>{{ saved ? 'Tersimpan' : 'Simpan Perubahan' }}</span>
       </button>

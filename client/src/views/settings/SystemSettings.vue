@@ -80,7 +80,7 @@
         <!-- Security Settings -->
         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
           <div class="flex items-center gap-4 mb-8">
-             <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl shadow-sm">
+             <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl shadow-sm">
                 <span class="material-symbols-outlined text-[24px]">security</span>
              </div>
              <div>
@@ -147,11 +147,11 @@
            
            <div class="mt-6 flex flex-wrap gap-4 pl-0 sm:pl-[72px]">
               <div class="bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
-                  <span class="material-symbols-outlined text-[16px] text-emerald-500">check_circle</span>
+                  <span class="material-symbols-outlined text-[16px] text-blue-500">check_circle</span>
                   A4 & Thermal (58mm/80mm)
               </div>
               <div class="bg-slate-50 dark:bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
-                  <span class="material-symbols-outlined text-[16px] text-emerald-500">check_circle</span>
+                  <span class="material-symbols-outlined text-[16px] text-blue-500">check_circle</span>
                   Kustomisasi Header & Footer
               </div>
            </div>

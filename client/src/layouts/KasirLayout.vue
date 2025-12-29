@@ -12,7 +12,7 @@
       <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="p-6 flex items-center gap-3 shrink-0">
-          <div class="h-10 w-10 shrink-0 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+          <div class="h-10 w-10 shrink-0 rounded-xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
             <span class="material-symbols-outlined text-[24px]">point_of_sale</span>
           </div>
           <div class="flex flex-col min-w-0">
@@ -26,8 +26,8 @@
           <router-link
             to="/app/dashboard"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/dashboard' }">dashboard</span>
@@ -38,8 +38,8 @@
             v-if="canManageProducts"
             to="/app/products"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path.startsWith('/app/products') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path.startsWith('/app/products') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/products') }">inventory_2</span>
@@ -49,8 +49,8 @@
           <router-link
             to="/pos"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path === '/pos' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path === '/pos' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/pos' }">point_of_sale</span>
@@ -61,8 +61,8 @@
             v-if="canEditOrders"
             to="/app/orders"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path.startsWith('/app/orders') && !$route.path.includes('kitchen') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path.startsWith('/app/orders') && !$route.path.includes('kitchen') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/orders') }">receipt_long</span>
@@ -73,8 +73,8 @@
             v-if="canManageCustomers"
             to="/app/customers"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/customers') }">group</span>
@@ -85,8 +85,8 @@
             v-if="authStore.user?.role === 'KITCHEN' || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPERVISOR'"
             to="/app/orders/kitchen"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path === '/app/orders/kitchen' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path === '/app/orders/kitchen' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
@@ -97,8 +97,8 @@
             v-if="canViewReports"
             to="/app/reports"
             class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
-            active-class="bg-emerald-50 text-emerald-600 font-bold"
-            :class="[$route.path.startsWith('/app/reports') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-emerald-600']"
+            active-class="bg-blue-50 text-blue-600 font-bold"
+            :class="[$route.path.startsWith('/app/reports') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/reports') }">bar_chart</span>
@@ -122,7 +122,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 shrink-0">
           <div class="flex items-center gap-3 mb-3">
-            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
+            <div class="flex-shrink-0 size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-blue-50 flex items-center justify-center text-blue-600 font-bold">
                {{ userInitials }}
             </div>
             <div class="flex flex-col min-w-0">
@@ -171,7 +171,7 @@
             <!-- System Status -->
              <div class="hidden lg:flex items-center gap-4 mr-2">
                <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                 <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
+                 <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-blue-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
                  <span class="text-xs font-bold text-[#4c739a] dark:text-slate-400 capitalize">{{ isOnline ? 'Online' : 'Offline' }}</span>
                </div>
                <div class="px-3 py-1.5 bg-[#0d141b] dark:bg-white text-white dark:text-[#0d141b] rounded-xl shadow-md font-mono text-sm font-bold tracking-wider border border-[#2a3036] dark:border-slate-200">

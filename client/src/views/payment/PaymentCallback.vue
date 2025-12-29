@@ -4,8 +4,8 @@
       
       <!-- Success State -->
       <div v-if="status === 'success'" class="space-y-6">
-        <div class="mx-auto w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 animate-bounce-in">
-          <span class="material-symbols-outlined text-emerald-600 text-4xl">check_circle</span>
+        <div class="mx-auto w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20 animate-bounce-in">
+          <span class="material-symbols-outlined text-blue-600 text-4xl">check_circle</span>
         </div>
         <div>
           <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pembayaran Berhasil!</h1>
@@ -25,17 +25,17 @@
             <p class="text-sm font-bold text-blue-600 dark:text-blue-400">Memverifikasi & Mengaktifkan...</p>
           </div>
         </div>
-        <div v-else-if="activationStatus === 'success'" class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+        <div v-else-if="activationStatus === 'success'" class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
            <div class="flex items-center justify-center gap-2">
-             <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">verified</span>
-             <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">Layanan Aktif!</p>
+             <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">verified</span>
+             <p class="text-sm font-bold text-blue-600 dark:text-blue-400">Layanan Aktif!</p>
            </div>
         </div>
 
         <div class="space-y-3 pt-2">
           <button
             @click="goToPaymentPage"
-            class="w-full px-6 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-bold shadow-lg shadow-emerald-500/30 active:scale-95"
+            class="w-full px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-bold shadow-lg shadow-blue-500/30 active:scale-95"
           >
             {{ isSubscriptionPayment ? 'Kembali ke Subscription' : 'Kembali ke Addons' }}
           </button>

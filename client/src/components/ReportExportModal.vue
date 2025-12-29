@@ -8,7 +8,7 @@
       <div class="p-8">
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-4">
-              <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl">
+              <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl">
                   <span class="material-symbols-outlined text-[28px]">download</span>
               </div>
               <div>
@@ -34,10 +34,10 @@
                 @click="exportForm.exportType = 'report'"
                 class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'report' 
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
                   : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <div v-if="exportForm.exportType === 'report'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                <div v-if="exportForm.exportType === 'report'" class="absolute -right-3 -top-3 bg-blue-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
                     <span class="material-symbols-outlined text-white text-[14px]">check</span>
                 </div>
                 <span class="material-symbols-outlined text-[32px]">description</span>
@@ -48,10 +48,10 @@
                 @click="exportForm.exportType = 'analytics'"
                 class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'analytics' 
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
                    : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                 <div v-if="exportForm.exportType === 'analytics'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                 <div v-if="exportForm.exportType === 'analytics'" class="absolute -right-3 -top-3 bg-blue-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
                     <span class="material-symbols-outlined text-white text-[14px]">check</span>
                 </div>
                 <span class="material-symbols-outlined text-[32px]">analytics</span>
@@ -62,10 +62,10 @@
                 @click="exportForm.exportType = 'both'"
                 class="px-4 py-4 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="exportForm.exportType === 'both' 
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
                   : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                 <div v-if="exportForm.exportType === 'both'" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                 <div v-if="exportForm.exportType === 'both'" class="absolute -right-3 -top-3 bg-blue-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
                     <span class="material-symbols-outlined text-white text-[14px]">check</span>
                 </div>
                 <span class="material-symbols-outlined text-[32px]">folder_zip</span>
@@ -82,7 +82,7 @@
                 <select
                   v-model="exportForm.reportType"
                   required
-                  class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                  class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer appearance-none"
                 >
                   <option value="sales">Laporan Penjualan</option>
                   <option value="product">Laporan Produk</option>
@@ -103,7 +103,7 @@
                 @click="exportForm.period = 'daily'"
                 class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'daily' 
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30' 
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Harian
@@ -113,7 +113,7 @@
                 @click="exportForm.period = 'weekly'"
                 class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'weekly' 
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30' 
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Mingguan
@@ -123,7 +123,7 @@
                 @click="exportForm.period = 'monthly'"
                 class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'monthly' 
-                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                   ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30' 
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Bulanan
@@ -133,7 +133,7 @@
                 @click="exportForm.period = 'all'"
                 class="px-3 py-2.5 text-xs sm:text-sm font-bold rounded-xl border transition-all"
                 :class="exportForm.period === 'all' 
-                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/30' 
+                   ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30' 
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'"
               >
                 Semua
@@ -151,7 +151,7 @@
                     v-model="exportForm.startDate"
                     type="date"
                     required
-                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
                </div>
             </div>
@@ -163,7 +163,7 @@
                     v-model="exportForm.endDate"
                     type="date"
                     required
-                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
                </div>
             </div>
@@ -215,8 +215,8 @@
                 @click="exportForm.template = 'professional'"
                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
                 :class="exportForm.template === 'professional'
-                  ? 'border-emerald-600 bg-emerald-600 text-white' 
-                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                  ? 'border-blue-600 bg-blue-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
                  <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
                 <span class="text-xs font-bold">Pro</span>
@@ -245,10 +245,10 @@
                 @click="shareMode = false"
                 class="px-6 py-6 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="!shareMode 
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
                   : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <div v-if="!shareMode" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                <div v-if="!shareMode" class="absolute -right-3 -top-3 bg-blue-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
                     <span class="material-symbols-outlined text-white text-[14px]">check</span>
                 </div>
                 <span class="material-symbols-outlined text-[32px]">download</span>
@@ -261,10 +261,10 @@
                 @click="shareMode = true"
                 class="px-6 py-6 rounded-2xl border-2 transition flex flex-col items-center gap-3 relative overflow-hidden group"
                 :class="shareMode 
-                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' 
                   : 'border-slate-200 dark:border-slate-700 dark:bg-slate-800 hover:border-emerald-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'"
               >
-                <div v-if="shareMode" class="absolute -right-3 -top-3 bg-emerald-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
+                <div v-if="shareMode" class="absolute -right-3 -top-3 bg-blue-500 w-10 h-10 rounded-full flex items-end justify-start p-1.5">
                     <span class="material-symbols-outlined text-white text-[14px]">check</span>
                 </div>
                 <span class="material-symbols-outlined text-[32px]">share</span>
@@ -316,9 +316,9 @@
 
           <!-- Share Link Section -->
           <div v-if="shareMode" class="pt-6 border-t border-slate-100 dark:border-slate-700 space-y-4">
-            <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-emerald-200 dark:border-blue-800 rounded-xl p-4">
               <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined text-emerald-600 text-[24px]">link</span>
+                <span class="material-symbols-outlined text-blue-600 text-[24px]">link</span>
                 <div class="flex-1">
                   <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2">Link Berbagi</h4>
                   <p class="text-xs text-slate-600 dark:text-slate-400 mb-3">Salin link ini untuk dibagikan dengan tim atau stakeholder.</p>
@@ -326,17 +326,17 @@
                     <input
                       :value="shareableLink"
                       readonly
-                      class="flex-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      class="flex-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       @click="copyShareLink"
-                      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-sm transition flex items-center gap-2"
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm transition flex items-center gap-2"
                     >
                       <span class="material-symbols-outlined text-[18px]">{{ linkCopied ? 'check' : 'content_copy' }}</span>
                       {{ linkCopied ? 'Tersalin!' : 'Salin' }}
                     </button>
                   </div>
-                  <p v-if="linkCopied" class="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+                  <p v-if="linkCopied" class="text-xs text-blue-600 font-medium mt-2 flex items-center gap-1">
                     <span class="material-symbols-outlined text-[16px]">check_circle</span>
                     Link berhasil disalin ke clipboard!
                   </p>
@@ -358,7 +358,7 @@
               v-if="!shareMode"
               type="submit"
               :disabled="exporting"
-              class="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
+              class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
             >
                <div v-if="exporting" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span class="material-symbols-outlined text-[20px]" v-else>download</span>
@@ -369,7 +369,7 @@
               type="button"
               @click="generateShareLink"
               :disabled="generatingLink"
-              class="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
+              class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
             >
                <div v-if="generatingLink" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span class="material-symbols-outlined text-[20px]" v-else>link</span>

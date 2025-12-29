@@ -2,7 +2,7 @@
   <div class="relative">
     <button
       @click="toggleDropdown"
-      class="relative p-2 text-[#4c739a] hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-700 rounded-xl transition-colors focus:outline-none"
+      class="relative p-2 text-[#4c739a] hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors focus:outline-none"
       title="Notifikasi"
     >
       <span class="material-symbols-outlined">notifications</span>
@@ -21,7 +21,7 @@
         <h3 class="font-bold text-[#0d141b] dark:text-white">Notifikasi</h3>
         <button
           @click="markAllRead"
-          class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+          class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
           v-if="unreadCount > 0"
         >
           Tandai sudah dibaca
@@ -43,7 +43,7 @@
             v-for="(notif, index) in notifications"
             :key="index"
             class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-default"
-            :class="{ 'bg-emerald-50/50 dark:bg-emerald-900/10': !notif.read }"
+            :class="{ 'bg-blue-50/50 dark:bg-blue-900/10': !notif.read }"
           >
             <div class="flex gap-3">
               <div

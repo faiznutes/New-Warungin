@@ -37,7 +37,7 @@
             <button
               @click="checkAdAvailability"
               :disabled="ironSourceLoading"
-              class="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-emerald-500 transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed flex items-center gap-2 mx-auto shadow-lg shadow-emerald-500/30"
+              class="px-6 py-3 bg-primary text-white rounded-xl font-bold hover:bg-blue-500 transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed flex items-center gap-2 mx-auto shadow-lg shadow-blue-500/30"
             >
               <span class="material-symbols-outlined text-[20px]" v-if="!ironSourceLoading">refresh</span>
               <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -46,12 +46,12 @@
           </div>
 
           <div v-else class="text-center">
-            <span class="material-symbols-outlined text-[64px] text-emerald-500 mb-4">play_circle</span>
+            <span class="material-symbols-outlined text-[64px] text-blue-500 mb-4">play_circle</span>
             <p class="text-slate-700 dark:text-slate-300 font-semibold mb-4">Ad ready to show!</p>
             <button
               @click="showAd"
               :disabled="loading"
-              class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition shadow-lg shadow-emerald-500/30 flex items-center gap-2 mx-auto"
+              class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-blue-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition shadow-lg shadow-blue-500/30 flex items-center gap-2 mx-auto"
             >
               <span class="material-symbols-outlined text-[20px]" v-if="!loading">play_arrow</span>
               <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -64,9 +64,9 @@
       <!-- Ad Playing Indicator -->
       <div v-if="adShown && !completed" class="mb-6">
         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
-          <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p class="text-blue-800 dark:text-blue-200 font-semibold">Ad is playing...</p>
-          <p class="text-emerald-500 dark:text-blue-300 text-sm mt-2">Wait for the ad to finish to earn points</p>
+          <p class="text-blue-500 dark:text-blue-300 text-sm mt-2">Wait for the ad to finish to earn points</p>
         </div>
       </div>
 
@@ -97,7 +97,7 @@
       <div v-if="completed" class="text-center">
         <button
           @click="goBack"
-          class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-600 transition shadow-lg shadow-emerald-500/30 flex items-center gap-2 mx-auto"
+          class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-blue-600 transition shadow-lg shadow-blue-500/30 flex items-center gap-2 mx-auto"
         >
           <span class="material-symbols-outlined text-[20px]">arrow_back</span>
           Back to Rewards Page

@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Campaign</span>
@@ -17,7 +17,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -27,7 +27,7 @@
       <p class="text-[#4c739a] text-center max-w-md mb-4">Create your first marketing campaign to engage with customers.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Create First Campaign
@@ -99,7 +99,7 @@
       >
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-slate-200 dark:border-slate-700">
           <div class="flex items-center gap-3 mb-6">
-            <div class="p-2 bg-emerald-500/10 text-emerald-600 rounded-xl">
+            <div class="p-2 bg-blue-500/10 text-blue-600 rounded-xl">
               <span class="material-symbols-outlined">campaign</span>
             </div>
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create New Campaign</h3>
@@ -110,7 +110,7 @@
               <input
                 v-model="campaignForm.name"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 placeholder="e.g. Holiday Sale 2025"
               />
             </div>
@@ -118,7 +118,7 @@
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Campaign Type</label>
               <select
                 v-model="campaignForm.type"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >
                 <option value="SMS">SMS</option>
                 <option value="EMAIL">Email</option>
@@ -130,7 +130,7 @@
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Audience</label>
               <select
                 v-model="campaignForm.target"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >
                 <option value="ALL">All Customers</option>
                 <option value="MEMBERS">Members Only</option>
@@ -143,7 +143,7 @@
               <textarea
                 v-model="campaignForm.content"
                 rows="4"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 placeholder="Enter campaign message..."
               ></textarea>
             </div>
@@ -152,7 +152,7 @@
               <input
                 v-model="campaignForm.promoCode"
                 type="text"
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono uppercase"
+                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono uppercase"
                 placeholder="HOLIDAY20"
               />
             </div>
@@ -165,7 +165,7 @@
               </button>
               <button
                 @click="saveCampaign"
-                class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-500-hover transition font-medium shadow-lg shadow-emerald-500/30"
+                class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-500-hover transition font-medium shadow-lg shadow-blue-500/30"
               >
                 Save
               </button>

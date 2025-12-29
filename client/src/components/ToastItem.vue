@@ -21,7 +21,7 @@
           <button
             v-if="undoAction"
             @click="handleUndo"
-            class="mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 underline"
+            class="mt-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-emerald-300 underline"
           >
             {{ undoLabel || 'Undo' }}
           </button>

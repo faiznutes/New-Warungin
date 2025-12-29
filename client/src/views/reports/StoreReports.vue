@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Laporan Toko</h1>
+        <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">Laporan Toko</h1>
         <p class="text-slate-500 dark:text-slate-400 font-medium">Laporan penjualan dan stok per toko/cabang.</p>
       </div>
     </div>
@@ -18,7 +18,7 @@
             <input
               v-model="startDate"
               type="date"
-              class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
@@ -29,7 +29,7 @@
             <input
               v-model="endDate"
               type="date"
-              class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+              class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
             />
           </div>
         </div>
@@ -37,7 +37,7 @@
           <button
             @click="loadReport"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed h-[46px]"
+            class="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed h-[46px]"
           >
             <span class="material-symbols-outlined text-[20px]" v-if="!loading">bar_chart</span>
             <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -52,7 +52,7 @@
       <div class="flex flex-col items-center gap-4">
         <div class="relative w-16 h-16">
             <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
         <p class="text-slate-500 font-medium animate-pulse">Sedang memproses laporan...</p>
       </div>
@@ -61,9 +61,9 @@
     <!-- Report Content -->
     <div v-else-if="report" class="space-y-8 animate-fade-in-up">
       <!-- Combined Summary -->
-      <div class="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30 p-6">
+      <div class="bg-gradient-to-br from-blue-500/10 to-blue-500/10 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl shadow-sm border border-blue-100 dark:border-blue-900/30 p-6">
         <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <span class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-xl">
+          <span class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
              <span class="material-symbols-outlined">analytics</span>
           </span>
           Ringkasan Gabungan - Semua Toko
@@ -71,7 +71,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all group">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Pendapatan</p>
-            <p class="text-3xl font-black text-emerald-600 group-hover:scale-105 transition-transform origin-left">{{ formatCurrency(report.combined.revenue) }}</p>
+            <p class="text-3xl font-black text-blue-600 group-hover:scale-105 transition-transform origin-left">{{ formatCurrency(report.combined.revenue) }}</p>
           </div>
           <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all group">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Total Pesanan</p>
@@ -88,7 +88,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
           <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-500">storefront</span>
+            <span class="material-symbols-outlined text-blue-500">storefront</span>
             Penjualan Per Toko
           </h3>
         </div>
@@ -124,7 +124,7 @@
                      {{ store.outlet.address }}
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-emerald-600">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-blue-600">
                   {{ formatCurrency(store.revenue) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -146,7 +146,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
           <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-500">inventory_2</span>
+            <span class="material-symbols-outlined text-blue-500">inventory_2</span>
             Stok Per Toko
           </h3>
         </div>
@@ -167,7 +167,7 @@
           >
             <h4 class="font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                <div class="p-2 bg-white dark:bg-slate-700 rounded-lg shadow-sm">
-                  <span class="material-symbols-outlined text-emerald-500 text-[20px]">store</span>
+                  <span class="material-symbols-outlined text-blue-500 text-[20px]">store</span>
                </div>
               {{ store.outlet.name }}
             </h4>
@@ -185,7 +185,7 @@
                 <span class="text-slate-500 font-medium">Stok Menipis:</span>
                 <span
                   class="font-black flex items-center gap-1"
-                  :class="store.lowStockCount > 0 ? 'text-amber-600' : 'text-emerald-600'"
+                  :class="store.lowStockCount > 0 ? 'text-amber-600' : 'text-blue-600'"
                 >
                   <span v-if="store.lowStockCount > 0" class="material-symbols-outlined text-[18px]">warning</span>
                   {{ store.lowStockCount }}

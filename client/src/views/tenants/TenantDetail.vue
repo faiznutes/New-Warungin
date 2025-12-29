@@ -45,7 +45,7 @@
                                     </div>
                                 </div>
                                 <div class="absolute bottom-1 right-1 translate-x-1/4 translate-y-1/4">
-                                    <span class="flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-white dark:ring-slate-800 shadow-sm" :class="tenant?.isActive ? 'bg-emerald-500' : 'bg-red-500'">
+                                    <span class="flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-white dark:ring-slate-800 shadow-sm" :class="tenant?.isActive ? 'bg-blue-500' : 'bg-red-500'">
                                         <span class="material-symbols-outlined text-white text-[14px] font-bold">{{ tenant?.isActive ? 'check' : 'close' }}</span>
                                     </span>
                                 </div>
@@ -62,8 +62,8 @@
                                             <span class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700/50 px-2 py-0.5 rounded-lg">
                                                 <span class="material-symbols-outlined text-[16px]">tag</span> ID: #{{ tenant?.id?.substring(0, 8) }}
                                             </span>
-                                            <span class="flex items-center gap-1.5" :class="tenant?.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'">
-                                                <span class="w-1.5 h-1.5 rounded-full" :class="tenant?.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                                            <span class="flex items-center gap-1.5" :class="tenant?.isActive ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'">
+                                                <span class="w-1.5 h-1.5 rounded-full" :class="tenant?.isActive ? 'bg-blue-500' : 'bg-red-500'"></span>
                                                 {{ tenant?.isActive ? 'Aktif' : 'Nonaktif' }}
                                             </span>
                                             <span class="flex items-center gap-1.5">
@@ -190,8 +190,8 @@
                         <h2 class="text-xl font-black text-slate-900 dark:text-white">Manajemen Langganan</h2>
                         <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
                             <span class="relative flex h-2.5 w-2.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
                             </span>
                             <span class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide">Status Sistem: Normal</span>
                         </div>
@@ -208,7 +208,7 @@
                                     <div>
                                         <div class="flex items-center gap-3 mb-1">
                                             <h3 class="text-2xl font-black text-slate-900 dark:text-white">Paket {{ getPlanName(subscription?.plan || tenant?.subscriptionPlan || 'BASIC') }}</h3>
-                                            <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-800">
+                                            <span class="inline-flex items-center gap-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-400 ring-1 ring-blue-100 dark:ring-blue-800">
                                                 Aktif
                                             </span>
                                         </div>
@@ -327,9 +327,9 @@
                                             <td class="px-6 py-4">
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-colors shadow-sm"
                                                       :class="invoice.status === 'ACTIVE' || invoice.reverted === false 
-                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                                                        ? 'bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' 
                                                         : 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'">
-                                                    <span class="w-1.5 h-1.5 rounded-full" :class="invoice.status === 'ACTIVE' || invoice.reverted === false ? 'bg-emerald-500' : 'bg-slate-400'"></span>
+                                                    <span class="w-1.5 h-1.5 rounded-full" :class="invoice.status === 'ACTIVE' || invoice.reverted === false ? 'bg-blue-500' : 'bg-slate-400'"></span>
                                                     {{ invoice.status === 'ACTIVE' || invoice.reverted === false ? 'Lunas' : 'Diarsipkan' }}
                                                 </span>
                                             </td>
@@ -381,7 +381,7 @@
                                     <div>
                                         <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight">{{ addon.addonName }}</h3>
                                         <div class="flex items-center gap-1.5 mt-1">
-                                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Aktif</span>
                                         </div>
                                     </div>

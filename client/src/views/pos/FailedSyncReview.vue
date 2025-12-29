@@ -14,7 +14,7 @@
         </RouterLink>
         <button
           @click="refreshList"
-          class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 font-bold text-sm hover:-translate-y-0.5"
+          class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 font-bold text-sm hover:-translate-y-0.5"
         >
           <span class="material-symbols-outlined text-[20px]">refresh</span>
           <span>Refresh List</span>
@@ -25,19 +25,19 @@
     <!-- Alert Boxes -->
     <div class="space-y-4">
       <!-- No Failed Orders -->
-      <div v-if="failedOrders.length === 0 && !loading" class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 flex items-center gap-4 shadow-sm">
-        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+      <div v-if="failedOrders.length === 0 && !loading" class="bg-blue-50 border border-blue-100 rounded-2xl p-6 flex items-center gap-4 shadow-sm">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
            <span class="material-symbols-outlined text-[28px]">cloud_done</span>
         </div>
         <div>
-          <h3 class="font-bold text-emerald-900 text-lg">All caught up!</h3>
-          <p class="text-sm text-emerald-700 font-medium">All valid orders have been successfully synced to the server.</p>
+          <h3 class="font-bold text-blue-900 text-lg">All caught up!</h3>
+          <p class="text-sm text-blue-700 font-medium">All valid orders have been successfully synced to the server.</p>
         </div>
       </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="bg-white border border-slate-100 rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm">
-        <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p class="text-slate-500 font-medium animate-pulse">Checking for unsynced orders...</p>
       </div>
 
@@ -111,7 +111,7 @@
               
               <div class="flex justify-between items-center pt-4 border-t border-slate-100">
                  <span class="font-bold text-slate-700">Total Amount</span>
-                 <span class="text-xl font-black text-emerald-600">
+                 <span class="text-xl font-black text-blue-600">
                     {{ formatCurrency(calculateTotal(order.orderData)) }}
                  </span>
               </div>
@@ -141,7 +141,7 @@
                  <button
                     @click="retrySync(order.id)"
                     :disabled="retrying === order.id || retryOrder?.id === order.id"
-                    class="px-4 py-3 bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/30 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                    class="px-4 py-3 bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
                  >
                     <div v-if="retrying === order.id" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span v-else class="material-symbols-outlined text-[20px]">cloud_upload</span>

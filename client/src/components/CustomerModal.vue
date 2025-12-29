@@ -35,12 +35,12 @@
               Nama Lengkap <span class="text-red-500">*</span>
             </label>
             <div class="relative group">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">person</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">person</span>
               <input
                 v-model="form.name"
                 type="text"
                 required
-                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
                 placeholder="Contoh: Budi Santoso"
               />
             </div>
@@ -53,11 +53,11 @@
                 Email
               </label>
               <div class="relative group">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">mail</span>
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">mail</span>
                 <input
                   v-model="form.email"
                   type="email"
-                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="budi@example.com"
                 />
               </div>
@@ -69,11 +69,11 @@
                 Nomor Telepon
               </label>
               <div class="relative group">
-                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">call</span>
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">call</span>
                 <input
                   v-model="form.phone"
                   type="tel"
-                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
+                  class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
                   placeholder="08123456789"
                 />
               </div>
@@ -86,11 +86,11 @@
               Alamat
             </label>
             <div class="relative group">
-              <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
+              <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
               <textarea
                 v-model="form.address"
                 rows="3"
-                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400 resize-none"
+                class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400 resize-none"
                 placeholder="Masukkan alamat lengkap pelanggan..."
               ></textarea>
             </div>
@@ -110,7 +110,7 @@
         <button
           @click="handleSubmit"
           :disabled="saving"
-          class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+          class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
         >
           <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           <span>{{ saving ? 'Menyimpan...' : (editingCustomer ? 'Simpan Perubahan' : 'Tambah Pelanggan') }}</span>

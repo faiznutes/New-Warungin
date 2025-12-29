@@ -4,12 +4,12 @@
     <section class="container mx-auto px-4 py-16 relative">
       <!-- Background Gradients -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
-         <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-100 dark:bg-emerald-900/10 rounded-full blur-3xl opacity-50"></div>
+         <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-100 dark:bg-blue-900/10 rounded-full blur-3xl opacity-50"></div>
       </div>
       
       <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto relative z-10">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 px-2">
-           Pusat Bantuan <span class="text-emerald-600">Warungin</span>
+           Pusat Bantuan <span class="text-blue-600">Warungin</span>
         </h1>
         <p class="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl px-4">
           Temukan jawaban, panduan, dan tips untuk memaksimalkan bisnis Anda.
@@ -20,11 +20,11 @@
               v-model="searchQuery"
               type="text"
               placeholder="Cari artikel bantuan... (Contoh: 'Cara tambah produk')"
-              class="w-full px-6 py-4 pl-14 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition text-lg shadow-sm group-hover:shadow-md"
+              class="w-full px-6 py-4 pl-14 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition text-lg shadow-sm group-hover:shadow-md"
               @input="handleSearch"
               @keyup.enter="goToFirstResult"
             />
-            <span class="material-symbols-outlined absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition">search</span>
+            <span class="material-symbols-outlined absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition">search</span>
             
             <!-- Search Results Dropdown -->
             <div 
@@ -38,8 +38,8 @@
                 class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition border-b border-slate-100 dark:border-slate-700 last:border-b-0"
                 @click="clearSearch"
               >
-                <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-emerald-600">{{ result.icon }}</span>
+                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-blue-600">{{ result.icon }}</span>
                 </div>
                 <div class="text-left">
                   <h4 class="font-bold text-slate-900 dark:text-white">{{ result.title }}</h4>
@@ -73,7 +73,7 @@
             v-for="category in categories"
             :key="category.id"
             :to="`/help/category/${category.id}`"
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-emerald-500/50 transition cursor-pointer group"
+            class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 hover:shadow-xl hover:border-blue-500/50 transition cursor-pointer group"
           >
             <div 
               class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
@@ -83,14 +83,14 @@
             </div>
             <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ category.label }}</h2>
             <p class="text-slate-500 dark:text-slate-400 text-sm">{{ category.description }}</p>
-            <div class="mt-4 text-xs text-emerald-600 font-bold">{{ getArticleCountByCategory(category.id) }} artikel</div>
+            <div class="mt-4 text-xs text-blue-600 font-bold">{{ getArticleCountByCategory(category.id) }} artikel</div>
           </router-link>
         </div>
 
         <!-- Popular Articles -->
         <div class="mb-16">
           <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2">
-             <span class="material-symbols-outlined text-emerald-600">trending_up</span>
+             <span class="material-symbols-outlined text-blue-600">trending_up</span>
              Panduan Populer
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,16 +98,16 @@
               v-for="article in popularArticles"
               :key="article.slug"
               :to="`/help/${article.slug}`"
-              class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition group"
+              class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition group"
             >
               <div class="flex items-start gap-4">
-                <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center shrink-0">
-                  <span class="material-symbols-outlined text-emerald-600 text-xl">{{ article.icon }}</span>
+                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-blue-600 text-xl">{{ article.icon }}</span>
                 </div>
                 <div class="flex-1">
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 transition">{{ article.title }}</h3>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 transition">{{ article.title }}</h3>
                   <p class="text-slate-500 dark:text-slate-400 text-sm mb-4">{{ article.description }}</p>
-                  <span class="text-emerald-600 text-sm font-bold flex items-center gap-1">
+                  <span class="text-blue-600 text-sm font-bold flex items-center gap-1">
                     Baca Selengkapnya 
                     <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                   </span>
@@ -120,20 +120,20 @@
 
 
         <!-- Contact Support -->
-        <div class="bg-emerald-500 rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
-           <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-400 opacity-50"></div>
+        <div class="bg-blue-500 rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
+           <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-50"></div>
            <div class="relative z-10">
              <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
                 <span class="material-symbols-outlined text-4xl">support_agent</span>
              </div>
              <h2 class="text-2xl sm:text-3xl font-bold mb-4">Masih Butuh Bantuan?</h2>
-             <p class="text-lg text-emerald-100 mb-8 max-w-2xl mx-auto">
+             <p class="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
                Tim support kami siap membantu Anda menyelesaikan masalah secepat mungkin.
              </p>
              <div class="flex flex-col sm:flex-row gap-4 justify-center">
                <router-link
                  to="/contact"
-                 class="px-8 py-4 bg-white text-emerald-600 rounded-xl hover:bg-slate-100 transition font-bold shadow-lg"
+                 class="px-8 py-4 bg-white text-blue-600 rounded-xl hover:bg-slate-100 transition font-bold shadow-lg"
                >
                  Hubungi Support
                </router-link>
@@ -176,8 +176,8 @@ const categories = [
     label: 'Panduan Memulai', 
     description: 'Setup akun, outlet pertama, dan onboarding.',
     icon: 'rocket_launch',
-    bgColor: 'bg-blue-50 dark:bg-blue-900/30 group-hover:bg-emerald-500',
-    iconColor: 'text-emerald-600 group-hover:text-white'
+    bgColor: 'bg-blue-50 dark:bg-blue-900/30 group-hover:bg-blue-500',
+    iconColor: 'text-blue-600 group-hover:text-white'
   },
   { 
     id: 'features', 

@@ -22,14 +22,14 @@
 
         <div class="p-6 overflow-y-auto custom-scrollbar">
           <!-- Total Card -->
-          <div class="mb-6 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-sm">
+          <div class="mb-6 p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm">
             <div class="flex justify-between items-center mb-2">
               <span class="text-slate-600 font-medium">Total Payment</span>
-              <span class="text-2xl font-black text-emerald-600">{{ formatCurrency(total) }}</span>
+              <span class="text-2xl font-black text-blue-600">{{ formatCurrency(total) }}</span>
             </div>
             <div v-if="discount > 0" class="flex justify-between items-center text-sm font-medium pt-2 border-t border-emerald-200/50 mt-2">
-              <span class="text-emerald-700">Discount Applied</span>
-              <span class="text-emerald-700">-{{ formatCurrency(discount) }}</span>
+              <span class="text-blue-700">Discount Applied</span>
+              <span class="text-blue-700">-{{ formatCurrency(discount) }}</span>
             </div>
           </div>
 
@@ -44,7 +44,7 @@
                  :key="method.value"
                  @click="selectedPayment = method.value; onPaymentMethodChange()"
                  class="p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 group"
-                 :class="selectedPayment === method.value ? 'border-emerald-500 bg-emerald-50/50 text-emerald-700 shadow-md shadow-emerald-500/10' : 'border-slate-100 bg-slate-50 text-slate-600 hover:bg-white hover:border-emerald-200 hover:shadow-sm'"
+                 :class="selectedPayment === method.value ? 'border-blue-500 bg-blue-50/50 text-blue-700 shadow-md shadow-blue-500/10' : 'border-slate-100 bg-slate-50 text-slate-600 hover:bg-white hover:border-emerald-200 hover:shadow-sm'"
                >
                  <span class="text-3xl filter drop-shadow-sm transition-transform group-hover:scale-110 duration-200">{{ method.icon }}</span>
                  <span class="font-bold text-sm">{{ method.label }}</span>
@@ -69,7 +69,7 @@
                     min="0"
                     step="1000"
                     placeholder="0"
-                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-transparent hover:bg-white focus:bg-white focus:border-emerald-500 rounded-xl transition-all outline-none font-bold text-lg text-slate-900 placeholder:text-slate-400"
+                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-transparent hover:bg-white focus:bg-white focus:border-blue-500 rounded-xl transition-all outline-none font-bold text-lg text-slate-900 placeholder:text-slate-400"
                     @input="calculateChange"
                   />
                 </div>
@@ -86,10 +86,10 @@
                  </div>
               </div>
               
-              <div v-if="change >= 0" class="p-4 bg-emerald-50 rounded-xl border border-emerald-100 animate-in fade-in zoom-in-95 duration-200">
+              <div v-if="change >= 0" class="p-4 bg-blue-50 rounded-xl border border-blue-100 animate-in fade-in zoom-in-95 duration-200">
                 <div class="flex justify-between items-center">
-                  <span class="text-emerald-700 font-bold">Change Due</span>
-                  <span class="text-2xl font-black text-emerald-600">{{ formatCurrency(change) }}</span>
+                  <span class="text-blue-700 font-bold">Change Due</span>
+                  <span class="text-2xl font-black text-blue-600">{{ formatCurrency(change) }}</span>
                 </div>
               </div>
               <div v-else-if="cashAmount > 0" class="p-4 bg-red-50 rounded-xl border border-red-100 animate-in fade-in zoom-in-95 duration-200">
@@ -111,7 +111,7 @@
                 v-model="qrCode"
                 type="text"
                 placeholder="Direct scan or enter ref..."
-                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-medium transition"
+                class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none font-medium transition"
               />
             </div>
             <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 flex gap-3">
@@ -133,7 +133,7 @@
           <button
             @click="confirmPayment"
             :disabled="!canConfirm || processing"
-            class="flex-[2] px-4 py-3 bg-emerald-500 text-white rounded-xl font-bold text-lg hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+            class="flex-[2] px-4 py-3 bg-blue-500 text-white rounded-xl font-bold text-lg hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
           >
             <span v-if="processing" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
             <span>{{ processing ? 'Processing...' : `Pay ${formatCurrency(total)}` }}</span>

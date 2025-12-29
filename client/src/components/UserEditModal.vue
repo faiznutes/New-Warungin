@@ -92,7 +92,7 @@
                     <button
                       type="button"
                       @click="copyPassword"
-                      class="px-3 py-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded border border-emerald-200 transition"
+                      class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-emerald-200 transition"
                     >
                       Salin
                     </button>
@@ -102,7 +102,7 @@
                       type="button"
                       @click="loadPassword"
                       :disabled="loadingPassword"
-                      class="px-3 py-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded border border-emerald-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="px-3 py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded border border-emerald-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Klik untuk melihat password aktif"
                     >
                       {{ loadingPassword ? 'Memuat...' : 'Lihat Password' }}

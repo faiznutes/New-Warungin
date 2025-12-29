@@ -9,9 +9,9 @@
       <div class="bg-white dark:bg-slate-800 rounded-full shadow-lg px-4 py-2 flex items-center gap-2 border border-slate-200 dark:border-slate-700">
         <div
           v-if="isRefreshing"
-          class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"
+          class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
         ></div>
-        <span v-else class="material-symbols-outlined text-emerald-500">arrow_downward</span>
+        <span v-else class="material-symbols-outlined text-blue-500">arrow_downward</span>
         <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
           {{ isRefreshing ? 'Memuat ulang...' : 'Tarik untuk refresh' }}
         </span>
@@ -55,23 +55,23 @@
            <div v-if="showColumnMenu" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-200">
               <div class="space-y-2">
                  <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                    <input type="checkbox" :checked="isColumnVisible('orderInfo')" @change="toggleColumn('orderInfo')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <input type="checkbox" :checked="isColumnVisible('orderInfo')" @change="toggleColumn('orderInfo')" class="rounded text-blue-500 focus:ring-blue-500">
                     <span class="text-sm font-medium text-slate-700">Order Info</span>
                  </label>
                  <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                    <input type="checkbox" :checked="isColumnVisible('customer')" @change="toggleColumn('customer')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <input type="checkbox" :checked="isColumnVisible('customer')" @change="toggleColumn('customer')" class="rounded text-blue-500 focus:ring-blue-500">
                     <span class="text-sm font-medium text-slate-700">Customer</span>
                  </label>
                  <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                    <input type="checkbox" :checked="isColumnVisible('total')" @change="toggleColumn('total')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <input type="checkbox" :checked="isColumnVisible('total')" @change="toggleColumn('total')" class="rounded text-blue-500 focus:ring-blue-500">
                     <span class="text-sm font-medium text-slate-700">Total</span>
                  </label>
                  <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                    <input type="checkbox" :checked="isColumnVisible('status')" @change="toggleColumn('status')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <input type="checkbox" :checked="isColumnVisible('status')" @change="toggleColumn('status')" class="rounded text-blue-500 focus:ring-blue-500">
                     <span class="text-sm font-medium text-slate-700">Status</span>
                  </label>
                  <label class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                    <input type="checkbox" :checked="isColumnVisible('date')" @change="toggleColumn('date')" class="rounded text-emerald-500 focus:ring-emerald-500">
+                    <input type="checkbox" :checked="isColumnVisible('date')" @change="toggleColumn('date')" class="rounded text-blue-500 focus:ring-blue-500">
                     <span class="text-sm font-medium text-slate-700">Date</span>
                  </label>
               </div>
@@ -94,7 +94,7 @@
             @input="handleSearchInput"
             type="text"
             placeholder="Search by Order #..."
-            class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 hover:border-slate-200 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
+            class="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 hover:border-slate-200 rounded-xl transition-all outline-none font-medium placeholder:text-slate-400"
           />
        </div>
 
@@ -125,7 +125,7 @@
           >
              <span v-if="status === 'PENDING'" class="w-2 h-2 rounded-full bg-yellow-400"></span>
              <span v-if="status === 'PROCESSING'" class="w-2 h-2 rounded-full bg-indigo-500"></span>
-             <span v-if="status === 'COMPLETED'" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+             <span v-if="status === 'COMPLETED'" class="w-2 h-2 rounded-full bg-blue-500"></span>
              <span v-if="status === 'CANCELLED'" class="w-2 h-2 rounded-full bg-red-500"></span>
              {{ status === 'ALL' ? 'All Orders' : status.charAt(0) + status.slice(1).toLowerCase() }}
           </button>
@@ -139,14 +139,14 @@
             v-model="filters.month"
             type="month"
             @change="handleMonthChange"
-            class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-emerald-500 rounded-xl text-sm font-medium transition-all outline-none"
+            class="w-full px-4 py-3 bg-slate-50 border-transparent hover:bg-slate-100 focus:bg-white focus:border-blue-500 rounded-xl text-sm font-medium transition-all outline-none"
           />
        </div>
     </div>
 
     <!-- Orders Table -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <p class="text-slate-500 font-medium animate-pulse">Loading orders...</p>
     </div>
 
@@ -157,7 +157,7 @@
       <h3 class="text-xl font-bold text-slate-900 mb-2">Belum Ada Pesanan</h3>
       <p class="text-slate-500 text-center max-w-md mb-6">Pesanan yang masuk atau transaksi baru akan muncul di sini.</p>
       
-      <router-link to="/app/pos" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+      <router-link to="/app/pos" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2">
          <span class="material-symbols-outlined">add_circle</span>
          Buat Pesanan Baru
       </router-link>
@@ -171,12 +171,12 @@
           v-for="order in orders"
           :key="order.id"
           class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm relative overflow-hidden"
-          :class="{ 'ring-2 ring-emerald-500': isOrderSelected(order.id) }"
+          :class="{ 'ring-2 ring-blue-500': isOrderSelected(order.id) }"
         >
           <!-- Selection Overlay -->
           <div 
             v-if="isOrderSelected(order.id)" 
-            class="absolute top-0 right-0 p-2 bg-emerald-500 rounded-bl-2xl z-10"
+            class="absolute top-0 right-0 p-2 bg-blue-500 rounded-bl-2xl z-10"
           >
             <span class="material-symbols-outlined text-white text-sm">check</span>
           </div>
@@ -186,7 +186,7 @@
               <div 
                   @click="toggleOrderSelection(order)"
                   class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors"
-                  :class="isOrderSelected(order.id) ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'"
+                  :class="isOrderSelected(order.id) ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'"
               >
                   <span class="material-symbols-outlined text-[20px]">{{ isOrderSelected(order.id) ? 'check_circle' : 'circle' }}</span>
               </div>
@@ -199,7 +199,7 @@
                 <select
                     :value="order.status"
                     @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
-                    class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transition-all"
+                    class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition-all"
                     :class="getStatusClass(order.status)"
                 >
                     <option value="PENDING" class="bg-white text-slate-900">Pending</option>
@@ -227,18 +227,18 @@
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-slate-500">Total</span>
-              <span class="font-bold text-emerald-600">{{ formatCurrency(Number(order.total)) }}</span>
+              <span class="font-bold text-blue-600">{{ formatCurrency(Number(order.total)) }}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
             <button @click="viewOrder(order)" class="py-2.5 px-4 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs hover:bg-slate-200 transition">Detail</button>
-            <button @click="printReceipt(order)" class="py-2.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:bg-emerald-100 transition">Print</button>
+            <button @click="printReceipt(order)" class="py-2.5 px-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400 font-bold text-xs hover:bg-blue-100 transition">Print</button>
             
             <button 
               v-if="order.status === 'PENDING' || order.status === 'PROCESSING'"
               @click="updateStatus(order.id, 'COMPLETED')"
-              class="col-span-2 py-2.5 px-4 rounded-xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition"
+              class="col-span-2 py-2.5 px-4 rounded-xl bg-blue-500 text-white font-bold text-xs hover:bg-blue-600 shadow-lg shadow-blue-500/20 transition"
             >
               Mark as Completed
             </button>
@@ -249,7 +249,7 @@
       <!-- Bulk Actions Bar -->
       <div v-if="selectedOrders.length > 0" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 animate-in slide-in-from-bottom-4 duration-200">
           <div class="flex items-center gap-3 pr-6 border-r border-slate-700">
-             <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-xs">{{ selectedOrders.length }}</div>
+             <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-xs">{{ selectedOrders.length }}</div>
              <span class="font-medium text-sm">Selected</span>
           </div>
           <div class="flex items-center gap-2">
@@ -283,7 +283,7 @@
                   type="checkbox"
                   :checked="selectedOrders.length === orders.length && orders.length > 0"
                   @change="toggleSelectAll"
-                  class="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+                  class="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-500 cursor-pointer"
                 />
               </th>
               <th v-if="isColumnVisible('orderInfo')" class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Order Info</th>
@@ -299,19 +299,19 @@
               v-for="order in orders" 
               :key="order.id" 
               class="hover:bg-slate-50 transition-colors group"
-              :class="{ 'bg-emerald-50/30': isOrderSelected(order.id) }"
+              :class="{ 'bg-blue-50/30': isOrderSelected(order.id) }"
             >
               <td class="p-4">
                 <input
                   type="checkbox"
                   :checked="isOrderSelected(order.id)"
                   @change="toggleOrderSelection(order)"
-                  class="w-5 h-5 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+                  class="w-5 h-5 rounded border-slate-300 text-blue-500 focus:ring-blue-500 cursor-pointer"
                 />
               </td>
               <td v-if="isColumnVisible('orderInfo')" class="p-4">
-                <div class="font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">{{ order.orderNumber }}</div>
-                <div v-if="order.sendToKitchen" class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1 font-medium">
+                <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{{ order.orderNumber }}</div>
+                <div v-if="order.sendToKitchen" class="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-1 font-medium">
                    <span class="material-symbols-outlined text-[14px]">soup_kitchen</span>
                    Kitchen
                 </div>
@@ -329,7 +329,7 @@
                     <select
                         :value="order.status"
                         @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
-                        class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 transition-all"
+                        class="appearance-none pl-3 pr-6 py-1 text-xs font-bold rounded-full border cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition-all"
                         :class="getStatusClass(order.status)"
                     >
                         <option value="PENDING" class="bg-white text-slate-900">Pending</option>
@@ -352,10 +352,10 @@
               </td>
               <td class="p-4 text-right">
                  <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button @click="viewOrder(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-emerald-600 transition" title="View Details">
+                    <button @click="viewOrder(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition" title="View Details">
                        <span class="material-symbols-outlined text-[20px]">visibility</span>
                     </button>
-                    <button @click="printReceipt(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-700 text-slate-500 hover:text-emerald-600 transition" title="Print Receipt">
+                    <button @click="printReceipt(order)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-500 hover:text-blue-600 transition" title="Print Receipt">
                        <span class="material-symbols-outlined text-[20px]">print</span>
                     </button>
                     <button 
@@ -465,7 +465,7 @@
         <!-- Items Table -->
         <div class="mb-8">
            <h4 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <span class="material-symbols-outlined text-emerald-500">shopping_cart</span>
+              <span class="material-symbols-outlined text-blue-500">shopping_cart</span>
               Items Purchased
            </h4>
            <div class="border rounded-xl border-slate-200 overflow-hidden">
@@ -498,11 +498,11 @@
            </div>
            <div v-if="(selectedOrder as any).discount > 0" class="flex justify-between w-full max-w-xs text-sm">
               <span class="text-slate-500">Discount</span>
-              <span class="font-bold text-emerald-600">-{{ formatCurrency(Number((selectedOrder as any).discount)) }}</span>
+              <span class="font-bold text-blue-600">-{{ formatCurrency(Number((selectedOrder as any).discount)) }}</span>
            </div>
            <div class="flex justify-between w-full max-w-xs text-lg pt-2 mt-2 border-t border-slate-100">
               <span class="font-bold text-slate-900">Total Amount</span>
-              <span class="font-black text-emerald-600">{{ formatCurrency(Number(selectedOrder.total)) }}</span>
+              <span class="font-black text-blue-600">{{ formatCurrency(Number(selectedOrder.total)) }}</span>
            </div>
         </div>
       </div>

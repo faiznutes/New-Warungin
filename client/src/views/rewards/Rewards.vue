@@ -14,7 +14,7 @@
         <button 
           @click="claimReward"
           :disabled="loading || dailyLimit.remaining === 0"
-          class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors shadow-lg shadow-emerald-500/20"
+          class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-600 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-500/20"
         >
           <div v-if="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           <span v-else class="material-symbols-outlined text-[20px]">play_circle</span>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.currentPoints || 0 }}</p>
-        <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
+        <div class="flex items-center gap-1 text-blue-600 text-xs font-medium bg-blue-50 dark:bg-blue-900/20 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">verified</span>
           <span>Saldo Aktif</span>
         </div>
@@ -49,7 +49,7 @@
           </div>
         </div>
         <p class="text-slate-900 dark:text-white text-2xl font-bold">{{ balance.totalEarned || 0 }}</p>
-        <div class="flex items-center gap-1 text-emerald-600 text-xs font-medium bg-emerald-50 dark:bg-emerald-900/20 w-fit px-2 py-0.5 rounded-full">
+        <div class="flex items-center gap-1 text-blue-600 text-xs font-medium bg-blue-50 dark:bg-blue-900/20 w-fit px-2 py-0.5 rounded-full">
           <span class="material-symbols-outlined text-[16px]">history</span>
           <span>Seumur Hidup</span>
         </div>
@@ -133,7 +133,7 @@
                 <span class="material-symbols-outlined text-6xl">currency_exchange</span>
              </div>
              <span class="material-symbols-outlined text-[64px] text-primary relative z-10">play_circle</span>
-             <div v-if="dailyLimit.remaining > 0" class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-emerald-600 text-xs font-bold border border-emerald-200 shadow-sm z-10">
+             <div v-if="dailyLimit.remaining > 0" class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-blue-600 text-xs font-bold border border-emerald-200 shadow-sm z-10">
                 Dapat Poin
              </div>
              <div v-else class="absolute top-3 right-3 px-2 py-1 rounded bg-slate-800/90 text-white text-xs font-bold z-10">
@@ -197,8 +197,8 @@
           class="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
         >
           <!-- Using a different icon/style for addons -->
-          <div class="aspect-[4/3] w-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-             <span class="material-symbols-outlined text-[64px] text-emerald-400 group-hover:text-emerald-500 transition-colors">extension</span>
+          <div class="aspect-[4/3] w-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+             <span class="material-symbols-outlined text-[64px] text-blue-400 group-hover:text-blue-500 transition-colors">extension</span>
              <div class="absolute top-3 right-3 px-2 py-1 rounded bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-600 shadow-sm">
                 Add-on
              </div>
@@ -207,7 +207,7 @@
             <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ addon.name }}</h3>
             <p class="text-xs text-slate-500 line-clamp-2">Aktifkan fitur {{ addon.name }} untuk toko Anda.</p>
             <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
-              <span class="text-emerald-600 dark:text-emerald-400 font-bold text-lg">{{ addon.pointsRequired }} Pts</span>
+              <span class="text-blue-600 dark:text-blue-400 font-bold text-lg">{{ addon.pointsRequired }} Pts</span>
               <span class="text-xs text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-full">Tersedia</span>
             </div>
           </div>
@@ -215,7 +215,7 @@
              <button 
               @click="redeemAddon(addon)"
               :disabled="balance.currentPoints < addon.pointsRequired || redeeming"
-              class="px-4 py-2 rounded-lg bg-emerald-500 text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
+              class="px-4 py-2 rounded-lg bg-blue-500 text-white font-bold shadow-lg hover:scale-105 transition-transform disabled:bg-slate-400"
             >
               {{ balance.currentPoints >= addon.pointsRequired ? 'Tukar' : 'Poin Kurang' }}
             </button>
@@ -251,7 +251,7 @@
                 <td class="px-6 py-4 text-slate-500">
                   <span 
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase"
-                    :class="transaction.amount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'"
+                    :class="transaction.amount > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-red-50 text-red-700 border border-red-100'"
                   >
                     {{ transaction.amount > 0 ? 'Diperoleh' : 'Digunakan' }}
                   </span>
@@ -260,14 +260,14 @@
                    {{ formatDate(transaction.createdAt) }}
                 </td>
                 <td class="px-6 py-4">
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
-                    <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900">
+                    <span class="size-1.5 rounded-full bg-blue-500"></span>
                     Selesai
                   </span>
                 </td>
                 <td 
                   class="px-6 py-4 text-right font-bold"
-                  :class="transaction.amount > 0 ? 'text-emerald-600' : 'text-red-500'"
+                  :class="transaction.amount > 0 ? 'text-blue-600' : 'text-red-500'"
                 >
                   {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount }}
                 </td>

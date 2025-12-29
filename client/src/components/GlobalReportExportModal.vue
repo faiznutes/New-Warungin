@@ -145,8 +145,8 @@
                 @click="exportForm.template = 'professional'"
                 class="px-2 py-3 rounded-xl border-2 transition flex flex-col items-center gap-1"
                 :class="exportForm.template === 'professional'
-                   ? 'border-emerald-600 bg-emerald-600 text-white' 
-                   : 'border-slate-200 dark:border-slate-700 hover:border-emerald-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
+                   ? 'border-blue-600 bg-blue-600 text-white' 
+                   : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
               >
                   <div class="w-8 h-10 bg-current opacity-20 rounded mb-1"></div>
                 <span class="text-xs font-bold">Pro</span>

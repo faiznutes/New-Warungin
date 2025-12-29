@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
+        class="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Ekspor Laporan</span>
@@ -85,11 +85,11 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-all group">
          <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pendapatan Subscription</p>
-            <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg group-hover:scale-110 transition-transform">
+            <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg group-hover:scale-110 transition-transform">
                <span class="material-symbols-outlined text-[20px]">subscriptions</span>
             </div>
          </div>
-          <p class="text-3xl font-black text-emerald-600 tracking-tight">{{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}</p>
+          <p class="text-3xl font-black text-blue-600 tracking-tight">{{ formatCurrency(reportData.summary?.totalSubscriptionRevenue || 0) }}</p>
         </div>
         
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-all group">
@@ -117,7 +117,7 @@
       <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-             <div class="p-2 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg text-emerald-600">
+             <div class="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg text-blue-600">
                 <span class="material-symbols-outlined">card_membership</span>
              </div>
              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Riwayat Subscription</h3>
@@ -195,7 +195,7 @@
                   <div class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ new Date(sub.createdAt).toLocaleDateString('id-ID') }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2.5 py-1 text-xs font-bold rounded-full border shadow-sm" :class="sub.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'">
+                  <span class="px-2.5 py-1 text-xs font-bold rounded-full border shadow-sm" :class="sub.status === 'ACTIVE' ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'">
                     {{ sub.status === 'ACTIVE' ? 'Aktif' : 'Kedaluwarsa' }}
                   </span>
                 </td>
@@ -355,7 +355,7 @@
                   <div class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ new Date(addon.subscribedAt).toLocaleDateString('id-ID') }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                   <span class="px-2.5 py-1 text-xs font-bold rounded-full border shadow-sm" :class="addon.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'">
+                   <span class="px-2.5 py-1 text-xs font-bold rounded-full border shadow-sm" :class="addon.status === 'active' ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-400 dark:border-slate-600'">
                     {{ addon.status === 'active' ? 'Aktif' : 'Kedaluwarsa' }}
                   </span>
                 </td>
@@ -513,7 +513,7 @@
               </button>
               <button
                 @click="updateSubscription"
-                class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-colors text-sm shadow-lg shadow-emerald-500/30"
+                class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-colors text-sm shadow-lg shadow-blue-500/30"
               >
                 Simpan Perubahan
               </button>
@@ -573,7 +573,7 @@
               </button>
               <button
                 @click="updateAddon"
-                class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-colors text-sm shadow-lg shadow-emerald-500/30"
+                class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-colors text-sm shadow-lg shadow-blue-500/30"
               >
                 Simpan Perubahan
               </button>

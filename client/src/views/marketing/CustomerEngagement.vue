@@ -8,7 +8,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Content -->
@@ -71,7 +71,7 @@
             <select
               v-model="selectedLevel"
               @change="loadCustomers"
-              class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             >
               <option value="">All Levels</option>
               <option value="HIGH">High</option>
@@ -85,7 +85,7 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search customers..."
-                class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 @input="loadCustomers"
               />
             </div>
@@ -94,7 +94,7 @@
 
         <!-- Customers List -->
         <div v-if="customersLoading" class="text-center py-12">
-          <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
 
         <div v-else-if="customers.length === 0" class="text-center py-16">
@@ -111,8 +111,8 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div class="flex-1">
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                    <span class="material-symbols-outlined text-emerald-600">person</span>
+                  <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">person</span>
                   </div>
                   <div>
                     <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">{{ customer.customerName || 'Unknown' }}</h3>

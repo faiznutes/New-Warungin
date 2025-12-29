@@ -64,7 +64,7 @@
         <div class="flex flex-wrap items-center gap-2">
           <button
             @click="bulkMarkAsRead"
-            class="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm"
+            class="px-4 py-2 bg-blue-100 hover:bg-emerald-200 text-blue-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 shadow-sm"
           >
             <span class="material-symbols-outlined text-[18px]">mark_email_read</span>
             Tandai Dibaca
@@ -171,7 +171,7 @@
                   </button>
                   <button
                     @click="toggleReadStatus(message)"
-                    class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-emerald-100"
+                    class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-blue-100"
                     :title="message.isRead ? 'Tandai Belum Dibaca' : 'Tandai Dibaca'"
                   >
                     <span class="material-symbols-outlined text-[18px]">{{ message.isRead ? 'mark_email_unread' : 'mark_email_read' }}</span>
@@ -280,10 +280,10 @@
                      <span
                         class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border shadow-sm"
                         :class="selectedMessage.isRead 
-                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' 
+                           ? 'bg-blue-50 text-blue-700 border-emerald-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' 
                            : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'"
                      >
-                        <span class="size-1.5 rounded-full" :class="selectedMessage.isRead ? 'bg-emerald-500' : 'bg-blue-500'"></span>
+                        <span class="size-1.5 rounded-full" :class="selectedMessage.isRead ? 'bg-blue-500' : 'bg-blue-500'"></span>
                         {{ selectedMessage.isRead ? 'Sudah Dibaca' : 'Belum Dibaca' }}
                      </span>
                   </div>

@@ -9,7 +9,7 @@
       <div class="flex gap-3">
         <button
           @click="showTemplateModal = true"
-          class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
+          class="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-500 hover:from-blue-400 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
         >
           <span class="material-symbols-outlined text-[20px]">add</span>
           <span>Buat Template</span>
@@ -784,7 +784,7 @@ const closeScheduleModal = () => {
 
 const getStatusColorClass = (status: string): string => {
     switch(status) {
-        case 'ACTIVE': return 'bg-emerald-500';
+        case 'ACTIVE': return 'bg-blue-500';
         case 'PAUSED': return 'bg-amber-500';
         case 'COMPLETED': return 'bg-blue-500';
         default: return 'bg-slate-300';
@@ -793,7 +793,7 @@ const getStatusColorClass = (status: string): string => {
 
 const getStatusBadgeClass = (status: string): string => {
   const classes: Record<string, string> = {
-    ACTIVE: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+    ACTIVE: 'bg-blue-100 text-blue-700 border-emerald-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
     PAUSED: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
     COMPLETED: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
   };

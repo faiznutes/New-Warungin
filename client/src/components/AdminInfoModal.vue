@@ -6,14 +6,14 @@
   >
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
       <!-- Header -->
-      <div class="sticky top-0 bg-gradient-to-r from-emerald-600 to-emerald-800 text-white p-6 rounded-t-xl z-10">
+      <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-t-xl z-10">
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-bold mb-1 flex items-center gap-2">
               <span class="material-symbols-outlined">menu_book</span>
               Knowledge Base
             </h2>
-            <p class="text-emerald-100 text-sm">Pelajari tentang fitur, langganan, dan cara penggunaan sistem</p>
+            <p class="text-blue-100 text-sm">Pelajari tentang fitur, langganan, dan cara penggunaan sistem</p>
           </div>
           <button
             @click="close"
@@ -27,14 +27,14 @@
       <!-- Content -->
       <div class="p-6 space-y-4 bg-white dark:bg-slate-800 min-h-[400px]">
         <!-- Card 0: Tutorial Penggunaan -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-emerald-50/50 dark:bg-slate-700/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-blue-50/50 dark:bg-slate-700/30">
           <button
             @click="toggleCard('tutorial')"
             class="w-full flex items-center justify-between p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex-1 text-left"
             :class="expandedCard === 'tutorial' ? 'bg-slate-100 dark:bg-slate-700' : ''"
           >
             <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                 <span class="material-symbols-outlined text-[24px]">school</span>
               </div>
               <div>
@@ -51,16 +51,16 @@
           >
             <div class="space-y-6 text-sm text-[#0d141b] dark:text-slate-300">
               <!-- Setup Awal Toko -->
-              <div class="bg-emerald-50 dark:bg-emerald-900/10 p-5 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                <h4 class="font-bold text-emerald-900 dark:text-emerald-100 mb-4 text-base flex items-center gap-2">
-                  <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">store</span>
+              <div class="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-xl border border-blue-100 dark:border-blue-800">
+                <h4 class="font-bold text-blue-900 dark:text-blue-100 mb-4 text-base flex items-center gap-2">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">store</span>
                   Langkah 1: Setup Awal Toko
                 </h4>
                 <ol class="list-decimal list-inside space-y-3 ml-2 text-[#0d141b] dark:text-slate-300">
-                  <li><strong class="text-emerald-800 dark:text-emerald-200">Lengkapi Profil Toko:</strong> Klik menu <strong>Pengaturan Toko</strong> → Isi nama toko, alamat, nomor telepon, dan informasi penting lainnya</li>
-                  <li><strong class="text-emerald-800 dark:text-emerald-200">Atur Outlet/Store:</strong> Jika memiliki beberapa cabang, tambahkan outlet di menu <strong>Store</strong> → Klik tombol <strong>Tambah Store</strong></li>
-                  <li><strong class="text-emerald-800 dark:text-emerald-200">Konfigurasi Struk:</strong> Di halaman <strong>Pengaturan Toko</strong>, scroll ke bagian <strong>Template Struk</strong> → Pilih template yang sesuai atau kustomisasi sesuai kebutuhan</li>
-                  <li><strong class="text-emerald-800 dark:text-emerald-200">Setup Metode Pembayaran:</strong> Pastikan metode pembayaran yang digunakan sudah dikonfigurasi (Cash, QRIS, Transfer Bank, dll)</li>
+                  <li><strong class="text-blue-800 dark:text-emerald-200">Lengkapi Profil Toko:</strong> Klik menu <strong>Pengaturan Toko</strong> → Isi nama toko, alamat, nomor telepon, dan informasi penting lainnya</li>
+                  <li><strong class="text-blue-800 dark:text-emerald-200">Atur Outlet/Store:</strong> Jika memiliki beberapa cabang, tambahkan outlet di menu <strong>Store</strong> → Klik tombol <strong>Tambah Store</strong></li>
+                  <li><strong class="text-blue-800 dark:text-emerald-200">Konfigurasi Struk:</strong> Di halaman <strong>Pengaturan Toko</strong>, scroll ke bagian <strong>Template Struk</strong> → Pilih template yang sesuai atau kustomisasi sesuai kebutuhan</li>
+                  <li><strong class="text-blue-800 dark:text-emerald-200">Setup Metode Pembayaran:</strong> Pastikan metode pembayaran yang digunakan sudah dikonfigurasi (Cash, QRIS, Transfer Bank, dll)</li>
                 </ol>
               </div>
 
@@ -80,9 +80,9 @@
               </div>
 
               <!-- Menu Admin Tenant -->
-              <div class="bg-emerald-50 dark:bg-emerald-900/10 p-5 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                <h4 class="font-bold text-emerald-900 dark:text-emerald-100 mb-4 text-base flex items-center gap-2">
-                   <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">admin_panel_settings</span>
+              <div class="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-xl border border-blue-100 dark:border-blue-800">
+                <h4 class="font-bold text-blue-900 dark:text-blue-100 mb-4 text-base flex items-center gap-2">
+                   <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">admin_panel_settings</span>
                   Menu Admin Tenant - Kontrol Penuh Sistem
                 </h4>
                 <div class="space-y-4 ml-2">
@@ -94,7 +94,7 @@
                      { title: 'Pelanggan', desc: 'Kelola data pelanggan dan member. Tambah pelanggan baru, lihat riwayat pembelian, dan kelola member dengan diskon khusus.', icon: 'group' },
                      { title: 'Laporan', desc: 'Akses berbagai laporan penjualan dan keuangan. Filter berdasarkan tanggal, export ke Excel/PDF, dan analisis performa bisnis.', icon: 'analytics' }
                    ]" :key="index">
-                     <strong class="text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                     <strong class="text-blue-800 dark:text-emerald-300 flex items-center gap-2">
                        <span class="material-symbols-outlined text-[18px]">{{ item.icon }}</span>
                        {{ item.title }}:
                      </strong>
@@ -107,14 +107,14 @@
         </div>
 
         <!-- Card 1: Paket Langganan -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-emerald-50/50 dark:bg-slate-700/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-blue-50/50 dark:bg-slate-700/30">
           <button
             @click="toggleCard('subscription')"
             class="w-full flex items-center justify-between p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex-1 text-left"
             :class="expandedCard === 'subscription' ? 'bg-slate-100 dark:bg-slate-700' : ''"
           >
             <div class="flex items-center space-x-4">
-               <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+               <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                 <span class="material-symbols-outlined text-[24px]">card_membership</span>
               </div>
               <div>
@@ -134,7 +134,7 @@
                 <h4 class="font-bold text-[#0d141b] dark:text-white mb-3">Paket yang Tersedia:</h4>
                 <ul class="space-y-2">
                   <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span> <strong>BASIC</strong> - Rp 99.000/bulan: Fitur dasar untuk UMKM kecil</li>
-                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> <strong>PRO</strong> - Rp 249.000/bulan: Fitur lengkap untuk bisnis menengah</li>
+                  <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> <strong>PRO</strong> - Rp 249.000/bulan: Fitur lengkap untuk bisnis menengah</li>
                   <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> <strong>ENTERPRISE</strong> - Rp 599.000/bulan: Fitur premium untuk bisnis besar</li>
                 </ul>
               </div>
@@ -153,14 +153,14 @@
         </div>
 
         <!-- Card 2: Addons -->
-        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-emerald-50/50 dark:bg-slate-700/30">
+        <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-blue-50/50 dark:bg-slate-700/30">
           <button
             @click="toggleCard('addons')"
             class="w-full flex items-center justify-between p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex-1 text-left"
             :class="expandedCard === 'addons' ? 'bg-slate-100 dark:bg-slate-700' : ''"
           >
             <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                 <span class="material-symbols-outlined text-[24px]">extension</span>
               </div>
               <div>
@@ -179,13 +179,13 @@
               <div>
                 <h4 class="font-bold text-[#0d141b] dark:text-white mb-3">Addons yang Tersedia:</h4>
                 <div v-if="loadingAddons" class="text-center py-4">
-                  <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <div class="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
                 </div>
                 <ul v-else-if="availableAddons.length > 0" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                   <li v-for="addon in availableAddons" :key="addon.id" class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
                     <div class="flex justify-between items-start">
                       <span class="font-bold">{{ addon.name }}</span>
-                      <span class="font-bold text-emerald-600 dark:text-emerald-400">Rp {{ formatAddonPrice(addon.price) }}rb/bln</span>
+                      <span class="font-bold text-blue-600 dark:text-blue-400">Rp {{ formatAddonPrice(addon.price) }}rb/bln</span>
                     </div>
                     <p class="text-xs text-[#4c739a] dark:text-slate-400 mt-1">{{ addon.description }}</p>
                     <div class="flex gap-2 mt-2">

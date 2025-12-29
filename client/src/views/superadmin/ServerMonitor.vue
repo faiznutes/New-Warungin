@@ -45,23 +45,23 @@
        <!-- OVERVIEW DASHBOARD -->
        <div v-if="activeTab === 'overview'" class="flex flex-col gap-6 animate-fade-in-up">
           <!-- Operational Status Header -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-900/20 dark:to-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30">
              <div class="flex items-center gap-4">
-                <div class="relative flex items-center justify-center size-12 rounded-full bg-emerald-100 dark:bg-emerald-800/30">
-                    <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[28px]">health_and_safety</span>
-                    <span class="absolute top-0 right-0 size-3 bg-emerald-500 rounded-full ring-2 ring-emerald-50 dark:ring-emerald-900/20"></span>
-                    <span class="absolute top-0 right-0 size-3 bg-emerald-500 rounded-full animate-ping opacity-75"></span>
+                <div class="relative flex items-center justify-center size-12 rounded-full bg-blue-100 dark:bg-blue-800/30">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[28px]">health_and_safety</span>
+                    <span class="absolute top-0 right-0 size-3 bg-blue-500 rounded-full ring-2 ring-blue-50 dark:ring-blue-900/20"></span>
+                    <span class="absolute top-0 right-0 size-3 bg-blue-500 rounded-full animate-ping opacity-75"></span>
                 </div>
                 <div>
-                   <h1 class="text-emerald-900 dark:text-emerald-100 text-xl font-black">Sistem Beroperasi Normal</h1>
-                   <p class="text-emerald-700/80 dark:text-emerald-300/80 text-sm font-medium mt-0.5">Semua layanan inti berjalan dalam parameter optimal. Diperbarui: Baru saja.</p>
+                   <h1 class="text-blue-900 dark:text-blue-100 text-xl font-black">Sistem Beroperasi Normal</h1>
+                   <p class="text-blue-700/80 dark:text-emerald-300/80 text-sm font-medium mt-0.5">Semua layanan inti berjalan dalam parameter optimal. Diperbarui: Baru saja.</p>
                 </div>
              </div>
              <div class="flex gap-3">
-                <button class="px-4 py-2 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors shadow-sm">
+                <button class="px-4 py-2 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-blue-800/50 rounded-xl text-sm font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
                    Lihat Riwayat
                 </button>
-                <button @click="loadAllData" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 hover:-translate-y-0.5">
+                <button @click="loadAllData" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 hover:-translate-y-0.5">
                    <span class="material-symbols-outlined text-[18px]">refresh</span>
                    Diagnostik
                 </button>
@@ -73,10 +73,10 @@
              <!-- Uptime -->
              <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:-translate-y-1">
                 <div class="flex justify-between items-start mb-4">
-                   <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                      <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">timer</span>
+                   <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                      <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">timer</span>
                    </div>
-                   <span class="flex items-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
+                   <span class="flex items-center text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
                       Stabil
                    </span>
                 </div>
@@ -91,7 +91,7 @@
                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
                       <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">speed</span>
                    </div>
-                   <span class="flex items-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
+                   <span class="flex items-center text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
                       <span class="material-symbols-outlined text-[14px] mr-1">arrow_downward</span> 5ms
                    </span>
                 </div>
@@ -106,7 +106,7 @@
                    <div class="p-3 bg-violet-50 dark:bg-violet-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
                       <span class="material-symbols-outlined text-violet-600 dark:text-violet-400">database</span>
                    </div>
-                   <span class="flex items-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
+                   <span class="flex items-center text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
                        Normal
                    </span>
                 </div>
@@ -136,7 +136,7 @@
                    <div class="p-3 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
                       <span class="material-symbols-outlined text-cyan-600 dark:text-cyan-400">memory</span>
                    </div>
-                   <span class="flex items-center text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
+                   <span class="flex items-center text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold">
                       Beban Rendah
                    </span>
                 </div>
@@ -174,8 +174,8 @@
                    <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/30">
                       <div class="flex items-center gap-2">
                          <h3 class="text-slate-900 dark:text-white text-lg font-black">Log Sistem Terbaru</h3>
-                         <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wide flex items-center gap-1">
-                            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
+                         <span class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-wide flex items-center gap-1">
+                            <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span> Live
                          </span>
                       </div>
                       <button @click="activeTab = 'logs'" class="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1">
@@ -254,7 +254,7 @@
                             <span class="text-xs font-black text-slate-900 dark:text-white">{{ serverResources.cpu || '45' }}%</span>
                          </div>
                          <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-sm" :style="{ width: (serverResources.cpu || '45') + '%' }"></div>
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-full rounded-full transition-all duration-500 shadow-sm" :style="{ width: (serverResources.cpu || '45') + '%' }"></div>
                          </div>
                       </div>
                       <div class="flex flex-col gap-2">
@@ -338,9 +338,9 @@
                       <td class="px-6 py-4">
                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border shadow-sm" 
                            :class="container.status === 'running' 
-                              ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/20 dark:text-emerald-400 dark:border-emerald-800' 
+                              ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-emerald-200 dark:from-blue-900/30 dark:to-blue-800/20 dark:text-blue-400 dark:border-blue-800' 
                               : 'bg-gradient-to-r from-red-50 to-red-100 text-red-700 border-red-200 dark:from-red-900/30 dark:to-red-800/20 dark:text-red-400 dark:border-red-800'">
-                            <span class="size-1.5 rounded-full" :class="container.status === 'running' ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                            <span class="size-1.5 rounded-full" :class="container.status === 'running' ? 'bg-blue-500' : 'bg-red-500'"></span>
                             {{ container.status }}
                          </span>
                       </td>
@@ -376,12 +376,12 @@
                 <div v-for="service in healthChecks" :key="service.name" 
                    class="flex items-center justify-between p-5 rounded-2xl border transition-all hover:shadow-lg group hover:-translate-y-1"
                    :class="service.status === 'healthy' 
-                      ? 'bg-emerald-50/50 border-emerald-100 hover:border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800 dark:hover:border-emerald-700' 
+                      ? 'bg-blue-50/50 border-blue-100 hover:border-emerald-200 dark:bg-blue-900/10 dark:border-blue-800 dark:hover:border-blue-700' 
                       : 'bg-red-50/50 border-red-100 hover:border-red-200 dark:bg-red-900/10 dark:border-red-800 dark:hover:border-red-700'">
                    <div class="flex items-center gap-4">
                       <div class="relative">
-                         <div class="w-3 h-3 rounded-full shadow-sm" :class="service.status === 'healthy' ? 'bg-emerald-500' : 'bg-red-500'"></div>
-                         <div class="absolute inset-0 rounded-full animate-ping opacity-50" :class="service.status === 'healthy' ? 'bg-emerald-500' : 'bg-red-500'"></div>
+                         <div class="w-3 h-3 rounded-full shadow-sm" :class="service.status === 'healthy' ? 'bg-blue-500' : 'bg-red-500'"></div>
+                         <div class="absolute inset-0 rounded-full animate-ping opacity-50" :class="service.status === 'healthy' ? 'bg-blue-500' : 'bg-red-500'"></div>
                       </div>
                       <div>
                          <div class="font-bold text-slate-900 dark:text-white text-sm">{{ service.name }}</div>
@@ -389,7 +389,7 @@
                       </div>
                    </div>
                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider" 
-                      :class="service.status === 'healthy' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'">
+                      :class="service.status === 'healthy' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'">
                       {{ service.status }}
                    </span>
                 </div>
@@ -524,7 +524,7 @@ const mockChartBars = [
 ];
 
 const getSeverityClass = (sev: string) => {
-   if (sev === 'INFO') return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+   if (sev === 'INFO') return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
    if (sev === 'WARN') return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
    if (sev === 'ERROR') return 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
    return 'bg-slate-100 text-slate-700 border-slate-200';

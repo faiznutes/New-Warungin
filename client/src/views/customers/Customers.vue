@@ -3,7 +3,7 @@
     <!-- Decorative Background -->
     <div class="fixed inset-0 pointer-events-none overflow-hidden">
       <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
     </div>
 
     <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 w-full">
@@ -35,7 +35,7 @@
             
             <button
               @click="triggerFileInput"
-              class="p-2.5 text-emerald-600 bg-white border border-slate-200 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 transition-all shadow-sm group relative"
+              class="p-2.5 text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-emerald-200 transition-all shadow-sm group relative"
               title="Impor CSV"
             >
               <span class="material-symbols-outlined text-[20px]">upload_file</span>
@@ -65,7 +65,7 @@
           <button
             v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
             @click="showCreateModal = true"
-            class="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-6 py-3 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-bold text-sm tracking-wide flex items-center gap-2"
+            class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-bold text-sm tracking-wide flex items-center gap-2"
           >
             <span class="material-symbols-outlined text-[20px] group-hover:rotate-12 transition-transform duration-300">person_add</span>
             <span>Tambah Pelanggan</span>
@@ -76,14 +76,14 @@
       <!-- Search & Filters -->
       <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 p-4 animate-fade-in-up" style="animation-delay: 100ms">
         <div class="relative group">
-          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors duration-300 text-[22px]">search</span>
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors duration-300 text-[22px]">search</span>
           <input
             v-model="filters.search"
             @focus="handleSearchFocus"
             @input="handleSearchInput"
             type="text"
             placeholder="Cari pelanggan berdasarkan nama, email, atau no. telepon..."
-            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all duration-300 font-medium"
+            class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 font-medium"
           />
         </div>
       </div>
@@ -92,7 +92,7 @@
       <div v-if="loading" class="flex flex-col items-center justify-center py-20 animate-fade-in">
         <div class="relative w-16 h-16">
           <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-          <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
         <p class="mt-4 text-slate-500 font-medium animate-pulse">Memuat data pelanggan...</p>
       </div>
@@ -109,7 +109,7 @@
         <button
           v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
           @click="showCreateModal = true"
-          class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-dashed border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all font-bold flex items-center gap-2"
+          class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-dashed border-blue-500 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all font-bold flex items-center gap-2"
         >
           <span class="material-symbols-outlined">add_circle</span>
           Tambah Pelanggan Pertama
@@ -122,8 +122,8 @@
         <div
           v-for="(customer, index) in customers"
           :key="customer.id"
-          class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:border-emerald-500/30 dark:hover:border-emerald-500/30 transition-all duration-300 p-6 flex flex-col animate-scale-in relative overflow-hidden"
-          :class="{ 'ring-2 ring-emerald-500 border-emerald-500 shadow-emerald-500/20': isSelected(customer.id) }"
+          class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:border-blue-500/30 dark:hover:border-blue-500/30 transition-all duration-300 p-6 flex flex-col animate-scale-in relative overflow-hidden"
+          :class="{ 'ring-2 ring-blue-500 border-blue-500 shadow-blue-500/20': isSelected(customer.id) }"
           :style="{ animationDelay: `${index * 50}ms` }"
         >
           <!-- Checkbox Overlay -->
@@ -132,15 +132,15 @@
                type="checkbox" 
                :checked="isSelected(customer.id)" 
                @change="toggleSelect(customer.id)"
-               class="w-5 h-5 text-emerald-600 border-slate-300 rounded-lg focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer shadow-lg"
+               class="w-5 h-5 text-blue-600 border-slate-300 rounded-lg focus:ring-blue-500 focus:ring-offset-0 cursor-pointer shadow-lg"
              />
           </div>
           <div class="flex items-start gap-4 mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-2xl shadow-inner border border-white/50 dark:border-white/10 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-2xl shadow-inner border border-white/50 dark:border-white/10 group-hover:scale-110 transition-transform duration-300">
               {{ customer.name.charAt(0).toUpperCase() }}
             </div>
             <div class="flex-1 min-w-0 pt-1">
-              <h3 class="font-bold text-lg text-slate-900 dark:text-white truncate mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white truncate mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {{ customer.name }}
               </h3>
               <div class="flex flex-col gap-0.5">
@@ -169,7 +169,7 @@
                 <span class="material-symbols-outlined text-[14px]">payments</span>
                 Total
               </span>
-              <span class="font-black text-emerald-600 dark:text-emerald-400 text-lg">{{ formatCurrency(customer.totalSpent || 0) }}</span>
+              <span class="font-black text-blue-600 dark:text-blue-400 text-lg">{{ formatCurrency(customer.totalSpent || 0) }}</span>
             </div>
           </div>
           
@@ -192,7 +192,7 @@
             </button>
             <button
               @click="viewCustomer(customer)"
-              class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors flex items-center justify-center gap-2"
+              class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors flex items-center justify-center gap-2"
             >
               <span class="material-symbols-outlined text-[18px]">visibility</span>
               Detail
@@ -214,7 +214,7 @@
         <button
           @click="loadCustomers(pagination.page - 1)"
           :disabled="pagination.page === 1"
-          class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm hover:shadow"
+          class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm hover:shadow"
         >
           <span class="material-symbols-outlined text-[20px]">chevron_left</span>
         </button>
@@ -226,7 +226,7 @@
         <button
           @click="loadCustomers(pagination.page + 1)"
           :disabled="pagination.page === pagination.totalPages"
-          class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm hover:shadow"
+          class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-sm hover:shadow"
         >
           <span class="material-symbols-outlined text-[20px]">chevron_right</span>
         </button>
@@ -245,7 +245,7 @@
   >
     <div v-if="selectedIds.length > 0" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-4 bg-slate-900 dark:bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl border border-slate-700/50 backdrop-blur-md min-w-[320px] md:min-w-[400px]">
       <div class="flex items-center gap-3 border-r border-slate-700 pr-4">
-        <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
+        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-black">{{ selectedIds.length }}</div>
         <span class="text-sm font-bold whitespace-nowrap">Pelanggan Terpilih</span>
       </div>
       <div class="flex items-center gap-2 flex-1 justify-end">

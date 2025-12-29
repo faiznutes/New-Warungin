@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Create Purchase Order</span>
@@ -21,7 +21,7 @@
         <select
           v-model="statusFilter"
           @change="loadPurchaseOrders"
-          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         >
           <option value="">All Status</option>
           <option value="PENDING">Pending</option>
@@ -33,7 +33,7 @@
         <select
           v-model="supplierFilter"
           @change="loadPurchaseOrders"
-          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         >
           <option value="">All Suppliers</option>
           <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
@@ -45,7 +45,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -55,7 +55,7 @@
       <p class="text-slate-500 text-center max-w-md mb-4">Create your first purchase order to start restocking products.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Create First PO
@@ -96,7 +96,7 @@
               </div>
               <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Amount</p>
-                <p class="font-semibold text-emerald-600">Rp {{ formatCurrency(po.totalAmount) }}</p>
+                <p class="font-semibold text-blue-600">Rp {{ formatCurrency(po.totalAmount) }}</p>
               </div>
               <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-3">
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Items</p>
@@ -168,7 +168,7 @@
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
                   <span class="material-symbols-outlined">receipt_long</span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create Purchase Order</h3>
@@ -188,7 +188,7 @@
                   <select
                     v-model="poForm.supplierId"
                     required
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   >
                     <option value="">Select Supplier</option>
                     <option v-for="supplier in suppliers" :key="supplier.id" :value="supplier.id">
@@ -201,7 +201,7 @@
                   <input
                     v-model="poForm.expectedDate"
                     type="date"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -211,7 +211,7 @@
                 <textarea
                   v-model="poForm.notes"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 ></textarea>
               </div>
 
@@ -237,7 +237,7 @@
                       <select
                         v-model="item.productId"
                         required
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       >
                         <option value="">Select Product</option>
                         <option v-for="product in products" :key="product.id" :value="product.id">
@@ -251,7 +251,7 @@
                         min="1"
                         required
                         placeholder="Qty"
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       />
                     </div>
                     <div class="col-span-3">
@@ -260,7 +260,7 @@
                         step="0.01"
                         required
                         placeholder="Unit Price"
-                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       />
                     </div>
                     <div class="col-span-2 flex items-center justify-end">
@@ -290,7 +290,7 @@
                   <button
                     type="submit"
                     :disabled="saving || poForm.items.length === 0"
-                    class="px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition font-medium shadow-lg shadow-emerald-500/30"
+                    class="px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 transition font-medium shadow-lg shadow-blue-500/30"
                   >
                     {{ saving ? 'Saving...' : 'Create PO' }}
                   </button>
@@ -351,7 +351,7 @@
                 </div>
                 <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
                   <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Amount</p>
-                  <p class="font-bold text-emerald-600 text-lg">Rp {{ formatCurrency(selectedPO.totalAmount) }}</p>
+                  <p class="font-bold text-blue-600 text-lg">Rp {{ formatCurrency(selectedPO.totalAmount) }}</p>
                 </div>
               </div>
 

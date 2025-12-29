@@ -15,7 +15,7 @@
         :style="tooltipStyle"
       >
         <div class="flex items-start gap-3">
-          <span class="material-symbols-outlined text-emerald-400 text-[20px] flex-shrink-0">lightbulb</span>
+          <span class="material-symbols-outlined text-blue-400 text-[20px] flex-shrink-0">lightbulb</span>
           <div class="flex-1">
             <h4 class="font-bold text-sm mb-1">{{ title }}</h4>
             <p class="text-xs text-slate-300 leading-relaxed">{{ content }}</p>
@@ -30,7 +30,7 @@
         <div class="mt-3 pt-3 border-t border-slate-700 flex items-center justify-between">
           <button
             @click="dismiss"
-            class="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors pointer-events-auto"
+            class="text-xs font-bold text-blue-400 hover:text-emerald-300 transition-colors pointer-events-auto"
           >
             Mengerti
           </button>

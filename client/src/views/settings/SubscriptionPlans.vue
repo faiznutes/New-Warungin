@@ -61,49 +61,49 @@
         </div>
         <ul class="space-y-4 mb-8 flex-1 relative z-10">
           <li class="flex items-start gap-3">
-            <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+            <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">1 toko (cabang)</span>
           </li>
           <li class="flex items-start gap-3">
-            <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+            <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">4 pengguna (1 admin + 2 kasir + 1 dapur)</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Mode Kasir Simpel</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Offline-first (Bisa tanpa internet)</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Pengingat stok menipis</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Auto-backup ke email</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Saran Harga Cerdas</span>
           </li>
           <li class="flex items-start gap-3">
-             <div class="p-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-full mt-0.5 shrink-0">
+             <div class="p-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full mt-0.5 shrink-0">
                 <span class="material-symbols-outlined text-[14px] font-bold">check</span>
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-300">PWA + Auto landscape</span>

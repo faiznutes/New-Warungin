@@ -8,7 +8,7 @@
       <div class="p-6 border-b border-slate-200 dark:border-slate-700">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-xl">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
               <span class="material-symbols-outlined text-[24px]">help</span>
             </div>
             <div>
@@ -33,9 +33,9 @@
         </div>
         
         <!-- Video Tutorials Section -->
-        <div v-if="helpContent.videoUrl || (helpContent.videoUrls && helpContent.videoUrls.length > 0)" class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+        <div v-if="helpContent.videoUrl || (helpContent.videoUrls && helpContent.videoUrls.length > 0)" class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-emerald-200 dark:border-blue-800">
           <div class="flex items-center gap-3 mb-4">
-            <span class="material-symbols-outlined text-emerald-600 text-[24px]">play_circle</span>
+            <span class="material-symbols-outlined text-blue-600 text-[24px]">play_circle</span>
             <h4 class="font-bold text-slate-900 dark:text-white">Video Tutorial</h4>
           </div>
           
@@ -45,18 +45,18 @@
             :href="helpContent.videoUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group"
+            class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-blue-800 hover:border-emerald-300 dark:hover:border-blue-700 transition-all group"
           >
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined text-emerald-600 text-[20px]">play_arrow</span>
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-blue-600 text-[20px]">play_arrow</span>
               </div>
               <div>
                 <p class="text-sm font-bold text-slate-900 dark:text-white">Tonton Video Tutorial</p>
                 <p class="text-xs text-slate-500">Pelajari lebih lanjut tentang fitur ini</p>
               </div>
             </div>
-            <span class="material-symbols-outlined text-emerald-600 text-[20px] group-hover:translate-x-1 transition-transform">open_in_new</span>
+            <span class="material-symbols-outlined text-blue-600 text-[20px] group-hover:translate-x-1 transition-transform">open_in_new</span>
           </a>
           
           <!-- Multiple Videos -->
@@ -67,18 +67,18 @@
               :href="video.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-800 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group"
+              class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-blue-800 hover:border-emerald-300 dark:hover:border-blue-700 transition-all group"
             >
               <div class="flex items-center gap-3 flex-1 min-w-0">
-                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
-                  <span class="material-symbols-outlined text-emerald-600 text-[20px]">play_arrow</span>
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                  <span class="material-symbols-outlined text-blue-600 text-[20px]">play_arrow</span>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ video.title }}</p>
                   <p v-if="video.duration" class="text-xs text-slate-500">{{ video.duration }}</p>
                 </div>
               </div>
-              <span class="material-symbols-outlined text-emerald-600 text-[20px] group-hover:translate-x-1 transition-transform flex-shrink-0 ml-2">open_in_new</span>
+              <span class="material-symbols-outlined text-blue-600 text-[20px] group-hover:translate-x-1 transition-transform flex-shrink-0 ml-2">open_in_new</span>
             </a>
           </div>
         </div>
@@ -101,7 +101,7 @@
       <div class="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
         <button
           @click="$emit('close')"
-          class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-colors"
+          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors"
         >
           Mengerti
         </button>

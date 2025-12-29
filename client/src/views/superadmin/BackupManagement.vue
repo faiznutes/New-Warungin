@@ -7,12 +7,12 @@
         <p class="text-slate-500 dark:text-slate-400 mt-1 font-medium">Monitor dan kelola cadangan data harian untuk seluruh tenant ekosistem.</p>
       </div>
       <div class="flex items-center gap-3">
-         <div class="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex items-center gap-2">
+         <div class="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30 flex items-center gap-2">
             <span class="relative flex h-3 w-3">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
             </span>
-            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">Auto-Backup Aktif</span>
+            <span class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">Auto-Backup Aktif</span>
          </div>
       </div>
     </div>
@@ -171,12 +171,12 @@
                 <span
                   class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border shadow-sm"
                   :class="[
-                    log.status === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
+                    log.status === 'success' ? 'bg-blue-50 text-blue-700 border-emerald-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' :
                     log.status === 'email_failed' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' :
                     'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
                   ]"
                 >
-                  <span class="size-1.5 rounded-full" :class="log.status === 'success' ? 'bg-emerald-500' : log.status === 'email_failed' ? 'bg-amber-500' : 'bg-red-500'"></span>
+                  <span class="size-1.5 rounded-full" :class="log.status === 'success' ? 'bg-blue-500' : log.status === 'email_failed' ? 'bg-amber-500' : 'bg-red-500'"></span>
                   {{ log.status === 'success' ? 'Berhasil' : log.status === 'email_failed' ? 'Gagal Email' : 'Gagal' }}
                 </span>
               </td>
@@ -201,7 +201,7 @@
                   </button>
                   <button
                     @click="downloadBackup(log.id)"
-                    class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-emerald-100"
+                    class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-transparent hover:border-blue-100"
                     title="Download File"
                   >
                     <span class="material-symbols-outlined text-[18px]">download</span>
@@ -262,8 +262,8 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-scale-in border border-slate-200 dark:border-slate-700">
           <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900">
             <div class="flex items-center gap-4">
-               <div class="p-2.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                  <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">description</span>
+               <div class="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">description</span>
                </div>
                <div>
                   <h3 class="text-lg font-black text-slate-900 dark:text-white">Detail Isi Backup</h3>
@@ -282,7 +282,7 @@
                <div class="prose max-w-none text-sm font-mono whitespace-pre-wrap text-slate-600 dark:text-slate-300 leading-relaxed" v-html="viewingBackup"></div>
             </div>
             <div v-else class="flex flex-col items-center justify-center h-full text-slate-400">
-               <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+               <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
                <p class="font-bold text-sm">Sedang mendekripsi dan memuat konten backup...</p>
             </div>
           </div>

@@ -18,7 +18,7 @@
                <button @click="cancelEdit" class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
                   Hint: Batal
               </button>
-              <button @click="saveChanges" :disabled="isSaving" class="flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white text-sm font-bold shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:scale-95">
+              <button @click="saveChanges" :disabled="isSaving" class="flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-5 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white text-sm font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:scale-95">
                   <span v-if="isSaving" class="flex items-center gap-2">
                     <span class="w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></span>
                     Menyimpan...
@@ -157,14 +157,14 @@
                           </div>
   
                            <!-- Status Store Toggle -->
-                          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 flex items-center justify-between hover:border-emerald-500/30 transition-colors">
+                          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 flex items-center justify-between hover:border-blue-500/30 transition-colors">
                               <div class="flex flex-col gap-1">
                                   <span class="text-sm font-bold text-slate-900 dark:text-white">Status Toko</span>
                                   <span class="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-[150px]">Nonaktifkan sementara jika toko sedang libur panjang</span>
                               </div>
                                <label class="relative inline-flex items-center cursor-pointer">
                                   <input type="checkbox" v-model="form.isActive" class="sr-only peer">
-                                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                  <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                               </label>
                           </div>
                       </div>
@@ -175,7 +175,7 @@
       <div v-else class="flex items-center justify-center h-screen gap-4">
            <div class="relative w-16 h-16">
             <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
           <p class="text-slate-500 font-medium animate-pulse">Memuat data toko...</p>
       </div>

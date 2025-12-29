@@ -11,13 +11,13 @@
       <div class="flex flex-col h-full">
         <div class="p-6 shrink-0">
           <router-link to="/app/dashboard" class="flex flex-col gap-1 group">
-            <h1 class="text-emerald-600 text-xl font-bold leading-normal flex items-center gap-2">
+            <h1 class="text-blue-600 text-xl font-bold leading-normal flex items-center gap-2">
                <span class="material-symbols-outlined icon-filled">restaurant</span>
                {{ outletName }}
             </h1>
             <div class="flex items-center gap-2 pl-8">
                <span class="text-[#4c739a] dark:text-slate-400 text-xs font-bold leading-normal truncate max-w-[150px]">{{ branchName }}</span>
-               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase tracking-wider">Kitchen</span>
+               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider">Kitchen</span>
             </div>
           </router-link>
         </div>
@@ -27,7 +27,7 @@
           <router-link
             to="/app/dashboard"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/dashboard' ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/dashboard' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/dashboard' }">dashboard</span>
@@ -37,7 +37,7 @@
           <router-link
             to="/app/orders/kitchen"
             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
-            :class="[$route.path === '/app/orders/kitchen' ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
+            :class="[$route.path === '/app/orders/kitchen' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200']"
             @click="closeSidebarOnMobile"
           >
             <span class="material-symbols-outlined" :class="{ 'filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
@@ -51,7 +51,7 @@
         <!-- User Section -->
         <div class="p-4 border-t border-slate-200 dark:border-slate-800">
           <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-            <div class="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold text-sm">
+            <div class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-sm">
               {{ userInitials }}
             </div>
             <div class="flex flex-col overflow-hidden flex-1">
@@ -90,7 +90,7 @@
             <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400">menu</span>
           </button>
           <div class="flex items-center gap-2 text-sm">
-            <router-link to="/app/dashboard" class="text-slate-500 hover:text-emerald-600 transition-colors">Home</router-link>
+            <router-link to="/app/dashboard" class="text-slate-500 hover:text-blue-600 transition-colors">Home</router-link>
             <span class="text-slate-400">/</span>
             <span class="text-[#0d141b] dark:text-white font-medium">{{ pageTitle }}</span>
           </div>
@@ -99,7 +99,7 @@
           <!-- System Status -->
            <div class="hidden lg:flex items-center gap-4 mr-2">
              <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-               <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
+               <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-blue-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
                <span class="text-xs font-bold text-[#4c739a] dark:text-slate-400 capitalize">{{ isOnline ? 'Online' : 'Offline' }}</span>
              </div>
              <div class="px-3 py-1.5 bg-[#0d141b] dark:bg-white text-white dark:text-[#0d141b] rounded-xl shadow-md font-mono text-sm font-bold tracking-wider border border-[#2a3036] dark:border-slate-200">
@@ -107,7 +107,7 @@
              </div>
            </div>
 
-          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-slate-500 hover:text-emerald-600 transition-colors border border-slate-100 dark:border-slate-700">
+          <button class="relative p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm text-slate-500 hover:text-blue-600 transition-colors border border-slate-100 dark:border-slate-700">
             <span class="material-symbols-outlined">notifications</span>
             <span v-if="pendingOrdersCount > 0" class="absolute top-2 right-2.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
           </button>

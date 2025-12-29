@@ -3,7 +3,7 @@
     <!-- Decorative Background -->
     <div class="fixed inset-0 pointer-events-none overflow-hidden">
       <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
     </div>
 
     <div class="relative z-10 p-6 lg:p-8 flex flex-col gap-8 max-w-7xl mx-auto">
@@ -21,7 +21,7 @@
         <button
           v-if="canManageStores"
           @click="showCreateModal = true"
-          class="group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-6 py-3 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-bold text-sm tracking-wide flex items-center gap-2"
+          class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-bold text-sm tracking-wide flex items-center gap-2"
         >
           <span class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add_business</span>
           <span>Tambah Toko</span>
@@ -54,7 +54,7 @@
             </span>
             <span 
               class="text-xs font-bold px-2 py-0.5 rounded-md"
-              :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'"
+              :class="(outletLimit.currentUsage || 0) >= outletLimit.limit ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'"
             >
               {{ outletLimit.limit - (outletLimit.currentUsage || 0) }} Tersedia
             </span>
@@ -76,7 +76,7 @@
       <div v-if="loading" class="flex flex-col items-center justify-center py-20 animate-fade-in">
         <div class="relative w-16 h-16">
           <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-          <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
         <p class="mt-4 text-slate-500 font-medium animate-pulse">Memuat toko...</p>
       </div>
@@ -93,7 +93,7 @@
         <button
           v-if="canManageStores"
           @click="showCreateModal = true"
-          class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-dashed border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all font-bold flex items-center gap-2"
+          class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-dashed border-blue-500 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all font-bold flex items-center gap-2"
         >
           <span class="material-symbols-outlined">add_business</span>
           Tambah Toko Pertama
@@ -105,23 +105,23 @@
         <div
           v-for="(store, index) in stores"
           :key="store.id"
-          class="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/60 p-6 hover:shadow-xl hover:border-emerald-500/30 dark:hover:border-emerald-500/30 transition-all duration-300 animate-scale-in flex flex-col"
+          class="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/60 p-6 hover:shadow-xl hover:border-blue-500/30 dark:hover:border-blue-500/30 transition-all duration-300 animate-scale-in flex flex-col"
           :style="{ animationDelay: `${index * 50}ms` }"
         >
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1 min-w-0 pr-4">
               <router-link :to="`/app/stores/${store.id}`" class="block group/link">
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 truncate group-hover/link:text-emerald-600 dark:group-hover/link:text-emerald-400 transition-colors">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 truncate group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors">
                   {{ store.name }}
                 </h3>
               </router-link>
               <span
                 class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-sm"
                 :class="store.isActive 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' 
+                  ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' 
                   : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'"
               >
-                <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="store.isActive ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="store.isActive ? 'bg-blue-500' : 'bg-red-500'"></span>
                 {{ store.isActive ? 'Aktif' : 'Tidak Aktif' }}
               </span>
             </div>
@@ -130,7 +130,7 @@
               <router-link
                 v-if="canManageStores"
                 :to="`/app/stores/${store.id}/edit`"
-                class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl transition-all"
+                class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
                 title="Ubah Toko"
               >
                 <span class="material-symbols-outlined text-[20px]">edit</span>
@@ -160,7 +160,7 @@
           <div class="pt-4 mt-2">
             <router-link 
               :to="`/app/stores/${store.id}`"
-              class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-white hover:shadow-md hover:text-emerald-600 dark:hover:bg-slate-700 dark:hover:text-emerald-400 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+              class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-white hover:shadow-md hover:text-blue-600 dark:hover:bg-slate-700 dark:hover:text-blue-400 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
             >
               <span>Lihat Detail</span>
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -205,12 +205,12 @@
                     Nama Toko <span class="text-red-500">*</span>
                   </label>
                   <div class="relative group">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">store</span>
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">store</span>
                     <input
                       v-model="storeForm.name"
                       required
                       placeholder="Contoh: Cabang Jakarta Pusat"
-                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -221,12 +221,12 @@
                     Alamat Lengkap
                   </label>
                   <div class="relative group">
-                    <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
+                    <span class="absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">location_on</span>
                     <textarea
                       v-model="storeForm.address"
                       rows="3"
                       placeholder="Masukan alamat lengkap toko..."
-                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 resize-none"
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 resize-none"
                     ></textarea>
                   </div>
                 </div>
@@ -237,17 +237,17 @@
                     Nomor Telepon
                   </label>
                   <div class="relative group">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-symbols-outlined text-[20px]">call</span>
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors material-symbols-outlined text-[20px]">call</span>
                     <input
                       v-model="storeForm.phone"
                       type="tel"
                       placeholder="081234567890"
-                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+                      class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
 
-                <div v-if="editingStore" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-500/30 transition-colors cursor-pointer" @click="storeForm.isActive = !storeForm.isActive">
+                <div v-if="editingStore" class="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-blue-500/30 transition-colors cursor-pointer" @click="storeForm.isActive = !storeForm.isActive">
                   <div class="relative flex items-center">
                     <input
                       v-model="storeForm.isActive"
@@ -255,7 +255,7 @@
                       id="isActive"
                       class="peer sr-only"
                     />
-                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
                   </div>
                   <label class="text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
                     Status Toko Aktif
@@ -266,7 +266,7 @@
                 <div class="space-y-3 pt-2">
                   <label class="flex items-center justify-between text-sm font-bold text-slate-700 dark:text-slate-300">
                     <span>Konfigurasi Shift</span>
-                    <button @click="storeForm.shiftConfig.push({ name: '', startTime: '08:00', endTime: '16:00' })" type="button" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">
+                    <button @click="storeForm.shiftConfig.push({ name: '', startTime: '08:00', endTime: '16:00' })" type="button" class="text-xs text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">
                       <span class="material-symbols-outlined text-[14px]">add</span> Tambah
                     </button>
                   </label>
@@ -274,14 +274,14 @@
                   <div class="space-y-3">
                       <div v-for="(shift, index) in storeForm.shiftConfig" :key="index" class="flex gap-2 items-start bg-slate-50 dark:bg-slate-900/30 p-2 rounded-xl border border-slate-100 dark:border-slate-700/50">
                           <div class="flex-1 space-y-1">
-                              <input v-model="shift.name" placeholder="Nama (e.g. Pagi)" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all" />
+                              <input v-model="shift.name" placeholder="Nama (e.g. Pagi)" class="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all" />
                           </div>
                           <div class="w-24 space-y-1">
-                              <input v-model="shift.startTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-center" />
+                              <input v-model="shift.startTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-center" />
                           </div>
                           <div class="flex items-center justify-center pt-2 text-slate-400">-</div>
                           <div class="w-24 space-y-1">
-                              <input v-model="shift.endTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-center" />
+                              <input v-model="shift.endTime" type="time" class="w-full px-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-center" />
                           </div>
                           <button @click="storeForm.shiftConfig.splice(index, 1)" type="button" class="mt-1 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                               <span class="material-symbols-outlined text-[18px]">delete</span>
@@ -307,7 +307,7 @@
               <button
                 @click="handleSubmit"
                 :disabled="processing"
-                class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+                class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 transform hover:-translate-y-0.5 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
               >
                 <span v-if="processing" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 <span>{{ processing ? 'Menyimpan...' : (editingStore ? 'Simpan Perubahan' : 'Tambah Toko') }}</span>

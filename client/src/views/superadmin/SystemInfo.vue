@@ -24,12 +24,12 @@
             <div class="size-16 rounded-full border-4 border-blue-100 dark:border-blue-900/30 flex items-center justify-center">
               <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl animate-pulse">speed</span>
             </div>
-            <div class="absolute -top-1 -right-1 size-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800"></div>
+            <div class="absolute -top-1 -right-1 size-4 bg-blue-500 rounded-full border-2 border-white dark:border-slate-800"></div>
           </div>
           <div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Rate Uptime</p>
             <p class="text-2xl font-black text-slate-900 dark:text-white">99.99%</p>
-            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+            <p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1">
                <span class="material-symbols-outlined text-[12px]">bolt</span>
                Optimasi Real-time
             </p>
@@ -148,11 +148,11 @@
                       <span :class="['material-symbols-outlined text-[28px]', service.color]">{{ service.icon }}</span>
                     </div>
                     <div class="flex flex-col items-end">
-                      <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">Aktif</span>
+                      <span class="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">Aktif</span>
                       <div class="flex gap-1 mt-2">
-                        <div class="size-1.5 bg-emerald-500 rounded-full"></div>
-                        <div class="size-1.5 bg-emerald-500 rounded-full animate-pulse delay-75"></div>
-                        <div class="size-1.5 bg-emerald-500 rounded-full animate-pulse delay-150"></div>
+                        <div class="size-1.5 bg-blue-500 rounded-full"></div>
+                        <div class="size-1.5 bg-blue-500 rounded-full animate-pulse delay-75"></div>
+                        <div class="size-1.5 bg-blue-500 rounded-full animate-pulse delay-150"></div>
                       </div>
                     </div>
                   </div>
@@ -222,7 +222,7 @@
                     <div class="flex-1 space-y-4">
                        <p class="text-[10px] font-black uppercase tracking-widest border-b pb-3 mb-4" :class="plan.popular ? 'text-slate-500 border-slate-700' : 'text-slate-400 border-slate-100 dark:border-slate-700'">Fitur Utama</p>
                        <div v-for="f in plan.points" :key="f" class="flex items-start gap-3">
-                         <span :class="['material-symbols-outlined text-[18px] mt-0.5', plan.popular ? 'text-emerald-400' : 'text-blue-600']">check_circle</span>
+                         <span :class="['material-symbols-outlined text-[18px] mt-0.5', plan.popular ? 'text-blue-400' : 'text-blue-600']">check_circle</span>
                          <span :class="['text-xs font-bold', plan.popular ? 'text-white' : 'text-slate-700 dark:text-slate-300']">{{ f }}</span>
                        </div>
                     </div>
@@ -329,8 +329,8 @@ const services = [
   { 
     name: 'Backend API Service', 
     icon: 'api', 
-    bg: 'bg-emerald-50 dark:bg-emerald-900/20', 
-    color: 'text-emerald-500',
+    bg: 'bg-blue-50 dark:bg-blue-900/20', 
+    color: 'text-blue-500',
     description: 'Core logic menangani integrasi pembayaran, notifikasi, dan kalkulasi inventory.',
     load: 45
   },
@@ -397,9 +397,9 @@ const roles = [
     name: 'Kasir (Cashier)',
     tagline: 'Garda Depan Pelayanan Transaksi',
     icon: 'point_of_sale',
-    iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-    headerBg: 'bg-emerald-50',
-    bulletColor: 'bg-emerald-500',
+    iconBg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+    headerBg: 'bg-blue-50',
+    bulletColor: 'bg-blue-500',
     features: [
       'Smart POS Interface (Fast Checkout)',
       'Manajemen Keranjang & Hold Order',

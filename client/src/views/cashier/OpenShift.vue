@@ -15,7 +15,7 @@
       <div class="w-full max-w-7xl mx-auto flex items-center justify-between">
         <!-- Left: Logo & Branding -->
         <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
             <span class="material-symbols-outlined text-xl">storefront</span>
           </div>
           <div>
@@ -34,9 +34,9 @@
         <div class="flex items-center gap-4">
              <div class="flex flex-col items-end mr-2">
                  <span class="text-sm font-bold text-slate-800 dark:text-white">{{ authStore.user?.name }}</span>
-                 <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full capitalize">{{ authStore.user?.role?.replace('_', ' ').toLowerCase() }}</span>
+                 <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-full capitalize">{{ authStore.user?.role?.replace('_', ' ').toLowerCase() }}</span>
              </div>
-             <div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden ring-2 ring-emerald-500/20 flex items-center justify-center text-slate-500">
+             <div class="h-10 w-10 rounded-full bg-slate-200 overflow-hidden ring-2 ring-blue-500/20 flex items-center justify-center text-slate-500">
                  <span class="material-symbols-outlined">person</span>
              </div>
              <button 
@@ -55,7 +55,7 @@
         
         <!-- Loading State -->
         <div v-if="loading" class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl flex flex-col items-center">
-             <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+             <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
              <p class="text-slate-500 font-medium">Memuat data shift...</p>
         </div>
 
@@ -118,8 +118,8 @@
         <div v-else-if="currentStoreShift && (!currentShift || currentShift.shiftEnd)" class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-dashed border-slate-300 dark:border-slate-700 p-8 relative overflow-hidden animate-fade-in-up">
             <!-- Modal Header -->
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100 dark:border-emerald-800/50 shadow-inner">
-                    <span class="material-symbols-outlined text-[32px] text-emerald-600 dark:text-emerald-500">point_of_sale</span>
+                <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100 dark:border-blue-800/50 shadow-inner">
+                    <span class="material-symbols-outlined text-[32px] text-blue-600 dark:text-blue-500">point_of_sale</span>
                 </div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Buka Shift Kasir</h2>
                 <p class="text-slate-500 dark:text-slate-400 text-sm">
@@ -136,14 +136,14 @@
                             Modal Awal <span class="text-red-500">*</span>
                         </label>
                         <div class="relative group">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-blue-600 transition-colors">Rp</span>
                             <input
                                 v-model.number="openShiftForm.modalAwal"
                                 type="number"
                                 step="0.01"
                                 min="0.01"
                                 required
-                                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
                                 placeholder="0"
                             />
                         </div>
@@ -159,7 +159,7 @@
                             v-model="openShiftForm.catatan"
                             rows="2" 
                             placeholder="Contoh: Pecahan 50rb kurang..." 
-                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
                         ></textarea>
                     </div>
 
@@ -168,7 +168,7 @@
                         <button 
                             type="submit" 
                             :disabled="openingShift"
-                            class="w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]"
+                            class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-600 hover:to-green-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform active:scale-[0.98]"
                         >
                             <span v-if="openingShift" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                             <span>{{ openingShift ? 'Membuka...' : 'Buka Shift Kasir' }}</span>
@@ -191,7 +191,7 @@
              <div class="px-8 pt-8 pb-4">
                  <div class="flex items-center justify-between">
                      <div class="flex items-center gap-4">
-                         <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
                             <span class="material-symbols-outlined text-[32px] text-white">check_circle</span>
                          </div>
                          <div>
@@ -202,7 +202,7 @@
                              </p>
                          </div>
                      </div>
-                     <span class="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-xl text-sm font-bold border border-emerald-200 shadow-sm animate-pulse-slow">AKTIF</span>
+                     <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-xl text-sm font-bold border border-emerald-200 shadow-sm animate-pulse-slow">AKTIF</span>
                  </div>
              </div>
 
@@ -212,13 +212,13 @@
                      <p class="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-1">Modal Awal</p>
                      <p class="text-xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(currentShift.modalAwal) }}</p>
                  </div>
-                 <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-5 border border-emerald-100 dark:border-emerald-800">
-                     <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider mb-1">Total Penjualan</p>
+                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 border border-blue-100 dark:border-blue-800">
+                     <p class="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-1">Total Penjualan</p>
                      <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency(currentShift.totalPenjualan || 0) }}</p>
                  </div>
                  <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-5 border border-purple-100 dark:border-purple-800">
                      <p class="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider mb-1">Saldo Seharusnya</p>
-                     <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}</p>
+                     <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency((currentShift.modalAwal || 0) + (currentShift.totalPenjualan || 0)) }}</p>
                  </div>
              </div>
 
@@ -263,10 +263,10 @@
                  <span class="font-bold text-blue-900">{{ formatCurrency(currentShift?.modalAwal || 0) }}</span>
              </div>
           </div>
-          <div class="bg-emerald-50 rounded-xl p-3">
+          <div class="bg-blue-50 rounded-xl p-3">
              <div class="flex justify-between items-center text-sm">
-                 <span class="text-emerald-700 font-medium">Total Penjualan</span>
-                 <span class="font-bold text-emerald-900">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</span>
+                 <span class="text-blue-700 font-medium">Total Penjualan</span>
+                 <span class="font-bold text-blue-900">{{ formatCurrency(currentShift?.totalPenjualan || 0) }}</span>
              </div>
           </div>
           <div class="bg-slate-100 rounded-xl p-3 border border-dashed border-slate-300">
@@ -283,14 +283,14 @@
               Uang Fisik di Laci <span class="text-red-500">*</span>
             </label>
             <div class="relative group">
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-emerald-600 transition-colors">Rp</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold group-focus-within:text-blue-600 transition-colors">Rp</span>
               <input
                 v-model.number="closeShiftForm.uangFisikTutup"
                 type="number"
                 step="0.01"
                 min="0"
                 required
-                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white font-bold transition-all text-lg"
                 placeholder="0"
               />
             </div>
@@ -324,7 +324,7 @@
             <textarea
               v-model="closeShiftForm.catatan"
               rows="2"
-              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
+              class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-white text-sm transition-all resize-none"
               placeholder="Tambahkan catatan..."
             ></textarea>
           </div>

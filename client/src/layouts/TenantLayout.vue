@@ -562,7 +562,7 @@
                   v-if="authStore.user?.role"
                   class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider"
                   :class="{
-                    'bg-emerald-50 text-emerald-600 border border-emerald-100': authStore.user.role === 'ADMIN_TENANT',
+                    'bg-blue-50 text-blue-600 border border-blue-100': authStore.user.role === 'ADMIN_TENANT',
                     'bg-blue-50 text-blue-600 border border-blue-100': authStore.user.role === 'SUPERVISOR',
                     'bg-orange-50 text-orange-600 border border-orange-100': authStore.user.role === 'CASHIER',
                     'bg-purple-50 text-purple-600 border border-purple-100': authStore.user.role === 'KITCHEN',
@@ -620,7 +620,7 @@
              <!-- System Status -->
              <div class="hidden lg:flex items-center gap-4 mr-2">
                <div class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                 <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
+                 <div class="w-2 h-2 rounded-full transition-colors duration-300" :class="isOnline ? 'bg-blue-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]'"></div>
                  <span class="text-xs font-bold text-[#4c739a] dark:text-slate-400 capitalize">{{ isOnline ? 'Online' : 'Offline' }}</span>
                </div>
                <div class="px-3 py-1.5 bg-[#0d141b] dark:bg-white text-white dark:text-[#0d141b] rounded-xl shadow-md font-mono text-sm font-bold tracking-wider border border-[#2a3036] dark:border-slate-200">

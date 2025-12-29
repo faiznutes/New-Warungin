@@ -3,7 +3,7 @@
     <!-- Breadcrumb -->
     <div class="container mx-auto px-4 pt-8">
       <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-        <router-link to="/help" class="hover:text-emerald-600 transition flex items-center gap-1">
+        <router-link to="/help" class="hover:text-blue-600 transition flex items-center gap-1">
           <span class="material-symbols-outlined text-[16px]">help_center</span>
           Pusat Bantuan
         </router-link>
@@ -14,7 +14,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="container mx-auto px-4 py-20 flex flex-col items-center justify-center">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
       <p class="text-slate-500">Memuat artikel...</p>
     </div>
 
@@ -27,7 +27,7 @@
       <p class="text-slate-500 mb-8">Maaf, artikel yang Anda cari tidak tersedia.</p>
       <router-link 
         to="/help" 
-        class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition"
       >
         <span class="material-symbols-outlined">arrow_back</span>
         Kembali ke Pusat Bantuan
@@ -40,8 +40,8 @@
         <!-- Article Header -->
         <div class="mb-12">
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
-              <span class="material-symbols-outlined text-emerald-600 text-2xl">{{ article.icon }}</span>
+            <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-blue-600 text-2xl">{{ article.icon }}</span>
             </div>
             <span 
               class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
@@ -78,7 +78,7 @@
         <!-- Related Articles -->
         <div v-if="relatedArticles.length > 0" class="border-t border-slate-200 dark:border-slate-700 pt-12">
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-emerald-600">link</span>
+            <span class="material-symbols-outlined text-blue-600">link</span>
             Artikel Terkait
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -86,9 +86,9 @@
               v-for="related in relatedArticles"
               :key="related.slug"
               :to="`/help/${related.slug}`"
-              class="p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition group"
+              class="p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition group"
             >
-              <h4 class="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition mb-2">
+              <h4 class="font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition mb-2">
                 {{ related.title }}
               </h4>
               <p class="text-sm text-slate-500 dark:text-slate-400">{{ related.description }}</p>
@@ -111,19 +111,19 @@
 
     <!-- Need More Help -->
     <section class="container mx-auto px-4 pb-20">
-      <div class="max-w-4xl mx-auto bg-emerald-500 rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-400 opacity-50"></div>
+      <div class="max-w-4xl mx-auto bg-blue-500 rounded-3xl p-8 sm:p-12 text-white text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-50"></div>
         <div class="relative z-10">
           <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
             <span class="material-symbols-outlined text-4xl">support_agent</span>
           </div>
           <h2 class="text-2xl sm:text-3xl font-bold mb-4">Masih Butuh Bantuan?</h2>
-          <p class="text-lg text-emerald-100 mb-8 max-w-2xl mx-auto">
+          <p class="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
             Tim support kami siap membantu Anda menyelesaikan masalah.
           </p>
           <router-link
             to="/contact"
-            class="inline-block px-8 py-4 bg-white text-emerald-600 rounded-xl hover:bg-slate-100 transition font-bold shadow-lg"
+            class="inline-block px-8 py-4 bg-white text-blue-600 rounded-xl hover:bg-slate-100 transition font-bold shadow-lg"
           >
             Hubungi Support
           </router-link>
@@ -241,7 +241,7 @@ onMounted(() => {
 }
 
 :deep(.prose a) {
-  @apply text-emerald-600 hover:text-emerald-700 underline transition;
+  @apply text-blue-600 hover:text-blue-700 underline transition;
 }
 
 :deep(.prose code) {
@@ -257,7 +257,7 @@ onMounted(() => {
 }
 
 :deep(.prose blockquote) {
-  @apply border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-r-xl my-6 italic;
+  @apply border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-r-xl my-6 italic;
 }
 
 :deep(.prose table) {

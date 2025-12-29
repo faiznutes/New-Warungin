@@ -8,7 +8,7 @@
       </div>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         <span>Add Supplier</span>
@@ -30,7 +30,7 @@
         <select
           v-model="isActiveFilter"
           @change="loadSuppliers"
-          class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         >
           <option value="">All Status</option>
           <option value="true">Active</option>
@@ -41,7 +41,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -51,7 +51,7 @@
       <p class="text-slate-500 text-center max-w-md mb-4">Add your first supplier to start creating purchase orders.</p>
       <button
         @click="showCreateModal = true"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm"
       >
         <span class="material-symbols-outlined text-[20px]">add</span>
         Add First Supplier
@@ -75,8 +75,8 @@
             <tr v-for="supplier in suppliers" :key="supplier.id" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                    <span class="material-symbols-outlined text-emerald-600 text-[20px]">local_shipping</span>
+                  <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600 text-[20px]">local_shipping</span>
                   </div>
                   <div>
                     <div class="text-sm font-medium text-slate-900 dark:text-white">{{ supplier.name }}</div>
@@ -166,7 +166,7 @@
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                <div class="p-2 bg-blue-50 text-blue-600 rounded-xl">
                   <span class="material-symbols-outlined">local_shipping</span>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">
@@ -188,7 +188,7 @@
                   v-model="supplierForm.name"
                   type="text"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
@@ -198,7 +198,7 @@
                   <input
                     v-model="supplierForm.email"
                     type="email"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -206,7 +206,7 @@
                   <input
                     v-model="supplierForm.phone"
                     type="text"
-                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -216,7 +216,7 @@
                 <input
                   v-model="supplierForm.contactPerson"
                   type="text"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
@@ -225,7 +225,7 @@
                 <textarea
                   v-model="supplierForm.address"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 ></textarea>
               </div>
 
@@ -234,7 +234,7 @@
                 <textarea
                   v-model="supplierForm.notes"
                   rows="3"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 ></textarea>
               </div>
 
@@ -243,7 +243,7 @@
                   v-model="supplierForm.isActive"
                   type="checkbox"
                   id="isActive"
-                  class="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <label for="isActive" class="text-sm font-medium text-slate-700 dark:text-slate-300">Active</label>
               </div>
@@ -259,7 +259,7 @@
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 disabled:opacity-50 transition font-medium shadow-lg shadow-emerald-500/30"
+                  class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 transition font-medium shadow-lg shadow-blue-500/30"
                 >
                   {{ saving ? 'Saving...' : editingSupplier ? 'Update' : 'Save' }}
                 </button>

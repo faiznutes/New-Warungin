@@ -9,7 +9,7 @@
       <button
         @click="loadSuggestions"
         :disabled="loading"
-        class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-medium text-sm disabled:opacity-50"
+        class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-medium text-sm disabled:opacity-50"
       >
         <span v-if="loading" class="flex items-center gap-2">
           <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -24,7 +24,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Empty State -->
@@ -108,13 +108,13 @@
           <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xs font-bold text-emerald-600 dark:text-blue-300 uppercase tracking-wider mb-1">Suggested Order</p>
+                <p class="text-xs font-bold text-blue-600 dark:text-blue-300 uppercase tracking-wider mb-1">Suggested Order</p>
                 <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">{{ suggestion.suggestedQuantity }} units</p>
-                <p class="text-xs text-emerald-500 dark:text-blue-400 mt-1">Enough for ~7 days + buffer</p>
+                <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">Enough for ~7 days + buffer</p>
               </div>
               <button
                 @click="applySuggestion(suggestion)"
-                class="px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition font-medium flex items-center gap-2"
+                class="px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
                 Apply
@@ -155,7 +155,7 @@ const urgencyOptions = [
   { value: 'all', label: 'All', icon: 'filter_list' },
   { value: 'critical', label: 'Critical', class: 'bg-red-600 text-white', icon: 'error' },
   { value: 'warning', label: 'Warning', class: 'bg-yellow-600 text-white', icon: 'warning' },
-  { value: 'normal', label: 'Normal', class: 'bg-emerald-500 text-white', icon: 'info' },
+  { value: 'normal', label: 'Normal', class: 'bg-blue-500 text-white', icon: 'info' },
 ];
 
 const filteredSuggestions = computed(() => {
@@ -169,7 +169,7 @@ const getUrgencyBadgeClass = (urgency: string) => {
   const classes: Record<string, string> = {
     critical: 'bg-red-100 text-red-700',
     warning: 'bg-yellow-100 text-yellow-700',
-    normal: 'bg-blue-100 text-emerald-600',
+    normal: 'bg-blue-100 text-blue-600',
   };
   return classes[urgency] || 'bg-slate-100 text-slate-700';
 };

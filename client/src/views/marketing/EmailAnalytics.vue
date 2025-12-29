@@ -20,7 +20,7 @@
         />
         <button
           @click="loadAnalytics"
-          class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-500 rounded-xl text-xs sm:text-sm font-medium text-white transition shadow-sm"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-500 rounded-xl text-xs sm:text-sm font-medium text-white transition shadow-sm"
         >
           Filter
         </button>
@@ -29,7 +29,7 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center justify-center py-12">
-      <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
 
     <!-- Overall Stats -->

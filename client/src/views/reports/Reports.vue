@@ -11,13 +11,13 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
       <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">Laporan</h1>
+        <h1 class="text-3xl font-black leading-tight tracking-tight bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">Laporan</h1>
         <p class="text-slate-500 dark:text-slate-400 font-medium">Analisis penjualan dan performa toko Anda.</p>
       </div>
       <button
         v-if="canExportReports || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN' || authStore.user?.role === 'SUPERVISOR'"
         @click="showExportModal = true"
-        class="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
+        class="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-green-600 hover:from-blue-400 hover:to-green-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all font-bold text-sm transform hover:-translate-y-0.5 active:scale-95"
       >
         <span class="material-symbols-outlined text-[20px]">download</span>
         <span>Ekspor Laporan</span>
@@ -35,7 +35,7 @@
             <select
                 v-model="reportType"
                 @change="handleReportTypeChange"
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer appearance-none"
             >
                 <option value="sales">Laporan Penjualan</option>
                 <option value="financial">Laporan Keuangan</option>
@@ -51,7 +51,7 @@
             <select
                 v-model="period"
                 @change="setPeriod(period)"
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer appearance-none"
             >
                 <option value="daily">Harian</option>
                 <option value="weekly">Mingguan</option>
@@ -70,7 +70,7 @@
           class="w-full flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition-colors group"
         >
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-600 transition-colors text-[20px]">tune</span>
+            <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors text-[20px]">tune</span>
             <span class="text-sm font-bold text-slate-700 dark:text-slate-300">Opsi Lanjutan</span>
             <span class="text-xs text-slate-400 font-medium">(Opsional)</span>
           </div>
@@ -100,7 +100,7 @@
                   <select
                       v-model="reportViewType"
                       @change="handleReportViewTypeChange"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer appearance-none"
                   >
                       <option value="full">Lengkap (Pendapatan + Modal)</option>
                       <option value="revenue">Hanya Pendapatan</option>
@@ -117,7 +117,7 @@
                   <select
                       v-model="marginDisplayFormat"
                       @change="saveMarginFormat"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer appearance-none"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer appearance-none"
                   >
                       <option value="percentage">Persentase (%)</option>
                       <option value="amount">Nominal (Rp)</option>
@@ -133,13 +133,13 @@
                     v-model="dateRange.from"
                     type="date"
                     @change="handleDateRangeChange"
-                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                   <input
                     v-model="dateRange.to"
                     type="date"
                     @change="handleDateRangeChange"
-                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    class="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
               </div>
@@ -153,12 +153,12 @@
     <div v-if="analyticsData && !loading && showAdvancedOptions" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-600">insights</span>
+          <span class="material-symbols-outlined text-blue-600">insights</span>
           Analitik Cerdas
         </h3>
         <button
           @click="loadAnalytics"
-          class="text-sm text-emerald-600 hover:text-emerald-700 font-bold transition flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800"
+          class="text-sm text-blue-600 hover:text-blue-700 font-bold transition flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800"
         >
           <span class="material-symbols-outlined text-[18px]">refresh</span>
           Segarkan
@@ -180,14 +180,14 @@
 
         <div class="relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm group hover:-translate-y-1 transition-transform cursor-default">
           <div class="flex items-center gap-3 mb-2">
-              <div class="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+              <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                   <span class="material-symbols-outlined">trending_up</span>
               </div>
               <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tren Penjualan</p>
           </div>
           <p 
             class="text-3xl font-black tracking-tight"
-            :class="(analyticsData.predictions?.trend || 0) >= 0 ? 'text-emerald-600' : 'text-red-500'"
+            :class="(analyticsData.predictions?.trend || 0) >= 0 ? 'text-blue-600' : 'text-red-500'"
           >
             {{ (analyticsData.predictions?.trend || 0) >= 0 ? '+' : '' }}{{ (analyticsData.predictions?.trend || 0).toFixed(2) }}%
           </p>
@@ -210,23 +210,23 @@
       
       <div v-if="analyticsData.topProducts && analyticsData.topProducts.length > 0" class="mt-8">
         <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 uppercase tracking-wide">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
           Produk Terlaris
         </h4>
         <div class="space-y-3">
           <div
             v-for="(product, index) in analyticsData.topProducts.slice(0, 5)"
             :key="product.id"
-            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors group"
+            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-blue-800 transition-colors group"
           >
             <div class="flex items-center gap-4">
               <span 
                 class="w-8 h-8 flex items-center justify-center text-sm font-bold rounded-lg transition-colors group-hover:scale-110"
-                :class="index < 3 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
+                :class="index < 3 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'"
               >
                 #{{ index + 1 }}
               </span>
-              <span class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{{ product.name }}</span>
+              <span class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ product.name }}</span>
             </div>
             <span class="text-sm font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-800 px-3 py-1 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">{{ product.sales || 0 }} terjual</span>
           </div>
@@ -239,7 +239,7 @@
       <div class="flex flex-col items-center gap-4">
          <div class="relative w-16 h-16">
             <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         <p class="text-slate-500 font-medium animate-pulse">Memuat laporan...</p>
       </div>
@@ -342,19 +342,19 @@
                   <td :colspan="reportHeaders.length" class="px-6 py-6 ring-1 ring-inset ring-slate-100 dark:ring-slate-700">
                     <div class="space-y-4">
                       <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-emerald-500 text-[18px]">inventory_2</span>
+                        <span class="material-symbols-outlined text-blue-500 text-[18px]">inventory_2</span>
                         Detail Produk Terjual:
                       </h4>
                       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         <div
                           v-for="product in productDetails[index]"
                           :key="product.id"
-                          class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all transform hover:-translate-y-1"
+                          class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:shadow-md cursor-pointer transition-all transform hover:-translate-y-1"
                           @click="showProductDetailModal(product)"
                         >
                           <div class="flex justify-between items-start mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
                             <span class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1" :title="product.name">{{ product.name }}</span>
-                            <span class="text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg">x{{ product.quantity }}</span>
+                            <span class="text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-lg">x{{ product.quantity }}</span>
                           </div>
                           <div class="space-y-1.5 text-xs font-medium">
                             <div class="flex justify-between">
@@ -367,11 +367,11 @@
                             </div>
                             <div v-if="product.cost && product.cost > 0" class="flex justify-between">
                               <span class="text-slate-500">Untung:</span>
-                              <span class="font-bold text-emerald-600">{{ formatCurrency(product.profit) }}</span>
+                              <span class="font-bold text-blue-600">{{ formatCurrency(product.profit) }}</span>
                             </div>
                             <div v-if="product.cost && product.cost > 0" class="flex justify-between pt-2 mt-1 border-t border-slate-100 dark:border-slate-700/50">
                               <span class="text-slate-500">Margin:</span>
-                              <span class="font-black text-emerald-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
+                              <span class="font-black text-blue-600">{{ formatProductMargin(product.sellingPrice, product.cost, product.profit) }}</span>
                             </div>
                           </div>
                         </div>
@@ -394,7 +394,7 @@
         <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-md w-full p-6 animate-scale-in border border-white/20">
           <div class="flex justify-between items-start mb-6">
              <div class="flex items-center gap-3">
-                 <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-xl">
+                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
                     <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
                   </div>
                 <div>
@@ -418,7 +418,7 @@
               </div>
               <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Harga Satuan</p>
-                 <p class="text-xl font-black text-emerald-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
+                 <p class="text-xl font-black text-blue-600">{{ formatCurrency(selectedProductDetail.sellingPrice / selectedProductDetail.quantity) }}</p>
               </div>
             </div>
 
@@ -436,15 +436,15 @@
                     <p class="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-1">Total Modal</p>
                     <p class="text-lg font-bold text-red-600">{{ formatCurrency(selectedProductDetail.cost) }}</p>
                   </div>
-                  <div class="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
-                    <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Total Untung</p>
-                    <p class="text-lg font-bold text-emerald-600">{{ formatCurrency(selectedProductDetail.profit) }}</p>
+                  <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Total Untung</p>
+                    <p class="text-lg font-bold text-blue-600">{{ formatCurrency(selectedProductDetail.profit) }}</p>
                   </div>
               </div>
               
-              <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-between">
-                <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">Margin Keuntungan</span>
-                <span class="text-2xl font-black text-emerald-600">
+              <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30 flex items-center justify-between">
+                <span class="text-sm font-bold text-blue-700 dark:text-blue-400">Margin Keuntungan</span>
+                <span class="text-2xl font-black text-blue-600">
                   {{ formatProductMargin(
                     selectedProductDetail.sellingPrice,
                     selectedProductDetail.cost,
@@ -602,14 +602,14 @@ const summaryStats = computed(() => {
   switch (reportType.value) {
     case 'sales':
       return [
-        { label: 'Total Pendapatan', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-emerald-600' },
+        { label: 'Total Pendapatan', value: formatCurrency(reportData.value.summary?.totalRevenue || 0), icon: '💰', color: 'text-blue-600' },
         { label: 'Total Pesanan', value: reportData.value.summary?.totalOrders || 0, icon: '📦', color: 'text-blue-600' },
         { label: 'Rata-rata / Pesanan', value: formatCurrency(reportData.value.summary?.averageOrderValue || 0), icon: '📊', color: 'text-purple-600' },
         { label: 'Item Terjual', value: reportData.value.summary?.totalItems || 0, icon: '🛒', color: 'text-orange-600' },
       ];
     case 'financial':
       return [
-        { label: 'Pendapatan', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-emerald-600' },
+        { label: 'Pendapatan', value: formatCurrency(reportData.value.revenue || 0), icon: '💵', color: 'text-blue-600' },
         { label: 'Total Modal', value: formatCurrency(reportData.value.costOfGoods || 0), icon: '💸', color: 'text-red-600' },
         { label: 'Keuntungan Kotor', value: formatCurrency(reportData.value.grossProfit || 0), icon: '📈', color: 'text-blue-600' },
         { label: 'Margin Keuntungan', value: `${reportData.value.profitMargin?.toFixed(2) || 0}%`, icon: '📊', color: 'text-purple-600' },

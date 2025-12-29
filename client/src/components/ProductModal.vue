@@ -29,7 +29,7 @@
                   v-model="form.name"
                   type="text"
                   required
-                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all placeholder:text-slate-400"
+                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all placeholder:text-slate-400"
                   placeholder="Contoh: Nasi Goreng Spesial"
                 />
              </div>
@@ -39,7 +39,7 @@
                 <textarea
                   v-model="form.description"
                   rows="3"
-                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all placeholder:text-slate-400 resize-none"
+                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all placeholder:text-slate-400 resize-none"
                   placeholder="Deskripsi singkat produk..."
                 ></textarea>
              </div>
@@ -56,7 +56,7 @@
                   required
                   min="0"
                   step="100"
-                  class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold text-lg transition-all"
+                  class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold text-lg transition-all"
                   placeholder="0"
                 />
               </div>
@@ -71,7 +71,7 @@
                   type="number"
                   min="0"
                   step="100"
-                  class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold text-lg transition-all"
+                  class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold text-lg transition-all"
                   placeholder="0"
                   @input="loadPriceSuggestions"
                 />
@@ -101,12 +101,12 @@
                 </div>
                 <span class="material-symbols-outlined text-indigo-300 group-hover:text-indigo-600">add_circle</span>
               </div>
-              <div v-if="priceSuggestions.marketPrice" class="col-span-1 sm:col-span-2 flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30 shadow-sm hover:shadow-md transition-shadow group cursor-pointer" @click="applyPrice(priceSuggestions.marketPrice!)">
+              <div v-if="priceSuggestions.marketPrice" class="col-span-1 sm:col-span-2 flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-emerald-200/50 dark:border-blue-800/30 shadow-sm hover:shadow-md transition-shadow group cursor-pointer" @click="applyPrice(priceSuggestions.marketPrice!)">
                 <div class="flex flex-col">
-                  <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Harga Pasaran</p>
-                  <p class="text-lg font-black text-emerald-700 dark:text-emerald-400">{{ formatCurrency(priceSuggestions.marketPrice) }}</p>
+                  <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">Harga Pasaran</p>
+                  <p class="text-lg font-black text-blue-700 dark:text-blue-400">{{ formatCurrency(priceSuggestions.marketPrice) }}</p>
                 </div>
-                 <span class="material-symbols-outlined text-emerald-400 group-hover:text-emerald-600">check_circle</span>
+                 <span class="material-symbols-outlined text-blue-400 group-hover:text-blue-600">check_circle</span>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@
               <input
                 v-model="form.category"
                 type="text"
-                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
+                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
                 placeholder="Contoh: Makanan, Minuman"
                 @blur="generateSkuSuggestion"
               />
@@ -130,7 +130,7 @@
                   v-if="!form.sku"
                   type="button"
                   @click="generateSkuSuggestion"
-                  class="ml-2 text-[10px] text-emerald-600 hover:text-emerald-700 font-normal underline"
+                  class="ml-2 text-[10px] text-blue-600 hover:text-blue-700 font-normal underline"
                   title="Generate SKU otomatis"
                 >
                   Auto-generate
@@ -140,7 +140,7 @@
                 <input
                   v-model="form.sku"
                   type="text"
-                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
+                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium transition-all"
                   placeholder="Kode unik produk (opsional)"
                   maxlength="50"
                 />
@@ -148,7 +148,7 @@
                   v-if="form.sku"
                   type="button"
                   @click="generateSkuSuggestion"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-700 transition-colors"
                   title="Generate ulang SKU"
                 >
                   <span class="material-symbols-outlined text-[18px]">refresh</span>
@@ -166,7 +166,7 @@
                   v-model="form.isConsignment"
                   type="checkbox"
                   id="isConsignment"
-                  class="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer"
+                  class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
                 />
                 <label for="isConsignment" class="ml-3 text-sm font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none">
                   Produk Titipan (Consignment)
@@ -183,7 +183,7 @@
                 type="number"
                 required
                 min="0"
-                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-bold transition-all"
+                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-bold transition-all"
                 placeholder="0"
               />
             </div>
@@ -194,7 +194,7 @@
                 v-model.number="form.minStock"
                 type="number"
                 min="0"
-                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-bold transition-all"
+                class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white font-bold transition-all"
                 placeholder="0"
               />
             </div>
@@ -259,13 +259,13 @@
                 :class="[
                   'border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer',
                   isDragging
-                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10 scale-[1.02]'
-                    : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/5'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10 scale-[1.02]'
+                    : 'border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/5'
                 ]"
                 @click="openFileInput"
               >
                 <div class="flex flex-col items-center gap-3">
-                  <span class="material-symbols-outlined text-5xl" :class="isDragging ? 'text-emerald-500' : 'text-slate-400'">
+                  <span class="material-symbols-outlined text-5xl" :class="isDragging ? 'text-blue-500' : 'text-slate-400'">
                     {{ isDragging ? 'cloud_upload' : 'image' }}
                   </span>
                   <div>
@@ -287,7 +287,7 @@
                 <button
                   type="button"
                   @click="openFileInput"
-                  class="flex-1 px-5 py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 font-bold"
+                  class="flex-1 px-5 py-3 bg-blue-50 text-blue-700 border border-emerald-200 rounded-xl hover:bg-blue-100 transition-all flex items-center justify-center gap-2 font-bold"
                 >
                   <span class="material-symbols-outlined text-[20px]">image</span>
                   <span>Ganti Gambar</span>
@@ -309,7 +309,7 @@
                     <input
                       v-model="form.image"
                       type="url"
-                      class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50"
+                      class="w-full pl-10 pr-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50"
                       placeholder="https://example.com/image.jpg"
                       @blur="showUrlInput = false"
                     />
@@ -350,7 +350,7 @@
                   v-model="form.emoji"
                   type="text"
                   maxlength="2"
-                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-slate-50 text-4xl text-center font-bold placeholder:text-lg placeholder:font-normal placeholder:text-slate-400"
+                  class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 text-4xl text-center font-bold placeholder:text-lg placeholder:font-normal placeholder:text-slate-400"
                   placeholder="Ketik 1 Emoji Disini..."
                 />
               </div>
@@ -365,7 +365,7 @@
                     type="button"
                     @click="form.emoji = emoji"
                     class="w-10 h-10 text-2xl hover:bg-white hover:shadow-sm rounded-xl transition-all flex items-center justify-center border border-transparent hover:border-slate-200"
-                    :class="{ 'bg-emerald-100 border-emerald-300 ring-2 ring-emerald-500/20': form.emoji === emoji }"
+                    :class="{ 'bg-blue-100 border-emerald-300 ring-2 ring-blue-500/20': form.emoji === emoji }"
                   >
                     {{ emoji }}
                   </button>
@@ -383,7 +383,7 @@
                       id="isActive"
                       class="peer sr-only"
                     />
-                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-emerald-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-emerald-600"></div>
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </div>
                 <label for="isActive" class="ml-3 text-sm font-bold text-slate-700 cursor-pointer select-none">
                   Produk Aktif
@@ -404,7 +404,7 @@
               type="button"
               :disabled="saving"
               @click="handleSubmit(true)"
-              class="flex-1 px-5 py-3.5 bg-white text-emerald-600 border border-emerald-200 font-bold rounded-xl hover:bg-emerald-50 transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              class="flex-1 px-5 py-3.5 bg-white text-blue-600 border border-emerald-200 font-bold rounded-xl hover:bg-blue-50 transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <span class="material-symbols-outlined text-[20px]">playlist_add</span>
               Simpan & Input Lagi
@@ -412,7 +412,7 @@
             <button
               type="submit"
               :disabled="saving"
-              class="flex-1 px-5 py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-green-700 transition shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              class="flex-1 px-5 py-3.5 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-green-700 transition shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <div v-if="saving" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               {{ saving ? 'Menyimpan...' : (editingProduct ? 'Simpan Perubahan' : 'Simpan Produk') }}

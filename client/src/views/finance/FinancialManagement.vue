@@ -93,11 +93,11 @@
           </div>
         </div>
         <div>
-          <h3 class="text-2xl font-bold tracking-tight" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-emerald-600' : 'text-red-600'">
+          <h3 class="text-2xl font-bold tracking-tight" :class="cashFlowSummary.netCashFlow >= 0 ? 'text-blue-600' : 'text-red-600'">
             {{ formatCurrency(cashFlowSummary.netCashFlow) }}
           </h3>
           <div class="flex items-center gap-2 mt-2">
-            <span class="flex items-center text-emerald-600 text-xs font-semibold" v-if="cashFlowSummary.netCashFlow >= 0">
+            <span class="flex items-center text-blue-600 text-xs font-semibold" v-if="cashFlowSummary.netCashFlow >= 0">
               <span class="material-symbols-outlined text-[14px] mr-0.5">arrow_upward</span> Profit
             </span>
             <span class="flex items-center text-red-600 text-xs font-semibold" v-else>
@@ -157,18 +157,18 @@
              <input
               v-model="dateRange.startDate"
               type="date"
-              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
             />
             <span class="text-[#4c739a] dark:text-slate-400 text-sm">s/d</span>
             <input
               v-model="dateRange.endDate"
               type="date"
-              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+              class="w-full sm:w-auto px-4 py-2 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <button
             @click="loadCashFlowSummary"
-            class="w-full sm:w-auto px-6 py-2 bg-emerald-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition"
+            class="w-full sm:w-auto px-6 py-2 bg-blue-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition"
           >
             Filter
           </button>
@@ -182,7 +182,7 @@
           <div
             v-for="(amount, category) in cashFlowSummary.byCategory"
             :key="category"
-            class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-emerald-500/30 transition-all"
+            class="flex items-center justify-between p-4 bg-[#f8fafc] dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-blue-500/30 transition-all"
           >
             <span class="font-bold text-[#0d141b] dark:text-white">{{ category }}</span>
             <span class="text-[#4c739a] font-mono">{{ formatCurrency(amount) }}</span>
@@ -224,13 +224,13 @@
             <input
               v-model="taxPeriod"
               type="month"
-              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <div class="flex items-end">
             <button
               @click="calculateTax"
-              class="w-full px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
+              class="w-full px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               Calculate
             </button>
@@ -255,7 +255,7 @@
               <p class="text-xs text-[#4c739a] mb-1">Tax Rate</p>
               <p class="text-lg font-bold text-[#0d141b] dark:text-white">{{ (taxCalculation.taxRate * 100).toFixed(1) }}%</p>
             </div>
-            <div class="col-span-2 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex justify-between items-center">
+            <div class="col-span-2 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex justify-between items-center">
               <p class="text-sm font-bold text-[#0d141b] dark:text-white">Estimasi Pajak</p>
               <p class="text-2xl font-bold text-red-600">{{ formatCurrency(taxCalculation.taxAmount) }}</p>
             </div>
@@ -276,12 +276,12 @@
               type="number"
               min="1"
               max="12"
-              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+              class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
             />
           </div>
           <button
             @click="loadForecast"
-            class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
+            class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
           >
             Generate Forecast
           </button>
@@ -301,7 +301,7 @@
             <div class="grid grid-cols-1 gap-2 pl-2">
               <div class="flex justify-between items-center text-sm">
                 <span class="text-[#4c739a]">Revenue</span>
-                <span class="font-bold text-emerald-600">{{ formatCurrency(item.projectedRevenue) }}</span>
+                <span class="font-bold text-blue-600">{{ formatCurrency(item.projectedRevenue) }}</span>
               </div>
               <div class="flex justify-between items-center text-sm">
                 <span class="text-[#4c739a]">Expenses</span>
@@ -309,7 +309,7 @@
               </div>
               <div class="flex justify-between items-center text-sm pt-2 border-t border-slate-100 dark:border-slate-700 mt-1">
                 <span class="font-bold text-[#0d141b] dark:text-white">Profit</span>
-                <span class="font-bold" :class="item.projectedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                <span class="font-bold" :class="item.projectedProfit >= 0 ? 'text-blue-600' : 'text-red-600'">
                   {{ formatCurrency(item.projectedProfit) }}
                 </span>
               </div>
@@ -326,7 +326,7 @@
             <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Bank Reconciliation</h3>
             <button
               @click="showReconciliationModal = true"
-              class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition"
+              class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition"
             >
               New Reconciliation
             </button>
@@ -338,12 +338,12 @@
             :key="recon.id"
             class="border border-slate-200 dark:border-slate-700 rounded-xl p-5 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors relative overflow-hidden"
           >
-            <div class="absolute left-0 top-0 bottom-0 w-1" :class="recon.reconciled ? 'bg-emerald-500' : 'bg-amber-500'"></div>
+            <div class="absolute left-0 top-0 bottom-0 w-1" :class="recon.reconciled ? 'bg-blue-500' : 'bg-amber-500'"></div>
             <div class="flex items-center justify-between mb-4 pl-2">
               <h4 class="font-bold text-[#0d141b] dark:text-white text-lg">{{ recon.bankAccount }}</h4>
               <span
                 class="px-2.5 py-1 text-xs font-bold rounded-xl uppercase tracking-wider"
-                :class="recon.reconciled ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
+                :class="recon.reconciled ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'"
               >
                 {{ recon.reconciled ? 'Reconciled' : 'Pending' }}
               </span>
@@ -359,7 +359,7 @@
               </div>
               <div>
                 <p class="text-[#4c739a] text-xs mb-1">Difference</p>
-                <p class="font-bold" :class="Math.abs(recon.difference) < 0.01 ? 'text-emerald-600' : 'text-red-600'">
+                <p class="font-bold" :class="Math.abs(recon.difference) < 0.01 ? 'text-blue-600' : 'text-red-600'">
                   {{ formatCurrency(recon.difference) }}
                 </p>
               </div>
@@ -399,7 +399,7 @@
                   <select
                     v-model="cashFlowForm.type"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   >
                     <option value="">Pilih Type</option>
                     <option value="INCOME">Income</option>
@@ -413,7 +413,7 @@
                     v-model="cashFlowForm.category"
                     type="text"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   />
                 </div>
 
@@ -425,7 +425,7 @@
                     min="0"
                     step="0.01"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   />
                 </div>
 
@@ -435,7 +435,7 @@
                     v-model="cashFlowForm.description"
                     rows="3"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   ></textarea>
                 </div>
 
@@ -446,7 +446,7 @@
                       v-model="cashFlowForm.date"
                       type="date"
                       required
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                   <div>
@@ -455,7 +455,7 @@
                       v-model="cashFlowForm.paymentMethod"
                       type="text"
                       required
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                 </div>
@@ -471,7 +471,7 @@
                   <button
                     type="submit"
                     :disabled="saving"
-                    class="flex-1 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition disabled:opacity-50"
+                    class="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition disabled:opacity-50"
                   >
                     {{ saving ? 'Menyimpan...' : 'Simpan' }}
                   </button>
@@ -503,7 +503,7 @@
                     v-model="expenseForm.category"
                     type="text"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   />
                 </div>
 
@@ -515,7 +515,7 @@
                     min="0"
                     step="0.01"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   />
                 </div>
 
@@ -525,7 +525,7 @@
                     v-model="expenseForm.description"
                     rows="3"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   ></textarea>
                 </div>
 
@@ -536,7 +536,7 @@
                       v-model="expenseForm.date"
                       type="date"
                       required
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                   <div>
@@ -544,7 +544,7 @@
                     <input
                       v-model="expenseForm.vendor"
                       type="text"
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                 </div>
@@ -554,7 +554,7 @@
                     v-model="expenseForm.isTaxDeductible"
                     type="checkbox"
                     id="taxDeductible"
-                    class="h-4 w-4 text-emerald-600 rounded focus:ring-emerald-500"
+                    class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
                   />
                   <label for="taxDeductible" class="text-sm font-medium text-[#0d141b] dark:text-white cursor-pointer">Tax Deductible</label>
                 </div>
@@ -603,7 +603,7 @@
                       v-model="reconciliationForm.bankAccount"
                       type="text"
                       required
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                   <div>
@@ -612,7 +612,7 @@
                       v-model="reconciliationForm.statementDate"
                       type="date"
                       required
-                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                      class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                     />
                   </div>
                 </div>
@@ -624,7 +624,7 @@
                     type="number"
                     step="0.01"
                     required
-                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-[#0d141b] dark:text-white"
+                    class="w-full px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-[#0d141b] dark:text-white"
                   />
                 </div>
 
@@ -682,7 +682,7 @@
                   <button
                     type="submit"
                     :disabled="saving"
-                    class="flex-1 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition disabled:opacity-50"
+                    class="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 transition disabled:opacity-50"
                   >
                     {{ saving ? 'Menyimpan...' : 'Simpan' }}
                   </button>

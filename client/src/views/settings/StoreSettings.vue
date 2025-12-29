@@ -116,7 +116,7 @@
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 sm:p-8">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
         <div class="flex items-center gap-4">
-          <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl shadow-sm">
+          <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl shadow-sm">
             <span class="material-symbols-outlined text-[24px]">receipt_long</span>
           </div>
           <div>
@@ -126,16 +126,16 @@
         </div>
         <button
           @click="showTemplateManager = true"
-          class="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30 px-5 py-2.5 rounded-xl transition-all font-bold text-sm border border-emerald-200 dark:border-emerald-800"
+          class="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 px-5 py-2.5 rounded-xl transition-all font-bold text-sm border border-emerald-200 dark:border-blue-800"
         >
           <span class="material-symbols-outlined text-[20px]">settings</span>
           <span>Kelola Template</span>
         </button>
       </div>
       <div class="text-sm text-slate-500 space-y-2 pl-0 sm:pl-[72px]">
-        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Template untuk A4, Thermal 58mm, atau Thermal 80mm</p>
-        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Kustomisasi header, footer, dan kolom yang ditampilkan</p>
-        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span> Dukungan untuk pencetakan Browser, Thermal, dan Bluetooth</p>
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-blue-500">check_circle</span> Template untuk A4, Thermal 58mm, atau Thermal 80mm</p>
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-blue-500">check_circle</span> Kustomisasi header, footer, dan kolom yang ditampilkan</p>
+        <p class="flex items-center gap-2 font-medium"><span class="material-symbols-outlined text-[18px] text-blue-500">check_circle</span> Dukungan untuk pencetakan Browser, Thermal, dan Bluetooth</p>
       </div>
     </div>
 

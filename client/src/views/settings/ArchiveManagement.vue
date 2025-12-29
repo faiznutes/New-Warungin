@@ -17,14 +17,14 @@
         <div class="bg-white/80 dark:bg-slate-800/80 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 backdrop-blur-sm hover:border-blue-200 transition-colors">
            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pesanan Diarsipkan</div>
            <div class="flex items-end gap-2">
-              <span class="text-3xl font-black text-emerald-500">{{ stats.ordersCount || 0 }}</span>
+              <span class="text-3xl font-black text-blue-500">{{ stats.ordersCount || 0 }}</span>
               <span class="material-symbols-outlined text-slate-300 text-3xl ml-auto">shopping_cart</span>
            </div>
         </div>
         <div class="bg-white/80 dark:bg-slate-800/80 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 backdrop-blur-sm hover:border-blue-200 transition-colors">
            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Transaksi Diarsipkan</div>
            <div class="flex items-end gap-2">
-              <span class="text-3xl font-black text-emerald-600">{{ stats.transactionsCount || 0 }}</span>
+              <span class="text-3xl font-black text-blue-600">{{ stats.transactionsCount || 0 }}</span>
               <span class="material-symbols-outlined text-slate-300 text-3xl ml-auto">receipt_long</span>
            </div>
         </div>
@@ -94,7 +94,7 @@
           <!-- Archive Orders -->
           <button
             @click="showArchiveOrdersModal = true"
-            class="flex items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-md hover:bg-emerald-50/10 transition-all text-left bg-white/50 dark:bg-slate-800/50 group backdrop-blur-sm"
+            class="flex items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:shadow-md hover:bg-blue-50/10 transition-all text-left bg-white/50 dark:bg-slate-800/50 group backdrop-blur-sm"
           >
              <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform shadow-sm">
                 <span class="material-symbols-outlined">shopping_bag</span>
@@ -108,13 +108,13 @@
           <!-- Archive Transactions -->
           <button
             @click="showArchiveTransactionsModal = true"
-            class="flex items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-md hover:bg-emerald-50/10 transition-all text-left bg-white/50 dark:bg-slate-800/50 group backdrop-blur-sm"
+            class="flex items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 hover:shadow-md hover:bg-blue-50/10 transition-all text-left bg-white/50 dark:bg-slate-800/50 group backdrop-blur-sm"
           >
-             <div class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform shadow-sm">
+             <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 p-3 rounded-xl mr-4 group-hover:scale-110 transition-transform shadow-sm">
                 <span class="material-symbols-outlined">payments</span>
              </div>
              <div>
-                <h4 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-emerald-600 transition-colors">Arsip Transaksi</h4>
+                <h4 class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 transition-colors">Arsip Transaksi</h4>
                 <p class="text-xs text-slate-500 font-medium">Selesai/Gagal</p>
              </div>
           </button>
@@ -196,7 +196,7 @@
                     class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border"
                     :class="[
                       file.type === 'orders' ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                      file.type === 'transactions' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                      file.type === 'transactions' ? 'bg-blue-50 text-blue-700 border-blue-100' :
                       'bg-violet-50 text-violet-700 border-violet-100'
                     ]"
                   >
@@ -269,7 +269,7 @@
       <div v-if="showArchiveTransactionsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showArchiveTransactionsModal = false">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scale-in border border-white/20">
            <div class="text-center mb-6">
-              <div class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                  <span class="material-symbols-outlined text-3xl">payments</span>
               </div>
               <h3 class="text-xl font-bold text-slate-900 dark:text-white">Arsip Transaksi</h3>
@@ -284,7 +284,7 @@
                   type="number"
                   min="30"
                   max="730"
-                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-center"
+                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-center"
                 />
              </div>
              
@@ -293,7 +293,7 @@
                 <button 
                   @click="archiveTransactions" 
                   :disabled="archiving"
-                  class="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-700 transition disabled:opacity-70 flex items-center justify-center gap-2"
+                  class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   <div v-if="archiving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   {{ archiving ? 'Memproses...' : 'Mulai Arsip' }}
