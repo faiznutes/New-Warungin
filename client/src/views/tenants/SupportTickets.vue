@@ -54,7 +54,7 @@
           </select>
         </div>
       </div>
-      <button class="w-full xl:w-auto px-5 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+      <button @click="handleCreateTicket" class="w-full xl:w-auto px-5 py-2.5 bg-primary hover:bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
         <span class="material-symbols-outlined text-[20px]">add_circle</span>
         Create New Ticket
       </button>
@@ -134,13 +134,13 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                  <button class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="View Details">
+                  <button @click="handleViewTicket(ticket)" class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="View Details">
                     <span class="material-symbols-outlined text-[20px]">visibility</span>
                   </button>
-                  <button class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="Assign Agent">
+                  <button @click="handleAssignAgent(ticket)" class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="Assign Agent">
                     <span class="material-symbols-outlined text-[20px]">person_add</span>
                   </button>
-                  <button class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="Add Note">
+                  <button @click="handleAddNote(ticket)" class="p-2 text-slate-500 hover:text-primary hover:bg-primary/10 rounded-xl transition-colors" title="Add Note">
                     <span class="material-symbols-outlined text-[20px]">note_add</span>
                   </button>
                 </div>
@@ -154,13 +154,11 @@
       <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-sm text-[#4c739a] dark:text-slate-400">Showing <span class="font-semibold text-[#0d141b] dark:text-white">1-5</span> of <span class="font-semibold text-[#0d141b] dark:text-white">128</span> tickets</p>
         <div class="flex items-center gap-2">
-          <button class="px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50" disabled>Previous</button>
+          <button @click="handlePagination('prev')" class="px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50" :disabled="currentPage === 1">Previous</button>
           <div class="flex gap-1">
-            <button class="size-8 rounded border border-primary bg-primary text-white text-sm font-medium">1</button>
-            <button class="size-8 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">2</button>
-            <button class="size-8 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">3</button>
+            <button v-for="page in 3" :key="page" @click="currentPage = page" :class="currentPage === page ? 'border-primary bg-primary text-white' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'" class="size-8 rounded border text-sm font-medium">{{ page }}</button>
           </div>
-          <button class="px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Next</button>
+          <button @click="handlePagination('next')" class="px-3 py-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Next</button>
         </div>
       </div>
     </div>
@@ -169,10 +167,39 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useNotification } from '../../composables/useNotification';
 
+const { success: showSuccess } = useNotification();
 const searchQuery = ref('');
 const statusFilter = ref('');
 const priorityFilter = ref('');
+const currentPage = ref(1);
+
+// Handlers
+const handleCreateTicket = () => {
+    showSuccess('Fitur pembuatan tiket baru akan segera tersedia.');
+};
+
+const handleViewTicket = (_ticket: any) => {
+    showSuccess('Detail tiket akan segera tersedia.');
+};
+
+const handleAssignAgent = (_ticket: any) => {
+    showSuccess('Fitur assign agent akan segera tersedia.');
+};
+
+const handleAddNote = (_ticket: any) => {
+    showSuccess('Fitur tambah catatan akan segera tersedia.');
+};
+
+const handlePagination = (direction: string) => {
+    if (direction === 'next' && currentPage.value < 3) {
+        currentPage.value++;
+    } else if (direction === 'prev' && currentPage.value > 1) {
+        currentPage.value--;
+    }
+    showSuccess(`Halaman ${currentPage.value}`);
+};
 
 // Mock Data matching prompt.md example
 const tickets = ref([

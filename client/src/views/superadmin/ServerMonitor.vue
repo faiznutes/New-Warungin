@@ -11,7 +11,7 @@
             <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
             <input class="bg-transparent border-none text-sm font-medium w-full focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 ml-2" placeholder="Cari log atau error..." type="text"/>
          </div>
-         <button class="relative p-2.5 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
+         <button @click="handleNotificationBell" class="relative p-2.5 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
             <span class="material-symbols-outlined text-[20px]">notifications_active</span>
             <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-800 animate-pulse"></span>
          </button>
@@ -58,7 +58,7 @@
                 </div>
              </div>
              <div class="flex gap-3">
-                <button class="px-4 py-2 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-blue-800/50 rounded-xl text-sm font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
+                <button @click="handleViewHistory" class="px-4 py-2 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-blue-800/50 rounded-xl text-sm font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors shadow-sm">
                    Lihat Riwayat
                 </button>
                 <button @click="loadAllData" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 hover:-translate-y-0.5">
@@ -226,8 +226,8 @@
                             <p class="text-sm font-bold text-red-700 dark:text-red-400">Penggunaan Memori Tinggi</p>
                             <p class="text-xs text-red-600/80 dark:text-red-300/70 mt-1 leading-relaxed">Node <span class="font-mono bg-red-100 dark:bg-red-900/40 px-1 rounded">worker-03</span> berjalan pada kapasitas RAM 92%.</p>
                             <div class="mt-3 flex gap-3">
-                               <button class="text-xs font-bold underline text-red-700 hover:text-red-900 dark:hover:text-red-300">Restart Node</button>
-                               <button class="text-xs font-semibold text-red-700/70 hover:text-red-900 dark:hover:text-red-300">Abaikan</button>
+                               <button @click="handleRestartNode('worker-03')" class="text-xs font-bold underline text-red-700 hover:text-red-900 dark:hover:text-red-300">Restart Node</button>
+                               <button @click="handleDismissAlert('memory')" class="text-xs font-semibold text-red-700/70 hover:text-red-900 dark:hover:text-red-300">Abaikan</button>
                             </div>
                          </div>
                       </div>
@@ -614,6 +614,25 @@ const loadAllData = async () => {
   loading.value = true;
   await Promise.all([loadContainers(), loadServerResources(), loadHealthChecks(), loadLogs()]);
   loading.value = false;
+};
+
+const handleNotificationBell = () => {
+  success('Anda memiliki 2 peringatan aktif. Lihat tab Ringkasan untuk detail.');
+};
+
+const handleViewHistory = () => {
+  success('Halaman riwayat sistem akan segera tersedia.');
+};
+
+const handleRestartNode = async (nodeName: string) => {
+  const confirmed = await confirm(`Restart node "${nodeName}"?`, 'Konfirmasi Restart', 'Restart', 'Batal');
+  if (confirmed) {
+    success(`Perintah restart untuk ${nodeName} telah dikirim.`);
+  }
+};
+
+const handleDismissAlert = (alertType: string) => {
+  success(`Alert ${alertType} telah diabaikan.`);
 };
 
 onMounted(() => {
