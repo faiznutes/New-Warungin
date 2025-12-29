@@ -105,7 +105,7 @@
             </span>
           </div>
         </div>
-        <button class="w-full py-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors text-[#4c739a] dark:text-slate-300">View Details</button>
+        <button @click="handleViewDetails" class="w-full py-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg text-xs font-medium transition-colors text-[#4c739a] dark:text-slate-300">View Details</button>
       </div>
 
       <!-- Tax Reserve -->
@@ -793,6 +793,10 @@ const calculateTax = async () => {
     console.error('Error calculating tax:', error);
     await showError('Gagal menghitung tax');
   }
+};
+
+const handleViewDetails = () => {
+  showSuccess('Detail cash flow akan segera tersedia.');
 };
 
 const loadForecast = async () => {

@@ -187,7 +187,7 @@
         <div class="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <h3 class="text-lg font-bold text-slate-900 dark:text-white">Transaksi Terbaru</h3>
           <div class="flex gap-2">
-            <button class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Ekspor</button>
+            <button @click="handleExportTransactions" class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Ekspor</button>
             <router-link to="/app/orders" class="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors">Lihat Semua</router-link>
           </div>
         </div>
@@ -414,6 +414,11 @@ const loadRecentOrders = async () => {
         recentOrders.value = [];
     }
 }
+
+const handleExportTransactions = () => {
+  showNotification({ title: 'Ekspor Data', message: 'Fitur ekspor transaksi akan segera tersedia.', type: 'info' });
+};
+
 
 const renderRevenueChart = () => {
   if (!revenueChartRef.value) return;

@@ -112,7 +112,7 @@
           <option value="pending">Pending</option>
         </select>
         <div class="h-8 w-px bg-slate-200 dark:bg-slate-600 mx-1 hidden md:block"></div>
-        <button class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0d141b] dark:text-white flex items-center gap-2 transition-colors">
+        <button @click="handleExport" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0d141b] dark:text-white flex items-center gap-2 transition-colors">
           <span class="material-symbols-outlined text-[18px]">download</span>
           Export Data
         </button>
@@ -185,7 +185,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 text-right">
-                <button class="text-[#4c739a] hover:text-primary transition-colors">
+                <button @click="handleViewTransaction(trx)" class="text-[#4c739a] hover:text-primary transition-colors">
                   <span class="material-symbols-outlined">visibility</span>
                 </button>
               </td>
@@ -199,10 +199,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useNotification } from '../../composables/useNotification';
 
+const { success: showSuccess } = useNotification();
 const searchQuery = ref('');
 const methodFilter = ref('');
 const statusFilter = ref('');
+
+const handleExport = () => {
+  showSuccess('Fitur export data akan segera tersedia.');
+};
+
+const handleViewTransaction = (_trx: any) => {
+  showSuccess('Detail transaksi akan segera tersedia.');
+};
 
 // Mock Data
 const transactions = ref([
