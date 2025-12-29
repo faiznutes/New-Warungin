@@ -56,12 +56,11 @@ RUN npm install --omit=dev --legacy-peer-deps --prefer-offline --no-audit && \
 
 # Copy built files from builder stage
 COPY --from=backend-builder /app/dist ./dist
-COPY --from=backend-builder /app/scripts ./scripts
 # CRITICAL: Copy the generated Prisma client from builder stage
 COPY --from=backend-builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=backend-builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy only necessary startup script
+# Copy startup script and ensure it's executable
 COPY scripts/docker-startup.sh /app/scripts/docker-startup.sh
 RUN chmod +x /app/scripts/docker-startup.sh
 
