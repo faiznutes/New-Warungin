@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4 md:px-8 font-display animate-fade-in">
-    <div class="max-w-7xl mx-auto space-y-12">
+    <div class="w-full space-y-12">
       <!-- Header -->
       <div class="flex flex-col gap-2 border-b border-slate-200 dark:border-slate-700 pb-8">
         <h1 class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">System Style Guide</h1>
