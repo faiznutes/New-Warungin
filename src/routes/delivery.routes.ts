@@ -107,7 +107,6 @@ router.get(
  */
 router.post(
   '/orders/:orderId/process',
-  '/orders/:orderId/process',
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: processDeliverySchema }),
@@ -126,7 +125,6 @@ router.post(
 );
 
 router.post(
-  '/couriers',
   '/couriers',
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
@@ -192,7 +190,6 @@ router.post(
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router.post(
-  '/orders/:orderId/create-shipment',
   '/orders/:orderId/create-shipment',
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
@@ -262,7 +259,6 @@ router.post(
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router.post(
-  '/track',
   '/track',
   checkDeliveryMarketingAddon,
   validate({ body: trackShipmentSchema }),
