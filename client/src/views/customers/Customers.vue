@@ -213,22 +213,24 @@
           </div>
           
           <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
-            <button
-              v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-              @click="quickAddPoints(customer)"
-              class="p-2.5 rounded-xl text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
-              title="Tambah Poin"
-            >
-              <span class="material-symbols-outlined text-[20px]">stars</span>
-            </button>
-            <button
-              v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-              @click="editCustomer(customer)"
-              class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
-            >
-              <span class="material-symbols-outlined text-[18px]">edit_square</span>
-              Edit
-            </button>
+            <template v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
+              <button
+                @click="quickAddPoints(customer)"
+                class="p-2.5 rounded-xl text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                title="Tambah Poin"
+              >
+                <span class="material-symbols-outlined text-[20px]">stars</span>
+              </button>
+            </template>
+            <template v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
+              <button
+                @click="editCustomer(customer)"
+                class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">edit_square</span>
+                Edit
+              </button>
+            </template>
             <button
               @click="viewCustomer(customer)"
               class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors flex items-center justify-center gap-2"
@@ -236,14 +238,15 @@
               <span class="material-symbols-outlined text-[18px]">visibility</span>
               Detail
             </button>
-            <button
-              v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-              @click="deleteCustomer(customer.id)"
-              class="p-2.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              title="Hapus Pelanggan"
-            >
-              <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
+            <template v-if="canManageCustomers || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'">
+              <button
+                @click="deleteCustomer(customer.id)"
+                class="p-2.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                title="Hapus Pelanggan"
+              >
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+              </button>
+            </template>
           </div>
         </div>
       </div>
