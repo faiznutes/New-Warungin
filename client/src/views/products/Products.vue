@@ -755,8 +755,8 @@
             </div>
           </div>
         </div>
-
-        <!-- Pagination / Infinite Scroll Toggle -->
+        
+        <!-- Pagination / Infinite Scroll Controls -->
         <div class="flex items-center justify-center gap-4 mt-8 pb-8">
           <!-- Toggle Infinite Scroll -->
           <label ref="infiniteScrollToggleRef" class="flex items-center gap-2 cursor-pointer">
@@ -768,9 +768,11 @@
             />
             <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Infinite Scroll</span>
           </label>
-          
-          <!-- Pagination (if infinite scroll disabled) -->
-          <div v-show="!useInfiniteScrollMode && pagination.totalPages > 1" class="flex items-center space-x-2">
+        </div>
+        
+        <!-- Pagination Controls (shown when infinite scroll is OFF) -->
+        <template v-if="!useInfiniteScrollMode && pagination.totalPages > 1">
+          <div class="flex items-center justify-center space-x-2 pb-8">
             <button
               @click="loadProducts(pagination.page - 1)"
               :disabled="pagination.page === 1"
@@ -791,17 +793,22 @@
               <span class="material-symbols-outlined text-[20px]">chevron_right</span>
             </button>
           </div>
-          
-          <!-- Infinite Scroll Indicators -->
-          <div v-show="useInfiniteScrollMode && infiniteScroll?.isLoading" class="flex items-center gap-2 text-slate-500">
+        </template>
+        
+        <!-- Infinite Scroll Loading Indicator (shown when infinite scroll is ON and loading) -->
+        <template v-if="useInfiniteScrollMode && infiniteScroll?.isLoading">
+          <div class="flex items-center justify-center gap-2 text-slate-500 pb-8">
             <div class="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
             <span class="text-sm font-medium">Memuat lebih banyak...</span>
           </div>
-          
-          <div v-show="useInfiniteScrollMode && !infiniteScroll?.isLoading && !infiniteScroll?.hasMore && products.length > 0" class="text-sm text-slate-500">
+        </template>
+        
+        <!-- Infinite Scroll End Message (shown when infinite scroll is ON and no more data) -->
+        <template v-if="useInfiniteScrollMode && !infiniteScroll?.isLoading && !infiniteScroll?.hasMore && products.length > 0">
+          <div class="flex items-center justify-center text-sm text-slate-500 pb-8">
             Semua produk telah dimuat
           </div>
-        </div>
+        </template>
       </div>
     </section>
 
