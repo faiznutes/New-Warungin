@@ -522,6 +522,62 @@
             </template>
         </div>
     </div>
+
+    <!-- Modal: Deactivate Subscription -->
+    <div v-if="showDeactivateSubscriptionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showDeactivateSubscriptionModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-red-500 text-3xl">warning</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Batalkan Langganan</h3>
+            </div>
+            <p class="text-slate-500 mb-6">Fitur ini akan segera tersedia. Hubungi support untuk bantuan pembatalan.</p>
+            <div class="flex justify-end gap-3">
+                <button @click="showDeactivateSubscriptionModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Reduce/Downgrade Subscription -->
+    <div v-if="showReduceSubscriptionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showReduceSubscriptionModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-amber-500 text-3xl">trending_down</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Downgrade Paket</h3>
+            </div>
+            <p class="text-slate-500 mb-6">Fitur ini akan segera tersedia. Perubahan paket dapat dilakukan di halaman Subscription.</p>
+            <div class="flex justify-end gap-3">
+                <button @click="showReduceSubscriptionModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Extend/Upgrade Subscription -->
+    <div v-if="showExtendSubscriptionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showExtendSubscriptionModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-blue-500 text-3xl">upgrade</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Upgrade Paket</h3>
+            </div>
+            <p class="text-slate-500 mb-6">Fitur ini akan segera tersedia. Upgrade paket dapat dilakukan di halaman Subscription.</p>
+            <div class="flex justify-end gap-3">
+                <button @click="showExtendSubscriptionModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Addon -->
+    <div v-if="showAddAddonModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddAddonModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-blue-500 text-3xl">extension</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Addon</h3>
+            </div>
+            <p class="text-slate-500 mb-6">Fitur ini akan segera tersedia. Addon dapat dikelola di halaman Addons.</p>
+            <div class="flex justify-end gap-3">
+                <button @click="showAddAddonModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
     </div>
 </template>
 
@@ -671,13 +727,25 @@ const getAddonIcon = (addon: any) => 'extension';
 const getAddonDescription = (addon: any) => addon.description;
 const getAvailableAddonIcon = (addon: any) => 'shopping_bag';
 
-// Stub actions
-const extendAddon = (addon: any) => {};
-const unsubscribeAddon = (addon: any) => {};
-const subscribeAddon = (addon: any) => {};
-const editUser = (user: any) => {};
-const editStore = (store: any) => {};
-const openCreateStoreModal = () => {};
+// Actions with notifications
+const extendAddon = (addon: any) => {
+    showSuccess('Fitur konfigurasi addon akan segera tersedia');
+};
+const unsubscribeAddon = (addon: any) => {
+    showSuccess('Fitur ini akan segera tersedia');
+};
+const subscribeAddon = (addon: any) => {
+    showSuccess('Fitur ini akan segera tersedia');
+};
+const editUser = (user: any) => {
+    showSuccess('Fitur edit user akan segera tersedia');
+};
+const editStore = (store: any) => {
+    showSuccess('Fitur edit store akan segera tersedia');
+};
+const openCreateStoreModal = () => {
+    showSuccess('Fitur tambah toko akan segera tersedia');
+};
 
 onMounted(() => {
     loadTenantDetail();
