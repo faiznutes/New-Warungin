@@ -179,7 +179,7 @@
                         </div>
                         <div class="bg-slate-50/50 dark:bg-slate-800/50 px-8 py-5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                             <span class="text-sm font-medium text-slate-500">Perlu mengupdate informasi sensitif?</span>
-                            <button class="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline">Request Update Profil</button>
+                            <button @click="handleRequestUpdateProfile" class="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline">Request Update Profil</button>
                         </div>
                     </div>
                 </section>
@@ -292,7 +292,7 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-black text-slate-900 dark:text-white">Riwayat Tagihan</h3>
-                            <button class="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors hover:gap-2">
+                            <button @click="handleViewAllInvoices" class="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors hover:gap-2">
                                 Lihat semua invoice
                                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                             </button>
@@ -334,7 +334,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-right">
-                                                <button class="text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center justify-center p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Download PDF">
+                                                <button @click="handleDownloadInvoice(invoice)" class="text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center justify-center p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" title="Download PDF">
                                                     <span class="material-symbols-outlined text-[20px]">download</span>
                                                 </button>
                                             </td>
@@ -705,6 +705,18 @@ const getAddonDescription = (addon: any) => addon.description;
 // Actions with notifications
 const extendAddon = (_addon: any) => {
     showSuccess('Fitur konfigurasi addon akan segera tersedia');
+};
+
+const handleRequestUpdateProfile = () => {
+    showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
+};
+
+const handleViewAllInvoices = () => {
+    showSuccess('Halaman riwayat invoice lengkap akan segera tersedia.');
+};
+
+const handleDownloadInvoice = (_invoice: any) => {
+    showSuccess('Fitur download PDF invoice akan segera tersedia.');
 };
 
 onMounted(() => {

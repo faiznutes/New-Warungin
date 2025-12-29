@@ -46,7 +46,7 @@
           </div>
           
           <div class="flex items-center gap-3">
-             <button class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm flex items-center gap-2">
+             <button @click="handleModePengguna" class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm flex items-center gap-2">
               <span class="material-symbols-outlined text-[20px]">visibility</span>
               <span class="hidden sm:inline">Mode Pengguna</span>
             </button>
@@ -198,7 +198,7 @@
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 <h3 class="font-bold text-lg mb-2 relative z-10">Butuh Bantuan?</h3>
                 <p class="text-white/80 text-sm mb-4 relative z-10">Hubungi tim support jika Anda mengalami kendala dengan toko ini.</p>
-                <button class="w-full py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-sm font-bold transition-all border border-white/20 relative z-10">
+                <button @click="handleHubungiSupport" class="w-full py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-sm font-bold transition-all border border-white/20 relative z-10">
                   Hubungi Support
                 </button>
              </div>
@@ -220,14 +220,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import api from '../../api';
+import { useNotification } from '../../composables/useNotification';
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
+const { success: showSuccess } = useNotification();
 const store = ref<any>(null);
 
 const fetchStore = async () => {
@@ -242,6 +245,14 @@ const fetchStore = async () => {
 const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd MMMM yyyy', { locale: id });
 }
+
+const handleModePengguna = () => {
+    showSuccess('Mode Pengguna akan segera tersedia. Fitur ini memungkinkan Anda melihat toko dari sudut pandang kasir.');
+};
+
+const handleHubungiSupport = () => {
+    router.push('/app/support');
+};
 
 onMounted(() => {
     fetchStore();
