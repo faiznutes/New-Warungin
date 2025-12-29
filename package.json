@@ -15,8 +15,6 @@
     "prisma:migrate:payment-mapping": "node scripts/apply-payment-mapping-migration-v2.js",
     "prisma:push": "prisma db push --accept-data-loss",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "seed:demo": "ts-node prisma/seed-demo.ts",
     "create:super-admin": "ts-node scripts/create-super-admin.ts",
     "create:super-admin:docker": "node scripts/create-super-admin-docker.js",
     "push:schema:supabase": "node scripts/push-schema-supabase.js",
