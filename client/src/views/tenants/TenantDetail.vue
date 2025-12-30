@@ -954,7 +954,7 @@ const handleRequestUpdateProfile = async () => {
 };
 
 const handleViewAllInvoices = () => {
-    router.push('/app/invoices');
+    router.push('/app/finance/transactions');
 };
 
 const handleDownloadInvoice = async (invoice: any) => {
@@ -1047,8 +1047,9 @@ const openEditProfileModal = () => {
 };
 
 // User management handlers
-const handleEditUser = (user: any) => {
-    router.push(`/app/users/${user.id}/edit`);
+const handleEditUser = async (user: any) => {
+    // Note: Edit user page not implemented yet, show info message
+    await showSuccess(`Edit user "${user.name}" dapat dilakukan di halaman Pengaturan > Users.`);
 };
 
 const handleToggleUserStatus = async (user: any) => {
