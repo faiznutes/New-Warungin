@@ -514,7 +514,7 @@ router.put(
 );
 
 const upgradePlanSchema = z.object({
-  subscriptionPlan: z.enum(['BASIC', 'PRO', 'ENTERPRISE']),
+  subscriptionPlan: z.enum(['DEMO', 'BASIC', 'PRO', 'ENTERPRISE']),
   durationDays: z.number().int().positive('Durasi harus lebih dari 0'),
 });
 
@@ -559,6 +559,7 @@ router.put(
 
       // Calculate amount based on plan price for global report
       const planPrices: Record<string, number> = {
+        DEMO: 0, // Demo: Free trial
         BASIC: 149000, // Starter: Rp 149.000
         PRO: 299000, // Boost: Rp 299.000
         ENTERPRISE: 499000, // Pro: Rp 499.000

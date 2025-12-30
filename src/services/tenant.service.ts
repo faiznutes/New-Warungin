@@ -8,7 +8,8 @@ export interface CreateTenantInput {
   name: string;
   phone?: string;
   address?: string;
-  subscriptionPlan?: string; // BASIC, PRO, ENTERPRISE
+  subscriptionPlan?: string; // DEMO, BASIC, PRO, ENTERPRISE
+  demoDuration?: number; // Custom duration in days for DEMO plan
 }
 
 // Generate email from tenant name
@@ -17,7 +18,7 @@ function generateEmailFromName(name: string): string {
   if (!name || name.trim().length === 0) {
     throw new AppError('Nama tenant tidak boleh kosong', 400);
   }
-  
+
   // Remove common words like "Nasi", "Warung", "Restoran", etc.
   const words = name
     .trim()
@@ -32,7 +33,7 @@ function generateEmailFromName(name: string): string {
       return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
     })
     .filter(word => word.length > 0);
-  
+
   // If no words left, use the first word
   if (words.length === 0) {
     const firstWord = name.trim().split(/\s+/)[0];
@@ -47,26 +48,26 @@ function generateEmailFromName(name: string): string {
       words.push(fallback.charAt(0).toUpperCase() + fallback.slice(1).toLowerCase());
     }
   }
-  
+
   // Join words and remove spaces and special characters
   let emailPrefix = words.join('').replace(/[^a-zA-Z0-9]/g, '');
-  
+
   // Ensure email prefix is not empty
   if (emailPrefix.length === 0) {
     emailPrefix = 'Tenant' + Date.now().toString().slice(-6);
   }
-  
+
   // Limit email prefix length to 50 characters
   if (emailPrefix.length > 50) {
     emailPrefix = emailPrefix.substring(0, 50);
   }
-  
+
   return `${emailPrefix}@warungin.com`;
 }
 
 export const createTenant = async (input: CreateTenantInput) => {
   try {
-    const { name, phone, address, subscriptionPlan = 'BASIC' } = input;
+    const { name, phone, address, subscriptionPlan = 'BASIC', demoDuration } = input;
 
     // Validate input
     if (!name || name.trim().length < 3) {
@@ -96,437 +97,365 @@ export const createTenant = async (input: CreateTenantInput) => {
       email = newEmail;
     }
 
-  // Generate slug from email
-  const slug = email.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    // Generate slug from email
+    const slug = email.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
-  // Set subscription dates (30 days from now)
-  const subscriptionStart = new Date();
-  const subscriptionEnd = new Date();
-  subscriptionEnd.setDate(subscriptionEnd.getDate() + 30);
+    // Set subscription dates
+    // For DEMO plan: use custom demoDuration, default 30 days
+    // For other plans: 30 days default
+    const subscriptionStart = new Date();
+    const subscriptionEnd = new Date();
+    const durationDays = subscriptionPlan === 'DEMO' && demoDuration ? demoDuration : 30;
+    subscriptionEnd.setDate(subscriptionEnd.getDate() + durationDays);
 
-  // Generate default password (random + uppercase + numbers)
-  const randomPart = Math.random().toString(36).slice(-8);
-  const upperPart = Math.random().toString(36).slice(-4).toUpperCase();
-  const defaultPassword = `${randomPart}${upperPart}123`;
+    // Generate default password (random + uppercase + numbers)
+    const randomPart = Math.random().toString(36).slice(-8);
+    const upperPart = Math.random().toString(36).slice(-4).toUpperCase();
+    const defaultPassword = `${randomPart}${upperPart}123`;
 
-  // Create tenant and users in transaction
-  const result = await prisma.$transaction(async (tx) => {
-    // Create tenant
-    const tenant = await tx.tenant.create({
-      data: {
-        name,
-        email,
-        phone,
-        address,
-        slug,
-        subscriptionPlan,
-        subscriptionStart,
-        subscriptionEnd,
-      },
-    });
+    // Create tenant and users in transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create tenant
+      const tenant = await tx.tenant.create({
+        data: {
+          name,
+          email,
+          phone,
+          address,
+          slug,
+          subscriptionPlan,
+          subscriptionStart,
+          subscriptionEnd,
+        },
+      });
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+      // Hash password
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    // Generate users based on plan
-    // BASIC: 1 ADMIN_TENANT, 2 CASHIER, 1 KITCHEN (total 4 users)
-    // PRO: 1 ADMIN_TENANT, 1 SUPERVISOR, 6 CASHIER, 2 KITCHEN (total 10 users)
-    // ENTERPRISE: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
-    const usersToCreate: Array<{
-      tenantId: string;
-      email: string;
-      password: string;
-      name: string;
-      role: 'ADMIN_TENANT' | 'CASHIER' | 'KITCHEN' | 'SUPERVISOR';
-    }> = [];
+      // Generate users based on plan
+      // BASIC: 1 ADMIN_TENANT, 2 CASHIER, 1 KITCHEN (total 4 users)
+      // PRO: 1 ADMIN_TENANT, 1 SUPERVISOR, 6 CASHIER, 2 KITCHEN (total 10 users)
+      // ENTERPRISE: 1 ADMIN_TENANT, 1 SUPERVISOR, 10 CASHIER, 3 KITCHEN (total 15 users, unlimited can add more)
+      const usersToCreate: Array<{
+        tenantId: string;
+        email: string;
+        password: string;
+        name: string;
+        role: 'ADMIN_TENANT' | 'CASHIER' | 'KITCHEN' | 'SUPERVISOR';
+      }> = [];
 
-    // Generate email prefix from tenant name
-    const emailPrefix = email.split('@')[0]; // e.g., "PadangBarokah"
-    
-    // Always create admin
-    usersToCreate.push({
-      tenantId: tenant.id,
-      email: `${emailPrefix}@warungin.com`, // Admin uses tenant email
-      password: hashedPassword,
-      name: `${name} Admin`,
-      role: 'ADMIN_TENANT' as const,
-    });
+      // Generate email prefix from tenant name
+      const emailPrefix = email.split('@')[0]; // e.g., "PadangBarokah"
 
-    if (subscriptionPlan === 'BASIC') {
-      // BASIC: 1 admin, 2 kasir, 1 dapur = 4 users
-      usersToCreate.push(
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 1`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K2@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 2`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur`,
-          role: 'KITCHEN' as const,
-        }
-      );
-    } else if (subscriptionPlan === 'PRO') {
-      // PRO: 1 admin, 1 supervisor, 6 kasir, 2 dapur = 10 users
-      usersToCreate.push(
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}S1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Supervisor`,
-          role: 'SUPERVISOR' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 1`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K2@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 2`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K3@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 3`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K4@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 4`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K5@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 5`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K6@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 6`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur 1`,
-          role: 'KITCHEN' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D2@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur 2`,
-          role: 'KITCHEN' as const,
-        }
-      );
-    } else if (subscriptionPlan === 'ENTERPRISE') {
-      // ENTERPRISE: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users (default set, user can add more)
-      usersToCreate.push(
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}S1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Supervisor`,
-          role: 'SUPERVISOR' as const,
-        },
-        // Create 10 cashiers for ENTERPRISE plan
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 1`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K2@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 2`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K3@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 3`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K4@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 4`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K5@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 5`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K6@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 6`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K7@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 7`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K8@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 8`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K9@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 9`,
-          role: 'CASHIER' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}K10@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Kasir 10`,
-          role: 'CASHIER' as const,
-        },
-        // Create 3 kitchen users for ENTERPRISE plan
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D1@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur 1`,
-          role: 'KITCHEN' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D2@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur 2`,
-          role: 'KITCHEN' as const,
-        },
-        {
-          tenantId: tenant.id,
-          email: `${emailPrefix}D3@warungin.com`,
-          password: hashedPassword,
-          name: `${name} Dapur 3`,
-          role: 'KITCHEN' as const,
-        }
-      );
-    }
+      // Always create admin
+      usersToCreate.push({
+        tenantId: tenant.id,
+        email: `${emailPrefix}@warungin.com`, // Admin uses tenant email
+        password: hashedPassword,
+        name: `${name} Admin`,
+        role: 'ADMIN_TENANT' as const,
+      });
 
-    // Encrypt defaultPassword before storing
-    const { encrypt } = await import('../utils/encryption');
-    const encryptedDefaultPassword = encrypt(defaultPassword);
-
-    const users = await Promise.all(
-      usersToCreate.map((userData) =>
-        tx.user.create({
-          data: {
-            ...userData,
-            defaultPassword: encryptedDefaultPassword, // Store encrypted default password
+      // DEMO plan gets ENTERPRISE-level users (all features unlocked)
+      if (subscriptionPlan === 'DEMO' || subscriptionPlan === 'ENTERPRISE') {
+        // DEMO/ENTERPRISE: 1 admin, 1 supervisor, 10 kasir, 3 dapur = 15 users
+        usersToCreate.push(
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}S1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Supervisor`,
+            role: 'SUPERVISOR' as const,
           },
-        })
-      )
-    );
+          // Create 10 cashiers for DEMO/ENTERPRISE plan
+          ...Array.from({ length: 10 }, (_, i) => ({
+            tenantId: tenant.id,
+            email: `${emailPrefix}K${i + 1}@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir ${i + 1}`,
+            role: 'CASHIER' as const,
+          })),
+          // Create 3 kitchen users for DEMO/ENTERPRISE plan
+          ...Array.from({ length: 3 }, (_, i) => ({
+            tenantId: tenant.id,
+            email: `${emailPrefix}D${i + 1}@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Dapur ${i + 1}`,
+            role: 'KITCHEN' as const,
+          }))
+        );
+      } else if (subscriptionPlan === 'BASIC') {
+        // BASIC: 1 admin, 2 kasir, 1 dapur = 4 users
+        usersToCreate.push(
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 1`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K2@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 2`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}D1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Dapur`,
+            role: 'KITCHEN' as const,
+          }
+        );
+      } else if (subscriptionPlan === 'PRO') {
+        // PRO: 1 admin, 1 supervisor, 6 kasir, 2 dapur = 10 users
+        usersToCreate.push(
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}S1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Supervisor`,
+            role: 'SUPERVISOR' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 1`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K2@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 2`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K3@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 3`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K4@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 4`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K5@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 5`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}K6@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Kasir 6`,
+            role: 'CASHIER' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}D1@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Dapur 1`,
+            role: 'KITCHEN' as const,
+          },
+          {
+            tenantId: tenant.id,
+            email: `${emailPrefix}D2@warungin.com`,
+            password: hashedPassword,
+            name: `${name} Dapur 2`,
+            role: 'KITCHEN' as const,
+          }
+        );
+      }
 
-    // Create default receipt template
-    await tx.receiptTemplate.create({
-      data: {
-        tenantId: tenant.id,
-        name: 'Default Receipt',
-        templateType: 'DEFAULT',
-        isDefault: true,
-        paperSize: 'A4',
-      },
-    });
+      // Encrypt defaultPassword before storing
+      const { encrypt } = await import('../utils/encryption');
+      const encryptedDefaultPassword = encrypt(defaultPassword);
 
-    // Get plan price
-    const planPrices: Record<string, number> = {
-      BASIC: 149000, // Starter: Rp 149.000
-      PRO: 299000, // Boost: Rp 299.000
-      ENTERPRISE: 499000, // Pro: Rp 499.000
-    };
-    const planPrice = planPrices[subscriptionPlan] || 0;
+      const users = await Promise.all(
+        usersToCreate.map((userData) =>
+          tx.user.create({
+            data: {
+              ...userData,
+              defaultPassword: encryptedDefaultPassword, // Store encrypted default password
+            },
+          })
+        )
+      );
 
-    // Create subscription record with plan price
-    // Convert amount to string for Prisma Decimal compatibility
-    // This subscription will be recorded as a purchase in global reports
-    const subscription = await tx.subscription.create({
-      data: {
-        tenantId: tenant.id,
-        plan: subscriptionPlan,
-        startDate: subscriptionStart,
-        endDate: subscriptionEnd,
-        status: 'ACTIVE',
-        amount: planPrice.toString(), // Set amount sesuai harga paket untuk laporan global
-        purchasedBy: 'SELF', // Initial subscription saat registrasi tenant adalah self-purchase
-      },
-    });
-    
-    // Auto activate users when subscription is active
-    await tx.user.updateMany({
-      where: {
-        tenantId: tenant.id,
-        role: {
-          in: ['CASHIER', 'KITCHEN', 'SUPERVISOR'],
+      // Create default receipt template
+      await tx.receiptTemplate.create({
+        data: {
+          tenantId: tenant.id,
+          name: 'Default Receipt',
+          templateType: 'DEFAULT',
+          isDefault: true,
+          paperSize: 'A4',
         },
-      },
-      data: {
-        isActive: true,
-      },
-    });
-    
-    // Log subscription creation for debugging
-    logger.info(`✅ Subscription created for tenant ${tenant.name}:`, {
-      subscriptionId: subscription.id,
-      plan: subscriptionPlan,
-      amount: planPrice,
-      startDate: subscriptionStart.toISOString(),
-      endDate: subscriptionEnd.toISOString(),
+      });
+
+      // Get plan price
+      const planPrices: Record<string, number> = {
+        DEMO: 0, // Demo: Free trial
+        BASIC: 149000, // Starter: Rp 149.000
+        PRO: 299000, // Boost: Rp 299.000
+        ENTERPRISE: 499000, // Pro: Rp 499.000
+      };
+      const planPrice = planPrices[subscriptionPlan] || 0;
+
+      // Create subscription record with plan price
+      // Convert amount to string for Prisma Decimal compatibility
+      // This subscription will be recorded as a purchase in global reports
+      const subscription = await tx.subscription.create({
+        data: {
+          tenantId: tenant.id,
+          plan: subscriptionPlan,
+          startDate: subscriptionStart,
+          endDate: subscriptionEnd,
+          status: 'ACTIVE',
+          amount: planPrice.toString(), // Set amount sesuai harga paket untuk laporan global
+          purchasedBy: 'SELF', // Initial subscription saat registrasi tenant adalah self-purchase
+        },
+      });
+
+      // Auto activate users when subscription is active
+      await tx.user.updateMany({
+        where: {
+          tenantId: tenant.id,
+          role: {
+            in: ['CASHIER', 'KITCHEN', 'SUPERVISOR'],
+          },
+        },
+        data: {
+          isActive: true,
+        },
+      });
+
+      // Log subscription creation for debugging
+      logger.info(`✅ Subscription created for tenant ${tenant.name}:`, {
+        subscriptionId: subscription.id,
+        plan: subscriptionPlan,
+        amount: planPrice,
+        startDate: subscriptionStart.toISOString(),
+        endDate: subscriptionEnd.toISOString(),
+      });
+
+      // Update tenant with plan features (inside transaction)
+      const planConfig = subscriptionPlan === 'BASIC' ? {
+        tenantsLimit: 1,
+        products: 25,
+        users: 4,
+        outlets: 1,
+        addons: ['receipt-basic'],
+        access: ['kasir', 'laporan'],
+      } : subscriptionPlan === 'PRO' ? {
+        tenantsLimit: 1,
+        products: 100,
+        users: 10,
+        outlets: 2,
+        addons: ['receipt-advanced', 'multi-outlet'],
+        access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
+      } : {
+        tenantsLimit: -1,
+        products: -1,
+        users: -1,
+        outlets: -1,
+        addons: ['receipt-advanced', 'multi-outlet'],
+        access: ['semua'],
+      };
+
+      await tx.tenant.update({
+        where: { id: tenant.id },
+        data: {
+          tenantsLimit: planConfig.tenantsLimit,
+          features: planConfig as any,
+        },
+      });
+
+      return { tenant, users, defaultPassword };
     });
 
-    // Update tenant with plan features (inside transaction)
-    const planConfig = subscriptionPlan === 'BASIC' ? {
-      tenantsLimit: 1,
-      products: 25,
-      users: 4,
-      outlets: 1,
-      addons: ['receipt-basic'],
-      access: ['kasir', 'laporan'],
-    } : subscriptionPlan === 'PRO' ? {
-      tenantsLimit: 1,
-      products: 100,
-      users: 10,
-      outlets: 2,
-      addons: ['receipt-advanced', 'multi-outlet'],
-      access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
-    } : {
-      tenantsLimit: -1,
-      products: -1,
-      users: -1,
-      outlets: -1,
-      addons: ['receipt-advanced', 'multi-outlet'],
-      access: ['semua'],
-    };
-    
-    await tx.tenant.update({
-      where: { id: tenant.id },
-      data: {
-        tenantsLimit: planConfig.tenantsLimit,
-        features: planConfig as any,
-      },
-    });
-
-    return { tenant, users, defaultPassword };
-  });
-
-  // Invalidate cache for tenants list and individual tenant
-  try {
-    const redis = getRedisClient();
-    if (redis) {
-      // Delete individual tenant cache
-      await redis.del(`tenant:${result.tenant.id}`);
-      
-      // Delete all tenants list cache (tenants:*)
-      const keys = await redis.keys('tenants:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-        logger.info('Invalidated tenants list cache after creating tenant', {
-          tenantId: result.tenant.id,
-          cacheKeysDeleted: keys.length
-        });
-      }
-    }
-  } catch (cacheError: any) {
-    // Log but don't fail tenant creation if cache invalidation fails
-    logger.warn('Failed to invalidate cache after creating tenant', {
-      error: cacheError.message,
-      tenantId: result.tenant.id
-    });
-  }
-
-  // Apply plan features after transaction completes (to avoid transaction conflicts)
-  // This is done asynchronously to not block the response
-  // Use process.nextTick to ensure it runs after the response is sent
-  process.nextTick(async () => {
+    // Invalidate cache for tenants list and individual tenant
     try {
-      const { applyPlanFeatures } = await import('./plan-features.service');
-      await applyPlanFeatures(result.tenant.id, subscriptionPlan);
-      logger.info(`✅ Plan features applied successfully for tenant ${result.tenant.id}`);
-    } catch (error: any) {
-      // Log error but don't fail tenant creation
-      // This error happens after the response is sent, so it won't affect the client
-      logger.error(`⚠️ Error applying plan features (non-blocking) for tenant ${result.tenant.id}:`, error.message || error);
-      if (error.stack) {
-        logger.error('Error stack:', error.stack);
-      }
-    }
-  });
+      const redis = getRedisClient();
+      if (redis) {
+        // Delete individual tenant cache
+        await redis.del(`tenant:${result.tenant.id}`);
 
-  return {
-    tenant: {
-      id: result.tenant.id,
-      name: result.tenant.name,
-      email: result.tenant.email,
-      slug: result.tenant.slug,
-      subscriptionEnd: result.tenant.subscriptionEnd,
-      subscriptionPlan: result.tenant.subscriptionPlan,
-      phone: result.tenant.phone,
-      address: result.tenant.address,
-    },
-    users: result.users.map((u) => ({
-      id: u.id,
-      email: u.email,
-      name: u.name,
-      role: u.role,
-      password: result.defaultPassword ? (async () => {
+        // Delete all tenants list cache (tenants:*)
+        const keys = await redis.keys('tenants:*');
+        if (keys.length > 0) {
+          await redis.del(...keys);
+          logger.info('Invalidated tenants list cache after creating tenant', {
+            tenantId: result.tenant.id,
+            cacheKeysDeleted: keys.length
+          });
+        }
+      }
+    } catch (cacheError: any) {
+      // Log but don't fail tenant creation if cache invalidation fails
+      logger.warn('Failed to invalidate cache after creating tenant', {
+        error: cacheError.message,
+        tenantId: result.tenant.id
+      });
+    }
+
+    // Apply plan features after transaction completes (to avoid transaction conflicts)
+    // This is done asynchronously to not block the response
+    // Use process.nextTick to ensure it runs after the response is sent
+    process.nextTick(async () => {
+      try {
+        const { applyPlanFeatures } = await import('./plan-features.service');
+        await applyPlanFeatures(result.tenant.id, subscriptionPlan);
+        logger.info(`✅ Plan features applied successfully for tenant ${result.tenant.id}`);
+      } catch (error: any) {
+        // Log error but don't fail tenant creation
+        // This error happens after the response is sent, so it won't affect the client
+        logger.error(`⚠️ Error applying plan features (non-blocking) for tenant ${result.tenant.id}:`, error.message || error);
+        if (error.stack) {
+          logger.error('Error stack:', error.stack);
+        }
+      }
+    });
+
+    return {
+      tenant: {
+        id: result.tenant.id,
+        name: result.tenant.name,
+        email: result.tenant.email,
+        slug: result.tenant.slug,
+        subscriptionEnd: result.tenant.subscriptionEnd,
+        subscriptionPlan: result.tenant.subscriptionPlan,
+        phone: result.tenant.phone,
+        address: result.tenant.address,
+      },
+      users: result.users.map((u) => ({
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        role: u.role,
+        password: result.defaultPassword ? (async () => {
+          // Decrypt defaultPassword before returning
+          const { decrypt } = await import('../utils/encryption');
+          return decrypt(result.defaultPassword);
+        })() : undefined, // Return decrypted password for super admin to share
+      })),
+      defaultPassword: result.defaultPassword ? (async () => {
         // Decrypt defaultPassword before returning
         const { decrypt } = await import('../utils/encryption');
         return decrypt(result.defaultPassword);
-      })() : undefined, // Return decrypted password for super admin to share
-    })),
-    defaultPassword: result.defaultPassword ? (async () => {
-      // Decrypt defaultPassword before returning
-      const { decrypt } = await import('../utils/encryption');
-      return decrypt(result.defaultPassword);
-    })() : undefined,
-  };
+      })() : undefined,
+    };
   } catch (error: any) {
     // Re-throw AppError as is
     if (error instanceof AppError) {
@@ -783,7 +712,7 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
 
       if (adminUser) {
         const hashedPassword = await bcrypt.hash(input.password, 10);
-        
+
         // Encrypt defaultPassword before storing
         const { encrypt: encryptPassword } = await import('../utils/encryption');
         const encryptedDefaultPassword = encryptPassword(input.password);
