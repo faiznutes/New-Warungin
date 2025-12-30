@@ -587,6 +587,44 @@
         </div>
     </div>
 
+    <!-- Modal: Add User -->
+    <div v-if="showAddUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddUserModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-blue-500 text-3xl">person_add</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah User</h3>
+            </div>
+            <p class="text-slate-500 mb-4">Tambah user baru untuk tenant ini. User akan dibuat dengan password default.</p>
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-4">
+                <p class="text-sm text-blue-700 dark:text-blue-300">
+                    <span class="font-bold">Tip:</span> Untuk menambah user, silakan gunakan halaman Users di menu Pengaturan tenant atau hubungi support.
+                </p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button @click="showAddUserModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold hover:bg-slate-200 transition-colors">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Store -->
+    <div v-if="showAddStoreModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddStoreModal = false">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="material-symbols-outlined text-blue-500 text-3xl">add_business</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Toko</h3>
+            </div>
+            <p class="text-slate-500 mb-4">Tambah outlet/toko baru untuk tenant ini.</p>
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-4">
+                <p class="text-sm text-blue-700 dark:text-blue-300">
+                    <span class="font-bold">Tip:</span> Untuk menambah toko, silakan gunakan halaman Outlets di menu Pengaturan tenant atau hubungi support.
+                </p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button @click="showAddStoreModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold hover:bg-slate-200 transition-colors">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Deactivate Subscription -->
     <div v-if="showDeactivateSubscriptionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showDeactivateSubscriptionModal = false">
         <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
