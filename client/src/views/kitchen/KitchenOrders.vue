@@ -71,7 +71,7 @@
       </div>
       <div class="flex items-center gap-3 ml-auto">
         <span class="text-slate-500 text-sm font-medium hidden sm:inline">Urutkan:</span>
-        <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-slate-300 px-3 hover:bg-slate-50 text-slate-700 shadow-sm">
+        <button @click="handleSortToggle" class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white border border-slate-300 px-3 hover:bg-slate-50 text-slate-700 shadow-sm">
           <span class="material-symbols-outlined text-[20px] text-slate-500">schedule</span>
           <span class="text-sm font-medium">Waktu (Lama &gt; Baru)</span>
           <span class="material-symbols-outlined text-[20px] text-slate-400">arrow_drop_down</span>
@@ -260,6 +260,10 @@ const toggleItemCheck = (itemId: string) => {
 const handleLogout = () => {
   authStore.clearAuth();
   window.location.replace('/login');
+};
+
+const handleSortToggle = () => {
+  success('Urutan pesanan: Paling lama di atas. Fitur sort lainnya akan segera tersedia.', 'Info');
 };
 
 const loadOrders = async () => {

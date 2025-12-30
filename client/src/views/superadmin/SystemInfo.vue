@@ -73,7 +73,7 @@
               </div>
               <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest mb-2">Info Upgrade</p>
               <h4 class="font-bold text-lg mb-4 leading-snug relative z-10">Butuh fitur kustom untuk perusahaan Anda?</h4>
-              <button class="w-full py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold transition-all border border-white/10 relative z-10 hover:shadow-lg">
+              <button @click="handleConsultEnterprise" class="w-full py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-xl text-xs font-bold transition-all border border-white/10 relative z-10 hover:shadow-lg">
                 Konsultasi Enterprise
               </button>
             </div>
@@ -226,7 +226,7 @@
                          <span :class="['text-xs font-bold', plan.popular ? 'text-white' : 'text-slate-700 dark:text-slate-300']">{{ f }}</span>
                        </div>
                     </div>
-                    <button :class="['mt-8 w-full py-4 rounded-xl font-black text-xs transition-all tracking-wide uppercase', plan.popular ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 dark:text-white text-slate-700']">
+                    <button @click="handleViewPlanDetail(plan)" :class="['mt-8 w-full py-4 rounded-xl font-black text-xs transition-all tracking-wide uppercase', plan.popular ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 dark:text-white text-slate-700']">
                       Lihat Detail Paket
                     </button>
                   </div>
@@ -254,7 +254,7 @@
                       <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium min-h-[40px]">{{ addon.description }}</p>
                       <div class="mt-4 flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
                         <span class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg">{{ addon.price }}</span>
-                        <button class="rotate-0 group-hover:rotate-90 transition-transform duration-300">
+                        <button @click="handleAddAddon(addon)" class="rotate-0 group-hover:rotate-90 transition-transform duration-300">
                            <span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors">add_circle</span>
                         </button>
                       </div>
@@ -273,7 +273,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useNotification } from '../../composables/useNotification';
 
+const { success: showSuccess, info: showInfo } = useNotification();
 const activeCategory = ref('tech');
 
 const menuLabels = {
@@ -517,6 +519,18 @@ const addons = [
 onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+const handleConsultEnterprise = () => {
+  showInfo('Fitur konsultasi Enterprise akan segera tersedia. Silakan hubungi sales@warungin.id');
+};
+
+const handleViewPlanDetail = (plan: any) => {
+  showInfo(`Detail paket ${plan.name} akan segera tersedia.`);
+};
+
+const handleAddAddon = (addon: any) => {
+  showInfo(`Fitur tambah addon ${addon.name} akan segera tersedia.`);
+};
 
 </script>
 

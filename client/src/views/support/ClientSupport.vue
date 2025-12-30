@@ -420,7 +420,7 @@
                     Tutup
                   </button>
                     <!-- Action Placeholder -->
-                    <button class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium shadow-lg shadow-blue-500/30">
+                    <button @click="handleReplyTicket" class="flex-1 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium shadow-lg shadow-blue-500/30">
                         Balas
                     </button>
                </div>
@@ -576,6 +576,10 @@ const formatDate = (dateStr: string) => {
 onMounted(() => {
   loadTickets();
 });
+
+const handleReplyTicket = () => {
+  showSuccess('Fitur membalas tiket akan segera tersedia.');
+};
 </script>
 
 <style scoped>

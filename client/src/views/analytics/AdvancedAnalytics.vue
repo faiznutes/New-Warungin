@@ -177,7 +177,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
        <div class="flex items-center justify-between mb-6">
          <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Perbandingan Performa Toko</h3>
-         <button class="text-sm text-[#4c739a] hover:text-[#10b981] font-medium flex items-center gap-1">
+         <button @click="handleExportStoreComparison" class="text-sm text-[#4c739a] hover:text-[#10b981] font-medium flex items-center gap-1">
             <span class="material-symbols-outlined text-[18px]">download</span> Export
          </button>
        </div>
@@ -207,7 +207,7 @@
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Custom Reports</h3>
-        <button class="text-sm text-[#10b981] font-bold hover:underline">View All</button>
+        <button @click="handleViewAllReports" class="text-sm text-[#10b981] font-bold hover:underline">View All</button>
       </div>
 
       <div v-if="customReports.length === 0" class="flex flex-col items-center justify-center py-12 text-center bg-[#f6f7f8] dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
@@ -502,5 +502,13 @@ onMounted(() => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   loadAnalytics();
 });
+
+const handleExportStoreComparison = () => {
+  showInfo('Fitur export perbandingan toko akan segera tersedia.');
+};
+
+const handleViewAllReports = () => {
+  showInfo('Halaman semua custom reports akan segera tersedia.');
+};
 </script>
 

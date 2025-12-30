@@ -7,7 +7,7 @@
         <p class="text-slate-500 text-base">Tukarkan poin untuk langganan atau add-on.</p>
       </div>
       <div class="flex gap-3">
-        <button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary hover:border-primary/30 transition-all shadow-sm">
+        <button @click="handleShowGuide" class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary hover:border-primary/30 transition-all shadow-sm">
           <span class="material-symbols-outlined text-[20px]">description</span>
           <span>Panduan</span>
         </button>
@@ -406,6 +406,10 @@ const claimReward = () => {
     name: 'reward-view',
     query: { session: sessionId },
   });
+};
+
+const handleShowGuide = () => {
+  success('Panduan poin gratis: Tonton iklan untuk mendapat poin, tukarkan poin untuk langganan atau add-on. Batas 5 iklan per hari.', 'Panduan');
 };
 
 const redeemSubscription = async (plan: any) => {
