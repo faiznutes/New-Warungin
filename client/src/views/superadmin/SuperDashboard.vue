@@ -13,9 +13,27 @@
             <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Selamat Datang Kembali, {{ authStore.user?.name || 'Admin' }}</span>
             <span class="text-3xl" style="color: initial; font-family: 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;">👋</span>
           </h1>
-          <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Berikut adalah ringkasan performa platform Anda hari ini.</p>
+          <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">
+            Ringkasan performa platform periode: <span class="font-bold text-slate-700 dark:text-slate-300">{{ getDateRangeLabel() }}</span>
+          </p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex flex-wrap gap-3 items-center">
+          <!-- Date Range Filter -->
+          <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm flex items-center overflow-hidden">
+            <button 
+              v-for="range in dateRanges" 
+              :key="range.value"
+              @click="superAdminDateRange = range.value; loadSuperAdminStats()"
+              :class="[
+                'px-4 py-2.5 text-sm font-bold transition-all',
+                superAdminDateRange === range.value 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+              ]"
+            >
+              {{ range.label }}
+            </button>
+          </div>
           <router-link
             to="/app/reports/global"
             class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white flex items-center gap-2 transition-all shadow-sm"
@@ -299,6 +317,13 @@ const authStore = useAuthStore();
 const { error: showError } = useNotification();
 const loading = ref(false);
 const superAdminDateRange = ref('month');
+
+const dateRanges = [
+  { value: 'today', label: 'Hari Ini' },
+  { value: 'week', label: 'Minggu' },
+  { value: 'month', label: 'Bulan' },
+  { value: 'year', label: 'Tahun' },
+];
 const stats = ref<any>(null);
 const globalReportData = ref<any>(null);
 const superAdminStats = ref({

@@ -173,13 +173,18 @@
                                     <span class="material-symbols-outlined text-[18px] text-blue-500">badge</span> NPWP
                                 </label>
                                 <p class="text-lg font-bold text-slate-900 dark:text-white border-b-2 border-slate-100 dark:border-slate-700 pb-2 group-hover:border-blue-500 transition-colors">
-                                    {{ (tenant as any)?.taxId || '-' }}
+                                        {{ (tenant as any)?.taxId || '-' }}
                                 </p>
                             </div>
                         </div>
-                        <div class="bg-slate-50/50 dark:bg-slate-800/50 px-8 py-5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-500">Perlu mengupdate informasi sensitif?</span>
-                            <button @click="handleRequestUpdateProfile" class="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline">Request Update Profil</button>
+                        <div class="bg-slate-50/50 dark:bg-slate-800/50 px-8 py-5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between flex-wrap gap-4">
+                            <span class="text-sm font-medium text-slate-500">Perlu mengupdate informasi tenant?</span>
+                            <div class="flex gap-3">
+                                <button @click="openEditProfileModal" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 shadow-sm">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span> Edit Profil
+                                </button>
+                                <button @click="handleRequestUpdateProfile" class="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors hover:underline">Request ke Tenant</button>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -453,7 +458,12 @@
 
                  <!-- TAB: Points -->
                  <section v-if="activeTab === 'points'" class="flex flex-col gap-6 animate-fade-in-up">
-                    <h2 class="text-xl font-black text-slate-900 dark:text-white">Poin Tenant</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white">Poin Tenant</h2>
+                        <button @click="showAddPointsModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/30">
+                            <span class="material-symbols-outlined text-[18px]">add</span> Tambah Poin
+                        </button>
+                    </div>
                     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
                         <div v-if="loadingPoints" class="flex items-center justify-center py-12">
                             <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
@@ -461,20 +471,33 @@
                         <div v-else-if="!tenantPoints" class="text-center py-12">
                             <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">stars</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Belum Ada Data Poin</h3>
-                            <p class="text-slate-500 font-medium">Tenant ini belum memiliki poin reward aktif.</p>
+                            <p class="text-slate-500 font-medium mb-4">Tenant ini belum memiliki poin reward aktif.</p>
+                            <button @click="showAddPointsModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                                Tambah Poin Pertama
+                            </button>
                         </div>
-                        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
-                                <span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Total Poin</span>
-                                <p class="text-3xl font-black mt-1">{{ tenantPoints?.totalPoints || 0 }}</p>
+                        <div v-else class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Total Poin</span>
+                                    <p class="text-3xl font-black mt-1">{{ tenantPoints?.totalPoints || 0 }}</p>
+                                </div>
+                                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Digunakan</span>
+                                    <p class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.usedPoints || 0 }}</p>
+                                </div>
+                                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Tersedia</span>
+                                    <p class="text-2xl font-black text-green-600 mt-1">{{ (tenantPoints?.totalPoints || 0) - (tenantPoints?.usedPoints || 0) }}</p>
+                                </div>
                             </div>
-                            <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Digunakan</span>
-                                <p class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.usedPoints || 0 }}</p>
-                            </div>
-                            <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Tersedia</span>
-                                <p class="text-2xl font-black text-green-600 mt-1">{{ (tenantPoints?.totalPoints || 0) - (tenantPoints?.usedPoints || 0) }}</p>
+                            <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <button @click="showEditPointsModal = true" class="px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">edit</span> Edit Poin
+                                </button>
+                                <button @click="showAddPointsModal = true" class="px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">add</span> Tambah Poin
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -579,6 +602,115 @@
         </div>
     </div>
     </div>
+
+    <!-- Modal: Edit Profile -->
+    <Teleport to="body">
+        <div v-if="showEditProfileModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditProfileModal = false">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Profil Tenant</h3>
+                    <button @click="showEditProfileModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form @submit.prevent="handleSaveProfile" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Tenant *</label>
+                        <input v-model="editForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama tenant" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Email *</label>
+                        <input v-model="editForm.email" type="email" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="email@example.com" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
+                        <input v-model="editForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="08xxxxxxxxxx" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat</label>
+                        <input v-model="editForm.address" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Alamat bisnis" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Status</label>
+                        <select v-model="editForm.isActive" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
+                            <option :value="true">Aktif</option>
+                            <option :value="false">Nonaktif</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" @click="showEditProfileModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
+                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+                            {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Modal: Add Points -->
+    <Teleport to="body">
+        <div v-if="showAddPointsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddPointsModal = false">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Poin</h3>
+                    <button @click="showAddPointsModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form @submit.prevent="handleAddPoints" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Jumlah Poin *</label>
+                        <input v-model.number="pointsToAdd" type="number" min="1" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Masukkan jumlah poin" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alasan/Catatan</label>
+                        <textarea v-model="pointsReason" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alasan penambahan poin (opsional)"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" @click="showAddPointsModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
+                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+                            {{ saving ? 'Menambah...' : 'Tambah Poin' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Modal: Edit Points -->
+    <Teleport to="body">
+        <div v-if="showEditPointsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditPointsModal = false">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Total Poin</h3>
+                    <button @click="showEditPointsModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <form @submit.prevent="handleEditPoints" class="space-y-4">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl mb-4">
+                        <p class="text-sm text-slate-500">Total poin saat ini:</p>
+                        <p class="text-2xl font-black text-blue-600">{{ tenantPoints?.totalPoints || 0 }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Total Poin Baru *</label>
+                        <input v-model.number="newTotalPoints" type="number" min="0" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Masukkan total poin baru" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alasan Perubahan</label>
+                        <textarea v-model="pointsReason" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alasan perubahan poin"></textarea>
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" @click="showEditPointsModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
+                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -590,7 +722,7 @@ import { useNotification } from '../../composables/useNotification';
 
 const route = useRoute();
 const router = useRouter();
-const { success: showSuccess } = useNotification();
+const { success: showSuccess, error: showError, confirm: confirmDialog } = useNotification();
 
 const tenantId = route.params.id as string;
 const activeTab = ref('profile');
@@ -611,6 +743,22 @@ const showDeactivateSubscriptionModal = ref(false);
 const showReduceSubscriptionModal = ref(false);
 const showExtendSubscriptionModal = ref(false);
 const showAddAddonModal = ref(false);
+const showEditProfileModal = ref(false);
+const showAddPointsModal = ref(false);
+const showEditPointsModal = ref(false);
+
+// Form data
+const saving = ref(false);
+const editForm = ref({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    isActive: true,
+});
+const pointsToAdd = ref(0);
+const newTotalPoints = ref(0);
+const pointsReason = ref('');
 
 
 // Computed
@@ -745,6 +893,76 @@ const handleDownloadInvoice = async (invoice: any) => {
         // Fallback: generate simple receipt
         showError('Gagal download invoice. Coba lagi nanti.');
     }
+};
+
+// Edit Profile Handler
+const handleSaveProfile = async () => {
+    saving.value = true;
+    try {
+        await api.put(`/tenants/${tenantId}`, editForm.value);
+        showSuccess('Profil tenant berhasil diperbarui!');
+        showEditProfileModal.value = false;
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal menyimpan perubahan.');
+    } finally {
+        saving.value = false;
+    }
+};
+
+// Add Points Handler
+const handleAddPoints = async () => {
+    if (!pointsToAdd.value || pointsToAdd.value < 1) return;
+    saving.value = true;
+    try {
+        await api.post(`/tenants/${tenantId}/points/add`, {
+            points: pointsToAdd.value,
+            reason: pointsReason.value || 'Penambahan poin manual oleh Super Admin',
+        });
+        showSuccess(`${pointsToAdd.value} poin berhasil ditambahkan!`);
+        showAddPointsModal.value = false;
+        pointsToAdd.value = 0;
+        pointsReason.value = '';
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal menambah poin.');
+    } finally {
+        saving.value = false;
+    }
+};
+
+// Edit Points Handler
+const handleEditPoints = async () => {
+    saving.value = true;
+    try {
+        await api.put(`/tenants/${tenantId}/points`, {
+            totalPoints: newTotalPoints.value,
+            reason: pointsReason.value || 'Perubahan poin manual oleh Super Admin',
+        });
+        showSuccess('Total poin berhasil diperbarui!');
+        showEditPointsModal.value = false;
+        newTotalPoints.value = 0;
+        pointsReason.value = '';
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal mengubah poin.');
+    } finally {
+        saving.value = false;
+    }
+};
+
+// Open edit modal with current data
+const openEditProfileModal = () => {
+    if (tenant.value) {
+        editForm.value = {
+            name: tenant.value.name || '',
+            email: tenant.value.email || '',
+            phone: tenant.value.phone || '',
+            address: tenant.value.address || '',
+            isActive: tenant.value.isActive !== false,
+        };
+    }
+    showEditProfileModal.value = true;
 };
 
 onMounted(() => {
