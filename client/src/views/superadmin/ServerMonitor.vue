@@ -617,11 +617,13 @@ const loadAllData = async () => {
 };
 
 const handleNotificationBell = () => {
-  success('Anda memiliki 2 peringatan aktif. Lihat tab Ringkasan untuk detail.');
+  activeTab.value = 'overview';
+  success('Lihat bagian Alerts di tab Ringkasan untuk detail peringatan aktif.');
 };
 
 const handleViewHistory = () => {
-  success('Halaman riwayat sistem akan segera tersedia.');
+  activeTab.value = 'logs';
+  success('Melihat riwayat log sistem.');
 };
 
 const handleRestartNode = async (nodeName: string) => {

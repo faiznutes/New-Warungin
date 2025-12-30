@@ -273,8 +273,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useNotification } from '../../composables/useNotification';
 
+const router = useRouter();
 const { success: showSuccess, info: showInfo } = useNotification();
 const activeCategory = ref('tech');
 
@@ -521,15 +523,15 @@ onMounted(() => {
 });
 
 const handleConsultEnterprise = () => {
-  showInfo('Fitur konsultasi Enterprise akan segera tersedia. Silakan hubungi sales@warungin.id');
+  window.open('mailto:sales@warungin.id?subject=Konsultasi Enterprise', '_blank');
 };
 
 const handleViewPlanDetail = (plan: any) => {
-  showInfo(`Detail paket ${plan.name} akan segera tersedia.`);
+  router.push(`/pricing?plan=${plan.id}`);
 };
 
 const handleAddAddon = (addon: any) => {
-  showInfo(`Fitur tambah addon ${addon.name} akan segera tersedia.`);
+  router.push(`/app/addons?add=${addon.name}`);
 };
 
 </script>

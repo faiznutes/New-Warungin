@@ -247,7 +247,7 @@ const formatDate = (dateString: string) => {
 }
 
 const handleModePengguna = () => {
-    showSuccess('Mode Pengguna akan segera tersedia. Fitur ini memungkinkan Anda melihat toko dari sudut pandang kasir.');
+    router.push('/app/pos');
 };
 
 const handleHubungiSupport = () => {

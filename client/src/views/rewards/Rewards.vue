@@ -408,8 +408,15 @@ const claimReward = () => {
   });
 };
 
-const handleShowGuide = () => {
-  success('Panduan poin gratis: Tonton iklan untuk mendapat poin, tukarkan poin untuk langganan atau add-on. Batas 5 iklan per hari.', 'Panduan');
+const handleShowGuide = async () => {
+  await success(
+    'Cara Mendapat Poin:\n' +
+    '1. Tonton iklan harian (dapat 10 poin per video)\n' +
+    '2. Maksimal 5 video per hari\n' +
+    '3. Tukarkan poin untuk perpanjang langganan atau tambah add-on\n' +
+    '4. Poin berlaku selama 180 hari',
+    'Panduan Poin Gratis'
+  );
 };
 
 const redeemSubscription = async (plan: any) => {

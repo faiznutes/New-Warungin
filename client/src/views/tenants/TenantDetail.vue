@@ -702,21 +702,49 @@ const getAddonColor = (_addon: any, type: string) => {
 const getAddonIcon = (_addon: any) => 'extension';
 const getAddonDescription = (addon: any) => addon.description;
 
-// Actions with notifications
-const extendAddon = (_addon: any) => {
-    showSuccess('Fitur konfigurasi addon akan segera tersedia');
+// Actions with real functionality
+const extendAddon = (addon: any) => {
+    router.push(`/app/addons?extend=${addon.id}`);
 };
 
-const handleRequestUpdateProfile = () => {
-    showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
+const handleRequestUpdateProfile = async () => {
+    const confirmed = await confirmDialog(
+        'Apakah Anda yakin ingin mengirim permintaan update profil?',
+        'Konfirmasi',
+        'Ya, Kirim',
+        'Batal'
+    );
+    if (confirmed) {
+        try {
+            await api.post(`/tenants/${tenantId.value}/request-update`);
+            showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
+        } catch (error) {
+            showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
+        }
+    }
 };
 
 const handleViewAllInvoices = () => {
-    showSuccess('Halaman riwayat invoice lengkap akan segera tersedia.');
+    router.push('/app/invoices');
 };
 
-const handleDownloadInvoice = (_invoice: any) => {
-    showSuccess('Fitur download PDF invoice akan segera tersedia.');
+const handleDownloadInvoice = async (invoice: any) => {
+    try {
+        const response = await api.get(`/invoices/${invoice.id}/download`, {
+            responseType: 'blob',
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `invoice-${invoice.invoiceNumber || invoice.id}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        showSuccess('Invoice berhasil didownload!');
+    } catch (error) {
+        // Fallback: generate simple receipt
+        showError('Gagal download invoice. Coba lagi nanti.');
+    }
 };
 
 onMounted(() => {

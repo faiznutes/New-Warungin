@@ -416,7 +416,8 @@ const loadRecentOrders = async () => {
 }
 
 const handleExportTransactions = () => {
-  showNotification({ title: 'Ekspor Data', message: 'Fitur ekspor transaksi akan segera tersedia.', type: 'info' });
+  // Navigate to full transactions page for export
+  router.push('/app/transactions');
 };
 
 

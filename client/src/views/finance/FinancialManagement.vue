@@ -796,7 +796,7 @@ const calculateTax = async () => {
 };
 
 const handleViewDetails = () => {
-  showSuccess('Detail cash flow akan segera tersedia.');
+  router.push('/app/reports?type=cashflow');
 };
 
 const loadForecast = async () => {

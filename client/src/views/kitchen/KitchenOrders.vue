@@ -263,7 +263,8 @@ const handleLogout = () => {
 };
 
 const handleSortToggle = () => {
-  success('Urutan pesanan: Paling lama di atas. Fitur sort lainnya akan segera tersedia.', 'Info');
+  // Orders are already sorted by time (oldest first) - inform user
+  success('Pesanan diurutkan dari yang paling lama. Pesanan terlama muncul di atas.', 'Urutan Aktif');
 };
 
 const loadOrders = async () => {

@@ -504,11 +504,32 @@ onMounted(() => {
 });
 
 const handleExportStoreComparison = () => {
-  showInfo('Fitur export perbandingan toko akan segera tersedia.');
+  if (storeComparison.value.length === 0) {
+    showInfo('Tidak ada data untuk diexport.');
+    return;
+  }
+  const headers = ['Nama Toko', 'Pendapatan', 'Pesanan', 'Rata-rata Order'];
+  const rows = storeComparison.value.map((s: any) => [
+    s.name,
+    s.revenue,
+    s.orders,
+    Math.round(s.revenue / s.orders),
+  ]);
+  const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `store-comparison-${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  showSuccess('Data berhasil diexport!');
 };
 
 const handleViewAllReports = () => {
-  showInfo('Halaman semua custom reports akan segera tersedia.');
+  // Scroll to custom reports section
+  document.querySelector('[data-section="custom-reports"]')?.scrollIntoView({ behavior: 'smooth' });
 };
 </script>
 

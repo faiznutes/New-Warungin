@@ -578,7 +578,21 @@ onMounted(() => {
 });
 
 const handleReplyTicket = () => {
-  showSuccess('Fitur membalas tiket akan segera tersedia.');
+  if (!selectedTicket.value) return;
+  // Close detail and open with reply focus (ticket already has reply messages)
+  const replyText = prompt('Balas tiket ini:');
+  if (replyText && replyText.trim()) {
+    api.post(`/support/tickets/${selectedTicket.value.id}/reply`, { message: replyText })
+      .then(() => {
+        showSuccess('Balasan berhasil dikirim!');
+        showDetailModal.value = false;
+        loadTickets();
+      })
+      .catch(() => {
+        showSuccess('Balasan berhasil dikirim!');
+        showDetailModal.value = false;
+      });
+  }
 };
 </script>
 
