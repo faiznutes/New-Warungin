@@ -100,6 +100,17 @@
           <p class="text-sm font-medium leading-normal">Analytics</p>
         </router-link>
 
+        <router-link 
+          to="/app/reports/global" 
+          class="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group"
+          active-class="bg-blue-50 text-blue-600 font-bold"
+          :class="[$route.path.startsWith('/app/reports') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600']"
+          @click="windowWidth < 1024 ? sidebarOpen = false : null"
+        >
+          <span class="material-symbols-outlined" :class="{ 'icon-filled': $route.path.startsWith('/app/reports') }">summarize</span>
+          <p class="text-sm font-medium leading-normal">Laporan</p>
+        </router-link>
+
         <div class="my-2 border-t border-slate-200 dark:border-slate-700"></div>
         <p class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 mt-1">System</p>
 

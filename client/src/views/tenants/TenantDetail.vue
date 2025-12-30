@@ -422,11 +422,19 @@
 
                  <!-- Other tabs (Points, Users, Stores) follow similar pattern, omitting for length constraints in this single call but would be fully implemented in real file -->
                  <section v-if="activeTab === 'users'" class="flex flex-col gap-6 animate-fade-in-up">
-                    <h2 class="text-xl font-black text-slate-900 dark:text-white">Manajemen Pengguna</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white">Manajemen Pengguna</h2>
+                        <button @click="showAddUserModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/30">
+                            <span class="material-symbols-outlined text-[18px]">add</span> Tambah User
+                        </button>
+                    </div>
                     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div v-if="tenantUsers.length === 0" class="p-12 text-center">
                             <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">group</span>
-                            <p class="text-slate-500 font-medium">Belum ada pengguna</p>
+                            <p class="text-slate-500 font-medium mb-4">Belum ada pengguna</p>
+                            <button @click="showAddUserModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                                Tambah User Pertama
+                            </button>
                         </div>
                         <div v-else class="overflow-x-auto">
                             <table class="w-full text-sm text-left">
@@ -436,10 +444,11 @@
                                         <th class="px-6 py-4">Email</th>
                                         <th class="px-6 py-4">Role</th>
                                         <th class="px-6 py-4">Status</th>
+                                        <th class="px-6 py-4 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                    <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                    <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
                                         <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">{{ user.name }}</td>
                                         <td class="px-6 py-4 text-slate-500">{{ user.email }}</td>
                                         <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg">{{ user.role }}</span></td>
@@ -448,6 +457,19 @@
                                                 <span class="w-1.5 h-1.5 rounded-full" :class="user.isActive ? 'bg-green-500' : 'bg-red-500'"></span>
                                                 {{ user.isActive ? 'Aktif' : 'Nonaktif' }}
                                             </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button @click="handleEditUser(user)" class="p-1.5 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition-colors" title="Edit">
+                                                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                                                </button>
+                                                <button @click="handleToggleUserStatus(user)" class="p-1.5 hover:bg-amber-50 text-slate-400 hover:text-amber-600 rounded-lg transition-colors" :title="user.isActive ? 'Nonaktifkan' : 'Aktifkan'">
+                                                    <span class="material-symbols-outlined text-[18px]">{{ user.isActive ? 'block' : 'check_circle' }}</span>
+                                                </button>
+                                                <button @click="handleDeleteUser(user)" class="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors" title="Hapus">
+                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -507,7 +529,12 @@
                  <section v-if="activeTab === 'stores'" class="flex flex-col gap-6 animate-fade-in-up">
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-black text-slate-900 dark:text-white">Daftar Toko</h2>
-                        <span class="text-sm font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">{{ tenantStores.length }} toko</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">{{ tenantStores.length }} toko</span>
+                            <button @click="showAddStoreModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/30">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Tambah Toko
+                            </button>
+                        </div>
                     </div>
                     <div v-if="loadingStores" class="flex items-center justify-center py-12">
                         <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
@@ -515,7 +542,10 @@
                     <div v-else-if="tenantStores.length === 0" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-12 text-center">
                         <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">store</span>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Belum Ada Toko</h3>
-                        <p class="text-slate-500 font-medium">Tenant ini belum memiliki toko terdaftar.</p>
+                        <p class="text-slate-500 font-medium mb-4">Tenant ini belum memiliki toko terdaftar.</p>
+                        <button @click="showAddStoreModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                            Tambah Toko Pertama
+                        </button>
                     </div>
                     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div v-for="store in tenantStores" :key="store.id" 
@@ -538,6 +568,17 @@
                             <div v-if="store.phone" class="text-sm text-slate-500 font-medium flex items-center gap-1.5 mt-1">
                                 <span class="material-symbols-outlined text-[16px]">call</span>
                                 {{ store.phone }}
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button @click="handleEditStore(store)" class="flex-1 py-2 px-3 text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                                </button>
+                                <button @click="handleToggleStoreStatus(store)" class="flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1"
+                                        :class="store.isActive ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-green-600 bg-green-50 hover:bg-green-100'">
+                                    <span class="material-symbols-outlined text-[16px]">{{ store.isActive ? 'block' : 'check_circle' }}</span>
+                                    {{ store.isActive ? 'Nonaktif' : 'Aktifkan' }}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -746,6 +787,8 @@ const showAddAddonModal = ref(false);
 const showEditProfileModal = ref(false);
 const showAddPointsModal = ref(false);
 const showEditPointsModal = ref(false);
+const showAddUserModal = ref(false);
+const showAddStoreModal = ref(false);
 
 // Form data
 const saving = ref(false);
@@ -963,6 +1006,57 @@ const openEditProfileModal = () => {
         };
     }
     showEditProfileModal.value = true;
+};
+
+// User management handlers
+const handleEditUser = (user: any) => {
+    router.push(`/app/users/${user.id}/edit`);
+};
+
+const handleToggleUserStatus = async (user: any) => {
+    const action = user.isActive ? 'menonaktifkan' : 'mengaktifkan';
+    const confirmed = await confirmDialog(`Apakah Anda yakin ingin ${action} user "${user.name}"?`, 'Konfirmasi', 'Ya', 'Batal');
+    if (!confirmed) return;
+    
+    try {
+        await api.put(`/users/${user.id}`, { isActive: !user.isActive });
+        showSuccess(`User berhasil di${user.isActive ? 'nonaktifkan' : 'aktifkan'}!`);
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal mengubah status user.');
+    }
+};
+
+const handleDeleteUser = async (user: any) => {
+    const confirmed = await confirmDialog(`Apakah Anda yakin ingin menghapus user "${user.name}"? Aksi ini tidak dapat dibatalkan.`, 'Hapus User', 'Hapus', 'Batal');
+    if (!confirmed) return;
+    
+    try {
+        await api.delete(`/users/${user.id}`);
+        showSuccess('User berhasil dihapus!');
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal menghapus user.');
+    }
+};
+
+// Store management handlers
+const handleEditStore = (store: any) => {
+    router.push(`/app/stores/${store.id}/edit`);
+};
+
+const handleToggleStoreStatus = async (store: any) => {
+    const action = store.isActive ? 'menonaktifkan' : 'mengaktifkan';
+    const confirmed = await confirmDialog(`Apakah Anda yakin ingin ${action} toko "${store.name}"?`, 'Konfirmasi', 'Ya', 'Batal');
+    if (!confirmed) return;
+    
+    try {
+        await api.put(`/stores/${store.id}`, { isActive: !store.isActive });
+        showSuccess(`Toko berhasil di${store.isActive ? 'nonaktifkan' : 'aktifkan'}!`);
+        loadTenantDetail();
+    } catch (error: any) {
+        showError(error.response?.data?.message || 'Gagal mengubah status toko.');
+    }
 };
 
 onMounted(() => {

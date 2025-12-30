@@ -205,6 +205,7 @@
                       v-model="tenantForm.subscriptionPlan"
                       class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
                     >
+                      <option value="DEMO">Demo (Semua Fitur)</option>
                       <option value="BASIC">Starter (BASIC)</option>
                       <option value="PRO">Boost (PRO)</option>
                       <option value="ENTERPRISE">Max (ENTERPRISE)</option>
@@ -212,6 +213,29 @@
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-500 pointer-events-none text-[20px]">expand_more</span>
                   </div>
                </div>
+            </div>
+
+            <!-- Custom Duration for DEMO -->
+            <div v-if="tenantForm.subscriptionPlan === 'DEMO'" class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+              <div class="flex items-start gap-3 mb-3">
+                <span class="material-symbols-outlined text-amber-600 text-[20px]">info</span>
+                <div>
+                  <p class="text-sm font-bold text-amber-800 dark:text-amber-200">Paket Demo</p>
+                  <p class="text-xs text-amber-700 dark:text-amber-300">Buka semua fitur premium untuk periode custom. Gratis tanpa biaya.</p>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-amber-800 dark:text-amber-200 mb-2">Durasi (hari) *</label>
+                <input
+                  v-model.number="tenantForm.demoDuration"
+                  type="number"
+                  min="1"
+                  max="365"
+                  required
+                  class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
+                  placeholder="Masukkan jumlah hari (misal: 30)"
+                />
+              </div>
             </div>
 
             <div>
@@ -284,6 +308,7 @@ const tenantForm = ref({
   phone: '',
   address: '',
   subscriptionPlan: 'BASIC',
+  demoDuration: 30,
   isActive: true,
 });
 
@@ -367,6 +392,11 @@ const saveTenant = async () => {
       subscriptionPlan: tenantForm.value.subscriptionPlan,
     };
 
+    // Add custom duration for DEMO plan
+    if (tenantForm.value.subscriptionPlan === 'DEMO') {
+      data.demoDuration = tenantForm.value.demoDuration || 30;
+    }
+
     if (editingTenant.value) {
       data.isActive = tenantForm.value.isActive;
       await api.put(`/tenants/${editingTenant.value.id}`, data);
@@ -409,6 +439,7 @@ const saveTenant = async () => {
 
 const getPlanName = (plan: string) => {
   const planNames: Record<string, string> = {
+    DEMO: 'DEMO',
     BASIC: 'BASIC',
     PRO: 'PRO',
     ENTERPRISE: 'MAX',
@@ -418,6 +449,7 @@ const getPlanName = (plan: string) => {
 
 const getPlanBadgeClass = (plan: string) => {
   const classes: Record<string, string> = {
+    DEMO: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30',
     BASIC: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
     PRO: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30',
     ENTERPRISE: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-900/20 dark:text-violet-400 dark:border-violet-900/30',
