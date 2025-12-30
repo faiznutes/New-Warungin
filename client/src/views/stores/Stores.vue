@@ -127,14 +127,14 @@
             </div>
             
             <div class="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
-              <router-link
+              <button
                 v-if="canManageStores"
-                :to="`/app/stores/${store.id}/edit`"
+                @click="editStore(store)"
                 class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
                 title="Ubah Toko"
               >
                 <span class="material-symbols-outlined text-[20px]">edit</span>
-              </router-link>
+              </button>
               <button
                 v-if="canManageStores"
                 @click="deleteStore(store)"

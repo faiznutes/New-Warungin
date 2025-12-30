@@ -417,7 +417,7 @@ const loadRecentOrders = async () => {
 
 const handleExportTransactions = () => {
   // Navigate to full transactions page for export
-  router.push('/app/transactions');
+  router.push('/app/finance/transactions');
 };
 
 
