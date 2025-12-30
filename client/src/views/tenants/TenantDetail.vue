@@ -99,7 +99,7 @@
                 <!-- Tabs -->
                 <div class="mt-2 px-6 lg:px-8 border-t border-slate-100 dark:border-slate-700">
                     <div class="flex overflow-x-auto gap-8 no-scrollbar scroll-smooth">
-                        <a v-for="tab in ['profile', 'subscription', 'addons', 'points', 'users', 'stores']" 
+                        <a v-for="tab in ['profile', 'subscription', 'addons', 'users', 'stores']" 
                            :key="tab"
                            @click.prevent="activeTab = tab" 
                            class="group relative py-4 flex flex-col items-center justify-center min-w-fit cursor-pointer">
@@ -472,53 +472,6 @@
                     </div>
                  </section>
 
-                 <!-- TAB: Points -->
-                 <section v-if="activeTab === 'points'" class="flex flex-col gap-6 animate-fade-in-up">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-black text-slate-900 dark:text-white">Poin Tenant</h2>
-                        <button @click="showAddPointsModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/30">
-                            <span class="material-symbols-outlined text-[18px]">add</span> Tambah Poin
-                        </button>
-                    </div>
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
-                        <div v-if="loadingPoints" class="flex items-center justify-center py-12">
-                            <div class="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-                        </div>
-                        <div v-else-if="!tenantPoints" class="text-center py-12">
-                            <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">stars</span>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Belum Ada Data Poin</h3>
-                            <p class="text-slate-500 font-medium mb-4">Tenant ini belum memiliki poin reward aktif.</p>
-                            <button @click="showAddPointsModal = true" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
-                                Tambah Poin Pertama
-                            </button>
-                        </div>
-                        <div v-else class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider opacity-80">Total Poin</span>
-                                    <p class="text-3xl font-black mt-1">{{ tenantPoints?.totalPoints || 0 }}</p>
-                                </div>
-                                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Digunakan</span>
-                                    <p class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ tenantPoints?.usedPoints || 0 }}</p>
-                                </div>
-                                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Poin Tersedia</span>
-                                    <p class="text-2xl font-black text-green-600 mt-1">{{ (tenantPoints?.totalPoints || 0) - (tenantPoints?.usedPoints || 0) }}</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                <button @click="showEditPointsModal = true" class="px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[18px]">edit</span> Edit Poin
-                                </button>
-                                <button @click="showAddPointsModal = true" class="px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[18px]">add</span> Tambah Poin
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                 </section>
-
                  <!-- TAB: Stores -->
                  <section v-if="activeTab === 'stores'" class="flex flex-col gap-6 animate-fade-in-up">
                     <div class="flex items-center justify-between">
@@ -658,14 +611,27 @@
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Toko</h3>
             </div>
             <p class="text-slate-500 mb-4">Tambah outlet/toko baru untuk tenant ini.</p>
-            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-4">
-                <p class="text-sm text-blue-700 dark:text-blue-300">
-                    <span class="font-bold">Tip:</span> Untuk menambah toko, silakan gunakan halaman Outlets di menu Pengaturan tenant atau hubungi support.
-                </p>
-            </div>
-            <div class="flex justify-end gap-3">
-                <button @click="showAddStoreModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold hover:bg-slate-200 transition-colors">Tutup</button>
-            </div>
+            <form @submit.prevent="handleAddStore" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko *</label>
+                    <input v-model="newStoreForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama toko/outlet" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat</label>
+                    <textarea v-model="newStoreForm.address" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alamat lengkap toko"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
+                    <input v-model="newStoreForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="08xxxxxxxxxx" />
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="showAddStoreModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                    <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                        <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        {{ saving ? 'Menambah...' : 'Tambah Toko' }}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -783,75 +749,6 @@
                         <button type="button" @click="showEditProfileModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
                         <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
                             {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </Teleport>
-
-    <!-- Modal: Ubah Poin (Tambah/Kurang) -->
-    <Teleport to="body">
-        <div v-if="showAddPointsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddPointsModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ubah Poin</h3>
-                    <button @click="showAddPointsModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form @submit.prevent="handleAddPoints" class="space-y-4">
-                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                        <p class="text-xs text-blue-700 dark:text-blue-300">
-                            <span class="font-bold">Tips:</span> Gunakan angka positif untuk menambah, negatif untuk mengurangi (contoh: -200)
-                        </p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Jumlah Poin *</label>
-                        <input v-model.number="pointsToAdd" type="number" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Contoh: 500 atau -200" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alasan/Catatan *</label>
-                        <textarea v-model="pointsReason" rows="3" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alasan perubahan poin (wajib untuk audit trail)"></textarea>
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showAddPointsModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving || !pointsReason" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : (pointsToAdd >= 0 ? 'Tambah Poin' : 'Kurangi Poin') }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </Teleport>
-
-    <!-- Modal: Edit Points -->
-    <Teleport to="body">
-        <div v-if="showEditPointsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showEditPointsModal = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Edit Total Poin</h3>
-                    <button @click="showEditPointsModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <form @submit.prevent="handleEditPoints" class="space-y-4">
-                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl mb-4">
-                        <p class="text-sm text-slate-500">Total poin saat ini:</p>
-                        <p class="text-2xl font-black text-blue-600">{{ tenantPoints?.totalPoints || 0 }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Total Poin Baru *</label>
-                        <input v-model.number="newTotalPoints" type="number" min="0" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Masukkan total poin baru" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alasan Perubahan</label>
-                        <textarea v-model="pointsReason" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alasan perubahan poin"></textarea>
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" @click="showEditPointsModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
-                        <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-                            {{ saving ? 'Menyimpan...' : 'Simpan' }}
                         </button>
                     </div>
                 </form>
@@ -1052,7 +949,6 @@ const errorMessage = ref('');
 const tenant = ref<any>(null);
 const tenantStores = ref<any[]>([]);
 const tenantUsers = ref<any[]>([]);
-const tenantPoints = ref<any>(null);
 const subscription = ref<any>(null);
 const billingHistory = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
@@ -1061,8 +957,6 @@ const activeAddons = ref<any[]>([]);
 
 const showAddAddonModal = ref(false);
 const showEditProfileModal = ref(false);
-const showAddPointsModal = ref(false);
-const showEditPointsModal = ref(false);
 const showAddUserModal = ref(false);
 const showEditUserModal = ref(false);
 const showAddStoreModal = ref(false);
@@ -1076,6 +970,11 @@ const editForm = ref({
     phone: '',
     address: '',
     isActive: true,
+});
+const newStoreForm = ref({
+    name: '',
+    address: '',
+    phone: ''
 });
 const editUserForm = ref({
     id: '',
@@ -1108,10 +1007,6 @@ const selectedAddonForEdit = ref<any>(null);
 const showEditSubscriptionModal = ref(false);
 const showEditAddonModal = ref(false);
 
-const pointsToAdd = ref<number | null>(null);
-const newTotalPoints = ref(0);
-const pointsReason = ref('');
-
 
 // Computed
 const daysRemainingDisplay = computed(() => {
@@ -1133,7 +1028,6 @@ const progressWidth = computed(() => {
 
 const filteredActiveAddons = computed(() => activeAddons.value || []);
 const loadingBilling = ref(false);
-const loadingPoints = ref(false);
 const loadingStores = ref(false);
 
 const getTabLabel = (tab: string) => {
@@ -1141,7 +1035,6 @@ const getTabLabel = (tab: string) => {
         profile: 'Profil',
         subscription: 'Langganan',
         addons: 'Addons',
-        points: 'Poin',
         users: 'Pengguna',
         stores: 'Toko'
     };
@@ -1163,7 +1056,7 @@ const loadTenantDetail = async () => {
     try {
         const [tenantRes, storesRes, usersRes, subRes] = await Promise.all([
             api.get(`/tenants/${tenantId}`),
-            api.get(`/tenants/${tenantId}/stores`),
+            api.get(`/outlets`),
             api.get(`/tenants/${tenantId}/users`),
             api.get(`/tenants/${tenantId}/subscription`) // Mock endpoint if needed
         ]);
@@ -1316,10 +1209,45 @@ const handleEditStore = (store: any) => {
     showEditStoreModal.value = true;
 };
 
+const handleAddStore = async () => {
+    if (!newStoreForm.value.name.trim()) {
+        showError('Nama toko wajib diisi');
+        return;
+    }
+
+    saving.value = true;
+    try {
+        await api.post('/outlets', {
+            tenantId: tenantId.value,
+            name: newStoreForm.value.name,
+            address: newStoreForm.value.address || undefined,
+            phone: newStoreForm.value.phone || undefined
+        });
+        
+        showSuccess(`Toko "${newStoreForm.value.name}" berhasil ditambahkan!`);
+        showAddStoreModal.value = false;
+        
+        // Reset form
+        newStoreForm.value = {
+            name: '',
+            address: '',
+            phone: ''
+        };
+        
+        loadTenantDetail();
+    } catch (error: any) {
+        const message = error.response?.data?.message || 'Gagal menambahkan toko. Silakan periksa kembali data Anda.';
+        showError(message);
+        console.error('Error adding store:', error);
+    } finally {
+        saving.value = false;
+    }
+};
+
 const handleSaveStore = async () => {
     saving.value = true;
     try {
-        await api.put(`/stores/${editStoreForm.value.id}`, {
+        await api.put(`/outlets/${editStoreForm.value.id}`, {
             name: editStoreForm.value.name,
             address: editStoreForm.value.address,
             phone: editStoreForm.value.phone,
@@ -1387,10 +1315,11 @@ const handleAddAddonSubmit = async () => {
     
     saving.value = true;
     try {
-        await api.post(`/tenants/${tenantId}/addons`, {
-            name: newAddonForm.value.name,
-            status: 'ACTIVE',
-            expiresAt: new Date(newAddonForm.value.expiresAt).toISOString()
+        await api.post(`/addons/subscribe`, {
+            addonId: newAddonForm.value.name.toLowerCase().replace(/\s+/g, '-'),
+            addonName: newAddonForm.value.name,
+            addonType: 'premium',
+            duration: Math.ceil((new Date(newAddonForm.value.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
         });
         
         showSuccess(`Addon "${newAddonForm.value.name}" berhasil ditambahkan!`);
@@ -1425,7 +1354,7 @@ const handleEditAddon = (addon: any) => {
 const handleSaveAddon = async () => {
     saving.value = true;
     try {
-        await api.put(`/tenants/${tenantId}/addons/${editAddonForm.value.id}`, {
+        await api.put(`/addons/${editAddonForm.value.id}`, {
             expiresAt: editAddonForm.value.expiresAt ? new Date(editAddonForm.value.expiresAt).toISOString() : null,
             status: editAddonForm.value.status
         });
@@ -1434,53 +1363,6 @@ const handleSaveAddon = async () => {
         loadTenantDetail();
     } catch (error: any) {
         showError(error.response?.data?.message || 'Gagal memperbarui addon.');
-    } finally {
-        saving.value = false;
-    }
-};
-
-
-
-// Add/Update Points Handler
-const handleAddPoints = async () => {
-    if (pointsToAdd.value === null || pointsToAdd.value === 0) return;
-    saving.value = true;
-    try {
-        await api.post(`/tenants/${tenantId}/points/add`, {
-            points: pointsToAdd.value,
-            reason: pointsReason.value || 'Perubahan poin manual oleh Super Admin',
-        });
-        
-        const action = pointsToAdd.value > 0 ? 'ditambahkan' : 'dikurangkan';
-        showSuccess(`${Math.abs(pointsToAdd.value)} poin berhasil ${action}!`);
-        showAddPointsModal.value = false;
-        pointsToAdd.value = null;
-        pointsReason.value = '';
-        loadTenantDetail();
-    } catch (error: any) {
-        showError(error.response?.data?.message || 'Gagal mengubah poin.');
-    } finally {
-        saving.value = false;
-    }
-};
-
-
-
-// Edit Points Handler
-const handleEditPoints = async () => {
-    saving.value = true;
-    try {
-        await api.put(`/tenants/${tenantId}/points`, {
-            totalPoints: newTotalPoints.value,
-            reason: pointsReason.value || 'Perubahan poin manual oleh Super Admin',
-        });
-        showSuccess('Total poin berhasil diperbarui!');
-        showEditPointsModal.value = false;
-        newTotalPoints.value = 0;
-        pointsReason.value = '';
-        loadTenantDetail();
-    } catch (error: any) {
-        showError(error.response?.data?.message || 'Gagal mengubah poin.');
     } finally {
         saving.value = false;
     }
@@ -1538,7 +1420,7 @@ const handleToggleStoreStatus = async (store: any) => {
     if (!confirmed) return;
     
     try {
-        await api.put(`/stores/${store.id}`, { isActive: !store.isActive });
+        await api.put(`/outlets/${store.id}`, { isActive: !store.isActive });
         showSuccess(`Toko berhasil di${store.isActive ? 'nonaktifkan' : 'aktifkan'}!`);
         loadTenantDetail();
     } catch (error: any) {

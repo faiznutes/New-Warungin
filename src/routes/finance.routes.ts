@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import { requireTenantId } from '../utils/tenant';
 import financeService from '../services/finance.service';
 import { checkBusinessAnalyticsAddon } from '../middlewares/addon-guard';

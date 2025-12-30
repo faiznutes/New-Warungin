@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import outletService from '../services/outlet.service';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';

@@ -19,15 +19,36 @@ export interface Tenant {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(localStorage.getItem('token'));
+  // Token storage strategy:
+  // - rememberMe=true: localStorage (persists across browser restarts)
+  // - rememberMe=false: sessionStorage (cleared on tab close)
+  // - On init: try both, prioritize localStorage then sessionStorage
+  
+  // Initialize token - try localStorage first, then sessionStorage
+  let initialToken: string | null = localStorage.getItem('token');
+  if (!initialToken) {
+    initialToken = sessionStorage.getItem('token');
+  }
+  
+  const token = ref<string | null>(initialToken);
+  const rememberMe = ref<boolean>(localStorage.getItem('rememberMe') === 'true');
   const user = ref<User | null>(null);
   const tenants = ref<Tenant[]>([]);
   const selectedTenantId = ref<string | null>(localStorage.getItem('selectedTenantId'));
   const selectedStoreId = ref<string | null>(localStorage.getItem('selectedStoreId'));
+  
+  // Shift status caching for CASHIER role - prevents excessive API calls
+  const shiftStatus = ref<{ shiftId: string; shiftEnd: null | string; storeName: string } | null>(null);
+  const shiftStatusCheckedAt = ref<number>(0);
+  const SHIFT_CACHE_DURATION = 5000; // Cache shift status for 5 seconds
+
+  // M-5 FIX: Request deduplication for fetchMe() calls
+  // Prevents multiple simultaneous /auth/me requests
+  let pendingFetchMePromise: Promise<any> | null = null;
 
   const isAuthenticated = computed(() => {
-    // Check if token exists (either in localStorage or sessionStorage)
-    const hasToken = token.value || localStorage.getItem('token') || sessionStorage.getItem('token');
+    // Check if token exists
+    const hasToken = token.value;
     // Return false immediately if no token to avoid flash
     if (!hasToken) {
       return false;
@@ -44,38 +65,69 @@ export const useAuthStore = defineStore('auth', () => {
   });
 
   const currentStoreId = computed(() => selectedStoreId.value);
+  
+  // Check if shift status cache is still valid
+  const isShiftCacheValid = computed(() => {
+    return shiftStatus.value !== null && (Date.now() - shiftStatusCheckedAt.value) < SHIFT_CACHE_DURATION;
+  });
 
+  /**
+   * Set authentication with token and user data
+   * respects rememberMe preference for token persistence
+   */
   const setAuth = (newToken: string, userData: User, remember: boolean = false) => {
     token.value = newToken;
     user.value = userData;
+    rememberMe.value = remember;
+    
+    // Clear all storage first to ensure clean state
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    localStorage.removeItem('rememberMe');
     
     // Store token based on remember me preference
     if (remember) {
+      // Persist across sessions
       localStorage.setItem('token', newToken);
       localStorage.setItem('rememberMe', 'true');
     } else {
+      // Clear on session end (tab close)
       sessionStorage.setItem('token', newToken);
-      localStorage.removeItem('rememberMe');
-      // Also store in localStorage for immediate access
-      localStorage.setItem('token', newToken);
+      localStorage.setItem('rememberMe', 'false');
     }
     
     // Always store user data in localStorage for faster access
     localStorage.setItem('user', JSON.stringify(userData));
+    
+    // Clear shift status cache on new auth
+    shiftStatus.value = null;
+    shiftStatusCheckedAt.value = 0;
   };
 
+  /**
+   * Clear all authentication data from both storage locations
+   * Ensures complete logout
+   */
   const clearAuth = () => {
     token.value = null;
     user.value = null;
+    rememberMe.value = false;
+    
+    // Clear from BOTH storage locations to ensure complete cleanup
     localStorage.removeItem('token');
     localStorage.removeItem('rememberMe');
     localStorage.removeItem('user');
     sessionStorage.removeItem('token');
-    tenants.value = []; // Clear tenants on logout
-    selectedTenantId.value = null; // Clear selected tenant on logout
-    localStorage.removeItem('selectedTenantId'); // Clear from local storage
-    selectedStoreId.value = null; // Clear selected store on logout
-    localStorage.removeItem('selectedStoreId'); // Clear from local storage
+    
+    tenants.value = [];
+    selectedTenantId.value = null;
+    localStorage.removeItem('selectedTenantId');
+    selectedStoreId.value = null;
+    localStorage.removeItem('selectedStoreId');
+    
+    // Clear shift status on logout
+    shiftStatus.value = null;
+    shiftStatusCheckedAt.value = 0;
   };
   
   // Restore user from localStorage on init
@@ -183,49 +235,124 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const fetchMe = async () => {
-    try {
-      // Ensure token is available
-      const currentToken = token.value || localStorage.getItem('token') || sessionStorage.getItem('token');
-      if (!currentToken) {
-        throw new Error('No token available');
-      }
-      
-      // Set token in store if not already set
-      if (!token.value && currentToken) {
-        token.value = currentToken;
-      }
-      
-      const response = await api.get('/auth/me');
-      user.value = response.data.user;
-      
-      // Update stored user data
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      // Auto-set store for cashier/kitchen from permissions
-      if (user.value && (user.value.role === 'CASHIER' || user.value.role === 'KITCHEN')) {
-        const permissions = (user.value as any).permissions;
-        if (permissions?.assignedStoreId) {
-          setSelectedStore(permissions.assignedStoreId);
-        }
-      }
-      
-      return response.data;
-    } catch (error) {
-      // Only clear auth if it's a real authentication error (401 or 404)
-      // Don't clear if it's just a network error or server error (500)
-      if (error && typeof error === 'object' && 'response' in error) {
-        const httpError = error as { response?: { status?: number } };
-        const status = httpError.response?.status;
-        if (status === 401 || status === 404) {
-          clearAuth();
-        }
-        // For 500 errors, log but don't clear auth (might be temporary server issue)
-        if (status === 500) {
-          console.error('Server error in /auth/me:', error);
-        }
-      }
-      throw error;
+    // M-5 FIX: Return pending promise if fetchMe is already in progress
+    // This prevents duplicate /auth/me requests on rapid reconnects
+    if (pendingFetchMePromise) {
+      console.log('[Auth] FetchMe already in progress, reusing pending promise');
+      return pendingFetchMePromise;
     }
+
+    // Create the promise and store it while request is pending
+    pendingFetchMePromise = (async () => {
+      try {
+        // Ensure token is available
+        const currentToken = token.value || localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!currentToken) {
+          throw new Error('No token available');
+        }
+        
+        // Set token in store if not already set
+        if (!token.value && currentToken) {
+          token.value = currentToken;
+        }
+        
+        const response = await api.get('/auth/me');
+        user.value = response.data.user;
+        
+        // Update stored user data
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        // Auto-set store for cashier/kitchen from permissions
+        if (user.value && (user.value.role === 'CASHIER' || user.value.role === 'KITCHEN')) {
+          const permissions = (user.value as any).permissions;
+          if (permissions?.assignedStoreId) {
+            setSelectedStore(permissions.assignedStoreId);
+          }
+          
+          // H-7 FIX: Load shift status on session restore
+          // This ensures cashiers see the correct shift state after page refresh
+          try {
+            await getShiftStatus();
+            console.log('[Auth] Shift status loaded on session restore');
+          } catch (shiftError) {
+            console.warn('[Auth] Could not load shift status during session restore:', shiftError);
+            // Don't block on shift status load - it's not critical for auth
+          }
+        }
+        
+        return response.data;
+      } catch (error) {
+        // Only clear auth if it's a real authentication error (401 or 404)
+        // Don't clear if it's just a network error or server error (500)
+        if (error && typeof error === 'object' && 'response' in error) {
+          const httpError = error as { response?: { status?: number } };
+          const status = httpError.response?.status;
+          if (status === 401 || status === 404) {
+            clearAuth();
+          }
+          // For 500 errors, log but don't clear auth (might be temporary server issue)
+          if (status === 500) {
+            console.error('Server error in /auth/me:', error);
+          }
+        }
+        throw error;
+      } finally {
+        // Clear pending promise when request completes (success or error)
+        pendingFetchMePromise = null;
+      }
+    })();
+
+    return pendingFetchMePromise;
+  };
+
+  /**
+   * Get current shift status for CASHIER role
+   * Implements caching to prevent excessive API calls
+   * Returns cached status if available and fresh, otherwise fetches from API
+   */
+  const getShiftStatus = async () => {
+    // Use cache if valid
+    if (isShiftCacheValid.value) {
+      return shiftStatus.value;
+    }
+
+    // Only CASHIER and KITCHEN should check shift status
+    if (user.value?.role !== 'CASHIER' && user.value?.role !== 'KITCHEN') {
+      return null;
+    }
+
+    try {
+      const response = await api.get('/cash-shift/current');
+      const shift = response.data?.data || response.data;
+      
+      // Update cache
+      shiftStatus.value = shift || null;
+      shiftStatusCheckedAt.value = Date.now();
+      
+      return shift;
+    } catch (error: any) {
+      // 404 means no active shift - this is normal and expected
+      if (error.response?.status === 404) {
+        shiftStatus.value = null;
+        shiftStatusCheckedAt.value = Date.now();
+        return null;
+      }
+      
+      // For other errors, clear cache but don't throw
+      // This prevents blocking navigation on API failures
+      shiftStatus.value = null;
+      shiftStatusCheckedAt.value = 0;
+      console.warn('Failed to fetch shift status:', error);
+      return null;
+    }
+  };
+
+  /**
+   * Clear shift cache when needed (e.g., after opening/closing shift)
+   */
+  const invalidateShiftCache = () => {
+    shiftStatus.value = null;
+    shiftStatusCheckedAt.value = 0;
   };
 
   return {
@@ -238,6 +365,8 @@ export const useAuthStore = defineStore('auth', () => {
     isSuperAdmin,
     currentTenantId,
     currentStoreId,
+    shiftStatus,
+    isShiftCacheValid,
     login,
     logout,
     fetchMe,
@@ -245,6 +374,8 @@ export const useAuthStore = defineStore('auth', () => {
     setSelectedTenant,
     setSelectedStore,
     clearAuth, // Export clearAuth for use in App.vue
+    getShiftStatus,
+    invalidateShiftCache,
   };
 });
 

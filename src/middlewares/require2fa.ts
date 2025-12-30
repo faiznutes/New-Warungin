@@ -8,11 +8,14 @@ import { AuthRequest } from './auth';
 import prisma from '../config/database';
 import logger from '../utils/logger';
 
-const ADMIN_ROLES_REQUIRING_2FA = ['ADMIN_TENANT']; // SUPER_ADMIN removed - can bypass 2FA
+const ADMIN_ROLES_REQUIRING_2FA = ['ADMIN_TENANT', 'SUPER_ADMIN']; // Both admin roles require 2FA for security
 
 /**
  * Middleware to require 2FA for admin roles
  * This middleware should be used after authGuard
+ * 
+ * CRITICAL SECURITY: SuperAdmin and AdminTenant MUST have 2FA enabled
+ * No bypasses allowed for platform security
  */
 export const require2FA = async (
   req: AuthRequest,
@@ -37,9 +40,9 @@ export const require2FA = async (
       return next();
     }
 
-    // SUPER_ADMIN can bypass 2FA requirement (for initial setup)
-    if (role === 'SUPER_ADMIN') {
-      // Check if 2FA is enabled, but don't block if not
+    // Both SUPER_ADMIN and ADMIN_TENANT require 2FA - strict enforcement
+    if (role === 'SUPER_ADMIN' || role === 'ADMIN_TENANT') {
+      // Get user's 2FA status
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -47,56 +50,37 @@ export const require2FA = async (
         } as any,
       });
 
-      if (user && (user as any).twoFactorEnabled) {
-        // 2FA is enabled, continue normally
-        return next();
-      } else {
-        // 2FA not enabled for SUPER_ADMIN - allow but log warning
-        logger.info('Super Admin accessing without 2FA (allowed)', {
+      if (!user) {
+        logger.error('User not found for 2FA check', { userId, role });
+        res.status(404).json({
+          error: 'User not found',
+          message: 'User account not found',
+        });
+        return;
+      }
+
+      // Check if 2FA is enabled - STRICT enforcement
+      if (!(user as any).twoFactorEnabled) {
+        logger.warn('2FA required but not enabled for admin role', {
           userId,
+          role,
           path: req.path,
         });
-        return next();
+
+        res.status(403).json({
+          error: '2FA Required',
+          message: 'Two-factor authentication is required for admin access. Please enable 2FA in your account settings immediately.',
+          requires2FA: true,
+          redirectTo: '/app/settings/2fa',
+        });
+        return;
       }
+
+      // 2FA is enabled, continue normally
+      return next();
     }
 
-    // For ADMIN_TENANT, require 2FA
-    // Get user's 2FA status
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        twoFactorEnabled: true,
-      } as any, // Type assertion needed until Prisma Client is regenerated
-    });
-
-    if (!user) {
-      res.status(404).json({
-        error: 'User not found',
-        message: 'User account not found',
-      });
-      return;
-    }
-
-    const twoFactorEnabled = (user as any).twoFactorEnabled;
-
-    // If 2FA is not enabled, return error
-    if (!twoFactorEnabled) {
-      logger.warn('2FA required but not enabled', {
-        userId,
-        role,
-        path: req.path,
-      });
-
-      res.status(403).json({
-        error: '2FA Required',
-        message: 'Two-factor authentication is required for admin roles. Please enable 2FA in your account settings.',
-        requires2FA: true,
-        redirectTo: '/app/settings/2fa',
-      });
-      return;
-    }
-
-    // 2FA is enabled, continue
+    // This should not be reached if role checking above is correct
     next();
   } catch (error: any) {
     logger.error('Error checking 2FA requirement', {

@@ -2,9 +2,9 @@
   <div
     v-if="show"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-    @click.self="handleCancel"
+    :class="{ 'pointer-events-auto': !required, 'pointer-events-none': required }"
   >
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 sm:p-8">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 sm:p-8" :class="{ 'pointer-events-auto': true }">
       <!-- Header -->
       <div class="text-center mb-6">
         <div class="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
@@ -14,7 +14,7 @@
         </div>
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Pilih Toko</h2>
         <p class="text-gray-600 text-sm">
-          {{ isSupervisor ? 'Pilih toko yang ingin Anda kelola' : 'Pilih toko untuk melanjutkan' }}
+          {{ required ? 'Silakan pilih toko untuk melanjutkan' : isSupervisor ? 'Pilih toko yang ingin Anda kelola' : 'Pilih toko untuk melanjutkan' }}
         </p>
         <p v-if="stores.length === 0" class="text-red-600 text-sm mt-2 font-medium">
           Tidak ada toko tersedia
@@ -61,7 +61,7 @@
       <!-- Actions -->
       <div class="flex gap-3">
         <button
-          v-if="!isSupervisor"
+          v-if="!isSupervisor && !required"
           @click="handleCancel"
           class="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition font-medium"
         >
@@ -83,7 +83,7 @@
           </span>
         </button>
         <button
-          v-else
+          v-else-if="!required"
           @click="handleCancel"
           class="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 shadow-lg hover:shadow-xl"
         >

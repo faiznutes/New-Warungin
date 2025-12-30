@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import customerService from '../services/customer.service';
 import { createCustomerSchema, updateCustomerSchema, getCustomersQuerySchema } from '../validators/customer.validator';
 import { validate } from '../middlewares/validator';
@@ -55,6 +56,7 @@ router.get(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
+  supervisorStoresGuard,
   validate({ query: getCustomersQuerySchema }),
   async (req: Request, res: Response) => {
     try {
@@ -94,6 +96,7 @@ router.get(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
+  supervisorStoresGuard,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

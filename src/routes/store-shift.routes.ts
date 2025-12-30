@@ -7,6 +7,7 @@ import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { AuthRequest } from '../middlewares/auth';
+import { supervisorStoreGuard } from '../middlewares/supervisor-store-guard';
 import storeShiftService from '../services/store-shift.service';
 import { requireTenantId, requireUserId } from '../utils/tenant';
 import { validate } from '../middlewares/validator';
@@ -35,6 +36,7 @@ router.get(
   '/current',
   authGuard,
   subscriptionGuard,
+  supervisorStoreGuard,
   async (req: AuthRequest, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

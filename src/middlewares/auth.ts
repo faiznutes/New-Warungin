@@ -236,6 +236,22 @@ export const authGuard = async (
       }
       const permissions = (user.permissions as UserPermissions) || {};
       autoStoreId = permissions?.assignedStoreId || null;
+      
+      // CRITICAL: Validate that store assignment exists and is valid
+      if (!autoStoreId || autoStoreId === '' || autoStoreId === 'undefined') {
+        logAuthError(
+          new Error(`Store not assigned for ${decoded.role} user`),
+          'STORE_NOT_ASSIGNED',
+          req
+        );
+        setCorsHeaders(res, req);
+        res.status(403).json({
+          error: 'Forbidden: Store assignment required',
+          message: `No store has been assigned to your account. Please contact an administrator to assign a store before you can login.`,
+          code: 'STORE_NOT_ASSIGNED',
+        });
+        return;
+      }
     }
     
     // Attach user info to request

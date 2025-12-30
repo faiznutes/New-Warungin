@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import { checkDeliveryMarketingAddon } from '../middlewares/plan-feature-guard';

@@ -608,6 +608,28 @@ router.beforeEach(async (to, from, next) => {
     return;
   }
 
+  // M-2 FIX: Redirect authenticated users away from forgot-password page
+  if (to.name === 'forgot-password' && hasToken && authStore.isAuthenticated) {
+    // User is already authenticated, redirect to dashboard
+    if (!authStore.user) {
+      try {
+        await authStore.fetchMe();
+      } catch (error) {
+        console.error('Failed to restore session:', error);
+        authStore.clearAuth();
+        next();
+        return;
+      }
+    }
+    // Redirect to appropriate dashboard
+    if (authStore.isSuperAdmin) {
+      next({ name: 'super-dashboard' });
+    } else {
+      next({ name: 'dashboard' });
+    }
+    return;
+  }
+
   // IMPORTANT: Load user data if not available before checking role-based redirects
   // This ensures isSuperAdmin is correctly determined
   if (to.meta.requiresAuth && hasToken && !authStore.user) {
@@ -662,71 +684,29 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // FORCE CASHIER TO OPEN SHIFT - Check active shift for CASHIER role
+  // Uses cached shift status to prevent excessive API calls
   if (hasToken && authStore.user?.role === 'CASHIER') {
     // If trying to access anything OTHER than open-shift or login
     if (to.name !== 'open-shift' && to.name !== 'login') {
       try {
-        // We need to check shift status if not already known
-        // This relies on the store having the shift status or making a quick API call
-        // For performance, we might want to store this in authStore or localStorage
-        // But for safety, let's check.
-        // NOTE: This might be chatty if we don't cache it.  
-        // Assuming authStore or a composable can tell us quickly.
+        // Use the cached shift status from auth store
+        // This prevents multiple simultaneous API calls and reduces server load
+        const shiftStatus = await authStore.getShiftStatus();
 
-        // Let's rely on a check. If we don't have a way to synchronously know, 
-        // we might need to let the view handle it OR do an async check here.
-        // Given the requirement "saat login ... buat begini saja full body dan header tanpa sidebar"
-
-        // Let's do a quick API check if we don't know, or better:
-        //Redirect to open-shift, and let open-shift decide if it should redirect BACK to active POS/Dashboard
-        // BUT the user wants "Dashboard button ... IF shift open".
-
-        // So:
-        // 1. If no shift -> Stay on /open-shift
-        // 2. If shift -> Can go to /pos or /app/dashboard
-
-        // Implementation:
-        // We will fetch shift status here if not present.
-
-        // However, to avoid blocking every navigation, we should probably check a flag in authStore
-        // or just let them go to /open-shift first upon login?
-
-        // User request: "saat login atau di page open shift ... jika belum open shift ... agar kasir tidak ke sidebar pos atau dashboard"
-
-        // Best approach: Check shift status.
-        const { default: api } = await import('../api');
-
-        // Check both store and cash shift
-        // Actually, for cashier, cash shift is the blocker.
-        // We can check /cash-shift/current
-
-        // Optimization: prevent infinite loop if checking
-
-        try {
-          const cashResponse = await api.get('/cash-shift/current');
-          const cashShift = cashResponse.data?.data || cashResponse.data;
-
-          if (!cashShift || cashShift.shiftEnd) {
-            // NO ACTIVE SHIFT
-            // Redirect to open-shift
-            next({ name: 'open-shift' });
-            return;
-          }
-          // IF HAS SHIFT, CONTINUE NORMAL FLOW
-        } catch (e: any) {
-          if (e.response?.status === 404) {
-            // 404 means no active shift usually
-            next({ name: 'open-shift' });
-            return;
-          }
-          // If other error, maybe let them pass or show error? 
-          // Safest is to redirect to open-shift to handle the error UI
-          // But if connection error, it might loop.
-          // Let's assume 404 or null.
-          console.error('Error checking shift in guard:', e);
+        if (!shiftStatus || shiftStatus.shiftEnd) {
+          // NO ACTIVE SHIFT - redirect to open-shift
+          next({ name: 'open-shift' });
+          return;
         }
+        
+        // IF HAS ACTIVE SHIFT, CONTINUE NORMAL FLOW
+        // Cashier can now access POS, dashboard, etc.
       } catch (err) {
         console.error('Guard shift check error:', err);
+        // On error, err on the side of caution and redirect to open-shift
+        // This prevents access if shift status cannot be determined
+        next({ name: 'open-shift' });
+        return;
       }
     }
   }
@@ -783,9 +763,17 @@ router.beforeEach(async (to, from, next) => {
     const hasStore = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
 
     if (requiresStore && !hasStore && to.name !== 'login' && to.name !== 'unauthorized') {
-      // Check if user has any stores available
+      // H-6 FIX: Better error handling for store selector
+      // Check if user has any stores available with improved error handling
       try {
-        const outletsResponse = await api.get('/outlets');
+        // Add timeout to prevent hanging (5 seconds)
+        const timeoutPromise = new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), 5000)
+        );
+        
+        const outletsPromise = api.get('/outlets');
+        const outletsResponse = await Promise.race([outletsPromise, timeoutPromise]);
+        
         const outletsData = outletsResponse.data?.data || outletsResponse.data || [];
         // NORMALISASI: Pastikan outlets selalu array
         const outlets = Array.isArray(outletsData) ? outletsData : [];
@@ -804,7 +792,7 @@ router.beforeEach(async (to, from, next) => {
 
         if (!Array.isArray(activeOutlets) || activeOutlets.length === 0) {
           // No stores available - show warning for SPV/kasir/dapur
-          const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
+          const warning = 'Tidak ada toko yang aktif tersedia. Silakan hubungi admin untuk membuat atau mengaktifkan toko terlebih dahulu.';
           next({
             name: 'unauthorized',
             query: { message: warning }
@@ -815,10 +803,21 @@ router.beforeEach(async (to, from, next) => {
           next({ name: 'login', query: { redirect: to.fullPath } });
           return;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error checking stores:', error);
-        // If error, show warning and continue
-        const warning = 'Tidak ada toko tersedia. Silakan hubungi admin untuk membuat toko terlebih dahulu.';
+        
+        // Timeout or network error
+        if (error.message === 'Timeout' || !error.response) {
+          const timeoutMessage = 'Toko tidak dapat dimuat. Silakan periksa koneksi internet Anda dan coba lagi.';
+          next({
+            name: 'unauthorized',
+            query: { message: timeoutMessage }
+          });
+          return;
+        }
+        
+        // Other API error
+        const warning = 'Tidak dapat memverifikasi akses toko. Silakan hubungi admin untuk bantuan.';
         next({
           name: 'unauthorized',
           query: { message: warning }
@@ -883,19 +882,26 @@ router.beforeEach(async (to, from, next) => {
     const userRole = authStore.user?.role;
     const requiredAddon = to.meta.requiresAddon as string;
 
-    // Super Admin bypass all addon checks
+    // H-4 FIX: Define which addons are "basic" (included for AdminTenant)
+    // These addons should not require paid subscription for AdminTenant
+    const BASIC_ADDONS_FOR_ADMIN_TENANT = ['BUSINESS_ANALYTICS'];
+    const isBasicAddon = BASIC_ADDONS_FOR_ADMIN_TENANT.includes(requiredAddon);
+
+    // Super Admin bypass all addon checks (for testing/demo)
     if (userRole === 'SUPER_ADMIN') {
       next();
       return;
     }
 
-    // Admin Tenant bypass addon check for BUSINESS_ANALYTICS (basic analytics access)
-    if (userRole === 'ADMIN_TENANT' && requiredAddon === 'BUSINESS_ANALYTICS') {
+    // Admin Tenant bypass addon check for basic addons
+    // CONSISTENCY: Only bypass for explicitly defined basic addons
+    if (userRole === 'ADMIN_TENANT' && isBasicAddon) {
+      console.log(`[Router] AdminTenant accessing basic addon: ${requiredAddon}`);
       next();
       return;
     }
 
-    // For other roles or addons, check if addon is active
+    // For other roles or non-basic addons, check if addon is active
     try {
       const { default: api } = await import('../api');
       const response = await api.get('/addons');

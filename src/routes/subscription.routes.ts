@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import subscriptionService from '../services/subscription.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';

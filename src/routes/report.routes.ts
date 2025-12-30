@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
@@ -93,6 +94,7 @@ router.get(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
+  supervisorStoresGuard,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

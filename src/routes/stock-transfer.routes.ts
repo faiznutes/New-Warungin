@@ -6,6 +6,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId, requireUserId } from '../utils/tenant';

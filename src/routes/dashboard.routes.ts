@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
@@ -54,6 +55,7 @@ router.get(
   '/stats',
   authGuard,
   subscriptionGuard,
+  supervisorStoresGuard,
   async (req: Request, res: Response, next) => {
     try {
       const user = (req as any).user;

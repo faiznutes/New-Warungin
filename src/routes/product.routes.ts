@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import productService from '../services/product.service';
 import productAdjustmentService, { createProductAdjustmentSchema } from '../services/product-adjustment.service';
 import { createProductSchema, updateProductSchema, getProductsQuerySchema } from '../validators/product.validator';
@@ -69,6 +70,7 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
+  supervisorStoresGuard,
   validate({ query: getProductsQuerySchema }),
   async (req: Request, res: Response) => {
     try {
@@ -104,6 +106,7 @@ router.get(
 router.get(
   '/low-stock/all',
   authGuard,
+  supervisorStoresGuard,
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);

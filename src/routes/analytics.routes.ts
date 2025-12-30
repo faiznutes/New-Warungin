@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
+import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import analyticsService from '../services/analytics.service';
@@ -55,6 +56,7 @@ const createCustomReportSchema = z.object({
 router.get(
   '/predictions',
   authGuard,
+  supervisorStoresGuard,
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response) => {
     try {
@@ -116,6 +118,7 @@ router.get(
 router.get(
   '/top-products',
   authGuard,
+  supervisorStoresGuard,
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response) => {
     try {
@@ -179,6 +182,7 @@ router.get(
 router.get(
   '/trends',
   authGuard,
+  supervisorStoresGuard,
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response) => {
     try {
@@ -229,6 +233,7 @@ router.get(
 router.get(
   '/custom-reports',
   authGuard,
+  supervisorStoresGuard,
   checkBusinessAnalyticsAddon,
   async (req: Request, res: Response) => {
     try {

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
+import { supervisorStoreGuard } from '../middlewares/supervisor-store-guard';
 import orderService from '../services/order.service';
 import { createOrderSchema, updateOrderStatusSchema, getOrdersQuerySchema, updateOrderSchema } from '../validators/order.validator';
 import { validate } from '../middlewares/validator';
@@ -54,6 +55,7 @@ const router = Router();
 router.get(
   '/',
   authGuard,
+  supervisorStoreGuard(),
   subscriptionGuard,
   validate({ query: getOrdersQuerySchema }),
   async (req: Request, res: Response) => {
