@@ -59,14 +59,15 @@
             <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">payments</span>
             </div>
-            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
-              <span class="material-symbols-outlined text-[14px] mr-0.5">trending_up</span> 12%
+            <span v-if="stats?.overview?.revenueGrowth" class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
+              <span class="material-symbols-outlined text-[14px] mr-0.5">{{ stats.overview.revenueGrowth >= 0 ? 'trending_up' : 'trending_down' }}</span>
+              {{ Math.abs(stats.overview.revenueGrowth).toFixed(1) }}%
             </span>
           </div>
           <div>
             <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Pendapatan</p>
             <p class="text-slate-900 dark:text-white text-2xl font-black">
-              {{ formatCurrency(globalReportData?.summary?.totalGlobalRevenue || stats?.overview?.totalRevenue || 0) }}
+              {{ formatCurrency(stats?.overview?.totalRevenue || 0) }}
             </p>
           </div>
         </div>
@@ -77,14 +78,11 @@
             <div class="p-3 bg-violet-100 dark:bg-violet-900/30 text-violet-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">stars</span>
             </div>
-            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
-              +8%
-            </span>
           </div>
           <div>
             <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Pendapatan Langganan</p>
             <p class="text-slate-900 dark:text-white text-2xl font-black">
-              {{ formatCurrency(globalReportData?.summary?.totalSubscriptionRevenue || stats?.overview?.totalSubscriptionRevenue || 0) }}
+              {{ formatCurrency(stats?.overview?.totalSubscriptionRevenue || 0) }}
             </p>
           </div>
         </div>
@@ -95,14 +93,11 @@
             <div class="p-3 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-2xl group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined text-[24px]">extension</span>
             </div>
-            <span class="flex items-center text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-blue-100 dark:ring-blue-900/30">
-              +4%
-            </span>
           </div>
           <div>
             <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Pendapatan Addon</p>
             <p class="text-slate-900 dark:text-white text-2xl font-black">
-              {{ formatCurrency(globalReportData?.summary?.totalAddonRevenue || stats?.overview?.totalAddonRevenue || 0) }}
+              {{ formatCurrency(stats?.overview?.totalAddonRevenue || 0) }}
             </p>
           </div>
         </div>
