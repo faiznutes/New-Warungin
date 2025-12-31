@@ -604,29 +604,81 @@
     </Teleport>
 
     <!-- Modal: Add Store -->
+    <!-- Modal: Add Store -->
     <div v-if="showAddStoreModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddStoreModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center gap-3 mb-4">
                 <span class="material-symbols-outlined text-blue-500 text-3xl">add_business</span>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Toko</h3>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Toko/Outlet Baru</h3>
             </div>
-            <p class="text-slate-500 mb-4">Tambah outlet/toko baru untuk tenant ini.</p>
-            <form @submit.prevent="handleAddStore" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko *</label>
-                    <input v-model="newStoreForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama toko/outlet" />
+            <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">Lengkapi informasi toko baru untuk tenant ini. Semua field yang wajib diisi sudah ditandai dengan (*).</p>
+            <form @submit.prevent="handleAddStore" class="space-y-5">
+                <!-- Informasi Dasar -->
+                <div class="border-b border-slate-200 dark:border-slate-700 pb-5">
+                    <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">📋 Informasi Dasar</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama Toko/Outlet *</label>
+                            <input v-model="newStoreForm.name" required type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Contoh: Warungin Pusat" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat Lengkap</label>
+                            <textarea v-model="newStoreForm.address" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Jl. Raya No. 123, Kota, Provinsi, Kode Pos"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
+                            <input v-model="newStoreForm.phone" type="tel" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="08xxxxxxxxxx" />
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Alamat</label>
-                    <textarea v-model="newStoreForm.address" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm resize-none" placeholder="Alamat lengkap toko"></textarea>
+
+                <!-- Jam Operasional -->
+                <div class="border-b border-slate-200 dark:border-slate-700 pb-5">
+                    <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">🕐 Jam Operasional (Opsional)</h4>
+                    <div class="space-y-3">
+                        <div v-for="day in ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']" :key="day" class="flex items-center gap-3">
+                            <label class="w-20 text-sm font-medium text-slate-600 dark:text-slate-300">{{ day }}</label>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" v-model="newStoreForm.operatingHours[day.toLowerCase()].isOpen" class="rounded" />
+                                <input v-model="newStoreForm.operatingHours[day.toLowerCase()].open" type="time" :disabled="!newStoreForm.operatingHours[day.toLowerCase()].isOpen" class="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm disabled:opacity-50" />
+                                <span class="text-slate-500">-</span>
+                                <input v-model="newStoreForm.operatingHours[day.toLowerCase()].close" type="time" :disabled="!newStoreForm.operatingHours[day.toLowerCase()].isOpen" class="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm disabled:opacity-50" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nomor Telepon</label>
-                    <input v-model="newStoreForm.phone" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="08xxxxxxxxxx" />
+
+                <!-- Konfigurasi Shift -->
+                <div class="pb-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300">👥 Konfigurasi Shift (Opsional)</h4>
+                        <button type="button" @click="addShift" class="text-xs px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">+ Tambah Shift</button>
+                    </div>
+                    <div v-if="newStoreForm.shiftConfig.length === 0" class="text-sm text-slate-500 dark:text-slate-400 text-center py-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg">
+                        Belum ada shift. Klik "+ Tambah Shift" untuk menambahkan.
+                    </div>
+                    <div v-else class="space-y-3">
+                        <div v-for="(shift, index) in newStoreForm.shiftConfig" :key="index" class="p-3 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <input v-model="shift.name" type="text" placeholder="Nama shift (Pagi, Siang, Malam, etc)" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                                <button type="button" @click="removeShift(index)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-slate-500 dark:text-slate-400 w-20">Jam Mulai</span>
+                                <input v-model="shift.startTime" type="time" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                                <span class="text-xs text-slate-500 dark:text-slate-400 w-20 text-right">Jam Selesai</span>
+                                <input v-model="shift.endTime" type="time" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex gap-3 pt-4">
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <button type="button" @click="showAddStoreModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Batal</button>
-                    <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2">
+                    <button type="submit" :disabled="saving || !newStoreForm.name" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
                         <span v-if="saving" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                         {{ saving ? 'Menambah...' : 'Tambah Toko' }}
                     </button>
@@ -974,8 +1026,30 @@ const editForm = ref({
 const newStoreForm = ref({
     name: '',
     address: '',
-    phone: ''
+    phone: '',
+    shiftConfig: [] as Array<{ name: string; startTime: string; endTime: string }>,
+    operatingHours: {
+        senin: { open: '08:00', close: '17:00', isOpen: true },
+        selasa: { open: '08:00', close: '17:00', isOpen: true },
+        rabu: { open: '08:00', close: '17:00', isOpen: true },
+        kamis: { open: '08:00', close: '17:00', isOpen: true },
+        jumat: { open: '08:00', close: '17:00', isOpen: true },
+        sabtu: { open: '08:00', close: '12:00', isOpen: false },
+        minggu: { open: '08:00', close: '12:00', isOpen: false }
+    }
 });
+
+const addShift = () => {
+    newStoreForm.value.shiftConfig.push({
+        name: '',
+        startTime: '08:00',
+        endTime: '17:00'
+    });
+};
+
+const removeShift = (index: number) => {
+    newStoreForm.value.shiftConfig.splice(index, 1);
+};
 const editUserForm = ref({
     id: '',
     name: '',
@@ -1144,7 +1218,7 @@ const handleDownloadInvoice = async (invoice: any) => {
 const handleSaveProfile = async () => {
     saving.value = true;
     try {
-        await api.put(`/tenants/${tenantId}`, editForm.value);
+        await api.put(`/tenants/${tenantId.value}`, editForm.value);
         showSuccess('Profil tenant berhasil diperbarui!');
         showEditProfileModal.value = false;
         loadTenantDetail();
@@ -1217,29 +1291,56 @@ const handleAddStore = async () => {
 
     saving.value = true;
     try {
-        await api.post('/outlets', {
+        // Filter operating hours to only include days that are open
+        const operatingHoursData = Object.entries(newStoreForm.value.operatingHours)
+            .reduce((acc: any, [day, hours]: any) => {
+                acc[day] = {
+                    open: hours.isOpen ? hours.open : null,
+                    close: hours.isOpen ? hours.close : null,
+                    isOpen: hours.isOpen
+                };
+                return acc;
+            }, {});
+
+        // Filter shift config to only include shifts with names
+        const shiftConfigData = newStoreForm.value.shiftConfig.filter(shift => shift.name.trim());
+
+        const payload: any = {
             tenantId: tenantId.value,
-            name: newStoreForm.value.name,
-            address: newStoreForm.value.address || undefined,
-            phone: newStoreForm.value.phone || undefined
-        });
+            name: newStoreForm.value.name.trim(),
+            address: newStoreForm.value.address?.trim() || undefined,
+            phone: newStoreForm.value.phone?.trim() || undefined
+        };
+
+        // Only include optional fields if they have data
+        if (shiftConfigData.length > 0) {
+            payload.shiftConfig = shiftConfigData;
+        }
         
+        if (Object.values(operatingHoursData).some((h: any) => h.isOpen)) {
+            payload.operatingHours = operatingHoursData;
+        }
+
+        await api.post('/outlets', payload);
+
         showSuccess(`Toko "${newStoreForm.value.name}" berhasil ditambahkan!`);
         showAddStoreModal.value = false;
-        
+
         // Reset form
         newStoreForm.value = {
             name: '',
             address: '',
-            phone: ''
-        };
-        
-        loadTenantDetail();
-    } catch (error: any) {
-        const message = error.response?.data?.message || 'Gagal menambahkan toko. Silakan periksa kembali data Anda.';
-        showError(message);
-        console.error('Error adding store:', error);
-    } finally {
+            phone: '',
+            shiftConfig: [],
+            operatingHours: {
+                senin: { open: '08:00', close: '17:00', isOpen: true },
+                selasa: { open: '08:00', close: '17:00', isOpen: true },
+                rabu: { open: '08:00', close: '17:00', isOpen: true },
+                kamis: { open: '08:00', close: '17:00', isOpen: true },
+                jumat: { open: '08:00', close: '17:00', isOpen: true },
+                sabtu: { open: '08:00', close: '12:00', isOpen: false },
+                minggu: { open: '08:00', close: '12:00', isOpen: false }
+            }
         saving.value = false;
     }
 };
@@ -1278,7 +1379,7 @@ const handleEditSubscription = () => {
 const handleSaveSubscription = async () => {
     saving.value = true;
     try {
-        await api.put(`/tenants/${tenantId}/subscription`, {
+        await api.put(`/tenants/${tenantId.value}/subscription`, {
             plan: editSubscriptionForm.value.plan,
             status: editSubscriptionForm.value.status,
             endDate: editSubscriptionForm.value.subscriptionEnd ? new Date(editSubscriptionForm.value.subscriptionEnd).toISOString() : null

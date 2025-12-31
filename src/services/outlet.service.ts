@@ -7,6 +7,8 @@ export interface CreateOutletInput {
   name: string;
   address?: string;
   phone?: string;
+  shiftConfig?: Array<{ name: string; startTime: string; endTime: string }>;
+  operatingHours?: Record<string, { open?: string; close?: string; isOpen: boolean }>;
 }
 
 export interface UpdateOutletInput {
@@ -14,6 +16,8 @@ export interface UpdateOutletInput {
   address?: string;
   phone?: string;
   isActive?: boolean;
+  shiftConfig?: Array<{ name: string; startTime: string; endTime: string }>;
+  operatingHours?: Record<string, { open?: string; close?: string; isOpen: boolean }>;
 }
 
 export class OutletService {
