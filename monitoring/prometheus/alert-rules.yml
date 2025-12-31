@@ -1,0 +1,159 @@
+# Prometheus Alert Rules - Phase 30
+# Monitors outlet metrics and system health
+
+groups:
+  - name: outlet_metrics
+    interval: 30s
+    rules:
+      # High error rate alert
+      - alert: HighErrorRate
+        expr: |
+          (rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          phase: phase30
+        annotations:
+          summary: "High error rate detected on {{ $labels.instance }}"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      # High API response time alert
+      - alert: SlowAPIResponse
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "Slow API responses detected on {{ $labels.instance }}"
+          description: "P95 response time is {{ $value | humanizeDuration }} (threshold: 1s)"
+
+      # High memory usage alert
+      - alert: HighMemoryUsage
+        expr: |
+          (process_resident_memory_bytes / 1024 / 1024) > 500
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanize }}MB (threshold: 500MB)"
+
+      # High CPU usage alert
+      - alert: HighCPUUsage
+        expr: |
+          rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanizePercentage }} (threshold: 80%)"
+
+      # Service down alert
+      - alert: ServiceDown
+        expr: |
+          up{job="backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          phase: phase30
+        annotations:
+          summary: "Backend service is down on {{ $labels.instance }}"
+          description: "Backend service has been down for more than 1 minute"
+
+  - name: database_metrics
+    interval: 30s
+    rules:
+      # High database connection count
+      - alert: HighDatabaseConnections
+        expr: |
+          postgresql_stat_activity_count{state="active"} > 50
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "High active database connections"
+          description: "Active database connections: {{ $value }} (threshold: 50)"
+
+      # Database query too slow
+      - alert: SlowDatabaseQuery
+        expr: |
+          postgresql_stat_statements_mean_time > 5000
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "Slow database queries detected"
+          description: "Average query time: {{ $value | humanizeDuration }} (threshold: 5s)"
+
+  - name: business_metrics
+    interval: 30s
+    rules:
+      # Low outlet availability
+      - alert: LowOutletAvailability
+        expr: |
+          (count(outlet_active) / count(outlet_total)) < 0.95
+        for: 10m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "Low outlet availability"
+          description: "Only {{ $value | humanizePercentage }} of outlets are active (threshold: 95%)"
+
+      # High bulk operation failure rate
+      - alert: BulkOperationFailures
+        expr: |
+          (rate(bulk_operations_failed_total[5m]) / rate(bulk_operations_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "High bulk operation failure rate"
+          description: "Failure rate: {{ $value | humanizePercentage }} (threshold: 10%)"
+
+      # Import/Export queue buildup
+      - alert: ExportQueueBacklog
+        expr: |
+          export_queue_pending > 100
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "Export queue backlog detected"
+          description: "Pending exports: {{ $value }} (threshold: 100)"
+
+  - name: infrastructure
+    interval: 30s
+    rules:
+      # Disk space low
+      - alert: LowDiskSpace
+        expr: |
+          (node_filesystem_avail_bytes{fstype=~"ext4|xfs"} / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          phase: phase30
+        annotations:
+          summary: "Low disk space on {{ $labels.device }}"
+          description: "Available space: {{ $value | humanizePercentage }}"
+
+      # Network errors increasing
+      - alert: HighNetworkErrors
+        expr: |
+          rate(node_network_transmit_errs_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          phase: phase30
+        annotations:
+          summary: "High network errors on {{ $labels.device }}"
+          description: "Errors per second: {{ $value }}"
