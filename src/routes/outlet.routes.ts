@@ -7,6 +7,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, successResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
 
 const router = Router();
 
@@ -296,6 +297,82 @@ router.delete(
       handleRouteError(res, error, 'Failed to process request', 'OUTLET');
     }
   }
+);
+
+/**
+ * @swagger
+ * /api/outlets/{id}/duplicate:
+ *   post:
+ *     summary: Duplicate an outlet with new name
+ *     tags: [Outlets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Outlet ID to duplicate
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newName
+ *             properties:
+ *               newName:
+ *                 type: string
+ *                 example: "Outlet Cabang Baru"
+ *     responses:
+ *       201:
+ *         description: Outlet duplicated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Outlet'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+router.post(
+  '/:id/duplicate',
+  authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
+  subscriptionGuard,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { newName } = req.body;
+
+    if (!newName) {
+      throw new ApiError(
+        ErrorCodes.MISSING_FIELD,
+        'Nama outlet baru harus diisi',
+        400,
+        { field: 'newName' }
+      );
+    }
+
+    const originalOutlet = await outletService.getOutlet(tenantId, req.params.id);
+
+    const duplicatedOutlet = await outletService.createOutlet(tenantId, {
+      name: newName,
+      address: (originalOutlet as any).address || undefined,
+      phone: (originalOutlet as any).phone || undefined,
+      shiftConfig: (originalOutlet as any).shiftConfig || undefined,
+      operatingHours: (originalOutlet as any).operatingHours || undefined,
+    });
+
+    res.status(201).json(
+      successResponse(req, 'Outlet duplicated successfully', { data: duplicatedOutlet })
+    );
+  })
 );
 
 export default router;
