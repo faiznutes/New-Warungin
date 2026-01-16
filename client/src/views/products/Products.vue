@@ -184,18 +184,18 @@
                 
                 <!-- Search Suggestions Dropdown -->
                 <div
-                  v-if="searchSuggestions.showSuggestions && searchSuggestions.allSuggestions.value.length > 0"
+                  v-if="searchSuggestions.showSuggestions.value && searchSuggestions.allSuggestions.value.length > 0"
                   class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 max-h-64 overflow-y-auto"
                 >
                   <div class="p-2">
                     <div
-                      v-for="(suggestion, index) in searchSuggestions.allSuggestions"
+                      v-for="(suggestion, index) in searchSuggestions.allSuggestions.value"
                       :key="index"
                       @click="selectSuggestion(suggestion.text)"
-                      @mouseenter="searchSuggestions.selectedIndex = index"
+                      @mouseenter="searchSuggestions.selectedIndex.value = index"
                       class="px-4 py-2 rounded-lg cursor-pointer transition-colors flex items-center gap-2"
                       :class="
-                        searchSuggestions.selectedIndex === index
+                        searchSuggestions.selectedIndex.value === index
                           ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-emerald-300'
                           : 'hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                       "
@@ -217,7 +217,7 @@
                     
                     <!-- Clear Recent Searches -->
                     <div
-                      v-if="searchSuggestions.recentSearches.length > 0"
+                      v-if="searchSuggestions.recentSearches.value.length > 0"
                       class="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700"
                     >
                       <button
@@ -555,7 +555,7 @@
           <div
             v-for="(product, index) in products"
             :key="product.id"
-            :ref="el => setupSwipeForProduct(el as HTMLElement, product.id)"
+            :ref="(el: any) => setupSwipeForProduct(el as HTMLElement, product.id)"
             class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/30 border border-slate-100 dark:border-slate-700 transition-all duration-300 group overflow-hidden flex flex-col relative touch-pan-y"
             :class="{ 'ring-2 ring-blue-500 border-blue-500 shadow-blue-500/20': isSelected(product.id) }"
             :style="{ animationDelay: `${index * 50}ms` }"

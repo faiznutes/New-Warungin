@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import logger from './logger';
+import logger from '../utils/logger';
 
 /**
  * Standardized API Response Interface
@@ -220,8 +220,8 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   else {
     error = new ApiError(
       ErrorCodes.INTERNAL_ERROR,
-      process.env.NODE_ENV === 'production' 
-        ? 'An unexpected error occurred' 
+      process.env.NODE_ENV === 'production'
+        ? 'An unexpected error occurred'
         : err.message || 'Unknown error',
       500
     );
