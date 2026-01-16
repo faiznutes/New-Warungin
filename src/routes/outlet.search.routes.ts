@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard, subscriptionGuard, asyncHandler } from '../middleware';
+import { authGuard, roleGuard, subscriptionGuard, asyncHandler } from '../middlewares';
 import outletSearchService from '../services/outlet.search.service';
-import { successResponse, errorResponse } from '../middleware/errorHandler';
+import { successResponse, errorResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
 
 const router = Router();
 
@@ -15,7 +15,7 @@ router.post(
     const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
 
     const results = await outletSearchService.search(tenantId, filters, { ...options, limit: Math.min(options.limit || 50, 100) });
-    res.json(successResponse(results, 'Search berhasil'));
+    res.json(successResponse(req, 'Search berhasil', results));
   })
 );
 
@@ -26,7 +26,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const stats = await outletSearchService.getStatistics(tenantId);
-    res.json(successResponse(stats, 'Statistik berhasil diambil'));
+    res.json(successResponse(req, 'Statistik berhasil diambil', stats));
   })
 );
 
@@ -36,11 +36,13 @@ router.get(
   subscriptionGuard,
   asyncHandler(async (req: Request, res: Response) => {
     const { q, limit = 20 } = req.query;
-    if (!q) return res.status(400).json(errorResponse('Query wajib diisi', 'VALIDATION_ERROR'));
+    if (!q) {
+      throw new ApiError(ErrorCodes.VALIDATION_ERROR, 'Query wajib diisi', 400);
+    }
 
     const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const results = await outletSearchService.fullTextSearch(tenantId, String(q), Number(limit));
-    res.json(successResponse(results, 'Pencarian berhasil'));
+    res.json(successResponse(req, 'Pencarian berhasil', results));
   })
 );
 
@@ -52,9 +54,8 @@ router.get(
     const { prefix = '', field = 'name' } = req.query;
     const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const suggestions = await outletSearchService.getAutocomplete(tenantId, String(prefix), String(field));
-    res.json(successResponse({ suggestions }, 'Autocomplete berhasil'));
+    res.json(successResponse(req, 'Autocomplete berhasil', { suggestions }));
   })
 );
 
 export default router;
-

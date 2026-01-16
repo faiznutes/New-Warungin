@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard, subscriptionGuard, asyncHandler } from '../middleware';
+import { authGuard, roleGuard, subscriptionGuard, asyncHandler } from '../middlewares';
 import { createRateLimiter, sanitizeInput } from '../middleware/security';
 import importExportService from '../services/outlet.import-export.service';
-import { successResponse, errorResponse } from '../middleware/errorHandler';
+import { successResponse, errorResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
 
 const router = Router();
 
@@ -30,11 +30,13 @@ router.post(
   sanitizeInput,
   asyncHandler(async (req: Request, res: Response) => {
     const { csvContent } = req.body;
-    if (!csvContent) return res.status(400).json(errorResponse('CSV wajib diisi', 'VALIDATION_ERROR'));
+    if (!csvContent) {
+      throw new ApiError(ErrorCodes.VALIDATION_ERROR, 'CSV wajib diisi', 400);
+    }
 
     const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const result = await importExportService.importFromCSV(tenantId, csvContent);
-    res.json(successResponse(result, 'Import berhasil'));
+    res.json(successResponse(req, 'Import berhasil', result));
   })
 );
 
