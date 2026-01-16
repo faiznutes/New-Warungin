@@ -16,9 +16,9 @@ export const createRateLimiter = (config: string = 'STANDARD') => {
   return rateLimit({
     windowMs: cfg.windowMs,
     max: cfg.max,
-    keyGenerator: (req: Request) => req.user?.id || req.ip || 'anonymous',
+    keyGenerator: (req: Request) => (req as any).user?.id || req.ip || 'anonymous',
     handler: (req: Request, res: Response) => {
-      logger.warn('Rate limit exceeded', { ip: req.ip, userId: req.user?.id });
+      logger.warn('Rate limit exceeded', { ip: req.ip, userId: (req as any).user?.id });
       res.status(429).json({ error: cfg.message, retryAfter: req.rateLimit?.resetTime });
     },
   });
@@ -26,7 +26,7 @@ export const createRateLimiter = (config: string = 'STANDARD') => {
 
 export const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
   const xssPattern = /<[^>]*>|javascript:|onerror|onclick|onload/gi;
-  
+
   const sanitizeObj = (obj: any): any => {
     if (typeof obj === 'string') {
       return obj.replace(xssPattern, '').substring(0, 1000);
@@ -50,7 +50,7 @@ export const validateSQLSafety = (req: Request, res: Response, next: NextFunctio
   const input = JSON.stringify({ body: req.body, query: req.query });
 
   if (sqlPattern.test(input)) {
-    logger.warn('Potential SQL injection attempt', { ip: req.ip, userId: req.user?.id });
+    logger.warn('Potential SQL injection attempt', { ip: req.ip, userId: (req as any).user?.id });
     return res.status(400).json({ error: 'Input tidak valid' });
   }
   next();

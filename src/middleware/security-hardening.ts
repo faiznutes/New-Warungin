@@ -69,7 +69,7 @@ export class SecurityHardening {
           message,
           standardHeaders: true,
           legacyHeaders: false,
-          skip: (req) => req.user?.role === 'admin', // Skip rate limiting for admins
+          skip: (req: any) => req.user?.role === 'admin', // Skip rate limiting for admins
         });
       } else {
         // In-memory rate limiting (for single instance)
@@ -161,7 +161,7 @@ export class SecurityHardening {
    * Request validation middleware
    */
   validateRequest() {
-    return (req, res, next) => {
+    return (req: any, res: any, next: any) => {
       // Sanitize request body
       if (req.body) {
         req.body = this.sanitizeInput(req.body);
@@ -192,7 +192,7 @@ export class SecurityHardening {
    * SQL/NoSQL injection prevention
    */
   preventSQLInjection() {
-    return (req, res, next) => {
+    return (req: any, res: any, next: any) => {
       // Check for common SQL injection patterns
       const dangerousPatterns = [
         /(\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|EXEC|EXECUTE)\b)/gi,
@@ -244,7 +244,7 @@ export class SecurityHardening {
    * Secure response headers
    */
   secureHeaders() {
-    return (req, res, next) => {
+    return (req: any, res: any, next: any) => {
       // Prevent MIME sniffing
       res.setHeader('X-Content-Type-Options', 'nosniff');
 
@@ -298,7 +298,7 @@ export class SecurityHardening {
    * Account lockout after failed attempts
    */
   getAccountLockoutMiddleware() {
-    return (req, res, next) => {
+    return (req: any, res: any, next: any) => {
       if (req.path !== '/auth/login') {
         return next();
       }
@@ -332,7 +332,7 @@ export class SecurityHardening {
    * API key rotation middleware
    */
   rotateApiKey() {
-    return (req, res, next) => {
+    return (req: any, res: any, next: any) => {
       if (!req.user) return next();
 
       // Check if API key is older than 90 days
