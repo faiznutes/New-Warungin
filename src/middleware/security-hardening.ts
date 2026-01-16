@@ -8,7 +8,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import { Redis } from 'ioredis';
 
 export class SecurityHardening {
-  private redis: Redis;
+  private redis: Redis | undefined;
 
   constructor(redis?: Redis) {
     this.redis = redis;
