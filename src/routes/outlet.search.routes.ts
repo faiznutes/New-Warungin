@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard, subscriptionGuard } from '../middlewares/auth';
+import { authGuard, roleGuard } from '../middlewares/auth';
+import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { asyncHandler, successResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
 import outletSearchService from '../services/outlet.search.service';
 
