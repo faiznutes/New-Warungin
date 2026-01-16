@@ -479,9 +479,32 @@ const tabs = [
   { value: 'logs', label: 'Log Sistem', icon: 'terminal' },
 ];
 
-const containers = ref<any[]>([]);
+interface Container {
+  id: string;
+  name: string;
+  image: string;
+  status: string;
+  cpu?: string;
+  memory?: string;
+}
+
+interface Log {
+  time: string;
+  severity: 'INFO' | 'WARN' | 'ERROR';
+  service: string;
+  message: string;
+  node: string;
+}
+
+interface Service {
+  name: string;
+  status: 'healthy' | 'unhealthy' | 'degraded';
+  message?: string;
+}
+
+const containers = ref<Container[]>([]);
 const serverResources = ref<any>({});
-const healthChecks = ref<any[]>([]);
+const healthChecks = ref<Service[]>([]);
 const logs = ref('');
 const selectedLogType = ref('backend');
 const showLogsModal = ref(false);

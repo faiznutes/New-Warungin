@@ -184,7 +184,7 @@
                 
                 <!-- Search Suggestions Dropdown -->
                 <div
-                  v-if="searchSuggestions.showSuggestions && searchSuggestions.allSuggestions.length > 0"
+                  v-if="searchSuggestions.showSuggestions && searchSuggestions.allSuggestions.value.length > 0"
                   class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 max-h-64 overflow-y-auto"
                 >
                   <div class="p-2">
@@ -983,8 +983,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import api from '../../api';
 import { formatCurrency } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -1020,10 +1020,13 @@ interface Product {
   emoji?: string;
   isActive: boolean;
   isConsignment?: boolean;
+  sku?: string;
+  barcode?: string;
 }
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 const { needsTenantSelection } = useTenantCheck();
 const { success: showSuccess, error: showError, warning: showWarning, confirm: showConfirm } = useNotification();
 const { canManageProducts } = usePermissions();
@@ -1059,6 +1062,7 @@ const infiniteScrollTooltip = useTooltip('infinite_scroll_products');
 const bulkEditButtonRef = ref<HTMLElement | null>(null);
 const inlineEditRef = ref<HTMLElement | null>(null);
 const infiniteScrollToggleRef = ref<HTMLElement | null>(null);
+const productCardRefs = ref(new Map<string, HTMLElement>());
 
 // Offline support
 const { isOnline } = useOffline();
@@ -1295,12 +1299,12 @@ const searchSuggestions = useSearchSuggestions('products');
 watch(() => filters.value.search, (newQuery) => {
   if (newQuery && newQuery.length >= 2) {
     searchSuggestions.generateSuggestions(newQuery, products.value, ['name', 'category', 'sku']);
-    searchSuggestions.showSuggestions = true;
+    searchSuggestions.showSuggestions.value = true;
   } else if (newQuery.length === 0) {
     // Show recent searches when input is empty
-    searchSuggestions.showSuggestions = true;
+    searchSuggestions.showSuggestions.value = true;
   } else {
-    searchSuggestions.showSuggestions = false;
+    searchSuggestions.showSuggestions.value = false;
   }
 });
 
@@ -1312,41 +1316,41 @@ const handleSearchInput = () => {
 // Handle search focus
 const handleSearchFocus = () => {
   if (filters.value.search.length === 0) {
-    searchSuggestions.showSuggestions = true;
+    searchSuggestions.showSuggestions.value = true;
   } else if (filters.value.search.length >= 2) {
     searchSuggestions.generateSuggestions(filters.value.search, products.value, ['name', 'category', 'sku']);
-    searchSuggestions.showSuggestions = true;
+    searchSuggestions.showSuggestions.value = true;
   }
 };
 
 // Handle search blur (with delay to allow click on suggestion)
 const handleSearchBlur = () => {
   setTimeout(() => {
-    searchSuggestions.showSuggestions = false;
+    searchSuggestions.showSuggestions.value = false;
   }, 200);
 };
 
 // Handle keyboard navigation
 const handleSearchKeyDown = () => {
-  if (searchSuggestions.selectedIndex < searchSuggestions.allSuggestions.length - 1) {
-    searchSuggestions.selectedIndex++;
+  if (searchSuggestions.selectedIndex.value < searchSuggestions.allSuggestions.value.length - 1) {
+    searchSuggestions.selectedIndex.value++;
   }
 };
 
 const handleSearchKeyUp = () => {
-  if (searchSuggestions.selectedIndex > 0) {
-    searchSuggestions.selectedIndex--;
+  if (searchSuggestions.selectedIndex.value > 0) {
+    searchSuggestions.selectedIndex.value--;
   }
 };
 
 const handleSearchEnter = () => {
-  if (searchSuggestions.selectedIndex >= 0 && searchSuggestions.allSuggestions[searchSuggestions.selectedIndex]) {
-    selectSuggestion(searchSuggestions.allSuggestions[searchSuggestions.selectedIndex].text);
+  if (searchSuggestions.selectedIndex.value >= 0 && searchSuggestions.allSuggestions.value[searchSuggestions.selectedIndex.value]) {
+    selectSuggestion(searchSuggestions.allSuggestions.value[searchSuggestions.selectedIndex.value].text);
   } else if (filters.value.search.trim()) {
     // Save as recent search and search
     searchSuggestions.saveRecentSearch(filters.value.search);
     loadProducts(1);
-    searchSuggestions.showSuggestions = false;
+    searchSuggestions.showSuggestions.value = false;
   }
 };
 
@@ -1354,7 +1358,7 @@ const handleSearchEnter = () => {
 const selectSuggestion = (text: string) => {
   filters.value.search = text;
   searchSuggestions.saveRecentSearch(text);
-  searchSuggestions.showSuggestions = false;
+  searchSuggestions.showSuggestions.value = false;
   loadProducts(1);
 };
 
@@ -1411,7 +1415,9 @@ const loadProducts = async (page = 1, append = false) => {
       limit: pagination.value.limit,
       ...(filters.value.search && { search: filters.value.search }),
       ...(filters.value.category && { category: filters.value.category }),
+
       ...(filters.value.isActive && { isActive: filters.value.isActive }),
+      ...(route.query.filter === 'low_stock' && { lowStock: 'true' }),
     };
     
     // Ensure tenantId is set in params for SUPER_ADMIN
@@ -2265,5 +2271,8 @@ const setupSwipeForProduct = (el: HTMLElement | null, productId: string) => {
 onUnmounted(() => {
     window.removeEventListener('focus-search', handleGlobalFocusSearch);
 });
+const setupSwipeForProduct = (el: HTMLElement | null, productId: string) => {
+  // Placeholder for swipe functionality
+};
 </script>
 

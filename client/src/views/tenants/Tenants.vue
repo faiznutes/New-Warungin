@@ -294,10 +294,22 @@ const router = useRouter();
 
 const authStore = useAuthStore();
 const { success: showSuccess, error: showError, confirm: showConfirm } = useNotification();
-const tenants = ref<any[]>([]);
+
+interface Tenant {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  isActive?: boolean;
+  subscriptionPlan?: string;
+  createdAt?: string;
+}
+
+const tenants = ref<Tenant[]>([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
-const editingTenant = ref<any>(null);
+const editingTenant = ref<Tenant | null>(null);
 const filters = ref({
   search: '',
   isActive: '',
@@ -367,6 +379,7 @@ const editTenant = (tenant: any) => {
     phone: tenant.phone || '',
     address: tenant.address || '',
     subscriptionPlan: tenant.subscriptionPlan || 'BASIC',
+    demoDuration: 30,
     isActive: tenant.isActive !== false,
   };
 };
@@ -465,6 +478,7 @@ const closeModal = () => {
     phone: '',
     address: '',
     subscriptionPlan: 'BASIC',
+    demoDuration: 30,
     isActive: true,
   };
 };

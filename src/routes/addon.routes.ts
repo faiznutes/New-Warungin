@@ -225,6 +225,7 @@ router.post(
 /**
  * Update addon (Super Admin only)
  */
+// Update addon details (SUPER_ADMIN only)
 router.put(
   '/:id',
   authGuard,
@@ -239,7 +240,7 @@ router.put(
       }
 
       const addonId = req.params.id;
-      const { status, purchasedBy } = req.body;
+      const { status, purchasedBy, durationDays } = req.body;
 
       // Check if addon exists
       const addon = await prisma.tenantAddon.findUnique({
@@ -250,12 +251,23 @@ router.put(
         return res.status(404).json({ message: 'Addon not found' });
       }
 
+      // Calculate new expiresAt if durationDays is provided
+      let newExpiresAt: Date | undefined;
+      if (durationDays !== undefined && durationDays !== null) {
+        const days = parseInt(durationDays);
+        if (!isNaN(days) && days > 0) {
+          newExpiresAt = new Date();
+          newExpiresAt.setDate(newExpiresAt.getDate() + days);
+        }
+      }
+
       // Update addon
       const updated = await prisma.tenantAddon.update({
         where: { id: addonId },
         data: {
           ...(status && { status }),
           ...(purchasedBy && { purchasedBy }),
+          ...(newExpiresAt && { expiresAt: newExpiresAt }),
         },
       });
 
@@ -265,6 +277,7 @@ router.put(
       res.status(500).json({ message: error.message || 'Failed to update addon' });
     }
   }
+);
 );
 
 /**

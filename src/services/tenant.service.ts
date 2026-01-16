@@ -1032,4 +1032,97 @@ export const deleteTenant = async (id: string) => {
   return { message: 'Tenant deleted successfully' };
 };
 
-export default { createTenant, getTenants, getTenantById, updateTenant, deleteTenant };
+export const updateTenantSubscription = async (
+  tenantId: string,
+  data: { plan: string; status: string; durationDays?: number }
+) => {
+  const result = await prisma.$transaction(async (tx) => {
+    // Calculate new end date based on duration
+    let newEndDate: Date | undefined;
+    if (data.durationDays !== undefined && data.durationDays !== null) {
+      newEndDate = new Date();
+      newEndDate.setDate(newEndDate.getDate() + data.durationDays);
+    }
+
+    // Update Tenant
+    const updateData: any = {
+      subscriptionPlan: data.plan,
+    };
+    if (newEndDate) {
+      updateData.subscriptionEnd = newEndDate;
+    }
+
+    await tx.tenant.update({
+      where: { id: tenantId },
+      data: updateData,
+    });
+
+    // Update Active Subscription or Create One
+    const activeSub = await tx.subscription.findFirst({
+      where: {
+        tenantId,
+        status: 'ACTIVE',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Determine end date for subscription record
+    // If activeSub exists and no new duration provided, keep existing end date?
+    // User requirement: "Super Admin HANYA menginput: Jumlah Hari".
+    // If we are editing, we probably want to set it.
+
+    if (activeSub) {
+      await tx.subscription.update({
+        where: { id: activeSub.id },
+        data: {
+          plan: data.plan,
+          status: data.status,
+          // If calculated, use it. Else keep existing.
+          endDate: newEndDate || activeSub.endDate,
+        },
+      });
+    } else if (data.status === 'ACTIVE') {
+      // Create new if none exists but status is active
+      await tx.subscription.create({
+        data: {
+          tenantId,
+          plan: data.plan,
+          status: data.status,
+          startDate: new Date(),
+          endDate: newEndDate || new Date(), // Default to now if no duration? Or maybe 30 days default? Let's use validation in route to force duration if needed.
+          amount: '0',
+          purchasedBy: 'ADMIN',
+        },
+      });
+    }
+
+    return { success: true, endDate: newEndDate };
+  });
+
+  // Apply plan features
+  try {
+    const { applyPlanFeatures } = await import('./plan-features.service');
+    await applyPlanFeatures(tenantId, data.plan);
+  } catch (error: any) {
+    logger.warn(`Failed to apply plan features: ${error.message}`);
+  }
+
+  // Invalidate cache
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      await redis.del(`tenant:${tenantId}`);
+      const keys = await redis.keys('tenants:*');
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    } catch (error) {
+      logger.warn('Failed to invalidate tenant cache:', error);
+    }
+  }
+
+  return result;
+};
+
+
+export default { createTenant, getTenants, getTenantById, updateTenant, deleteTenant, updateTenantSubscription };

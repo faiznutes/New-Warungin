@@ -43,6 +43,11 @@ export class ProductService {
       }),
       ...(category && { category }),
       ...(isActive !== undefined && { isActive }),
+      ...(query.lowStock && {
+        stock: {
+          lte: prisma.product.fields.minStock,
+        },
+      }),
     };
 
     const [products, total] = await Promise.all([
@@ -117,7 +122,7 @@ export class ProductService {
       // Check limit using plan-features service (includes base plan + addons)
       const planFeaturesService = (await import('./plan-features.service')).default;
       const limitCheck = await planFeaturesService.checkPlanLimit(tenantId, 'products');
-      
+
       if (!limitCheck.allowed) {
         throw new Error(limitCheck.message || `Product limit reached (${limitCheck.currentUsage}/${limitCheck.limit}). Upgrade your plan or addon to add more products.`);
       }
@@ -131,7 +136,7 @@ export class ProductService {
           barcode: data.barcode,
         },
       });
-      
+
       if (existingProduct) {
         throw new Error(`Barcode ${data.barcode} already exists for another product in this tenant`);
       }
@@ -192,7 +197,7 @@ export class ProductService {
           id: { not: id }, // Exclude current product
         },
       });
-      
+
       if (existingProduct) {
         throw new Error(`Barcode ${data.barcode} already exists for another product in this tenant`);
       }
@@ -234,18 +239,18 @@ export class ProductService {
     context?: { productId?: string; tenantId?: string }
   ): Promise<T> {
     let lastError: Error | null = null;
-    
+
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         return await fn();
       } catch (error: any) {
         lastError = error;
-        
+
         // Track retry attempts
         if (attempt < maxRetries - 1 && context?.tenantId) {
           stockRetryAttempts.inc({ tenant_id: context.tenantId });
         }
-        
+
         // Don't retry on non-transient errors (validation errors, not found, etc.)
         if (
           error.message?.includes('not found') ||
@@ -256,34 +261,34 @@ export class ProductService {
         ) {
           throw error;
         }
-        
+
         // If this is the last attempt, throw the error
         if (attempt === maxRetries - 1) {
           throw error;
         }
-        
+
         // Calculate delay with exponential backoff
         const delay = initialDelay * Math.pow(2, attempt);
         logger.warn(`Stock update attempt ${attempt + 1} failed, retrying in ${delay}ms`, {
           error: error.message,
           ...context,
         });
-        
+
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
-    
+
     throw lastError || new Error('Stock update failed after retries');
   }
 
   async updateStock(id: string, quantity: number, tenantId: string, operation: 'add' | 'subtract' | 'set' = 'set', emitSocketEvent: boolean = false): Promise<Product> {
     const startTime = Date.now();
     const operationLabel = operation;
-    
+
     // Use distributed lock to prevent race conditions
     const { withLock } = await import('../utils/distributed-lock');
     const lockKey = `stock:${tenantId}:${id}`;
-    
+
     try {
       const result = await withLock(lockKey, async () => {
         // CRITICAL FIX: Add retry mechanism for transient errors
@@ -329,7 +334,7 @@ export class ProductService {
 
           // Invalidate cache for this product and products list
           await this.invalidateProductCache(tenantId);
-          
+
           // Also invalidate analytics cache that depends on products
           try {
             await CacheService.delete(`analytics:top-products:${tenantId}`);
@@ -354,19 +359,19 @@ export class ProductService {
           return updatedProduct;
         }, 3, 100, { productId: id, tenantId }); // 3 retries with 100ms initial delay
       }, env.STOCK_LOCK_TIMEOUT * 1000); // Configurable lock timeout (default 10 seconds)
-      
+
       // Track successful operation
       const duration = (Date.now() - startTime) / 1000;
       stockUpdateDuration.observe({ operation: operationLabel, tenant_id: tenantId }, duration);
       stockUpdateTotal.inc({ operation: operationLabel, status: 'success', tenant_id: tenantId });
-      
+
       return result;
     } catch (error: any) {
       // Track failed operation
       const duration = (Date.now() - startTime) / 1000;
       stockUpdateDuration.observe({ operation: operationLabel, tenant_id: tenantId }, duration);
       stockUpdateTotal.inc({ operation: operationLabel, status: 'failure', tenant_id: tenantId });
-      
+
       // Track failure reason
       let reason = 'other';
       if (error.message?.includes('not found')) {
@@ -378,9 +383,9 @@ export class ProductService {
       } else if (error.message?.includes('timeout') || error.message?.includes('lock')) {
         reason = 'lock_timeout';
       }
-      
+
       stockUpdateFailures.inc({ reason, tenant_id: tenantId });
-      
+
       throw error;
     }
   }

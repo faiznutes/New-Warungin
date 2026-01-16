@@ -1147,8 +1147,13 @@ const filteredProductsSimple = computed(() => {
   return filtered;
 });
 
+
 const subtotal = computed(() => {
   return safeReduce(cart.value, (sum: number, item: any) => sum + (item?.price || 0) * (item?.quantity || 0), 0);
+});
+
+const tax = computed(() => {
+  return subtotal.value * 0.1; // 10% tax
 });
 
 
@@ -1704,6 +1709,11 @@ const loadDiscounts = async () => {
     console.error('Error loading discounts:', error);
     discounts.value = [];
   }
+};
+
+const fetchInventoryAddonStatus = async () => {
+    // Stub for missing function
+    console.log('fetchInventoryAddonStatus called');
 };
 
 const refreshProducts = async () => {

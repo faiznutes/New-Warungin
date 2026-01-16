@@ -328,6 +328,42 @@ router.get(
   }
 );
 
+// Update tenant subscription (SUPER_ADMIN only)
+router.put(
+  '/:id/subscription',
+  authGuard,
+  validate({
+    body: z.object({
+      plan: z.enum(['BASIC', 'PRO', 'ENTERPRISE', 'DEMO']),
+      status: z.enum(['ACTIVE', 'INACTIVE', 'PAST_DUE', 'CANCELLED', 'EXPIRED']),
+      durationDays: z.number().int().min(1).optional(),
+    })
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can update tenant subscription' });
+      }
+
+      const { plan, status, durationDays } = req.body;
+
+      await tenantService.updateTenantSubscription(req.params.id, {
+        plan,
+        status,
+        durationDays
+      });
+
+      res.json({ message: 'Subscription updated successfully' });
+    } catch (error: unknown) {
+      logRouteError(error, 'UPDATE_TENANT_SUBSCRIPTION', req);
+      res.status(500).json({ message: 'Failed to update subscription' });
+    }
+  }
+);
+
 // Delete tenant (only for SUPER_ADMIN) - must be before GET /:id to avoid route conflict
 router.delete(
   '/:id',

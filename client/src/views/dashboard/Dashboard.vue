@@ -230,7 +230,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, onUnmounted, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
@@ -238,7 +238,7 @@ import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
 import { useShiftReminder } from '../../composables/useShiftReminder';
 
-const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const { showNotification, warning: showWarning } = useNotification();
 
@@ -256,7 +256,7 @@ const showSalesChart = ref(localStorage.getItem('user_showSalesChart') !== 'fals
 const showTopProducts = ref(localStorage.getItem('user_showTopProducts') !== 'false');
 
 const tenantName = computed(() => {
-  return authStore.user?.tenant?.name || authStore.user?.name || 'User';
+  return authStore.user?.tenantName || authStore.user?.name || 'User';
 });
 
 const topProducts = computed(() => {
@@ -319,74 +319,28 @@ const getStatusLabel = (status: string) => {
 };
 
 // Data Loading
-// Mock Data for Demo
-const mockStats = {
-  overview: {
-    totalRevenue: 24500000,
-    revenueGrowth: 12.5,
-    totalOrders: 142,
-    ordersGrowth: 8.2
-  },
-  alerts: {
-    lowStockProducts: 3
-  },
-  charts: {
-    revenue: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      data: [1200000, 1900000, 1500000, 2400000, 3200000, 4800000, 5100000]
-    },
-    topProducts: [
-      { product: { name: 'Kopi Susu Gula Aren', image: null }, totalQuantity: 86, totalRevenue: 1290000 },
-      { product: { name: 'Nasi Goreng Spesial', image: null }, totalQuantity: 54, totalRevenue: 1620000 },
-      { product: { name: 'Teh Tarik', image: null }, totalQuantity: 42, totalRevenue: 420000 },
-      { product: { name: 'Roti Bakar Coklat', image: null }, totalQuantity: 35, totalRevenue: 525000 }
-    ]
-  }
-};
-
-const mockLangganan = {
-  plan: 'PRO',
-  status: 'active',
-  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-};
-
-/* const mockOrders = [
-  { id: 1, orderNumber: 'ORD-00123', createdAt: new Date().toISOString(), customerName: 'Budi Santoso', outletName: 'Warung Pusat', totalAmount: 125000, status: 'completed' },
-  { id: 2, orderNumber: 'ORD-00124', createdAt: new Date(Date.now() - 3600000).toISOString(), customerName: 'Siti Aminah', outletName: 'Warung Pusat', totalAmount: 45000, status: 'processing' },
-  { id: 3, orderNumber: 'ORD-00125', createdAt: new Date(Date.now() - 7200000).toISOString(), customerName: 'Ahmad Rizki', outletName: 'Warung Pusat', totalAmount: 210000, status: 'completed' },
-  { id: 4, orderNumber: 'ORD-00126', createdAt: new Date(Date.now() - 10800000).toISOString(), customerName: 'Dewi Lestari', outletName: 'Cabang 2', totalAmount: 85000, status: 'cancelled' },
-  { id: 5, orderNumber: 'ORD-00127', createdAt: new Date(Date.now() - 14400000).toISOString(), customerName: 'Rudi Hartono', outletName: 'Warung Pusat', totalAmount: 150000, status: 'completed' }
-]; */
+// Data Loading
 
 const loadStats = async () => {
   try {
     const response = await api.get('/dashboard/stats', {
       params: { range: dateRange.value }
     });
-    // Use Mock if data is empty or zeros (simple check)
-    const data = response.data;
-    // Check if we have valid non-zero data
-    const hasData = data && (Number(data.overview?.totalRevenue) > 0 || Number(data.overview?.totalOrders) > 0);
-    
-    if (hasData) {
-      stats.value = data;
-    } else {
-      console.log('Using Mock Data for Stats (Data was empty or zero)');
-      stats.value = mockStats;
-    }
+    stats.value = response.data || {};
   } catch (error) {
-    console.error('Error loading stats, using mock:', error);
-    stats.value = mockStats;
+    console.error('Error loading stats:', error);
+    stats.value = {}; // Empty stats on error instead of mock
   }
+
 };
 
 const loadLangganan = async () => {
   try {
     const response = await api.get('/subscriptions/current');
-    currentLangganan.value = response.data || mockLangganan;
+    currentLangganan.value = response.data || {};
   } catch (error) {
-    console.error('Error loading subscription, using mock:', error);
-    currentLangganan.value = mockLangganan;
+    console.error('Error loading subscription:', error);
+    currentLangganan.value = {};
   }
 };
 
@@ -396,16 +350,8 @@ const loadRecentOrders = async () => {
             params: { page: 1, limit: 5 }
         });
         const data = response.data.data;
-        // Mock recent orders if empty
         if (!data || data.length === 0) {
-           recentOrders.value = [
-              { id: 1, orderNumber: 'ORD-00123', createdAt: new Date().toISOString(), customerName: 'Budi Santoso', store: { name: 'Main Store' }, totalAmount: 125000, status: 'completed' },
-              { id: 2, orderNumber: 'ORD-00124', createdAt: new Date(Date.now() - 3600000).toISOString(), customerName: 'Siti Aminah', store: { name: 'Main Store' }, totalAmount: 45000, status: 'processing' },
-              { id: 3, orderNumber: 'ORD-00125', createdAt: new Date(Date.now() - 7200000).toISOString(), customerName: 'Ahmad Rizki', store: { name: 'Main Store' }, totalAmount: 210000, status: 'completed' },
-              { id: 4, orderNumber: 'ORD-00126', createdAt: new Date(Date.now() - 10800000).toISOString(), customerName: 'Dewi Lestari', store: { name: 'Branch 1' }, totalAmount: 85000, status: 'cancelled' },
-              { id: 5, orderNumber: 'ORD-00127', createdAt: new Date(Date.now() - 14400000).toISOString(), customerName: 'Rudi Hartono', store: { name: 'Main Store' }, totalAmount: 150000, status: 'completed' }
-           ];
-           console.log('Using Mock Data for Orders');
+           recentOrders.value = [];
         } else {
            recentOrders.value = data;
         }
@@ -436,7 +382,7 @@ const renderRevenueChart = () => {
   gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
 
   // Use real data if available, fallback to mock (though stats logic above handles this mostly, chart specific check here)
-  const chartData = stats.value?.charts?.revenue || mockStats.charts.revenue;
+  const chartData = stats.value?.charts?.revenue || { labels: [], data: [] };
   const labels = chartData.labels;
   const data = chartData.data;
 
@@ -494,6 +440,7 @@ const renderRevenueChart = () => {
           beginAtZero: true,
           grid: {
             color: '#e2e8f0', 
+            // @ts-ignore
             borderDash: [5, 5],
             drawBorder: false
           },

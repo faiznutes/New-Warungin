@@ -537,7 +537,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { safeSome, safeFilter, safeMap, safeFindIndex } from '../../utils/array-helpers';
 import api from '../../api';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
@@ -600,6 +600,12 @@ const { canEditOrders, canDeleteOrders, canCancelOrders, canRefundOrders } = use
 const selectedOrder = ref<Order | null>(null);
 const showEditModal = ref(false);
 const editingOrder = ref<Order | null>(null);
+
+const { pullDistance, isRefreshing } = usePullToRefresh({
+  onRefresh: async () => {
+    await loadOrders(1);
+  },
+});
 
 const orders = ref<Order[]>([]);
 const loading = ref(false);
@@ -1285,7 +1291,7 @@ onUnmounted(() => {
 
 
 
-const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+const handleExport = (format: 'csv' | 'excel' | 'pdf' | 'email') => {
    const data = orders.value.map(o => ({
       OrderNumber: o.orderNumber,
       Customer: o.customer?.name || o.temporaryCustomerName || 'Walk-in',

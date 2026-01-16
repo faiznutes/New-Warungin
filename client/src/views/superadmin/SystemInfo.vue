@@ -526,11 +526,11 @@ const handleConsultEnterprise = () => {
   window.open('mailto:sales@warungin.id?subject=Konsultasi Enterprise', '_blank');
 };
 
-const handleViewPlanDetail = (plan: any) => {
+const handleViewPlanDetail = (plan: typeof subscriptionPlans[0]) => {
   router.push(`/pricing?plan=${plan.id}`);
 };
 
-const handleAddAddon = (addon: any) => {
+const handleAddAddon = (addon: typeof addons[0]) => {
   router.push(`/app/addons?add=${addon.name}`);
 };
 

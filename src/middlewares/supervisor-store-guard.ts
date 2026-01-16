@@ -33,17 +33,22 @@ export const supervisorStoreGuard = () => {
 
       // Extract storeId from different possible sources
       let storeId: string | null = null;
-      
+
       // Try query parameter first (most common)
       if (req.query.storeId) {
-        storeId = Array.isArray(req.query.storeId) ? req.query.storeId[0] : req.query.storeId;
+        const queryStoreId = req.query.storeId;
+        if (typeof queryStoreId === 'string') {
+          storeId = queryStoreId;
+        } else if (Array.isArray(queryStoreId) && typeof queryStoreId[0] === 'string') {
+          storeId = queryStoreId[0];
+        }
       }
-      
+
       // Try body (for POST/PUT requests)
       if (!storeId && (req.body?.storeId || req.body?.store_id)) {
         storeId = req.body.storeId || req.body.store_id;
       }
-      
+
       // Try route params (e.g., /stores/:storeId)
       if (!storeId && req.params?.storeId) {
         storeId = req.params.storeId;

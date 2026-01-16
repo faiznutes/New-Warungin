@@ -1,6 +1,8 @@
 import { onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+declare const gtag: Function;
+
 interface SEOConfig {
   title?: string;
   description?: string;
@@ -54,7 +56,7 @@ function updateScriptTag(id: string, content: string) {
 
 export function useSEO(config: SEOConfig = {}) {
   const route = useRoute();
-  
+
   const seoConfig = {
     title: config.title || defaultSEO.title,
     description: config.description || defaultSEO.description,
@@ -67,14 +69,14 @@ export function useSEO(config: SEOConfig = {}) {
   const updateSEO = () => {
     // Update title
     document.title = seoConfig.title;
-    
+
     // Basic Meta Tags
     updateMetaTag('description', seoConfig.description);
     updateMetaTag('keywords', seoConfig.keywords);
     updateMetaTag('author', 'Warungin');
     updateMetaTag('robots', 'index, follow');
     updateMetaTag('theme-color', '#2563EB');
-    
+
     // Open Graph Tags - Complete
     updateMetaTag('og:title', seoConfig.title, 'property');
     updateMetaTag('og:description', seoConfig.description, 'property');
@@ -86,13 +88,13 @@ export function useSEO(config: SEOConfig = {}) {
     updateMetaTag('og:image:width', '1200', 'property');
     updateMetaTag('og:image:height', '630', 'property');
     updateMetaTag('og:image:alt', seoConfig.title, 'property');
-    
+
     // Twitter Card Tags
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:title', seoConfig.title);
     updateMetaTag('twitter:description', seoConfig.description);
     updateMetaTag('twitter:image', seoConfig.image);
-    
+
     // Canonical URL - Always use HTTPS and remove trailing slash
     let canonicalUrl = seoConfig.url;
     // Remove trailing slash except for root
@@ -101,15 +103,15 @@ export function useSEO(config: SEOConfig = {}) {
     }
     // Ensure canonical is always set
     updateLinkTag('canonical', canonicalUrl);
-    
+
     // Update Google Analytics page view
     if (typeof gtag !== 'undefined') {
       gtag('config', 'G-EJJJLD8YNQ', {
-        'page_path': route.path + (route.query ? '?' + new URLSearchParams(route.query).toString() : ''),
+        'page_path': route.path + (route.query ? '?' + new URLSearchParams(route.query as any).toString() : ''),
         'page_title': seoConfig.title
       });
     }
-    
+
     // Structured Data (JSON-LD) - Enhanced
     const structuredData = {
       '@context': 'https://schema.org',

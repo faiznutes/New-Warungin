@@ -282,6 +282,21 @@ import api from '../../api';
 
 const { success: showSuccess, error: showError } = useNotification();
 
+interface Agent {
+  id: string;
+  name: string;
+}
+
+interface Ticket {
+  id: string;
+  subject: string;
+  description: string;
+  priority: string;
+  status: string;
+  createdAt: string;
+  assignedTo?: Agent;
+}
+
 const loading = ref(true);
 const submitting = ref(false);
 const assigning = ref(false);
@@ -289,15 +304,15 @@ const addingNote = ref(false);
 const searchQuery = ref('');
 const statusFilter = ref('');
 const priorityFilter = ref('');
-const tickets = ref<any[]>([]);
-const agents = ref<any[]>([]);
+const tickets = ref<Ticket[]>([]);
+const agents = ref<Agent[]>([]);
 
 // Modals
 const showCreateModal = ref(false);
 const showDetailModal = ref(false);
 const showAssignModal = ref(false);
 const showNoteModal = ref(false);
-const selectedTicket = ref<any>(null);
+const selectedTicket = ref<Ticket | null>(null);
 const assigneeId = ref('');
 const noteContent = ref('');
 

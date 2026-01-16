@@ -746,7 +746,9 @@ const activeAddons = computed({
   set: (value: any) => setActiveAddons(value)
 });
 
-const userRole = computed(() => authStore.user?.role || '');
+
+
+const userRole = computed(() => (authStore.user?.role || '') as string);
 const showInfoModal = ref(false);
 const showShortcutsModal = ref(false);
 const showHelpModal = ref(false);
@@ -826,6 +828,13 @@ watch(menuSearchQuery, (query) => {
 const globalSearchRef = ref<any>(null);
 const openGlobalSearch = () => {
   globalSearchRef.value?.open();
+};
+
+const clearRecentItems = () => {
+  if (recentItems) {
+     (recentItems as any).value = [];
+  }
+  localStorage.removeItem('recentItems');
 };
 
 // Menu expand/collapse state - all closed by default

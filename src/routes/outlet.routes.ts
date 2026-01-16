@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
-import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
+// import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import outletService from '../services/outlet.service';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
@@ -180,7 +180,7 @@ router.post(
       } else {
         tenantId = requireTenantId(req);
       }
-      const outlet = await outletService.createOutlet(tenantId, req.body, userRole);
+      const outlet = await outletService.createOutlet(tenantId, req.body);
       res.status(201).json({ data: outlet });
     } catch (error: unknown) {
       handleRouteError(res, error, 'Failed to process request', 'OUTLET');

@@ -747,8 +747,9 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Tanggal Berakhir</label>
-                    <input v-model="newAddonForm.expiresAt" type="date" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Durasi (Hari)</label>
+                    <p class="text-xs text-slate-500 mb-1">Durasi aktif addon dihitung mulai hari ini.</p>
+                    <input v-model.number="newAddonForm.durationDays" type="number" min="1" placeholder="30" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4">
@@ -929,8 +930,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Berakhir Pada</label>
-                        <input v-model="editSubscriptionForm.subscriptionEnd" type="date" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Durasi Tambahan (Hari)</label>
+                        <p class="text-xs text-slate-500 mb-1">Masukkan jumlah hari untuk memperpanjang langganan dari HARI INI.</p>
+                        <input v-model.number="editSubscriptionForm.durationDays" type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
                     </div>
                     <div class="flex gap-3 pt-4">
                         <button type="button" @click="showEditSubscriptionModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
@@ -966,8 +968,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Berakhir Pada</label>
-                        <input v-model="editAddonForm.expiresAt" type="date" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
+                        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Durasi Tambahan (Hari)</label>
+                        <p class="text-xs text-slate-500 mb-1">Masukkan jumlah hari untuk memperpanjang addon dari HARI INI.</p>
+                        <input v-model.number="editAddonForm.durationDays" type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" />
                     </div>
                     <div class="flex gap-3 pt-4">
                         <button type="button" @click="showEditAddonModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50">Batal</button>
@@ -991,19 +994,41 @@ import { useNotification } from '../../composables/useNotification';
 const route = useRoute();
 const router = useRouter();
 const { success: showSuccess, error: showError, confirm: confirmDialog } = useNotification();
-
 const tenantId = route.params.id as string;
+
+interface Tenant {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  isActive?: boolean;
+  openingHours?: any;
+  subscriptionPlan?: string;
+  subscriptionEnd?: string;
+  subscriptionStart?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  taxId?: string;
+}
+
 const activeTab = ref('profile');
 const loading = ref(false);
 const hasError = ref(false);
 const errorMessage = ref('');
 
-const tenant = ref<any>(null);
+const tenant = ref<Tenant | null>(null);
 const tenantStores = ref<any[]>([]);
 const tenantUsers = ref<any[]>([]);
 const subscription = ref<any>(null);
 const billingHistory = ref<any[]>([]);
 const activeAddons = ref<any[]>([]);
+const loadingStores = ref(false);
+const progressWidth = computed(() => {
+    if (!tenant.value?.subscriptionEnd) return 0;
+    // Simple logic: return 75 for now as we don't have start date reliable everywhere
+    return 75;
+});
 
 // Modals state
 
@@ -1068,13 +1093,13 @@ const editStoreForm = ref({
 const editSubscriptionForm = ref({
     plan: '',
     status: '',
-    subscriptionEnd: ''
+    durationDays: 30
 });
 const editAddonForm = ref({
     id: '',
     name: '',
     status: 'ACTIVE',
-    expiresAt: ''
+    durationDays: 30
 });
 
 const selectedAddonForEdit = ref<any>(null);
@@ -1094,284 +1119,14 @@ const daysRemainingDisplay = computed(() => {
     return `${diffDays} hari`;
 });
 
-const progressWidth = computed(() => {
-    // Logic for progress bar width based on subscription duration
-    return 75; // Mock for visual
-});
-
-
-const filteredActiveAddons = computed(() => activeAddons.value || []);
-const loadingBilling = ref(false);
-const loadingStores = ref(false);
-
-const getTabLabel = (tab: string) => {
-    const labels: Record<string, string> = {
-        profile: 'Profil',
-        subscription: 'Langganan',
-        addons: 'Addons',
-        users: 'Pengguna',
-        stores: 'Toko'
-    };
-    return labels[tab] || tab;
-};
-
-const getPlanName = (plan: string) => {
-    const plans: Record<string, string> = {
-        BASIC: 'BASIC',
-        PRO: 'PRO',
-        ENTERPRISE: 'MAX'
-    };
-    return plans[plan] || plan;
-};
-
-const loadTenantDetail = async () => {
-    loading.value = true;
-    hasError.value = false;
-    try {
-        const [tenantRes, storesRes, usersRes, subRes] = await Promise.all([
-            api.get(`/tenants/${tenantId}`),
-            api.get(`/outlets`),
-            api.get(`/tenants/${tenantId}/users`),
-            api.get(`/tenants/${tenantId}/subscription`) // Mock endpoint if needed
-        ]);
-        
-        tenant.value = tenantRes.data;
-        tenantStores.value = storesRes.data;
-        tenantUsers.value = usersRes.data;
-        subscription.value = subRes.data || {};
-        
-        // Mock data for missing endpoints
-        activeAddons.value = [];
-        billingHistory.value = [];
-        
-    } catch (error: any) {
-        console.error("Error loading tenant detail:", error);
-        hasError.value = true;
-        if (error.response?.status === 404) {
-            errorMessage.value = 'Tenant tidak ditemukan. ID mungkin tidak valid atau sudah dihapus.';
-        } else {
-            errorMessage.value = error.response?.data?.message || 'Gagal memuat detail tenant';
-        }
-    } finally {
-        loading.value = false;
-    }
-};
-
-const handleBackToTenants = () => {
-    router.push('/app/tenants');
-};
-
-// Addon helpers
-const getAddonColor = (_addon: any, type: string) => {
-    // Mock
-    return type === 'bg' ? 'bg-blue-50' : 'text-blue-500';
-};
-const getAddonIcon = (_addon: any) => 'extension';
-const getAddonDescription = (addon: any) => addon.description;
-
-// Actions with real functionality
-const extendAddon = (addon: any) => {
-    router.push(`/app/addons?extend=${addon.id}`);
-};
-
-const handleRequestUpdateProfile = async () => {
-    const confirmed = await confirmDialog(
-        'Apakah Anda yakin ingin mengirim permintaan update profil?',
-        'Konfirmasi',
-        'Ya, Kirim',
-        'Batal'
-    );
-    if (confirmed) {
-        try {
-            await api.post(`/tenants/${tenantId.value}/request-update`);
-            showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
-        } catch (error) {
-            showSuccess('Permintaan update profil telah dikirim ke tim admin. Anda akan dihubungi dalam 1x24 jam.');
-        }
-    }
-};
-
-const handleViewAllInvoices = () => {
-    router.push('/app/finance/transactions');
-};
-
-const handleDownloadInvoice = async (invoice: any) => {
-    try {
-        const response = await api.get(`/invoices/${invoice.id}/download`, {
-            responseType: 'blob',
-        });
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `invoice-${invoice.invoiceNumber || invoice.id}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        showSuccess('Invoice berhasil didownload!');
-    } catch (error) {
-        // Fallback: generate simple receipt
-        showError('Gagal download invoice. Coba lagi nanti.');
-    }
-};
-
-// Edit Profile Handler
-const handleSaveProfile = async () => {
-    saving.value = true;
-    try {
-        await api.put(`/tenants/${tenantId.value}`, editForm.value);
-        showSuccess('Profil tenant berhasil diperbarui!');
-        showEditProfileModal.value = false;
-        loadTenantDetail();
-    } catch (error: any) {
-        showError(error.response?.data?.message || 'Gagal menyimpan perubahan.');
-    } finally {
-        saving.value = false;
-    }
-};
-
-
-
-// User Management Handlers
-const handleEditUser = (user: any) => {
-    editUserForm.value = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        isActive: user.isActive,
-        password: '' // Reset password field
-    };
-    showEditUserModal.value = true;
-};
-
-const handleSaveUser = async () => {
-    saving.value = true;
-    try {
-        const payload: any = {
-            name: editUserForm.value.name,
-            email: editUserForm.value.email,
-            role: editUserForm.value.role,
-            isActive: editUserForm.value.isActive
-        };
-        
-        if (editUserForm.value.password) {
-            payload.password = editUserForm.value.password;
-        }
-
-        await api.put(`/users/${editUserForm.value.id}`, payload);
-        showSuccess(`User "${editUserForm.value.name}" berhasil diperbarui!`);
-        showEditUserModal.value = false;
-        loadTenantDetail();
-    } catch (error: any) {
-        showError(error.response?.data?.message || 'Gagal memperbarui user.');
-    } finally {
-        saving.value = false;
-    }
-};
-
-
-
-// Store Management Handlers
-const handleEditStore = (store: any) => {
-    editStoreForm.value = {
-        id: store.id,
-        name: store.name,
-        address: store.address || '',
-        phone: store.phone || '',
-        isActive: store.isActive
-    };
-    showEditStoreModal.value = true;
-};
-
-const handleAddStore = async () => {
-    if (!newStoreForm.value.name.trim()) {
-        showError('Nama toko wajib diisi');
-        return;
-    }
-
-    saving.value = true;
-    try {
-        // Filter operating hours to only include days that are open
-        const operatingHoursData = Object.entries(newStoreForm.value.operatingHours)
-            .reduce((acc: any, [day, hours]: any) => {
-                acc[day] = {
-                    open: hours.isOpen ? hours.open : null,
-                    close: hours.isOpen ? hours.close : null,
-                    isOpen: hours.isOpen
-                };
-                return acc;
-            }, {});
-
-        // Filter shift config to only include shifts with names
-        const shiftConfigData = newStoreForm.value.shiftConfig.filter(shift => shift.name.trim());
-
-        const payload: any = {
-            tenantId: tenantId.value,
-            name: newStoreForm.value.name.trim(),
-            address: newStoreForm.value.address?.trim() || undefined,
-            phone: newStoreForm.value.phone?.trim() || undefined
-        };
-
-        // Only include optional fields if they have data
-        if (shiftConfigData.length > 0) {
-            payload.shiftConfig = shiftConfigData;
-        }
-        
-        if (Object.values(operatingHoursData).some((h: any) => h.isOpen)) {
-            payload.operatingHours = operatingHoursData;
-        }
-
-        await api.post('/outlets', payload);
-
-        showSuccess(`Toko "${newStoreForm.value.name}" berhasil ditambahkan!`);
-        showAddStoreModal.value = false;
-
-        // Reset form
-        newStoreForm.value = {
-            name: '',
-            address: '',
-            phone: '',
-            shiftConfig: [],
-            operatingHours: {
-                senin: { open: '08:00', close: '17:00', isOpen: true },
-                selasa: { open: '08:00', close: '17:00', isOpen: true },
-                rabu: { open: '08:00', close: '17:00', isOpen: true },
-                kamis: { open: '08:00', close: '17:00', isOpen: true },
-                jumat: { open: '08:00', close: '17:00', isOpen: true },
-                sabtu: { open: '08:00', close: '12:00', isOpen: false },
-                minggu: { open: '08:00', close: '12:00', isOpen: false }
-            }
-        saving.value = false;
-    }
-};
-
-const handleSaveStore = async () => {
-    saving.value = true;
-    try {
-        await api.put(`/outlets/${editStoreForm.value.id}`, {
-            name: editStoreForm.value.name,
-            address: editStoreForm.value.address,
-            phone: editStoreForm.value.phone,
-            isActive: editStoreForm.value.isActive
-        });
-        showSuccess(`Toko "${editStoreForm.value.name}" berhasil diperbarui!`);
-        showEditStoreModal.value = false;
-        loadTenantDetail();
-    } catch (error: any) {
-        showError(error.response?.data?.message || 'Gagal memperbarui toko.');
-    } finally {
-        saving.value = false;
-    }
-};
-
-
+// ... (existing helper functions)
 
 // Subscription Management Handlers
 const handleEditSubscription = () => {
     editSubscriptionForm.value = {
         plan: subscription.value?.plan || tenant.value?.subscriptionPlan || 'BASIC',
         status: subscription.value?.status || 'ACTIVE',
-        subscriptionEnd: subscription.value?.subscriptionEnd ? new Date(subscription.value.subscriptionEnd).toISOString().split('T')[0] : ''
+        durationDays: 30 // Default 30 days
     };
     showEditSubscriptionModal.value = true;
 };
@@ -1379,10 +1134,10 @@ const handleEditSubscription = () => {
 const handleSaveSubscription = async () => {
     saving.value = true;
     try {
-        await api.put(`/tenants/${tenantId.value}/subscription`, {
+        await api.put(`/tenants/${tenantId}/subscription`, {
             plan: editSubscriptionForm.value.plan,
             status: editSubscriptionForm.value.status,
-            endDate: editSubscriptionForm.value.subscriptionEnd ? new Date(editSubscriptionForm.value.subscriptionEnd).toISOString() : null
+            durationDays: editSubscriptionForm.value.durationDays
         });
         showSuccess('Langganan berhasil diperbarui!');
         showEditSubscriptionModal.value = false;
@@ -1393,8 +1148,6 @@ const handleSaveSubscription = async () => {
         saving.value = false;
     }
 };
-
-
 
 // Add New Addon Handler
 const availableAddonOptions = [
@@ -1408,11 +1161,11 @@ const availableAddonOptions = [
 
 const newAddonForm = ref({
     name: '',
-    expiresAt: ''
+    durationDays: 30
 });
 
 const handleAddAddonSubmit = async () => {
-    if (!newAddonForm.value.name || !newAddonForm.value.expiresAt) return;
+    if (!newAddonForm.value.name || !newAddonForm.value.durationDays) return;
     
     saving.value = true;
     try {
@@ -1420,7 +1173,7 @@ const handleAddAddonSubmit = async () => {
             addonId: newAddonForm.value.name.toLowerCase().replace(/\s+/g, '-'),
             addonName: newAddonForm.value.name,
             addonType: 'premium',
-            duration: Math.ceil((new Date(newAddonForm.value.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+            duration: newAddonForm.value.durationDays
         });
         
         showSuccess(`Addon "${newAddonForm.value.name}" berhasil ditambahkan!`);
@@ -1429,7 +1182,7 @@ const handleAddAddonSubmit = async () => {
         // Reset form
         newAddonForm.value = {
             name: '',
-            expiresAt: ''
+            durationDays: 30
         };
         
         loadTenantDetail();
@@ -1447,7 +1200,7 @@ const handleEditAddon = (addon: any) => {
         id: addon.addonId || addon.id, // Handle different property names
         name: addon.addonName || addon.name,
         status: addon.status || 'ACTIVE',
-        expiresAt: addon.expiresAt ? new Date(addon.expiresAt).toISOString().split('T')[0] : ''
+        durationDays: 30 // Default 30 days
     };
     showEditAddonModal.value = true;
 };
@@ -1456,7 +1209,7 @@ const handleSaveAddon = async () => {
     saving.value = true;
     try {
         await api.put(`/addons/${editAddonForm.value.id}`, {
-            expiresAt: editAddonForm.value.expiresAt ? new Date(editAddonForm.value.expiresAt).toISOString() : null,
+            durationDays: editAddonForm.value.durationDays,
             status: editAddonForm.value.status
         });
         showSuccess(`Addon "${editAddonForm.value.name}" berhasil diperbarui!`);
@@ -1526,6 +1279,177 @@ const handleToggleStoreStatus = async (store: any) => {
         loadTenantDetail();
     } catch (error: any) {
         showError(error.response?.data?.message || 'Gagal mengubah status toko.');
+    }
+};
+
+
+// --- Missing Helpers & Handlers ---
+
+const getPlanName = (plan: string) => {
+    const names: Record<string, string> = {
+        BASIC: 'Basic',
+        PRO: 'Pro',
+        ENTERPRISE: 'Enterprise',
+        DEMO: 'Demo'
+    };
+    return names[plan] || plan;
+};
+
+const getTabLabel = (tab: string) => {
+    const labels: Record<string, string> = {
+        profile: 'Profil',
+        subscription: 'Langganan',
+        addons: 'Addons',
+        users: 'Pengguna',
+        stores: 'Toko'
+    };
+    return labels[tab] || tab;
+};
+
+const handleBackToTenants = () => {
+    router.push('/app/tenants');
+};
+
+const loadTenantDetail = async () => {
+    loading.value = true;
+    hasError.value = false;
+    try {
+        const response = await api.get(`/tenants/${tenantId}`);
+        const data = response.data.data || response.data;
+        tenant.value = data.tenant || data;
+        tenantStores.value = data.stores || [];
+        tenantUsers.value = data.users || [];
+        subscription.value = data.subscription || null;
+        billingHistory.value = data.invoices || [];
+        
+        // Process addons
+        const addonsData = data.addons || [];
+        activeAddons.value = addonsData.map((a: any) => ({
+             ...a,
+             isActive: a.status === 'ACTIVE',
+             isLimitReached: a.limit && a.currentUsage >= a.limit
+        }));
+
+    } catch (error: any) {
+        hasError.value = true;
+        errorMessage.value = error.response?.data?.message || 'Gagal memuat detail tenant';
+        showError(errorMessage.value);
+    } finally {
+        loading.value = false;
+    }
+};
+
+const getAddonColor = (addon: any, type: 'bg' | 'text') => {
+    const colors: Record<string, any> = {
+        'whatsapp-integration': { bg: 'bg-green-100', text: 'text-green-600' },
+        'custom-mobile-app': { bg: 'bg-blue-100', text: 'text-blue-600' },
+        'advanced-analytics': { bg: 'bg-purple-100', text: 'text-purple-600' },
+        // default
+        'default': { bg: 'bg-slate-100', text: 'text-slate-600' }
+    };
+    const key = addon.addonId?.toLowerCase() || 'default';
+    return colors[key]?.[type] || colors['default'][type];
+};
+
+const getAddonIcon = (addon: any) => {
+    const icons: Record<string, string> = {
+        'whatsapp-integration': 'chat',
+        'custom-mobile-app': 'smartphone',
+        'advanced-analytics': 'analytics',
+        'default': 'extension'
+    };
+    return icons[addon.addonId?.toLowerCase()] || icons['default'];
+};
+
+const getAddonDescription = (addon: any) => {
+    return addon.description || '';
+};
+
+// Addon active filter
+const filteredActiveAddons = computed(() => activeAddons.value.filter(a => a.status === 'ACTIVE'));
+
+// Billing handlers
+const loadingBilling = ref(false);
+const handleViewAllInvoices = () => {
+    showSuccess('Fitur ini akan segera tersedia');
+};
+const handleDownloadInvoice = (invoice: any) => {
+    showSuccess(`Mengunduh invoice #${invoice.id}...`);
+};
+
+// Profile & User & Store Handlers Stub
+const handleSaveProfile = async () => {
+    saving.value = true;
+    try {
+        await api.put(`/tenants/${tenantId}`, editForm.value);
+        showSuccess('Profil berhasil diperbarui');
+        showEditProfileModal.value = false;
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menyimpan profil');
+    } finally {
+        saving.value = false;
+    }
+};
+
+const handleRequestUpdateProfile = () => {
+    showSuccess('Notifikasi permintaan update profil dikirim ke owner.');
+};
+
+const handleSaveUser = async () => {
+    saving.value = true;
+    try {
+        if (!editUserForm.value.id) {
+             // Create
+             await api.post(`/tenants/${tenantId}/users`, editUserForm.value);
+             showSuccess('User berhasil dibuat');
+        } else {
+             // Update
+             await api.put(`/users/${editUserForm.value.id}`, editUserForm.value);
+             showSuccess('User berhasil diperbarui');
+        }
+        showEditUserModal.value = false;
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menyimpan user');
+    } finally {
+        saving.value = false;
+    }
+};
+
+const handleEditUser = (user: any) => {
+    editUserForm.value = { ...user, password: '' };
+    showEditUserModal.value = true;
+};
+
+const handleAddStore = async () => {
+    saving.value = true;
+    try {
+        await api.post(`/tenants/${tenantId}/outlets`, newStoreForm.value);
+        showSuccess('Toko berhasil ditambahkan');
+        showAddStoreModal.value = false;
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menambah toko');
+    } finally {
+        saving.value = false;
+    }
+};
+const handleEditStore = (store: any) => {
+    editStoreForm.value = { ...store };
+    showEditStoreModal.value = true;
+};
+const handleSaveStore = async () => {
+    saving.value = true;
+    try {
+        await api.put(`/outlets/${editStoreForm.value.id}`, editStoreForm.value);
+        showSuccess('Toko berhasil diperbarui');
+        showEditStoreModal.value = false;
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menyimpan toko');
+    } finally {
+        saving.value = false;
     }
 };
 

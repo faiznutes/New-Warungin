@@ -27,6 +27,7 @@ export const getProductsQuerySchema = z.object({
   sortBy: z.enum(['name', 'price', 'stock', 'createdAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   tenantId: z.string().optional(), // Allow tenantId for SUPER_ADMIN
+  lowStock: z.string().transform(val => val === 'true').optional(),
 }).passthrough(); // Allow additional parameters
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

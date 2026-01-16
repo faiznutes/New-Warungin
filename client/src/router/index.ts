@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import MarketingLayout from '../layouts/MarketingLayout.vue';
 import api from '../api';
+import { addonRoutes } from './addon.routes';
+import { checkStoreAccess } from './supervisor-store-guard';
 
 // Helper function to get layout based on role
 const getLayoutForRole = (role: string | undefined) => {
@@ -341,42 +343,8 @@ const router = createRouter({
           meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'] },
         },
         // Addon Features
-        {
-          path: 'delivery',
-          name: 'delivery',
-          component: () => import('../views/delivery/DeliveryOrders.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
-        {
-          path: 'marketing',
-          name: 'marketing',
-          component: () => import('../views/marketing/MarketingCampaigns.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
-        {
-          path: 'marketing/email-templates',
-          name: 'email-templates',
-          component: () => import('../views/marketing/EmailTemplates.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
-        {
-          path: 'marketing/email-analytics',
-          name: 'email-analytics',
-          component: () => import('../views/marketing/EmailAnalytics.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
-        {
-          path: 'marketing/email-scheduler',
-          name: 'email-scheduler',
-          component: () => import('../views/marketing/EmailScheduler.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
-        {
-          path: 'marketing/customer-engagement',
-          name: 'customer-engagement',
-          component: () => import('../views/marketing/CustomerEngagement.vue'),
-          meta: { roles: ['ADMIN_TENANT', 'SUPER_ADMIN'], requiresAddon: 'DELIVERY_MARKETING' },
-        },
+        ...addonRoutes,
+        // Inventory Management
         // Inventory Management
         {
           path: 'inventory/suppliers',
@@ -698,7 +666,7 @@ router.beforeEach(async (to, from, next) => {
           next({ name: 'open-shift' });
           return;
         }
-        
+
         // IF HAS ACTIVE SHIFT, CONTINUE NORMAL FLOW
         // Cashier can now access POS, dashboard, etc.
       } catch (err) {
@@ -756,76 +724,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Check store requirement for CASHIER, SUPERVISOR, KITCHEN (NOT ADMIN_TENANT)
-  if (hasToken && authStore.user && authStore.isAuthenticated) {
-    const userRole = authStore.user.role;
-    // ADMIN_TENANT tidak perlu toko - skip check
-    const requiresStore = ['CASHIER', 'SUPERVISOR', 'KITCHEN'].includes(userRole);
-    const hasStore = authStore.selectedStoreId || localStorage.getItem('selectedStoreId');
-
-    if (requiresStore && !hasStore && to.name !== 'login' && to.name !== 'unauthorized') {
-      // H-6 FIX: Better error handling for store selector
-      // Check if user has any stores available with improved error handling
-      try {
-        // Add timeout to prevent hanging (5 seconds)
-        const timeoutPromise = new Promise<any>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout')), 5000)
-        );
-        
-        const outletsPromise = api.get('/outlets');
-        const outletsResponse = await Promise.race([outletsPromise, timeoutPromise]);
-        
-        const outletsData = outletsResponse.data?.data || outletsResponse.data || [];
-        // NORMALISASI: Pastikan outlets selalu array
-        const outlets = Array.isArray(outletsData) ? outletsData : [];
-
-        // LOGGING: Log untuk debugging
-        console.log('[Router] Checking outlets for role guard:', {
-          outletsType: typeof outlets,
-          outletsIsArray: Array.isArray(outlets),
-          outletsLength: outlets.length
-        });
-
-        // GUARD CLAUSE: Safe filter dengan check
-        const activeOutlets = Array.isArray(outlets)
-          ? outlets.filter((o: any) => o && o.isActive !== false)
-          : [];
-
-        if (!Array.isArray(activeOutlets) || activeOutlets.length === 0) {
-          // No stores available - show warning for SPV/kasir/dapur
-          const warning = 'Tidak ada toko yang aktif tersedia. Silakan hubungi admin untuk membuat atau mengaktifkan toko terlebih dahulu.';
-          next({
-            name: 'unauthorized',
-            query: { message: warning }
-          });
-          return;
-        } else {
-          // Has stores but not selected - redirect to login to show store selector
-          next({ name: 'login', query: { redirect: to.fullPath } });
-          return;
-        }
-      } catch (error: any) {
-        console.error('Error checking stores:', error);
-        
-        // Timeout or network error
-        if (error.message === 'Timeout' || !error.response) {
-          const timeoutMessage = 'Toko tidak dapat dimuat. Silakan periksa koneksi internet Anda dan coba lagi.';
-          next({
-            name: 'unauthorized',
-            query: { message: timeoutMessage }
-          });
-          return;
-        }
-        
-        // Other API error
-        const warning = 'Tidak dapat memverifikasi akses toko. Silakan hubungi admin untuk bantuan.';
-        next({
-          name: 'unauthorized',
-          query: { message: warning }
-        });
-        return;
-      }
-    }
-  }
+  if (await checkStoreAccess(to, next)) return;
 
   // Role-based access control
   if (to.meta.roles && authStore.user) {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import api from '../api';
+import { safeFilter } from '../utils/array-helpers';
 
 export interface User {
   id: string;
@@ -9,6 +10,8 @@ export interface User {
   role: string;
   tenantId: string;
   tenantName: string;
+  permissions?: any;
+  isActive?: boolean;
 }
 
 export interface Tenant {
@@ -23,20 +26,20 @@ export const useAuthStore = defineStore('auth', () => {
   // - rememberMe=true: localStorage (persists across browser restarts)
   // - rememberMe=false: sessionStorage (cleared on tab close)
   // - On init: try both, prioritize localStorage then sessionStorage
-  
+
   // Initialize token - try localStorage first, then sessionStorage
   let initialToken: string | null = localStorage.getItem('token');
   if (!initialToken) {
     initialToken = sessionStorage.getItem('token');
   }
-  
+
   const token = ref<string | null>(initialToken);
   const rememberMe = ref<boolean>(localStorage.getItem('rememberMe') === 'true');
   const user = ref<User | null>(null);
   const tenants = ref<Tenant[]>([]);
   const selectedTenantId = ref<string | null>(localStorage.getItem('selectedTenantId'));
   const selectedStoreId = ref<string | null>(localStorage.getItem('selectedStoreId'));
-  
+
   // Shift status caching for CASHIER role - prevents excessive API calls
   const shiftStatus = ref<{ shiftId: string; shiftEnd: null | string; storeName: string } | null>(null);
   const shiftStatusCheckedAt = ref<number>(0);
@@ -65,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
   });
 
   const currentStoreId = computed(() => selectedStoreId.value);
-  
+
   // Check if shift status cache is still valid
   const isShiftCacheValid = computed(() => {
     return shiftStatus.value !== null && (Date.now() - shiftStatusCheckedAt.value) < SHIFT_CACHE_DURATION;
@@ -79,12 +82,12 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = newToken;
     user.value = userData;
     rememberMe.value = remember;
-    
+
     // Clear all storage first to ensure clean state
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
     localStorage.removeItem('rememberMe');
-    
+
     // Store token based on remember me preference
     if (remember) {
       // Persist across sessions
@@ -95,10 +98,10 @@ export const useAuthStore = defineStore('auth', () => {
       sessionStorage.setItem('token', newToken);
       localStorage.setItem('rememberMe', 'false');
     }
-    
+
     // Always store user data in localStorage for faster access
     localStorage.setItem('user', JSON.stringify(userData));
-    
+
     // Clear shift status cache on new auth
     shiftStatus.value = null;
     shiftStatusCheckedAt.value = 0;
@@ -112,24 +115,24 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null;
     user.value = null;
     rememberMe.value = false;
-    
+
     // Clear from BOTH storage locations to ensure complete cleanup
     localStorage.removeItem('token');
     localStorage.removeItem('rememberMe');
     localStorage.removeItem('user');
     sessionStorage.removeItem('token');
-    
+
     tenants.value = [];
     selectedTenantId.value = null;
     localStorage.removeItem('selectedTenantId');
     selectedStoreId.value = null;
     localStorage.removeItem('selectedStoreId');
-    
+
     // Clear shift status on logout
     shiftStatus.value = null;
     shiftStatusCheckedAt.value = 0;
   };
-  
+
   // Restore user from localStorage on init
   const restoreUser = () => {
     try {
@@ -141,7 +144,7 @@ export const useAuthStore = defineStore('auth', () => {
       console.error('Failed to restore user:', error);
     }
   };
-  
+
   // Initialize user from localStorage
   restoreUser();
 
@@ -150,11 +153,11 @@ export const useAuthStore = defineStore('auth', () => {
     // Ensure permissions are included in user object
     const userData = response.data.user;
     const token = response.data.token;
-    
+
     // IMPORTANT: Set token FIRST before calling /auth/me
     // This ensures the Authorization header is included in the request
     setAuth(token, userData, remember);
-    
+
     // Always fetch fresh user data including permissions from /auth/me
     // This ensures we have the latest permissions and all user data
     try {
@@ -176,7 +179,7 @@ export const useAuthStore = defineStore('auth', () => {
         userData.permissions = null;
       }
     }
-    
+
     return response.data;
   };
 
@@ -201,7 +204,7 @@ export const useAuthStore = defineStore('auth', () => {
       } else if (response.data?.data && Array.isArray(response.data.data)) {
         tenantList = response.data.data;
       }
-      
+
       // Filter out System tenant (double check, backend already filters)
       // Use safe filter to ensure array
       tenants.value = safeFilter(tenantList, (tenant: any) => tenant && tenant.name !== 'System');
@@ -250,25 +253,25 @@ export const useAuthStore = defineStore('auth', () => {
         if (!currentToken) {
           throw new Error('No token available');
         }
-        
+
         // Set token in store if not already set
         if (!token.value && currentToken) {
           token.value = currentToken;
         }
-        
+
         const response = await api.get('/auth/me');
         user.value = response.data.user;
-        
+
         // Update stored user data
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        
+
         // Auto-set store for cashier/kitchen from permissions
         if (user.value && (user.value.role === 'CASHIER' || user.value.role === 'KITCHEN')) {
           const permissions = (user.value as any).permissions;
           if (permissions?.assignedStoreId) {
             setSelectedStore(permissions.assignedStoreId);
           }
-          
+
           // H-7 FIX: Load shift status on session restore
           // This ensures cashiers see the correct shift state after page refresh
           try {
@@ -279,7 +282,7 @@ export const useAuthStore = defineStore('auth', () => {
             // Don't block on shift status load - it's not critical for auth
           }
         }
-        
+
         return response.data;
       } catch (error) {
         // Only clear auth if it's a real authentication error (401 or 404)
@@ -324,11 +327,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.get('/cash-shift/current');
       const shift = response.data?.data || response.data;
-      
+
       // Update cache
       shiftStatus.value = shift || null;
       shiftStatusCheckedAt.value = Date.now();
-      
+
       return shift;
     } catch (error: any) {
       // 404 means no active shift - this is normal and expected
@@ -337,7 +340,7 @@ export const useAuthStore = defineStore('auth', () => {
         shiftStatusCheckedAt.value = Date.now();
         return null;
       }
-      
+
       // For other errors, clear cache but don't throw
       // This prevents blocking navigation on API failures
       shiftStatus.value = null;

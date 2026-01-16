@@ -145,8 +145,7 @@
                   class="w-3 h-3 rounded-full mt-1.5"
                   :class="{
                     'bg-yellow-500': ticket.status === 'open',
-                    'bg-blue-500': ticket.status === 'in_progress',
-                    'bg-blue-500': ticket.status === 'resolved',
+                    'bg-blue-500': ticket.status === 'in_progress' || ticket.status === 'resolved',
                     'bg-slate-400': ticket.status === 'closed'
                   }"
                 ></div>
@@ -157,8 +156,7 @@
                       class="text-xs font-bold px-2 py-0.5 rounded-full"
                       :class="{
                         'bg-yellow-100 text-yellow-700': ticket.status === 'open',
-                        'bg-blue-100 text-blue-700': ticket.status === 'in_progress',
-                        'bg-blue-100 text-blue-700': ticket.status === 'resolved',
+                        'bg-blue-100 text-blue-700': ticket.status === 'in_progress' || ticket.status === 'resolved',
                         'bg-slate-100 text-slate-600': ticket.status === 'closed'
                       }"
                     >
@@ -370,8 +368,7 @@
                    <div class="px-3 py-1.5 rounded-lg"
                         :class="{
                              'bg-yellow-100 text-yellow-700': selectedTicket.status === 'open',
-                             'bg-blue-100 text-blue-700': selectedTicket.status === 'in_progress',
-                             'bg-blue-100 text-blue-700': selectedTicket.status === 'resolved',
+                             'bg-blue-100 text-blue-700': selectedTicket.status === 'in_progress' || selectedTicket.status === 'resolved',
                              'bg-slate-100 text-slate-600': selectedTicket.status === 'closed'
                            }">
                     <span class="text-xs font-bold uppercase tracking-wider block mb-0.5 opacity-75">Status</span>
@@ -440,15 +437,24 @@ import api from '../../api';
 
 const { success: showSuccess, error: showError } = useNotification();
 
+interface Ticket {
+  id: string;
+  subject: string;
+  description: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  category: string;
+  createdAt: string;
+}
+
 // State
 const searchQuery = ref('');
 const ticketFilter = ref('all');
 const showTicketModal = ref(false);
 const showDetailModal = ref(false);
-const selectedTicket = ref<any>(null);
+const selectedTicket = ref<Ticket | null>(null);
 const loadingTickets = ref(false);
 const submitting = ref(false);
-const tickets = ref<any[]>([]);
+const tickets = ref<Ticket[]>([]);
 
 const newTicket = ref({
   category: '',
