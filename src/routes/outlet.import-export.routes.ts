@@ -12,7 +12,7 @@ router.get(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   createRateLimiter('EXPORT'),
   asyncHandler(async (req: Request, res: Response) => {
-    const tenantId = req.tenant?.id || req.user?.tenantId;
+    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const filters = req.query;
 
     const result = await importExportService.exportToCSV(tenantId, filters);
@@ -32,7 +32,7 @@ router.post(
     const { csvContent } = req.body;
     if (!csvContent) return res.status(400).json(errorResponse('CSV wajib diisi', 'VALIDATION_ERROR'));
 
-    const tenantId = req.tenant?.id || req.user?.tenantId;
+    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const result = await importExportService.importFromCSV(tenantId, csvContent);
     res.json(successResponse(result, 'Import berhasil'));
   })
@@ -44,7 +44,7 @@ router.get(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   createRateLimiter('EXPORT'),
   asyncHandler(async (req: Request, res: Response) => {
-    const tenantId = req.tenant?.id || req.user?.tenantId;
+    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
     const format = req.query.format as 'detailed' | 'summary' || 'detailed';
 
     const result = await importExportService.exportToJSON(tenantId, format);
