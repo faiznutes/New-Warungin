@@ -278,7 +278,6 @@ router.put(
     }
   }
 );
-);
 
 /**
  * Delete addon (Super Admin only)
