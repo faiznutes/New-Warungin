@@ -77,13 +77,14 @@ export const supervisorStoreGuard = () => {
         });
 
         // Return 403 Forbidden with clear error message
-        return res.status(403).json({
+        res.status(403).json({
           error: 'Forbidden: Store access not allowed',
           message: `You do not have access to store "${storeId}". Contact admin to get access to this store.`,
           code: 'STORE_ACCESS_DENIED',
           requestedStore: storeId,
           allowedStores: allowedStoreIds,
         });
+        return;
       }
 
       // Supervisor is allowed - continue
@@ -148,13 +149,14 @@ export const supervisorStoresGuard = () => {
           path: req.path,
         });
 
-        return res.status(403).json({
+        res.status(403).json({
           error: 'Forbidden: Some stores not allowed',
           message: `You do not have access to stores: ${unauthorizedStores.join(', ')}`,
           code: 'STORE_ACCESS_DENIED',
           unauthorizedStores,
           allowedStores: allowedStoreIds,
         });
+        return;
       }
 
       logger.debug('Supervisor bulk store access granted', {

@@ -9,14 +9,14 @@ import logger from '../utils/logger';
 const router = Router();
 
 // Bulk update
-router.post('/bulk/update', authGuard, roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'), subscriptionGuard, 
+router.post('/bulk/update', authGuard, roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'), subscriptionGuard,
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
     const { outlets } = req.body;
     if (!Array.isArray(outlets) || outlets.length === 0) throw new ApiError(ErrorCodes.INVALID_INPUT, 'outlets harus array', 400);
     if (outlets.length > 100) throw new ApiError(ErrorCodes.INVALID_INPUT, 'Max 100 items', 400);
-    
-    const results = { success: 0, failed: 0, errors: [], updated: [] };
+
+    const results: { success: number; failed: number; errors: any[]; updated: any[] } = { success: 0, failed: 0, errors: [], updated: [] };
     for (const outlet of outlets) {
       try {
         if (!outlet.id) { results.errors.push({ error: 'ID required' }); results.failed++; continue; }
@@ -37,8 +37,8 @@ router.post('/bulk/delete', authGuard, roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
     const { outletIds } = req.body;
     if (!Array.isArray(outletIds) || outletIds.length === 0) throw new ApiError(ErrorCodes.INVALID_INPUT, 'outletIds required', 400);
     if (outletIds.length > 100) throw new ApiError(ErrorCodes.INVALID_INPUT, 'Max 100 items', 400);
-    
-    const results = { success: 0, failed: 0, deleted: [], errors: [] };
+
+    const results: { success: number; failed: number; deleted: any[]; errors: any[] } = { success: 0, failed: 0, deleted: [], errors: [] };
     for (const outletId of outletIds) {
       try {
         const deleted = await OutletService.deleteOutlet(tenantId, outletId);
