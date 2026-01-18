@@ -103,11 +103,11 @@ class CourierService {
       */
 
       logger.info(`Creating JNE shipment for order ${request.orderId}`);
-      
+
       // JNE API Production Integration
       // Note: This requires actual JNE API credentials and endpoint
       // JNE typically uses SOAP API or REST API with authentication
-      
+
       if (!config.apiKey || !config.username) {
         throw new Error('JNE API credentials not configured');
       }
@@ -115,7 +115,7 @@ class CourierService {
       try {
         // JNE API endpoint (example - actual endpoint may vary)
         const jneApiUrl = config.baseUrl || 'https://api.jne.co.id/v1/shipment';
-        
+
         // JNE API request structure (adjust based on actual JNE API documentation)
         const jneRequest = {
           username: config.username,
@@ -143,23 +143,24 @@ class CourierService {
           })),
         };
 
-        // Make API call to JNE
-        // TODO: Implement actual JNE API call using fetch
-        // For now, return mock response
-        const mockResponse = {
-          data: {
-            trackingNumber: `JNE-${Date.now()}`,
-            courier: 'JNE',
-            status: 'CREATED',
-            estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-            cost: request.weight * 5000,
-            airwayBill: `JNE-${Date.now()}`,
+        // Make API call to JNE using fetch
+        const jneResponse = await fetch(jneApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`,
           },
-        };
-        const response = mockResponse;
+          body: JSON.stringify(jneRequest),
+        });
 
-        // Parse JNE response (mock response uses camelCase)
-        if (response.data && response.data.trackingNumber) {
+        if (!jneResponse.ok) {
+          throw new Error(`JNE API returned ${jneResponse.status}: ${jneResponse.statusText}`);
+        }
+
+        const response = await jneResponse.json() as any;
+
+        // Parse JNE response
+        if (response?.data?.trackingNumber) {
           return {
             trackingNumber: response.data.trackingNumber,
             courier: response.data.courier || 'JNE',
@@ -173,18 +174,7 @@ class CourierService {
         }
       } catch (error: any) {
         logger.error('JNE API error:', error);
-        // Fallback to mock if API fails (for development)
-        if (process.env.NODE_ENV === 'development') {
-          logger.warn('Using mock JNE response due to API error');
-          return {
-            trackingNumber: `JNE-${Date.now()}`,
-            courier: 'JNE',
-            status: 'CREATED',
-            estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
-            cost: request.weight * 5000, // Mock cost
-            airwayBill: `JNE-${Date.now()}`,
-          };
-        }
+        // Fail-fast: Don't use mock fallback in production
         throw error;
       }
     } catch (error: any) {
@@ -202,7 +192,7 @@ class CourierService {
   ): Promise<ShipmentResponse> {
     try {
       logger.info(`Creating J&T shipment for order ${request.orderId}`);
-      
+
       // J&T API Production Integration
       if (!config.apiKey || !config.apiSecret) {
         throw new Error('J&T API credentials not configured');
@@ -211,7 +201,7 @@ class CourierService {
       try {
         // J&T API endpoint (example - actual endpoint may vary)
         const jntApiUrl = config.baseUrl || 'https://api.jnt.co.id/v1/shipment';
-        
+
         // J&T API request structure
         const jntRequest = {
           api_key: config.apiKey,
@@ -234,21 +224,23 @@ class CourierService {
           items: request.items,
         };
 
-        // TODO: Implement actual J&T API call using fetch
-        // For now, return mock response
-        const mockResponse = {
-          data: {
-            trackingNumber: `JNT-${Date.now()}`,
-            courier: 'JNT',
-            status: 'CREATED',
-            estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-            cost: request.weight * 4500,
-            airwayBill: `JNT-${Date.now()}`,
+        // Make API call to J&T using fetch
+        const jntResponse = await fetch(jntApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`,
           },
-        };
-        const response = mockResponse;
+          body: JSON.stringify(jntRequest),
+        });
 
-        // Parse J&T response (mock response uses camelCase)
+        if (!jntResponse.ok) {
+          throw new Error(`J&T API returned ${jntResponse.status}: ${jntResponse.statusText}`);
+        }
+
+        const response = (await jntResponse.json()) as { data?: any };
+
+        // Parse J&T response
         if (response.data && response.data.trackingNumber) {
           return {
             trackingNumber: response.data.trackingNumber,
@@ -263,17 +255,7 @@ class CourierService {
         }
       } catch (error: any) {
         logger.error('J&T API error:', error);
-        if (process.env.NODE_ENV === 'development') {
-          logger.warn('Using mock J&T response due to API error');
-          return {
-            trackingNumber: `JNT-${Date.now()}`,
-            courier: 'JNT',
-            status: 'CREATED',
-            estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-            cost: request.weight * 4500,
-            airwayBill: `JNT-${Date.now()}`,
-          };
-        }
+        // Fail-fast: Don't use mock fallback in production
         throw error;
       }
     } catch (error: any) {
@@ -290,21 +272,68 @@ class CourierService {
     request: CreateShipmentRequest
   ): Promise<ShipmentResponse> {
     try {
-      // POS Indonesia API integration
-      // In production, implement actual POS Indonesia API call
       logger.info(`Creating POS shipment for order ${request.orderId}`);
-      
-      // Mock response for now
-      const trackingNumber = `POS${Date.now()}`;
-      
-      return {
-        trackingNumber,
-        courier: 'POS',
-        status: 'CREATED',
-        estimatedDelivery: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days
-        cost: 10000,
-        airwayBill: trackingNumber,
-      };
+
+      // POS Indonesia API credentials validation
+      if (!config.apiKey || !config.apiSecret) {
+        throw new Error('POS Indonesia API credentials not configured');
+      }
+
+      try {
+        const posApiUrl = config.baseUrl || 'https://api.posindonesia.co.id/v1/shipment';
+
+        const posRequest = {
+          api_key: config.apiKey,
+          api_secret: config.apiSecret,
+          from: {
+            name: 'Warungin',
+            address: '...',
+            city: '...',
+            postal_code: '...',
+            phone: '...',
+          },
+          to: {
+            name: request.customerName,
+            address: request.customerAddress,
+            city: request.customerCity,
+            postal_code: request.customerPostalCode,
+            phone: request.customerPhone,
+          },
+          weight: request.weight,
+          items: request.items,
+        };
+
+        const posResponse = await fetch(posApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`,
+          },
+          body: JSON.stringify(posRequest),
+        });
+
+        if (!posResponse.ok) {
+          throw new Error(`POS API returned ${posResponse.status}: ${posResponse.statusText}`);
+        }
+
+        const response = (await posResponse.json()) as { data?: any };
+
+        if (response.data && response.data.trackingNumber) {
+          return {
+            trackingNumber: response.data.trackingNumber,
+            courier: response.data.courier || 'POS',
+            status: response.data.status || 'CREATED',
+            estimatedDelivery: response.data.estimatedDelivery,
+            cost: response.data.cost,
+            airwayBill: response.data.airwayBill || response.data.trackingNumber,
+          };
+        } else {
+          throw new Error('Invalid POS API response');
+        }
+      } catch (error: any) {
+        logger.error('POS API error:', error);
+        throw error;
+      }
     } catch (error: any) {
       logger.error('POS shipment creation failed:', error);
       throw new Error(`Failed to create POS shipment: ${error.message}`);
@@ -335,31 +364,38 @@ class CourierService {
    */
   async trackJNE(trackingNumber: string, config: CourierConfig): Promise<TrackingResponse> {
     try {
-      // JNE tracking API integration
-      // In production, implement actual JNE tracking API call
       logger.info(`Tracking JNE shipment: ${trackingNumber}`);
-      
-      // Mock response
-      return {
-        trackingNumber,
-        status: 'IN_TRANSIT',
-        currentLocation: 'Jakarta',
-        history: [
-          {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            status: 'CREATED',
-            location: 'Jakarta',
-            description: 'Shipment created',
-          },
-          {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-            status: 'IN_TRANSIT',
-            location: 'Jakarta',
-            description: 'In transit to destination',
-          },
-        ],
-        estimatedDelivery: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-      };
+
+      // JNE tracking API integration
+      if (!config.apiKey) {
+        throw new Error('JNE API credentials not configured');
+      }
+
+      const jneTrackingUrl = `${config.baseUrl || 'https://api.jne.co.id/v1'}/tracking/${trackingNumber}`;
+
+      const trackingResponse = await fetch(jneTrackingUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`,
+        },
+      });
+
+      if (!trackingResponse.ok) {
+        throw new Error(`JNE tracking API returned ${trackingResponse.status}: ${trackingResponse.statusText}`);
+      }
+
+      const response = (await trackingResponse.json()) as { data?: any };
+
+      if (response.data) {
+        return {
+          trackingNumber: response.data.trackingNumber || trackingNumber,
+          status: response.data.status || 'IN_TRANSIT',
+          currentLocation: response.data.currentLocation || 'In Transit',
+          history: response.data.history || [],
+          estimatedDelivery: response.data.estimatedDelivery || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        };
+      }
+      throw new Error('Invalid JNE tracking response');
     } catch (error: any) {
       logger.error('JNE tracking failed:', error);
       throw new Error(`Failed to track JNE shipment: ${error.message}`);
@@ -371,24 +407,38 @@ class CourierService {
    */
   async trackJNT(trackingNumber: string, config: CourierConfig): Promise<TrackingResponse> {
     try {
-      // J&T tracking API integration
       logger.info(`Tracking J&T shipment: ${trackingNumber}`);
-      
-      // Mock response
-      return {
-        trackingNumber,
-        status: 'IN_TRANSIT',
-        currentLocation: 'Bandung',
-        history: [
-          {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-            status: 'CREATED',
-            location: 'Bandung',
-            description: 'Shipment created',
-          },
-        ],
-        estimatedDelivery: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-      };
+
+      // J&T tracking API integration
+      if (!config.apiKey) {
+        throw new Error('J&T API credentials not configured');
+      }
+
+      const jntTrackingUrl = `${config.baseUrl || 'https://api.jnt.co.id/v1'}/tracking/${trackingNumber}`;
+
+      const trackingResponse = await fetch(jntTrackingUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`,
+        },
+      });
+
+      if (!trackingResponse.ok) {
+        throw new Error(`J&T tracking API returned ${trackingResponse.status}: ${trackingResponse.statusText}`);
+      }
+
+      const response = (await trackingResponse.json()) as { data?: any };
+
+      if (response.data) {
+        return {
+          trackingNumber: response.data.trackingNumber || trackingNumber,
+          status: response.data.status || 'IN_TRANSIT',
+          currentLocation: response.data.currentLocation || 'In Transit',
+          history: response.data.history || [],
+          estimatedDelivery: response.data.estimatedDelivery || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        };
+      }
+      throw new Error('Invalid J&T tracking response');
     } catch (error: any) {
       logger.error('J&T tracking failed:', error);
       throw new Error(`Failed to track J&T shipment: ${error.message}`);
@@ -400,24 +450,38 @@ class CourierService {
    */
   async trackPOS(trackingNumber: string, config: CourierConfig): Promise<TrackingResponse> {
     try {
-      // POS Indonesia tracking API integration
       logger.info(`Tracking POS shipment: ${trackingNumber}`);
-      
-      // Mock response
-      return {
-        trackingNumber,
-        status: 'IN_TRANSIT',
-        currentLocation: 'Surabaya',
-        history: [
-          {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            status: 'CREATED',
-            location: 'Surabaya',
-            description: 'Shipment created',
-          },
-        ],
-        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-      };
+
+      // POS Indonesia tracking API integration
+      if (!config.apiKey) {
+        throw new Error('POS Indonesia API credentials not configured');
+      }
+
+      const posTrackingUrl = `${config.baseUrl || 'https://api.posindonesia.co.id/v1'}/tracking/${trackingNumber}`;
+
+      const trackingResponse = await fetch(posTrackingUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`,
+        },
+      });
+
+      if (!trackingResponse.ok) {
+        throw new Error(`POS tracking API returned ${trackingResponse.status}: ${trackingResponse.statusText}`);
+      }
+
+      const response = (await trackingResponse.json()) as { data?: any };
+
+      if (response.data) {
+        return {
+          trackingNumber: response.data.trackingNumber || trackingNumber,
+          status: response.data.status || 'IN_TRANSIT',
+          currentLocation: response.data.currentLocation || 'In Transit',
+          history: response.data.history || [],
+          estimatedDelivery: response.data.estimatedDelivery || new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        };
+      }
+      throw new Error('Invalid POS tracking response');
     } catch (error: any) {
       logger.error('POS tracking failed:', error);
       throw new Error(`Failed to track POS shipment: ${error.message}`);
@@ -448,18 +512,66 @@ class CourierService {
    * Get courier config from database
    */
   async getCourierConfig(tenantId: string, courier: string): Promise<CourierConfig | null> {
-    // In production, fetch from courier_config table
-    // For now, return null (needs to be configured)
-    return null;
+    try {
+      const config = await prisma.courierConfig.findUnique({
+        where: {
+          tenantId_courier: {
+            tenantId,
+            courier,
+          },
+        },
+      });
+
+      if (!config) {
+        logger.warn(`No courier config found for tenant ${tenantId}, courier ${courier}`);
+        return null;
+      }
+
+      if (!config.isActive) {
+        logger.warn(`Courier config is inactive for tenant ${tenantId}, courier ${courier}`);
+        return null;
+      }
+
+      return config as CourierConfig;
+    } catch (error: any) {
+      logger.error(`Failed to get courier config: ${error.message}`);
+      return null;
+    }
   }
 
   /**
    * Save courier config to database
    */
   async saveCourierConfig(tenantId: string, config: CourierConfig): Promise<void> {
-    // In production, save to courier_config table
-    // For now, just log
-    logger.info(`Saving courier config for tenant ${tenantId}: ${config.courier}`);
+    try {
+      await prisma.courierConfig.upsert({
+        where: {
+          tenantId_courier: {
+            tenantId,
+            courier: config.courier,
+          },
+        },
+        update: {
+          apiKey: config.apiKey,
+          apiSecret: config.apiSecret,
+          baseUrl: config.baseUrl,
+          isActive: true,
+        },
+        create: {
+          tenantId,
+          courier: config.courier,
+          apiKey: config.apiKey,
+          apiSecret: config.apiSecret || '',
+          baseUrl: config.baseUrl,
+          isActive: true,
+        },
+      });
+
+      logger.info(`Courier config saved for tenant ${tenantId}: ${config.courier}`);
+    } catch (error: any) {
+      logger.error(`Failed to save courier config: ${error.message}`);
+      throw new Error(`Failed to save courier config: ${error.message}`);
+    }
   }
 }
 

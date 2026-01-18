@@ -18,7 +18,7 @@ const createTemplateSchema = z.object({
 });
 
 // All routes require Super Admin
-const requireSuperAdmin = (req: Request, res: Response, next: Function) => {
+const requireSuperAdmin = (req: Request, res: Response, next: () => void) => {
   const userRole = (req as any).user?.role;
   if (userRole !== 'SUPER_ADMIN') {
     return res.status(403).json({ message: 'Access denied. Super Admin only.' });

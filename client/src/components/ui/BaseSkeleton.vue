@@ -16,12 +16,12 @@
           <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
         </div>
         
-        <div v-if="lines > 0" class="space-y-3">
+        <div v-if="(lines ?? 0) > 0" class="space-y-3">
           <div 
-            v-for="i in lines" 
+            v-for="i in (lines ?? 0)" 
             :key="i"
             class="h-4 bg-slate-200 dark:bg-slate-700 rounded"
-            :class="i === lines ? 'w-5/6' : 'w-full'"
+            :class="i === (lines ?? 0) ? 'w-5/6' : 'w-full'"
           ></div>
         </div>
       </div>

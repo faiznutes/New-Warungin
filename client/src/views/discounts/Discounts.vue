@@ -484,8 +484,8 @@ const discountForm = ref({
   discountType: 'AMOUNT_BASED' as 'AMOUNT_BASED' | 'BUNDLE' | 'PRODUCT_BASED' | 'QUANTITY_BASED',
   discountValue: 0,
   discountValueType: 'PERCENTAGE' as 'PERCENTAGE' | 'FIXED',
-  minAmount: undefined as number | undefined,
-  minQuantity: undefined as number | undefined,
+  minAmount: undefined as number | string | undefined,
+  minQuantity: undefined as number | string | undefined,
   applicableProducts: [] as string[],
   bundleProducts: [] as string[],
   bundleDiscountProduct: '',
@@ -495,7 +495,7 @@ const discountForm = ref({
   endDate: '',
 });
 
-const productSelectionType = ref<'CATEGORY' | 'PRODUCTS'>('PRODUCTS');
+const productSelectionType = ref<'ALL' | 'CATEGORY' | 'PRODUCTS'>('PRODUCTS');
 const selectedCategory = ref<string>('');
 const categories = ref<string[]>([]);
 const availableProducts = ref<any[]>([]);
@@ -699,7 +699,7 @@ const editDiscount = async (discount: any) => {
     } else if (discount.applicableProducts && discount.applicableProducts.length > 0) {
       productSelectionType.value = 'PRODUCTS';
     } else {
-      productSelectionType.value = 'ALL';
+      productSelectionType.value = 'CATEGORY';
     }
   }
   
@@ -884,11 +884,12 @@ const closeModal = () => {
     applicableProducts: [],
     bundleProducts: [],
     bundleDiscountProduct: '',
+    applicableTo: 'ALL',
     isActive: true,
     startDate: '',
     endDate: '',
   };
-  productSelectionType.value = 'ALL';
+  productSelectionType.value = 'PRODUCTS';
   selectedCategory.value = '';
 };
 

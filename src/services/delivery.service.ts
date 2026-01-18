@@ -1,6 +1,8 @@
 import prisma from '../config/database';
 import orderService from './order.service';
 import courierService, { CreateShipmentRequest, CourierConfig } from './courier.service';
+import smsGatewayService from './sms-gateway.service';
+import { sendEmail } from '../config/email';
 import logger from '../utils/logger';
 
 interface DeliveryOrder {
@@ -104,9 +106,9 @@ class DeliveryService {
       courier: data.courier as 'JNE' | 'JNT' | 'POS',
       apiKey: data.apiKey,
     };
-    
+
     await courierService.saveCourierConfig(tenantId, config);
-    
+
     return {
       tenantId,
       courier: data.courier,
@@ -320,9 +322,54 @@ class DeliveryService {
       logger.info(`Order ${order.id} status updated via courier webhook: ${status}`);
 
       // Notify customer if delivered
-      if (status === 'DELIVERED' && order.customer?.email) {
-        // In production, send email/SMS notification
-        logger.info(`Order ${order.id} delivered - customer notification should be sent`);
+      if (status === 'DELIVERED' && order.customer) {
+        try {
+          // Send email notification
+          if (order.customer.email) {
+            const emailContent = `
+              <html>
+                <body>
+                  <h2>Pesanan Anda Telah Diterima</h2>
+                  <p>Pesanan #${order.orderNumber} telah berhasil diterima.</p>
+                  <p>Nomor tracking: ${trackingNumber}</p>
+                  <p>Terima kasih telah berbelanja!</p>
+                </body>
+              </html>
+            `;
+
+            await sendEmail(
+              order.customer.email,
+              `Pesanan Diterima - ${order.orderNumber}`,
+              emailContent
+            );
+            logger.info(`Delivery notification email sent to ${order.customer.email} for order ${order.id}`);
+          }
+
+          // Send SMS notification if phone is available
+          if (order.customer.phone) {
+            try {
+              const phoneNumber = order.customer.phone.replace(/[+\s-]/g, '');
+              const formattedPhone = phoneNumber.startsWith('62')
+                ? `+${phoneNumber}`
+                : phoneNumber.startsWith('0')
+                  ? `+62${phoneNumber.substring(1)}`
+                  : `+62${phoneNumber}`;
+
+              await smsGatewayService.sendSMS({
+                to: formattedPhone,
+                message: `Pesanan #${order.orderNumber} telah diterima. Terima kasih!`,
+              });
+              logger.info(`Delivery notification SMS sent to ${formattedPhone} for order ${order.id}`);
+            } catch (smsError: any) {
+              logger.warn(`Failed to send SMS notification for order ${order.id}:`, smsError);
+            }
+          }
+
+          // Log notification (Notification model not in schema)
+          logger.info(`Delivery notification for order ${order.id}: DELIVERY_COMPLETED - Pesanan #${order.orderNumber} telah berhasil diterima`);
+        } catch (notificationError: any) {
+          logger.error(`Failed to send delivery notification for order ${order.id}:`, notificationError);
+        }
       }
     } catch (error: any) {
       logger.error(`Error processing courier webhook:`, error);

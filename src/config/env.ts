@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 import logger from '../utils/logger';
+import { sanitizeForLogging } from '../utils/log-sanitizer';
 
 dotenv.config();
 
@@ -61,7 +62,6 @@ try {
     // Sanitize env errors to prevent leaking sensitive data
     // Use require for synchronous import in error handler
     try {
-      const { sanitizeForLogging } = require('./utils/log-sanitizer');
       logger.error('Invalid environment variables:', sanitizeForLogging({
         errors: error.errors.map((err) => ({
           path: err.path.join('.'),

@@ -112,8 +112,8 @@ interface Campaign {
   name: string;
   type?: string;
   targetAudience?: string;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
   status: string;
   opens?: number;
   clicks?: number;
@@ -156,7 +156,8 @@ const getStatusClass = (status: string) => {
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString('id-ID', {
     year: 'numeric',

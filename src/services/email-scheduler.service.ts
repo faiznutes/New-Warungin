@@ -170,10 +170,28 @@ class EmailSchedulerService {
             target: schedule.target as any,
           });
 
-          // Track sent events
+          // Track sent events in email_logs table
           if (result.sent > 0) {
-            // In production, track each sent email individually
-            // For now, we'll just mark the schedule as sent
+            try {
+              await prisma.emailLog.create({
+                data: {
+                  tenantId: schedule.tenantId,
+                  campaignId: schedule.campaignId,
+                  type: 'SCHEDULED_EMAIL',
+                  recipientCount: result.sent,
+                  failedCount: result.failed,
+                  status: 'SENT',
+                  sentAt: new Date(),
+                  details: JSON.stringify({
+                    scheduleId: schedule.id,
+                    subject: schedule.subject,
+                    target: schedule.target,
+                  }),
+                },
+              });
+            } catch (logError: any) {
+              logger.warn('Failed to create email log:', logError.message);
+            }
           }
 
           // Update schedule status

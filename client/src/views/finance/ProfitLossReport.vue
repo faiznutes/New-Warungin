@@ -255,7 +255,7 @@ const loadProfitLoss = async () => {
       error.value = 'Business Analytics & Insight addon diperlukan untuk mengakses fitur ini';
     } else {
       error.value = err.response?.data?.message || 'Gagal memuat laporan laba rugi';
-      await showError(error.value);
+      await showError(error.value ?? 'Gagal memuat laporan');
     }
   } finally {
     loading.value = false;

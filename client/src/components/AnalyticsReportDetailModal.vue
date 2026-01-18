@@ -93,8 +93,8 @@ interface CustomReport {
   name: string;
   dataType: string;
   metrics: string[];
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface Props {
@@ -109,7 +109,8 @@ defineEmits<{
   export: [report: CustomReport];
 }>();
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString?: string) => {
+  if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString('id-ID', {
     year: 'numeric',

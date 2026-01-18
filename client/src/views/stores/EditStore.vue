@@ -210,7 +210,7 @@
           const data = response.data.data;
           
           // Initialize operatingHours if missing
-          const defaultHours = {};
+          const defaultHours: Record<string, { open: string; close: string; isOpen: boolean }> = {};
           days.forEach(d => {
               defaultHours[d.key] = { open: '08:00', close: '22:00', isOpen: true };
           });

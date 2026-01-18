@@ -53,7 +53,7 @@ const OutletValidation = {
     if (trimmed.length > 20) {
       throw new Error('Nomor telepon maksimal 20 karakter');
     }
-    if (!/^[\d\s\-\+\(\)]+$/.test(trimmed)) {
+    if (!/^[\d\s\-+()]+$/.test(trimmed)) {
       throw new Error('Nomor telepon mengandung karakter tidak valid');
     }
     return trimmed;
@@ -187,7 +187,7 @@ export class OutletService {
       const skip = (page - 1) * limit;
 
       // Filter by allowedStoreIds for SUPERVISOR role
-      let whereFilter: any = { tenantId };
+      const whereFilter: any = { tenantId };
       if (userRole === 'SUPERVISOR' && userPermissions?.allowedStoreIds) {
         const allowedStoreIds = userPermissions.allowedStoreIds;
         if (allowedStoreIds.length > 0) {

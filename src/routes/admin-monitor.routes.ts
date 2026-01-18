@@ -1,3 +1,4 @@
+import http from 'http';
 import { Router, Request, Response } from 'express';
 import { authGuard } from '../middlewares/auth';
 import { exec } from 'child_process';
@@ -325,7 +326,6 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
 
     // Check Backend
     try {
-      const http = require('http');
       const response = await new Promise((resolve, reject) => {
         const req = http.get('http://localhost:3000/health', (res: any) => {
           let data = '';
@@ -431,7 +431,6 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
 
     // Check Prometheus (if exists)
     try {
-      const http = require('http');
       const response = await new Promise((resolve, reject) => {
         const req = http.get('http://localhost:9090/-/healthy', (res: any) => {
           resolve({ ok: res.statusCode === 200 });
@@ -457,7 +456,6 @@ router.get('/health', authGuard, requireSuperAdmin, async (req: Request, res: Re
 
     // Check Loki (if exists)
     try {
-      const http = require('http');
       const response = await new Promise((resolve, reject) => {
         const req = http.get('http://localhost:3100/ready', (res: any) => {
           resolve({ ok: res.statusCode === 200 });

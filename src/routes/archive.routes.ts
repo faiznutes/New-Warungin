@@ -679,7 +679,7 @@ router.post(
       
       const { archiveFile, tenantId: requestTenantId } = req.body;
       // SUPER_ADMIN can restore from any tenant
-      const tenantId = requestTenantId || (archiveFile.match(/archives[\/\\]([^\/\\]+)/)?.[1]) || null;
+      const tenantId = requestTenantId || (archiveFile.match(/archives[/\\]([^/\\]+)/)?.[1]) || null;
       
       if (!tenantId) {
         return res.status(400).json({ message: 'Tenant ID is required or could not be extracted from archive file path' });

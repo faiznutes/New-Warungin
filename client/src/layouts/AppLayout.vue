@@ -160,7 +160,7 @@
           </div>
 
           <!-- Laporan & Analitik Section -->
-          <div v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canViewReports) || (userRole === 'CASHIER' && canViewReports)) && userRole !== 'KITCHEN'" class="pt-4 mt-4 border-t border-gray-200">
+          <div v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canViewReports) || (userRole === 'CASHIER' && canViewReports)" class="pt-4 mt-4 border-t border-gray-200">
             <button
               @click="toggleMenu('laporan')"
               class="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
@@ -328,7 +328,7 @@
               </router-link>
 
               <router-link
-                v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || userRole === 'SUPER_ADMIN'"
+                v-if="['ADMIN_TENANT', 'SUPERVISOR', 'SUPER_ADMIN'].includes(userRole as string)"
                 to="/app/rewards"
                 class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 group"
                 active-class="bg-blue-50 text-blue-600 font-semibold"
@@ -777,7 +777,7 @@ const menuItems = computed(() => {
   }
   
   // Laporan
-  if ((userRole.value === 'ADMIN_TENANT' || userRole.value === 'SUPER_ADMIN' || (userRole.value === 'SUPERVISOR' && canViewReports.value) || (userRole.value === 'CASHIER' && canViewReports.value)) && userRole.value !== 'KITCHEN') {
+  if (['ADMIN_TENANT', 'SUPER_ADMIN'].includes(userRole.value as string) || ((userRole.value === 'SUPERVISOR' || userRole.value === 'CASHIER') && canViewReports.value)) {
     items.push({ path: '/app/reports', label: 'Laporan', section: 'laporan' });
     items.push({ path: '/app/reports/global', label: 'Laporan Global', section: 'laporan' });
     items.push({ path: '/app/reports/advanced', label: 'Laporan Lanjutan', section: 'laporan' });
@@ -1029,7 +1029,7 @@ const hasBusinessAnalytics = computed(() => {
           // Final check inside
           if (!Array.isArray(addons)) return false;
           return addons.some(
-            (addon) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
+            (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
           );
         } catch (error) {
           console.error('Error in hasBusinessAnalytics .some():', error);
@@ -1065,7 +1065,7 @@ const hasDeliveryMarketing = computed(() => {
           // Final check inside
           if (!Array.isArray(addons)) return false;
           return addons.some(
-            (addon) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
+            (addon: any) => addon && addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active'
           );
         } catch (error) {
           console.error('Error in hasDeliveryMarketing .some():', error);

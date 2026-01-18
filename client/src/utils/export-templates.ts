@@ -30,26 +30,26 @@ const TEMPLATES = {
 
 export async function generateFlexboxExport(data: ExportData) {
   const template = data.template || 'modern';
-  
+
   // Debug: Log template being used
   console.log(`[PDF Export] Using template: ${template}`);
-  
+
   // Generate filename
   const { type, reportType, startDate, endDate } = data;
   const reportTypeLabel = reportType === 'sales' ? 'Penjualan' :
-                          reportType === 'product' ? 'Produk' :
-                          reportType === 'customers' ? 'Pelanggan' :
-                          reportType === 'inventory' ? 'Inventori' :
-                          reportType === 'financial' ? 'Keuangan' :
-                          reportType === 'global' ? 'Global' : 'Laporan';
-  
+    reportType === 'product' ? 'Produk' :
+      reportType === 'customers' ? 'Pelanggan' :
+        reportType === 'inventory' ? 'Inventori' :
+          reportType === 'financial' ? 'Keuangan' :
+            reportType === 'global' ? 'Global' : 'Laporan';
+
   const exportTypeLabel = type === 'report' ? 'Laporan' :
-                          type === 'analytics' ? 'Analytics' :
-                          'Laporan-Analytics';
-  
+    type === 'analytics' ? 'Analytics' :
+      'Laporan-Analytics';
+
   const templateLabel = TEMPLATES[template as keyof typeof TEMPLATES] || 'Modern';
   const filename = `${exportTypeLabel}_${reportTypeLabel}_${templateLabel}_${startDate}_${endDate}.pdf`;
-  
+
   try {
     // Use fetch API directly to avoid XMLHttpRequest CORS issues
     // Get API URL - use VITE_API_URL or detect from window location
@@ -67,50 +67,50 @@ export async function generateFlexboxExport(data: ExportData) {
       apiBaseURL = 'http://localhost:3000/api';
     }
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    
+
     // Suppress console errors for this specific request
     const originalConsoleError = console.error;
     const originalConsoleWarn = console.warn;
     const originalConsoleLog = console.log;
-    
+
     // Temporarily disable console errors for CORS/network issues
     const suppressCorsErrors = () => {
       console.error = (...args: any[]) => {
         const message = args[0]?.toString() || '';
-        if (!message.includes('CORS') && 
-            !message.includes('Access-Control') && 
-            !message.includes('ERR_NETWORK') &&
-            !message.includes('ERR_FAILED') &&
-            !message.includes('blocked by CORS policy')) {
+        if (!message.includes('CORS') &&
+          !message.includes('Access-Control') &&
+          !message.includes('ERR_NETWORK') &&
+          !message.includes('ERR_FAILED') &&
+          !message.includes('blocked by CORS policy')) {
           originalConsoleError.apply(console, args);
         }
       };
-      
+
       console.warn = (...args: any[]) => {
         const message = args[0]?.toString() || '';
         if (!message.includes('CORS') && !message.includes('Access-Control')) {
           originalConsoleWarn.apply(console, args);
         }
       };
-      
+
       // Suppress XMLHttpRequest errors
       console.log = (...args: any[]) => {
         const message = args[0]?.toString() || '';
-        if (!message.includes('pdf/generate') || 
-            (!message.includes('CORS') && !message.includes('blocked'))) {
+        if (!message.includes('pdf/generate') ||
+          (!message.includes('CORS') && !message.includes('blocked'))) {
           originalConsoleLog.apply(console, args);
         }
       };
     };
-    
+
     const restoreConsole = () => {
       console.error = originalConsoleError;
       console.warn = originalConsoleWarn;
       console.log = originalConsoleLog;
     };
-    
+
     suppressCorsErrors();
-    
+
     try {
       // Use fetch API instead of axios to avoid XMLHttpRequest CORS issues
       const response = await fetch(`${apiBaseURL}/pdf/generate`, {
@@ -129,13 +129,13 @@ export async function generateFlexboxExport(data: ExportData) {
         }),
         credentials: 'include',
       });
-      
+
       restoreConsole();
-      
+
       // Check if response is successful
       if (response.ok && response.status >= 200 && response.status < 300) {
         const blob = await response.blob();
-        
+
         if (blob && blob.size > 0) {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -148,14 +148,14 @@ export async function generateFlexboxExport(data: ExportData) {
           return; // Success, exit early
         }
       }
-      
+
       // If response is not ok, fallback to HTML to PDF
       const html = generateTemplateHTML(data, template);
       await downloadPDFFromHTMLIframe(html, filename);
-      
+
     } catch (requestError: any) {
       restoreConsole();
-      
+
       // Silently fallback to HTML to PDF for any error
       const html = generateTemplateHTML(data, template);
       await downloadPDFFromHTMLIframe(html, filename);
@@ -1107,40 +1107,40 @@ function generateElegantTemplate(data: ExportData): string {
 // Helper functions (same as before)
 function generateReportSection(reportData: any, reportType?: string, isGlobal: boolean = false): string {
   if (!reportData) return '';
-  
+
   let summaryStats = '';
   let tableContent = '';
-  
+
   // Generate summary stats
   if (reportData.summary) {
     let stats: Array<[string, any]> = [];
-    
+
     if (isGlobal) {
       // Global Report: Show subscription + addon revenue
       const totalGlobalRevenue = (reportData.summary.totalSubscriptionRevenue || 0) + (reportData.summary.totalAddonRevenue || 0);
-      stats = [
+      stats = ([
         ['totalGlobalRevenue', totalGlobalRevenue],
         ['totalSubscriptionRevenue', reportData.summary.totalSubscriptionRevenue || 0],
         ['totalAddonRevenue', reportData.summary.totalAddonRevenue || 0],
         ['activeTenants', reportData.summary.activeTenants || 0],
-      ].filter(([_, value]) => value !== undefined && value !== null);
+      ] as Array<[string, any]>).filter(([_, value]) => value !== undefined && value !== null);
     } else {
       // Tenant Report: Show orders/transactions revenue
       stats = Object.entries(reportData.summary)
         .filter(([key, value]) => {
           // Exclude subscription/addon revenue for tenant reports
-          return key !== 'totalSubscriptionRevenue' && 
-                 key !== 'totalAddonRevenue' && 
-                 key !== 'totalGlobalRevenue' &&
-                 key !== 'activeTenants' &&
-                 value !== undefined && 
-                 value !== null;
+          return key !== 'totalSubscriptionRevenue' &&
+            key !== 'totalAddonRevenue' &&
+            key !== 'totalGlobalRevenue' &&
+            key !== 'activeTenants' &&
+            value !== undefined &&
+            value !== null;
         })
         .slice(0, 4);
     }
-    
+
     if (stats.length > 0) {
-    summaryStats = `
+      summaryStats = `
       <div class="stats-grid">
         ${stats.map(([key, value]) => `
           <div class="stat-card">
@@ -1152,7 +1152,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
     `;
     }
   }
-  
+
   // Generate table based on report type
   switch (reportType) {
     case 'global':
@@ -1188,7 +1188,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
           </div>
         `;
       }
-      
+
       if (reportData.addons && reportData.addons.length > 0) {
         tableContent += `
           <div class="section">
@@ -1221,7 +1221,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      
+
     case 'sales':
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
@@ -1250,7 +1250,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      
+
     case 'product':
       if (reportData.products && reportData.products.length > 0) {
         tableContent = `
@@ -1281,7 +1281,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      
+
     case 'customers':
       const allCustomers = [
         ...(reportData.customers || []),
@@ -1316,7 +1316,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      
+
     case 'financial':
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
@@ -1378,7 +1378,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
       break;
-      
+
     default:
       if (reportData.byDate && reportData.byDate.length > 0) {
         tableContent = `
@@ -1405,7 +1405,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
         `;
       }
   }
-  
+
   const reportTypeLabels: Record<string, string> = {
     sales: 'Penjualan',
     product: 'Produk',
@@ -1414,7 +1414,7 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
     financial: 'Keuangan',
     global: 'Global',
   };
-  
+
   return `
     <div class="section">
       <h2 class="section-title">Laporan ${reportTypeLabels[reportType || ''] || reportType || 'Penjualan'}</h2>
@@ -1426,9 +1426,9 @@ function generateReportSection(reportData: any, reportType?: string, isGlobal: b
 
 function generateAnalyticsSection(analyticsData: any): string {
   if (!analyticsData) return '';
-  
+
   let content = '';
-  
+
   if (analyticsData.predictions) {
     content += `
       <div class="analytics-section">
@@ -1452,7 +1452,7 @@ function generateAnalyticsSection(analyticsData: any): string {
       </div>
     `;
   }
-  
+
   if (analyticsData.topProducts && analyticsData.topProducts.length > 0) {
     content += `
       <div class="section">
@@ -1480,7 +1480,7 @@ function generateAnalyticsSection(analyticsData: any): string {
       </div>
     `;
   }
-  
+
   return content;
 }
 

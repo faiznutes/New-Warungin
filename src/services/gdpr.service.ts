@@ -194,9 +194,41 @@ export class GDPRService {
       return JSON.stringify(data, null, 2);
     }
 
-    // CSV format (simplified - would need proper CSV library for complex data)
-    // For now, return JSON as CSV is complex for nested data
-    return JSON.stringify(data, null, 2);
+    // CSV export for GDPR data: each top-level array (orders, transactions, etc.) as a separate CSV section
+    function toCSVSection(title: string, arr: any[]): string {
+      if (!Array.isArray(arr) || arr.length === 0) return `${title}: (none)\n\n`;
+      const keys = Object.keys(arr[0]);
+      const header = keys.join(',');
+      const rows = arr.map(obj => keys.map(k => {
+        let val = obj[k];
+        if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
+        if (typeof val === 'string' && val.includes(',')) val = `"${val.replace(/"/g, '""')}"`;
+        return val;
+      }).join(','));
+      return `${title}:\n${header}\n${rows.join('\n')}\n\n`;
+    }
+
+    let csv = '';
+    // User (single row)
+    if (data.user) {
+      const userKeys = Object.keys(data.user);
+      const userVals = userKeys.map(k => {
+        let val = data.user[k];
+        if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
+        if (typeof val === 'string' && val.includes(',')) val = `"${val.replace(/"/g, '""')}"`;
+        return val;
+      });
+      csv += `User:\n${userKeys.join(',')}\n${userVals.join(',')}\n\n`;
+    }
+    // Arrays
+    csv += toCSVSection('Orders', data.orders || []);
+    csv += toCSVSection('Transactions', data.transactions || []);
+    csv += toCSVSection('Customers', data.customers || []);
+    csv += toCSVSection('Members', data.members || []);
+    csv += toCSVSection('Products', data.products || []);
+    // Metadata
+    csv += `ExportDate,Format\n${data.exportDate},csv\n`;
+    return csv;
   }
 }
 

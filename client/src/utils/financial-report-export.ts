@@ -6,7 +6,7 @@ interface FinancialData {
     profit: number;
     profitMargin: number;
   };
-  profitLoss: {
+  profitLoss?: {
     revenue: number;
     discount: number;
     cogs: number;
@@ -36,20 +36,28 @@ import { downloadPDFFromHTMLIframe } from './pdf-download';
 
 export async function generateFinancialReportPDF(data: FinancialData) {
   const html = generateFinancialReportHTML(data);
-  
+
   // Generate filename
   const { startDate, endDate } = data;
   const filename = `Laporan_Keuangan_${startDate}_${endDate}.pdf`;
-  
+
   await downloadPDFFromHTMLIframe(html, filename);
 }
 
 function generateFinancialReportHTML(data: FinancialData): string {
-  const { summary, profitLoss, balanceSheet, cashFlow, startDate, endDate } = data;
-  const date = new Date().toLocaleDateString('id-ID', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const { summary, balanceSheet, cashFlow, startDate, endDate } = data;
+  // Handle optional profitLoss with defaults based on summary data
+  const profitLoss = data.profitLoss ?? {
+    revenue: summary.revenue,
+    discount: 0,
+    cogs: 0,
+    operatingExpenses: summary.expenses,
+    netProfit: summary.profit,
+  };
+  const date = new Date().toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
   return `

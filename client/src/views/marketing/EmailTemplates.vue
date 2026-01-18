@@ -194,7 +194,7 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
                 placeholder="HTML content dengan variables seperti {{name}}, {{email}}, dll"
               ></textarea>
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="text-xs text-gray-500 mt-1" v-pre>
                 Gunakan variables seperti: {{name}}, {{email}}, {{orderNumber}}, dll
               </p>
             </div>

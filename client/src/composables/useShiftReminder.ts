@@ -11,7 +11,7 @@ export function useShiftReminder() {
   const shiftDurationHours = ref(0);
   const shouldShowReminder = computed(() => shiftDurationHours.value >= 8);
   let checkInterval: ReturnType<typeof setInterval> | null = null;
-  let lastReminderShown = ref<Date | null>(null);
+  const lastReminderShown = ref<Date | null>(null);
 
   const loadCurrentShift = async () => {
     try {

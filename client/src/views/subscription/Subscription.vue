@@ -482,7 +482,14 @@ const extendPlan = ref<string>('');
 const extendDuration = ref<number>(0);
 const showExtendSection = ref(false);
 
-const subscriptionPlans = [
+const subscriptionPlans: Array<{
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  originalPrice?: number;
+  discount?: number;
+}> = [
   {
     id: 'BASIC',
     name: 'Warungin Starter',

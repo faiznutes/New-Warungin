@@ -12,7 +12,7 @@ import * as fs from 'fs';
 const router = Router();
 
 // Internal API Key middleware (for n8n) with rotation support
-const validateInternalApiKey = async (req: Request, res: Response, next: Function) => {
+const validateInternalApiKey = async (req: Request, res: Response, next: () => void) => {
   const apiKey = req.headers['x-internal-api-key'] as string;
   
   if (!apiKey) {

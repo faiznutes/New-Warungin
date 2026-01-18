@@ -6,6 +6,11 @@ import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'mongo-sanitize';
 import DOMPurify from 'isomorphic-dompurify';
 import { Redis } from 'ioredis';
+import logger from '../utils/logger';
+// @ts-expect-error - Optional dependency
+import * as RedisStore from 'rate-limit-redis';
+// @ts-expect-error - Optional dependency
+import csrf from 'csurf';
 
 export class SecurityHardening {
   private redis: Redis | undefined;
@@ -58,7 +63,6 @@ export class SecurityHardening {
     const createLimiter = (windowMs: number, maxRequests: number, message: string) => {
       if (this.redis) {
         // Redis-backed rate limiting for distributed systems
-        const RedisStore = require('rate-limit-redis');
         return rateLimit({
           store: new RedisStore({
             client: this.redis,
@@ -207,7 +211,7 @@ export class SecurityHardening {
       // Check body
       if (req.body) {
         for (const [key, value] of Object.entries(req.body)) {
-          if (checkValue(value)) {
+          if (checkValue(value as string)) {
             return res.status(400).json({
               error: 'Invalid input detected. Potential injection attempt.',
             });
@@ -218,7 +222,7 @@ export class SecurityHardening {
       // Check query
       if (req.query) {
         for (const [key, value] of Object.entries(req.query)) {
-          if (checkValue(value)) {
+          if (checkValue(value as string)) {
             return res.status(400).json({
               error: 'Invalid query parameter. Potential injection attempt.',
             });
@@ -234,7 +238,6 @@ export class SecurityHardening {
    * CSRF token middleware
    */
   csrfProtection() {
-    const csrf = require('csurf');
     return csrf({
       cookie: false, // Use session-based tokens instead of cookies
     });
@@ -286,7 +289,7 @@ export class SecurityHardening {
       severity,
     };
 
-    console.log(JSON.stringify(logEntry));
+    logger.info('Security event logged', logEntry);
 
     // Send to monitoring system (Phase 30)
     if (this.redis) {

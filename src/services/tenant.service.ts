@@ -78,7 +78,7 @@ export const createTenant = async (input: CreateTenantInput) => {
     let email = generateEmailFromName(name);
 
     // Check if tenant email exists
-    let existingTenant = await prisma.tenant.findUnique({
+    const existingTenant = await prisma.tenant.findUnique({
       where: { email },
     });
 

@@ -518,7 +518,7 @@ import { usePermissions } from '../../composables/usePermissions';
 import { safeMap } from '../../utils/array-helpers';
 
 const authStore = useAuthStore();
-const { showError } = useNotification();
+const { error: showError } = useNotification();
 const { canViewReports, canExportReports } = usePermissions();
 
 const needsTenantSelection = computed(() => {

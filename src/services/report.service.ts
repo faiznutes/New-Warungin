@@ -473,6 +473,7 @@ export class ReportService {
       // Use dynamic import with type assertion to avoid TS error if module not installed
       let ExcelJS: any = null;
       try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - exceljs may not be installed
         ExcelJS = await import('exceljs');
       } catch (error) {
@@ -485,6 +486,7 @@ export class ReportService {
         logger.warn('exceljs not installed, falling back to CSV format');
         const csv = await this.exportToCSV(reportData, metadata);
         // Buffer is available in Node.js runtime
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - Buffer is available in Node.js
         return Buffer.from(csv, 'utf-8');
       }
@@ -524,12 +526,14 @@ export class ReportService {
       
       const buffer = await workbook.xlsx.writeBuffer();
       // Buffer is available in Node.js runtime
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - Buffer is available in Node.js
       return Buffer.from(buffer);
     } catch (error: any) {
       logger.error('Error exporting to Excel:', error);
       // Fallback to CSV
       const csv = await this.exportToCSV(reportData, metadata);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - Buffer is available in Node.js
       return Buffer.from(csv, 'utf-8');
     }

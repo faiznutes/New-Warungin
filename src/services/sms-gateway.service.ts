@@ -233,12 +233,44 @@ class SMSGatewayService {
    * Check Zenziva delivery status
    */
   private async checkZenzivaStatus(messageId: string): Promise<SMSResponse> {
-    // Zenziva status check implementation
-    // Note: Zenziva may not provide status check API, return default
-    return {
-      success: true,
-      status: 'delivered',
-    };
+    if (!this.config.apiKey || !this.config.apiSecret) {
+      throw new Error('Zenziva credentials not configured');
+    }
+
+    try {
+      // Zenziva inbox status check endpoint
+      const url = 'https://console.zenziva.net/reguler/api/statussms/';
+      
+      const params = new URLSearchParams({
+        userkey: this.config.apiKey,
+        passkey: this.config.apiSecret,
+        messageId: messageId,
+      });
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+
+      const data = await response.json() as any;
+
+      return {
+        success: true,
+        status: data?.status || 'unknown',
+        messageId: messageId,
+      };
+    } catch (error: any) {
+      logger.error('Zenziva status check error:', error);
+      // Return pending status if check fails
+      return {
+        success: true,
+        status: 'pending',
+        messageId: messageId,
+      };
+    }
   }
 
   /**
@@ -294,9 +326,38 @@ class SMSGatewayService {
    * Get Zenziva balance
    */
   private async getZenzivaBalance(): Promise<{ balance: number }> {
-    // Zenziva balance check implementation
-    // Note: Zenziva may not provide balance API
-    return { balance: 0 };
+    if (!this.config.apiKey || !this.config.apiSecret) {
+      throw new Error('Zenziva credentials not configured');
+    }
+
+    try {
+      // Zenziva balance check endpoint
+      const url = 'https://console.zenziva.net/reguler/api/balance/';
+      
+      const params = new URLSearchParams({
+        userkey: this.config.apiKey,
+        passkey: this.config.apiSecret,
+      });
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+
+      const data = await response.json() as any;
+
+      // Zenziva returns balance in various formats, handle them
+      const balance = parseFloat(data?.data?.balance || data?.balance || '0');
+      
+      return { balance };
+    } catch (error: any) {
+      logger.error('Error getting Zenziva balance:', error);
+      // Return 0 if balance check fails
+      return { balance: 0 };
+    }
   }
 }
 

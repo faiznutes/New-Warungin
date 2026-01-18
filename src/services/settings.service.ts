@@ -34,22 +34,53 @@ export class SettingsService {
 
   async getSystemSettings(): Promise<SystemSettings> {
     try {
-      // Try to get settings from database (using a simple key-value approach)
-      // For now, we'll use a JSON file or environment variables
-      // In production, you might want to create a Settings table
+      // Get settings from database
+      const dbSettings = await prisma.systemSettings.findFirst();
       
-      // Check if settings exist in environment
-      const envSettings = process.env.SYSTEM_SETTINGS;
-      if (envSettings) {
-        try {
-          return JSON.parse(envSettings);
-        } catch {
-          // Invalid JSON, use defaults
-        }
+      if (dbSettings) {
+        return {
+          appName: dbSettings.appName,
+          version: dbSettings.version,
+          maintenanceMode: dbSettings.maintenanceMode,
+          allowRegistration: dbSettings.allowRegistration,
+          maxTenants: dbSettings.maxTenants,
+          maxUsersPerTenant: dbSettings.maxUsersPerTenant,
+          features: {
+            multiOutlet: dbSettings.multiOutletEnabled,
+            delivery: dbSettings.deliveryEnabled,
+            accounting: dbSettings.accountingEnabled,
+          },
+        };
       }
 
-      // Return default settings
-      return DEFAULT_SETTINGS;
+      // If no settings in database, create defaults
+      const newSettings = await prisma.systemSettings.create({
+        data: {
+          appName: DEFAULT_SETTINGS.appName,
+          version: DEFAULT_SETTINGS.version,
+          maintenanceMode: DEFAULT_SETTINGS.maintenanceMode,
+          allowRegistration: DEFAULT_SETTINGS.allowRegistration,
+          maxTenants: DEFAULT_SETTINGS.maxTenants,
+          maxUsersPerTenant: DEFAULT_SETTINGS.maxUsersPerTenant,
+          multiOutletEnabled: DEFAULT_SETTINGS.features.multiOutlet,
+          deliveryEnabled: DEFAULT_SETTINGS.features.delivery,
+          accountingEnabled: DEFAULT_SETTINGS.features.accounting,
+        },
+      });
+
+      return {
+        appName: newSettings.appName,
+        version: newSettings.version,
+        maintenanceMode: newSettings.maintenanceMode,
+        allowRegistration: newSettings.allowRegistration,
+        maxTenants: newSettings.maxTenants,
+        maxUsersPerTenant: newSettings.maxUsersPerTenant,
+        features: {
+          multiOutlet: newSettings.multiOutletEnabled,
+          delivery: newSettings.deliveryEnabled,
+          accounting: newSettings.accountingEnabled,
+        },
+      };
     } catch (error: unknown) {
       const err = error as Error;
       logger.error('Error loading system settings:', { error: err.message, stack: err.stack });
@@ -60,34 +91,66 @@ export class SettingsService {
   async updateSystemSettings(settings: Partial<SystemSettings>): Promise<SystemSettings> {
     try {
       // Get current settings
-      const currentSettings = await this.getSystemSettings();
-      
-      // Merge with new settings
-      const updatedSettings: SystemSettings = {
-        ...currentSettings,
-        ...settings,
-        features: {
-          ...currentSettings.features,
-          ...(settings.features || {}),
-        },
-      };
+      let dbSettings = await prisma.systemSettings.findFirst();
 
-      // In production, save to database or config file
-      // For now, we'll just validate and return
-      // You can implement actual persistence later
+      // If no settings exist, create defaults first
+      if (!dbSettings) {
+        dbSettings = await prisma.systemSettings.create({
+          data: {
+            appName: DEFAULT_SETTINGS.appName,
+            version: DEFAULT_SETTINGS.version,
+            maintenanceMode: DEFAULT_SETTINGS.maintenanceMode,
+            allowRegistration: DEFAULT_SETTINGS.allowRegistration,
+            maxTenants: DEFAULT_SETTINGS.maxTenants,
+            maxUsersPerTenant: DEFAULT_SETTINGS.maxUsersPerTenant,
+            multiOutletEnabled: DEFAULT_SETTINGS.features.multiOutlet,
+            deliveryEnabled: DEFAULT_SETTINGS.features.delivery,
+            accountingEnabled: DEFAULT_SETTINGS.features.accounting,
+          },
+        });
+      }
 
-      // Validate settings
-      if (updatedSettings.maxTenants < 1) {
+      // Validate settings before updating
+      if (settings.maxTenants !== undefined && settings.maxTenants < 1) {
         throw new Error('maxTenants must be at least 1');
       }
-      if (updatedSettings.maxUsersPerTenant < 1) {
+      if (settings.maxUsersPerTenant !== undefined && settings.maxUsersPerTenant < 1) {
         throw new Error('maxUsersPerTenant must be at least 1');
       }
 
-      // Log settings update (in production, save to database)
-      logger.info('System settings updated:', updatedSettings);
+      // Prepare update data
+      const updateData: any = {};
+      if (settings.appName !== undefined) updateData.appName = settings.appName;
+      if (settings.version !== undefined) updateData.version = settings.version;
+      if (settings.maintenanceMode !== undefined) updateData.maintenanceMode = settings.maintenanceMode;
+      if (settings.allowRegistration !== undefined) updateData.allowRegistration = settings.allowRegistration;
+      if (settings.maxTenants !== undefined) updateData.maxTenants = settings.maxTenants;
+      if (settings.maxUsersPerTenant !== undefined) updateData.maxUsersPerTenant = settings.maxUsersPerTenant;
+      if (settings.features?.multiOutlet !== undefined) updateData.multiOutletEnabled = settings.features.multiOutlet;
+      if (settings.features?.delivery !== undefined) updateData.deliveryEnabled = settings.features.delivery;
+      if (settings.features?.accounting !== undefined) updateData.accountingEnabled = settings.features.accounting;
 
-      return updatedSettings;
+      // Update in database
+      const updatedSettings = await prisma.systemSettings.update({
+        where: { id: dbSettings.id },
+        data: updateData,
+      });
+
+      logger.info('System settings updated:', { appName: updatedSettings.appName, version: updatedSettings.version });
+
+      return {
+        appName: updatedSettings.appName,
+        version: updatedSettings.version,
+        maintenanceMode: updatedSettings.maintenanceMode,
+        allowRegistration: updatedSettings.allowRegistration,
+        maxTenants: updatedSettings.maxTenants,
+        maxUsersPerTenant: updatedSettings.maxUsersPerTenant,
+        features: {
+          multiOutlet: updatedSettings.multiOutletEnabled,
+          delivery: updatedSettings.deliveryEnabled,
+          accounting: updatedSettings.accountingEnabled,
+        },
+      };
     } catch (error: any) {
       logger.error('Error updating system settings:', { error: error.message, stack: error.stack });
       throw new Error(error.message || 'Failed to update system settings');

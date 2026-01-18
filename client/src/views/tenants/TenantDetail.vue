@@ -1061,7 +1061,7 @@ const newStoreForm = ref({
         jumat: { open: '08:00', close: '17:00', isOpen: true },
         sabtu: { open: '08:00', close: '12:00', isOpen: false },
         minggu: { open: '08:00', close: '12:00', isOpen: false }
-    }
+    } as Record<string, { open: string; close: string; isOpen: boolean }>
 });
 
 const addShift = () => {

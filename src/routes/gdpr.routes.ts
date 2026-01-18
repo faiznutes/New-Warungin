@@ -29,11 +29,17 @@ router.get(
       const userId = req.userId!;
       const tenantId = req.tenantId!;
 
+      const format = (req.query.format === 'csv') ? 'csv' : 'json';
       const data = await gdprService.exportUserData(userId, tenantId);
-      const exportFile = await gdprService.generateExportFile(data, 'json');
+      const exportFile = await gdprService.generateExportFile(data, format);
 
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="warungin-data-export-${Date.now()}.json"`);
+      if (format === 'csv') {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="warungin-data-export-${Date.now()}.csv"`);
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="warungin-data-export-${Date.now()}.json"`);
+      }
       res.send(exportFile);
     } catch (error: any) {
       logger.error('Error exporting user data', { error: error.message, userId: req.userId });
@@ -104,11 +110,17 @@ router.get(
         return res.status(403).json({ message: 'Only tenant admin can export tenant data' });
       }
 
+      const format = (req.query.format === 'csv') ? 'csv' : 'json';
       const data = await gdprService.exportTenantData(tenantId);
-      const exportFile = await gdprService.generateExportFile(data, 'json');
+      const exportFile = await gdprService.generateExportFile(data, format);
 
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="warungin-tenant-export-${tenantId}-${Date.now()}.json"`);
+      if (format === 'csv') {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="warungin-tenant-export-${tenantId}-${Date.now()}.csv"`);
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="warungin-tenant-export-${tenantId}-${Date.now()}.json"`);
+      }
       res.send(exportFile);
     } catch (error: any) {
       logger.error('Error exporting tenant data', { error: error.message, tenantId: req.tenantId });

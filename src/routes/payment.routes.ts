@@ -94,9 +94,27 @@ router.get(
  */
 router.post(
   '/webhook',
+  // Placeholder: add rate limiting/IP allowlisting middleware here if needed
   async (req: Request, res: Response) => {
+    // Audit log: log IP and headers for traceability
+    logger.info('Webhook received', {
+      ip: req.ip,
+      ips: req.ips,
+      headers: {
+        'user-agent': req.headers['user-agent'],
+        'x-forwarded-for': req.headers['x-forwarded-for'],
+        'x-real-ip': req.headers['x-real-ip'],
+      },
+    });
     try {
       const result = await paymentService.handleWebhook(req.body);
+      // If signature verification failed, log explicitly
+      if (result && result.success === false && result.message && result.message.toLowerCase().includes('signature')) {
+        logger.warn('Webhook signature verification failed', {
+          body: req.body,
+          ip: req.ip,
+        });
+      }
       res.json(result);
     } catch (error: any) {
       logger.error('Webhook handling error:', { error: error.message, stack: error.stack });

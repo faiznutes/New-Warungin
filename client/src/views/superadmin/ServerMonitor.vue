@@ -22,7 +22,7 @@
     <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-1.5 flex overflow-x-auto no-scrollbar gap-2">
        <button
           v-for="tab in tabs"
-          :key="tab.id"
+          :key="tab.value"
           @click="activeTab = tab.value"
           class="flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap"
           :class="activeTab === tab.value 

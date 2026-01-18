@@ -43,8 +43,8 @@ router.get(
       }
 
       const { startDate, endDate } = req.query;
-      let start = startDate ? new Date(startDate as string) : undefined;
-      let end = endDate ? new Date(endDate as string) : undefined;
+      const start = startDate ? new Date(startDate as string) : undefined;
+      const end = endDate ? new Date(endDate as string) : undefined;
 
       // If end date is provided, set time to end of day to include all subscriptions created on that day
       if (end) {

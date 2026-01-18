@@ -7,7 +7,7 @@ import addonService from '../services/addon.service';
 const router = Router();
 
 // Middleware to check Business Analytics addon (Super Admin bypass)
-const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: Function) => {
+const checkBusinessAnalyticsAddon = async (req: Request, res: Response, next: () => void) => {
   try {
     const userRole = (req as any).user?.role;
     

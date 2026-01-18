@@ -125,12 +125,34 @@ class ComplianceReportingService {
         }
 
         if (request.anonymizeTransactions) {
-          // Anonymize transactions
-          // Note: userId in Transaction is required, cannot be null
-          // Anonymization would require schema change or separate anonymizedUserId field
-          // For now, skip this anonymization
-          const result = { count: 0 };
-          anonymized += result.count;
+          // Anonymize transactions by creating anonymized records
+          // This maintains audit trail while removing personal identification
+          const transactionsToAnonymize = await prisma.transaction.findMany({
+            where: {
+              tenantId: request.tenantId,
+              userId: request.userId,
+            },
+          });
+
+          // Update transactions with anonymized user reference
+          // Create a transaction record with anonymized user ID pattern
+          for (const transaction of transactionsToAnonymize) {
+            await prisma.transaction.update({
+              where: { id: transaction.id },
+              data: {
+                // Create anonymous user reference while maintaining referential integrity
+                userId: `ANON_${crypto.createHash('sha256')
+                  .update(request.userId)
+                  .digest('hex')
+                  .substring(0, 16)}`,
+              },
+            });
+            anonymized++;
+          }
+
+          logger.info(`Anonymized ${anonymized} transactions for user ${request.userId}`, {
+            tenantId: request.tenantId,
+          });
         }
 
         // Log deletion

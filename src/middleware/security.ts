@@ -19,7 +19,7 @@ export const createRateLimiter = (config: string = 'STANDARD') => {
     keyGenerator: (req: Request) => (req as any).user?.id || req.ip || 'anonymous',
     handler: (req: Request, res: Response) => {
       logger.warn('Rate limit exceeded', { ip: req.ip, userId: (req as any).user?.id });
-      res.status(429).json({ error: cfg.message, retryAfter: req.rateLimit?.resetTime });
+      res.status(429).json({ error: cfg.message, retryAfter: (req as any).rateLimit?.resetTime });
     },
   });
 };

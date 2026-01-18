@@ -90,7 +90,11 @@ interface Notification {
   read: boolean;
 }
 
-const notifications = computed(() => [...rawNotifications.value].sort((a, b) => b.date.getTime() - a.date.getTime()));
+const notifications = computed(() => {
+  const sorted = [...rawNotifications.value];
+  sorted.sort((a, b) => b.date.getTime() - a.date.getTime());
+  return sorted;
+});
 const unreadCount = computed(() => rawNotifications.value.filter(n => !n.read).length);
 
 const toggleDropdown = () => {

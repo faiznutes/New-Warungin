@@ -19,11 +19,24 @@ class DataEncryptionService {
   private getEncryptionKey(): Buffer {
     const key = process.env.ENCRYPTION_KEY;
     if (!key) {
-      logger.warn('ENCRYPTION_KEY not set, using default (NOT SECURE FOR PRODUCTION)');
-      // In production, this should throw an error
-      return crypto.scryptSync('default-key-change-in-production', 'salt', this.keyLength);
+      logger.error('ENCRYPTION_KEY not set - this is required for production');
+      throw new Error(
+        'ENCRYPTION_KEY environment variable is not set. ' +
+        'Please set a valid encryption key (32 bytes hex-encoded) in your .env file or environment variables. ' +
+        'Generate with: node -e "console.log(require(\'crypto\').randomBytes(32).toString(\'hex\'))"'
+      );
     }
-    return Buffer.from(key, 'hex');
+
+    try {
+      const buffer = Buffer.from(key, 'hex');
+      if (buffer.length !== this.keyLength) {
+        throw new Error(`Encryption key must be exactly ${this.keyLength} bytes (${this.keyLength * 2} hex characters)`);
+      }
+      return buffer;
+    } catch (error: any) {
+      logger.error('Invalid ENCRYPTION_KEY format:', error.message);
+      throw new Error('ENCRYPTION_KEY must be a valid 32-byte hex string');
+    }
   }
 
   /**

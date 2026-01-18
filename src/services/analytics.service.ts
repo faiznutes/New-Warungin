@@ -47,7 +47,7 @@ class AnalyticsService {
         }
       }
     }
-    
+
     // Get sales data for last 6 months for better accuracy
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -91,7 +91,7 @@ class AnalyticsService {
       const recentValues = values.slice(-window);
       const average = recentValues.reduce((sum, val) => sum + val, 0) / recentValues.length;
       nextMonth = average;
-      
+
       if (values.length >= 2) {
         const lastMonth = values[values.length - 1];
         const secondLastMonth = values[values.length - 2];
@@ -157,7 +157,7 @@ class AnalyticsService {
         }
       }
     }
-    
+
     let startDate: Date;
     const now = new Date();
 
@@ -243,7 +243,7 @@ class AnalyticsService {
     }
 
     const result = { period, data };
-    
+
     // Cache the result if enabled
     if (useCache) {
       const redis = getRedisClient();
@@ -304,7 +304,7 @@ class AnalyticsService {
       .filter(product => product.sales > 0) // Filter out products with 0 sales
       .sort((a, b) => b.sales - a.sales)
       .slice(0, limit);
-    
+
     // Cache the result if enabled (cache top 50 for flexibility)
     if (useCache) {
       const redis = getRedisClient();
@@ -321,7 +321,7 @@ class AnalyticsService {
         }
       }
     }
-    
+
     return result;
   }
 
@@ -375,9 +375,45 @@ class AnalyticsService {
   }
 
   async exportCustomReport(tenantId: string, reportId: string): Promise<Buffer> {
-    // In production, generate Excel file using exceljs or similar
-    // For now, return empty buffer
-    return Buffer.from('');
+    try {
+      // Query report data from database - use reportTemplate since customReport doesn't exist
+      const customReport = await prisma.reportTemplate.findUnique({
+        where: { id: reportId },
+      });
+
+      if (!customReport) {
+        logger.warn('Custom report not found:', { reportId });
+        return Buffer.from('Custom Report Not Found');
+      }
+
+      // Build CSV format data
+      let csvContent = `Report: ${customReport.name}\n`;
+      csvContent += `Generated: ${new Date().toLocaleString()}\n\n`;
+
+      // If report has data stored in config
+      if (customReport.config) {
+        const configData = customReport.config as any;
+        if (configData.data && Array.isArray(configData.data) && configData.data.length > 0) {
+          const data = configData.data;
+          const columns = Object.keys(data[0]);
+          csvContent += columns.map(col => `"${col}"`).join(',') + '\n';
+
+          data.forEach((row: any) => {
+            const values = columns.map(col => {
+              const value = row[col] || '';
+              return `"${String(value).replace(/"/g, '""')}"`;
+            });
+            csvContent += values.join(',') + '\n';
+          });
+        }
+      }
+
+      logger.info('Custom report exported:', { reportId, tenantId });
+      return Buffer.from(csvContent, 'utf-8');
+    } catch (error: any) {
+      logger.error('Error exporting custom report:', error);
+      return Buffer.from('Export Error');
+    }
   }
 
   // Platform Analytics Methods (for Super Admin - subscriptions & addons revenue)
@@ -409,7 +445,7 @@ class AnalyticsService {
 
     // Calculate monthly totals (subscriptions + addons)
     const monthlyTotals: Record<string, number> = {};
-    
+
     subscriptions.forEach((sub) => {
       const month = sub.createdAt.toISOString().substring(0, 7);
       monthlyTotals[month] = (monthlyTotals[month] || 0) + parseFloat(sub.amount.toString());
@@ -449,7 +485,7 @@ class AnalyticsService {
       const recentValues = values.slice(-window);
       const average = recentValues.reduce((sum, val) => sum + val, 0) / recentValues.length;
       nextMonth = average;
-      
+
       if (values.length >= 2) {
         const lastMonth = values[values.length - 1];
         const secondLastMonth = values[values.length - 2];
@@ -484,7 +520,7 @@ class AnalyticsService {
   async getPlatformTrends(period: 'daily' | 'weekly' | 'monthly' = 'monthly') {
     const now = new Date();
     let startDate: Date;
-    let endDate: Date = now;
+    const endDate: Date = now;
 
     if (period === 'daily') {
       startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30, 0, 0, 0);

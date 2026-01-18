@@ -37,9 +37,24 @@ class WhatsAppService {
   private config: WhatsAppConfig;
 
   constructor() {
-    // Load config from environment variables
+    // Load config from environment variables - must explicitly set WHATSAPP_PROVIDER
+    const provider = process.env.WHATSAPP_PROVIDER as 'TWILIO' | 'WABA' | 'FONNTE' | 'MOCK' | undefined;
+    
+    // If no provider is set, validate required credentials based on what we detect
+    if (!provider) {
+      // Check which credentials are available and auto-detect provider
+      if (process.env.WHATSAPP_ACCESS_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID) {
+        // Auto-detect WABA (WhatsApp Business API)
+        logger.warn('Auto-detecting WhatsApp provider as WABA. Set WHATSAPP_PROVIDER env var explicitly to avoid auto-detection.');
+      } else if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+        logger.warn('Auto-detecting WhatsApp provider as TWILIO. Set WHATSAPP_PROVIDER env var explicitly to avoid auto-detection.');
+      } else if (process.env.WHATSAPP_API_KEY) {
+        logger.warn('Auto-detecting WhatsApp provider as FONNTE. Set WHATSAPP_PROVIDER env var explicitly to avoid auto-detection.');
+      }
+    }
+    
     this.config = {
-      provider: (process.env.WHATSAPP_PROVIDER as 'TWILIO' | 'WABA' | 'FONNTE' | 'MOCK') || 'MOCK',
+      provider: provider || 'MOCK',
       accountSid: process.env.TWILIO_ACCOUNT_SID,
       authToken: process.env.TWILIO_AUTH_TOKEN,
       phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID,

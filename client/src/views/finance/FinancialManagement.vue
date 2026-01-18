@@ -697,9 +697,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 
+const router = useRouter();
 const { success: showSuccess, error: showError } = useNotification();
 
 const activeTab = ref('cashflow');

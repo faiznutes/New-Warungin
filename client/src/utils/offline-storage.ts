@@ -130,7 +130,7 @@ class OfflineStorage {
       const transaction = this.db!.transaction(['actions'], 'readonly');
       const store = transaction.objectStore('actions');
       const index = store.index('synced');
-      const request = index.getAll(false);
+      const request = index.getAll(IDBKeyRange.only(0)); // 0 = false in IndexedDB
 
       request.onsuccess = () => {
         resolve(request.result || []);
@@ -304,7 +304,7 @@ class OfflineStorage {
       const transaction = this.db!.transaction(['orders'], 'readonly');
       const store = transaction.objectStore('orders');
       const index = store.index('synced');
-      const request = index.getAll(false);
+      const request = index.getAll(IDBKeyRange.only(0)); // 0 = false in IndexedDB
 
       request.onsuccess = () => {
         resolve(request.result || []);
@@ -428,7 +428,7 @@ class OfflineStorage {
       await this.init();
     }
 
-    const transaction = this.db.transaction(['products'], 'readwrite');
+    const transaction = this.db!.transaction(['products'], 'readwrite');
     const store = transaction.objectStore('products');
 
     // Clear old products first

@@ -138,9 +138,13 @@ const form = ref({
   email: '',
   error: '',
   select: '',
+  textarea: '',
   checkbox1: true,
   checkbox2: false,
   checkbox3: false,
-  radio: 'pro'
+  radio: 'pro',
+  switch1: true,
+  switch2: false,
+  switch3: false,
 });
 </script>

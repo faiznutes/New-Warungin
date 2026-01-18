@@ -363,7 +363,7 @@ import api from '../../api';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { showSuccess, showError } = useNotification();
+const { success: showSuccess, error: showError } = useNotification();
 
 // State
 const loading = ref(true);
@@ -420,7 +420,7 @@ const formattedDate = computed(() => {
 
 // Methods
 const getShiftLabel = (shiftName: string) => {
-    const found = availableShifts.value.find(s => s.name === shiftName || s.name.toLowerCase() === shiftName.toLowerCase());
+    const found = availableShifts.value.find((s: { name: string; label: string }) => s.name === shiftName || s.name.toLowerCase() === shiftName.toLowerCase());
     return found ? found.label : shiftName;
 };
 

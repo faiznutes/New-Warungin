@@ -26,7 +26,7 @@ export const login = async (input: LoginInput, req?: any) => {
   // Note: email can be duplicate across tenants, so prioritize SUPER_ADMIN
   // Email is already normalized to lowercase above
   // Use findMany with take: 1 to avoid prepared statement issues with pgbouncer
-  let users = await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: { 
       email: email, // Already normalized to lowercase
       role: 'SUPER_ADMIN', // Try to find Super Admin first

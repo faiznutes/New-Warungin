@@ -285,30 +285,37 @@ export class OrderService {
       );
     }
 
-    // Check idempotency key if provided (prevent double order)
+    // Enhanced duplicate detection: check by idempotencyKey if provided, else fallback to item/time-based detection
+    let duplicateOrder: Order | null = null;
     if (idempotencyKey) {
-      const existingOrder = await prisma.order.findFirst({
+      duplicateOrder = await prisma.order.findFirst({
         where: {
           tenantId,
-          // Store idempotency key in notes or create separate field
-          // For now, we'll check by matching order data within last 5 minutes
+          idempotencyKey: idempotencyKey,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (duplicateOrder) {
+        logger.warn(`Duplicate order detected (idempotencyKey: ${idempotencyKey}), returning existing order ${duplicateOrder.id}`);
+        return duplicateOrder;
+      }
+    } else {
+      // Fallback: check for duplicate order by items within last 5 minutes
+      const recentOrder = await prisma.order.findFirst({
+        where: {
+          tenantId,
           createdAt: {
-            gte: new Date(Date.now() - 5 * 60 * 1000), // Last 5 minutes
+            gte: new Date(Date.now() - 5 * 60 * 1000),
           },
         },
         orderBy: { createdAt: 'desc' },
       });
-
-      // If order exists with same items in last 5 minutes, return existing order
-      if (existingOrder) {
+      if (recentOrder) {
         const existingItems = await prisma.orderItem.findMany({
-          where: { orderId: existingOrder.id },
+          where: { orderId: recentOrder.id },
         });
-
-        // Ensure both are arrays before comparison
         const itemsArray = Array.isArray(data.items) ? data.items : [];
         const existingItemsArray = Array.isArray(existingItems) ? existingItems : [];
-
         const isDuplicate = itemsArray.every((item: any) =>
           existingItemsArray.some((ei: any) =>
             ei && item && ei.productId === item.productId &&
@@ -316,10 +323,9 @@ export class OrderService {
             Math.abs(Number(ei.price) - item.price) < 0.01
           )
         ) && existingItemsArray.length === itemsArray.length;
-
         if (isDuplicate) {
-          logger.warn(`Duplicate order detected (idempotency key: ${idempotencyKey}), returning existing order ${existingOrder.id}`);
-          return existingOrder;
+          logger.warn(`Duplicate order detected (fallback, no idempotencyKey), returning existing order ${recentOrder.id}`);
+          return recentOrder;
         }
       }
     }
@@ -507,6 +513,7 @@ export class OrderService {
           sendToKitchen: data.sendToKitchen || false,
           kitchenStatus: data.sendToKitchen ? 'PENDING' : null,
           notes: orderNotes,
+          idempotencyKey: idempotencyKey || null,
           items: {
             create: orderItemsData,
           },

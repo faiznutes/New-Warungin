@@ -72,15 +72,25 @@ class FinanceService {
     const lastMonthRevenue = lastMonthOrders.reduce((sum, order) => sum + parseFloat(order.total.toString()), 0);
     const revenueGrowth = lastMonthRevenue > 0 ? ((revenue - lastMonthRevenue) / lastMonthRevenue) * 100 : 0;
 
-    // Expenses (simplified - in production, you'd have an expenses table)
-    const expenses = revenue * 0.3; // Mock: 30% of revenue as expenses
-    const profit = revenue - discount - expenses;
+    // Get real expenses from database
+    const expenses = await prisma.expense.aggregate({
+      where: {
+        tenantId,
+        ...dateFilter,
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const totalExpenses = expenses._sum.amount ? parseFloat(expenses._sum.amount.toString()) : 0;
+    const profit = revenue - discount - totalExpenses;
     const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
     return {
       revenue,
       revenueGrowth: Math.round(revenueGrowth * 100) / 100,
-      expenses,
+      expenses: totalExpenses,
       profit,
       profitMargin: Math.round(profitMargin * 100) / 100,
     };
@@ -137,9 +147,17 @@ class FinanceService {
     // Calculate Gross Profit
     const grossProfit = revenue - discount - cogs;
 
-    // Operating Expenses (mock - in production, this would come from expenses table)
-    // Estimate as 15% of revenue for small business
-    const operatingExpenses = revenue * 0.15;
+    // Get real Operating Expenses from database
+    const expenseData = await prisma.expense.aggregate({
+      where: {
+        tenantId,
+        ...dateFilter,
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+    const operatingExpenses = expenseData._sum.amount ? parseFloat(expenseData._sum.amount.toString()) : 0;
 
     // Net Profit
     const netProfit = grossProfit - operatingExpenses;
@@ -199,8 +217,13 @@ class FinanceService {
 
     const totalAssets = cash + receivables + inventory;
 
-    // Liabilities (mock - in production, you'd have a liabilities table)
-    const liabilities = 0;
+    // Liabilities from expense and payable records
+    const expenses = await prisma.expense.findMany({
+      where: { tenantId },
+      select: { amount: true },
+    });
+    const liabilities = expenses.reduce((sum, exp) => sum + parseFloat(exp.amount.toString()), 0);
+
     const equity = totalAssets - liabilities;
     const totalLiabilities = liabilities + equity;
 
@@ -244,16 +267,25 @@ class FinanceService {
       .filter(o => o.status === 'COMPLETED')
       .reduce((sum, order) => sum + parseFloat(order.total.toString()), 0);
 
-    // Operating outflow - simplified estimate
-    const operatingOutflow = operatingInflow * 0.6; // Estimate 60% as cost
+    // Operating outflow - real from expenses table
+    const expenseData = await prisma.expense.aggregate({
+      where: {
+        tenantId,
+        ...dateFilter,
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+    const operatingOutflow = expenseData._sum.amount ? parseFloat(expenseData._sum.amount.toString()) : 0;
 
     const operatingNet = operatingInflow - operatingOutflow;
 
-    // Investing activities (mock)
+    // Investing activities (no specific model - can be added later)
     const investingOutflow = 0;
     const investingNet = -investingOutflow;
 
-    // Financing activities (mock)
+    // Financing activities (no specific model - can be added later)
     const financingInflow = 0;
     const financingNet = financingInflow;
 
@@ -318,8 +350,8 @@ class FinanceService {
   // Platform Profit Loss (for Super Admin - subscriptions & addons revenue)
   async getPlatformProfitLoss(startDate?: string, endDate?: string): Promise<ProfitLoss> {
     // Build date filter for subscriptions (createdAt) and addons (subscribedAt)
-    let subscriptionFilter: any = {};
-    let addonFilter: any = {};
+    const subscriptionFilter: any = {};
+    const addonFilter: any = {};
 
     if (startDate || endDate) {
       const filter: any = {};

@@ -13,8 +13,8 @@ import DOMPurify from 'dompurify';
  */
 export function sanitizeHTML(html: string, allowImages: boolean = true): string {
   if (!html) return '';
-  
-  const config: DOMPurify.Config = {
+
+  const config = {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'ul', 'ol', 'li', 'a', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'td', 'th',
@@ -26,9 +26,10 @@ export function sanitizeHTML(html: string, allowImages: boolean = true): string 
     ],
     ALLOW_DATA_ATTR: false,
     KEEP_CONTENT: true,
+    RETURN_TRUSTED_TYPE: false,
   };
-  
-  return DOMPurify.sanitize(html, config);
+
+  return DOMPurify.sanitize(html, config) as string;
 }
 
 /**
@@ -38,7 +39,7 @@ export function sanitizeHTML(html: string, allowImages: boolean = true): string 
  */
 export function sanitizeText(text: string): string {
   if (!text) return '';
-  return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], RETURN_TRUSTED_TYPE: false }) as string;
 }
 
 /**
@@ -48,16 +49,16 @@ export function sanitizeText(text: string): string {
  */
 export function sanitizeURL(url: string): string {
   if (!url) return '';
-  
+
   try {
     // Only allow http, https, mailto, tel protocols
     const parsed = new URL(url);
     const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
-    
+
     if (!allowedProtocols.includes(parsed.protocol)) {
       return '';
     }
-    
+
     return url;
   } catch {
     // Invalid URL, return empty

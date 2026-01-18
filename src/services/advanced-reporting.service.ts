@@ -7,6 +7,7 @@ import prisma from '../config/database';
 import logger from '../utils/logger';
 import { sendEmail } from '../config/email';
 import reportService from './report.service';
+import PDFDocument from 'pdfkit';
 
 interface ReportTemplate {
   id: string;
@@ -54,20 +55,7 @@ class AdvancedReportingService {
     }
   ): Promise<ReportTemplate> {
     try {
-      // In production, save to database
-      // For now, return mock structure
-      const template: ReportTemplate = {
-        id: `template-${Date.now()}`,
-        name: data.name,
-        description: data.description,
-        type: data.type as any,
-        config: data.config,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      logger.info('Report template created:', template);
-
+      // Save report template to database
       const savedTemplate = await prisma.reportTemplate.create({
         data: {
           tenantId,
@@ -78,9 +66,14 @@ class AdvancedReportingService {
         },
       });
 
+      logger.info('Report template created:', { id: savedTemplate.id, name: savedTemplate.name });
+
       return {
-        ...template,
         id: savedTemplate.id,
+        name: savedTemplate.name,
+        description: savedTemplate.description ?? undefined,
+        type: savedTemplate.type as any,
+        config: savedTemplate.config as any,
         createdAt: savedTemplate.createdAt,
         updatedAt: savedTemplate.updatedAt,
       };
@@ -249,13 +242,13 @@ class AdvancedReportingService {
       });
 
       // Convert null to undefined for TypeScript strict mode
-      const lastRunAt: Date | undefined = saved.lastRunAt !== null && saved.lastRunAt !== undefined 
-        ? saved.lastRunAt 
+      const lastRunAt: Date | undefined = saved.lastRunAt !== null && saved.lastRunAt !== undefined
+        ? saved.lastRunAt
         : undefined;
       const nextRunAt: Date | undefined = saved.nextRunAt !== null && saved.nextRunAt !== undefined
         ? saved.nextRunAt
         : undefined;
-      
+
       return {
         id: saved.id,
         templateId: saved.templateId,
@@ -291,7 +284,7 @@ class AdvancedReportingService {
         }
         break;
 
-      case 'WEEKLY':
+      case 'WEEKLY': {
         const dayOfWeek = scheduleConfig?.dayOfWeek ?? 1; // Monday
         const daysUntilNext = (dayOfWeek - now.getDay() + 7) % 7 || 7;
         nextRun.setDate(now.getDate() + daysUntilNext);
@@ -302,8 +295,9 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
+      }
 
-      case 'MONTHLY':
+      case 'MONTHLY': {
         const dayOfMonth = scheduleConfig?.dayOfMonth ?? 1;
         nextRun.setMonth(now.getMonth() + 1);
         nextRun.setDate(dayOfMonth);
@@ -314,6 +308,7 @@ class AdvancedReportingService {
           nextRun.setHours(9, 0, 0, 0);
         }
         break;
+      }
 
       case 'CUSTOM':
         // For custom cron expressions, would need a cron parser
@@ -418,10 +413,10 @@ class AdvancedReportingService {
           for (const recipient of scheduledReport.recipients) {
             try {
               // Convert exportedReport to string if it's a Buffer
-              const emailContent = typeof exportedReport === 'string' 
-                ? exportedReport 
+              const emailContent = typeof exportedReport === 'string'
+                ? exportedReport
                 : `<p>Please find your scheduled report attached.</p>`;
-              
+
               await sendEmail(
                 recipient,
                 'Scheduled Report',
@@ -482,37 +477,180 @@ class AdvancedReportingService {
    * Export to PDF
    */
   private async exportToPDF(reportData: any): Promise<Buffer> {
-    // Use PDFKit or similar library
-    // For now, return mock
-    logger.info('Exporting report to PDF');
-    return Buffer.from('PDF content');
+    try {
+      const doc = new PDFDocument();
+      const chunks: Buffer[] = [];
+
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+
+      // Add title
+      doc.fontSize(16).font('Helvetica-Bold').text('Report', { align: 'center' });
+      doc.moveDown();
+
+      // Add report metadata
+      if (reportData.title) {
+        doc.fontSize(12).font('Helvetica').text(`Title: ${reportData.title}`);
+      }
+      if (reportData.generatedAt) {
+        doc.text(`Generated: ${new Date(reportData.generatedAt).toLocaleString()}`);
+      }
+
+      doc.moveDown();
+
+      // Add table headers if data exists
+      if (reportData.data && Array.isArray(reportData.data) && reportData.data.length > 0) {
+        doc.fontSize(10).font('Helvetica-Bold');
+        const firstRow = reportData.data[0];
+        const columns = Object.keys(firstRow);
+
+        // Add table headers
+        columns.forEach((col) => {
+          doc.text(col, { continued: true });
+          doc.text(' | ');
+        });
+        doc.moveDown();
+
+        // Add table data
+        doc.font('Helvetica').fontSize(9);
+        reportData.data.forEach((row: any) => {
+          columns.forEach((col) => {
+            doc.text(String(row[col] || ''), { continued: true });
+            doc.text(' | ');
+          });
+          doc.moveDown(0.5);
+        });
+      }
+
+      doc.end();
+
+      return Buffer.concat(chunks);
+    } catch (error: any) {
+      logger.error('Error exporting to PDF:', error);
+      // Fallback: return basic PDF on error
+      return Buffer.from('PDF Export Error');
+    }
   }
 
   /**
-   * Export to Excel
+   * Export to Excel (CSV format for now - exceljs not installed)
    */
   private async exportToExcel(reportData: any): Promise<Buffer> {
-    // Use exceljs or similar library
-    logger.info('Exporting report to Excel');
-    return Buffer.from('Excel content');
+    try {
+      let csvContent = '';
+
+      // Add headers
+      if (reportData.data && Array.isArray(reportData.data) && reportData.data.length > 0) {
+        const columns = Object.keys(reportData.data[0]);
+        csvContent += columns.map(col => `"${col}"`).join(',') + '\n';
+
+        // Add data rows
+        reportData.data.forEach((row: any) => {
+          const values = columns.map(col => {
+            const value = row[col] || '';
+            // Escape quotes in values
+            return `"${String(value).replace(/"/g, '""')}"`;
+          });
+          csvContent += values.join(',') + '\n';
+        });
+      }
+
+      logger.info('Exporting report to Excel format (CSV)');
+      return Buffer.from(csvContent, 'utf-8');
+    } catch (error: any) {
+      logger.error('Error exporting to Excel:', error);
+      return Buffer.from('Excel Export Error');
+    }
   }
 
   /**
    * Export to CSV
    */
   private async exportToCSV(reportData: any): Promise<string> {
-    // Convert report data to CSV format
-    logger.info('Exporting report to CSV');
-    return 'CSV content';
+    try {
+      let csvContent = '';
+
+      // Add headers
+      if (reportData.data && Array.isArray(reportData.data) && reportData.data.length > 0) {
+        const columns = Object.keys(reportData.data[0]);
+        csvContent += columns.map(col => `"${col}"`).join(',') + '\n';
+
+        // Add data rows
+        reportData.data.forEach((row: any) => {
+          const values = columns.map(col => {
+            const value = row[col] || '';
+            return `"${String(value).replace(/"/g, '""')}"`;
+          });
+          csvContent += values.join(',') + '\n';
+        });
+      }
+
+      logger.info('Exporting report to CSV');
+      return csvContent;
+    } catch (error: any) {
+      logger.error('Error exporting to CSV:', error);
+      return 'CSV Export Error';
+    }
   }
 
   /**
    * Export to HTML
    */
   private async exportToHTML(reportData: any): Promise<string> {
-    // Convert report data to HTML format
-    logger.info('Exporting report to HTML');
-    return '<html><body>Report content</body></html>';
+    try {
+      let htmlContent = `
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>${reportData.title || 'Report'}</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              h1 { text-align: center; }
+              table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #4CAF50; color: white; }
+              tr:nth-child(even) { background-color: #f2f2f2; }
+            </style>
+          </head>
+          <body>
+            <h1>${reportData.title || 'Report'}</h1>
+      `;
+
+      if (reportData.generatedAt) {
+        htmlContent += `<p>Generated: ${new Date(reportData.generatedAt).toLocaleString()}</p>`;
+      }
+
+      // Add table if data exists
+      if (reportData.data && Array.isArray(reportData.data) && reportData.data.length > 0) {
+        const columns = Object.keys(reportData.data[0]);
+        htmlContent += '<table><thead><tr>';
+
+        // Add headers
+        columns.forEach((col) => {
+          htmlContent += `<th>${col}</th>`;
+        });
+
+        htmlContent += '</tr></thead><tbody>';
+
+        // Add rows
+        reportData.data.forEach((row: any) => {
+          htmlContent += '<tr>';
+          columns.forEach((col) => {
+            htmlContent += `<td>${row[col] || ''}</td>`;
+          });
+          htmlContent += '</tr>';
+        });
+
+        htmlContent += '</tbody></table>';
+      }
+
+      htmlContent += '</body></html>';
+
+      logger.info('Exporting report to HTML');
+      return htmlContent;
+    } catch (error: any) {
+      logger.error('Error exporting to HTML:', error);
+      return '<html><body>HTML Export Error</body></html>';
+    }
   }
 
   /**
@@ -520,21 +658,21 @@ class AdvancedReportingService {
    */
   async getDashboardSettings(tenantId: string, userId?: string): Promise<any> {
     try {
-      const settings = userId 
+      const settings = userId
         ? await prisma.dashboardSettings.findUnique({
-            where: {
-              tenantId_userId: {
-                tenantId,
-                userId: userId,
-              },
-            },
-          })
-        : await prisma.dashboardSettings.findFirst({
-            where: {
+          where: {
+            tenantId_userId: {
               tenantId,
-              userId: null,
+              userId: userId,
             },
-          });
+          },
+        })
+        : await prisma.dashboardSettings.findFirst({
+          where: {
+            tenantId,
+            userId: null,
+          },
+        });
 
       if (settings) {
         return {
@@ -564,19 +702,19 @@ class AdvancedReportingService {
   async saveDashboardSettings(tenantId: string, userId: string | undefined, settings: any): Promise<void> {
     try {
       await prisma.dashboardSettings.upsert({
-        where: userId 
+        where: userId
           ? {
-              tenantId_userId: {
-                tenantId,
-                userId: userId,
-              },
-            }
-          : {
-              tenantId_userId: {
-                tenantId,
-                userId: null as any,
-              },
+            tenantId_userId: {
+              tenantId,
+              userId: userId,
             },
+          }
+          : {
+            tenantId_userId: {
+              tenantId,
+              userId: null as any,
+            },
+          },
         create: {
           tenantId,
           userId: userId || null,

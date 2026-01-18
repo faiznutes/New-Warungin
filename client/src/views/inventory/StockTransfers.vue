@@ -197,7 +197,7 @@
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Source Store</label>
               <select
-                v-model="transferForm.fromStoreId"
+                v-model="transferForm.fromOutletId"
                 required
                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >
@@ -210,7 +210,7 @@
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination Store</label>
               <select
-                v-model="transferForm.toStoreId"
+                v-model="transferForm.toOutletId"
                 required
                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >
@@ -223,7 +223,7 @@
             <div>
               <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Product</label>
               <select
-                v-model="transferForm.productId"
+                v-model="transferForm.items[0].productId"
                 required
                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >

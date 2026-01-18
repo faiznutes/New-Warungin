@@ -114,13 +114,6 @@ class AccountingIntegrationService {
         }
       } catch (error: any) {
         logger.error('Jurnal.id API error:', error);
-        if (process.env.NODE_ENV === 'development') {
-          logger.warn('Using mock Jurnal.id response');
-          return {
-            success: true,
-            accountingId: `jurnal-${Date.now()}`,
-          };
-        }
         throw error;
       }
     } catch (error: any) {
@@ -187,13 +180,6 @@ class AccountingIntegrationService {
         }
       } catch (error: any) {
         logger.error('Accurate Online API error:', error);
-        if (process.env.NODE_ENV === 'development') {
-          logger.warn('Using mock Accurate Online response');
-          return {
-            success: true,
-            accountingId: `accurate-${Date.now()}`,
-          };
-        }
         throw error;
       }
     } catch (error: any) {
@@ -260,13 +246,6 @@ class AccountingIntegrationService {
         }
       } catch (error: any) {
         logger.error('MYOB API error:', error);
-        if (process.env.NODE_ENV === 'development') {
-          logger.warn('Using mock MYOB response');
-          return {
-            success: true,
-            accountingId: `myob-${Date.now()}`,
-          };
-        }
         throw error;
       }
     } catch (error: any) {

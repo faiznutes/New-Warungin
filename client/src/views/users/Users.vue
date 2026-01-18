@@ -193,7 +193,8 @@ import { useNotification } from '../../composables/useNotification';
 
 const authStore = useAuthStore();
 const userRole = authStore.user?.role || '';
-const { needsTenantSelection, tenantMessage } = useTenantCheck();
+const { needsTenantSelection } = useTenantCheck();
+const tenantMessage = 'Silakan pilih tenant di atas untuk melihat data pengguna.';
 const { error: showError, success: showSuccess, confirm: showConfirm } = useNotification();
 
 const users = ref<any[]>([]);

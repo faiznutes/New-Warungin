@@ -151,7 +151,7 @@ const suggestions = ref<RestockSuggestion[]>([]);
 const loading = ref(false);
 const selectedUrgency = ref<'all' | 'critical' | 'warning' | 'normal'>('all');
 
-const urgencyOptions = [
+const urgencyOptions: Array<{ value: 'all' | 'critical' | 'warning' | 'normal', label: string, class?: string, icon: string }> = [
   { value: 'all', label: 'All', icon: 'filter_list' },
   { value: 'critical', label: 'Critical', class: 'bg-red-600 text-white', icon: 'error' },
   { value: 'warning', label: 'Warning', class: 'bg-yellow-600 text-white', icon: 'warning' },

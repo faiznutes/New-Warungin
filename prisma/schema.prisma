@@ -71,6 +71,10 @@ model Tenant {
   backupLogs          BackupLog[]
   cashShifts          CashShift[]
   storeShifts         StoreShift[]
+  courierConfigs      CourierConfig[]
+  marketingCampaigns  MarketingCampaign[]
+  promotions          Promotion[]
+  emailLogs           EmailLog[]
 
   @@map("tenants")
 }
@@ -106,6 +110,7 @@ model User {
   auditLogs          AuditLog[]
   dashboardSettings  DashboardSettings[]
   storeShifts        StoreShift[]        @relation("StoreShiftOpener")
+  deviceTokens       DeviceToken[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -188,6 +193,7 @@ model ProductAdjustment {
 // Order Model
 model Order {
   id                    String      @id @default(uuid())
+  idempotencyKey        String?     @unique
   tenantId              String
   orderNumber           String      @unique
   userId                String
@@ -1280,4 +1286,129 @@ model CashShift {
   @@index([tenantId, status])
   @@index([tenantId, shiftStart])
   @@map("cash_shifts")
+}
+// Device Token Model (For push notifications)
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  platform  String // ios | android | web
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([userId, isActive])
+  @@map("device_tokens")
+}
+
+// Courier Config Model (For storing courier API credentials)
+model CourierConfig {
+  id        String   @id @default(uuid())
+  tenantId  String
+  courier   String // JNE | JNT | POS
+  apiKey    String
+  apiSecret String
+  baseUrl   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, courier])
+  @@index([tenantId])
+  @@index([tenantId, courier])
+  @@map("courier_configs")
+}
+
+// System Settings Model (For storing system-level configuration)
+model SystemSettings {
+  id                   String   @id @default(cuid())
+  appName              String   @default("Warungin")
+  version              String   @default("1.3.0")
+  maintenanceMode      Boolean  @default(false)
+  allowRegistration    Boolean  @default(false)
+  maxTenants           Int      @default(1000)
+  maxUsersPerTenant    Int      @default(50)
+  multiOutletEnabled   Boolean  @default(true)
+  deliveryEnabled      Boolean  @default(false)
+  accountingEnabled    Boolean  @default(false)
+  customSettings       Json? // JSON for additional custom settings
+  lastModifiedBy       String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// Marketing Campaign Model (for tracking marketing campaigns)
+model MarketingCampaign {
+  id             String    @id @default(uuid())
+  tenantId       String
+  name           String
+  type           String    // SMS, EMAIL, WHATSAPP, PROMO, PUSH
+  status         String    @default("DRAFT") // DRAFT, SENT, CANCELLED
+  content        String?   @db.Text
+  subject        String?
+  targetCriteria Json?
+  targetCount    Int       @default(0)
+  sentCount      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("marketing_campaigns")
+}
+
+// Promotion Model (for promo codes and discounts)
+model Promotion {
+  id        String    @id @default(uuid())
+  tenantId  String
+  name      String
+  type      String    // PERCENTAGE, FIXED
+  value     Decimal   @db.Decimal(10, 2)
+  code      String    @unique
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([code])
+  @@map("promotions")
+}
+
+// Email Log Model (for tracking email sends)
+model EmailLog {
+  id             String    @id @default(uuid())
+  tenantId       String
+  campaignId     String?
+  type           String
+  recipientCount Int       @default(0)
+  failedCount    Int       @default(0)
+  status         String
+  sentAt         DateTime?
+  details        Json?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([campaignId])
+  @@map("email_logs")
 }

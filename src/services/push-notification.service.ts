@@ -4,6 +4,7 @@
  */
 
 import logger from '../utils/logger';
+import prisma from '../config/database';
 
 interface PushConfig {
   provider: 'FIREBASE' | 'ONESIGNAL' | 'MOCK';
@@ -33,9 +34,21 @@ class PushNotificationService {
   private config: PushConfig;
 
   constructor() {
-    // Load config from environment variables
+    // Load config from environment variables - must explicitly set PUSH_PROVIDER
+    const provider = process.env.PUSH_PROVIDER as 'FIREBASE' | 'ONESIGNAL' | 'MOCK' | undefined;
+    
+    // If no provider is set, validate required credentials based on what we detect
+    if (!provider) {
+      // Check which credentials are available and auto-detect provider
+      if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_SERVER_KEY) {
+        logger.warn('Auto-detecting push provider as FIREBASE. Set PUSH_PROVIDER env var explicitly to avoid auto-detection.');
+      } else if (process.env.ONESIGNAL_APP_ID && process.env.ONESIGNAL_REST_API_KEY) {
+        logger.warn('Auto-detecting push provider as ONESIGNAL. Set PUSH_PROVIDER env var explicitly to avoid auto-detection.');
+      }
+    }
+    
     this.config = {
-      provider: (process.env.PUSH_PROVIDER as 'FIREBASE' | 'ONESIGNAL' | 'MOCK') || 'MOCK',
+      provider: provider || 'MOCK',
       apiKey: process.env.PUSH_API_KEY,
       appId: process.env.ONESIGNAL_APP_ID,
       restApiKey: process.env.ONESIGNAL_REST_API_KEY,
@@ -225,24 +238,24 @@ class PushNotificationService {
     message: string,
     data?: Record<string, any>
   ): Promise<{ sent: number; failed: number }> {
-    // In production, fetch device tokens from database based on user IDs
-    // For now, this is a placeholder structure
     let sent = 0;
     let failed = 0;
 
-    // TODO: Fetch device tokens from database
-    // const deviceTokens = await prisma.deviceToken.findMany({
-    //   where: { userId: { in: userIds } },
-    //   select: { token: true },
-    // });
+    // Fetch device tokens from database based on user IDs
+    const deviceTokens = await prisma.deviceToken.findMany({
+      where: { userId: { in: userIds } },
+      select: { token: true },
+    });
 
-    // Mock device tokens for now
-    const deviceTokens: string[] = [];
+    if (deviceTokens.length === 0) {
+      logger.warn(`No device tokens found for users: ${userIds.join(', ')}`);
+      return { sent: 0, failed: userIds.length };
+    }
 
-    for (const token of deviceTokens) {
+    for (const deviceToken of deviceTokens) {
       try {
         const result = await this.sendPush({
-          to: token,
+          to: deviceToken.token,
           title,
           message,
           data,
