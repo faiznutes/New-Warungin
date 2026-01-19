@@ -1,76 +1,43 @@
-# Phase 26 Production Deployment Script
-# Run in PowerShell
-# .\deploy-to-prod.ps1
-
+# Production Deployment Script
 param(
-    [string]$Server = "192.168.1.101",
-    [string]$User = "faiz",
-    [string]$Password = "faiz_password_here",  # Change this
-    [string]$RootPassword = "123"
+    [string]$Server = "172.27.30.45",
+    [string]$User = "faiz"
 )
 
-Write-Host "========================================"
-Write-Host "Phase 26 Production Deployment" -ForegroundColor Green
-Write-Host "========================================"
-Write-Host ""
+$ErrorActionPreference = "Stop"
 
-# Function to run SSH commands
-function Invoke-SSHCommand {
-    param(
-        [string]$Command,
-        [string]$Description
-    )
-    
-    Write-Host "[$Description]" -ForegroundColor Yellow
-    Write-Host "> $Command"
-    
-    # Using SSH key if available, otherwise will prompt for password
-    ssh $User@$Server $Command
-    
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "✓ Success`n" -ForegroundColor Green
-    } else {
-        Write-Host "✗ Failed`n" -ForegroundColor Red
-        exit 1
+function Run-SSH {
+    param($Cmd, $Msg)
+    Write-Host "[$Msg]" -ForegroundColor Yellow
+    Write-Host "> $Cmd"
+    ssh $User@$Server $Cmd
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Command failed: $Msg"
     }
+    Write-Host "OK`n" -ForegroundColor Green
 }
 
-# Step 1: Check connection
-Write-Host "[Step 1/8] Testing Connection..." -ForegroundColor Cyan
+Write-Host "Deploying to $Server..." -ForegroundColor Cyan
+
+# Check connection
+write-host "Checking connection..."
 ssh -o ConnectTimeout=5 $User@$Server "echo 'Connection OK'"
+if ($LASTEXITCODE -ne 0) { exit 1 }
 
-# Step 2: Check Docker
-Invoke-SSHCommand "su - root -c 'docker --version && docker ps --format `"table {{.Names}}\t{{.Status}}`"'" "Checking Docker"
+# Check Docker
+Run-SSH "su - root -c 'docker --version && docker ps'" "Checking Docker"
 
-# Step 3: Check current git
-Invoke-SSHCommand "su - root -c 'cd /root/New-Warungin && git log --oneline | head -3'" "Current Git Status"
+# Git Update (Force Reset to match Origin)
+Run-SSH "su - root -c 'cd /root/New-Warungin && git fetch origin && git reset --hard origin/main'" "Updating Code"
 
-# Step 4: Pull latest
-Invoke-SSHCommand "su - root -c 'cd /root/New-Warungin && git pull origin main'" "Pulling Latest Code"
+# Rebuild and Restart
+Run-SSH "su - root -c 'cd /root/New-Warungin && docker-compose down'" "Stopping Containers"
+Run-SSH "su - root -c 'cd /root/New-Warungin && docker-compose build --no-cache'" "Building Images"
+Run-SSH "su - root -c 'cd /root/New-Warungin && docker-compose up -d'" "Starting Containers"
 
-# Step 5: Stop containers
-Invoke-SSHCommand "su - root -c 'cd /root/New-Warungin && docker-compose down'" "Stopping Containers"
+# Verification
+Write-Host "Waiting for services to initialize (30s)..." -ForegroundColor Cyan
+Start-Sleep -Seconds 30
+Run-SSH "su - root -c 'cd /root/New-Warungin && docker-compose ps'" "Verifying Status"
 
-# Step 6: Build images
-Invoke-SSHCommand "su - root -c 'cd /root/New-Warungin && docker-compose build --no-cache'" "Building Docker Images"
-
-# Step 7: Start containers
-Invoke-SSHCommand "su - root -c 'cd /root/New-Warungin && docker-compose up -d'" "Starting Containers"
-
-# Step 8: Verify
-Write-Host "[Step 8/8] Verifying Deployment..." -ForegroundColor Cyan
-ssh $User@$Server "su - root -c 'cd /root/New-Warungin && sleep 30 && docker-compose ps'"
-
-# Step 9: Health check
-Write-Host ""
-Write-Host "Testing Backend Health..." -ForegroundColor Yellow
-ssh $User@$Server "curl -s http://localhost:3001/api/health | ConvertFrom-Json | Format-Table -AutoSize"
-
-Write-Host ""
-Write-Host "✅ Deployment Complete!" -ForegroundColor Green
-Write-Host ""
-Write-Host "Next Steps:" -ForegroundColor Yellow
-Write-Host "1. Open browser: http://192.168.1.101"
-Write-Host "2. Login as SUPER_ADMIN"
-Write-Host "3. Navigate to Tenants"
-Write-Host "4. Verify all fixes working"
+Write-Host "Deployment Complete!" -ForegroundColor Green
