@@ -80,8 +80,10 @@ export const requireShift = async (
     next();
   } catch (error: any) {
     logger.error('Error in shift guard:', error);
-    // If error checking shift, allow access (will be handled by backend)
-    next();
+    return res.status(500).json({
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to validate shift status',
+    });
   }
 };
 
@@ -127,7 +129,10 @@ export const requireShiftForStore = (outletIdParam: string = 'outletId') => {
       next();
     } catch (error: any) {
       logger.error('Error in shift guard for store:', error);
-      next();
+      return res.status(500).json({
+        error: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to validate shift status for store',
+      });
     }
   };
 };

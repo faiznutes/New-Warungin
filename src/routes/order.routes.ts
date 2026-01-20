@@ -55,6 +55,7 @@ const router = Router();
 router.get(
   '/',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   supervisorStoreGuard(),
   subscriptionGuard,
   validate({ query: getOrdersQuerySchema }),
@@ -83,6 +84,7 @@ router.get(
 router.put(
   '/bulk-update-kitchen',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'KITCHEN'),
   subscriptionGuard,
   validate({
     body: z.object({
@@ -140,6 +142,7 @@ router.put(
 router.get(
   '/stats/summary',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -185,6 +188,7 @@ router.get(
 router.get(
   '/:id',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   async (req: Request, res: Response) => {
     try {
       const tenantId = requireTenantId(req);
@@ -247,6 +251,7 @@ router.get(
 router.post(
   '/',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: createOrderSchema }),
   async (req: Request, res: Response) => {
@@ -307,6 +312,7 @@ router.post(
 router.put(
   '/:id',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: updateOrderSchema }),
   async (req: Request, res: Response) => {
@@ -338,6 +344,7 @@ router.put(
 router.put(
   '/:id/status',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   validate({ body: updateOrderStatusSchema }),
   async (req: Request, res: Response) => {
     try {
@@ -362,6 +369,7 @@ router.put(
 router.put(
   '/:id/kitchen-status',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED']) }) }),
   async (req: Request, res: Response) => {
@@ -399,6 +407,7 @@ router.put(
 router.post(
   '/bulk-delete',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
   async (req: Request, res: Response) => {
@@ -432,6 +441,7 @@ router.post(
 router.post(
   '/bulk-refund',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
   async (req: Request, res: Response) => {
@@ -465,6 +475,7 @@ router.post(
 router.delete(
   '/:id',
   authGuard,
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   async (req: Request, res: Response) => {
     try {

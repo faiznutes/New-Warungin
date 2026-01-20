@@ -536,20 +536,49 @@
 
     <!-- Modal: Add User -->
     <div v-if="showAddUserModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="showAddUserModal = false">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="material-symbols-outlined text-blue-500 text-3xl">person_add</span>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah User</h3>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-blue-500 text-3xl">person_add</span>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Tambah User</h3>
+                </div>
+                <button @click="showAddUserModal = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
-            <p class="text-slate-500 mb-4">Tambah user baru untuk tenant ini. User akan dibuat dengan password default.</p>
-            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl mb-4">
-                <p class="text-sm text-blue-700 dark:text-blue-300">
-                    <span class="font-bold">Tip:</span> Untuk menambah user, silakan gunakan halaman Users di menu Pengaturan tenant atau hubungi support.
-                </p>
-            </div>
-            <div class="flex justify-end gap-3">
-                <button @click="showAddUserModal = false" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold hover:bg-slate-200 transition-colors">Tutup</button>
-            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Tambah user baru untuk tenant ini. User akan dibuat dengan password default yang dapat diubah kemudian.</p>
+            <form @submit.prevent="handleAddUserSubmit" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Nama *</label>
+                    <input v-model="newUserForm.name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="Nama user" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Email *</label>
+                    <input v-model="newUserForm.email" type="email" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm" placeholder="email@example.com" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Role *</label>
+                    <select v-model="newUserForm.role" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-sm">
+                        <option value="">Pilih Role</option>
+                        <option value="ADMIN_TENANT">Admin Tenant</option>
+                        <option value="SUPERVISOR">Supervisor</option>
+                        <option value="CASHIER">Kasir</option>
+                        <option value="KITCHEN">Dapur</option>
+                    </select>
+                </div>
+                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                        <span class="font-bold">ℹ️ Info:</span> Password default akan di-generate otomatis. User dapat mengubahnya setelah login pertama.
+                    </p>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="showAddUserModal = false" class="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">Batal</button>
+                    <button type="submit" :disabled="saving" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2">
+                        <span v-if="!saving" class="material-symbols-outlined text-[18px]">add</span>
+                        {{ saving ? 'Menambah...' : 'Tambah User' }}
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1048,6 +1077,11 @@ const editForm = ref({
     address: '',
     isActive: true,
 });
+const newUserForm = ref({
+    name: '',
+    email: '',
+    role: '',
+});
 const newStoreForm = ref({
     name: '',
     address: '',
@@ -1169,12 +1203,19 @@ const handleAddAddonSubmit = async () => {
     
     saving.value = true;
     try {
-        await api.post(`/addons/subscribe`, {
+        const payload: any = {
             addonId: newAddonForm.value.name.toLowerCase().replace(/\s+/g, '-'),
             addonName: newAddonForm.value.name,
             addonType: 'premium',
             duration: newAddonForm.value.durationDays
-        });
+        };
+        
+        // For Super Admin viewing a tenant, include tenantId in the request
+        if (tenantId) {
+            payload.tenantId = tenantId;
+        }
+        
+        await api.post(`/addons/subscribe`, payload);
         
         showSuccess(`Addon "${newAddonForm.value.name}" berhasil ditambahkan!`);
         showAddAddonModal.value = false;
@@ -1394,6 +1435,27 @@ const handleSaveProfile = async () => {
 
 const handleRequestUpdateProfile = () => {
     showSuccess('Notifikasi permintaan update profil dikirim ke owner.');
+};
+
+const handleAddUserSubmit = async () => {
+    saving.value = true;
+    try {
+        // Send request to add user for the tenant
+        await api.post(`/tenants/${tenantId}/users`, {
+            name: newUserForm.value.name,
+            email: newUserForm.value.email,
+            role: newUserForm.value.role,
+        });
+        showSuccess('User berhasil ditambahkan. Password default telah dikirim via email.');
+        showAddUserModal.value = false;
+        // Reset form
+        newUserForm.value = { name: '', email: '', role: '' };
+        loadTenantDetail();
+    } catch (err: any) {
+        showError(err.response?.data?.message || 'Gagal menambah user');
+    } finally {
+        saving.value = false;
+    }
 };
 
 const handleSaveUser = async () => {

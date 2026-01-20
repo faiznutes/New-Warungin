@@ -918,4 +918,127 @@ router.put(
   }
 );
 
+// POST /tenants/:id/users - Create a new user for a tenant (SUPER_ADMIN only)
+router.post(
+  '/:id/users',
+  authGuard,
+  validate({
+    body: z.object({
+      name: z.string().min(1, 'Nama wajib diisi'),
+      email: z.string().email('Email tidak valid'),
+      role: z.enum(['ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN']),
+      password: z.string().optional(),
+    })
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      // Only SUPER_ADMIN can create users for any tenant
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can create users for tenants' });
+      }
+
+      const tenantId = req.params.id;
+
+      // Verify tenant exists
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+      });
+
+      if (!tenant) {
+        return res.status(404).json({ message: 'Tenant not found' });
+      }
+
+      // Use userService to create the user
+      const userService = (await import('../services/user.service')).default;
+      const user = await userService.createUser(req.body, tenantId, userRole);
+
+      // Log audit
+      const { logAction } = await import('../middlewares/audit-logger');
+      await logAction(
+        authReq,
+        'CREATE',
+        'users',
+        user.id,
+        { email: user.email, name: user.name, role: user.role, tenantId },
+        'SUCCESS'
+      );
+
+      res.status(201).json(user);
+    } catch (error: unknown) {
+      const err = error as Error & { statusCode?: number; message?: string };
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to create user', 'CREATE_TENANT_USER');
+    }
+  }
+);
+
+// POST /tenants/:id/outlets - Create a new outlet for a tenant (SUPER_ADMIN only)
+router.post(
+  '/:id/outlets',
+  authGuard,
+  validate({
+    body: z.object({
+      name: z.string().min(1, 'Nama outlet wajib diisi'),
+      address: z.string().optional(),
+      phone: z.string().optional(),
+      shiftConfig: z.array(z.object({
+        name: z.string(),
+        startTime: z.string(),
+        endTime: z.string()
+      })).optional(),
+      operatingHours: z.record(z.string(), z.object({
+        open: z.string(),
+        close: z.string(),
+        isOpen: z.boolean()
+      })).optional(),
+    })
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const authReq = req as AuthRequest;
+      const userRole = authReq.role || (authReq as any).user?.role;
+
+      // Only SUPER_ADMIN can create outlets for any tenant
+      if (userRole !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admin can create outlets for tenants' });
+      }
+
+      const tenantId = req.params.id;
+
+      // Verify tenant exists
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+      });
+
+      if (!tenant) {
+        return res.status(404).json({ message: 'Tenant not found' });
+      }
+
+      // Use outletService to create the outlet
+      const outletService = (await import('../services/outlet.service')).default;
+      const outlet = await outletService.createOutlet(tenantId, req.body);
+
+      // Log audit
+      const { logAction } = await import('../middlewares/audit-logger');
+      await logAction(
+        authReq,
+        'CREATE',
+        'outlets',
+        outlet.id,
+        { name: outlet.name, address: outlet.address, tenantId },
+        'SUCCESS'
+      );
+
+      res.status(201).json({ data: outlet });
+    } catch (error: unknown) {
+      const err = error as Error & { statusCode?: number; message?: string };
+      const { handleRouteError } = await import('../utils/route-error-handler');
+      handleRouteError(res, error, 'Failed to create outlet', 'CREATE_TENANT_OUTLET');
+    }
+  }
+);
+
 export default router;

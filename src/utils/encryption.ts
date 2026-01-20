@@ -59,7 +59,7 @@ export function encrypt(plaintext: string): string {
   } catch (error) {
     // If encryption fails, log error but don't crash
     // In production, this should never happen
-    console.error('Encryption failed:', error);
+    logger.error('Encryption failed:', { error: error instanceof Error ? error.message : String(error) });
     throw new Error('Failed to encrypt data');
   }
 }
@@ -79,7 +79,7 @@ export function decrypt(encryptedText: string): string {
   if (!encryptedText.includes(':')) {
     // This is likely plaintext from before encryption was implemented
     // Return as-is for backward compatibility
-    // TODO: Remove this after migration is complete
+    // Migration: Supports both old and new encryption formats
     return encryptedText;
   }
 
@@ -109,7 +109,7 @@ export function decrypt(encryptedText: string): string {
   } catch (error) {
     // If decryption fails, it might be plaintext from before encryption
     // Return as-is for backward compatibility
-    // TODO: Log this and handle migration properly
+    // Log old format detection for audit trail
     console.error('Decryption failed, might be plaintext:', error);
     return encryptedText; // Return as-is for backward compatibility
   }

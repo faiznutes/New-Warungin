@@ -1,0 +1,23 @@
+# WSL2 Mirrored Networking Setup
+# Save this as C:\Users\<YourUsername>\.wslconfig
+
+[wsl2]
+# Enable mirrored networking to access local network
+networkingMode=mirrored
+firewall=false
+
+# Alternative: if mirrored doesn't work, use bridged
+# networkingMode=bridged
+# bridgeInterface=Ethernet
+
+[interop]
+# Enable running Windows programs from WSL
+enabled=true
+appendWindowsPath=true
+
+[user]
+# Default user when launching WSL
+default=faiz
+
+[boot]
+systemd=true

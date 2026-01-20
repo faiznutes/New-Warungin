@@ -84,12 +84,22 @@ router.post(
   validate({ body: subscribeAddonSchema }),
   async (req: Request, res: Response) => {
     try {
-      const tenantId = requireTenantId(req);
       const userRole = (req as any).user.role;
 
       // Only ADMIN_TENANT and SUPER_ADMIN can subscribe to addons
       if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN') {
         return res.status(403).json({ message: 'Only tenant admin or super admin can subscribe to addons' });
+      }
+
+      // For SUPER_ADMIN, tenantId can be provided in body or query
+      let tenantId: string;
+      if (userRole === 'SUPER_ADMIN') {
+        tenantId = req.body.tenantId || req.query.tenantId as string;
+        if (!tenantId) {
+          return res.status(400).json({ message: 'tenantId is required for super admin' });
+        }
+      } else {
+        tenantId = requireTenantId(req);
       }
 
       // Check if addon is API-based (coming soon) - block subscription
