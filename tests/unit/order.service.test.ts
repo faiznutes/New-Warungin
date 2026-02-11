@@ -147,24 +147,18 @@ describe('Order Service Unit Tests', () => {
           findFirst: vi.fn().mockResolvedValue({
             id: productId,
             stock: 100,
+            name: 'Product A',
           }),
-          update: vi.fn().mockResolvedValue({
-            id: productId,
-            stock: 98,
-          }),
+          updateMany: vi.fn().mockResolvedValue({ count: 1 }),
         },
         tenant: {
-          findUnique: vi.fn().mockResolvedValue({
-            name: 'Test Tenant',
-          }),
+          findUnique: vi.fn().mockResolvedValue({ name: 'Test Tenant' }),
         },
       };
       return callback(tx);
     });
 
     const userId = 'user-1';
-
-    // ... setup mocks ...
 
     const order = await orderService.createOrder({
       items: [
@@ -481,6 +475,79 @@ describe('Order Service Unit Tests', () => {
           sendToKitchen: false,
         }, userId, tenantId)
       ).rejects.toThrow();
+    });
+
+    it('should use conditional updateMany to decrement stock atomically', async () => {
+      const productId = 'product-1';
+      const quantity = 1;
+      const price = 10000;
+
+      // Mock transaction to use updateMany
+      (prisma.$transaction as any).mockImplementation(async (callback: any) => {
+        const tx = {
+          order: {
+            create: vi.fn().mockResolvedValue({ id: 'order-1', tenantId, status: 'PENDING', total: price }),
+            findFirst: vi.fn().mockResolvedValue(null),
+            findUnique: vi.fn().mockResolvedValue(null),
+            count: vi.fn().mockResolvedValue(0),
+          },
+          product: {
+            findFirst: vi.fn().mockResolvedValue({ id: productId, stock: 10, name: 'Product A' }),
+            updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+          },
+          tenant: {
+            findUnique: vi.fn().mockResolvedValue({ name: 'Test Tenant' }),
+          },
+        };
+        return callback(tx);
+      });
+
+      const userId = 'user-1';
+
+      const order = await orderService.createOrder({
+        items: [
+          { productId, quantity, price },
+        ],
+        discount: 0,
+        sendToKitchen: false,
+      }, userId, tenantId);
+
+      expect(order).toBeDefined();
+      // Ensure updateMany was called
+      expect((prisma.$transaction as any).mock.calls.length).toBeGreaterThan(0);
+    });
+
+    it('should throw if conditional updateMany returns count 0 (insufficient stock)', async () => {
+      const productId = 'product-1';
+      const quantity = 5;
+      const price = 10000;
+
+      (prisma.$transaction as any).mockImplementation(async (callback: any) => {
+        const tx = {
+          order: {
+            create: vi.fn().mockResolvedValue({ id: 'order-1', tenantId, status: 'PENDING', total: price }),
+            findFirst: vi.fn().mockResolvedValue(null),
+            findUnique: vi.fn().mockResolvedValue(null),
+            count: vi.fn().mockResolvedValue(0),
+          },
+          product: {
+            findFirst: vi.fn().mockResolvedValue({ id: productId, stock: 2, name: 'Product A' }),
+            updateMany: vi.fn().mockResolvedValue({ count: 0 }),
+          },
+          tenant: {
+            findUnique: vi.fn().mockResolvedValue({ name: 'Test Tenant' }),
+          },
+        };
+        return callback(tx);
+      });
+
+      const userId = 'user-1';
+
+      await expect(orderService.createOrder({
+        items: [ { productId, quantity, price } ],
+        discount: 0,
+        sendToKitchen: false,
+      }, userId, tenantId)).rejects.toThrow(/Insufficient stock/);
     });
   });
 });

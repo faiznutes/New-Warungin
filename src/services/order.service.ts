@@ -569,14 +569,25 @@ export class OrderService {
         }
 
         // Update stock atomically within transaction
-        await tx.product.update({
-          where: { id: item.productId },
+        // Use conditional updateMany to ensure stock cannot go negative in concurrent scenarios
+        const updateResult = await tx.product.updateMany({
+          where: { id: item.productId, tenantId, stock: { gte: item.quantity } },
           data: {
             stock: {
               decrement: item.quantity, // Atomic decrement
             },
           },
         });
+
+        if (!updateResult || (updateResult as any).count === 0) {
+          logger.error('Insufficient stock during order creation (concurrent protection)', {
+            productId: item.productId,
+            requiredQuantity: item.quantity,
+            tenantId,
+            orderNumber,
+          });
+          throw new Error(`Insufficient stock for product ${product.name}. Available stock may be insufficient due to concurrent orders.`);
+        }
 
         logger.debug('Stock decremented for order', {
           productId: item.productId,

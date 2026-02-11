@@ -131,6 +131,14 @@ export const authGuard = async (
       return;
     }
 
+    // CRITICAL: Ensure token role matches DB role to prevent token claim tampering
+    if (user.role && user.role !== decoded.role) {
+      logAuthError(new Error('Role mismatch between token and database'), 'ROLE_MISMATCH', req);
+      setCorsHeaders(res, req);
+      res.status(401).json({ error: 'Unauthorized: Role mismatch' });
+      return;
+    }
+
     // Validate tenant exists and is active (skip for SUPER_ADMIN)
     if (decoded.role !== 'SUPER_ADMIN') {
       if (!user.tenant) {
