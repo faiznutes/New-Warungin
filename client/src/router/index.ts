@@ -117,7 +117,7 @@ const router = createRouter({
       component: () => import('../views/pos/POS.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'SUPERVISOR', 'SUPER_ADMIN'],
+        roles: ['CASHIER', 'SUPERVISOR'],
         fullscreen: true
       },
     },
@@ -128,7 +128,7 @@ const router = createRouter({
       component: () => import('../views/cashier/OpenShift.vue'),
       meta: {
         requiresAuth: true,
-        roles: ['CASHIER', 'SUPERVISOR', 'SUPER_ADMIN'],
+        roles: ['CASHIER', 'SUPERVISOR'],
         fullscreen: true
       },
     },

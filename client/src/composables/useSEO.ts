@@ -1,7 +1,7 @@
 import { onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-declare const gtag: Function;
+declare const gtag: any;
 
 interface SEOConfig {
   title?: string;

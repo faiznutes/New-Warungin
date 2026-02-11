@@ -20,7 +20,7 @@
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-95"
       >
-        <div class="relative mx-auto max-w-2xl transform divide-y divide-slate-100 dark:divide-slate-700/50 overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl ring-1 ring-black/5 transition-all">
+        <div v-show="true" class="relative mx-auto max-w-2xl transform divide-y divide-slate-100 dark:divide-slate-700/50 overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl ring-1 ring-black/5 transition-all">
           <div class="relative">
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[24px]">search</span>
             <input
@@ -50,7 +50,7 @@
                 <h3 class="px-3 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ group.title }}</h3>
                 <ul class="space-y-1">
                   <li
-                    v-for="(item, index) in group.items"
+                    v-for="item in group.items"
                     :key="item.id"
                     :class="[
                       'group flex cursor-pointer items-center gap-3 rounded-xl px-3 py-3 transition-all',

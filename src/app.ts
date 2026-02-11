@@ -10,12 +10,15 @@ import { apiLimiter, authLimiter } from './middlewares/rateLimiter';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { addCSRFToken } from './middlewares/csrf';
 import { metricsMiddleware } from './middlewares/metrics';
+import { correlationIdMiddleware } from './middlewares/correlationId';
 import logger from './utils/logger';
 import apiRoutes from './routes';
 import { initializeSocket } from './socket/socket';
 import { swaggerSpec } from './config/swagger';
 import prisma from './config/database';
-import businessMetricsService from './services/business-metrics.service';
+
+import { requestSizeLimiter, responseSizeLimiter } from './middlewares/request-limits';
+import { responseTimeAudit } from './middlewares/response-time';
 
 logger.info('Loading Express app...');
 const app: Express = express();
@@ -28,6 +31,9 @@ logger.info('Express app and HTTP server created');
 // This is more secure than 'true' and prevents rate limiter warnings
 app.set('trust proxy', 2);
 
+// Correlation ID
+app.use(correlationIdMiddleware);
+
 // Security middleware
 logger.info('Setting up security middleware...');
 setupSecurity(app);
@@ -39,7 +45,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = env.CORS_ORIGIN.split(',').map(o => o.trim());
-      
+
       // Allow requests with no origin (like health checks, mobile apps, curl requests)
       // Health checks from Docker don't send Origin header
       if (!origin) {
@@ -47,7 +53,7 @@ app.use(
         // This is safe because health check doesn't expose sensitive data
         return callback(null, true);
       }
-      
+
       // Check if origin is in allowed list
       if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
         callback(null, true);
@@ -80,8 +86,17 @@ app.use(cookieParser());
 app.use(express.json({ limit: '10mb' })); // 10MB max request body
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Request timeout - prevent infinite hangs (30 seconds)
+app.use((req, res, next) => {
+  req.setTimeout(30000, () => {
+    if (!res.headersSent) {
+      res.status(408).json({ success: false, message: 'Request timeout' });
+    }
+  });
+  next();
+});
+
 // Request/Response size limiters
-import { requestSizeLimiter, responseSizeLimiter } from './middlewares/request-limits';
 app.use(requestSizeLimiter(10)); // 10MB max request
 app.use(responseSizeLimiter(10)); // 10MB max response
 
@@ -89,32 +104,35 @@ app.use(responseSizeLimiter(10)); // 10MB max response
 // Note: CSRF protection is optional for JWT-based auth, but adds extra security layer
 app.use('/api', addCSRFToken);
 
-// Rate limiting - Use Redis-based rate limiter if available, fallback to memory-based
+// Rate limiting - Always apply memory-based rate limiter immediately (no race condition)
+// Redis-based rate limiter can be added as an upgrade later if needed
 logger.info('Setting up rate limiting...');
-// Use IIFE to handle async import
-(async () => {
-  try {
-    const { redisApiLimiter, redisAuthLimiter } = await import('./middlewares/redis-rate-limiter');
-    app.use('/api', redisApiLimiter);
-    app.use('/api/auth/login', redisAuthLimiter);
-    logger.info('Redis-based rate limiting configured');
-  } catch (error) {
-    // Fallback to memory-based rate limiter
-    logger.warn('Redis rate limiter not available, using memory-based limiter', {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    app.use('/api', apiLimiter);
-    app.use('/api/auth/login', authLimiter);
-    logger.info('Memory-based rate limiting configured');
-  }
-})();
+app.use('/api', apiLimiter);
+app.use('/api/auth/login', authLimiter);
+logger.info('Memory-based rate limiting configured');
 
 // Response time audit middleware
-import { responseTimeAudit } from './middlewares/response-time';
+
 app.use(responseTimeAudit(1000, true)); // Log requests slower than 1 second
 
 // Metrics middleware (before routes to track all requests)
 app.use(metricsMiddleware);
+
+// Root route - Redirect to API info or health
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Warungin POS API Server',
+    version: '1.1.0',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      auth: '/api/auth',
+      docs: '/api-docs',
+    },
+  });
+});
 
 // Health check - Enhanced with detailed metrics
 app.get('/health', async (req, res) => {
@@ -240,39 +258,15 @@ setImmediate(async () => {
   }
 });
 
-// Initialize scheduler (optional - requires Redis)
-// Load asynchronously to prevent blocking app start
-setImmediate(() => {
-  import('./scheduler').catch((error: any) => {
-    // Scheduler is optional, continue if import fails
-    if (process.env.NODE_ENV === 'development') {
-      logger.warn('Scheduler import failed (optional service)', { error: error?.message || error });
-    }
-  });
-});
+// Scheduler removed per user rules
+// Business metrics are now computed on-demand when dashboard is loaded
 
 // Initialize business metrics update
 // Update metrics on startup and then every 5 minutes
-setImmediate(async () => {
-  try {
-    logger.info('Initializing business metrics...');
-    await businessMetricsService.updateAllMetrics();
-    logger.info('Business metrics initialized successfully');
-    
-    // Update metrics every 5 minutes
-    setInterval(async () => {
-      try {
-        await businessMetricsService.updateAllMetrics();
-      } catch (error: any) {
-        logger.error('Error updating business metrics in interval:', error);
-      }
-    }, 5 * 60 * 1000); // 5 minutes
-  } catch (error: any) {
-    logger.warn('Failed to initialize business metrics (non-critical)', {
-      error: error?.message || error,
-    });
-  }
-});
+// Scheduler removed per user rules (no cron/scheduler without explicit permission)
+
+// Business metrics are now computed on-demand when dashboard is loaded
+// Removed 5-minute setInterval to avoid unnecessary DB load
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
@@ -293,7 +287,27 @@ process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception:', error);
   logger.error('Uncaught Exception Stack:', error.stack);
   // Don't exit the process, just log the error
-  // Process should continue running to avoid 502 errors
+  // Process should continue running to avoid 502 errors -- INCORRECT: Process state is unreliable
+  // Gracefully shutdown - process state is unreliable after uncaught exception
+  logger.error('Shutting down due to uncaught exception...');
+  // Try to close server and database connection
+  try {
+    if (httpServer.listening) {
+      httpServer.close(() => {
+        prisma.$disconnect().finally(() => {
+          process.exit(1);
+        });
+      });
+    } else {
+      process.exit(1);
+    }
+  } catch (err) {
+    // Force exit if cleanup fails
+    process.exit(1);
+  }
+
+  // Force exit after 10 seconds if graceful shutdown hangs
+  setTimeout(() => process.exit(1), 10000);
 });
 
 logger.info(`Starting HTTP server on port ${PORT}...`);

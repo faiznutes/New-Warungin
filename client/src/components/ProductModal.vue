@@ -433,7 +433,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import ImageCropperModal from './ImageCropperModal.vue';
 import { useNotification } from '../composables/useNotification';
 import api from '../api';
@@ -484,6 +484,21 @@ const form = ref<Partial<Product>>({
   emoji: '',
   isActive: true,
   isConsignment: false,
+});
+
+// Auto-save logic
+import { useAutoSave } from '../composables/useAutoSave';
+const { loadDraft, clearDraft, hasDraft } = useAutoSave('draft_new_product', form.value, !props.product);
+
+// Ask to restore draft on mount if not editing
+onMounted(() => {
+  if (!props.product && hasDraft.value) {
+    if (confirm('Ditemukan draft produk yang belum tersimpan. Pulihkan?')) {
+      loadDraft();
+    } else {
+      clearDraft();
+    }
+  }
 });
 
 const saving = ref(false);
@@ -754,6 +769,12 @@ const handleSubmit = (keepOpen = false) => {
   }
   
   emit('save', submitData, keepOpen);
+  
+  // Clear draft on successful submit
+  if (!props.product) {
+    clearDraft();
+  }
+
   setTimeout(() => {
     saving.value = false;
   }, 500);

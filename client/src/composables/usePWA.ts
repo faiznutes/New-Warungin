@@ -15,6 +15,8 @@ export function usePWA() {
   const isInstalled = ref(false);
   const isStandalone = ref(false);
   const isOnline = ref(navigator.onLine);
+  const isSWActive = ref(false);
+  const lastSWCheck = ref<Date | null>(null);
 
   // Check if app is installed
   const checkInstallation = () => {
@@ -38,6 +40,9 @@ export function usePWA() {
         });
         console.log('Service Worker registered:', registration);
 
+        isSWActive.value = !!registration.active;
+        lastSWCheck.value = new Date();
+
         // Check for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
@@ -52,8 +57,20 @@ export function usePWA() {
         });
       } catch (error) {
         console.error('Service Worker registration failed:', error);
+        isSWActive.value = false;
       }
     }
+  };
+
+  // Check Service Worker Status (Health Check)
+  const checkSWStatus = async () => {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.getRegistration();
+      isSWActive.value = !!registration?.active && !!navigator.serviceWorker.controller;
+      lastSWCheck.value = new Date();
+      return isSWActive.value;
+    }
+    return false;
   };
 
   // Show install prompt
@@ -102,8 +119,11 @@ export function usePWA() {
     isInstalled,
     isStandalone,
     isOnline,
+    isSWActive,
+    lastSWCheck,
     showInstallPrompt,
     checkInstallation,
+    checkSWStatus,
   };
 }
 

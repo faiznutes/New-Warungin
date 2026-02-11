@@ -35,12 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onErrorCaptured } from 'vue';
+import { ref, onMounted, onErrorCaptured, onUnmounted } from 'vue';
 import { useAuthStore } from './stores/auth';
 import NotificationModal from './components/NotificationModal.vue';
 import ToastContainer from './components/ToastContainer.vue';
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue';
 import { useNotification } from './composables/useNotification';
+import { getFriendlyErrorMessage } from './utils/error-messages';
 import {
   handleNotificationConfirm as handleConfirm,
   handleNotificationCancel as handleCancel,
@@ -48,7 +49,7 @@ import {
 } from './composables/useNotification';
 
 const authStore = useAuthStore();
-const { showNotification, notificationOptions } = useNotification();
+const { showNotification, notificationOptions, notify } = useNotification();
 const globalError = ref(false);
 const globalErrorMessage = ref<string>('');
 
@@ -61,12 +62,57 @@ const handleGlobalErrorRetry = () => {
 // Global error handler untuk menangkap semua error Vue
 onErrorCaptured((err: any, instance, info) => {
   console.error('Vue Error Captured:', err, info);
+  
+  const friendlyMessage = getFriendlyErrorMessage(err);
+  
+  // If error is from an event handler, it's likely not fatal to the UI tree
+  // We can just show a notification instead of crashing the whole app
+  if (info === 'native event handler' || info === 'v-on handler') {
+    notify({
+      type: 'error',
+      title: 'Terjadi Kesalahan',
+      message: friendlyMessage,
+    });
+    return false; // Prevent propagation
+  }
+
+  // If it's a network error during mount, maybe just show toast?
+  if (err.message && (err.message.includes('Network') || err.message.includes('fetch'))) {
+     notify({
+      type: 'error',
+      title: 'Koneksi Bermasalah',
+      message: friendlyMessage,
+    });
+    return false;
+  }
+
   globalError.value = true;
-  globalErrorMessage.value = err?.message || 'Terjadi kesalahan saat memuat aplikasi';
+  globalErrorMessage.value = friendlyMessage;
   return false; // Prevent error from propagating
 });
 
+// Handle unhandled promise rejections (e.g. failed fetches without catch)
+const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+  // Ignore resize observer loop limit exceeded
+  if (event.reason?.message?.includes('ResizeObserver loop')) return;
+
+  console.error('Unhandled Promise Rejection:', event.reason);
+  const friendlyMessage = getFriendlyErrorMessage(event.reason);
+  
+  notify({
+    type: 'error',
+    title: 'Terjadi Kesalahan Sistem',
+    message: friendlyMessage,
+  });
+};
+
+onUnmounted(() => {
+  window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+});
+
 onMounted(async () => {
+  window.addEventListener('unhandledrejection', handleUnhandledRejection);
+  
   // Skip restore if we're on login page (to avoid flash)
   if (window.location.pathname === '/login') {
     return;
