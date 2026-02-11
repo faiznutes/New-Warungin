@@ -46,11 +46,11 @@ receivers:
 #        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
 #        text: '{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}'
 #        send_resolved: true
-    email_configs:
-      - to: 'admin@warungin.local'
-        from: 'alertmanager@warungin.local'
-        headers:
-          Subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+#    email_configs:
+#      - to: 'admin@warungin.local'
+#        from: 'alertmanager@warungin.local'
+#        headers:
+#          Subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
 
   - name: 'warning'
 #    slack_configs:
