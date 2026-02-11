@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import env from '../config/env';
+import logger from './logger';
 
 /**
  * Encryption utility for sensitive data
@@ -22,7 +23,7 @@ function getKey(): Buffer {
     // Use provided key (should be 64 hex chars = 32 bytes)
     return Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
   }
-  
+
   // Fallback: derive key from JWT_SECRET (not ideal, but better than nothing)
   // This is a temporary solution - should set ENCRYPTION_KEY in production
   const secret = env.JWT_SECRET;
@@ -43,17 +44,17 @@ export function encrypt(plaintext: string): string {
     const key = getKey();
     const iv = crypto.randomBytes(IV_LENGTH);
     const salt = crypto.randomBytes(SALT_LENGTH);
-    
+
     // Derive key with salt for this specific encryption
     const derivedKey = crypto.pbkdf2Sync(key, salt, 100000, KEY_LENGTH, 'sha256');
-    
+
     const cipher = crypto.createCipheriv(ALGORITHM, derivedKey, iv);
-    
+
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const tag = cipher.getAuthTag();
-    
+
     // Return format: iv:salt:tag:encrypted (all hex encoded)
     return `${iv.toString('hex')}:${salt.toString('hex')}:${tag.toString('hex')}:${encrypted}`;
   } catch (error) {
@@ -90,27 +91,27 @@ export function decrypt(encryptedText: string): string {
     }
 
     const [ivHex, saltHex, tagHex, encrypted] = parts;
-    
+
     const key = getKey();
     const iv = Buffer.from(ivHex, 'hex');
     const salt = Buffer.from(saltHex, 'hex');
     const tag = Buffer.from(tagHex, 'hex');
-    
+
     // Derive key with salt (must match encryption)
     const derivedKey = crypto.pbkdf2Sync(key, salt, 100000, KEY_LENGTH, 'sha256');
-    
+
     const decipher = crypto.createDecipheriv(ALGORITHM, derivedKey, iv);
     decipher.setAuthTag(tag);
-    
+
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
   } catch (error) {
     // If decryption fails, it might be plaintext from before encryption
     // Return as-is for backward compatibility
     // Log old format detection for audit trail
-    console.error('Decryption failed, might be plaintext:', error);
+    logger.error('Decryption failed, might be plaintext:', { error: error instanceof Error ? error.message : String(error) });
     return encryptedText; // Return as-is for backward compatibility
   }
 }
@@ -124,7 +125,7 @@ export function isEncrypted(text: string): boolean {
   if (!text) {
     return false;
   }
-  
+
   // Encrypted format: iv:salt:tag:encrypted (all hex, separated by colons)
   const parts = text.split(':');
   return parts.length === 4 && parts.every(part => /^[0-9a-f]+$/i.test(part));
