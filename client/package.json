@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --fix"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "terser": "^5.44.1",
     "typescript": "^5.3.3",
     "vite": "^6.4.1",
+    "vite-plugin-pwa": "^1.2.0",
     "vue-tsc": "^2.0.0"
   },
   "overrides": {

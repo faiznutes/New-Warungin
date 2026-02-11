@@ -30,7 +30,7 @@
             </p>
           </div>
           <div class="mt-auto hidden md:block">
-            <div class="flex items-center gap-2 text-sm text-slate-400">
+            <div class="flex items-center gap-2 text-sm text-slate-500">
               <span class="material-symbols-outlined text-[18px]">verified_user</span>
               <span>Aman & Terpercaya</span>
             </div>
@@ -81,7 +81,7 @@
                   type="button"
                   @click="showPassword = !showPassword"
                   class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors flex items-center focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-full p-1"
-                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  :aria-label="showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'"
                 >
                   <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                 </button>
@@ -107,18 +107,22 @@
             </div>
 
             <!-- Submit Button -->
-            <button
+            <BaseButton
               type="submit"
-              :disabled="loading"
-              class="w-full h-12 bg-primary hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              :loading="loading"
+              variant="primary"
+              size="xl"
+              block
+              class="h-12 shadow-md shadow-primary/25 hover:shadow-primary/30 group"
             >
-              <span v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              <span v-else>Masuk Dashboard</span>
-              <span v-if="!loading" class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </button>
+              <span class="flex items-center gap-2">
+                <span>Masuk Dashboard</span>
+                <span v-if="!loading" class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              </span>
+            </BaseButton>
           </form>
           <div class="mt-8 text-center md:text-left">
-            <p class="text-xs text-slate-400 dark:text-slate-500">
+            <p class="text-xs text-slate-500 dark:text-slate-500">
               © 2024 Warungin Indonesia. Hak Cipta Dilindungi.
             </p>
           </div>
@@ -149,6 +153,7 @@ import { useAuthStore } from '../../stores/auth';
 import api from '../../api';
 import { useNotification } from '../../composables/useNotification';
 import StoreSelectorModal from '../../components/StoreSelectorModal.vue';
+import BaseButton from '../../components/ui/BaseButton.vue';
 
 const router = useRouter();
 const { error: showError, warning: showWarning } = useNotification();

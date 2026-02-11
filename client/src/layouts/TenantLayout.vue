@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-screen bg-background-light dark:bg-background-dark font-display overflow-hidden">
-    <!-- Sidebar - Main Tenant -->
+    <!-- Sidebar -->
     <aside
       class="w-64 bg-slate-50 dark:bg-[#1e293b] border-r border-[#e7edf3] dark:border-slate-700 flex flex-col h-full shrink-0 transition-all duration-300 fixed lg:relative z-50"
       :class="{ 
@@ -19,573 +19,171 @@
             </h1>
             <div class="flex items-center gap-2 pl-8">
                <span class="text-[#4c739a] dark:text-slate-400 text-xs font-bold leading-normal truncate max-w-[150px]" :title="branchName">{{ branchName }}</span>
-               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">Owner</span>
+               <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">Tenant</span>
             </div>
           </router-link>
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto overscroll-contain flex flex-col gap-1">
           <!-- Operasional Section -->
-          <div class="mb-1">
-            <button
-              @click="toggleMenu('operasional')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-primary transition-colors mb-1"
-            >
-              <span>Operasional</span>
-              <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.operasional }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.operasional"
-              class="space-y-1 transition-all duration-200"
-            >
-            <router-link
-              to="/app/dashboard"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-primary/10 text-primary"
-              exact-active-class="bg-primary/10 text-primary"
-              :class="[$route.path === '/app/dashboard' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
-            >
-               <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path === '/app/dashboard' }">grid_view</span>
-               <div class="flex flex-col leading-tight">
-                  <span class="text-sm font-medium">Dashboard</span>
-               </div>
-            </router-link>
-
-            <router-link
+          <SidebarSection label="Operasional" :isOpen="expandedMenus.operasional" @toggle="toggleMenu('operasional')">
+            <SidebarItem to="/app/dashboard" icon="grid_view" label="Dashboard" exact />
+            
+            <SidebarItem
+              v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPER_ADMIN' || (userRole === 'SUPERVISOR' && canManageProducts) || (userRole === 'CASHIER' && canManageProducts)"
               to="/app/products"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-primary/10 text-primary"
-              :class="[$route.path.startsWith('/app/products') && !$route.path.includes('adjustments') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
+              icon="inventory_2"
+              label="Produk"
             >
-              <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path.startsWith('/app/products') }">inventory_2</span>
-              <span class="text-sm font-medium leading-normal">Produk</span>
-            </router-link>
+              <template #suffix>
+                <span v-if="criticalStockCount > 0" class="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
+                  {{ criticalStockCount }}
+                </span>
+              </template>
+            </SidebarItem>
 
-            <router-link
-              v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '')"
+            <SidebarItem
+              v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR'"
               to="/app/products/adjustments"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#10b981]/10 text-[#10b981]"
-              :class="[$route.path === '/app/products/adjustments' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
-            >
-              <span class="material-symbols-outlined text-[20px]">tune</span>
-              <span class="text-sm font-medium leading-normal">Penyesuaian</span>
-            </router-link>
+              icon="tune"
+              label="Penyesuaian"
+            />
 
-            <router-link
+            <SidebarItem
+              v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR' || (userRole === 'SUPERVISOR' && canEditOrders) || userRole === 'CASHIER'"
               to="/app/orders"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#10b981]/10 text-[#10b981]"
-              :class="[$route.path.startsWith('/app/orders') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
+              icon="shopping_cart"
+              label="Pesanan"
             >
-              <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
-              <span class="text-sm font-medium leading-normal">Pesanan</span>
-            </router-link>
+              <template #suffix>
+                <span v-if="pendingOrdersCount > 0" class="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
+                  {{ pendingOrdersCount }}
+                </span>
+              </template>
+            </SidebarItem>
 
-            <router-link
+            <SidebarItem
+              v-if="userRole === 'ADMIN_TENANT' || (userRole === 'SUPERVISOR' && canManageCustomers) || (userRole === 'CASHIER' && canManageCustomers)"
               to="/app/customers"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#10b981]/10 text-[#10b981]"
-              :class="[$route.path.startsWith('/app/customers') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
-            >
-              <span class="material-symbols-outlined text-[20px]">group</span>
-              <span class="text-sm font-medium leading-normal">Pelanggan</span>
-            </router-link>
+              icon="group"
+              label="Pelanggan"
+            />
 
-            <router-link
-              v-if="['SUPERVISOR', 'KITCHEN'].includes(authStore.user?.role || '')"
+            <SidebarItem
+              v-if="userRole === 'SUPERVISOR' || userRole === 'KITCHEN'"
               to="/app/orders/kitchen"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-              active-class="bg-[#10b981]/10 text-[#10b981]"
-              :class="[$route.path === '/app/orders/kitchen' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-              @click="closeSidebarOnMobile"
-            >
-              <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path === '/app/orders/kitchen' }">restaurant_menu</span>
-              <span class="text-sm font-medium leading-normal">Dapur (KDS)</span>
-            </router-link>
+              icon="restaurant_menu"
+              label="Dapur (KDS)"
+            />
 
-            <router-link
-              v-if="['CASHIER', 'SUPERVISOR'].includes(authStore.user?.role || '')"
+            <SidebarItem
+              v-if="userRole === 'CASHIER' || userRole === 'SUPERVISOR'"
               to="/pos"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-              @click="closeSidebarOnMobile"
+              icon="point_of_sale"
+              label="Buka POS"
               target="_blank"
-            >
-              <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
-              <span class="text-sm font-medium leading-normal">Buka POS</span>
-            </router-link>
-            </div>
-          </div>
-
-          <div class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
+            />
+          </SidebarSection>
 
           <!-- Laporan & Analitik Section -->
-          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '')" class="mb-1">
-            <button
-              @click="toggleMenu('laporan')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
-            >
-              <span>Laporan & Analitik</span>
-              <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.laporan }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.laporan"
-              class="space-y-1 transition-all duration-200"
-            >
-              <router-link
-                to="/app/reports"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                exact-active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/reports' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">summarize</span>
-                <span class="text-sm font-medium leading-normal">Laporan</span>
-              </router-link>
-
-              <!-- Business Analytics Submenu -->
-              <div v-if="hasBusinessAnalytics" class="space-y-1">
-                <router-link
-                  to="/app/analytics"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#10b981]/10 text-[#10b981]"
-                  :class="[$route.path === '/app/analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                  @click="closeSidebarOnMobile"
-                >
-                  <span class="material-symbols-outlined text-[20px]">analytics</span>
-                  <span class="text-sm font-medium leading-normal">Advanced Analytics</span>
-                </router-link>
-
-                <router-link
-                  to="/app/finance"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#10b981]/10 text-[#10b981]"
-                  :class="[$route.path === '/app/finance' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                  @click="closeSidebarOnMobile"
-                >
-                  <span class="material-symbols-outlined text-[20px]">payments</span>
-                  <span class="text-sm font-medium leading-normal">Keuangan</span>
-                </router-link>
-
-                <router-link
-                  to="/app/profit-loss"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#10b981]/10 text-[#10b981]"
-                  :class="[$route.path === '/app/profit-loss' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                  @click="closeSidebarOnMobile"
-                >
-                   <span class="material-symbols-outlined text-[20px]">trending_up</span>
-                   <span class="text-sm font-medium leading-normal">Laba Rugi</span>
-                </router-link>
-
-                <router-link
-                  to="/app/reports/advanced"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#10b981]/10 text-[#10b981]"
-                  :class="[$route.path === '/app/reports/advanced' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                  @click="closeSidebarOnMobile"
-                >
-                  <span class="material-symbols-outlined text-[20px]">bar_chart</span>
-                  <span class="text-sm font-medium leading-normal">Advanced Reporting</span>
-                </router-link>
-
-                <router-link
-                  to="/app/finance/management"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                  active-class="bg-[#10b981]/10 text-[#10b981]"
-                  :class="[$route.path === '/app/finance/management' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                  @click="closeSidebarOnMobile"
-                >
-                  <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
-                  <span class="text-sm font-medium leading-normal">Financial Mgmt</span>
-                </router-link>
-              </div>
-            </div>
-          </div>
-          
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
+          <SidebarSection
+            v-if="userRole === 'ADMIN_TENANT' || (userRole === 'SUPERVISOR' && canViewReports) || (userRole === 'CASHIER' && canViewReports)"
+            label="Laporan & Analitik"
+            :isOpen="expandedMenus.laporan"
+            @toggle="toggleMenu('laporan')"
+          >
+            <SidebarItem to="/app/reports" icon="summarize" label="Laporan" />
+            
+            <template v-if="hasBusinessAnalytics">
+              <SidebarItem to="/app/analytics" icon="analytics" label="Advanced Analytics" />
+              <SidebarItem to="/app/finance" icon="payments" label="Keuangan" />
+              <SidebarItem to="/app/profit-loss" icon="trending_up" label="Laba Rugi" />
+              <SidebarItem to="/app/reports/advanced" icon="bar_chart" label="Advanced Reporting" />
+              <SidebarItem to="/app/finance/management" icon="account_balance_wallet" label="Financial Mgmt" />
+            </template>
+          </SidebarSection>
 
           <!-- Marketing & Delivery Section -->
-          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '') && hasDeliveryMarketing" class="mb-1">
-            <button
-              @click="toggleMenu('marketing')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
-            >
-              <span>Marketing & Delivery</span>
-               <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.marketing }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.marketing"
-              class="space-y-1 transition-all duration-200"
-            >
-              <router-link
-                to="/app/marketing"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/marketing' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">campaign</span>
-                <span class="text-sm font-medium leading-normal">Campaigns</span>
-              </router-link>
-
-              <router-link
-                to="/app/marketing/email-templates"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/marketing/email-templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">mail</span>
-                <span class="text-sm font-medium leading-normal">Email Templates</span>
-              </router-link>
-
-              <router-link
-                to="/app/marketing/email-analytics"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/marketing/email-analytics' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">insights</span>
-                <span class="text-sm font-medium leading-normal">Email Analytics</span>
-              </router-link>
-
-              <router-link
-                to="/app/marketing/email-scheduler"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/marketing/email-scheduler' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">schedule_send</span>
-                <span class="text-sm font-medium leading-normal">Email Scheduler</span>
-              </router-link>
-
-              <router-link
-                to="/app/marketing/customer-engagement"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/marketing/customer-engagement' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">loyalty</span>
-                <span class="text-sm font-medium leading-normal">Engagement</span>
-              </router-link>
-
-              <router-link
-                to="/app/delivery"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/delivery' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">local_shipping</span>
-                <span class="text-sm font-medium leading-normal">Delivery Orders</span>
-              </router-link>
-            </div>
-          </div>
-
-          <div v-if="authStore.user?.role === 'ADMIN_TENANT' && hasInventoryAccess" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
+          <SidebarSection
+            v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR') && hasDeliveryMarketing"
+            label="Marketing & Delivery"
+            :isOpen="expandedMenus.marketing"
+            @toggle="toggleMenu('marketing')"
+          >
+            <SidebarItem to="/app/marketing" icon="campaign" label="Campaigns" />
+            <SidebarItem to="/app/marketing/email-templates" icon="mail" label="Email Templates" />
+            <SidebarItem to="/app/marketing/email-analytics" icon="insights" label="Email Analytics" />
+            <SidebarItem to="/app/marketing/email-scheduler" icon="schedule_send" label="Email Scheduler" />
+            <SidebarItem to="/app/marketing/customer-engagement" icon="loyalty" label="Engagement" />
+            <SidebarItem to="/app/delivery" icon="local_shipping" label="Delivery Orders" />
+          </SidebarSection>
 
           <!-- Inventory Management Section -->
-          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '') && hasInventoryAccess" class="mb-1">
-             <button
-              @click="toggleMenu('inventory')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
-            >
-              <span>Inventory</span>
-               <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.inventory }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.inventory"
-              class="space-y-1 transition-all duration-200"
-            >
-              <router-link
-                to="/app/inventory/suppliers"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/inventory/suppliers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">factory</span>
-                <span class="text-sm font-medium leading-normal">Suppliers</span>
-              </router-link>
-
-              <router-link
-                to="/app/inventory/purchase-orders"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/inventory/purchase-orders' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-                <span class="text-sm font-medium leading-normal">Purchase Orders</span>
-              </router-link>
-
-              <router-link
-                to="/app/inventory/stock-transfers"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/inventory/stock-transfers' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">move_down</span>
-                <span class="text-sm font-medium leading-normal">Stock Transfers</span>
-              </router-link>
-
-              <router-link
-                to="/app/inventory/stock-alerts"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                 active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/inventory/stock-alerts' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">notification_important</span>
-                <span class="text-sm font-medium leading-normal">Stock Alerts</span>
-              </router-link>
-            </div>
-          </div>
-          
-           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
+          <SidebarSection
+            v-if="(userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR') && hasInventoryAccess"
+            label="Inventory"
+            :isOpen="expandedMenus.inventory"
+            @toggle="toggleMenu('inventory')"
+          >
+            <SidebarItem to="/app/inventory/suppliers" icon="factory" label="Suppliers" />
+            <SidebarItem to="/app/inventory/purchase-orders" icon="shopping_bag" label="Purchase Orders" />
+            <SidebarItem to="/app/inventory/stock-transfers" icon="move_down" label="Stock Transfers" />
+            <SidebarItem to="/app/inventory/stock-alerts" icon="notification_important" label="Stock Alerts" />
+          </SidebarSection>
 
           <!-- Manajemen Section -->
-          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '')" class="mb-1">
-             <button
-              @click="toggleMenu('manajemen')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
-            >
-              <span>Manajemen</span>
-               <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.manajemen }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.manajemen"
-              class="space-y-1 transition-all duration-200"
-            >
-              <router-link
-                to="/app/users"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/users') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">badge</span>
-                <span class="text-sm font-medium leading-normal">Pengguna</span>
-              </router-link>
-
-              <router-link
-                v-if="authStore.user?.role === 'ADMIN_TENANT'"
-                to="/app/stores"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/stores') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]">store</span>
-                 <span class="text-sm font-medium leading-normal">Kelola Store</span>
-              </router-link>
-
-              <router-link
-                v-if="authStore.user?.role === 'ADMIN_TENANT'"
-                to="/app/discounts"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/discounts') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">percent</span>
-                <span class="text-sm font-medium leading-normal">Diskon</span>
-              </router-link>
-            </div>
-          </div>
-          
-           <div v-if="authStore.user?.role === 'ADMIN_TENANT'" class="my-1 border-t border-slate-200 dark:border-slate-700"></div>
+          <SidebarSection
+            v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR'"
+            label="Manajemen"
+            :isOpen="expandedMenus.manajemen"
+            @toggle="toggleMenu('manajemen')"
+          >
+            <SidebarItem to="/app/users" icon="badge" label="Pengguna" />
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/stores" icon="store" label="Kelola Store" />
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/discounts" icon="percent" label="Diskon" />
+          </SidebarSection>
 
           <!-- Pengaturan Section -->
-          <div v-if="['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user?.role || '')" class="mb-1">
-             <button
-              @click="toggleMenu('pengaturan')"
-              class="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#94a3b8] hover:text-[#10b981] transition-colors mb-1"
-            >
-              <span>Pengaturan</span>
-               <span 
-                class="material-symbols-outlined text-[16px] transition-transform duration-200"
-                :class="{ 'rotate-180': expandedMenus.pengaturan }"
-              >expand_more</span>
-            </button>
-            <div
-              v-show="expandedMenus.pengaturan"
-              class="space-y-1 transition-all duration-200"
-            >
-              <router-link
-                v-if="authStore.user?.role === 'ADMIN_TENANT'"
-                to="/app/subscription"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/subscription') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">card_membership</span>
-                <span class="text-sm font-medium leading-normal">Berlangganan</span>
-              </router-link>
+          <SidebarSection
+            v-if="userRole === 'ADMIN_TENANT' || userRole === 'SUPERVISOR'"
+            label="Pengaturan"
+            :isOpen="expandedMenus.pengaturan"
+            @toggle="toggleMenu('pengaturan')"
+          >
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/subscription" icon="card_membership" label="Berlangganan" />
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/addons" icon="extension" label="Addon" />
+            <SidebarItem to="/app/tenants/support" icon="support_agent" label="Bantuan" />
+            <SidebarItem to="/app/rewards" icon="stars" label="Point Gratis" />
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/settings/store" icon="storefront" label="Pengaturan Toko" />
+            <SidebarItem v-if="hasSimpleNotaEditor" to="/app/receipts/templates" icon="receipt" label="Template Struk" />
+            <SidebarItem v-if="authStore.isSuperAdmin" to="/app/settings/archive" icon="archive" label="Archive Management" />
+            <SidebarItem v-if="authStore.isSuperAdmin" to="/app/settings/retention" icon="auto_delete" label="Retention Management" />
+          </SidebarSection>
 
-              <router-link
-                v-if="authStore.user?.role === 'ADMIN_TENANT'"
-                to="/app/addons"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/addons') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">extension</span>
-                <span class="text-sm font-medium leading-normal">Addon</span>
-              </router-link>
-
-              <router-link
-                to="/app/tenants/support"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/tenants/support' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">support_agent</span>
-                <span class="text-sm font-medium leading-normal">Bantuan</span>
-              </router-link>
-
-              <router-link
-                to="/app/rewards"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/rewards') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]">stars</span>
-                 <span class="text-sm font-medium leading-normal">Point Gratis</span>
-              </router-link>
-
-              <router-link
-                v-if="authStore.user?.role === 'ADMIN_TENANT'"
-                to="/app/settings/store"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/settings/store' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]">storefront</span>
-                 <span class="text-sm font-medium leading-normal">Pengaturan Toko</span>
-              </router-link>
-
-              <router-link
-                v-if="hasSimpleNotaEditor"
-                to="/app/receipts/templates"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path === '/app/receipts/templates' ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                <span class="material-symbols-outlined text-[20px]">receipt</span>
-                <span class="text-sm font-medium leading-normal">Template Struk</span>
-              </router-link>
-
-              <router-link
-                v-if="authStore.isSuperAdmin"
-                to="/app/settings/archive"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/settings/archive') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]">archive</span>
-                 <span class="text-sm font-medium leading-normal">Archive Management</span>
-              </router-link>
-
-              <router-link
-                v-if="authStore.isSuperAdmin"
-                to="/app/settings/retention"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.startsWith('/app/settings/retention') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]">auto_delete</span>
-                 <span class="text-sm font-medium leading-normal">Retention Management</span>
-              </router-link>
-            </div>
+          <!-- Support Section -->
+          <div class="mb-1 mt-4 border-t border-slate-100 dark:border-slate-700 pt-2">
+            <SidebarItem
+              :to="authStore.isSuperAdmin ? '/app/tenants/support' : '/app/support'"
+              icon="help_center"
+              label="Bantuan & Support"
+            />
           </div>
-            <!-- Support Section -->
-            <div class="mb-1 mt-4 border-t border-slate-100 dark:border-slate-700 pt-2">
-              <router-link
-                :to="authStore.isSuperAdmin ? '/app/tenants/support' : '/app/support'"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors group"
-                active-class="bg-[#10b981]/10 text-[#10b981]"
-                :class="[$route.path.includes('/support') ? '' : 'text-[#4c739a] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700']"
-                @click="closeSidebarOnMobile"
-              >
-                 <span class="material-symbols-outlined text-[20px]" :class="{ 'icon-filled': $route.path.includes('/support') }">help_center</span>
-                 <span class="text-sm font-medium leading-normal">Bantuan & Support</span>
-              </router-link>
-            </div>
         </nav>
 
         <!-- User Section -->
-        <div class="p-4 border-t border-[#e7edf3] dark:border-slate-700 shrink-0">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="size-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-600 shadow-sm bg-slate-200 flex items-center justify-center text-[#10b981] font-bold">
-               {{ userInitials }}
-            </div>
-            <div class="flex flex-col min-w-0">
-              <div class="flex items-center gap-1.5">
-                <p class="text-sm font-bold text-[#0d141b] dark:text-white truncate">{{ userName }}</p>
-                <span 
-                  v-if="authStore.user?.role"
-                  class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider"
-                  :class="{
-                    'bg-blue-50 text-blue-600 border border-blue-100': authStore.user.role === 'ADMIN_TENANT' || authStore.user.role === 'SUPERVISOR',
-                    'bg-orange-50 text-orange-600 border border-orange-100': authStore.user.role === 'CASHIER',
-                    'bg-purple-50 text-purple-600 border border-purple-100': authStore.user.role === 'KITCHEN',
-                    'bg-red-50 text-red-600 border border-red-100': authStore.isSuperAdmin
-                  }"
-                >
-                  {{ authStore.isSuperAdmin ? 'S-Admin' : authStore.user.role }}
-                </span>
-              </div>
-              <p class="text-xs text-[#4c739a] dark:text-slate-400 truncate">{{ tenantName }}</p>
-            </div>
-          </div>
-          <button
-            @click="handleLogout"
-            class="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-bold text-[#4c739a] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors w-full border border-transparent hover:border-red-100"
-          >
-            <span class="material-symbols-outlined text-[18px]">logout</span>
-            <span>Keluar</span>
-          </button>
-        </div>
+        <LayoutUserSection
+          :name="userName"
+          :initials="userInitials"
+          :role="userRole"
+          :subtext="tenantName"
+          :isSuperAdmin="authStore.isSuperAdmin"
+          @logout="handleLogout"
+        />
       </div>
     </aside>
 
-    <!-- Overlay for mobile/tablet -->
+    <!-- Overlay -->
     <div
       v-if="sidebarOpen && windowWidth < 1024"
       class="fixed inset-0 bg-[#0d141b]/50 z-40 transition-opacity duration-300 backdrop-blur-sm"
@@ -626,34 +224,39 @@
                  {{ currentTime }}
                </div>
              </div>
-             <!-- Search (Optional) -->
-             <div class="hidden md:flex items-center bg-[#e7edf3] dark:bg-slate-700 rounded-xl px-3 py-2 w-64 focus-within:ring-2 ring-primary/50 transition-all">
-                <span class="material-symbols-outlined text-[#4c739a] dark:text-slate-400 text-[20px]">search</span>
-                <input 
-                  v-model="searchQuery"
-                  @keyup.enter="handleGlobalSearch"
-                  class="bg-transparent border-none text-sm w-full focus:ring-0 text-[#0d141b] dark:text-white placeholder:text-[#4c739a] dark:placeholder:text-slate-400" 
-                  placeholder="Search products, orders..." 
-                  type="text"
-                />
-              </div>
 
-            <!-- Notification Dropdown -->
-            <NotificationDropdown />
+             <!-- Global Search Trigger -->
+             <button
+                @click="openGlobalSearch"
+                class="flex items-center gap-2 px-3 py-2 text-[#4c739a] hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all group"
+                title="Cari (Ctrl+K)"
+             >
+                <span class="material-symbols-outlined text-[20px]">search</span>
+                <span class="hidden md:inline text-xs font-bold">Cari <span class="bg-slate-100 dark:bg-slate-800 px-1 rounded ml-1 text-[9px]">Ctrl+K</span></span>
+             </button>
+
+             <!-- Notification Dropdown -->
+             <NotificationDropdown />
             
-            <!-- Knowledge/Info Button for Admin Tenant -->
-            <button
-              v-if="authStore.user?.role === 'ADMIN_TENANT'"
-              @click="showInfoModal = true"
-              class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              title="Informasi / Knowledge Base"
-            >
-              <span class="material-symbols-outlined">menu_book</span>
-              <span
-                v-if="hasUnreadInfo"
-                class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white dark:border-[#1e293b]"
-              ></span>
-            </button>
+             <!-- Info Button for Admin Tenant -->
+             <button
+               v-if="userRole === 'ADMIN_TENANT'"
+               @click="showInfoModal = true"
+               class="relative p-2 text-[#4c739a] hover:text-[#10b981] hover:bg-blue-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
+               title="Informasi / Knowledge Base"
+             >
+               <span class="material-symbols-outlined">menu_book</span>
+               <span v-if="hasUnreadInfo" class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-white dark:border-[#1e293b]"></span>
+             </button>
+
+             <!-- Help Button -->
+             <button
+               @click="showHelpModal = true"
+               class="p-2 text-[#4c739a] hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all"
+               title="Bantuan"
+             >
+               <span class="material-symbols-outlined text-[20px]">help</span>
+             </button>
           </div>
         </div>
       </header>
@@ -668,259 +271,102 @@
       </main>
     </div>
     
-    <!-- Admin Info Modal -->
-    <AdminInfoModal
-      :show="showInfoModal"
-      @close="handleInfoModalClose"
-      @dont-show-today="handleDontShowToday"
+    <!-- Modals -->
+    <ShellModals
+      ref="shellModalsRef"
+      :userRole="userRole"
+      v-model:showInfoModal="showInfoModal"
+      v-model:showShortcutsModal="showShortcutsModal"
+      v-model:showHelpModal="showHelpModal"
+      :helpContent="currentHelp"
+      @dont-show-today="handleInfoModalClose"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { safeArrayMethod } from '../utils/array-helpers';
-import { useRoute, useRouter } from 'vue-router';
-import NotificationDropdown from '../components/NotificationDropdown.vue';
-import AdminInfoModal from '../components/AdminInfoModal.vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import { useSystemStatus } from '../composables/useSystemStatus';
+import { usePermissions } from '../composables/usePermissions';
 import api from '../api';
+import { useStockAlerts } from '../composables/useStockAlerts';
+import { useHelp } from '../composables/useHelp';
+import { useLayoutBase } from '../composables/useLayoutBase';
+import { useLayoutUser } from '../composables/useLayoutUser';
+import { useActiveAddons } from '../composables/useActiveAddons';
+import { usePendingOrders } from '../composables/usePendingOrders';
 
-const route = useRoute();
+// Components
+import SidebarItem from '../components/layout/SidebarItem.vue';
+import SidebarSection from '../components/layout/SidebarSection.vue';
+import LayoutUserSection from '../components/layout/LayoutUserSection.vue';
+import ShellModals from '../components/layout/ShellModals.vue';
+import NotificationDropdown from '../components/NotificationDropdown.vue';
+
+import { useSystemStatus } from '../composables/useSystemStatus';
+
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
+
+// Composables
+const { sidebarOpen, windowWidth, toggleSidebar, closeSidebarOnMobile } = useLayoutBase();
+const { userName, userEmail, userRole, userInitials, handleLogout } = useLayoutUser();
+const { activeAddons, loadAddons, hasBusinessAnalytics } = useActiveAddons();
+const { pendingOrdersCount, startPolling, stopPolling } = usePendingOrders();
+const { canManageProducts, canViewReports, canEditOrders, canManageCustomers } = usePermissions();
+const { criticalStockCount, fetchCriticalStock } = useStockAlerts();
+const { currentHelp } = useHelp();
 const { isOnline, currentTime, outletName, branchName } = useSystemStatus();
 
-const sidebarOpen = ref(false);
-const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
-const showInfoModal = ref(false);
-const hasUnreadInfo = ref(false);
-// Use internal ref that we control, and expose via computed property that always returns array
-const _activeAddons = ref<any[]>([]);
-
-// Helper function to always get a valid array from activeAddons
-// GUARD CLAUSE: Triple-check untuk memastikan selalu array
-const getActiveAddons = (): any[] => {
-  try {
-    const value = _activeAddons.value;
-    
-    // LOGGING: Log untuk debugging jika value tidak valid
-    if (value !== null && value !== undefined && !Array.isArray(value)) {
-      console.warn('[TenantLayout] getActiveAddons: Value is not array, type:', typeof value, 'value:', value);
-    }
-    
-    if (value === null || value === undefined || !Array.isArray(value)) {
-      // AUTO-FIX: Auto-fix if not array
-      _activeAddons.value = [];
-      return [];
-    }
-    // Double-check: ensure it's really an array
-    if (!Array.isArray(value)) {
-      _activeAddons.value = [];
-      return [];
-    }
-    return value;
-  } catch (error) {
-    console.error('[TenantLayout] Error in getActiveAddons:', error);
-    _activeAddons.value = [];
-    return [];
-  }
-};
-
-// Helper function to safely set activeAddons (always ensures it's an array)
-// NORMALISASI DATA: Setiap data yang masuk akan dinormalisasi menjadi array
-const setActiveAddons = (value: any): void => {
-  try {
-    // LOGGING untuk debugging - log tipe dan isi data yang masuk
-    console.log('[TenantLayout] setActiveAddons called with:', {
-      type: typeof value,
-      isArray: Array.isArray(value),
-      value: value,
-      hasData: value?.data ? 'yes' : 'no',
-      hasAddons: value?.addons ? 'yes' : 'no'
-    });
-    
-    // NORMALISASI: Pastikan selalu array
-    if (Array.isArray(value)) {
-      _activeAddons.value = value;
-      console.log('[TenantLayout] setActiveAddons: Set as array, length:', value.length);
-      return;
-    }
-    if (value && typeof value === 'object') {
-      if (Array.isArray(value.data)) {
-        _activeAddons.value = value.data;
-        console.log('[TenantLayout] setActiveAddons: Extracted from value.data, length:', value.data.length);
-        return;
-      }
-      if (Array.isArray(value.addons)) {
-        _activeAddons.value = value.addons;
-        console.log('[TenantLayout] setActiveAddons: Extracted from value.addons, length:', value.addons.length);
-        return;
-      }
-    }
-    // FALLBACK: Jika tidak valid, set ke array kosong
-    _activeAddons.value = [];
-    console.log('[TenantLayout] setActiveAddons: Invalid data, set to empty array');
-  } catch (error) {
-    console.error('[TenantLayout] Error in setActiveAddons:', error);
-    _activeAddons.value = [];
-  }
-};
-
-
-// Computed property that always returns an array (safer than direct ref access)
-const activeAddons = computed({
-  get: (): any[] => {
-    const result = getActiveAddons();
-    // Triple-check: ensure computed property always returns array
-    if (!Array.isArray(result)) {
-      return [];
-    }
-    return result;
-  },
-  set: (value: any) => setActiveAddons(value)
-});
+const tenantName = computed(() => authStore.user?.tenantName || 'Toko');
 
 const currentSubscription = ref<any>(null);
+const showInfoModal = ref(false);
+const showShortcutsModal = ref(false);
+const showHelpModal = ref(false);
+const hasUnreadInfo = ref(false);
 
-const hasBusinessAnalytics = computed(() => {
-  try {
-    // TRIPLE GUARD: Check directly on value before calling any methods
-    const addonsToCheck = activeAddons.value;
-    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
-      console.warn('[TenantLayout hasBusinessAnalytics] activeAddons is not valid:', {
-        type: typeof addonsToCheck,
-        isArray: Array.isArray(addonsToCheck),
-        value: addonsToCheck
-      });
-      return false;
-    }
-    
-    // Use safe wrapper as additional layer
-    return safeArrayMethod(
-      addonsToCheck,
-      (addons) => {
-        try {
-          // Final check inside
-          if (!Array.isArray(addons)) return false;
-          return addons.some(
-            (addon: any) => addon && addon.addonType === 'BUSINESS_ANALYTICS' && addon.status === 'active'
-          );
-        } catch (error) {
-          console.error('Error in hasBusinessAnalytics .some():', error);
-          return false;
-        }
-      },
-      false
-    );
-  } catch (error) {
-    console.error('[TenantLayout hasBusinessAnalytics] Outer error:', error);
-    return false;
-  }
-});
+const shellModalsRef = ref<any>(null);
+const openGlobalSearch = () => shellModalsRef.value?.openGlobalSearch();
+
+const handleInfoModalClose = () => {
+   showInfoModal.value = false;
+   hasUnreadInfo.value = false;
+   localStorage.setItem('admin_info_last_seen', new Date().toISOString());
+};
+
+const handleDontShowToday = () => {
+   handleInfoModalClose();
+};
 
 const hasDeliveryMarketing = computed(() => {
-  try {
-    // TRIPLE GUARD: Check directly on value before calling any methods
-    const addonsToCheck = activeAddons.value;
-    if (!addonsToCheck || !Array.isArray(addonsToCheck)) {
-      console.warn('[TenantLayout hasDeliveryMarketing] activeAddons is not valid:', {
-        type: typeof addonsToCheck,
-        isArray: Array.isArray(addonsToCheck),
-        value: addonsToCheck
-      });
-      return false;
-    }
-    
-    // Use safe wrapper as additional layer
-    return safeArrayMethod(
-      addonsToCheck,
-      (addons) => {
-        try {
-          // Final check inside
-          if (!Array.isArray(addons)) return false;
-          return addons.some(
-            (addon: any) => addon && (
-              (addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active') ||
-              (addon.addonType === 'MARKETING_TOOLS' && addon.status === 'active')
-            )
-          );
-        } catch (error) {
-          console.error('Error in hasDeliveryMarketing .some():', error);
-          return false;
-        }
-      },
-      false
-    );
-  } catch (error) {
-    console.error('[TenantLayout hasDeliveryMarketing] Outer error:', error);
-    return false;
-  }
+  return activeAddons.value.some(
+    (addon: any) => addon && (
+      (addon.addonType === 'DELIVERY_MARKETING' && addon.status === 'active') ||
+      (addon.addonType === 'MARKETING_TOOLS' && addon.status === 'active')
+    )
+  );
 });
 
-// Check if user has access to Inventory Management
 const hasInventoryAccess = computed(() => {
-  // Check Role
   if (!authStore.user || !['ADMIN_TENANT', 'SUPERVISOR'].includes(authStore.user.role)) return false;
-
-  // Check Subscription Plan (PRO/ENTERPRISE)
   const plan = currentSubscription.value?.plan || 'BASIC';
   if (plan === 'PRO' || plan === 'ENTERPRISE') return true;
-
-  // Check Addons
-  try {
-    const addonsToCheck = activeAddons.value;
-    if (!addonsToCheck || !Array.isArray(addonsToCheck)) return false;
-    
-    return safeArrayMethod(
-      addonsToCheck,
-      (addons) => {
-        try {
-          if (!Array.isArray(addons)) return false;
-          return addons.some(
-            (addon: any) => addon && addon.addonType === 'INVENTORY_MANAGEMENT' && addon.status === 'active'
-          );
-        } catch (error) {
-          return false;
-        }
-      },
-      false
-    );
-  } catch (error) {
-    return false;
-  }
+  return activeAddons.value.some(
+    (addon: any) => addon && addon.addonType === 'INVENTORY_MANAGEMENT' && addon.status === 'active'
+  );
 });
 
 const hasSimpleNotaEditor = computed(() => {
-  try {
-    const addonsToCheck = activeAddons.value;
-    if (!addonsToCheck || !Array.isArray(addonsToCheck)) return false;
-    
-    return safeArrayMethod(
-      addonsToCheck,
-      (addons) => {
-        try {
-          if (!Array.isArray(addons)) return false;
-          return addons.some(
-            (addon: any) => addon && (addon.addonType === 'SIMPLE_NOTA_EDITOR' || addon.addonType === 'RECEIPT_CUSTOMIZER') && addon.status === 'active'
-          );
-        } catch (error) {
-          return false;
-        }
-      },
-      false
-    );
-  } catch (error) {
-    return false;
-  }
+  return activeAddons.value.some(
+    (addon: any) => addon && (addon.addonType === 'SIMPLE_NOTA_EDITOR' || addon.addonType === 'RECEIPT_CUSTOMIZER') && addon.status === 'active'
+  );
 });
 
-
-
-// Menu expand/collapse state - semua tertutup saat login
 const expandedMenus = ref({
-  operasional: false,
+  operasional: true,
   laporan: false,
   marketing: false,
   inventory: false,
@@ -928,294 +374,94 @@ const expandedMenus = ref({
   pengaturan: false,
 });
 
-// Toggle menu section - close other menus when opening one
 const toggleMenu = (menuKey: keyof typeof expandedMenus.value) => {
-  const isCurrentlyOpen = expandedMenus.value[menuKey];
-  
-  // If clicking to open, close all other menus first
-  if (!isCurrentlyOpen) {
-    Object.keys(expandedMenus.value).forEach(key => {
-      if (key !== menuKey) {
-        expandedMenus.value[key as keyof typeof expandedMenus.value] = false;
-      }
-    });
-  }
-  
-  // Toggle the clicked menu
-  expandedMenus.value[menuKey] = !isCurrentlyOpen;
-  
-  // Save to localStorage
-  localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus.value));
+  expandedMenus.value[menuKey] = !expandedMenus.value[menuKey];
 };
 
-// Auto-expand menu based on current route
 const autoExpandMenu = () => {
-  const currentPath = route.path;
-  
-  // Check which section contains the current route
-  if (currentPath.includes('/dashboard') || currentPath.includes('/products') || 
-      currentPath.includes('/orders') || currentPath.includes('/customers') ||
-      currentPath.includes('/orders/kitchen')) {
+  const path = route.path;
+  if (path.includes('/dashboard') || path.includes('/products') || path.includes('/orders') || path.includes('/customers') || path.includes('/orders/kitchen')) {
     expandedMenus.value.operasional = true;
-  }
-  
-  if (currentPath.includes('/reports') || currentPath.includes('/analytics') || 
-      currentPath.includes('/finance') || currentPath.includes('/profit-loss')) {
+  } else if (path.includes('/reports') || path.includes('/analytics') || path.includes('/finance') || path.includes('/profit-loss')) {
     expandedMenus.value.laporan = true;
-  }
-  
-  if (currentPath.includes('/marketing') || currentPath.includes('/delivery')) {
+  } else if (path.includes('/marketing') || path.includes('/delivery')) {
     expandedMenus.value.marketing = true;
-  }
-  
-  if (currentPath.includes('/inventory')) {
+  } else if (path.includes('/inventory')) {
     expandedMenus.value.inventory = true;
-  }
-  
-  if (currentPath.includes('/users') || currentPath.includes('/stores') || 
-      currentPath.includes('/discounts')) {
+  } else if (path.includes('/users') || path.includes('/stores') || path.includes('/discounts')) {
     expandedMenus.value.manajemen = true;
-  }
-  
-  if (currentPath.includes('/subscription') || currentPath.includes('/addons') || 
-      currentPath.includes('/settings')) {
+  } else if (path.includes('/subscription') || path.includes('/addons') || path.includes('/settings') || path.includes('/rewards')) {
     expandedMenus.value.pengaturan = true;
   }
 };
 
-// Load saved menu state from localStorage
-const loadMenuState = () => {
-  // Jangan load dari localStorage - selalu mulai dengan semua tertutup
-  // Auto-expand based on current route (hanya untuk menu yang sesuai route)
-  autoExpandMenu();
-};
-
-// Check if info modal should be shown (once per day)
-const checkShouldShowInfo = () => {
-  if (authStore.user?.role !== 'ADMIN_TENANT') {
-    return false;
-  }
-  
-  const lastShownDate = localStorage.getItem('adminInfoLastShown');
-  const today = new Date().toDateString();
-  
-  if (lastShownDate !== today) {
-    return true;
-  }
-  
-  return false;
-};
-
-// Check for unread info (show badge if not shown today)
-const checkUnreadInfo = () => {
-  if (authStore.user?.role !== 'ADMIN_TENANT') {
-    hasUnreadInfo.value = false;
-    return;
-  }
-  
-  const lastShownDate = localStorage.getItem('adminInfoLastShown');
-  const today = new Date().toDateString();
-  
-  hasUnreadInfo.value = lastShownDate !== today;
-};
-
-const handleInfoModalClose = () => {
-  // Save today's date when modal is closed (so it won't show again today)
-  const today = new Date().toDateString();
-  localStorage.setItem('adminInfoLastShown', today);
-  hasUnreadInfo.value = false;
-  showInfoModal.value = false;
-};
-
-const handleDontShowToday = () => {
-  // Same as close - save today's date
-  handleInfoModalClose();
-};
-
-// Load active addons
-const loadAddons = async () => {
-  if (authStore.user?.role === 'ADMIN_TENANT') {
-    try {
-      const response = await api.get('/addons');
-      
-      // LOGGING: Log response structure untuk debugging
-      console.log('[TenantLayout] loadAddons - API Response:', {
-        type: typeof response?.data,
-        isArray: Array.isArray(response?.data),
-        hasData: response?.data?.data ? 'yes' : 'no',
-        hasAddons: response?.data?.addons ? 'yes' : 'no',
-        data: response?.data
-      });
-      
-      // NORMALISASI: Use helper function to safely set (always ensures array)
-      setActiveAddons(response.data);
-    } catch (error) {
-      console.error('[TenantLayout] Failed to load addons:', error);
-      // FALLBACK: Set ke array kosong jika error
-      setActiveAddons([]);
-    }
-    
-    // GUARD CLAUSE: Final validation using helper function
-    getActiveAddons(); // This will auto-fix if needed
-  }
-};
-
-// Load current subscription to check plan features
 const loadSubscription = async () => {
-  if (authStore.user?.role === 'ADMIN_TENANT') {
+  if (userRole.value === 'ADMIN_TENANT') {
     try {
       const response = await api.get('/subscriptions/current');
       if (response.data) {
         currentSubscription.value = response.data;
-        // Use plan from subscription response
-        if (response.data.plan) {
-          currentSubscription.value.plan = response.data.plan;
-        } else if (response.data.subscription?.plan) {
-          currentSubscription.value.plan = response.data.subscription.plan;
-        } else if (response.data.subscriptionPlan) {
-          currentSubscription.value.plan = response.data.subscriptionPlan;
-        } else {
-          // Fallback to tenant subscriptionPlan if available
-          if ((authStore.user as any).tenantSubscriptionPlan) {
-            currentSubscription.value.plan = (authStore.user as any).tenantSubscriptionPlan;
-          } else {
-            currentSubscription.value.plan = 'BASIC';
-          }
-        }
+        const plan = response.data.plan || response.data.subscription?.plan || response.data.subscriptionPlan || (authStore.user as any).tenantSubscriptionPlan || 'BASIC';
+        currentSubscription.value.plan = plan;
       }
     } catch (error) {
       console.error('Failed to load subscription:', error);
-      // Default to BASIC if subscription load fails
       currentSubscription.value = { plan: 'BASIC' };
     }
   }
 };
 
-// Watch for role changes to check info status
-watch(() => authStore.user?.role, () => {
-  checkUnreadInfo();
-  if (checkShouldShowInfo()) {
-    showInfoModal.value = true;
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target instanceof HTMLInputElement)) {
+    e.preventDefault();
+    showShortcutsModal.value = !showShortcutsModal.value;
   }
-  loadAddons();
-  loadSubscription();
-}, { immediate: true });
+  if (e.key === 'Escape') {
+    showShortcutsModal.value = false;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    openGlobalSearch();
+  }
+};
 
-// Watch route changes to auto-expand menu
-watch(() => route.path, () => {
+onMounted(async () => {
+  window.addEventListener('keydown', handleKeydown);
+  
+  await loadSubscription();
+  await loadAddons();
+  if (canManageProducts.value) fetchCriticalStock();
+  
+  startPolling();
   autoExpandMenu();
-}, { immediate: true });
 
-// Watch activeAddons to ensure it's always valid array
-// This prevents "B.value.some is not a function" error when data is loading
-watch(
-  () => _activeAddons.value,
-  (newVal) => {
-    // GUARD: Ensure value is always an array
-    if (!Array.isArray(newVal)) {
-      console.warn('[TenantLayout Watch] activeAddons is not array, fixing:', {
-        type: typeof newVal,
-        value: newVal
-      });
-      _activeAddons.value = [];
+  // Check if we should show info modal
+  if (userRole.value === 'ADMIN_TENANT') {
+    const lastSeen = localStorage.getItem('admin_info_last_seen');
+    if (!lastSeen) {
+        showInfoModal.value = true;
+        hasUnreadInfo.value = true;
+    } else {
+        const lastSeenDate = new Date(lastSeen);
+        const today = new Date();
+        if (lastSeenDate.toDateString() !== today.toDateString()) {
+            hasUnreadInfo.value = true;
+        }
     }
-  },
-  { deep: true, immediate: true }
-);
-
-// Load menu state on mount
-onMounted(() => {
-  loadMenuState();
-});
-
-const userName = computed(() => authStore.user?.name || 'Tenant');
-const tenantName = computed(() => authStore.user?.tenantName || 'Toko');
-const userInitials = computed(() => {
-  const name = userName.value;
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
-});
-
-const pageTitle = computed(() => {
-  const titles: Record<string, string> = {
-    '/app/dashboard': 'Dashboard',
-    '/app/products': 'Produk',
-    '/app/orders': 'Pesanan',
-    '/app/customers': 'Pelanggan',
-    '/app/reports': 'Laporan',
-    '/app/users': 'Pengguna',
-    '/app/subscription': 'Berlangganan',
-    '/app/addons': 'Addon',
-    '/app/discounts': 'Diskon',
-    '/app/settings/store': 'Pengaturan Toko',
-    '/app/analytics': 'Advanced Analytics',
-    '/app/finance': 'Keuangan',
-    '/app/profit-loss': 'Laporan Laba Rugi',
-    '/app/reports/advanced': 'Advanced Reporting',
-    '/app/finance/management': 'Financial Management',
-  };
-  return titles[route.path] || 'Dashboard';
-});
-
-// Search functionality
-const searchQuery = ref('');
-const handleGlobalSearch = () => {
-  if (!searchQuery.value) return;
-  // TODO: Implement global search navigation or filtered view
-  console.log('Searching for:', searchQuery.value);
-  // For now, redirect to relevant page based on keyword if possible
-  if (searchQuery.value.toLowerCase().includes('produk') || searchQuery.value.toLowerCase().includes('product')) {
-    router.push('/app/products');
-  } else if (searchQuery.value.toLowerCase().includes('order') || searchQuery.value.toLowerCase().includes('pesan')) {
-    router.push('/app/orders');
-  } else if (searchQuery.value.toLowerCase().includes('cust') || searchQuery.value.toLowerCase().includes('pelanggan')) {
-    router.push('/app/customers');
   }
-};
-
-const closeSidebarOnMobile = () => {
-  if (windowWidth.value < 1024) {
-    sidebarOpen.value = false;
-  }
-};
-
-const handleResize = () => {
-  windowWidth.value = window.innerWidth;
-  if (windowWidth.value >= 1024) {
-    sidebarOpen.value = true;
-  } else {
-    sidebarOpen.value = false;
-  }
-};
-
-const handleLogout = () => {
-  authStore.clearAuth();
-  window.location.replace('/login');
-};
-
-onMounted(() => {
-  windowWidth.value = window.innerWidth;
-  // Initialize responsive state correctly
-  if (windowWidth.value >= 1024) {
-    sidebarOpen.value = true;
-  } else {
-    sidebarOpen.value = false;
-  }
-  
-  if (checkShouldShowInfo()) {
-    showInfoModal.value = true;
-  }
-  checkUnreadInfo();
-  
-  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('keydown', handleKeydown);
+  stopPolling();
+});
+
+watch(() => route.path, () => {
+  autoExpandMenu();
+});
+
+const pageTitle = computed(() => {
+  return (route.meta.title as string) || 'Dashboard';
 });
 </script>
 
