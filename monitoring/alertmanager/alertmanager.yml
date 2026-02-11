@@ -1,9 +1,9 @@
 # Alertmanager Configuration - Phase 30
 # Handles alert routing, deduplication, and notifications
 
-global:
-  resolve_timeout: 5m
-  slack_api_url: 'http://localhost/slack'
+# global:
+#   resolve_timeout: 5m
+#   slack_api_url: 'http://localhost/slack'
 
 templates:
   - '/etc/alertmanager/templates/*.tmpl'
@@ -34,18 +34,18 @@ route:
 # Notification receivers
 receivers:
   - name: 'default'
-    slack_configs:
-      - channel: '#alerts'
-        title: '⚠️ {{ .GroupLabels.alertname }}'
-        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
-        send_resolved: true
+#    slack_configs:
+#      - channel: '#alerts'
+#        title: '⚠️ {{ .GroupLabels.alertname }}'
+#        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+#        send_resolved: true
 
   - name: 'critical'
-    slack_configs:
-      - channel: '#critical-alerts'
-        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
-        text: '{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}'
-        send_resolved: true
+#    slack_configs:
+#      - channel: '#critical-alerts'
+#        title: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+#        text: '{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}'
+#        send_resolved: true
     email_configs:
       - to: 'admin@warungin.local'
         from: 'alertmanager@warungin.local'
@@ -53,11 +53,11 @@ receivers:
           Subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
 
   - name: 'warning'
-    slack_configs:
-      - channel: '#warnings'
-        title: '⚠️ {{ .GroupLabels.alertname }}'
-        text: 'Phase: {{ .GroupLabels.phase }}\nInstance: {{ .GroupLabels.instance }}\n{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
-        send_resolved: true
+#    slack_configs:
+#      - channel: '#warnings'
+#        title: '⚠️ {{ .GroupLabels.alertname }}'
+#        text: 'Phase: {{ .GroupLabels.phase }}\nInstance: {{ .GroupLabels.instance }}\n{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+#        send_resolved: true
 
 # Alert suppression rules
 inhibit_rules:
