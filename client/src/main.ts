@@ -4,6 +4,19 @@ import App from './App.vue';
 import router from './router';
 import './styles/main.css';
 import { offlineStorage } from './utils/offline-storage';
+import { registerSW } from 'virtual:pwa-register';
+
+// Register PWA Service Worker
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm('Aplikasi versi baru tersedia. Muat ulang sekarang?')) {
+      updateSW(true);
+    }
+  },
+  onOfflineReady() {
+    console.log('Aplikasi siap digunakan secara offline');
+  },
+});
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -26,15 +39,15 @@ window.console.error = (...args: any[]) => {
     originalError.apply(window.console, args);
     return;
   }
-  
+
   const message = args[0]?.toString() || '';
   // Don't log CORS errors for PDF generation (production only)
-  if (message.includes('CORS') || 
-      message.includes('Access-Control') || 
-      message.includes('ERR_NETWORK') ||
-      message.includes('ERR_FAILED') ||
-      message.includes('blocked by CORS policy') ||
-      (message.includes('pdf/generate') && (message.includes('blocked') || message.includes('failed')))) {
+  if (message.includes('CORS') ||
+    message.includes('Access-Control') ||
+    message.includes('ERR_NETWORK') ||
+    message.includes('ERR_FAILED') ||
+    message.includes('blocked by CORS policy') ||
+    (message.includes('pdf/generate') && (message.includes('blocked') || message.includes('failed')))) {
     // Silently ignore CORS errors for PDF generation
     return;
   }
@@ -47,12 +60,12 @@ window.console.warn = (...args: any[]) => {
     originalWarn.apply(window.console, args);
     return;
   }
-  
+
   const message = args[0]?.toString() || '';
   // Don't log CORS warnings for PDF generation (production only)
-  if (message.includes('CORS') || 
-      message.includes('Access-Control') ||
-      (message.includes('pdf/generate') && message.includes('blocked'))) {
+  if (message.includes('CORS') ||
+    message.includes('Access-Control') ||
+    (message.includes('pdf/generate') && message.includes('blocked'))) {
     return;
   }
   originalWarn.apply(window.console, args);
@@ -72,13 +85,13 @@ window.addEventListener('error', (event) => {
     });
     return;
   }
-  
+
   // In production, suppress CORS errors for PDF generation
   const message = event.message || event.error?.message || '';
-  if (message.includes('CORS') || 
-      message.includes('Access-Control') ||
-      message.includes('blocked by CORS policy') ||
-      (message.includes('pdf/generate') && message.includes('blocked'))) {
+  if (message.includes('CORS') ||
+    message.includes('Access-Control') ||
+    message.includes('blocked by CORS policy') ||
+    (message.includes('pdf/generate') && message.includes('blocked'))) {
     event.preventDefault();
     event.stopPropagation();
     return false;
@@ -88,7 +101,7 @@ window.addEventListener('error', (event) => {
 // Unhandled promise rejection handler - show all errors in development
 window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
-  
+
   // In development, log all unhandled rejections for debugging
   if (SHOW_ALL_ERRORS) {
     console.error('🔴 Unhandled Promise Rejection:', {
@@ -100,19 +113,19 @@ window.addEventListener('unhandledrejection', (event) => {
     });
     return;
   }
-  
+
   // In production, suppress CORS errors for PDF generation
   const errorMessage = error?.message || error?.toString() || '';
   const errorCode = error?.code || '';
-  
+
   // Check if it's a CORS error for PDF generation
-  if ((errorMessage.includes('CORS') || 
-       errorMessage.includes('Access-Control') || 
-       errorMessage.includes('blocked by CORS policy') ||
-       errorCode === 'ERR_NETWORK' ||
-       errorCode === 'ERR_FAILED') &&
-      (error?.config?.url?.includes('/pdf/generate') || 
-       errorMessage.includes('pdf/generate'))) {
+  if ((errorMessage.includes('CORS') ||
+    errorMessage.includes('Access-Control') ||
+    errorMessage.includes('blocked by CORS policy') ||
+    errorCode === 'ERR_NETWORK' ||
+    errorCode === 'ERR_FAILED') &&
+    (error?.config?.url?.includes('/pdf/generate') ||
+      errorMessage.includes('pdf/generate'))) {
     // Prevent the error from being logged
     event.preventDefault();
     return;

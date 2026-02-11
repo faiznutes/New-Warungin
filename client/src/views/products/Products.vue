@@ -406,20 +406,27 @@
            </div>
         </div>
 
-        <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border-2 border-dashed border-slate-100">
-           <div class="p-6 bg-slate-50 rounded-full mb-4">
-             <span class="material-symbols-outlined text-5xl text-slate-300">inventory_2</span>
-           </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-2">Produk Tidak Ditemukan</h3>
-          <p class="text-slate-500 mb-6">Mulai dengan menambahkan produk pertama Anda.</p>
-          <button
-              v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
-              @click="showCreateModal = true"
-              class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 font-medium text-sm"
-            >
-              <span class="material-symbols-outlined text-[20px]">add</span>
-              <span>Tambah Produk Pertama</span>
-            </button>
+        <div v-else-if="products.length === 0" class="flex flex-col items-center justify-center py-12 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 animate-fade-in-up">
+           <EmptyState
+             icon="inventory_2"
+             title="Produk Tidak Ditemukan"
+             description="Belum ada data produk yang tersedia. Mulai dengan menambahkan produk pertama Anda."
+             action-label="Tambah Produk Pertama"
+             action-icon="add"
+             icon-bg-color="bg-blue-50 dark:bg-blue-900/20"
+             icon-color="text-blue-500"
+             :animate-icon="true"
+             @action="showCreateModal = true"
+             v-if="canManageProducts || authStore.user?.role === 'ADMIN_TENANT' || authStore.user?.role === 'SUPER_ADMIN'"
+           />
+           <EmptyState
+             v-else
+             icon="search_off"
+             title="Produk Tidak Ditemukan"
+             description="Tidak ada produk yang cocok dengan pencarian atau filter Anda."
+             icon-bg-color="bg-slate-50 dark:bg-slate-800"
+             icon-color="text-slate-400"
+           />
         </div>
 
         <!-- Products List View -->
@@ -992,6 +999,7 @@ import TenantSelector from '../../components/TenantSelector.vue';
 import StoreSelector from '../../components/StoreSelector.vue';
 import ExportButton from '../../components/ExportButton.vue';
 import ProductModal from '../../components/ProductModal.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SkeletonLoader from '../../components/SkeletonLoader.vue';
 import { useTenantCheck } from '../../composables/useTenantCheck';
 import { exportToCSV, exportToExcel, exportToPDF, formatDataForExport } from '../../utils/export';

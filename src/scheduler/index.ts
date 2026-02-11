@@ -164,7 +164,7 @@ export const scheduleJobs = async (): Promise<void> => {
     // In production: daily at 3 AM
     if (subscriptionQueue) {
       const pattern = '0 3 * * *'; // 3 AM daily for production
-      
+
       await subscriptionQueue.add(
         'revert-temporary-upgrades',
         {},
@@ -174,7 +174,7 @@ export const scheduleJobs = async (): Promise<void> => {
           },
         }
       );
-      
+
       logger.info(`✅ Subscription revert job scheduled: ${pattern}`);
     }
 
@@ -212,24 +212,8 @@ export const startScheduledEmailProcessor = (): void => {
     return;
   }
 
-  // Import email scheduler service
-  import('../services/email-scheduler.service').then(({ default: emailSchedulerService }) => {
-    // Process scheduled emails every minute
-    scheduledEmailInterval = setInterval(async () => {
-      try {
-        const results = await emailSchedulerService.processScheduledEmails();
-        if (results.processed > 0) {
-          logger.info(`✅ Processed ${results.processed} scheduled emails: ${results.sent} sent, ${results.failed} failed`);
-        }
-      } catch (error: any) {
-        logger.error('❌ Error processing scheduled emails:', error);
-      }
-    }, 60000); // Every minute (60000 ms)
-
-    logger.info('✅ Scheduled email processor started (runs every minute)');
-  }).catch((error) => {
-    logger.warn('⚠️  Failed to start scheduled email processor:', error);
-  });
+  // Email scheduler service removed
+  logger.info('✅ Scheduled email processor disabled (service removed)');
 };
 
 export const stopScheduledEmailProcessor = (): void => {
@@ -286,7 +270,7 @@ export const stopWebhookRetryProcessor = (): void => {
 if (process.env.NODE_ENV !== 'test') {
   // Initialize workers asynchronously
   initializeWorkers();
-  
+
   // Try to schedule jobs after a delay
   setTimeout(() => {
     if (redisClient) {

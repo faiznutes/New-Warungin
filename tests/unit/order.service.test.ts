@@ -10,6 +10,9 @@ import productService from '../../src/services/product.service';
 // Mock dependencies
 vi.mock('../../src/config/database', () => ({
   default: {
+    tenant: {
+      findUnique: vi.fn(),
+    },
     order: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
@@ -17,6 +20,11 @@ vi.mock('../../src/config/database', () => ({
       create: vi.fn(),
       update: vi.fn(),
       count: vi.fn(),
+    },
+    orderItem: {
+      findMany: vi.fn(),
+      deleteMany: vi.fn(),
+      createMany: vi.fn(),
     },
     product: {
       findFirst: vi.fn(),
@@ -51,6 +59,7 @@ vi.mock('../../src/utils/logger', () => ({
     warn: vi.fn(),
     error: vi.fn(),
     info: vi.fn(),
+    debug: vi.fn(),
   },
 }));
 
@@ -88,6 +97,8 @@ describe('Order Service Unit Tests', () => {
     const result = await orderService.getOrders(tenantId, {
       page: 1,
       limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
     });
 
     expect(result.data).toHaveLength(1);
@@ -128,6 +139,9 @@ describe('Order Service Unit Tests', () => {
             status: 'PENDING',
             total: price * quantity,
           }),
+          findFirst: vi.fn().mockResolvedValue(null),
+          findUnique: vi.fn().mockResolvedValue(null),
+          count: vi.fn().mockResolvedValue(0),
         },
         product: {
           findFirst: vi.fn().mockResolvedValue({
@@ -139,11 +153,20 @@ describe('Order Service Unit Tests', () => {
             stock: 98,
           }),
         },
+        tenant: {
+          findUnique: vi.fn().mockResolvedValue({
+            name: 'Test Tenant',
+          }),
+        },
       };
       return callback(tx);
     });
 
-    const order = await orderService.createOrder(tenantId, {
+    const userId = 'user-1';
+
+    // ... setup mocks ...
+
+    const order = await orderService.createOrder({
       items: [
         {
           productId,
@@ -151,9 +174,9 @@ describe('Order Service Unit Tests', () => {
           price,
         },
       ],
-      paymentMethod: 'CASH',
-      total: price * quantity,
-    });
+      discount: 0,
+      sendToKitchen: false,
+    }, userId, tenantId);
 
     expect(order).toBeDefined();
     expect(order.status).toBe('PENDING');
@@ -169,8 +192,9 @@ describe('Order Service Unit Tests', () => {
       price: 25000,
     });
 
+    const userId = 'user-1';
     await expect(
-      orderService.createOrder(tenantId, {
+      orderService.createOrder({
         items: [
           {
             productId,
@@ -178,9 +202,9 @@ describe('Order Service Unit Tests', () => {
             price: 25000,
           },
         ],
-        paymentMethod: 'CASH',
-        total: 25000 * quantity,
-      })
+        discount: 0,
+        sendToKitchen: false,
+      }, userId, tenantId)
     ).rejects.toThrow();
   });
 
@@ -409,8 +433,9 @@ describe('Order Service Unit Tests', () => {
 
   describe('Order Validation', () => {
     it('should validate order items have valid productId', async () => {
+      const userId = 'user-1';
       await expect(
-        orderService.createOrder(tenantId, {
+        orderService.createOrder({
           items: [
             {
               productId: '', // Invalid: empty string
@@ -418,15 +443,16 @@ describe('Order Service Unit Tests', () => {
               price: 10000,
             },
           ],
-          paymentMethod: 'CASH',
-          total: 10000,
-        })
+          discount: 0,
+          sendToKitchen: false,
+        }, userId, tenantId)
       ).rejects.toThrow();
     });
 
     it('should validate order items have positive quantity', async () => {
+      const userId = 'user-1';
       await expect(
-        orderService.createOrder(tenantId, {
+        orderService.createOrder({
           items: [
             {
               productId: 'product-1',
@@ -434,15 +460,16 @@ describe('Order Service Unit Tests', () => {
               price: 10000,
             },
           ],
-          paymentMethod: 'CASH',
-          total: 10000,
-        })
+          discount: 0,
+          sendToKitchen: false,
+        }, userId, tenantId)
       ).rejects.toThrow();
     });
 
     it('should validate order items have non-negative price', async () => {
+      const userId = 'user-1';
       await expect(
-        orderService.createOrder(tenantId, {
+        orderService.createOrder({
           items: [
             {
               productId: 'product-1',
@@ -450,9 +477,9 @@ describe('Order Service Unit Tests', () => {
               price: -1000, // Invalid: negative price
             },
           ],
-          paymentMethod: 'CASH',
-          total: 10000,
-        })
+          discount: 0,
+          sendToKitchen: false,
+        }, userId, tenantId)
       ).rejects.toThrow();
     });
   });

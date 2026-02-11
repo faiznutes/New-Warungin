@@ -112,6 +112,50 @@ const options: swaggerJsdoc.Options = {
             updatedAt: { type: 'string', format: 'date-time' },
           },
         },
+        Product: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            sku: { type: 'string' },
+            description: { type: 'string' },
+            price: { type: 'number' },
+            costPrice: { type: 'number' },
+            stock: { type: 'number' },
+            category: { type: 'string' },
+            image: { type: 'string' },
+            isActive: { type: 'boolean' },
+            tenantId: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+        Order: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            orderNumber: { type: 'string' },
+            totalAmount: { type: 'number' },
+            status: { type: 'string', enum: ['PENDING', 'COMPLETED', 'CANCELLED', 'PAID'] },
+            paymentMethod: { type: 'string' },
+            memberId: { type: 'string' },
+            userId: { type: 'string' },
+            tenantId: { type: 'string' },
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string' },
+                  quantity: { type: 'number' },
+                  price: { type: 'number' },
+                },
+              },
+            },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
         User: {
           type: 'object',
           properties: {

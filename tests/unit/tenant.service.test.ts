@@ -19,14 +19,60 @@ vi.mock('../../src/config/database', () => ({
     },
     user: {
       create: vi.fn(),
+      updateMany: vi.fn(),
+      createMany: vi.fn(),
+    },
+    subscription: {
+      create: vi.fn(),
     },
     $disconnect: vi.fn(),
+    $transaction: vi.fn(async (callback) => {
+      // Execute callback with mocked tx
+      const tx = {
+        tenant: {
+          create: vi.fn().mockImplementation((args) => Promise.resolve({
+            id: 'tenant-1',
+            name: args.data.name,
+            email: args.data.email || 'test@warungin.com',
+            subscriptionPlan: args.data.subscriptionPlan,
+            isActive: true,
+          })),
+          update: vi.fn().mockResolvedValue({}),
+        },
+        subscription: {
+          create: vi.fn().mockResolvedValue({ id: 'sub-1' }),
+        },
+        user: {
+          create: vi.fn().mockImplementation((args) => Promise.resolve({
+            id: 'user-' + Math.random(),
+            email: args.data.email,
+            name: args.data.name,
+            role: args.data.role,
+          })),
+          updateMany: vi.fn().mockResolvedValue({ count: 4 }),
+        },
+        receiptTemplate: {
+          create: vi.fn().mockResolvedValue({ id: 'template-1' }),
+        },
+      };
+      return callback(tx);
+    }),
   },
 }));
 
 vi.mock('../../src/utils/encryption', () => ({
   encrypt: vi.fn((val: string) => `encrypted-${val}`),
   decrypt: vi.fn((val: string) => val.replace('encrypted-', '')),
+}));
+
+vi.mock('../../src/services/user.service', () => ({
+  default: {
+    createUser: vi.fn().mockResolvedValue({
+      id: 'user-1',
+      email: 'test@warungin.com',
+      role: 'ADMIN_TENANT',
+    }),
+  },
 }));
 
 describe('Tenant Service Unit Tests', () => {
@@ -50,35 +96,33 @@ describe('Tenant Service Unit Tests', () => {
       role: 'ADMIN_TENANT',
     });
 
-    const tenant = await tenantService.createTenant({
+    const result = await tenantService.createTenant({
       name: 'Test Tenant',
       subscriptionPlan: 'BASIC',
     });
 
-    expect(tenant).toBeDefined();
-    expect(tenant.name).toBe('Test Tenant');
-    expect(tenant.subscriptionPlan).toBe('BASIC');
+    expect(result.tenant).toBeDefined();
+    expect(result.tenant.name).toBe('Test Tenant');
+    expect(result.tenant.subscriptionPlan).toBe('BASIC');
   });
 
   it('should generate email from tenant name', async () => {
     (prisma.tenant.findUnique as any).mockResolvedValue(null);
-    (prisma.tenant.create as any).mockResolvedValue({
-      id: 'tenant-1',
+
+    const result = await tenantService.createTenant({
       name: 'Nasi Padang Barokah',
-      email: 'PadangBarokah@warungin.com',
-      slug: 'nasi-padang-barokah',
-    });
-    (prisma.user.create as any).mockResolvedValue({
-      id: 'user-1',
-      email: 'PadangBarokah@warungin.com',
+      subscriptionPlan: 'BASIC',
     });
 
-    const tenant = await tenantService.createTenant({
-      name: 'Nasi Padang Barokah',
-    });
-
-    expect(tenant.email).toContain('@warungin.com');
-    expect(tenant.email).not.toContain('Nasi');
+    expect(result.tenant).toBeDefined();
+    expect(result.tenant.email).toContain('@warungin.com');
+    // The mocked transaction returns args.data.email OR default.
+    // Since createTenant logic generates email and passes it to tx.create,
+    // args.data.email will be the generated email.
+    // So checking if it contains 'Nasi' might fail if logic strips it?
+    // Logic: removes 'Nasi', 'Warung' etc.
+    // 'Nasi Padang Barokah' -> 'PadangBarokah'
+    expect(result.tenant.email).not.toContain('Nasi');
   });
 
   it('should get tenants with pagination', async () => {
@@ -92,14 +136,14 @@ describe('Tenant Service Unit Tests', () => {
     ]);
     (prisma.tenant.count as any).mockResolvedValue(1);
 
-    const result = await tenantService.getTenants({ page: 1, limit: 10 });
+    const result = await tenantService.getTenants(1, 10);
 
     expect(result.data).toHaveLength(1);
     expect(result.pagination.total).toBe(1);
   });
 
   it('should get tenant by ID', async () => {
-    (prisma.tenant.findFirst as any).mockResolvedValue({
+    (prisma.tenant.findUnique as any).mockResolvedValue({
       id: 'tenant-1',
       name: 'Test Tenant',
       email: 'test@warungin.com',
@@ -107,6 +151,7 @@ describe('Tenant Service Unit Tests', () => {
     });
 
     const tenant = await tenantService.getTenantById('tenant-1');
+    // getTenantById returns the tenant object directly (or from cache)
 
     expect(tenant).toBeDefined();
     expect(tenant?.id).toBe('tenant-1');

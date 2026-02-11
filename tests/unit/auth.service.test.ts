@@ -12,6 +12,7 @@ vi.mock('../../src/config/database', () => ({
   default: {
     user: {
       findMany: vi.fn(),
+      update: vi.fn(),
     },
     $disconnect: vi.fn(),
   },
@@ -19,6 +20,7 @@ vi.mock('../../src/config/database', () => ({
 
 vi.mock('../../src/utils/jwt', () => ({
   generateToken: vi.fn(() => 'mock-jwt-token'),
+  generateRefreshToken: vi.fn(() => 'mock-refresh-token'),
 }));
 
 vi.mock('../../src/utils/refresh-token', () => ({
@@ -33,7 +35,7 @@ describe('Auth Service Unit Tests', () => {
 
   it('should login successfully with valid credentials', async () => {
     const hashedPassword = await bcrypt.hash('Test123!', 10);
-    
+
     (prisma.user.findMany as any).mockResolvedValue([
       {
         id: 'user-1',
@@ -61,7 +63,7 @@ describe('Auth Service Unit Tests', () => {
 
   it('should throw error for invalid password', async () => {
     const hashedPassword = await bcrypt.hash('CorrectPassword123!', 10);
-    
+
     (prisma.user.findMany as any).mockResolvedValue([
       {
         id: 'user-1',

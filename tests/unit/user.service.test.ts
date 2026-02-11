@@ -12,6 +12,7 @@ vi.mock('../../src/config/database', () => ({
     user: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       count: vi.fn(),
@@ -23,6 +24,18 @@ vi.mock('../../src/config/database', () => ({
 vi.mock('../../src/utils/encryption', () => ({
   encrypt: vi.fn((val: string) => `encrypted-${val}`),
   decrypt: vi.fn((val: string) => val.replace('encrypted-', '')),
+}));
+
+vi.mock('../../src/services/addon.service', () => ({
+  default: {
+    getTenantAddons: vi.fn().mockResolvedValue({ data: [] }),
+  },
+}));
+
+vi.mock('../../src/services/plan-features.service', () => ({
+  default: {
+    checkPlanLimit: vi.fn().mockResolvedValue({ allowed: true }),
+  },
 }));
 
 describe('User Service Unit Tests', () => {
@@ -79,12 +92,12 @@ describe('User Service Unit Tests', () => {
       tenantId,
     });
 
-    const user = await userService.createUser(tenantId, {
+    const user = await userService.createUser({
       name: 'New User',
       email: 'newuser@example.com',
       password: 'Password123!',
       role: 'CASHIER',
-    });
+    }, tenantId);
 
     expect(user).toBeDefined();
     expect(user.email).toBe('newuser@example.com');
@@ -103,10 +116,10 @@ describe('User Service Unit Tests', () => {
       role: 'SUPERVISOR',
     });
 
-    const updated = await userService.updateUser('user-1', tenantId, {
+    const updated = await userService.updateUser('user-1', {
       name: 'Updated User',
       role: 'SUPERVISOR',
-    });
+    }, tenantId, 'SUPER_ADMIN');
 
     expect(updated.name).toBe('Updated User');
     expect(updated.role).toBe('SUPERVISOR');

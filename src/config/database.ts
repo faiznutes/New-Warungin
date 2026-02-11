@@ -6,9 +6,9 @@ function cleanDatabaseUrl(url: string | undefined): string {
   if (!url) {
     throw new Error('DATABASE_URL is not defined');
   }
-  
+
   let cleanedUrl = url;
-  
+
   // Remove "DATABASE_URL=" prefix if present
   if (cleanedUrl.startsWith('DATABASE_URL=')) {
     cleanedUrl = cleanedUrl.replace('DATABASE_URL=', '');
@@ -16,20 +16,20 @@ function cleanDatabaseUrl(url: string | undefined): string {
   // Remove "DATABASE_URL=" if present at the end
   cleanedUrl = cleanedUrl.replace(/DATABASE_URL=$/g, '');
   cleanedUrl = cleanedUrl.replace(/DATABASE_URL=/g, '');
-  
+
   // Trim whitespace
   cleanedUrl = cleanedUrl.trim();
-  
+
   // Remove duplicate schema parameters (if any)
   cleanedUrl = cleanedUrl.replace(/schema=publicschema=public/g, 'schema=public');
   cleanedUrl = cleanedUrl.replace(/&schema=public&schema=public/g, '&schema=public');
   cleanedUrl = cleanedUrl.replace(/\?schema=public&schema=public/g, '?schema=public');
-  
+
   // Validate URL format
   if (!cleanedUrl.startsWith('postgresql://') && !cleanedUrl.startsWith('postgres://')) {
     throw new Error(`Invalid DATABASE_URL format: URL must start with postgresql:// or postgres://`);
   }
-  
+
   return cleanedUrl;
 }
 
@@ -82,13 +82,13 @@ if (isPgbouncer) {
 }
 
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' 
+  log: process.env.NODE_ENV === 'development'
     ? [
-        { level: 'query', emit: 'event' },
-        { level: 'error', emit: 'event' },
-        { level: 'warn', emit: 'event' },
-        { level: 'info', emit: 'event' },
-      ]
+      { level: 'query', emit: 'event' },
+      { level: 'error', emit: 'event' },
+      { level: 'warn', emit: 'event' },
+      { level: 'info', emit: 'event' },
+    ]
     : ['error'],
   datasources: {
     db: {
@@ -99,6 +99,25 @@ const prisma = new PrismaClient({
   // Prisma uses connection pooling via the database URL
   // For Supabase pooler, connections are managed by pgbouncer
   // For direct connections, we rely on database connection limits
+});
+
+// Add middleware for query timeouts
+// This ensures no query hangs indefinitely (default 5s)
+prisma.$extends({
+  query: {
+    $allModels: {
+      async $allOperations({ operation, model, args, query }) {
+        // Set a 5s timeout for all queries to prevent database lockups
+        const result = await Promise.race([
+          query(args),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Query timeout')), 5000)
+          )
+        ]);
+        return result;
+      },
+    },
+  },
 });
 
 // Note: RLS context is set via Express middleware (setRLSContext)

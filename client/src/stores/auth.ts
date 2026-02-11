@@ -12,6 +12,7 @@ export interface User {
   tenantName: string;
   permissions?: any;
   isActive?: boolean;
+  subscriptionEnd?: string | null;
 }
 
 export interface Tenant {
@@ -68,6 +69,14 @@ export const useAuthStore = defineStore('auth', () => {
   });
 
   const currentStoreId = computed(() => selectedStoreId.value);
+
+  const isSubscriptionActive = computed(() => {
+    if (isSuperAdmin.value) return true;
+    if (!user.value?.subscriptionEnd) return true; // Default to active if not provided? Or false? 
+    // Usually, if it's missing, we might assume it's an old user or not loaded yet.
+    // But global rules say: "Subscription check HANYA di CREATE".
+    return new Date(user.value.subscriptionEnd) > new Date();
+  });
 
   // Check if shift status cache is still valid
   const isShiftCacheValid = computed(() => {
@@ -368,6 +377,7 @@ export const useAuthStore = defineStore('auth', () => {
     isSuperAdmin,
     currentTenantId,
     currentStoreId,
+    isSubscriptionActive,
     shiftStatus,
     isShiftCacheValid,
     login,

@@ -1,21 +1,10 @@
-import jsPDF from 'jspdf';
-
 export const exportToCSV = (data: any[], filename: string, headers?: string[]) => {
     if (!data || !data.length) return;
-
-    // If headers provided, use them. Else infer from first object keys.
-    // Note: if data items have different keys, inference might be flaky.
-    // We assume data is flattened/normalized if possible.
 
     const dataKeys = Object.keys(data[0]);
     const headerRow = headers ? headers.join(',') : dataKeys.join(',');
 
     const rows = data.map(row => {
-        // If headers provided, we might want to map specific keys corresponding to headers?
-        // But this generic function assumes data is already shaped correctly or headers match keys order.
-        // For safety, let's just dump Object.values if no specific key mapping provided.
-        // Better: If headers are just labels, we still rely on Object.values order.
-
         return Object.values(row).map(value => {
             let str = value === null || value === undefined ? '' : String(value);
             // Escape quotes and wrap in quotes to handle commas
@@ -38,7 +27,8 @@ export const exportToCSV = (data: any[], filename: string, headers?: string[]) =
     }
 };
 
-export const exportToPDF = (data: any[], filename: string, title?: string) => {
+export const exportToPDF = async (data: any[], filename: string, title?: string) => {
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
 
     if (title) {
@@ -69,9 +59,6 @@ export const exportToPDF = (data: any[], filename: string, title?: string) => {
 
 export const exportToExcel = (data: any[], filename: string) => {
     // Basic Excel XML format or just CSV disguised?
-    // Since we don't have xlsx library, we will fallback to CSV but with .xls extension if requested, 
-    // or just warn and use CSV.
-    // Actually, simple HTML table to XLS works in some browsers but is old school.
-    // Let's aliass to CSV for now or alert not implemented.
+    // Since we don't have xlsx library, we will fallback to CSV but with .xls extension if requested
     exportToCSV(data, filename); // Fallback
 };

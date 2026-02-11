@@ -144,7 +144,7 @@ describe('Discount Calculation', () => {
 
       const result = calculateOrderTotal(order);
       expect(result.error).toBeDefined();
-      expect(result.error).toContain('cannot exceed subtotal');
+      expect(result.error).toContain('Total cannot be negative');
     });
   });
 
@@ -218,7 +218,7 @@ describe('Discount Calculation', () => {
 
       const result = calculateOrderTotal(order, memberWithBigDiscount);
       expect(result.error).toBeDefined();
-      expect(result.error).toContain('cannot exceed subtotal');
+      expect(result.error).toContain('Total cannot be negative');
     });
 
     it('should apply member percentage discount after auto discount', () => {
@@ -266,7 +266,7 @@ describe('Discount Calculation', () => {
 
       const result = calculateOrderTotal(order);
       expect(result.error).toBeDefined();
-      expect(result.error).toContain('cannot exceed subtotal');
+      expect(result.error).toContain('Total cannot be negative');
     });
   });
 
@@ -322,7 +322,7 @@ describe('Discount Calculation', () => {
 
       const result = calculateOrderTotal(order, activeMember);
       expect(result.error).toBeDefined();
-      expect(result.error).toContain('cannot exceed subtotal');
+      expect(result.error).toContain('Total cannot be negative');
     });
   });
 

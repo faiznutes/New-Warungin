@@ -20,6 +20,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - "5432:5432"
     deploy:
       resources:
         limits:
@@ -245,21 +247,29 @@ services:
 
     # Cloudflare Tunnel - untuk public access via Cloudflare
     # Setup: 
-    # 1. Buat tunnel di Cloudflare Dashboard (Zero Trust > Networks > Tunnels)
-    # 2. Copy TUNNEL_TOKEN dan set di .env file
-    # 3. Configure Public Hostname: http://nginx:80 (jika di Docker) atau http://localhost:80 (jika di host)
-    # 4. Jalankan dengan: docker compose --profile cloudflare up -d cloudflared
+    # Tunnel: warungin-pos
+    # Tunnel ID: bbf00287-7974-46ea-b0fa-095ba6973892
+    # Domain: pos.faiznute.site
+    # Created: 2026-01-21
+    # Status: Active & Connected
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: warungin-cloudflared
     restart: unless-stopped
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-}
+      - TUNNEL_TRANSPORT_PROTOCOL=tcp
+    volumes:
+      - ./tunnel-config.yml:/etc/cloudflared/config.yml:ro
     networks:
       - warungin-network
     depends_on:
-      nginx:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+      grafana:
         condition: service_started
     # Healthcheck disabled to avoid false negatives
     # healthcheck:
@@ -279,7 +289,7 @@ services:
     # Troubleshooting: Lihat CLOUDFLARE_TROUBLESHOOTING.md
     # Note: Changed depends_on to service_started instead of service_healthy untuk avoid dependency issues
 
-  # Phase 30 - Prometheus Metrics Collection
+    # Phase 30 - Prometheus Metrics Collection
   prometheus:
     image: prom/prometheus:latest
     container_name: warungin-prometheus

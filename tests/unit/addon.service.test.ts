@@ -8,9 +8,56 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import addonService from '../../src/services/addon.service';
 import prisma from '../../src/config/database';
 
+// Mock dependencies
+vi.mock('../../src/config/database', () => ({
+  default: {
+    tenantAddon: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      count: vi.fn(),
+    },
+    tenant: {
+      findUnique: vi.fn(),
+    },
+    user: {
+      count: vi.fn(),
+    },
+    product: {
+      count: vi.fn(),
+    },
+    outlet: {
+      count: vi.fn(),
+    },
+    $disconnect: vi.fn(),
+  },
+}));
+
+vi.mock('../../src/services/plan-features.service', () => ({
+  default: {
+    checkPlanLimit: vi.fn().mockResolvedValue({ allowed: true, currentUsage: 0, limit: 100 }),
+  },
+}));
+
+vi.mock('../../src/services/reward-point.service', () => ({
+  default: {
+    awardPointsFromAddon: vi.fn(),
+  },
+}));
+
 describe('AddonService', () => {
-  beforeEach(async () => {
-    // Clear test data
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    // Default mocks
+    (prisma.tenantAddon.findMany as any).mockResolvedValue([]);
+    (prisma.tenantAddon.count as any).mockResolvedValue(0);
+    (prisma.tenantAddon.create as any).mockImplementation((args) => Promise.resolve({ ...args.data, id: 'addon-1' }));
+    (prisma.tenantAddon.update as any).mockImplementation((args) => Promise.resolve({ ...args.data, id: args.where.id }));
+    (prisma.user.count as any).mockResolvedValue(0);
+    (prisma.product.count as any).mockResolvedValue(0);
+    (prisma.outlet.count as any).mockResolvedValue(0);
   });
 
   describe('getAvailableAddons', () => {
@@ -23,7 +70,7 @@ describe('AddonService', () => {
     it('should include all required addon fields', async () => {
       const addons = await addonService.getAvailableAddons();
       const firstAddon = addons[0];
-      
+
       expect(firstAddon).toHaveProperty('id');
       expect(firstAddon).toHaveProperty('name');
       expect(firstAddon).toHaveProperty('type');
@@ -34,12 +81,24 @@ describe('AddonService', () => {
 
   describe('getTenantAddons', () => {
     it('should return active addons for tenant', async () => {
+      (prisma.tenantAddon.findMany as any).mockResolvedValue([
+        {
+          id: 'addon-1',
+          addonId: 'add_users',
+          addonType: 'ADD_USERS',
+          status: 'active',
+          limit: 5,
+        }
+      ]);
+      (prisma.tenantAddon.count as any).mockResolvedValue(1);
+
       const tenantId = 'test-tenant-id';
       const result = await addonService.getTenantAddons(tenantId);
-      
+
       expect(result).toHaveProperty('data');
       expect(result).toHaveProperty('pagination');
       expect(Array.isArray(result.data)).toBe(true);
+      expect(result.data).toHaveLength(1);
     });
 
     it('should exclude expired addons', async () => {
@@ -60,19 +119,59 @@ describe('AddonService', () => {
         addonType: 'EXPORT_REPORTS',
       };
 
+      (prisma.tenant.findUnique as any).mockResolvedValue({ id: tenantId, subscriptionEnd: new Date() });
+      (prisma.tenantAddon.findUnique as any).mockResolvedValue(null); // No existing addon
+
       const addon = await addonService.subscribeAddon(tenantId, addonData);
-      
+
       expect(addon).toHaveProperty('id');
       expect(addon.addonType).toBe('EXPORT_REPORTS');
       expect(addon.status).toBe('active');
     });
 
-    it('should throw error if addon already subscribed (non-limit addon)', async () => {
-      // Test: Addon tanpa limit tidak bisa di-subscribe 2x
+    it('should reuse existing addon subscription (non-limit addon)', async () => {
+      const tenantId = 'test-tenant-id';
+      const addonData = {
+        addonId: 'export_reports',
+        addonName: 'Export Laporan',
+        addonType: 'EXPORT_REPORTS',
+      };
+
+      (prisma.tenant.findUnique as any).mockResolvedValue({ id: tenantId, subscriptionEnd: new Date() });
+      (prisma.tenantAddon.findUnique as any).mockResolvedValue({
+        id: 'existing-addon',
+        addonType: 'EXPORT_REPORTS',
+        status: 'active',
+        limit: null // Non-limit addon
+      });
+
+      const addon = await addonService.subscribeAddon(tenantId, addonData);
+      expect(addon).toBeDefined();
+      expect(prisma.tenantAddon.update).toHaveBeenCalled();
     });
 
     it('should allow multiple subscriptions for limit-based addons', async () => {
-      // Test: ADD_OUTLETS bisa di-subscribe multiple times
+      const tenantId = 'test-tenant-id';
+      const addonData = {
+        addonId: 'add_users',
+        addonName: 'Tambah User',
+        addonType: 'ADD_USERS',
+        limit: 5
+      };
+
+      (prisma.tenant.findUnique as any).mockResolvedValue({ id: tenantId, subscriptionEnd: new Date() });
+      (prisma.tenantAddon.findUnique as any).mockResolvedValue({
+        id: 'existing-addon',
+        addonType: 'ADD_USERS',
+        status: 'active',
+        limit: 5
+      });
+
+      await addonService.subscribeAddon(tenantId, addonData);
+
+      expect(prisma.tenantAddon.update).toHaveBeenCalled();
+      const updateCall = (prisma.tenantAddon.update as any).mock.calls[0][0];
+      expect(updateCall.data.limit).toBe(10); // 5 + 5
     });
   });
 
@@ -80,14 +179,19 @@ describe('AddonService', () => {
     it('should deactivate addon', async () => {
       const tenantId = 'test-tenant-id';
       const addonId = 'export_reports';
-      
-      await addonService.unsubscribeAddon(tenantId, addonId);
-      
-      const addon = await prisma.tenantAddon.findUnique({
-        where: { tenantId_addonId: { tenantId, addonId } },
+
+      (prisma.tenantAddon.findUnique as any).mockResolvedValue({
+        id: 'addon-1',
+        tenantId,
+        addonId,
+        status: 'active'
       });
-      
-      expect(addon?.status).toBe('inactive');
+
+      await addonService.unsubscribeAddon(tenantId, addonId);
+
+      const updateCall = (prisma.tenantAddon.update as any).mock.calls[0][0];
+
+      expect(updateCall.data.status).toBe('inactive');
     });
   });
 

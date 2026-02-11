@@ -234,7 +234,6 @@ import { useRouter } from 'vue-router';
 import api from '../../api';
 import { formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
-import Chart from 'chart.js/auto';
 import { useNotification } from '../../composables/useNotification';
 import { useShiftReminder } from '../../composables/useShiftReminder';
 
@@ -251,7 +250,7 @@ const recentOrders = ref<any[]>([]);
 const currentLangganan = ref<any>(null);
 const dateRange = ref('week');
 const revenueChartRef = ref<HTMLCanvasElement | null>(null);
-let revenueChart: Chart | null = null;
+let revenueChart: any = null;
 const showSalesChart = ref(localStorage.getItem('user_showSalesChart') !== 'false');
 const showTopProducts = ref(localStorage.getItem('user_showTopProducts') !== 'false');
 
@@ -367,8 +366,10 @@ const handleExportTransactions = () => {
 };
 
 
-const renderRevenueChart = () => {
+const renderRevenueChart = async () => {
   if (!revenueChartRef.value) return;
+  
+  const { default: Chart } = await import('chart.js/auto');
   
   if (revenueChart) {
     revenueChart.destroy();
@@ -440,7 +441,7 @@ const renderRevenueChart = () => {
           beginAtZero: true,
           grid: {
             color: '#e2e8f0', 
-            // @ts-ignore
+            // @ts-expect-error - Chart.js type definition mismatch for borderDash array
             borderDash: [5, 5],
             drawBorder: false
           },
