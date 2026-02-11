@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response, Request } from 'express';
 import { authGuard, roleGuard } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
@@ -10,7 +10,7 @@ import { requireTenantId } from '../utils/tenant';
 import { AuthRequest } from '../middlewares/auth';
 import { logAction } from '../middlewares/audit-logger';
 import { validateImageUpload } from '../middlewares/file-upload-validator';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -72,26 +72,14 @@ router.get(
   subscriptionGuard,
   supervisorStoresGuard,
   validate({ query: getProductsQuerySchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const user = (req as any).user;
-      const userRole = user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const user = req.user;
+    const userRole = user?.role;
 
-      // Build query with optional store filter for CASHIER/KITCHEN
-      const query: any = { ...req.query };
-      if ((userRole === 'CASHIER' || userRole === 'KITCHEN') && user?.assignedStoreId) {
-        // For cashier/kitchen, filter products by assigned store if needed
-        // Note: Products are tenant-level, not store-level, so we don't filter by store
-        // But we can add store-specific filtering if needed in the future
-      }
-
-      const result = await productService.getProducts(tenantId, query as any);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
+    const result = await productService.getProducts(tenantId, req.query as any);
+    res.json(result);
+  })
 );
 
 /**
@@ -107,15 +95,11 @@ router.get(
   '/low-stock/all',
   authGuard,
   supervisorStoresGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const products = await productService.getLowStockProducts(tenantId);
-      res.json(products);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const products = await productService.getLowStockProducts(tenantId);
+    res.json(products);
+  })
 );
 
 /**
@@ -131,25 +115,20 @@ router.get(
   '/adjustments',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const query = {
-        page: req.query.page ? parseInt(req.query.page as string) : 1,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : 50,
-        productId: req.query.productId as string | undefined,
-        search: req.query.search as string | undefined,
-        type: req.query.type as string | undefined,
-        startDate: req.query.startDate as string | undefined,
-        endDate: req.query.endDate as string | undefined,
-      };
-      const result = await productAdjustmentService.getAdjustments(tenantId, query);
-      res.json(result);
-    } catch (error: any) {
-      console.error('Error in GET /products/adjustments:', error);
-      handleRouteError(res, error, 'Failed to get adjustments', 'GET_ADJUSTMENTS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const query = {
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 50,
+      productId: req.query.productId as string | undefined,
+      search: req.query.search as string | undefined,
+      type: req.query.type as string | undefined,
+      startDate: req.query.startDate as string | undefined,
+      endDate: req.query.endDate as string | undefined,
+    };
+    const result = await productAdjustmentService.getAdjustments(tenantId, query);
+    res.json(result);
+  })
 );
 
 /**
@@ -167,61 +146,42 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   validate({ body: createProductAdjustmentSchema as any }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-      const result = await productAdjustmentService.createAdjustment(
-        req.body,
-        tenantId,
-        userId
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const result = await productAdjustmentService.createAdjustment(
+      req.body,
+      tenantId,
+      userId
+    );
+
+    // Handle array response for stock transfer
+    const adjustments = Array.isArray(result) ? result : [result];
+
+    // Log audit for each adjustment
+    for (const adjustment of adjustments) {
+      await logAction(
+        req,
+        'CREATE',
+        'product_adjustments',
+        adjustment.id,
+        {
+          productId: adjustment.productId,
+          type: adjustment.type,
+          quantity: adjustment.quantity,
+          reason: adjustment.reason,
+          stockUpdate: {
+            before: adjustment.stockBefore,
+            after: adjustment.stockAfter
+          }
+        },
+        'SUCCESS'
       );
-
-      // Handle array response for stock transfer
-      const adjustments = Array.isArray(result) ? result : [result];
-
-      // Log audit for each adjustment
-      for (const adjustment of adjustments) {
-        await logAction(
-          req,
-          'CREATE',
-          'product_adjustments',
-          adjustment.id,
-          {
-            productId: adjustment.productId,
-            type: adjustment.type,
-            quantity: adjustment.quantity,
-            reason: adjustment.reason,
-            stockUpdate: {
-              before: adjustment.stockBefore,
-              after: adjustment.stockAfter
-            }
-          },
-          'SUCCESS'
-        );
-      }
-
-      // Log for debugging
-      console.log('Adjustment created, products should be updated:', adjustments.map(a => ({
-        productId: a.productId,
-        stockBefore: a.stockBefore,
-        stockAfter: a.stockAfter,
-        type: a.type
-      })));
-
-      // Return array for transfer, single object for regular adjustment
-      res.status(201).json(Array.isArray(result) ? { data: result, type: 'TRANSFER' } : result);
-    } catch (error: any) {
-      await logAction(req, 'CREATE', 'product_adjustments', null, { error: error.message }, 'FAILED', error.message);
-      if (error.message === 'Product not found' || error.message.includes('not found')) {
-        return res.status(404).json({ message: error.message });
-      }
-      if (error.message.includes('Insufficient stock')) {
-        return res.status(400).json({ message: error.message });
-      }
-      res.status(500).json({ message: error.message });
     }
-  }
+
+    // Return array for transfer, single object for regular adjustment
+    res.status(201).json(Array.isArray(result) ? { data: result, type: 'TRANSFER' } : result);
+  })
 );
 
 /**
@@ -236,21 +196,17 @@ router.post(
 router.get(
   '/adjustments/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const adjustment = await productAdjustmentService.getAdjustmentById(
-        req.params.id,
-        tenantId
-      );
-      if (!adjustment) {
-        return res.status(404).json({ message: 'Adjustment not found' });
-      }
-      res.json(adjustment);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const adjustment = await productAdjustmentService.getAdjustmentById(
+      req.params.id,
+      tenantId
+    );
+    if (!adjustment) {
+      return res.status(404).json({ message: 'Adjustment not found' });
     }
-  }
+    res.json(adjustment);
+  })
 );
 
 // ==========================================
@@ -313,29 +269,24 @@ router.post(
   subscriptionGuard,
   validateImageUpload, // Validate image upload security
   validate({ body: createProductSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userRole = req.role;
-      let tenantId: string;
-      if (userRole === 'SUPER_ADMIN') {
-        tenantId = req.body.tenantId || req.query.tenantId as string;
-        if (!tenantId) {
-          return res.status(400).json({ message: 'tenantId is required for super admin' });
-        }
-      } else {
-        tenantId = requireTenantId(req);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
+    let tenantId: string;
+    if (userRole === 'SUPER_ADMIN') {
+      tenantId = req.body.tenantId || req.query.tenantId as string;
+      if (!tenantId) {
+        return res.status(400).json({ message: 'tenantId is required for super admin' });
       }
-      const product = await productService.createProduct(req.body, tenantId, userRole);
-
-      // Log audit
-      await logAction(req, 'CREATE', 'products', product.id, { name: product.name, price: product.price }, 'SUCCESS');
-
-      res.status(201).json(product);
-    } catch (error: unknown) {
-      await logAction(req, 'CREATE', 'products', null, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to create product', 'CREATE_PRODUCT');
+    } else {
+      tenantId = requireTenantId(req);
     }
-  }
+    const product = await productService.createProduct(req.body, tenantId, userRole);
+
+    // Log audit
+    await logAction(req, 'CREATE', 'products', product.id, { name: product.name, price: product.price }, 'SUCCESS');
+
+    res.status(201).json(product);
+  })
 );
 
 /**
@@ -377,18 +328,14 @@ router.post(
 router.get(
   '/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.getProductById(req.params.id, tenantId);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      res.json(product);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const product = await productService.getProductById(req.params.id, tenantId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
     }
-  }
+    res.json(product);
+  })
 );
 
 /**
@@ -431,20 +378,15 @@ router.put(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validateImageUpload, // Validate image upload security
   validate({ body: updateProductSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.updateProduct(req.params.id, req.body, tenantId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const product = await productService.updateProduct(req.params.id, req.body, tenantId);
 
-      // Log audit
-      await logAction(req, 'UPDATE', 'products', product.id, { changes: req.body }, 'SUCCESS');
+    // Log audit
+    await logAction(req, 'UPDATE', 'products', product.id, { changes: req.body }, 'SUCCESS');
 
-      res.json(product);
-    } catch (error: unknown) {
-      await logAction(req, 'UPDATE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to update product', 'UPDATE_PRODUCT');
-    }
-  }
+    res.json(product);
+  })
 );
 
 /**
@@ -473,23 +415,18 @@ router.delete(
   '/:id',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const product = await productService.getProductById(req.params.id, tenantId);
-      await productService.deleteProduct(req.params.id, tenantId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const product = await productService.getProductById(req.params.id, tenantId);
+    await productService.deleteProduct(req.params.id, tenantId);
 
-      // Log audit
-      if (product) {
-        await logAction(req, 'DELETE', 'products', req.params.id, { name: product.name }, 'SUCCESS');
-      }
-
-      res.status(204).send();
-    } catch (error: unknown) {
-      await logAction(req, 'DELETE', 'products', req.params.id, { error: (error as Error).message }, 'FAILED', (error as Error).message);
-      handleRouteError(res, error, 'Failed to delete product', 'DELETE_PRODUCT');
+    // Log audit
+    if (product) {
+      await logAction(req, 'DELETE', 'products', req.params.id, { name: product.name }, 'SUCCESS');
     }
-  }
+
+    res.status(204).send();
+  })
 );
 
 /**
@@ -541,21 +478,17 @@ router.put(
   '/:id/stock',
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { quantity, operation } = req.body;
-      const product = await productService.updateStock(
-        req.params.id,
-        quantity,
-        tenantId,
-        operation || 'set'
-      );
-      res.json(product);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'PRODUCT');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { quantity, operation } = req.body;
+    const product = await productService.updateStock(
+      req.params.id,
+      quantity,
+      tenantId,
+      operation || 'set'
+    );
+    res.json(product);
+  })
 );
 
 export default router;

@@ -1,10 +1,10 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import OutletService from '../services/outlet.service';
-import { asyncHandler, successResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
+import { successResponse, ApiError, ErrorCodes } from '../middlewares/errorHandler';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { requireTenantId } from '../utils/tenant';
-import logger from '../utils/logger';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 

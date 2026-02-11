@@ -3,7 +3,7 @@
  * API endpoints for managing stock transfers between outlets
  */
 
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
@@ -12,7 +12,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId, requireUserId } from '../utils/tenant';
 import stockTransferService from '../services/stock-transfer.service';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 import { logAction } from '../middlewares/audit-logger';
 
 const router = Router();
@@ -62,21 +62,17 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const query = {
-        page: req.query.page ? parseInt(req.query.page as string) : undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-        status: req.query.status as string | undefined,
-        outletId: req.query.outletId as string | undefined,
-      };
-      const result = await stockTransferService.getStockTransfers(tenantId, query);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get stock transfers', 'GET_STOCK_TRANSFERS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const query = {
+      page: req.query.page ? parseInt(req.query.page as string) : undefined,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+      status: req.query.status as string | undefined,
+      outletId: req.query.outletId as string | undefined,
+    };
+    const result = await stockTransferService.getStockTransfers(tenantId, query);
+    res.json(result);
+  })
 );
 
 /**
@@ -102,15 +98,11 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const transfer = await stockTransferService.getStockTransferById(req.params.id, tenantId);
-      res.json(transfer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get stock transfer', 'GET_STOCK_TRANSFER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const transfer = await stockTransferService.getStockTransferById(req.params.id, tenantId);
+    res.json(transfer);
+  })
 );
 
 /**
@@ -151,10 +143,11 @@ router.post(
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createStockTransferSchema }),
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+
     try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
       const transfer = await stockTransferService.createStockTransfer(
         tenantId,
         userId,
@@ -163,7 +156,7 @@ router.post(
 
       // Log audit for SPV actions
       await logAction(
-        req as AuthRequest,
+        req,
         'CREATE',
         'stock_transfers',
         transfer.id,
@@ -178,8 +171,9 @@ router.post(
 
       res.status(201).json(transfer);
     } catch (error: unknown) {
+      // Log audit attempt on failure
       await logAction(
-        req as AuthRequest,
+        req,
         'CREATE',
         'stock_transfers',
         null,
@@ -187,9 +181,10 @@ router.post(
         'FAILED',
         (error as Error).message
       );
-      handleRouteError(res, error, 'Failed to create stock transfer', 'CREATE_STOCK_TRANSFER');
+      // Re-throw to be caught by asyncHandler and handled centraly
+      throw error;
     }
-  }
+  })
 );
 
 /**
@@ -223,11 +218,12 @@ router.post(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
+
     try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
-      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
       const transfer = await stockTransferService.receiveStockTransfer(
         req.params.id,
         tenantId,
@@ -237,7 +233,7 @@ router.post(
 
       // Log audit for SPV actions
       await logAction(
-        req as AuthRequest,
+        req,
         'RECEIVE',
         'stock_transfers',
         transfer.id,
@@ -251,7 +247,7 @@ router.post(
       res.json(transfer);
     } catch (error: unknown) {
       await logAction(
-        req as AuthRequest,
+        req,
         'RECEIVE',
         'stock_transfers',
         req.params.id,
@@ -259,9 +255,9 @@ router.post(
         'FAILED',
         (error as Error).message
       );
-      handleRouteError(res, error, 'Failed to receive stock transfer', 'RECEIVE_STOCK_TRANSFER');
+      throw error;
     }
-  }
+  })
 );
 
 /**
@@ -288,14 +284,15 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+
     try {
-      const tenantId = requireTenantId(req);
       const transfer = await stockTransferService.cancelStockTransfer(req.params.id, tenantId);
 
       // Log audit for SPV actions
       await logAction(
-        req as AuthRequest,
+        req,
         'CANCEL',
         'stock_transfers',
         transfer.id,
@@ -308,7 +305,7 @@ router.post(
       res.json(transfer);
     } catch (error: unknown) {
       await logAction(
-        req as AuthRequest,
+        req,
         'CANCEL',
         'stock_transfers',
         req.params.id,
@@ -316,9 +313,9 @@ router.post(
         'FAILED',
         (error as Error).message
       );
-      handleRouteError(res, error, 'Failed to cancel stock transfer', 'CANCEL_STOCK_TRANSFER');
+      throw error;
     }
-  }
+  })
 );
 
 export default router;

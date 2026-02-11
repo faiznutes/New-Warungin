@@ -442,23 +442,7 @@ export class SubscriptionService {
 
       return { tenant: updatedTenant, subscription };
     }).then(async (result) => {
-      // Award points from subscription purchase (setiap 20rb = 2 point, jadi setiap 10rb = 1 point)
-      // Use Math.floor to ensure integer amount
-      const amountInt = Math.floor(amount);
-      if (amountInt > 0) {
-        try {
-          const rewardPointService = (await import('./reward-point.service')).default;
-          await rewardPointService.awardPointsFromSubscription(
-            tenantId,
-            amountInt,
-            data.plan,
-            data.duration
-          );
-        } catch (error: any) {
-          // Log error but don't fail the subscription extension
-          logger.error('Error awarding points from subscription', { error: error.message, stack: error.stack });
-        }
-      }
+
       return result;
     });
   }

@@ -129,7 +129,9 @@ export const createTenant = async (input: CreateTenantInput) => {
         },
       });
 
-      // Hash password
+      // Hash password (using temporary password for setup, should be changed)
+      // For now, we will use a generated password but NOT store it in defaultPassword
+      // Admin receives it via response ONE TIME only
       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
       // Generate users based on plan
@@ -278,16 +280,11 @@ export const createTenant = async (input: CreateTenantInput) => {
         );
       }
 
-      // Encrypt defaultPassword before storing
-      const { encrypt } = await import('../utils/encryption');
-      const encryptedDefaultPassword = encrypt(defaultPassword);
-
       const users = await Promise.all(
         usersToCreate.map((userData) =>
           tx.user.create({
             data: {
               ...userData,
-              defaultPassword: encryptedDefaultPassword, // Store encrypted default password
             },
           })
         )
@@ -450,11 +447,8 @@ export const createTenant = async (input: CreateTenantInput) => {
           return decrypt(result.defaultPassword);
         })() : undefined, // Return decrypted password for super admin to share
       })),
-      defaultPassword: result.defaultPassword ? (async () => {
-        // Decrypt defaultPassword before returning
-        const { decrypt } = await import('../utils/encryption');
-        return decrypt(result.defaultPassword);
-      })() : undefined,
+
+      // defaultPassword removed from return for security
     };
   } catch (error: any) {
     // Re-throw AppError as is
@@ -713,14 +707,9 @@ export const updateTenant = async (id: string, input: UpdateTenantInput) => {
       if (adminUser) {
         const hashedPassword = await bcrypt.hash(input.password, 10);
 
-        // Encrypt defaultPassword before storing
-        const { encrypt: encryptPassword } = await import('../utils/encryption');
-        const encryptedDefaultPassword = encryptPassword(input.password);
-
         // Prepare user update data
         const userUpdateData: any = {
           password: hashedPassword,
-          defaultPassword: encryptedDefaultPassword, // Store encrypted default password
         };
 
         // If email was updated, also normalize the user's email to lowercase
@@ -885,10 +874,8 @@ export const deleteTenant = async (id: string) => {
       where: { tenantId: id },
     });
 
-    // 20. Delete RewardPoints (depends on Tenant, User)
-    await tx.rewardPoint.deleteMany({
-      where: { tenantId: id },
-    });
+
+
 
     // 21. Delete AuditLogs (depends on Tenant, User)
     await tx.auditLog.deleteMany({
@@ -897,16 +884,6 @@ export const deleteTenant = async (id: string) => {
 
     // 22. Delete Webhooks (depends on Tenant)
     await tx.webhook.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 23. Delete EmailTemplates (depends on Tenant)
-    await tx.emailTemplate.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 24. Delete ScheduledEmails (depends on Tenant)
-    await tx.scheduledEmail.deleteMany({
       where: { tenantId: id },
     });
 
@@ -967,26 +944,6 @@ export const deleteTenant = async (id: string) => {
       where: { tenantId: id },
     });
 
-    // 32. Delete CashFlows (depends on Tenant)
-    await tx.cashFlow.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 33. Delete Expenses (depends on Tenant)
-    await tx.expense.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 34. Delete TaxCalculations (depends on Tenant)
-    await tx.taxCalculation.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 35. Delete FinancialForecasts (depends on Tenant)
-    await tx.financialForecast.deleteMany({
-      where: { tenantId: id },
-    });
-
     // 36. Delete BankReconciliations (depends on Tenant)
     await tx.bankReconciliation.deleteMany({
       where: { tenantId: id },
@@ -999,11 +956,6 @@ export const deleteTenant = async (id: string) => {
 
     // 38. Delete CustomerReviews (depends on Tenant, Customer, Product)
     await tx.customerReview.deleteMany({
-      where: { tenantId: id },
-    });
-
-    // 39. Delete EmailEvents (depends on Tenant)
-    await tx.emailEvent.deleteMany({
       where: { tenantId: id },
     });
 

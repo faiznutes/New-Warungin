@@ -8,7 +8,7 @@ import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import dailyBackupService from '../services/daily-backup.service';
 import prisma from '../config/database';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
+import { handleRouteError, asyncHandler } from '../utils/route-error-handler';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -27,89 +27,85 @@ router.get(
   '/critical',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      threeDaysAgo.setHours(0, 0, 0, 0);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    threeDaysAgo.setHours(0, 0, 0, 0);
 
-      // Get all failed backups in last 3 days
-      const failedBackups = await prisma.backupLog.findMany({
-        where: {
-          status: { in: ['failed', 'email_failed'] },
-          generatedAt: { gte: threeDaysAgo },
-        },
-        include: {
-          tenant: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
+    // Get all failed backups in last 3 days
+    const failedBackups = await prisma.backupLog.findMany({
+      where: {
+        status: { in: ['failed', 'email_failed'] },
+        generatedAt: { gte: threeDaysAgo },
+      },
+      include: {
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
+        },
+      },
+      orderBy: { generatedAt: 'desc' },
+    });
+
+    // Group by tenant and count consecutive failures
+    const tenantFailures: Record<string, {
+      tenant: any;
+      failures: number;
+      lastFailure: Date;
+      consecutiveDays: number;
+    }> = {};
+
+    for (const backup of failedBackups) {
+      if (!tenantFailures[backup.tenantId]) {
+        tenantFailures[backup.tenantId] = {
+          tenant: backup.tenant,
+          failures: 0,
+          lastFailure: backup.generatedAt,
+          consecutiveDays: 0,
+        };
+      }
+      tenantFailures[backup.tenantId].failures++;
+      if (backup.generatedAt > tenantFailures[backup.tenantId].lastFailure) {
+        tenantFailures[backup.tenantId].lastFailure = backup.generatedAt;
+      }
+    }
+
+    // Calculate consecutive days for each tenant
+    for (const tenantId in tenantFailures) {
+      const tf = tenantFailures[tenantId];
+      const last3Days = await prisma.backupLog.findMany({
+        where: {
+          tenantId,
+          generatedAt: { gte: threeDaysAgo },
+          status: { in: ['failed', 'email_failed'] },
         },
         orderBy: { generatedAt: 'desc' },
       });
 
-      // Group by tenant and count consecutive failures
-      const tenantFailures: Record<string, {
-        tenant: any;
-        failures: number;
-        lastFailure: Date;
-        consecutiveDays: number;
-      }> = {};
-
-      for (const backup of failedBackups) {
-        if (!tenantFailures[backup.tenantId]) {
-          tenantFailures[backup.tenantId] = {
-            tenant: backup.tenant,
-            failures: 0,
-            lastFailure: backup.generatedAt,
-            consecutiveDays: 0,
-          };
-        }
-        tenantFailures[backup.tenantId].failures++;
-        if (backup.generatedAt > tenantFailures[backup.tenantId].lastFailure) {
-          tenantFailures[backup.tenantId].lastFailure = backup.generatedAt;
-        }
-      }
-
-      // Calculate consecutive days for each tenant
-      for (const tenantId in tenantFailures) {
-        const tf = tenantFailures[tenantId];
-        const last3Days = await prisma.backupLog.findMany({
-          where: {
-            tenantId,
-            generatedAt: { gte: threeDaysAgo },
-            status: { in: ['failed', 'email_failed'] },
-          },
-          orderBy: { generatedAt: 'desc' },
-        });
-
-        // Count unique days with failures
-        const failureDays = new Set(
-          last3Days.map(b => b.generatedAt.toISOString().split('T')[0])
-        );
-        tf.consecutiveDays = failureDays.size;
-      }
-
-      // Filter tenants with 3+ consecutive days
-      const criticalTenants = Object.values(tenantFailures)
-        .filter(tf => tf.consecutiveDays >= 3)
-        .map(tf => ({
-          tenantId: tf.tenant.id,
-          tenantName: tf.tenant.name,
-          tenantEmail: tf.tenant.email,
-          failures: tf.failures,
-          consecutiveDays: tf.consecutiveDays,
-          lastFailure: tf.lastFailure,
-        }));
-
-      res.json({ criticalTenants });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get critical backups', 'BACKUP');
+      // Count unique days with failures
+      const failureDays = new Set(
+        last3Days.map(b => b.generatedAt.toISOString().split('T')[0])
+      );
+      tf.consecutiveDays = failureDays.size;
     }
-  }
+
+    // Filter tenants with 3+ consecutive days
+    const criticalTenants = Object.values(tenantFailures)
+      .filter(tf => tf.consecutiveDays >= 3)
+      .map(tf => ({
+        tenantId: tf.tenant.id,
+        tenantName: tf.tenant.name,
+        tenantEmail: tf.tenant.email,
+        failures: tf.failures,
+        consecutiveDays: tf.consecutiveDays,
+        lastFailure: tf.lastFailure,
+      }));
+
+    res.json({ criticalTenants });
+  })
 );
 
 /**
@@ -164,7 +160,7 @@ router.get(
   '/',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const startTime = Date.now();
     logger.info('Backup route called', {
       role: req.role,
@@ -193,8 +189,7 @@ router.get(
       if (req.role !== 'SUPER_ADMIN') {
         clearTimeout(responseTimeout);
         logger.warn('Unauthorized access attempt to backup route', { role: req.role });
-        res.status(403).json({ message: 'Only super admin can access backup logs' });
-        return;
+        return res.status(403).json({ message: 'Only super admin can access backup logs' });
       }
 
       const {
@@ -305,12 +300,12 @@ router.get(
         elapsed: `${elapsed}ms`,
       });
       if (!res.headersSent) {
-        handleRouteError(res, error, 'Failed to fetch backup logs', 'BACKUP');
+        throw error; // Let asyncHandler handle it
       } else {
         logger.warn('Response already sent, cannot send error response');
       }
     }
-  }
+  })
 );
 
 /**
@@ -326,27 +321,23 @@ router.post(
   '/:tenantId/regenerate',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const { tenantId } = req.params;
-      const result = await dailyBackupService.regenerateBackup(tenantId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { tenantId } = req.params;
+    const result = await dailyBackupService.regenerateBackup(tenantId);
 
-      if (result.success) {
-        res.json({
-          message: 'Backup regenerated successfully',
-          backupLogId: result.backupLogId,
-          filePath: result.filePath,
-        });
-      } else {
-        res.status(500).json({
-          message: 'Failed to regenerate backup',
-          error: result.error,
-        });
-      }
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to regenerate backup', 'BACKUP');
+    if (result.success) {
+      res.json({
+        message: 'Backup regenerated successfully',
+        backupLogId: result.backupLogId,
+        filePath: result.filePath,
+      });
+    } else {
+      res.status(500).json({
+        message: 'Failed to regenerate backup',
+        error: result.error,
+      });
     }
-  }
+  })
 );
 
 /**
@@ -362,25 +353,21 @@ router.post(
   '/:backupId/resend-email',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const { backupId } = req.params;
-      const result = await dailyBackupService.resendBackupEmail(backupId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { backupId } = req.params;
+    const result = await dailyBackupService.resendBackupEmail(backupId);
 
-      if (result.success) {
-        res.json({
-          message: 'Backup email resent successfully',
-        });
-      } else {
-        res.status(500).json({
-          message: 'Failed to resend backup email',
-          error: result.error,
-        });
-      }
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to resend backup email', 'BACKUP');
+    if (result.success) {
+      res.json({
+        message: 'Backup email resent successfully',
+      });
+    } else {
+      res.status(500).json({
+        message: 'Failed to resend backup email',
+        error: result.error,
+      });
     }
-  }
+  })
 );
 
 /**
@@ -396,38 +383,32 @@ router.get(
   '/:backupId/download',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const { backupId } = req.params;
-      const backupLog = await prisma.backupLog.findUnique({
-        where: { id: backupId },
-        include: {
-          tenant: {
-            select: {
-              name: true,
-            },
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { backupId } = req.params;
+    const backupLog = await prisma.backupLog.findUnique({
+      where: { id: backupId },
+      include: {
+        tenant: {
+          select: {
+            name: true,
           },
         },
-      });
+      },
+    });
 
-      if (!backupLog) {
-        res.status(404).json({ message: 'Backup log not found' });
-        return;
-      }
-
-      if (!fs.existsSync(backupLog.filePath)) {
-        res.status(404).json({ message: 'Backup file not found' });
-        return;
-      }
-
-      const fileName = path.basename(backupLog.filePath);
-      res.setHeader('Content-Type', 'text/html');
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      res.sendFile(path.resolve(backupLog.filePath));
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to download backup', 'BACKUP');
+    if (!backupLog) {
+      return res.status(404).json({ message: 'Backup log not found' });
     }
-  }
+
+    if (!fs.existsSync(backupLog.filePath)) {
+      return res.status(404).json({ message: 'Backup file not found' });
+    }
+
+    const fileName = path.basename(backupLog.filePath);
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.sendFile(path.resolve(backupLog.filePath));
+  })
 );
 
 /**
@@ -443,30 +424,24 @@ router.get(
   '/:backupId/view',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const { backupId } = req.params;
-      const backupLog = await prisma.backupLog.findUnique({
-        where: { id: backupId },
-      });
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { backupId } = req.params;
+    const backupLog = await prisma.backupLog.findUnique({
+      where: { id: backupId },
+    });
 
-      if (!backupLog) {
-        res.status(404).json({ message: 'Backup log not found' });
-        return;
-      }
-
-      if (!fs.existsSync(backupLog.filePath)) {
-        res.status(404).json({ message: 'Backup file not found' });
-        return;
-      }
-
-      const htmlContent = fs.readFileSync(backupLog.filePath, 'utf8');
-      res.setHeader('Content-Type', 'text/html');
-      res.send(htmlContent);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to view backup', 'BACKUP');
+    if (!backupLog) {
+      return res.status(404).json({ message: 'Backup log not found' });
     }
-  }
+
+    if (!fs.existsSync(backupLog.filePath)) {
+      return res.status(404).json({ message: 'Backup file not found' });
+    }
+
+    const htmlContent = fs.readFileSync(backupLog.filePath, 'utf8');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlContent);
+  })
 );
 
 export default router;

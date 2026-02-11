@@ -1,8 +1,7 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authGuard, AuthRequest } from '../middlewares/auth';
 import sessionService from '../services/session.service';
-import { requireTenantId } from '../utils/tenant';
-import logger from '../utils/logger';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -18,17 +17,12 @@ const router = Router();
 router.get(
   '/',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      const sessions = await sessionService.getUserSessions(userId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.userId!;
+    const sessions = await sessionService.getUserSessions(userId);
 
-      res.json({ sessions });
-    } catch (error: any) {
-      logger.error('Error getting user sessions', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
-    }
-  }
+    res.json({ sessions });
+  })
 );
 
 /**
@@ -43,25 +37,20 @@ router.get(
 router.delete(
   '/:sessionId',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const { sessionId } = req.params;
-      const userId = req.userId!;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { sessionId } = req.params;
+    const userId = req.userId!;
 
-      // Verify session belongs to user
-      const session = await sessionService.getSession(sessionId);
-      if (!session || session.userId !== userId) {
-        return res.status(404).json({ message: 'Session not found' });
-      }
-
-      await sessionService.revokeSession(sessionId);
-
-      res.json({ message: 'Session berhasil di-revoke' });
-    } catch (error: any) {
-      logger.error('Error revoking session', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
+    // Verify session belongs to user
+    const session = await sessionService.getSession(sessionId);
+    if (!session || session.userId !== userId) {
+      return res.status(404).json({ message: 'Session not found' });
     }
-  }
+
+    await sessionService.revokeSession(sessionId);
+
+    res.json({ message: 'Session berhasil di-revoke' });
+  })
 );
 
 /**
@@ -76,22 +65,17 @@ router.delete(
 router.post(
   '/revoke-all',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      const currentSessionId = (req as any).sessionId; // Should be set by middleware
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.userId!;
+    const currentSessionId = (req as any).sessionId; // Should be set by middleware
 
-      const revokedCount = await sessionService.revokeAllUserSessions(userId, currentSessionId);
+    const revokedCount = await sessionService.revokeAllUserSessions(userId, currentSessionId);
 
-      res.json({
-        message: `${revokedCount} session berhasil di-revoke`,
-        revokedCount,
-      });
-    } catch (error: any) {
-      logger.error('Error revoking all sessions', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
-    }
-  }
+    res.json({
+      message: `${revokedCount} session berhasil di-revoke`,
+      revokedCount,
+    });
+  })
 );
 
 /**
@@ -106,17 +90,12 @@ router.post(
 router.get(
   '/count',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const userId = req.userId!;
-      const count = await sessionService.getSessionCount(userId);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.userId!;
+    const count = await sessionService.getSessionCount(userId);
 
-      res.json({ count });
-    } catch (error: any) {
-      logger.error('Error getting session count', { error: error.message, userId: req.userId });
-      res.status(500).json({ message: error.message });
-    }
-  }
+    res.json({ count });
+  })
 );
 
 export default router;

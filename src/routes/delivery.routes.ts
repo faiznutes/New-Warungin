@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { authGuard, AuthRequest, roleGuard } from '../middlewares/auth';
 import { validate } from '../middlewares/validator';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import { z } from 'zod';
@@ -7,7 +7,7 @@ import { requireTenantId } from '../utils/tenant';
 import { checkDeliveryMarketingAddon } from '../middlewares/plan-feature-guard';
 import deliveryService from '../services/delivery.service';
 import logger from '../utils/logger';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 router.use(authGuard);
@@ -62,15 +62,11 @@ router.get(
   '/orders',
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const orders = await deliveryService.getDeliveryOrders(tenantId);
-      res.json({ data: orders });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get delivery orders', 'GET_DELIVERY_ORDERS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const orders = await deliveryService.getDeliveryOrders(tenantId);
+    res.json({ data: orders });
+  })
 );
 
 /**
@@ -111,18 +107,14 @@ router.post(
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: processDeliverySchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      if (!req.body || !req.params.orderId) {
-        return res.status(400).json({ message: 'Missing required fields' });
-      }
-      const order = await deliveryService.processDelivery(tenantId, req.params.orderId, req.body);
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'DELIVERY');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    if (!req.body || !req.params.orderId) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
-  }
+    const order = await deliveryService.processDelivery(tenantId, req.params.orderId, req.body);
+    res.json(order);
+  })
 );
 
 router.post(
@@ -130,18 +122,14 @@ router.post(
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createCourierSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      if (!req.body) {
-        return res.status(400).json({ message: 'Missing request body' });
-      }
-      const courier = await deliveryService.setupCourier(tenantId, req.body);
-      res.status(201).json(courier);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'DELIVERY');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    if (!req.body) {
+      return res.status(400).json({ message: 'Missing request body' });
     }
-  }
+    const courier = await deliveryService.setupCourier(tenantId, req.body);
+    res.status(201).json(courier);
+  })
 );
 
 /**
@@ -195,22 +183,18 @@ router.post(
   checkDeliveryMarketingAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: createShipmentSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      if (!req.body || !req.params.orderId) {
-        return res.status(400).json({ message: 'Missing required fields' });
-      }
-      const result = await deliveryService.createShipment(
-        tenantId,
-        req.params.orderId,
-        req.body.courier
-      );
-      res.status(201).json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'DELIVERY');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    if (!req.body || !req.params.orderId) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
-  }
+    const result = await deliveryService.createShipment(
+      tenantId,
+      req.params.orderId,
+      req.body.courier
+    );
+    res.status(201).json(result);
+  })
 );
 
 /**
@@ -263,22 +247,18 @@ router.post(
   '/track',
   checkDeliveryMarketingAddon,
   validate({ body: trackShipmentSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      if (!req.body) {
-        return res.status(400).json({ message: 'Missing request body' });
-      }
-      const tracking = await deliveryService.trackShipment(
-        tenantId,
-        req.body.trackingNumber,
-        req.body.courier
-      );
-      res.json(tracking);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'DELIVERY');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    if (!req.body) {
+      return res.status(400).json({ message: 'Missing request body' });
     }
-  }
+    const tracking = await deliveryService.trackShipment(
+      tenantId,
+      req.body.trackingNumber,
+      req.body.courier
+    );
+    res.json(tracking);
+  })
 );
 
 /**
@@ -321,7 +301,7 @@ router.post(
  */
 router.post(
   '/webhook/:courier',
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
     try {
       const { courier } = req.params;
       const webhookData = req.body;
@@ -340,7 +320,7 @@ router.post(
       logger.error('Courier webhook error:', error);
       res.status(200).json({ message: 'Webhook received but processing failed' });
     }
-  }
+  })
 );
 
 export default router;

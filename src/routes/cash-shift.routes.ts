@@ -3,15 +3,14 @@
  * Routes untuk manajemen uang modal dan rekap fisik kasir
  */
 
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
-import { AuthRequest } from '../middlewares/auth';
 import cashShiftService from '../services/cash-shift.service';
 import { requireTenantId } from '../utils/tenant';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -39,30 +38,26 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: openShiftSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-      const userRole = req.role!;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const userRole = req.role!;
 
-      // Hanya CASHIER yang bisa buka shift
-      if (userRole !== 'CASHIER') {
-        return res.status(403).json({ message: 'Hanya kasir yang dapat membuka shift' });
-      }
-
-      const { modalAwal, catatan } = req.body;
-
-      const shift = await cashShiftService.openShift(tenantId, userId, modalAwal, catatan);
-
-      res.json({
-        success: true,
-        message: 'Shift berhasil dibuka',
-        data: shift,
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Gagal membuka shift', 'CASH_SHIFT');
+    // Hanya CASHIER yang bisa buka shift
+    if (userRole !== 'CASHIER') {
+      return res.status(403).json({ message: 'Hanya kasir yang dapat membuka shift' });
     }
-  }
+
+    const { modalAwal, catatan } = req.body;
+
+    const shift = await cashShiftService.openShift(tenantId, userId, modalAwal, catatan);
+
+    res.json({
+      success: true,
+      message: 'Shift berhasil dibuka',
+      data: shift,
+    });
+  })
 );
 
 /**
@@ -79,34 +74,30 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: closeShiftSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-      const userRole = req.role!;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const userRole = req.role!;
 
-      // Hanya CASHIER yang bisa tutup shift
-      if (userRole !== 'CASHIER') {
-        return res.status(403).json({ message: 'Hanya kasir yang dapat menutup shift' });
-      }
-
-      const { uangFisikTutup, catatan } = req.body;
-
-      if (!uangFisikTutup && uangFisikTutup !== 0) {
-        return res.status(400).json({ message: 'Uang fisik tutup wajib diisi' });
-      }
-
-      const shift = await cashShiftService.closeShift(tenantId, userId, uangFisikTutup, catatan);
-
-      res.json({
-        success: true,
-        message: 'Shift berhasil ditutup',
-        data: shift,
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Gagal menutup shift', 'CASH_SHIFT');
+    // Hanya CASHIER yang bisa tutup shift
+    if (userRole !== 'CASHIER') {
+      return res.status(403).json({ message: 'Hanya kasir yang dapat menutup shift' });
     }
-  }
+
+    const { uangFisikTutup, catatan } = req.body;
+
+    if (!uangFisikTutup && uangFisikTutup !== 0) {
+      return res.status(400).json({ message: 'Uang fisik tutup wajib diisi' });
+    }
+
+    const shift = await cashShiftService.closeShift(tenantId, userId, uangFisikTutup, catatan);
+
+    res.json({
+      success: true,
+      message: 'Shift berhasil ditutup',
+      data: shift,
+    });
+  })
 );
 
 /**
@@ -122,35 +113,31 @@ router.get(
   '/current',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-      const userRole = req.role!;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const userRole = req.role!;
 
-      // Hanya CASHIER yang bisa lihat shift
-      if (userRole !== 'CASHIER') {
-        return res.status(403).json({ message: 'Hanya kasir yang dapat melihat shift' });
-      }
-
-      const shift = await cashShiftService.getCurrentShift(tenantId, userId);
-
-      if (!shift) {
-        return res.json({
-          success: true,
-          data: null,
-          message: 'Tidak ada shift aktif',
-        });
-      }
-
-      res.json({
-        success: true,
-        data: shift,
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Gagal memuat shift aktif', 'CASH_SHIFT');
+    // Hanya CASHIER yang bisa lihat shift
+    if (userRole !== 'CASHIER') {
+      return res.status(403).json({ message: 'Hanya kasir yang dapat melihat shift' });
     }
-  }
+
+    const shift = await cashShiftService.getCurrentShift(tenantId, userId);
+
+    if (!shift) {
+      return res.json({
+        success: true,
+        data: null,
+        message: 'Tidak ada shift aktif',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: shift,
+    });
+  })
 );
 
 /**
@@ -166,25 +153,21 @@ router.get(
   '/history',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = req.userId!;
-      const userRole = req.role!;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const userRole = req.role!;
 
-      // CASHIER hanya bisa lihat shift sendiri, ADMIN_TENANT/SUPERVISOR bisa lihat semua
-      const kasirId = (userRole === 'CASHIER') ? userId : (req.query.kasirId as string | undefined);
+    // CASHIER hanya bisa lihat shift sendiri, ADMIN_TENANT/SUPERVISOR bisa lihat semua
+    const kasirId = (userRole === 'CASHIER') ? userId : (req.query.kasirId as string | undefined);
 
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-      const result = await cashShiftService.getShiftHistory(tenantId, kasirId, page, limit);
+    const result = await cashShiftService.getShiftHistory(tenantId, kasirId, page, limit);
 
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Gagal memuat riwayat shift', 'CASH_SHIFT');
-    }
-  }
+    res.json(result);
+  })
 );
 
 export default router;

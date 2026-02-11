@@ -1,11 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import receiptService from '../services/receipt.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
 import { checkReceiptEditorAddon } from '../middlewares/addon-guard';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -22,51 +23,39 @@ const createTemplateSchema = z.object({
 router.get(
   '/templates',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const templates = await receiptService.getReceiptTemplates(tenantId);
-      res.json(templates);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const templates = await receiptService.getReceiptTemplates(tenantId);
+    res.json(templates);
+  })
 );
 
 router.get(
   '/templates/default',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const template = await receiptService.getDefaultTemplate(tenantId);
-      res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const template = await receiptService.getDefaultTemplate(tenantId);
+    res.json(template);
+  })
 );
 
 router.get(
   '/templates/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const template = await prisma.receiptTemplate.findFirst({
-        where: {
-          id: req.params.id,
-          tenantId,
-        },
-      });
-      if (!template) {
-        return res.status(404).json({ message: 'Template not found' });
-      }
-      res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const template = await prisma.receiptTemplate.findFirst({
+      where: {
+        id: req.params.id,
+        tenantId,
+      },
+    });
+    if (!template) {
+      return res.status(404).json({ message: 'Template not found' });
     }
-  }
+    res.json(template);
+  })
 );
 
 router.post(
@@ -75,15 +64,11 @@ router.post(
   checkReceiptEditorAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
   validate({ body: createTemplateSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const template = await receiptService.createTemplate(tenantId, req.body);
-      res.status(201).json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const template = await receiptService.createTemplate(tenantId, req.body);
+    res.status(201).json(template);
+  })
 );
 
 router.put(
@@ -91,15 +76,11 @@ router.put(
   authGuard,
   checkReceiptEditorAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const template = await receiptService.updateTemplate(req.params.id, tenantId, req.body);
-      res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const template = await receiptService.updateTemplate(req.params.id, tenantId, req.body);
+    res.json(template);
+  })
 );
 
 router.post(
@@ -107,15 +88,11 @@ router.post(
   authGuard,
   checkReceiptEditorAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const template = await receiptService.setDefaultTemplate(req.params.id, tenantId);
-      res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const template = await receiptService.setDefaultTemplate(req.params.id, tenantId);
+    res.json(template);
+  })
 );
 
 router.delete(
@@ -123,30 +100,22 @@ router.delete(
   authGuard,
   checkReceiptEditorAddon,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      await receiptService.deleteTemplate(req.params.id, tenantId);
-      res.json({ message: 'Template deleted successfully' });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    await receiptService.deleteTemplate(req.params.id, tenantId);
+    res.json({ message: 'Template deleted successfully' });
+  })
 );
 
 router.get(
   '/generate/:orderId',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const templateId = req.query.templateId as string | undefined;
-      const receipt = await receiptService.generateReceipt(req.params.orderId, tenantId, templateId);
-      res.json(receipt);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const templateId = req.query.templateId as string | undefined;
+    const receipt = await receiptService.generateReceipt(req.params.orderId, tenantId, templateId);
+    res.json(receipt);
+  })
 );
 
 export default router;

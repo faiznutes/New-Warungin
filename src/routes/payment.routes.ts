@@ -1,11 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import paymentService from '../services/payment.service';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import prisma from '../config/database';
 import logger from '../utils/logger';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -39,24 +40,15 @@ router.post(
   '/create',
   authGuard,
   validate({ body: createPaymentSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const result = await paymentService.createPayment(req.body);
-      
-      if (result.success) {
-        res.json(result);
-      } else {
-        res.status(400).json(result);
-      }
-    } catch (error: any) {
-      logger.error('Payment creation error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to create payment' 
-      });
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await paymentService.createPayment(req.body);
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json(result);
     }
-  }
+  })
 );
 
 /**
@@ -71,18 +63,10 @@ router.post(
 router.get(
   '/status/:orderId',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const result = await paymentService.checkPaymentStatus(req.params.orderId);
-      res.json(result);
-    } catch (error: any) {
-      logger.error('Payment status check error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to check payment status' 
-      });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await paymentService.checkPaymentStatus(req.params.orderId);
+    res.json(result);
+  })
 );
 
 /**
@@ -95,7 +79,7 @@ router.get(
 router.post(
   '/webhook',
   // Placeholder: add rate limiting/IP allowlisting middleware here if needed
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     // Audit log: log IP and headers for traceability
     logger.info('Webhook received', {
       ip: req.ip,
@@ -106,24 +90,17 @@ router.post(
         'x-real-ip': req.headers['x-real-ip'],
       },
     });
-    try {
-      const result = await paymentService.handleWebhook(req.body);
-      // If signature verification failed, log explicitly
-      if (result && result.success === false && result.message && result.message.toLowerCase().includes('signature')) {
-        logger.warn('Webhook signature verification failed', {
-          body: req.body,
-          ip: req.ip,
-        });
-      }
-      res.json(result);
-    } catch (error: any) {
-      logger.error('Webhook handling error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to handle webhook' 
+
+    const result = await paymentService.handleWebhook(req.body);
+    // If signature verification failed, log explicitly
+    if (result && result.success === false && result.message && result.message.toLowerCase().includes('signature')) {
+      logger.warn('Webhook signature verification failed', {
+        body: req.body,
+        ip: req.ip,
       });
     }
-  }
+    res.json(result);
+  })
 );
 
 /**
@@ -135,20 +112,12 @@ router.post(
  */
 router.post(
   '/webhook/n8n',
-  async (req: Request, res: Response) => {
-    try {
-      // n8n already validated the webhook signature
-      // Just process the payment directly
-      const result = await paymentService.handleWebhook(req.body);
-      res.json(result);
-    } catch (error: any) {
-      logger.error('n8n webhook processing error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to process webhook' 
-      });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    // n8n already validated the webhook signature
+    // Just process the payment directly
+    const result = await paymentService.handleWebhook(req.body);
+    res.json(result);
+  })
 );
 
 /**
@@ -163,18 +132,10 @@ router.post(
 router.post(
   '/cancel/:orderId',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const result = await paymentService.cancelPayment(req.params.orderId);
-      res.json(result);
-    } catch (error: any) {
-      logger.error('Payment cancellation error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to cancel payment' 
-      });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await paymentService.cancelPayment(req.params.orderId);
+    res.json(result);
+  })
 );
 
 const createAddonPaymentSchema = z.object({
@@ -197,53 +158,44 @@ router.post(
   '/addon',
   authGuard,
   validate({ body: createAddonPaymentSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const user = (req as any).user;
-      
-      // Get tenant info with subscription plan
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: tenantId },
-        select: { 
-          name: true, 
-          email: true, 
-          phone: true,
-          subscriptionPlan: true,
-        },
-      });
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
 
-      if (!tenant) {
-        return res.status(404).json({ 
-          success: false, 
-          message: 'Tenant not found' 
-        });
-      }
+    // Get tenant info with subscription plan
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        subscriptionPlan: true,
+      },
+    });
 
-      const result = await paymentService.createAddonPayment({
-        tenantId,
-        tenantName: tenant.name,
-        tenantEmail: tenant.email || undefined,
-        tenantPhone: tenant.phone || undefined,
-        itemName: req.body.itemName,
-        amount: req.body.amount,
-        itemId: req.body.itemId,
-        itemType: req.body.itemType,
-      });
-
-      if (result.success) {
-        res.json(result);
-      } else {
-        res.status(400).json(result);
-      }
-    } catch (error: any) {
-      logger.error('Addon payment creation error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || 'Failed to create payment' 
+    if (!tenant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Tenant not found'
       });
     }
-  }
+
+    const result = await paymentService.createAddonPayment({
+      tenantId,
+      tenantName: tenant.name,
+      tenantEmail: tenant.email || undefined,
+      tenantPhone: tenant.phone || undefined,
+      itemName: req.body.itemName,
+      amount: req.body.amount,
+      itemId: req.body.itemId,
+      itemType: req.body.itemType,
+    });
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  })
 );
 
 export default router;

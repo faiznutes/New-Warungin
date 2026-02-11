@@ -8,6 +8,17 @@ export interface AuthRequest extends Request {
   userId?: string;
   tenantId?: string | null;
   role?: string;
+  user?: {
+    id: string;
+    tenantId: string | null;
+    role: string;
+    email: string;
+    name: string;
+    permissions?: Record<string, any>;
+    assignedStoreId?: string | null;
+  };
+  currentShift?: any;
+  storeShiftId?: string;
 }
 
 /**
@@ -67,7 +78,7 @@ export const authGuard = async (
     } catch (jwtError) {
       const err = jwtError as Error & { name?: string };
       logAuthError(jwtError, 'JWT_VERIFICATION', req);
-      
+
       setCorsHeaders(res, req);
       if (err.name === 'TokenExpiredError') {
         res.status(401).json({ error: 'Unauthorized: Token expired' });
@@ -89,16 +100,16 @@ export const authGuard = async (
     } catch (dbError: unknown) {
       const err = dbError as Error & { code?: string; message?: string };
       logAuthError(dbError, 'DATABASE_QUERY', req);
-      
+
       setCorsHeaders(res, req);
       // Check if it's a connection error
       if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-        res.status(503).json({ 
+        res.status(503).json({
           error: 'Database connection failed. Please try again.',
           message: 'Unable to connect to database. Please retry the request.',
         });
       } else {
-        res.status(500).json({ 
+        res.status(500).json({
           error: 'Database error occurred',
           message: 'An error occurred while verifying your credentials.',
         });
@@ -128,7 +139,7 @@ export const authGuard = async (
         res.status(403).json({ error: 'Forbidden: Tenant not found' });
         return;
       }
-      
+
       if (!user.tenant.isActive) {
         logAuthError(new Error('Tenant inactive'), 'TENANT_INACTIVE', req);
         setCorsHeaders(res, req);
@@ -152,10 +163,10 @@ export const authGuard = async (
         allowedStoreIds?: string[];
       }
       const permissions = (user.permissions as UserPermissions) || {};
-      
+
       if (decoded.role === 'CASHIER' || decoded.role === 'KITCHEN') {
         const assignedStoreId = permissions?.assignedStoreId;
-        
+
         if (assignedStoreId) {
           try {
             const assignedStore = await prisma.outlet.findFirst({
@@ -164,10 +175,10 @@ export const authGuard = async (
                 tenantId: user.tenantId || user.tenant?.id || '',
               },
             });
-            
+
             if (!assignedStore || !assignedStore.isActive) {
               setCorsHeaders(res, req);
-              res.status(403).json({ 
+              res.status(403).json({
                 error: `Store "${assignedStore?.name || 'yang ditetapkan'}" yang ditetapkan untuk akun Anda saat ini tidak aktif. Silakan hubungi administrator untuk memindahkan Anda ke store aktif terlebih dahulu.`,
                 message: `Store "${assignedStore?.name || 'yang ditetapkan'}" yang ditetapkan untuk akun Anda saat ini tidak aktif. Silakan hubungi administrator untuk memindahkan Anda ke store aktif terlebih dahulu.`,
               });
@@ -182,7 +193,7 @@ export const authGuard = async (
         }
       } else if (decoded.role === 'SUPERVISOR') {
         const allowedStoreIds = permissions?.allowedStoreIds || [];
-        
+
         if (allowedStoreIds.length > 0) {
           try {
             const allowedStores = await prisma.outlet.findMany({
@@ -191,13 +202,13 @@ export const authGuard = async (
                 tenantId: user.tenantId || user.tenant?.id || '',
               },
             });
-            
+
             const activeStores = allowedStores.filter(store => store.isActive);
-            
+
             if (activeStores.length === 0) {
               const storeNames = allowedStores.map(s => s.name).join(', ');
               setCorsHeaders(res, req);
-              res.status(403).json({ 
+              res.status(403).json({
                 error: `Semua store yang diizinkan untuk akun Anda (${storeNames}) saat ini tidak aktif. Silakan hubungi administrator untuk memindahkan Anda ke store aktif terlebih dahulu.`,
                 message: `Semua store yang diizinkan untuk akun Anda (${storeNames}) saat ini tidak aktif. Silakan hubungi administrator untuk memindahkan Anda ke store aktif terlebih dahulu.`,
               });
@@ -215,19 +226,19 @@ export const authGuard = async (
 
     // Ensure tenantId is set (use from decoded token or fallback to user.tenantId)
     let tenantId: string | null = decoded.tenantId || user.tenantId || null;
-    
+
     // If tenantId is empty string, convert to null for Super Admin
     if (tenantId === '' && decoded.role === 'SUPER_ADMIN') {
       tenantId = null;
     }
-    
+
     if (!tenantId && decoded.role !== 'SUPER_ADMIN') {
       logAuthError(new Error('Tenant ID missing for non-Super Admin'), 'TENANT_ID_MISSING', req);
       setCorsHeaders(res, req);
       res.status(403).json({ error: 'Forbidden: Tenant ID not found' });
       return;
     }
-    
+
     // Auto-set storeId untuk kasir/dapur dari permissions
     let autoStoreId: string | null = null;
     if (decoded.role === 'CASHIER' || decoded.role === 'KITCHEN') {
@@ -236,7 +247,7 @@ export const authGuard = async (
       }
       const permissions = (user.permissions as UserPermissions) || {};
       autoStoreId = permissions?.assignedStoreId || null;
-      
+
       // CRITICAL: Validate that store assignment exists and is valid
       if (!autoStoreId || autoStoreId === '' || autoStoreId === 'undefined') {
         logAuthError(
@@ -253,12 +264,12 @@ export const authGuard = async (
         return;
       }
     }
-    
+
     // Attach user info to request
     req.userId = decoded.userId;
     req.tenantId = tenantId;
     req.role = decoded.role;
-    
+
     // Also attach to req.user for compatibility with routes
     interface ExtendedRequest extends Request {
       user?: {
@@ -278,8 +289,8 @@ export const authGuard = async (
       role: decoded.role,
       email: user.email,
       name: user.name,
-      permissions: (user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions)) 
-        ? user.permissions as Record<string, any> 
+      permissions: (user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions))
+        ? user.permissions as Record<string, any>
         : {},
       assignedStoreId: autoStoreId,
     };
@@ -290,10 +301,10 @@ export const authGuard = async (
     // Catch any unexpected errors
     logAuthError(error, 'UNEXPECTED_ERROR', req);
     setCorsHeaders(res, req);
-    
+
     // Ensure response hasn't been sent
     if (!res.headersSent) {
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'Internal server error',
         message: 'An unexpected error occurred during authentication.',
       });

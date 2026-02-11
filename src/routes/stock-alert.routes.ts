@@ -3,13 +3,13 @@
  * API endpoints for stock alerts and notifications
  */
 
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { requireTenantId } from '../utils/tenant';
 import stockAlertService from '../services/stock-alert.service';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -30,15 +30,11 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const products = await stockAlertService.getLowStockProducts(tenantId);
-      res.json(products);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get low stock products', 'GET_LOW_STOCK');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const products = await stockAlertService.getLowStockProducts(tenantId);
+    res.json(products);
+  })
 );
 
 /**
@@ -58,15 +54,11 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const stats = await stockAlertService.getStockAlertStats(tenantId);
-      res.json(stats);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get stock alert stats', 'GET_STOCK_ALERT_STATS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const stats = await stockAlertService.getStockAlertStats(tenantId);
+    res.json(stats);
+  })
 );
 
 /**
@@ -86,15 +78,11 @@ router.post(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const result = await stockAlertService.checkAndSendStockAlerts(tenantId);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to send stock alerts', 'SEND_STOCK_ALERTS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const result = await stockAlertService.checkAndSendStockAlerts(tenantId);
+    res.json(result);
+  })
 );
 
 export default router;

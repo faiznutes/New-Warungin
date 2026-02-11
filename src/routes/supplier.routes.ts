@@ -1,17 +1,12 @@
-/**
- * Supplier Routes
- * API endpoints for managing suppliers
- */
-
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import supplierService from '../services/supplier.service';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -66,21 +61,17 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const query = {
-        page: req.query.page ? parseInt(req.query.page as string) : undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-        search: req.query.search as string | undefined,
-        isActive: req.query.isActive ? req.query.isActive === 'true' : undefined,
-      };
-      const result = await supplierService.getSuppliers(tenantId, query);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get suppliers', 'GET_SUPPLIERS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const query = {
+      page: req.query.page ? parseInt(req.query.page as string) : undefined,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+      search: req.query.search as string | undefined,
+      isActive: req.query.isActive ? req.query.isActive === 'true' : undefined,
+    };
+    const result = await supplierService.getSuppliers(tenantId, query);
+    res.json(result);
+  })
 );
 
 /**
@@ -108,15 +99,11 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const supplier = await supplierService.getSupplierById(req.params.id, tenantId);
-      res.json(supplier);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get supplier', 'GET_SUPPLIER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const supplier = await supplierService.getSupplierById(req.params.id, tenantId);
+    res.json(supplier);
+  })
 );
 
 /**
@@ -161,15 +148,11 @@ router.post(
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createSupplierSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const supplier = await supplierService.createSupplier(tenantId, req.body);
-      res.status(201).json(supplier);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create supplier', 'CREATE_SUPPLIER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const supplier = await supplierService.createSupplier(tenantId, req.body);
+    res.status(201).json(supplier);
+  })
 );
 
 /**
@@ -205,15 +188,11 @@ router.put(
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: updateSupplierSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const supplier = await supplierService.updateSupplier(req.params.id, tenantId, req.body);
-      res.json(supplier);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update supplier', 'UPDATE_SUPPLIER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const supplier = await supplierService.updateSupplier(req.params.id, tenantId, req.body);
+    res.json(supplier);
+  })
 );
 
 /**
@@ -242,15 +221,11 @@ router.delete(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      await supplierService.deleteSupplier(req.params.id, tenantId);
-      res.status(204).send();
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to delete supplier', 'DELETE_SUPPLIER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    await supplierService.deleteSupplier(req.params.id, tenantId);
+    res.status(204).send();
+  })
 );
 
 export default router;

@@ -1,7 +1,7 @@
 import prisma from '../config/database';
 import orderService from './order.service';
 import courierService, { CreateShipmentRequest, CourierConfig } from './courier.service';
-import smsGatewayService from './sms-gateway.service';
+
 import { sendEmail } from '../config/email';
 import logger from '../utils/logger';
 
@@ -345,25 +345,7 @@ class DeliveryService {
             logger.info(`Delivery notification email sent to ${order.customer.email} for order ${order.id}`);
           }
 
-          // Send SMS notification if phone is available
-          if (order.customer.phone) {
-            try {
-              const phoneNumber = order.customer.phone.replace(/[+\s-]/g, '');
-              const formattedPhone = phoneNumber.startsWith('62')
-                ? `+${phoneNumber}`
-                : phoneNumber.startsWith('0')
-                  ? `+62${phoneNumber.substring(1)}`
-                  : `+62${phoneNumber}`;
 
-              await smsGatewayService.sendSMS({
-                to: formattedPhone,
-                message: `Pesanan #${order.orderNumber} telah diterima. Terima kasih!`,
-              });
-              logger.info(`Delivery notification SMS sent to ${formattedPhone} for order ${order.id}`);
-            } catch (smsError: any) {
-              logger.warn(`Failed to send SMS notification for order ${order.id}:`, smsError);
-            }
-          }
 
           // Log notification (Notification model not in schema)
           logger.info(`Delivery notification for order ${order.id}: DELIVERY_COMPLETED - Pesanan #${order.orderNumber} telah berhasil diterima`);

@@ -1,8 +1,9 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response, Request } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { generatePDF } from '../services/pdf.service';
 import { checkExportReportsAddon } from '../middlewares/addon-guard';
 import logger from '../utils/logger';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -30,52 +31,37 @@ router.post(
   '/generate',
   authGuard,
   checkExportReportsAddon,
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     // Set CORS headers first, before any response
     setCORSHeaders(req, res);
-    
-    try {
-      const { template, data } = req.body;
-      
-      // Debug: Log received template
-      logger.info(`Received template request: ${template}`);
-      
-      if (!template || !['minimalist', 'modern', 'classic', 'colorful', 'elegant'].includes(template)) {
-        return res.status(400).json({ 
-          message: 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant' 
-        });
-      }
-      
-      if (!data) {
-        return res.status(400).json({ message: 'Data is required' });
-      }
-      
-      try {
-        // Generate PDF using PDFMake
-        logger.info(`Generating PDF with template: ${template}`);
-        const pdfBuffer = await generatePDF(template, data);
-        
-        // Send PDF as response with CORS headers already set
-        res.setHeader('Content-Type', 'application/pdf');
-        const filename = encodeURIComponent(data.filename || 'report.pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${filename}`);
-        res.setHeader('Content-Length', pdfBuffer.length.toString());
-        
-        res.send(pdfBuffer);
-        
-      } catch (error: any) {
-        logger.error('Error generating PDF with PDFMake:', { error: error.message, stack: error.stack });
-        return res.status(500).json({ 
-          message: 'Failed to generate PDF', 
-          error: error.message
-        });
-      }
-      
-    } catch (error: any) {
-      logger.error('PDF generation error:', { error: error.message, stack: error.stack });
-      res.status(500).json({ message: error.message || 'Failed to generate PDF' });
+
+    const { template, data } = req.body;
+
+    // Debug: Log received template
+    logger.info(`Received template request: ${template}`);
+
+    if (!template || !['minimalist', 'modern', 'classic', 'colorful', 'elegant'].includes(template)) {
+      return res.status(400).json({
+        message: 'Invalid template. Must be one of: minimalist, modern, classic, colorful, elegant'
+      });
     }
-  }
+
+    if (!data) {
+      return res.status(400).json({ message: 'Data is required' });
+    }
+
+    // Generate PDF using PDFMake
+    logger.info(`Generating PDF with template: ${template}`);
+    const pdfBuffer = await generatePDF(template, data);
+
+    // Send PDF as response with CORS headers already set
+    res.setHeader('Content-Type', 'application/pdf');
+    const filename = encodeURIComponent(data.filename || 'report.pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${filename}`);
+    res.setHeader('Content-Length', pdfBuffer.length.toString());
+
+    res.send(pdfBuffer);
+  })
 );
 
 export default router;

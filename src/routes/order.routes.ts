@@ -1,5 +1,5 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoreGuard } from '../middlewares/supervisor-store-guard';
 import orderService from '../services/order.service';
@@ -7,7 +7,7 @@ import { createOrderSchema, updateOrderStatusSchema, getOrdersQuerySchema, updat
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -59,17 +59,13 @@ router.get(
   supervisorStoreGuard(),
   subscriptionGuard,
   validate({ query: getOrdersQuerySchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
-      const userPermissions = (req as any).user.permissions;
-      const result = await orderService.getOrders(tenantId, req.query as any, userRole, userPermissions);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userRole = req.user!.role;
+    const userPermissions = req.user!.permissions;
+    const result = await orderService.getOrders(tenantId, req.query as any, userRole, userPermissions);
+    res.json(result);
+  })
 );
 
 /**
@@ -92,17 +88,13 @@ router.put(
       status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED'])
     })
   }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { orderIds, status } = req.body;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { orderIds, status } = req.body;
 
-      const results = await orderService.bulkUpdateKitchenStatus(tenantId, orderIds, status);
-      res.json(results);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
+    const results = await orderService.bulkUpdateKitchenStatus(tenantId, orderIds, status);
+    res.json(results);
+  })
 );
 
 /**
@@ -143,20 +135,16 @@ router.get(
   '/stats/summary',
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { startDate, endDate } = req.query;
-      const stats = await orderService.getOrderStats(
-        tenantId,
-        startDate ? new Date(startDate as string) : undefined,
-        endDate ? new Date(endDate as string) : undefined
-      );
-      res.json(stats);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { startDate, endDate } = req.query;
+    const stats = await orderService.getOrderStats(
+      tenantId,
+      startDate ? new Date(startDate as string) : undefined,
+      endDate ? new Date(endDate as string) : undefined
+    );
+    res.json(stats);
+  })
 );
 
 /**
@@ -189,18 +177,14 @@ router.get(
   '/:id',
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const order = await orderService.getOrderById(req.params.id, tenantId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
     }
-  }
+    res.json(order);
+  })
 );
 
 /**
@@ -254,19 +238,15 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: createOrderSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = (req as any).user.id;
-      const userRole = (req as any).user.role;
-      // Get idempotency key from header (X-Idempotency-Key)
-      const idempotencyKey = req.headers['x-idempotency-key'] as string | undefined;
-      const order = await orderService.createOrder(req.body, userId, tenantId, idempotencyKey, userRole);
-      res.status(201).json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create order', 'CREATE_ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.user!.id;
+    const userRole = req.user!.role;
+    // Get idempotency key from header (X-Idempotency-Key)
+    const idempotencyKey = req.headers['x-idempotency-key'] as string | undefined;
+    const order = await orderService.createOrder(req.body, userId, tenantId, idempotencyKey, userRole);
+    res.status(201).json(order);
+  })
 );
 
 /**
@@ -315,21 +295,17 @@ router.put(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: updateOrderSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Pass all validated data to updateOrder service
-      const updatedOrder = await orderService.updateOrder(req.params.id, req.body, tenantId);
-      res.json(updatedOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const order = await orderService.getOrderById(req.params.id, tenantId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
     }
-  }
+
+    // Pass all validated data to updateOrder service
+    const updatedOrder = await orderService.updateOrder(req.params.id, req.body, tenantId);
+    res.json(updatedOrder);
+  })
 );
 
 /**
@@ -346,15 +322,11 @@ router.put(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   validate({ body: updateOrderStatusSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.updateOrderStatus(req.params.id, req.body, tenantId);
-      res.json(order);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const order = await orderService.updateOrderStatus(req.params.id, req.body, tenantId);
+    res.json(order);
+  })
 );
 
 /**
@@ -372,27 +344,23 @@ router.put(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED']) }) }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const order = await orderService.getOrderById(req.params.id, tenantId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Only update if order is sent to kitchen
-      if (!order.sendToKitchen) {
-        return res.status(400).json({ message: 'Order is not sent to kitchen' });
-      }
-
-      const updatedOrder = await orderService.updateOrder(req.params.id, {
-        kitchenStatus: req.body.status,
-      }, tenantId);
-      res.json(updatedOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const order = await orderService.getOrderById(req.params.id, tenantId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
     }
-  }
+
+    // Only update if order is sent to kitchen
+    if (!order.sendToKitchen) {
+      return res.status(400).json({ message: 'Order is not sent to kitchen' });
+    }
+
+    const updatedOrder = await orderService.updateOrder(req.params.id, {
+      kitchenStatus: req.body.status,
+    }, tenantId);
+    res.json(updatedOrder);
+  })
 );
 
 /**
@@ -410,23 +378,19 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userRole = req.user!.role;
 
-      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
-        return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat menghapus pesanan' });
-      }
-
-      const { orderIds } = req.body;
-      const result = await orderService.bulkDeleteOrders(tenantId, orderIds);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
+    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+      return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat menghapus pesanan' });
     }
-  }
+
+    const { orderIds } = req.body;
+    const result = await orderService.bulkDeleteOrders(tenantId, orderIds);
+    res.json(result);
+  })
 );
 
 /**
@@ -444,23 +408,19 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: z.object({ orderIds: z.array(z.string()).min(1) }) }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userRole = req.user!.role;
 
-      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can refund orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
-        return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat melakukan refund' });
-      }
-
-      const { orderIds } = req.body;
-      const result = await orderService.bulkRefundOrders(tenantId, orderIds);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'ORDER');
+    // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can refund orders
+    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+      return res.status(403).json({ message: 'Hanya admin atau supervisor yang dapat melakukan refund' });
     }
-  }
+
+    const { orderIds } = req.body;
+    const result = await orderService.bulkRefundOrders(tenantId, orderIds);
+    res.json(result);
+  })
 );
 
 /**
@@ -477,39 +437,21 @@ router.delete(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = (req as any).user.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userRole = req.user!.role;
 
-      // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
-        return res.status(403).json({
-          error: 'FORBIDDEN',
-          message: 'Hanya admin atau supervisor yang dapat menghapus pesanan'
-        });
-      }
-
-      await orderService.deleteOrder(req.params.id, tenantId);
-      res.status(204).send();
-    } catch (error: unknown) {
-      const err = error as Error;
-      // Check if it's a known business logic error
-      if (err.message?.includes('cannot be deleted') || err.message?.includes('Status must be')) {
-        return res.status(400).json({
-          error: 'INVALID_STATUS',
-          message: err.message
-        });
-      }
-      if (err.message?.includes('not found')) {
-        return res.status(404).json({
-          error: 'NOT_FOUND',
-          message: err.message
-        });
-      }
-      handleRouteError(res, error, 'Gagal menghapus pesanan', 'DELETE_ORDER');
+    // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
+    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
+      return res.status(403).json({
+        error: 'FORBIDDEN',
+        message: 'Hanya admin atau supervisor yang dapat menghapus pesanan'
+      });
     }
-  }
+
+    await orderService.deleteOrder(req.params.id, tenantId);
+    res.status(204).send();
+  })
 );
 
 export default router;

@@ -9,7 +9,6 @@ import tenantRoutes from '../tenant.routes';
 import productRoutes from '../product.routes';
 import orderRoutes from '../order.routes';
 import archiveRoutes from '../archive.routes';
-import retentionRoutes from '../retention.routes';
 // Import other routes as needed
 
 const router = Router();
@@ -20,7 +19,6 @@ router.use('/tenants', tenantRoutes);
 router.use('/products', productRoutes);
 router.use('/orders', orderRoutes);
 router.use('/archives', archiveRoutes);
-router.use('/retention', retentionRoutes);
 // Add other routes...
 
 export default router;

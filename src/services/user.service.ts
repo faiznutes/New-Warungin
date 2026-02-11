@@ -50,7 +50,6 @@ export class UserService {
           role: true,
           isActive: true,
           permissions: true,
-          defaultPassword: true, // Include default password for Super Admin
           lastLogin: true,
           createdAt: true,
         },
@@ -58,15 +57,8 @@ export class UserService {
       prisma.user.count({ where: { tenantId } }),
     ]);
 
-    // Decrypt defaultPassword for all users
-    const { decrypt } = await import('../utils/encryption');
-    const decryptedUsers = users.map(user => ({
-      ...user,
-      defaultPassword: user.defaultPassword ? decrypt(user.defaultPassword) : null,
-    }));
-
     return {
-      data: decryptedUsers,
+      data: users,
       pagination: {
         page,
         limit,
@@ -86,7 +78,6 @@ export class UserService {
         role: true,
         isActive: true,
         permissions: true,
-        defaultPassword: true, // Include default password for Super Admin
         lastLogin: true,
         createdAt: true,
       },
@@ -96,13 +87,9 @@ export class UserService {
       return null;
     }
 
-    // Decrypt defaultPassword before returning
-    const { decrypt } = await import('../utils/encryption');
-    return {
-      ...user,
-      defaultPassword: user.defaultPassword ? decrypt(user.defaultPassword) : null,
-    };
+    return user;
   }
+
 
   async createUser(data: CreateUserInput, tenantId: string, userRole?: string) {
     // Check if trying to create SUPERVISOR role - requires SUPERVISOR_ROLE addon
@@ -160,7 +147,6 @@ export class UserService {
         name: data.name,
         email: data.email,
         password: hashedPassword,
-        defaultPassword: encryptedDefaultPassword, // Store encrypted default password
         role: data.role,
       },
       select: {
@@ -169,7 +155,6 @@ export class UserService {
         email: true,
         role: true,
         isActive: true,
-        defaultPassword: true,
       },
     });
 
@@ -177,14 +162,9 @@ export class UserService {
     // Note: Users don't directly affect analytics, but we invalidate for consistency
     await this.invalidateAnalyticsCache(tenantId);
 
-    // Decrypt defaultPassword before returning
-    const { decrypt } = await import('../utils/encryption');
-    const decryptedDefaultPassword = user.defaultPassword ? decrypt(user.defaultPassword) : undefined;
-
-    return { 
-      ...user, 
-      defaultPassword: decryptedDefaultPassword,
-      password: data.password ? undefined : password 
+    return {
+      ...user,
+      password: data.password ? undefined : password
     };
   }
 
@@ -212,7 +192,7 @@ export class UserService {
     if (data.name) updateData.name = data.name;
     if (data.email) updateData.email = data.email;
     if (data.role) updateData.role = data.role;
-    
+
     // Allow isActive update based on role and subscription status
     // ADMIN_TENANT can activate/deactivate users if subscription is active
     // ADMIN_TENANT cannot activate users if subscription is expired or null
@@ -240,13 +220,10 @@ export class UserService {
       }
       updateData.isActive = data.isActive;
     }
-    
+
     if (data.password) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
-      // Encrypt defaultPassword before storing
-      const { encrypt } = await import('../utils/encryption');
       updateData.password = hashedPassword;
-      updateData.defaultPassword = encrypt(data.password); // Store encrypted default password
     }
     if (data.permissions !== undefined) {
       updateData.permissions = data.permissions;
@@ -262,15 +239,8 @@ export class UserService {
         role: true,
         isActive: true,
         permissions: true,
-        defaultPassword: true, // Include default password for Super Admin
       },
     });
-
-    // Decrypt defaultPassword before returning
-    if (user.defaultPassword) {
-      const { decrypt } = await import('../utils/encryption');
-      user.defaultPassword = decrypt(user.defaultPassword);
-    }
 
     // Invalidate analytics cache after user update (if needed)
     await this.invalidateAnalyticsCache(tenantId);
@@ -362,20 +332,14 @@ export class UserService {
     const randomPart = Math.random().toString(36).slice(-8);
     const upperPart = Math.random().toString(36).slice(-4).toUpperCase();
     const newPassword = `${randomPart}${upperPart}123`;
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password and default password
-    // Encrypt defaultPassword before storing
-    const { encrypt } = await import('../utils/encryption');
-    const encryptedDefaultPassword = encrypt(newPassword);
-    
     await prisma.user.update({
       where: { id },
-      data: { 
+      data: {
         password: hashedPassword,
-        defaultPassword: encryptedDefaultPassword, // Store encrypted default password
       },
     });
 
@@ -389,14 +353,8 @@ export class UserService {
       throw new Error('User not found');
     }
 
-    // Return default password if available (decrypt first)
-    if (user.defaultPassword) {
-      const { decrypt } = await import('../utils/encryption');
-      const decryptedPassword = decrypt(user.defaultPassword);
-      return { password: decryptedPassword };
-    }
-
-    // If no default password, reset it and return new password
+    // Since defaultPassword field is removed, we can no longer retrieve the original default password.
+    // We will always reset the password and return the new one.
     return this.resetPassword(id, tenantId);
   }
 }

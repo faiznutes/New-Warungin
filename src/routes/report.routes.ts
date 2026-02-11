@@ -1,12 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import reportService from '../services/report.service';
 import { requireTenantId } from '../utils/tenant';
-import { checkExportReportsAddon } from '../middlewares/addon-guard';
-import logger from '../utils/logger';
 import prisma from '../config/database';
+import { asyncHandler } from '../utils/route-error-handler';
+import logger from '../utils/logger';
 
 const router = Router();
 
@@ -33,35 +33,31 @@ const router = Router();
 router.get(
   '/global',
   authGuard,
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = (req as any).user;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
 
-      // Only Super Admin can access global reports
-      if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
-      }
-
-      const { startDate, endDate } = req.query;
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
-
-      // If end date is provided, set time to end of day to include all subscriptions created on that day
-      if (end) {
-        end.setHours(23, 59, 59, 999);
-      }
-
-      // If start date is provided, set time to start of day
-      if (start) {
-        start.setHours(0, 0, 0, 0);
-      }
-
-      const report = await reportService.getGlobalReport(start, end);
-      res.json(report);
-    } catch (error: any) {
-      next(error);
+    // Only Super Admin can access global reports
+    if (user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Access denied. Super Admin only.' });
     }
-  }
+
+    const { startDate, endDate } = req.query;
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+
+    // If end date is provided, set time to end of day to include all subscriptions created on that day
+    if (end) {
+      end.setHours(23, 59, 59, 999);
+    }
+
+    // If start date is provided, set time to start of day
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+    }
+
+    const report = await reportService.getGlobalReport(start, end);
+    res.json(report);
+  })
 );
 
 /**
@@ -95,107 +91,99 @@ router.get(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   supervisorStoresGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { startDate, endDate, reportType, period, format } = req.query;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { startDate, endDate, reportType, period, format } = req.query;
 
-      // Check if export format is requested (requires PRO/MAX plan or EXPORT_REPORTS addon)
-      if (format && (format === 'CSV' || format === 'PDF' || format === 'EXCEL')) {
-        // Get tenant to check subscription plan
-        const tenant = await prisma.tenant.findUnique({
-          where: { id: tenantId },
-          select: { subscriptionPlan: true },
-        });
+    // Check if export format is requested (requires PRO/MAX plan or EXPORT_REPORTS addon)
+    if (format && (format === 'CSV' || format === 'PDF' || format === 'EXCEL')) {
+      // Get tenant to check subscription plan
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { subscriptionPlan: true },
+      });
 
-        const isProOrMax = tenant?.subscriptionPlan === 'PRO' || tenant?.subscriptionPlan === 'MAX';
+      const isProOrMax = tenant?.subscriptionPlan === 'PRO' || tenant?.subscriptionPlan === 'MAX';
 
-        // Check addon for export (if not PRO/MAX)
-        let hasExportAddon = false;
-        if (!isProOrMax) {
-          const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
-          const addonsData = Array.isArray(addons.data) ? addons.data : [];
-          // Ensure addonsData is array before using .some()
-          if (Array.isArray(addonsData) && addonsData.length > 0) {
-            try {
-              hasExportAddon = addonsData.some(
-                (addon: any) => addon && addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
-              );
-            } catch (error: any) {
-              logger.error('Error checking export reports addon:', { error: error.message });
-              hasExportAddon = false;
-            }
-          } else {
+      // Check addon for export (if not PRO/MAX)
+      let hasExportAddon = false;
+      if (!isProOrMax) {
+        const addons = await (await import('../services/addon.service')).default.getTenantAddons(tenantId);
+        const addonsData = Array.isArray(addons.data) ? addons.data : [];
+        // Ensure addonsData is array before using .some()
+        if (Array.isArray(addonsData) && addonsData.length > 0) {
+          try {
+            hasExportAddon = addonsData.some(
+              (addon: any) => addon && addon.addonType === 'EXPORT_REPORTS' && addon.status === 'ACTIVE'
+            );
+          } catch (error: any) {
+            logger.error('Error checking export reports addon:', { error: error.message });
             hasExportAddon = false;
           }
-        }
-
-        if (!isProOrMax && !hasExportAddon) {
-          return res.status(403).json({
-            message: 'Export Laporan memerlukan paket PRO/MAX atau addon Export Laporan'
-          });
+        } else {
+          hasExportAddon = false;
         }
       }
 
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
-      const type = (reportType as string) || 'sales';
-      const periodType = (period as string) || 'all';
-
-      const userRole = (req as any).user.role;
-      const userPermissions = (req as any).user.permissions;
-
-      // Use new report service methods
-      let report: any;
-      switch (type) {
-        case 'sales':
-          report = await reportService.generateSalesReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-            format: format as any,
-          });
-          break;
-        case 'products':
-          report = await reportService.generateProductReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-            format: format as any,
-          });
-          break;
-        case 'customers':
-          report = await reportService.generateCustomerReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-            format: format as any,
-          });
-          break;
-        case 'inventory':
-          report = await reportService.generateInventoryReport(tenantId, {
-            format: format as any,
-          });
-          break;
-        case 'financial':
-          report = await reportService.generateFinancialReport(tenantId, {
-            startDate: start?.toISOString(),
-            endDate: end?.toISOString(),
-            period: periodType as any,
-            format: format as any,
-          });
-          break;
-        default:
-          // Fallback to old method
-          report = await reportService.getTenantReport(tenantId, start, end, type);
+      if (!isProOrMax && !hasExportAddon) {
+        return res.status(403).json({
+          message: 'Export Laporan memerlukan paket PRO/MAX atau addon Export Laporan'
+        });
       }
-
-      res.json(report);
-    } catch (error: any) {
-      logger.error('Error loading tenant report:', { error: error.message, stack: error.stack });
-      res.status(500).json({ message: error.message || 'Failed to load tenant report' });
     }
-  }
+
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+    const type = (reportType as string) || 'sales';
+    const periodType = (period as string) || 'all';
+
+    // Use new report service methods
+    let report: any;
+    switch (type) {
+      case 'sales':
+        report = await reportService.generateSalesReport(tenantId, {
+          startDate: start?.toISOString(),
+          endDate: end?.toISOString(),
+          period: periodType as any,
+          format: format as any,
+        });
+        break;
+      case 'products':
+        report = await reportService.generateProductReport(tenantId, {
+          startDate: start?.toISOString(),
+          endDate: end?.toISOString(),
+          period: periodType as any,
+          format: format as any,
+        });
+        break;
+      case 'customers':
+        report = await reportService.generateCustomerReport(tenantId, {
+          startDate: start?.toISOString(),
+          endDate: end?.toISOString(),
+          period: periodType as any,
+          format: format as any,
+        });
+        break;
+      case 'inventory':
+        report = await reportService.generateInventoryReport(tenantId, {
+          format: format as any,
+        });
+        break;
+      case 'financial':
+        report = await reportService.generateFinancialReport(tenantId, {
+          startDate: start?.toISOString(),
+          endDate: end?.toISOString(),
+          period: periodType as any,
+          format: format as any,
+        });
+        break;
+      default:
+        // Fallback to old method
+        report = await reportService.getTenantReport(tenantId, start, end, type);
+    }
+
+    res.json(report);
+  })
 );
 
 /**
@@ -212,22 +200,17 @@ router.get(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { startDate, endDate, type } = req.query;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { startDate, endDate, type } = req.query;
 
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
-      const reportType = (type as string) || 'sales';
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+    const reportType = (type as string) || 'sales';
 
-      const report = await reportService.getTenantReport(tenantId, start, end, reportType);
-      res.json(report);
-    } catch (error: any) {
-      logger.error('Error loading report:', { error: error.message, stack: error.stack });
-      res.status(500).json({ message: error.message || 'Failed to load report' });
-    }
-  }
+    const report = await reportService.getTenantReport(tenantId, start, end, reportType);
+    res.json(report);
+  })
 );
 
 /**
@@ -242,33 +225,28 @@ router.get(
 router.get(
   '/global/export/pdf',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const user = (req as any).user;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
 
-      // Only Super Admin can access global reports
-      if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
-      }
-
-      const { startDate, endDate } = req.query;
-      const start = startDate ? new Date(startDate as string) : undefined;
-      const end = endDate ? new Date(endDate as string) : undefined;
-
-      const report = await reportService.getGlobalReport(start, end);
-
-      // Generate HTML for PDF
-      const html = reportService.generateGlobalReportPDF(report, start, end);
-
-      // Set headers for PDF download
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
-      res.send(html);
-    } catch (error: any) {
-      logger.error('Error exporting global report PDF:', { error: error.message, stack: error.stack });
-      res.status(500).json({ message: error.message || 'Failed to export PDF' });
+    // Only Super Admin can access global reports
+    if (user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Access denied. Super Admin only.' });
     }
-  }
+
+    const { startDate, endDate } = req.query;
+    const start = startDate ? new Date(startDate as string) : undefined;
+    const end = endDate ? new Date(endDate as string) : undefined;
+
+    const report = await reportService.getGlobalReport(start, end);
+
+    // Generate HTML for PDF
+    const html = reportService.generateGlobalReportPDF(report, start, end);
+
+    // Set headers for PDF download
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Disposition', `inline; filename="laporan-global-${startDate || 'all'}-${endDate || 'all'}.html"`);
+    res.send(html);
+  })
 );
 
 /**
@@ -296,26 +274,22 @@ router.get(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { startDate, endDate } = req.query;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { startDate, endDate } = req.query;
 
-      const start = startDate ? new Date(startDate as string) : new Date();
-      start.setHours(0, 0, 0, 0);
-      start.setDate(start.getDate() - 30); // Default: last 30 days
+    const start = startDate ? new Date(startDate as string) : new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - 30); // Default: last 30 days
 
-      const end = endDate ? new Date(endDate as string) : new Date();
-      end.setHours(23, 59, 59, 999);
+    const end = endDate ? new Date(endDate as string) : new Date();
+    end.setHours(23, 59, 59, 999);
 
-      const userRole = (req as any).user.role;
-      const userPermissions = (req as any).user.permissions;
-      const report = await reportService.getMultiStoreReport(tenantId, start, end, userRole, userPermissions);
-      res.json(report);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message || 'Failed to generate multi-store report' });
-    }
-  }
+    const userRole = req.role!;
+    const userPermissions = req.user?.permissions;
+    const report = await reportService.getMultiStoreReport(tenantId, start, end, userRole, userPermissions);
+    res.json(report);
+  })
 );
 
 export default router;

@@ -1,12 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import customerService from '../services/customer.service';
 import { createCustomerSchema, updateCustomerSchema, getCustomersQuerySchema } from '../validators/customer.validator';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -58,15 +58,11 @@ router.get(
   subscriptionGuard,
   supervisorStoresGuard,
   validate({ query: getCustomersQuerySchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const result = await customerService.getCustomers(tenantId, req.query as any);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get customers', 'GET_CUSTOMERS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const result = await customerService.getCustomers(tenantId, req.query as any);
+    res.json(result);
+  })
 );
 
 /**
@@ -97,18 +93,14 @@ router.get(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   supervisorStoresGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const customer = await customerService.getCustomerById(req.params.id, tenantId);
-      if (!customer) {
-        return res.status(404).json({ message: 'Customer not found' });
-      }
-      res.json(customer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get customers', 'GET_CUSTOMERS');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const customer = await customerService.getCustomerById(req.params.id, tenantId);
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
     }
-  }
+    res.json(customer);
+  })
 );
 
 /**
@@ -152,15 +144,11 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: createCustomerSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const customer = await customerService.createCustomer(req.body, tenantId);
-      res.status(201).json(customer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create customer', 'CREATE_CUSTOMER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const customer = await customerService.createCustomer(req.body, tenantId);
+    res.status(201).json(customer);
+  })
 );
 
 /**
@@ -213,15 +201,11 @@ router.put(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: updateCustomerSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const customer = await customerService.updateCustomer(req.params.id, req.body, tenantId);
-      res.json(customer);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update customer', 'UPDATE_CUSTOMER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const customer = await customerService.updateCustomer(req.params.id, req.body, tenantId);
+    res.json(customer);
+  })
 );
 
 /**
@@ -251,15 +235,11 @@ router.delete(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      await customerService.deleteCustomer(req.params.id, tenantId);
-      res.status(204).send();
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update customer', 'UPDATE_CUSTOMER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    await customerService.deleteCustomer(req.params.id, tenantId);
+    res.status(204).send();
+  })
 );
 
 export default router;

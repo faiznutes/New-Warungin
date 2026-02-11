@@ -4,11 +4,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
-import { AuthRequest } from '../middlewares/auth';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { requireTenantId } from '../utils/tenant';
 import dailyBackupService from '../services/daily-backup.service';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -24,29 +23,25 @@ const router = Router();
 router.get(
   '/preview',
   authGuard,
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const userRole = req.role || (req as any).user?.role;
-      
-      // Only ADMIN_TENANT and SUPERVISOR can preview their backup
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
-        res.status(403).json({ message: 'Access denied. Tenant admin only.' });
-        return;
-      }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role || (req as any).user?.role;
 
-      const tenantId = requireTenantId(req);
-      
-      // Generate preview (without sending email or creating log)
-      const report = await dailyBackupService.generateDailyBackupPreview(tenantId);
-      
-      res.json({
-        report,
-        html: dailyBackupService.generateReportHTMLFromData(report),
-      });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to generate backup preview', 'BACKUP_PREVIEW');
+    // Only ADMIN_TENANT and SUPERVISOR can preview their backup
+    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
+      res.status(403).json({ message: 'Access denied. Tenant admin only.' });
+      return;
     }
-  }
+
+    const tenantId = requireTenantId(req);
+
+    // Generate preview (without sending email or creating log)
+    const report = await dailyBackupService.generateDailyBackupPreview(tenantId);
+
+    res.json({
+      report,
+      html: dailyBackupService.generateReportHTMLFromData(report),
+    });
+  })
 );
 
 /**
@@ -61,30 +56,26 @@ router.get(
 router.get(
   '/latest',
   authGuard,
-  async (req: AuthRequest, res: Response): Promise<void> => {
-    try {
-      const userRole = req.role || (req as any).user?.role;
-      
-      // Only ADMIN_TENANT and SUPERVISOR can view their backup
-      if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
-        res.status(403).json({ message: 'Access denied. Tenant admin only.' });
-        return;
-      }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role || (req as any).user?.role;
 
-      const tenantId = requireTenantId(req);
-      
-      const latestBackup = await dailyBackupService.getLatestBackup(tenantId);
-      
-      if (!latestBackup) {
-        res.status(404).json({ message: 'No backup found' });
-        return;
-      }
-      
-      res.json(latestBackup);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get latest backup', 'BACKUP_LATEST');
+    // Only ADMIN_TENANT and SUPERVISOR can view their backup
+    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPERVISOR') {
+      res.status(403).json({ message: 'Access denied. Tenant admin only.' });
+      return;
     }
-  }
+
+    const tenantId = requireTenantId(req);
+
+    const latestBackup = await dailyBackupService.getLatestBackup(tenantId);
+
+    if (!latestBackup) {
+      res.status(404).json({ message: 'No backup found' });
+      return;
+    }
+
+    res.json(latestBackup);
+  })
 );
 
 export default router;

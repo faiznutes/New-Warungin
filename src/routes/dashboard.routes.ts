@@ -1,11 +1,11 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
 import dashboardService from '../services/dashboard.service';
 import { requireTenantId } from '../utils/tenant';
 import prisma from '../config/database';
-import { handleApiError } from '../utils/error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 import logger from '../utils/logger';
 
 const router = Router();
@@ -56,60 +56,45 @@ router.get(
   authGuard,
   subscriptionGuard,
   supervisorStoresGuard,
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = (req as any).user;
-      const userRole = user?.role;
-      
-      // For Super Admin without selected tenant, return addon & subscription stats
-      if (userRole === 'SUPER_ADMIN') {
-        const queryTenantId = req.query.tenantId as string;
-        if (!queryTenantId) {
-          // Return super admin stats (addon & subscription revenue)
-          return res.json(await getSuperAdminStats());
-        }
-        
-        // Super Admin with tenantId selected
-        const { startDate, endDate } = req.query;
-        const stats = await dashboardService.getDashboardStats(
-          queryTenantId,
-          startDate ? new Date(startDate as string) : undefined,
-          endDate ? new Date(endDate as string) : undefined
-        );
-        return res.json(stats);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.user?.role;
+
+    // For Super Admin without selected tenant, return addon & subscription stats
+    if (userRole === 'SUPER_ADMIN') {
+      const queryTenantId = req.query.tenantId as string;
+      if (!queryTenantId) {
+        // Return super admin stats (addon & subscription revenue)
+        return res.json(await getSuperAdminStats());
       }
-      
-      // For other roles, require tenantId from user
-      let tenantId: string;
-      try {
-        tenantId = requireTenantId(req);
-      } catch (error: any) {
-        // If tenantId is missing, return 400 with helpful message
-        return res.status(400).json({ 
-          message: error.message || 'Tenant ID is required',
-          error: 'TENANT_ID_REQUIRED'
-        });
-      }
-      
+
+      // Super Admin with tenantId selected
       const { startDate, endDate } = req.query;
-      
-      // Auto-filter berdasarkan assignedStoreId untuk kasir/dapur
-      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
-      const outletId = assignedStoreId || undefined;
-      
       const stats = await dashboardService.getDashboardStats(
-        tenantId,
+        queryTenantId,
         startDate ? new Date(startDate as string) : undefined,
-        endDate ? new Date(endDate as string) : undefined,
-        true,
-        outletId
+        endDate ? new Date(endDate as string) : undefined
       );
-      res.json(stats);
-    } catch (error: any) {
-      // Pass error to Express error handler
-      next(error);
+      return res.json(stats);
     }
-  }
+
+    // For other roles, require tenantId from user
+    const tenantId = requireTenantId(req);
+
+    const { startDate, endDate } = req.query;
+
+    // Auto-filter berdasarkan assignedStoreId untuk kasir/dapur
+    const assignedStoreId = (req as any).assignedStoreId || req.user?.assignedStoreId;
+    const outletId = assignedStoreId || undefined;
+
+    const stats = await dashboardService.getDashboardStats(
+      tenantId,
+      startDate ? new Date(startDate as string) : undefined,
+      endDate ? new Date(endDate as string) : undefined,
+      true,
+      outletId
+    );
+    res.json(stats);
+  })
 );
 
 /**
@@ -125,65 +110,61 @@ router.get(
   '/stats/cashier',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const user = (req as any).user;
-      if (user.role !== 'CASHIER') {
-        return res.status(403).json({ message: 'Access denied. Cashier only.' });
-      }
-
-      const tenantId = requireTenantId(req);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      // Auto-filter berdasarkan assignedStoreId untuk kasir
-      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
-      const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
-
-      const [todayOrders, todayRevenue, recentTransactions] = await Promise.all([
-        prisma.order.count({
-          where: {
-            tenantId,
-            userId: user.id,
-            createdAt: { gte: today },
-            ...outletFilter,
-          },
-        }),
-        prisma.order.aggregate({
-          where: {
-            tenantId,
-            userId: user.id,
-            status: 'COMPLETED',
-            createdAt: { gte: today },
-            ...outletFilter,
-          },
-          _sum: { total: true },
-        }),
-        prisma.order.findMany({
-          where: {
-            tenantId,
-            userId: user.id,
-            ...outletFilter,
-          },
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          include: {
-            items: {
-              include: { product: true },
-            },
-          },
-        }),
-      ]);
-
-      res.json({
-        todayOrders,
-        todayRevenue: Number(todayRevenue._sum.total || 0),
-        recentTransactions,
-      });
-    } catch (error: any) {
-      handleApiError(res, error, 'Failed to load cashier stats');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
+    if (user.role !== 'CASHIER') {
+      return res.status(403).json({ message: 'Access denied. Cashier only.' });
     }
-  }
+
+    const tenantId = requireTenantId(req);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Auto-filter berdasarkan assignedStoreId untuk kasir
+    const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
+    const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
+
+    const [todayOrders, todayRevenue, recentTransactions] = await Promise.all([
+      prisma.order.count({
+        where: {
+          tenantId,
+          userId: user.id,
+          createdAt: { gte: today },
+          ...outletFilter,
+        },
+      }),
+      prisma.order.aggregate({
+        where: {
+          tenantId,
+          userId: user.id,
+          status: 'COMPLETED',
+          createdAt: { gte: today },
+          ...outletFilter,
+        },
+        _sum: { total: true },
+      }),
+      prisma.order.findMany({
+        where: {
+          tenantId,
+          userId: user.id,
+          ...outletFilter,
+        },
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          items: {
+            include: { product: true },
+          },
+        },
+      }),
+    ]);
+
+    res.json({
+      todayOrders,
+      todayRevenue: Number(todayRevenue._sum.total || 0),
+      recentTransactions,
+    });
+  })
 );
 
 /**
@@ -199,56 +180,52 @@ router.get(
   '/stats/kitchen',
   authGuard,
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const user = (req as any).user;
-      if (user.role !== 'KITCHEN') {
-        return res.status(403).json({ message: 'Access denied. Kitchen only.' });
-      }
-
-      const tenantId = requireTenantId(req);
-      
-      // Auto-filter berdasarkan assignedStoreId untuk kitchen
-      const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
-      const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
-
-      const [pendingOrders, cookingOrders, readyOrders] = await Promise.all([
-        prisma.order.count({
-          where: {
-            tenantId,
-            sendToKitchen: true,
-            kitchenStatus: 'PENDING',
-            ...outletFilter,
-          },
-        }),
-        prisma.order.count({
-          where: {
-            tenantId,
-            sendToKitchen: true,
-            kitchenStatus: 'COOKING',
-            ...outletFilter,
-          },
-        }),
-        prisma.order.count({
-          where: {
-            tenantId,
-            sendToKitchen: true,
-            kitchenStatus: 'READY',
-            ...outletFilter,
-          },
-        }),
-      ]);
-
-      res.json({
-        pendingOrders,
-        cookingOrders,
-        readyOrders,
-        totalOrders: pendingOrders + cookingOrders + readyOrders,
-      });
-    } catch (error: any) {
-      handleApiError(res, error, 'Failed to load kitchen stats');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
+    if (user.role !== 'KITCHEN') {
+      return res.status(403).json({ message: 'Access denied. Kitchen only.' });
     }
-  }
+
+    const tenantId = requireTenantId(req);
+
+    // Auto-filter berdasarkan assignedStoreId untuk kitchen
+    const assignedStoreId = (req as any).assignedStoreId || user.assignedStoreId;
+    const outletFilter = assignedStoreId ? { outletId: assignedStoreId } : {};
+
+    const [pendingOrders, cookingOrders, readyOrders] = await Promise.all([
+      prisma.order.count({
+        where: {
+          tenantId,
+          sendToKitchen: true,
+          kitchenStatus: 'PENDING',
+          ...outletFilter,
+        },
+      }),
+      prisma.order.count({
+        where: {
+          tenantId,
+          sendToKitchen: true,
+          kitchenStatus: 'COOKING',
+          ...outletFilter,
+        },
+      }),
+      prisma.order.count({
+        where: {
+          tenantId,
+          sendToKitchen: true,
+          kitchenStatus: 'READY',
+          ...outletFilter,
+        },
+      }),
+    ]);
+
+    res.json({
+      pendingOrders,
+      cookingOrders,
+      readyOrders,
+      totalOrders: pendingOrders + cookingOrders + readyOrders,
+    });
+  })
 );
 
 /**
@@ -430,7 +407,7 @@ async function getSuperAdminStats() {
         },
       }),
     ]);
-    
+
     const activeTenants = activeTenantsCount;
 
     return {
@@ -461,18 +438,18 @@ async function getSuperAdminStats() {
     };
   } catch (error: any) {
     logger.error('Error in getSuperAdminStats:', { error: error.message, stack: error.stack });
-    
+
     // Handle database connection errors
-    if (error.code === 'P1001' || 
-        error.message?.includes('Can\'t reach database server') || 
-        error.message?.includes('connection') ||
-        error.message?.includes('Database connection error')) {
+    if (error.code === 'P1001' ||
+      error.message?.includes('Can\'t reach database server') ||
+      error.message?.includes('connection') ||
+      error.message?.includes('Database connection error')) {
       throw {
         code: 'P1001',
         message: 'Database connection error. Please check your database configuration.',
       };
     }
-    
+
     // Re-throw other errors
     throw error;
   }

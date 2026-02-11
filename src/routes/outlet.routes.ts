@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 // import { supervisorStoresGuard } from '../middlewares/supervisor-store-guard';
@@ -6,8 +6,7 @@ import outletService from '../services/outlet.service';
 import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
-import { asyncHandler, successResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -61,19 +60,15 @@ router.get(
   '/',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50; // Default 50 for outlets
-      const userRole = req.role;
-      const userPermissions = (req as any).user?.permissions;
-      const result = await outletService.getOutlets(tenantId, page, limit, userRole, userPermissions);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get outlets', 'GET_OUTLETS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50; // Default 50 for outlets
+    const userRole = req.role;
+    const userPermissions = (req as any).user?.permissions;
+    const result = await outletService.getOutlets(tenantId, page, limit, userRole, userPermissions);
+    res.json(result);
+  })
 );
 
 /**
@@ -110,15 +105,11 @@ router.get(
   '/:id',
   authGuard,
   subscriptionGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const outlet = await outletService.getOutlet(tenantId, req.params.id);
-      res.json({ data: outlet });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get outlet', 'GET_OUTLET');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const outlet = await outletService.getOutlet(tenantId, req.params.id);
+    res.json({ data: outlet });
+  })
 );
 
 /**
@@ -168,24 +159,20 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   subscriptionGuard,
   validate({ body: createOutletSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const userRole = (req as any).user?.role;
-      let tenantId: string;
-      if (userRole === 'SUPER_ADMIN') {
-        tenantId = req.body.tenantId || req.query.tenantId as string;
-        if (!tenantId) {
-          return res.status(400).json({ message: 'tenantId is required for super admin' });
-        }
-      } else {
-        tenantId = requireTenantId(req);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
+    let tenantId: string;
+    if (userRole === 'SUPER_ADMIN') {
+      tenantId = req.body.tenantId || req.query.tenantId as string;
+      if (!tenantId) {
+        return res.status(400).json({ message: 'tenantId is required for super admin' });
       }
-      const outlet = await outletService.createOutlet(tenantId, req.body);
-      res.status(201).json({ data: outlet });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'OUTLET');
+    } else {
+      tenantId = requireTenantId(req);
     }
-  }
+    const outlet = await outletService.createOutlet(tenantId, req.body);
+    res.status(201).json({ data: outlet });
+  })
 );
 
 /**
@@ -239,17 +226,13 @@ router.put(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   subscriptionGuard,
   validate({ body: updateOutletSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userRole = req.role;
-      const userPermissions = (req as any).user?.permissions;
-      const outlet = await outletService.updateOutlet(tenantId, req.params.id, req.body, userRole, userPermissions);
-      res.json({ data: outlet });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'OUTLET');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userRole = req.role;
+    const userPermissions = (req as any).user?.permissions;
+    const outlet = await outletService.updateOutlet(tenantId, req.params.id, req.body, userRole, userPermissions);
+    res.json({ data: outlet });
+  })
 );
 
 /**
@@ -288,15 +271,11 @@ router.delete(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   subscriptionGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      await outletService.deleteOutlet(tenantId, req.params.id);
-      res.json({ message: 'Outlet berhasil dihapus' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'OUTLET');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    await outletService.deleteOutlet(tenantId, req.params.id);
+    res.json({ message: 'Outlet berhasil dihapus' });
+  })
 );
 
 /**
@@ -351,12 +330,7 @@ router.post(
     const { newName } = req.body;
 
     if (!newName) {
-      throw new ApiError(
-        ErrorCodes.MISSING_FIELD,
-        'Nama outlet baru harus diisi',
-        400,
-        { field: 'newName' }
-      );
+      return res.status(400).json({ message: 'Nama outlet baru harus diisi' });
     }
 
     const originalOutlet = await outletService.getOutlet(tenantId, req.params.id);
@@ -369,9 +343,11 @@ router.post(
       operatingHours: (originalOutlet as any).operatingHours || undefined,
     });
 
-    res.status(201).json(
-      successResponse(req, 'Outlet duplicated successfully', { data: duplicatedOutlet })
-    );
+    res.status(201).json({
+      success: true,
+      message: 'Outlet duplicated successfully',
+      data: duplicatedOutlet
+    });
   })
 );
 

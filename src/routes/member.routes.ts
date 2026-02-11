@@ -1,10 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import memberService from '../services/member.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { requireTenantId } from '../utils/tenant';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -72,19 +72,15 @@ const updateMemberSchema = createMemberSchema.partial().extend({
 router.get(
   '/',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const search = req.query.search as string | undefined;
-      const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
-      const result = await memberService.getMembers(tenantId, page, limit, search, isActive);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+    const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
+    const result = await memberService.getMembers(tenantId, page, limit, search, isActive);
+    res.json(result);
+  })
 );
 
 /**
@@ -117,18 +113,14 @@ router.get(
 router.get(
   '/code/:code',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const member = await memberService.getMemberByCode(req.params.code, tenantId);
-      if (!member) {
-        return res.status(404).json({ message: 'Member not found' });
-      }
-      res.json(member);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const member = await memberService.getMemberByCode(req.params.code, tenantId);
+    if (!member) {
+      return res.status(404).json({ message: 'Member not found' });
     }
-  }
+    res.json(member);
+  })
 );
 
 /**
@@ -161,18 +153,14 @@ router.get(
 router.get(
   '/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const member = await memberService.getMemberById(req.params.id, tenantId);
-      if (!member) {
-        return res.status(404).json({ message: 'Member not found' });
-      }
-      res.json(member);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const member = await memberService.getMemberById(req.params.id, tenantId);
+    if (!member) {
+      return res.status(404).json({ message: 'Member not found' });
     }
-  }
+    res.json(member);
+  })
 );
 
 /**
@@ -228,15 +216,11 @@ router.post(
   '/',
   authGuard,
   validate({ body: createMemberSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const member = await memberService.createMember(req.body, tenantId);
-      res.status(201).json(member);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const member = await memberService.createMember(req.body, tenantId);
+    res.status(201).json(member);
+  })
 );
 
 /**
@@ -295,15 +279,11 @@ router.put(
   '/:id',
   authGuard,
   validate({ body: updateMemberSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const member = await memberService.updateMember(req.params.id, req.body, tenantId);
-      res.json(member);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const member = await memberService.updateMember(req.params.id, req.body, tenantId);
+    res.json(member);
+  })
 );
 
 /**
@@ -332,15 +312,11 @@ router.put(
 router.delete(
   '/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      await memberService.deleteMember(req.params.id, tenantId);
-      res.status(204).send();
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to process request', 'MEMBER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    await memberService.deleteMember(req.params.id, tenantId);
+    res.status(204).send();
+  })
 );
 
 export default router;

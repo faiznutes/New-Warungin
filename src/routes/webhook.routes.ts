@@ -6,7 +6,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import logger from '../utils/logger';
 import prisma from '../config/database';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -32,17 +32,13 @@ const updateWebhookSchema = createWebhookSchema.partial();
 router.get(
   '/',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const includeInactive = req.query.includeInactive === 'true';
-      const webhooks = await webhookService.getWebhooks(tenantId, includeInactive);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const includeInactive = req.query.includeInactive === 'true';
+    const webhooks = await webhookService.getWebhooks(tenantId, includeInactive);
 
-      res.json({ webhooks });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get webhooks', 'GET_WEBHOOKS');
-    }
-  }
+    res.json({ webhooks });
+  })
 );
 
 /**
@@ -58,18 +54,14 @@ router.post(
   '/',
   authGuard,
   validate({ body: createWebhookSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const data = req.body;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const data = req.body;
 
-      const webhook = await webhookService.createWebhook(tenantId, data);
+    const webhook = await webhookService.createWebhook(tenantId, data);
 
-      res.status(201).json({ webhook });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create webhook', 'CREATE_WEBHOOK');
-    }
-  }
+    res.status(201).json({ webhook });
+  })
 );
 
 /**
@@ -85,19 +77,15 @@ router.put(
   '/:id',
   authGuard,
   validate({ body: updateWebhookSchema }),
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { id } = req.params;
-      const data = req.body;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { id } = req.params;
+    const data = req.body;
 
-      const webhook = await webhookService.updateWebhook(id, tenantId, data);
+    const webhook = await webhookService.updateWebhook(id, tenantId, data);
 
-      res.json({ webhook });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update webhook', 'UPDATE_WEBHOOK');
-    }
-  }
+    res.json({ webhook });
+  })
 );
 
 /**
@@ -112,18 +100,14 @@ router.put(
 router.delete(
   '/:id',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { id } = req.params;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { id } = req.params;
 
-      await webhookService.deleteWebhook(id, tenantId);
+    await webhookService.deleteWebhook(id, tenantId);
 
-      res.json({ message: 'Webhook berhasil dihapus' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to delete webhook', 'DELETE_WEBHOOK');
-    }
-  }
+    res.json({ message: 'Webhook berhasil dihapus' });
+  })
 );
 
 /**
@@ -138,20 +122,16 @@ router.delete(
 router.get(
   '/:id/deliveries',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const { id } = req.params;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 50;
-      const status = req.query.status as string | undefined;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { id } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const status = req.query.status as string | undefined;
 
-      const result = await webhookService.getDeliveries(id, page, limit, status);
+    const result = await webhookService.getDeliveries(id, page, limit, status);
 
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get webhook deliveries', 'GET_WEBHOOK_DELIVERIES');
-    }
-  }
+    res.json(result);
+  })
 );
 
 /**
@@ -166,37 +146,33 @@ router.get(
 router.post(
   '/:id/test',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { id } = req.params;
-      const customPayload = req.body.payload; // Optional custom payload
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { id } = req.params;
+    const customPayload = req.body.payload; // Optional custom payload
 
-      // Get webhook to verify it exists and belongs to tenant
-      const webhook = await prisma.webhook.findFirst({
-        where: { id, tenantId },
-      });
+    // Get webhook to verify it exists and belongs to tenant
+    const webhook = await prisma.webhook.findFirst({
+      where: { id, tenantId },
+    });
 
-      if (!webhook) {
-        return res.status(404).json({ message: 'Webhook not found' });
-      }
-
-      // Use custom payload if provided, otherwise use default test payload
-      const payload = customPayload || {
-        test: true,
-        message: 'This is a test webhook',
-        timestamp: new Date().toISOString(),
-        webhookId: id,
-      };
-
-      // Trigger test webhook with sample payload (target specific webhook)
-      await webhookService.triggerWebhook(tenantId, req.body.event || 'test.event', payload, id);
-
-      res.json({ message: 'Test webhook triggered successfully' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to test webhook', 'TEST_WEBHOOK');
+    if (!webhook) {
+      return res.status(404).json({ message: 'Webhook not found' });
     }
-  }
+
+    // Use custom payload if provided, otherwise use default test payload
+    const payload = customPayload || {
+      test: true,
+      message: 'This is a test webhook',
+      timestamp: new Date().toISOString(),
+      webhookId: id,
+    };
+
+    // Trigger test webhook with sample payload (target specific webhook)
+    await webhookService.triggerWebhook(tenantId, req.body.event || 'test.event', payload, id);
+
+    res.json({ message: 'Test webhook triggered successfully' });
+  })
 );
 
 /**
@@ -211,18 +187,14 @@ router.post(
 router.post(
   '/:id/replay/:deliveryId',
   authGuard,
-  async (req: AuthRequest, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const { id, deliveryId } = req.params;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const { id, deliveryId } = req.params;
 
-      await webhookService.replayDelivery(id, deliveryId, tenantId);
+    await webhookService.replayDelivery(id, deliveryId, tenantId);
 
-      res.json({ message: 'Webhook delivery replayed successfully' });
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to replay webhook delivery', 'REPLAY_WEBHOOK');
-    }
-  }
+    res.json({ message: 'Webhook delivery replayed successfully' });
+  })
 );
 
 export default router;

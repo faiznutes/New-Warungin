@@ -6,7 +6,7 @@
 import prisma from '../config/database';
 import logger from '../utils/logger';
 import productService from './product.service';
-import marketingService from './marketing.service';
+import { sendEmail } from '../config/email';
 
 class StockAlertService {
   /**
@@ -55,7 +55,7 @@ class StockAlertService {
       }
 
       // Prepare alert message
-      const productList = lowStockProducts.map(p => 
+      const productList = lowStockProducts.map(p =>
         `- ${p.name} (SKU: ${p.sku || 'N/A'}): Stock: ${p.stock}, Min: ${p.minStock}`
       ).join('\n');
 
@@ -65,21 +65,18 @@ class StockAlertService {
         <p>Dear ${tenant.name},</p>
         <p>The following products are running low on stock:</p>
         <ul>
-          ${lowStockProducts.map(p => 
-            `<li><strong>${p.name}</strong> (SKU: ${p.sku || 'N/A'}): Stock: ${p.stock}, Min: ${p.minStock}</li>`
-          ).join('')}
+          ${lowStockProducts.map(p =>
+        `<li><strong>${p.name}</strong> (SKU: ${p.sku || 'N/A'}): Stock: ${p.stock}, Min: ${p.minStock}</li>`
+      ).join('')}
         </ul>
         <p>Please consider placing a purchase order to restock these items.</p>
       `;
 
-      // Send email alert (using marketing service)
+      // Send email alert
       try {
-        await marketingService.sendEmailCampaign(tenantId, {
-          name: subject,
-          target: tenant.email,
-          subject,
-          content,
-        });
+        if (tenant.email) {
+          await sendEmail(tenant.email, subject, content);
+        }
       } catch (emailError) {
         logger.error('Error sending stock alert email:', emailError);
         // Continue even if email fails

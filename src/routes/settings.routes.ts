@@ -1,6 +1,7 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import settingsService from '../services/settings.service';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -17,20 +18,16 @@ router.get(
   '/system',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = (req as any).user;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
 
-      if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
-      }
-
-      const settings = await settingsService.getSystemSettings();
-      res.json(settings);
-    } catch (error: any) {
-      next(error);
+    if (user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Access denied. Super Admin only.' });
     }
-  }
+
+    const settings = await settingsService.getSystemSettings();
+    res.json(settings);
+  })
 );
 
 /**
@@ -46,23 +43,19 @@ router.put(
   '/system',
   authGuard,
   roleGuard('SUPER_ADMIN'),
-  async (req: Request, res: Response, next) => {
-    try {
-      const user = (req as any).user;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const user = req.user!;
 
-      if (user.role !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Access denied. Super Admin only.' });
-      }
-
-      const updatedSettings = await settingsService.updateSystemSettings(req.body);
-      res.json({
-        message: 'Settings updated successfully',
-        settings: updatedSettings,
-      });
-    } catch (error: any) {
-      next(error);
+    if (user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Access denied. Super Admin only.' });
     }
-  }
+
+    const updatedSettings = await settingsService.updateSystemSettings(req.body);
+    res.json({
+      message: 'Settings updated successfully',
+      settings: updatedSettings,
+    });
+  })
 );
 
 export default router;

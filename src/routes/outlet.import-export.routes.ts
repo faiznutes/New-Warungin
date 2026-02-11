@@ -1,8 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
-import { asyncHandler, successResponse, ApiError, ErrorCodes } from '../middleware/errorHandler';
-import { createRateLimiter, sanitizeInput } from '../middleware/security';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
+import { successResponse, ApiError, ErrorCodes } from '../middlewares/errorHandler';
+import { createRateLimiter, sanitizeInput } from '../middlewares/security';
 import importExportService from '../services/outlet.import-export.service';
+import { asyncHandler } from '../utils/route-error-handler';
+import { requireTenantId } from '../utils/tenant';
 
 const router = Router();
 
@@ -11,8 +13,8 @@ router.get(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   createRateLimiter('EXPORT'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
     const filters = req.query;
 
     const result = await importExportService.exportToCSV(tenantId, filters);
@@ -28,13 +30,13 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   createRateLimiter('IMPORT'),
   sanitizeInput,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const { csvContent } = req.body;
     if (!csvContent) {
       throw new ApiError(ErrorCodes.VALIDATION_ERROR, 'CSV wajib diisi', 400);
     }
 
-    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
+    const tenantId = requireTenantId(req);
     const result = await importExportService.importFromCSV(tenantId, csvContent);
     res.json(successResponse(req, 'Import berhasil', result));
   })
@@ -45,8 +47,8 @@ router.get(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPER_ADMIN'),
   createRateLimiter('EXPORT'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const tenantId = (req as any).tenant?.id || (req as any).user?.tenantId;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
     const format = req.query.format as 'detailed' | 'summary' || 'detailed';
 
     const result = await importExportService.exportToJSON(tenantId, format);

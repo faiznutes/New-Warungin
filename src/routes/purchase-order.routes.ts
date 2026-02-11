@@ -1,17 +1,12 @@
-/**
- * Purchase Order Routes
- * API endpoints for managing purchase orders
- */
-
-import { Router, Request, Response } from 'express';
-import { authGuard, roleGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import { subscriptionGuard } from '../middlewares/subscription-guard';
 import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validate } from '../middlewares/validator';
 import { requireTenantId, requireUserId } from '../utils/tenant';
 import purchaseOrderService from '../services/purchase-order.service';
 import { z } from 'zod';
-import { handleRouteError } from '../utils/route-error-handler';
+import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -75,21 +70,17 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const query = {
-        page: req.query.page ? parseInt(req.query.page as string) : undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-        status: req.query.status as string | undefined,
-        supplierId: req.query.supplierId as string | undefined,
-      };
-      const result = await purchaseOrderService.getPurchaseOrders(tenantId, query);
-      res.json(result);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get purchase orders', 'GET_PURCHASE_ORDERS');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const query = {
+      page: req.query.page ? parseInt(req.query.page as string) : undefined,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+      status: req.query.status as string | undefined,
+      supplierId: req.query.supplierId as string | undefined,
+    };
+    const result = await purchaseOrderService.getPurchaseOrders(tenantId, query);
+    res.json(result);
+  })
 );
 
 /**
@@ -115,15 +106,11 @@ router.get(
   authGuard,
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const purchaseOrder = await purchaseOrderService.getPurchaseOrderById(req.params.id, tenantId);
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to get purchase order', 'GET_PURCHASE_ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const purchaseOrder = await purchaseOrderService.getPurchaseOrderById(req.params.id, tenantId);
+    res.json(purchaseOrder);
+  })
 );
 
 /**
@@ -163,27 +150,23 @@ router.post(
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: createPurchaseOrderSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
 
-      // Convert expectedDate from string to Date if provided
-      const purchaseOrderData = {
-        ...req.body,
-        expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
-      };
+    // Convert expectedDate from string to Date if provided
+    const purchaseOrderData = {
+      ...req.body,
+      expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
+    };
 
-      const purchaseOrder = await purchaseOrderService.createPurchaseOrder(
-        tenantId,
-        userId,
-        purchaseOrderData
-      );
-      res.status(201).json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to create purchase order', 'CREATE_PURCHASE_ORDER');
-    }
-  }
+    const purchaseOrder = await purchaseOrderService.createPurchaseOrder(
+      tenantId,
+      userId,
+      purchaseOrderData
+    );
+    res.status(201).json(purchaseOrder);
+  })
 );
 
 /**
@@ -217,29 +200,25 @@ router.put(
   subscriptionGuard,
   checkInventoryAccess,
   validate({ body: updatePurchaseOrderSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
 
-      // Convert dates from string to Date if provided
-      const updateData = {
-        ...req.body,
-        expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
-        receivedDate: req.body.receivedDate ? new Date(req.body.receivedDate) : undefined,
-      };
+    // Convert dates from string to Date if provided
+    const updateData = {
+      ...req.body,
+      expectedDate: req.body.expectedDate ? new Date(req.body.expectedDate) : undefined,
+      receivedDate: req.body.receivedDate ? new Date(req.body.receivedDate) : undefined,
+    };
 
-      const purchaseOrder = await purchaseOrderService.updatePurchaseOrder(
-        req.params.id,
-        tenantId,
-        userId,
-        updateData
-      );
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to update purchase order', 'UPDATE_PURCHASE_ORDER');
-    }
-  }
+    const purchaseOrder = await purchaseOrderService.updatePurchaseOrder(
+      req.params.id,
+      tenantId,
+      userId,
+      updateData
+    );
+    res.json(purchaseOrder);
+  })
 );
 
 /**
@@ -274,22 +253,18 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const userId = requireUserId(req);
-      const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
-      const purchaseOrder = await purchaseOrderService.receivePurchaseOrder(
-        req.params.id,
-        tenantId,
-        userId,
-        receivedDate
-      );
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to receive purchase order', 'RECEIVE_PURCHASE_ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const userId = req.userId!;
+    const receivedDate = req.body.receivedDate ? new Date(req.body.receivedDate) : undefined;
+    const purchaseOrder = await purchaseOrderService.receivePurchaseOrder(
+      req.params.id,
+      tenantId,
+      userId,
+      receivedDate
+    );
+    res.json(purchaseOrder);
+  })
 );
 
 /**
@@ -316,15 +291,11 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
   checkInventoryAccess,
-  async (req: Request, res: Response) => {
-    try {
-      const tenantId = requireTenantId(req);
-      const purchaseOrder = await purchaseOrderService.cancelPurchaseOrder(req.params.id, tenantId);
-      res.json(purchaseOrder);
-    } catch (error: unknown) {
-      handleRouteError(res, error, 'Failed to cancel purchase order', 'CANCEL_PURCHASE_ORDER');
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const tenantId = requireTenantId(req);
+    const purchaseOrder = await purchaseOrderService.cancelPurchaseOrder(req.params.id, tenantId);
+    res.json(purchaseOrder);
+  })
 );
 
 export default router;

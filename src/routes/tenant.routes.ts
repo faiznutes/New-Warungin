@@ -1,5 +1,5 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response, Request } from 'express';
+import { authGuard, AuthRequest } from '../middlewares/auth';
 import { require2FA } from '../middlewares/require2fa';
 import tenantService from '../services/tenant.service';
 import { createTenantSchema, updateTenantSchema } from '../validators/tenant.validator';
@@ -7,51 +7,11 @@ import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import prisma from '../config/database';
 import logger from '../utils/logger';
-import { AuthRequest } from '../middlewares/auth';
 import { auditLogger } from '../middlewares/audit-logger';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
-/**
- * Helper to log route errors with context
- * Safe wrapper to prevent logging errors from breaking the app
- */
-function logRouteError(error: unknown, context: string, req: any) {
-  try {
-    const err = error as Error & {
-      code?: string;
-      statusCode?: number;
-      message?: string;
-      name?: string;
-      stack?: string;
-    };
-
-    // Safely extract error info
-    const errorInfo: any = {
-      message: err.message || 'Unknown error',
-      name: err.name || 'Error',
-    };
-
-    // Only add optional fields if they exist
-    if (err.code) errorInfo.code = err.code;
-    if (err.statusCode) errorInfo.statusCode = err.statusCode;
-    if (err.stack) errorInfo.stack = err.stack;
-    if (req?.url) errorInfo.path = req.url;
-    if (req?.path) errorInfo.path = errorInfo.path || req.path;
-    if (req?.method) errorInfo.method = req.method;
-    if ((req as AuthRequest)?.userId) errorInfo.userId = (req as AuthRequest).userId;
-    if ((req as AuthRequest)?.tenantId) errorInfo.tenantId = (req as AuthRequest).tenantId;
-
-    logger.error(`Tenant route error [${context}]:`, errorInfo);
-  } catch (logError) {
-    // Fallback to console if logger fails
-    try {
-      console.error(`Tenant route error [${context}]:`, error);
-    } catch (e) {
-      // Silent fail if even console.error fails
-    }
-  }
-}
 
 // Only SUPER_ADMIN can create tenants
 router.post(
@@ -63,269 +23,140 @@ router.post(
     // Get tenant ID from response if available
     return (req as any).createdTenantId || null;
   }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      // Log request for debugging
-      logger.info('Tenant creation request', {
-        userId: authReq.userId,
+    // Log request for debugging
+    logger.info('Tenant creation request', {
+      userId: req.userId,
+      role: userRole,
+      body: { ...req.body, name: req.body.name?.substring(0, 20) }, // Log partial name for privacy
+    });
+
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized tenant creation attempt', {
+        userId: req.userId,
         role: userRole,
-        body: { ...req.body, name: req.body.name?.substring(0, 20) }, // Log partial name for privacy
+        path: req.url,
       });
-
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant creation attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          path: req.url,
-        });
-        return res.status(403).json({ message: 'Only super admin can create tenants' });
-      }
-
-      const result = await tenantService.createTenant(req.body);
-
-      // Store tenant ID for audit logger
-      (req as any).createdTenantId = result.tenant.id;
-
-      res.status(201).json(result);
-    } catch (error: unknown) {
-      const err = error as Error & {
-        statusCode?: number;
-        message?: string;
-        code?: string;
-        issues?: Array<{ path: (string | number)[]; message: string }>;
-      };
-
-      logRouteError(error, 'CREATE_TENANT', req);
-
-      // Handle validation errors (Zod)
-      // Note: Validator middleware should catch this first, but handle here as fallback
-      if (err.name === 'ZodError' || err.issues || (err as any).errors) {
-        const issues = err.issues || (err as any).errors || [];
-        return res.status(400).json({
-          error: 'VALIDATION_ERROR',
-          message: 'Data tidak valid. Silakan periksa field yang diisi.',
-          errors: issues.map((issue: any) => ({
-            path: Array.isArray(issue.path) ? issue.path.join('.') : (issue.path || 'unknown'),
-            message: issue.message,
-          })),
-        });
-      }
-
-      // Handle AppError with statusCode
-      if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500) {
-        return res.status(err.statusCode).json({
-          error: err.name || 'ERROR',
-          message: err.message || 'Gagal membuat tenant',
-        });
-      }
-
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          return res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else if (err.code === 'P2002') {
-          return res.status(409).json({
-            message: 'Tenant dengan email ini sudah ada',
-            error: 'DUPLICATE_ENTRY',
-          });
-        } else {
-          return res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-      }
-
-      // Default error
-      const statusCode = err.statusCode || 500;
-      const message = err.message || 'Gagal membuat tenant';
-
-      res.status(statusCode).json({
-        error: err.name || 'ERROR',
-        message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-      });
+      return res.status(403).json({ message: 'Only super admin can create tenants' });
     }
-  }
+
+    const result = await tenantService.createTenant(req.body);
+
+    // Store tenant ID for audit logger
+    (req as any).createdTenantId = result.tenant.id;
+
+    res.status(201).json(result);
+  })
 );
 
 router.get(
   '/',
   authGuard,
-  async (req: Request, res: Response, next) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant list access attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          path: req.url,
-        });
-        return res.status(403).json({ message: 'Only super admin can view all tenants' });
-      }
-
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 100;
-      const includeCounts = req.query.includeCounts === 'true';
-
-      let result;
-      try {
-        result = await tenantService.getTenants(page, limit, includeCounts, false); // Disable cache for super admin to always get fresh data
-      } catch (serviceError: unknown) {
-        const err = serviceError as Error & { code?: string; message?: string };
-        logRouteError(serviceError, 'GET_TENANTS_SERVICE', req);
-
-        // Handle database connection errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-
-        // Handle Prisma query errors
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred while fetching tenants',
-            error: err.code,
-          });
-          return;
-        }
-
-        // Re-throw to be handled by outer catch
-        throw serviceError;
-      }
-
-      // Log for debugging
-      logger.info('Tenants list fetched', {
-        userId: (req as AuthRequest).userId,
-        page,
-        limit,
-        total: result.pagination?.total || 0,
-        dataCount: result.data?.length || 0
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized tenant list access attempt', {
+        userId: req.userId,
+        role: userRole,
+        path: req.url,
       });
-
-      // Return just the data array for easier frontend consumption
-      res.json(result.data || []);
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'GET_TENANTS', req);
-
-      // Ensure response hasn't been sent
-      if (!res.headersSent) {
-        // Pass error to Express error handler
-        next(error);
-      } else {
-        logger.warn('Error in GET /tenants but response already sent:', {
-          error: err.message,
-          path: req.url,
-        });
-      }
+      return res.status(403).json({ message: 'Only super admin can view all tenants' });
     }
-  }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 100;
+    const includeCounts = req.query.includeCounts === 'true';
+
+    const result = await tenantService.getTenants(page, limit, includeCounts, false); // Disable cache for super admin to always get fresh data
+
+    // Log for debugging
+    logger.info('Tenants list fetched', {
+      userId: req.userId,
+      page,
+      limit,
+      total: result.pagination?.total || 0,
+      dataCount: result.data?.length || 0
+    });
+
+    // Return just the data array for easier frontend consumption
+    res.json(result.data || []);
+  })
 );
 
 // GET /tenants/:id/stores - Get all outlets/stores for a tenant
 router.get(
   '/:id/stores',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can view tenant stores' });
-      }
-
-      const stores = await prisma.outlet.findMany({
-        where: { tenantId: req.params.id },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      res.json(stores);
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'GET_TENANT_STORES', req);
-      res.status(500).json({ message: err.message || 'Failed to fetch tenant stores' });
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can view tenant stores' });
     }
-  }
+
+    const stores = await prisma.outlet.findMany({
+      where: { tenantId: req.params.id },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(stores);
+  })
 );
 
 // GET /tenants/:id/users - Get all users for a tenant
 router.get(
   '/:id/users',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can view tenant users' });
-      }
-
-      const users = await prisma.user.findMany({
-        where: { tenantId: req.params.id },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          isActive: true,
-          createdAt: true,
-          lastLogin: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      res.json(users);
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'GET_TENANT_USERS', req);
-      res.status(500).json({ message: err.message || 'Failed to fetch tenant users' });
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can view tenant users' });
     }
-  }
+
+    const users = await prisma.user.findMany({
+      where: { tenantId: req.params.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        lastLogin: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json(users);
+  })
 );
 
 // GET /tenants/:id/subscription - Get active subscription for a tenant
 router.get(
   '/:id/subscription',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can view tenant subscription' });
-      }
-
-      const subscription = await prisma.subscription.findFirst({
-        where: {
-          tenantId: req.params.id,
-          status: 'ACTIVE',
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      // Return empty object if no active subscription found
-      res.json(subscription || {});
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'GET_TENANT_SUBSCRIPTION', req);
-      res.status(500).json({ message: err.message || 'Failed to fetch tenant subscription' });
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can view tenant subscription' });
     }
-  }
+
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        tenantId: req.params.id,
+        status: 'ACTIVE',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Return empty object if no active subscription found
+    res.json(subscription || {});
+  })
 );
 
 // Update tenant subscription (SUPER_ADMIN only)
@@ -339,29 +170,23 @@ router.put(
       durationDays: z.number().int().min(1).optional(),
     })
   }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can update tenant subscription' });
-      }
-
-      const { plan, status, durationDays } = req.body;
-
-      await tenantService.updateTenantSubscription(req.params.id, {
-        plan,
-        status,
-        durationDays
-      });
-
-      res.json({ message: 'Subscription updated successfully' });
-    } catch (error: unknown) {
-      logRouteError(error, 'UPDATE_TENANT_SUBSCRIPTION', req);
-      res.status(500).json({ message: 'Failed to update subscription' });
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can update tenant subscription' });
     }
-  }
+
+    const { plan, status, durationDays } = req.body;
+
+    await tenantService.updateTenantSubscription(req.params.id, {
+      plan,
+      status,
+      durationDays
+    });
+
+    res.json({ message: 'Subscription updated successfully' });
+  })
 );
 
 // Delete tenant (only for SUPER_ADMIN) - must be before GET /:id to avoid route conflict
@@ -369,125 +194,47 @@ router.delete(
   '/:id',
   authGuard,
   require2FA, // Require 2FA for admin roles when deleting tenants
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant deletion attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can delete tenants' });
-      }
-
-      await tenantService.deleteTenant(req.params.id);
-      res.status(200).json({ message: 'Tenant deleted successfully' });
-    } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string; code?: string };
-      logRouteError(error, 'DELETE_TENANT', req);
-
-      if (err.statusCode) {
-        return res.status(err.statusCode).json({ message: err.message });
-      }
-
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-
-      res.status(500).json({ message: err.message || 'Failed to delete tenant' });
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized tenant deletion attempt', {
+        userId: req.userId,
+        role: userRole,
+        tenantId: req.params.id,
+      });
+      return res.status(403).json({ message: 'Only super admin can delete tenants' });
     }
-  }
+
+    await tenantService.deleteTenant(req.params.id);
+    res.status(200).json({ message: 'Tenant deleted successfully' });
+  })
 );
 
 router.get(
   '/:id',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant detail access attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can view tenant details' });
-      }
-
-      let tenant;
-      try {
-        tenant = await tenantService.getTenantById(req.params.id);
-      } catch (serviceError: unknown) {
-        const err = serviceError as Error & { code?: string; message?: string };
-        logRouteError(serviceError, 'GET_TENANT_BY_ID_SERVICE', req);
-
-        // Handle database connection errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-
-        // Handle Prisma query errors
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred while fetching tenant',
-            error: err.code,
-          });
-          return;
-        }
-
-        throw serviceError;
-      }
-
-      if (!tenant) {
-        res.status(404).json({ message: 'Tenant not found' });
-        return;
-      }
-
-      res.json(tenant);
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'GET_TENANT_BY_ID', req);
-
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-
-      res.status(500).json({ message: err.message || 'Failed to fetch tenant' });
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized tenant detail access attempt', {
+        userId: req.userId,
+        role: userRole,
+        tenantId: req.params.id,
+      });
+      return res.status(403).json({ message: 'Only super admin can view tenant details' });
     }
-  }
+
+    const tenant = await tenantService.getTenantById(req.params.id);
+
+    if (!tenant) {
+      res.status(404).json({ message: 'Tenant not found' });
+      return;
+    }
+
+    res.json(tenant);
+  })
 );
 
 /**
@@ -504,49 +251,21 @@ router.put(
   authGuard,
   require2FA, // Require 2FA for admin roles when updating tenants
   validate({ body: updateTenantSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized tenant update attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can update tenants' });
-      }
-
-      const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
-      res.json(updatedTenant);
-    } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string; code?: string };
-      logRouteError(error, 'UPDATE_TENANT', req);
-
-      if (err.statusCode) {
-        return res.status(err.statusCode).json({ message: err.message });
-      }
-
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-
-      res.status(500).json({ message: err.message || 'Failed to update tenant' });
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized tenant update attempt', {
+        userId: req.userId,
+        role: userRole,
+        tenantId: req.params.id,
+      });
+      return res.status(403).json({ message: 'Only super admin can update tenants' });
     }
-  }
+
+    const updatedTenant = await tenantService.updateTenant(req.params.id, req.body);
+    res.json(updatedTenant);
+  })
 );
 
 const upgradePlanSchema = z.object({
@@ -561,208 +280,156 @@ router.put(
   '/:id/upgrade-plan',
   authGuard,
   validate({ body: upgradePlanSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized plan upgrade attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized plan upgrade attempt', {
+        userId: req.userId,
+        role: userRole,
+        tenantId: req.params.id,
+      });
+      return res.status(403).json({ message: 'Only super admin can upgrade tenant plans' });
+    }
+
+    const tenantId = req.params.id;
+    const { subscriptionPlan, durationDays } = req.body;
+
+    // Get current tenant
+    const tenant = await tenantService.getTenantById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    const currentPlan = tenant.subscriptionPlan || 'BASIC';
+
+    // Calculate end date: now + durationDays (duration in days)
+    const now = new Date();
+    const originalSubscriptionEnd = tenant.subscriptionEnd;
+
+    // Always use now as base date for temporary upgrade (ignore current subscription end)
+    const endDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
+    // Calculate amount based on plan price for global report
+    const planPrices: Record<string, number> = {
+      DEMO: 0, // Demo: Free trial
+      BASIC: 149000, // Starter: Rp 149.000
+      PRO: 299000, // Boost: Rp 299.000
+      ENTERPRISE: 499000, // Pro: Rp 499.000
+    };
+    const planPrice = planPrices[subscriptionPlan] || 0;
+    const amount = (planPrice * durationDays) / 30;
+
+    // Perform temporary upgrade directly (admin action, no payment needed)
+    await prisma.$transaction(async (tx) => {
+      // Update tenant subscription plan and end date
+      await tx.tenant.update({
+        where: { id: tenantId },
+        data: {
+          subscriptionPlan: subscriptionPlan,
+          subscriptionEnd: endDate,
+          ...(currentPlan !== subscriptionPlan ? {
+            temporaryUpgrade: true,
+            previousPlan: currentPlan,
+          } : {
+            temporaryUpgrade: false,
+            previousPlan: null,
+          }),
+        } as any,
+      });
+
+      // Always create new subscription record for global report tracking
+      const subscription = await tx.subscription.create({
+        data: {
+          tenantId,
+          plan: subscriptionPlan,
+          startDate: now,
+          endDate: endDate,
+          status: 'ACTIVE',
+          amount: amount.toString(),
+          ...(currentPlan !== subscriptionPlan ? {
+            temporaryUpgrade: true,
+            previousPlan: currentPlan,
+          } : {}),
+        } as any,
+      });
+
+      logger.info(`Subscription created for upgrade/extend tenant ${tenantId}:`, {
+        subscriptionId: subscription.id,
+        plan: subscriptionPlan,
+        currentPlan,
+        amount: amount,
+        startDate: now.toISOString(),
+        endDate: endDate.toISOString(),
+      });
+
+      // Save to SubscriptionHistory with originalSubscriptionEnd info
+      if (originalSubscriptionEnd && currentPlan !== subscriptionPlan) {
+        const lastHistory = await tx.subscriptionHistory.findFirst({
+          where: {
+            tenantId: tenantId,
+            isTemporary: false,
+          },
+          orderBy: { createdAt: 'desc' },
         });
-        return res.status(403).json({ message: 'Only super admin can upgrade tenant plans' });
-      }
 
-      const tenantId = req.params.id;
-      const { subscriptionPlan, durationDays } = req.body;
-
-      // Get current tenant
-      const tenant = await tenantService.getTenantById(tenantId);
-      if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
-      }
-
-      const currentPlan = tenant.subscriptionPlan || 'BASIC';
-
-      // Calculate end date: now + durationDays (duration in days)
-      const now = new Date();
-      const originalSubscriptionEnd = tenant.subscriptionEnd;
-
-      // Always use now as base date for temporary upgrade (ignore current subscription end)
-      const endDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
-
-      // Calculate amount based on plan price for global report
-      const planPrices: Record<string, number> = {
-        DEMO: 0, // Demo: Free trial
-        BASIC: 149000, // Starter: Rp 149.000
-        PRO: 299000, // Boost: Rp 299.000
-        ENTERPRISE: 499000, // Pro: Rp 499.000
-      };
-      const planPrice = planPrices[subscriptionPlan] || 0;
-      const amount = (planPrice * durationDays) / 30;
-
-      // Perform temporary upgrade directly (admin action, no payment needed)
-      try {
-        await prisma.$transaction(async (tx) => {
-          // Update tenant subscription plan and end date
-          await tx.tenant.update({
-            where: { id: tenantId },
-            data: {
-              subscriptionPlan: subscriptionPlan,
-              subscriptionEnd: endDate,
-              ...(currentPlan !== subscriptionPlan ? {
-                temporaryUpgrade: true,
-                previousPlan: currentPlan,
-              } : {
-                temporaryUpgrade: false,
-                previousPlan: null,
-              }),
-            } as any,
-          });
-
-          // Always create new subscription record for global report tracking
-          const subscription = await tx.subscription.create({
-            data: {
-              tenantId,
-              plan: subscriptionPlan,
-              startDate: now,
-              endDate: endDate,
-              status: 'ACTIVE',
-              amount: amount.toString(),
-              ...(currentPlan !== subscriptionPlan ? {
-                temporaryUpgrade: true,
-                previousPlan: currentPlan,
-              } : {}),
-            } as any,
-          });
-
-          logger.info(`Subscription created for upgrade/extend tenant ${tenantId}:`, {
-            subscriptionId: subscription.id,
-            plan: subscriptionPlan,
-            currentPlan,
-            amount: amount,
-            startDate: now.toISOString(),
-            endDate: endDate.toISOString(),
-          });
-
-          // Save to SubscriptionHistory with originalSubscriptionEnd info
-          if (originalSubscriptionEnd && currentPlan !== subscriptionPlan) {
-            const lastHistory = await tx.subscriptionHistory.findFirst({
-              where: {
-                tenantId: tenantId,
-                isTemporary: false,
-              },
-              orderBy: { createdAt: 'desc' },
-            });
-
-            const needsHistory = !lastHistory || (lastHistory.endDate.getTime() !== originalSubscriptionEnd.getTime());
-            if (needsHistory && originalSubscriptionEnd > now) {
-              await tx.subscriptionHistory.create({
-                data: {
-                  subscriptionId: subscription.id,
-                  tenantId: tenantId,
-                  planType: currentPlan,
-                  startDate: tenant.subscriptionStart || now,
-                  endDate: originalSubscriptionEnd,
-                  price: '0',
-                  durationDays: Math.ceil((originalSubscriptionEnd.getTime() - (tenant.subscriptionStart?.getTime() || now.getTime())) / (1000 * 60 * 60 * 24)),
-                  isTemporary: false,
-                  reverted: false,
-                },
-              });
-              logger.info(`Created history record for original subscription (${currentPlan}) ending at ${originalSubscriptionEnd.toISOString()}`);
-            }
-          }
-
-          // Create history for upgrade/extend
+        const needsHistory = !lastHistory || (lastHistory.endDate.getTime() !== originalSubscriptionEnd.getTime());
+        if (needsHistory && originalSubscriptionEnd > now) {
           await tx.subscriptionHistory.create({
             data: {
               subscriptionId: subscription.id,
               tenantId: tenantId,
-              planType: subscriptionPlan,
-              startDate: now,
-              endDate: endDate,
-              price: amount.toString(),
-              durationDays: durationDays,
-              isTemporary: currentPlan !== subscriptionPlan,
+              planType: currentPlan,
+              startDate: tenant.subscriptionStart || now,
+              endDate: originalSubscriptionEnd,
+              price: '0',
+              durationDays: Math.ceil((originalSubscriptionEnd.getTime() - (tenant.subscriptionStart?.getTime() || now.getTime())) / (1000 * 60 * 60 * 24)),
+              isTemporary: false,
               reverted: false,
             },
           });
-
-          // Auto activate users when subscription is active
-          await tx.user.updateMany({
-            where: {
-              tenantId,
-              role: {
-                in: ['CASHIER', 'KITCHEN', 'SUPERVISOR'],
-              },
-            },
-            data: {
-              isActive: true,
-            },
-          });
-        });
-      } catch (txError: unknown) {
-        const err = txError as Error & { code?: string; message?: string };
-        logRouteError(txError, 'UPGRADE_PLAN_TRANSACTION', req);
-
-        // Handle database errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
+          logger.info(`Created history record for original subscription (${currentPlan}) ending at ${originalSubscriptionEnd.toISOString()}`);
         }
-
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred during plan upgrade',
-            error: err.code,
-          });
-          return;
-        }
-
-        throw txError;
       }
 
-      res.json({
-        success: true,
-        message: 'Paket berhasil diupgrade (temporary)',
-        tenant: await tenantService.getTenantById(tenantId),
-        endDate: endDate.toISOString(),
-        previousPlan: currentPlan,
-        willRevertTo: currentPlan === 'BASIC' ? 'BASIC' : currentPlan,
+      // Create history for upgrade/extend
+      await tx.subscriptionHistory.create({
+        data: {
+          subscriptionId: subscription.id,
+          tenantId: tenantId,
+          planType: subscriptionPlan,
+          startDate: now,
+          endDate: endDate,
+          price: amount.toString(),
+          durationDays: durationDays,
+          isTemporary: currentPlan !== subscriptionPlan,
+          reverted: false,
+        },
       });
-    } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string; code?: string };
-      logRouteError(error, 'UPGRADE_PLAN', req);
 
-      if (err.statusCode) {
-        return res.status(err.statusCode).json({ message: err.message });
-      }
+      // Auto activate users when subscription is active
+      await tx.user.updateMany({
+        where: {
+          tenantId,
+          role: {
+            in: ['CASHIER', 'KITCHEN', 'SUPERVISOR'],
+          },
+        },
+        data: {
+          isActive: true,
+        },
+      });
+    });
 
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-
-      res.status(500).json({ message: err.message || 'Failed to upgrade plan' });
-    }
-  }
+    res.json({
+      success: true,
+      message: 'Paket berhasil diupgrade (temporary)',
+      tenant: await tenantService.getTenantById(tenantId),
+      endDate: endDate.toISOString(),
+      previousPlan: currentPlan,
+      willRevertTo: currentPlan === 'BASIC' ? 'BASIC' : currentPlan,
+    });
+  })
 );
 
 /**
@@ -771,151 +438,69 @@ router.put(
 router.put(
   '/:id/deactivate-subscription',
   authGuard,
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      if (userRole !== 'SUPER_ADMIN') {
-        logger.warn('Unauthorized subscription deactivation attempt', {
-          userId: authReq.userId,
-          role: userRole,
-          tenantId: req.params.id,
-        });
-        return res.status(403).json({ message: 'Only super admin can deactivate subscriptions' });
-      }
-
-      const tenantId = req.params.id;
-
-      // Get current tenant
-      const tenant = await tenantService.getTenantById(tenantId);
-      if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
-      }
-
-      // Deactivate subscription by setting subscriptionEnd to null
-      const now = new Date();
-      let updatedTenant;
-
-      try {
-        updatedTenant = await prisma.$transaction(async (tx) => {
-          // Delete all temporary subscriptions first
-          await tx.subscription.deleteMany({
-            where: {
-              tenantId: tenantId,
-              temporaryUpgrade: true,
-            },
-          });
-
-          // Update ALL subscriptions to set endDate to past
-          const expiredDate = new Date(now.getTime() - 1000);
-          await tx.subscription.updateMany({
-            where: {
-              tenantId: tenantId,
-              OR: [
-                { status: 'ACTIVE' },
-                { status: 'EXPIRED' },
-              ],
-              endDate: {
-                gt: expiredDate,
-              },
-            },
-            data: {
-              status: 'EXPIRED',
-              endDate: expiredDate,
-              ...({ temporaryUpgrade: false } as any),
-              ...({ previousPlan: null } as any),
-            },
-          });
-
-          // Also update all subscriptions regardless of endDate
-          await tx.subscription.updateMany({
-            where: {
-              tenantId: tenantId,
-            },
-            data: {
-              status: 'EXPIRED',
-              ...({ temporaryUpgrade: false } as any),
-              ...({ previousPlan: null } as any),
-            },
-          });
-
-          // Update tenant: revert to BASIC, set subscriptionEnd to null
-          const tenant = await tx.tenant.update({
-            where: { id: tenantId },
-            data: {
-              subscriptionPlan: 'BASIC',
-              subscriptionEnd: null,
-              subscriptionStart: null,
-              temporaryUpgrade: false,
-              previousPlan: null,
-            } as any,
-          });
-
-          return tenant;
-        });
-      } catch (txError: unknown) {
-        const err = txError as Error & { code?: string; message?: string };
-        logRouteError(txError, 'DEACTIVATE_SUBSCRIPTION_TRANSACTION', req);
-
-        // Handle database errors
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-          return;
-        }
-
-        if (err.code?.startsWith('P')) {
-          res.status(500).json({
-            message: 'Database error occurred during subscription deactivation',
-            error: err.code,
-          });
-          return;
-        }
-
-        throw txError;
-      }
-
-      // Apply BASIC plan features
-      const { applyPlanFeatures } = await import('../services/plan-features.service');
-      await applyPlanFeatures(tenantId, 'BASIC');
-
-      // Deactivate CASHIER, KITCHEN, SUPERVISOR users
-      const { updateUserStatusBasedOnSubscription } = await import('../services/user-status.service');
-      await updateUserStatusBasedOnSubscription(tenantId);
-
-      // Reload tenant data
-      const finalTenant = await tenantService.getTenantById(tenantId);
-
-      res.json({
-        message: 'Langganan berhasil dinonaktifkan',
-        tenant: finalTenant,
+    if (userRole !== 'SUPER_ADMIN') {
+      logger.warn('Unauthorized subscription deactivation attempt', {
+        userId: req.userId,
+        role: userRole,
+        tenantId: req.params.id,
       });
-    } catch (error: unknown) {
-      const err = error as Error & { code?: string; message?: string };
-      logRouteError(error, 'DEACTIVATE_SUBSCRIPTION', req);
-
-      // Handle database errors
-      if (err.code?.startsWith('P')) {
-        if (err.code === 'P1001' || err.code === 'P1002' || err.message?.includes('connect')) {
-          res.status(503).json({
-            message: 'Database connection failed. Please try again.',
-            error: 'DATABASE_CONNECTION_ERROR',
-          });
-        } else {
-          res.status(500).json({
-            message: 'Database error occurred',
-            error: err.code,
-          });
-        }
-        return;
-      }
-
-      res.status(500).json({ message: err.message || 'Gagal menonaktifkan langganan' });
+      return res.status(403).json({ message: 'Only super admin can deactivate subscriptions' });
     }
-  }
+
+    const tenantId = req.params.id;
+
+    // Get current tenant
+    const tenant = await tenantService.getTenantById(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    // Deactivate subscription by setting subscriptionEnd to null
+    await prisma.$transaction(async (tx) => {
+      // Mark current active subscription as EXPIRED
+      await tx.subscription.updateMany({
+        where: {
+          tenantId: tenantId,
+        },
+        data: {
+          status: 'EXPIRED',
+          ...({ temporaryUpgrade: false } as any),
+          ...({ previousPlan: null } as any),
+        },
+      });
+
+      // Update tenant: revert to BASIC, set subscriptionEnd to null
+      await tx.tenant.update({
+        where: { id: tenantId },
+        data: {
+          subscriptionPlan: 'BASIC',
+          subscriptionEnd: null,
+          subscriptionStart: null,
+          temporaryUpgrade: false,
+          previousPlan: null,
+        } as any,
+      });
+    });
+
+    // Apply BASIC plan features
+    const { applyPlanFeatures } = await import('../services/plan-features.service');
+    await applyPlanFeatures(tenantId, 'BASIC');
+
+    // Deactivate CASHIER, KITCHEN, SUPERVISOR users
+    const { updateUserStatusBasedOnSubscription } = await import('../services/user-status.service');
+    await updateUserStatusBasedOnSubscription(tenantId);
+
+    // Reload tenant data
+    const finalTenant = await tenantService.getTenantById(tenantId);
+
+    res.json({
+      message: 'Langganan berhasil dinonaktifkan',
+      tenant: finalTenant,
+    });
+  })
 );
 
 // POST /tenants/:id/users - Create a new user for a tenant (SUPER_ADMIN only)
@@ -930,49 +515,42 @@ router.post(
       password: z.string().optional(),
     })
   }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      // Only SUPER_ADMIN can create users for any tenant
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can create users for tenants' });
-      }
-
-      const tenantId = req.params.id;
-
-      // Verify tenant exists
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: tenantId },
-      });
-
-      if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
-      }
-
-      // Use userService to create the user
-      const userService = (await import('../services/user.service')).default;
-      const user = await userService.createUser(req.body, tenantId, userRole);
-
-      // Log audit
-      const { logAction } = await import('../middlewares/audit-logger');
-      await logAction(
-        authReq,
-        'CREATE',
-        'users',
-        user.id,
-        { email: user.email, name: user.name, role: user.role, tenantId },
-        'SUCCESS'
-      );
-
-      res.status(201).json(user);
-    } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string };
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to create user', 'CREATE_TENANT_USER');
+    // Only SUPER_ADMIN can create users for any tenant
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can create users for tenants' });
     }
-  }
+
+    const tenantId = req.params.id;
+
+    // Verify tenant exists
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    // Use userService to create the user
+    const userService = (await import('../services/user.service')).default;
+    const user = await userService.createUser(req.body, tenantId, userRole);
+
+    // Log audit
+    const { logAction } = await import('../middlewares/audit-logger');
+    await logAction(
+      req,
+      'CREATE',
+      'users',
+      user.id,
+      { email: user.email, name: user.name, role: user.role, tenantId },
+      'SUCCESS'
+    );
+
+    res.status(201).json(user);
+  })
 );
 
 // POST /tenants/:id/outlets - Create a new outlet for a tenant (SUPER_ADMIN only)
@@ -996,49 +574,42 @@ router.post(
       })).optional(),
     })
   }),
-  async (req: Request, res: Response) => {
-    try {
-      const authReq = req as AuthRequest;
-      const userRole = authReq.role || (authReq as any).user?.role;
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userRole = req.role;
 
-      // Only SUPER_ADMIN can create outlets for any tenant
-      if (userRole !== 'SUPER_ADMIN') {
-        return res.status(403).json({ message: 'Only super admin can create outlets for tenants' });
-      }
-
-      const tenantId = req.params.id;
-
-      // Verify tenant exists
-      const tenant = await prisma.tenant.findUnique({
-        where: { id: tenantId },
-      });
-
-      if (!tenant) {
-        return res.status(404).json({ message: 'Tenant not found' });
-      }
-
-      // Use outletService to create the outlet
-      const outletService = (await import('../services/outlet.service')).default;
-      const outlet = await outletService.createOutlet(tenantId, req.body);
-
-      // Log audit
-      const { logAction } = await import('../middlewares/audit-logger');
-      await logAction(
-        authReq,
-        'CREATE',
-        'outlets',
-        outlet.id,
-        { name: outlet.name, address: outlet.address, tenantId },
-        'SUCCESS'
-      );
-
-      res.status(201).json({ data: outlet });
-    } catch (error: unknown) {
-      const err = error as Error & { statusCode?: number; message?: string };
-      const { handleRouteError } = await import('../utils/route-error-handler');
-      handleRouteError(res, error, 'Failed to create outlet', 'CREATE_TENANT_OUTLET');
+    // Only SUPER_ADMIN can create outlets for any tenant
+    if (userRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({ message: 'Only super admin can create outlets for tenants' });
     }
-  }
+
+    const tenantId = req.params.id;
+
+    // Verify tenant exists
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      return res.status(404).json({ message: 'Tenant not found' });
+    }
+
+    // Use outletService to create the outlet
+    const outletService = (await import('../services/outlet.service')).default;
+    const outlet = await outletService.createOutlet(tenantId, req.body);
+
+    // Log audit
+    const { logAction } = await import('../middlewares/audit-logger');
+    await logAction(
+      req,
+      'CREATE',
+      'outlets',
+      outlet.id,
+      { name: outlet.name, address: outlet.address, tenantId },
+      'SUCCESS'
+    );
+
+    res.status(201).json({ data: outlet });
+  })
 );
 
 export default router;

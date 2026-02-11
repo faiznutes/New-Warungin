@@ -1,9 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { authGuard } from '../middlewares/auth';
+import { Router, Response } from 'express';
+import { authGuard, roleGuard, AuthRequest } from '../middlewares/auth';
 import subscriptionReceiptService from '../services/subscription-receipt.service';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import prisma from '../config/database';
+import { asyncHandler } from '../utils/route-error-handler';
 
 const router = Router();
 
@@ -17,135 +18,94 @@ const createTemplateSchema = z.object({
   styles: z.any().optional(),
 });
 
-// All routes require Super Admin
-const requireSuperAdmin = (req: Request, res: Response, next: () => void) => {
-  const userRole = (req as any).user?.role;
-  if (userRole !== 'SUPER_ADMIN') {
-    return res.status(403).json({ message: 'Access denied. Super Admin only.' });
-  }
-  next();
-};
-
 router.get(
   '/templates',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const templates = await subscriptionReceiptService.getReceiptTemplates();
-      res.json(templates);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const templates = await subscriptionReceiptService.getReceiptTemplates();
+    res.json(templates);
+  })
 );
 
 router.get(
   '/templates/default',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const template = await subscriptionReceiptService.getDefaultTemplate();
-      res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const template = await subscriptionReceiptService.getDefaultTemplate();
+    res.json(template);
+  })
 );
 
 router.get(
   '/templates/:id',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const template = await prisma.receiptTemplate.findFirst({
-        where: {
-          id: req.params.id,
-          tenantId: 'platform',
-        },
-      });
-      if (!template) {
-        return res.status(404).json({ message: 'Template not found' });
-      }
-      res.json(template);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const template = await prisma.receiptTemplate.findFirst({
+      where: {
+        id: req.params.id,
+        tenantId: 'platform',
+      },
+    });
+    if (!template) {
+      return res.status(404).json({ message: 'Template not found' });
     }
-  }
+    res.json(template);
+  })
 );
 
 router.post(
   '/templates',
   authGuard,
-  requireSuperAdmin,
+  roleGuard('SUPER_ADMIN'),
   validate({ body: createTemplateSchema }),
-  async (req: Request, res: Response) => {
-    try {
-      const template = await subscriptionReceiptService.createTemplate(req.body);
-      res.status(201).json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const template = await subscriptionReceiptService.createTemplate(req.body);
+    res.status(201).json(template);
+  })
 );
 
 router.put(
   '/templates/:id',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const template = await subscriptionReceiptService.updateTemplate(req.params.id, req.body);
-      res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const template = await subscriptionReceiptService.updateTemplate(req.params.id, req.body);
+    res.json(template);
+  })
 );
 
 router.post(
   '/templates/:id/set-default',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const template = await subscriptionReceiptService.setDefaultTemplate(req.params.id);
-      res.json(template);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const template = await subscriptionReceiptService.setDefaultTemplate(req.params.id);
+    res.json(template);
+  })
 );
 
 router.delete(
   '/templates/:id',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      await subscriptionReceiptService.deleteTemplate(req.params.id);
-      res.json({ message: 'Template deleted successfully' });
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    await subscriptionReceiptService.deleteTemplate(req.params.id);
+    res.json({ message: 'Template deleted successfully' });
+  })
 );
 
 router.get(
   '/generate/:subscriptionId',
   authGuard,
-  requireSuperAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      const templateId = req.query.templateId as string | undefined;
-      const receipt = await subscriptionReceiptService.generateReceipt(req.params.subscriptionId, templateId);
-      res.json(receipt);
-    } catch (error: any) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+  roleGuard('SUPER_ADMIN'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const templateId = req.query.templateId as string | undefined;
+    const receipt = await subscriptionReceiptService.generateReceipt(req.params.subscriptionId, templateId);
+    res.json(receipt);
+  })
 );
 
 export default router;
