@@ -71,5 +71,4 @@ inhibit_rules:
       alertname: 'ServiceDown'
     target_match:
       severity: 'warning'
-    equal: ['instance']
-    equal: ['name', 'instance']
+    equal: ['instance', 'name']
