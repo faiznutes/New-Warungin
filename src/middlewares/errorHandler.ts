@@ -320,7 +320,10 @@ export const notFoundHandler = (req: Request, res: Response): void => {
   });
 
   res.status(404).json({
+    success: false,
     error: 'Route not found',
+    message: `Route ${req.method} ${req.path} not found`,
+    timestamp: new Date().toISOString(),
     path: req.path,
   });
 };

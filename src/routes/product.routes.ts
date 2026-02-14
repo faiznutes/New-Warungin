@@ -9,8 +9,10 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { AuthRequest } from '../middlewares/auth';
 import { logAction } from '../middlewares/audit-logger';
+import { checkInventoryAccess } from '../middlewares/plan-feature-guard';
 import { validateImageUpload } from '../middlewares/file-upload-validator';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { requireShift } from '../middlewares/shift-guard';
 
 const router = Router();
 
@@ -143,8 +145,10 @@ router.get(
 router.post(
   '/adjustments',
   authGuard,
-  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
+  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
+  requireShift,
+  checkInventoryAccess,
   validate({ body: createProductAdjustmentSchema as any }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);

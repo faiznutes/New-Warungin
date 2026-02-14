@@ -48,6 +48,20 @@ const router = Router();
  *                   type: integer
  *                 totalCustomers:
  *                   type: integer
+ *                 charts:
+ *                   type: object
+ *                   properties:
+ *                     salesOverTime:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           date:
+ *                             type: string
+ *                           total:
+ *                             type: number
+ *                           count:
+ *                             type: integer
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  */

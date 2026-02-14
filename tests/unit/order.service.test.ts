@@ -544,10 +544,69 @@ describe('Order Service Unit Tests', () => {
       const userId = 'user-1';
 
       await expect(orderService.createOrder({
-        items: [ { productId, quantity, price } ],
+        items: [{ productId, quantity, price }],
         discount: 0,
         sendToKitchen: false,
       }, userId, tenantId)).rejects.toThrow(/Insufficient stock/);
+    });
+  });
+
+  describe('getOrders Role-Based Filtering', () => {
+    const baseQuery = { page: 1, limit: 10, sortBy: 'createdAt' as const, sortOrder: 'desc' as const };
+
+    beforeEach(() => {
+      (prisma.order.findMany as any).mockResolvedValue([]);
+      (prisma.order.count as any).mockResolvedValue(0);
+    });
+
+    it('SUPERVISOR: should filter orders by allowedStoreIds', async () => {
+      await orderService.getOrders(tenantId, baseQuery, 'SUPERVISOR', {
+        allowedStoreIds: ['store-1', 'store-2'],
+      });
+
+      // Verify the Prisma query includes outletId filter
+      const findManyCall = (prisma.order.findMany as any).mock.calls[0][0];
+      expect(findManyCall.where.outletId).toEqual({ in: ['store-1', 'store-2'] });
+    });
+
+    it('SUPERVISOR: should return empty when requesting unauthorized outletId', async () => {
+      const result = await orderService.getOrders(
+        tenantId,
+        { ...baseQuery, outletId: 'unauthorized-store' },
+        'SUPERVISOR',
+        { allowedStoreIds: ['store-1', 'store-2'] }
+      );
+
+      expect(result.data).toEqual([]);
+      expect(result.pagination.total).toBe(0);
+      // Prisma should NOT be called since we short-circuit
+      expect(prisma.order.findMany).not.toHaveBeenCalled();
+    });
+
+    it('CASHIER: should use assignedStoreId and ignore outletId query param', async () => {
+      await orderService.getOrders(
+        tenantId,
+        { ...baseQuery, outletId: 'some-other-store' },
+        'CASHIER',
+        { assignedStoreId: 'cashier-store' }
+      );
+
+      const findManyCall = (prisma.order.findMany as any).mock.calls[0][0];
+      // Cashier's assignedStoreId overrides the outletId query param
+      expect(findManyCall.where.outletId).toBe('cashier-store');
+    });
+
+    it('KITCHEN: should add sendToKitchen filter', async () => {
+      await orderService.getOrders(
+        tenantId,
+        baseQuery,
+        'KITCHEN',
+        { assignedStoreId: 'kitchen-store' }
+      );
+
+      const findManyCall = (prisma.order.findMany as any).mock.calls[0][0];
+      expect(findManyCall.where.outletId).toBe('kitchen-store');
+      expect(findManyCall.where.sendToKitchen).toBe(true);
     });
   });
 });

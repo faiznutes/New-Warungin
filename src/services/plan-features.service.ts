@@ -1,460 +1,118 @@
 import prisma from '../config/database';
-import addonService from './addon.service';
-import logger from '../utils/logger';
+import { SUBSCRIPTION_PLANS } from '../constants/enums';
 
-/**
- * Plan base limits (without addons)
- * Sesuai dengan struktur yang diminta
- */
-const PLAN_FEATURES: Record<string, {
-  tenantsLimit: number;
-  products: number;
-  users: number;
-  outlets: number;
-  addons: string[];
-  access: string[];
-}> = {
-  BASIC: {
-    tenantsLimit: 1,
-    products: 30, // Limit produk 30 (Starter)
-    users: 4, // 3-4 User (1 admin + 2 kasir + 1 kitchen)
-    outlets: 1, // 1 Outlet
-    addons: ['receipt-basic'],
-    access: ['kasir', 'laporan'],
-  },
-  PRO: {
-    tenantsLimit: 1, // 1 tenant
-    products: 200, // Limit produk 200 (Boost)
-    users: 10, // 10 User (1 admin + 1 supervisor + 6 kasir + 2 kitchen)
-    outlets: 2, // 2 Outlet
-    addons: ['receipt-advanced', 'multi-outlet'],
-    access: ['kasir', 'laporan', 'manajemen-stok', 'addon-management'],
-  },
-  ENTERPRISE: {
-    tenantsLimit: 1, // 1 tenant
-    products: 1000, // Produk 1000 (Pro)
-    users: 20, // 20 User
-    outlets: 3, // 3 Outlet
-    addons: ['receipt-advanced', 'multi-outlet'],
-    access: ['semua'],
-  },
+type LimitType = 'users' | 'products' | 'outlets';
+
+interface PlanLimit {
+    users: number;
+    products: number;
+    outlets: number;
+}
+
+// Default limits if not defined elsewhere
+// Basic: Small shop (1 outlet, few staff, limited products)
+// Pro: Growing business (3 outlets, more staff, more products)
+// Enterprise: Unlimited
+const PLAN_LIMITS: Record<string, PlanLimit> = {
+    [SUBSCRIPTION_PLANS.BASIC]: { users: 2, products: 100, outlets: 1 },
+    [SUBSCRIPTION_PLANS.PRO]: { users: 10, products: 1000, outlets: 3 },
+    [SUBSCRIPTION_PLANS.ENTERPRISE]: { users: -1, products: -1, outlets: -1 }, // -1 means unlimited
 };
 
-// Alias untuk backward compatibility
-const PLAN_BASE_LIMITS: Record<string, {
-  products: number;
-  users: number;
-  outlets: number;
-  features: string[];
-}> = {
-  BASIC: {
-    products: PLAN_FEATURES.BASIC.products,
-    users: PLAN_FEATURES.BASIC.users,
-    outlets: PLAN_FEATURES.BASIC.outlets,
-    features: PLAN_FEATURES.BASIC.access,
-  },
-  PRO: {
-    products: PLAN_FEATURES.PRO.products,
-    users: PLAN_FEATURES.PRO.users,
-    outlets: PLAN_FEATURES.PRO.outlets,
-    features: PLAN_FEATURES.PRO.access,
-  },
-  ENTERPRISE: {
-    products: PLAN_FEATURES.ENTERPRISE.products,
-    users: PLAN_FEATURES.ENTERPRISE.users,
-    outlets: PLAN_FEATURES.ENTERPRISE.outlets,
-    features: PLAN_FEATURES.ENTERPRISE.access,
-  },
-};
-
-/**
- * Apply plan features to tenant
- * Update features, tenantsLimit, dan semua limit terkait
- */
-export async function applyPlanFeatures(tenantId: string, planName: string) {
-  const plan = (planName || 'BASIC').toUpperCase() as 'BASIC' | 'PRO' | 'ENTERPRISE';
-  const planConfig = PLAN_FEATURES[plan] || PLAN_FEATURES.BASIC;
-
-  // Get current tenant
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    include: {
-      users: {
-        where: { isActive: true },
-      },
-    },
-  });
-
-  if (!tenant) {
-    throw new Error('Tenant not found');
-  }
-
-  // Update tenant with new plan features
-  const updatedTenant = await prisma.tenant.update({
-    where: { id: tenantId },
-    data: {
-      tenantsLimit: planConfig.tenantsLimit,
-      features: planConfig as any, // Store full plan config as JSON
-    },
-  });
-
-  // Auto-disable users that exceed the limit
-  // Priority: ADMIN_TENANT always stays active, then CASHIER, then KITCHEN, then SUPERVISOR
-  if (planConfig.users !== -1) {
-    const activeUsers = tenant.users;
-    if (activeUsers.length > planConfig.users) {
-      // Separate users by role for priority-based disabling
-      const adminUsers = activeUsers.filter(u => u.role === 'ADMIN_TENANT');
-      const cashierUsers = activeUsers.filter(u => u.role === 'CASHIER');
-      const kitchenUsers = activeUsers.filter(u => u.role === 'KITCHEN');
-      const supervisorUsers = activeUsers.filter(u => u.role === 'SUPERVISOR');
-      
-      // Sort each group by creation date (oldest first)
-      adminUsers.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      cashierUsers.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      kitchenUsers.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      supervisorUsers.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      
-      // Calculate how many users we can keep
-      let remainingSlots = planConfig.users;
-      const usersToKeep: typeof activeUsers = [];
-      const usersToDisable: typeof activeUsers = [];
-      
-      // Keep all ADMIN_TENANT (always)
-      usersToKeep.push(...adminUsers);
-      remainingSlots -= adminUsers.length;
-      
-      // Keep CASHIER users (priority after admin)
-      if (remainingSlots > 0) {
-        const cashierToKeep = cashierUsers.slice(0, Math.min(remainingSlots, cashierUsers.length));
-        usersToKeep.push(...cashierToKeep);
-        remainingSlots -= cashierToKeep.length;
-        usersToDisable.push(...cashierUsers.slice(cashierToKeep.length));
-      } else {
-        usersToDisable.push(...cashierUsers);
-      }
-      
-      // Keep KITCHEN users
-      if (remainingSlots > 0) {
-        const kitchenToKeep = kitchenUsers.slice(0, Math.min(remainingSlots, kitchenUsers.length));
-        usersToKeep.push(...kitchenToKeep);
-        remainingSlots -= kitchenToKeep.length;
-        usersToDisable.push(...kitchenUsers.slice(kitchenToKeep.length));
-      } else {
-        usersToDisable.push(...kitchenUsers);
-      }
-      
-      // Keep SUPERVISOR users (lowest priority)
-      if (remainingSlots > 0) {
-        const supervisorToKeep = supervisorUsers.slice(0, Math.min(remainingSlots, supervisorUsers.length));
-        usersToKeep.push(...supervisorToKeep);
-        usersToDisable.push(...supervisorUsers.slice(supervisorToKeep.length));
-      } else {
-        usersToDisable.push(...supervisorUsers);
-      }
-      
-      // Disable users that exceed limit
-      for (const user of usersToDisable) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { isActive: false },
+class PlanFeaturesService {
+    /**
+     * Check if a tenant has reached their plan limit for a specific feature
+     */
+    async checkPlanLimit(tenantId: string, limitType: LimitType) {
+        // 1. Get Tenant Plan
+        const tenant = await prisma.tenant.findUnique({
+            where: { id: tenantId },
+            select: { subscriptionPlan: true }
         });
-      }
-    }
-  }
 
-  // Auto-disable outlets that exceed the limit
-  if (planConfig.outlets !== -1) {
-    const activeOutlets = await prisma.outlet.findMany({
-      where: { tenantId, isActive: true },
-    });
+        if (!tenant) throw new Error('Tenant not found');
 
-    if (activeOutlets.length > planConfig.outlets) {
-      const sortedOutlets = activeOutlets.sort((a, b) => 
-        a.createdAt.getTime() - b.createdAt.getTime()
-      );
-      
-      const outletsToDisable = sortedOutlets.slice(planConfig.outlets);
-      for (const outlet of outletsToDisable) {
-        await prisma.outlet.update({
-          where: { id: outlet.id },
-          data: { isActive: false },
+        const plan = (tenant.subscriptionPlan as string) || SUBSCRIPTION_PLANS.BASIC;
+        const planLimitConfig = PLAN_LIMITS[plan] ?? PLAN_LIMITS[SUBSCRIPTION_PLANS.BASIC];
+        const baseLimit = planLimitConfig[limitType];
+
+        // 2. Get Active Addons that increase limits
+        const now = new Date();
+        const activeAddons = await prisma.tenantAddon.findMany({
+            where: {
+                tenantId,
+                // Status check (handle casing if inconsistent in DB, though enum suggests uppercase)
+                OR: [
+                    { status: 'ACTIVE' },
+                    { status: 'active' }
+                ],
+                // Expiry check
+                AND: [
+                    {
+                        OR: [
+                            { expiresAt: null },
+                            { expiresAt: { gt: now } }
+                        ]
+                    }
+                ]
+            }
         });
-      }
+
+        // 3. Calculate Addon Boost
+        let addonLimit = 0;
+        for (const addon of activeAddons) {
+            if (limitType === 'users' && addon.addonType === 'ADD_USERS') {
+                addonLimit += (addon.limit || 0);
+            }
+            if (limitType === 'products' && addon.addonType === 'ADD_PRODUCTS') {
+                addonLimit += (addon.limit || 0);
+            }
+            if (limitType === 'outlets' && addon.addonType === 'ADD_OUTLETS') {
+                addonLimit += (addon.limit || 0);
+            }
+        }
+
+        // 4. Calculate Total Limit
+        // If base limit is -1 (unlimited), total is -1
+        const totalLimit = baseLimit === -1 ? -1 : (baseLimit + addonLimit);
+
+        // 5. Get Current Usage
+        let currentUsage = 0;
+        if (limitType === 'users') {
+            currentUsage = await prisma.user.count({
+                where: {
+                    tenantId,
+                    isActive: true
+                }
+            });
+        } else if (limitType === 'products') {
+            currentUsage = await prisma.product.count({
+                where: {
+                    tenantId,
+                    isActive: true
+                }
+            });
+        } else if (limitType === 'outlets') {
+            currentUsage = await prisma.outlet.count({
+                where: {
+                    tenantId,
+                    isActive: true
+                }
+            });
+        }
+
+        // 6. Return Result
+        const allowed = totalLimit === -1 || currentUsage < totalLimit;
+
+        return {
+            allowed,
+            limit: totalLimit,
+            currentUsage,
+            message: allowed
+                ? 'Allowed'
+                : `Limit reached (${currentUsage}/${totalLimit}). Upgrade plan or buy addon.`
+        };
     }
-  }
-
-  // Auto-disable products that exceed the limit
-  if (planConfig.products !== -1) {
-    const activeProducts = await prisma.product.findMany({
-      where: { tenantId, isActive: true },
-    });
-
-    if (activeProducts.length > planConfig.products) {
-      // Sort by creation date, keep oldest products active
-      const sortedProducts = activeProducts.sort((a, b) => 
-        a.createdAt.getTime() - b.createdAt.getTime()
-      );
-      
-      // Disable products that exceed limit
-      const productsToDisable = sortedProducts.slice(planConfig.products);
-      for (const product of productsToDisable) {
-        await prisma.product.update({
-          where: { id: product.id },
-          data: { isActive: false },
-        });
-      }
-    }
-  }
-
-  // Update tenantsActive count
-  const activeUsersCount = await prisma.user.count({
-    where: { tenantId, isActive: true },
-  });
-
-  await prisma.tenant.update({
-    where: { id: tenantId },
-    data: {
-      tenantsActive: activeUsersCount,
-    },
-  });
-
-  return {
-    plan,
-    features: planConfig,
-    tenantsLimit: planConfig.tenantsLimit,
-    tenantsActive: activeUsersCount,
-  };
 }
 
-/**
- * Get tenant plan features and limits
- * Combines base plan limits with active addons
- */
-export async function getTenantPlanFeatures(tenantId: string) {
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: {
-      subscriptionPlan: true,
-      tenantsLimit: true,
-      tenantsActive: true,
-      features: true,
-    },
-  });
-
-  if (!tenant) {
-    throw new Error('Tenant not found');
-  }
-
-  const plan = (tenant.subscriptionPlan || 'BASIC') as 'BASIC' | 'PRO' | 'ENTERPRISE';
-  const baseLimits = PLAN_BASE_LIMITS[plan] || PLAN_BASE_LIMITS.BASIC;
-
-  // Get active addons - get all pages to ensure all addons are included
-  // For limit calculation, we need ALL active addons, not just first page
-  let allActiveAddons: any[] = [];
-  let page = 1;
-  const pageLimit = 100; // Get more per page
-  let hasMore = true;
-  
-  while (hasMore) {
-    const activeAddonsResult = await addonService.getTenantAddons(tenantId, page, pageLimit);
-    const pageAddons = activeAddonsResult.data || [];
-    allActiveAddons = [...allActiveAddons, ...pageAddons];
-    
-    // Check if there are more pages
-    const total = activeAddonsResult.pagination?.total || 0;
-    const totalPages = activeAddonsResult.pagination?.totalPages || 1;
-    hasMore = page < totalPages && pageAddons.length === pageLimit;
-    page++;
-  }
-  
-  const activeAddons = allActiveAddons;
-
-  // Calculate total limits (base + addons)
-  let totalProducts = baseLimits.products === -1 ? -1 : baseLimits.products;
-  let totalUsers = baseLimits.users === -1 ? -1 : baseLimits.users;
-  let totalOutlets = baseLimits.outlets === -1 ? -1 : baseLimits.outlets;
-  let totalTenants = tenant.tenantsLimit || PLAN_FEATURES[plan]?.tenantsLimit || 1;
-  if (totalTenants === -1) totalTenants = -1; // Keep unlimited
-  const features = [...baseLimits.features];
-
-  // Add addon limits - sum all addons of the same type
-  // Group addons by type and sum their limits
-  const addonLimitsByType: Record<string, number> = {
-    ADD_PRODUCTS: 0,
-    ADD_USERS: 0,
-    ADD_OUTLETS: 0,
-  };
-  
-  for (const addon of activeAddons) {
-    if (addon.addonType === 'ADD_PRODUCTS' && addon.limit) {
-      addonLimitsByType.ADD_PRODUCTS += addon.limit;
-    } else if (addon.addonType === 'ADD_USERS' && addon.limit) {
-      addonLimitsByType.ADD_USERS += addon.limit;
-    } else if (addon.addonType === 'ADD_OUTLETS' && addon.limit) {
-      addonLimitsByType.ADD_OUTLETS += addon.limit;
-    }
-  }
-  
-  // Add summed addon limits to base limits
-  if (totalProducts !== -1) {
-    totalProducts += addonLimitsByType.ADD_PRODUCTS;
-  }
-  if (totalUsers !== -1) {
-    totalUsers += addonLimitsByType.ADD_USERS;
-  }
-  if (totalOutlets !== -1) {
-    totalOutlets += addonLimitsByType.ADD_OUTLETS;
-  }
-  
-  // Process feature addons
-  for (const addon of activeAddons) {
-    switch (addon.addonType) {
-      case 'BUSINESS_ANALYTICS':
-        if (!features.includes('Business Analytics & Insight')) {
-          features.push('Business Analytics & Insight');
-          features.push('Laporan Laba Rugi');
-          features.push('Advanced Analytics');
-          features.push('Quick Insight');
-        }
-        break;
-      case 'EXPORT_REPORTS':
-        if (!features.includes('Export Laporan')) {
-          features.push('Export Laporan');
-        }
-        break;
-      case 'RECEIPT_EDITOR':
-        if (!features.includes('Simple Nota Editor')) {
-          features.push('Simple Nota Editor');
-        }
-        break;
-      case 'DELIVERY_MARKETING':
-        if (!features.includes('Delivery & Marketing')) {
-          features.push('Delivery & Marketing');
-        }
-        break;
-      case 'E_COMMERCE':
-        if (!features.includes('E-commerce Integration')) {
-          features.push('E-commerce Integration');
-        }
-        break;
-      case 'PAYMENT_ACCOUNTING':
-        if (!features.includes('Payment & Accounting Integration')) {
-          features.push('Payment & Accounting Integration');
-        }
-        break;
-    }
-  }
-
-  return {
-    plan,
-    limits: {
-      products: totalProducts,
-      users: totalUsers,
-      outlets: totalOutlets,
-    },
-    features,
-    baseLimits,
-    tenantsLimit: tenant.tenantsLimit || PLAN_FEATURES[plan]?.tenantsLimit || 1,
-    tenantsActive: tenant.tenantsActive || 0,
-    activeAddons: activeAddons.map(a => ({
-      id: a.addonId,
-      type: a.addonType,
-      name: a.addonName,
-      limit: a.limit,
-    })),
-  };
-}
-
-/**
- * Check if tenant can perform an action based on plan limits
- */
-export async function checkPlanLimit(
-  tenantId: string,
-  limitType: 'products' | 'users' | 'outlets'
-): Promise<{ allowed: boolean; currentUsage: number; limit: number; message?: string }> {
-  
-  const planFeatures = await getTenantPlanFeatures(tenantId);
-  const limit = planFeatures.limits[limitType];
-
-  // Unlimited
-  if (limit === -1) {
-    return { allowed: true, currentUsage: 0, limit: -1 };
-  }
-
-  // Get current usage
-  let currentUsage = 0;
-  switch (limitType) {
-    case 'products':
-      currentUsage = await prisma.product.count({
-        where: { tenantId, isActive: true },
-      });
-      break;
-    case 'users':
-      currentUsage = await prisma.user.count({
-        where: { tenantId, isActive: true },
-      });
-      break;
-    case 'outlets':
-      // Count all outlets (both active and inactive) for usage calculation
-      // isActive filter removed because we want to count all outlets created
-      currentUsage = await prisma.outlet.count({
-        where: { tenantId },
-      });
-      break;
-  }
-
-  const allowed = currentUsage < limit;
-  const message = !allowed
-    ? `Limit ${limitType} tercapai (${currentUsage}/${limit}). Upgrade paket atau beli addon untuk menambah limit.`
-    : undefined;
-
-  // Debug logging for outlet limit
-  if (limitType === 'outlets') {
-    const planFeatures = await getTenantPlanFeatures(tenantId);
-    logger.debug(`[checkPlanLimit] Outlet limit calculation for tenant ${tenantId}:`, {
-      plan: planFeatures.plan,
-      baseLimit: PLAN_BASE_LIMITS[planFeatures.plan]?.outlets,
-      activeAddons: planFeatures.activeAddons.filter(a => a.type === 'ADD_OUTLETS'),
-      totalLimit: limit,
-      currentUsage,
-      allowed,
-    });
-  }
-
-  return {
-    allowed,
-    currentUsage,
-    limit,
-    message,
-  };
-}
-
-/**
- * Check if tenant has access to a feature
- */
-export async function checkPlanFeature(
-  tenantId: string,
-  feature: string
-): Promise<boolean> {
-  
-  const planFeatures = await getTenantPlanFeatures(tenantId);
-  
-  // If plan has 'semua' in features, it means ENTERPRISE plan with access to all features
-  if (planFeatures.features.includes('semua')) {
-    return true;
-  }
-  
-  return planFeatures.features.includes(feature);
-}
-
-// Export PLAN_FEATURES for use in other services
-export { PLAN_FEATURES, PLAN_BASE_LIMITS };
-
-export default {
-  getTenantPlanFeatures,
-  checkPlanLimit,
-  checkPlanFeature,
-  applyPlanFeatures,
-  PLAN_FEATURES,
-};
+export default new PlanFeaturesService();

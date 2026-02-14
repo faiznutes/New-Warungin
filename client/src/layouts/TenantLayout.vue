@@ -139,7 +139,7 @@
             :isOpen="expandedMenus.manajemen"
             @toggle="toggleMenu('manajemen')"
           >
-            <SidebarItem to="/app/users" icon="badge" label="Pengguna" />
+            <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/users" icon="badge" label="Pengguna" />
             <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/stores" icon="store" label="Kelola Store" />
             <SidebarItem v-if="userRole === 'ADMIN_TENANT'" to="/app/discounts" icon="percent" label="Diskon" />
           </SidebarSection>

@@ -49,14 +49,17 @@ export const validate = (schemas: { body?: AnyZodObject; query?: AnyZodObject; p
           method: req.method,
           errors: error.errors,
         });
-        
+
         return res.status(400).json({
+          success: false,
           error: 'VALIDATION_ERROR',
           message: 'Data tidak valid. Silakan periksa field yang diisi.',
-          errors: error.errors.map((err) => ({
+          details: error.errors.map((err) => ({
             path: err.path.join('.'),
             message: err.message,
           })),
+          timestamp: new Date().toISOString(),
+          path: req.path,
         });
       }
       next(error);

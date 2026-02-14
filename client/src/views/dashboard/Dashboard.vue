@@ -121,23 +121,8 @@
       <!-- Charts & Tables Row -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Revenue Chart -->
-        <div v-if="showSalesChart" class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl shadow-card border border-slate-100 dark:border-slate-700/50 p-6 flex flex-col h-full animate-in fade-in zoom-in duration-300">
-          <div class="flex items-center justify-between mb-6 flex-shrink-0">
-            <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Pertumbuhan Pendapatan</h3>
-              <p class="text-sm text-slate-500">Pendapatan Kotor vs Bersih</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="flex items-center gap-1 text-xs text-slate-500">
-                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span> Revenue
-              </span>
-            </div>
-          </div>
-          <div class="flex flex-col flex-1 min-h-[250px] overflow-hidden">
-             <div class="relative w-full h-full">
-                <canvas ref="revenueChartRef"></canvas>
-             </div>
-          </div>
+        <div v-if="showSalesChart" class="lg:col-span-2 h-full">
+          <SalesChart :data="stats?.charts?.salesOverTime" :loading="loading" />
         </div>
         <div v-else class="lg:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-6 flex items-center justify-center text-slate-400">
            <div class="text-center">
@@ -236,6 +221,7 @@ import { formatDateTime } from '../../utils/formatters';
 import { useAuthStore } from '../../stores/auth';
 import { useNotification } from '../../composables/useNotification';
 import { useShiftReminder } from '../../composables/useShiftReminder';
+import SalesChart from '../../components/dashboard/SalesChart.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -249,8 +235,6 @@ const stats = ref<any>(null);
 const recentOrders = ref<any[]>([]);
 const currentLangganan = ref<any>(null);
 const dateRange = ref('week');
-const revenueChartRef = ref<HTMLCanvasElement | null>(null);
-let revenueChart: any = null;
 const showSalesChart = ref(localStorage.getItem('user_showSalesChart') !== 'false');
 const showTopProducts = ref(localStorage.getItem('user_showTopProducts') !== 'false');
 
@@ -318,7 +302,6 @@ const getStatusLabel = (status: string) => {
 };
 
 // Data Loading
-// Data Loading
 
 const loadStats = async () => {
   try {
@@ -330,7 +313,6 @@ const loadStats = async () => {
     console.error('Error loading stats:', error);
     stats.value = {}; // Empty stats on error instead of mock
   }
-
 };
 
 const loadLangganan = async () => {
@@ -365,117 +347,10 @@ const handleExportTransactions = () => {
   router.push('/app/finance/transactions');
 };
 
-
-const renderRevenueChart = async () => {
-  if (!revenueChartRef.value) return;
-  
-  const { default: Chart } = await import('chart.js/auto');
-  
-  if (revenueChart) {
-    revenueChart.destroy();
-  }
-
-  const ctx = revenueChartRef.value.getContext('2d');
-  if (!ctx) return;
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)'); 
-  gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-
-  // Use real data if available, fallback to mock (though stats logic above handles this mostly, chart specific check here)
-  const chartData = stats.value?.charts?.revenue || { labels: [], data: [] };
-  const labels = chartData.labels;
-  const data = chartData.data;
-
-  revenueChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Revenue',
-          data: data,
-          borderColor: '#2563eb', 
-          backgroundColor: gradient,
-          borderWidth: 3,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: '#2563eb',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-            mode: 'index',
-            intersect: false,
-            backgroundColor: '#1e293b',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            padding: 10,
-            cornerRadius: 8,
-            displayColors: false,
-            callbacks: {
-                label: function(context) {
-                    let label = context.dataset.label || '';
-                    if (label) {
-                        label += ': ';
-                    }
-                    if (context.parsed.y !== null) {
-                        label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
-                    }
-                    return label;
-                }
-            }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: '#e2e8f0', 
-            // @ts-expect-error - Chart.js type definition mismatch for borderDash array
-            borderDash: [5, 5],
-            drawBorder: false
-          },
-          ticks: {
-             callback: function(value: any) {
-                if (value >= 1000000) return (value/1000000) + 'M';
-                if (value >= 1000) return (value/1000) + 'k';
-                return value;
-             },
-             color: '#94a3b8',
-             font: { size: 11, family: 'Inter' }
-          },
-          border: { display: false }
-        },
-        x: {
-          grid: { display: false },
-          ticks: {
-             color: '#94a3b8',
-             font: { size: 11, family: 'Inter' }
-          },
-             border: { display: false }
-        }
-      }
-    }
-  });
-};
-
 watch(dateRange, async () => {
     loading.value = true;
     await loadStats();
-    nextTick(() => {
-        renderRevenueChart();
-        loading.value = false;
-    });
+    loading.value = false;
 });
 
 // Check subscription expiry warning (7 days before)
@@ -517,9 +392,6 @@ onMounted(async () => {
     }
   } finally {
     loading.value = false;
-    nextTick(() => {
-      renderRevenueChart();
-    });
   }
 });
 
@@ -529,9 +401,6 @@ watch(() => currentLangganan.value, () => {
 }, { deep: true });
 
 onUnmounted(() => {
-  if (revenueChart) {
-    revenueChart.destroy();
-  }
   stopChecking();
 });
 </script>

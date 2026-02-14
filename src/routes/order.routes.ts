@@ -8,6 +8,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { requireShift } from '../middlewares/shift-guard';
 
 const router = Router();
 
@@ -237,6 +238,7 @@ router.post(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
+  requireShift,
   validate({ body: createOrderSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
@@ -293,7 +295,8 @@ router.put(
   '/:id',
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
-  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'), // Double check? This seems restrictive.
+  requireShift,
   validate({ body: updateOrderSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
@@ -321,6 +324,7 @@ router.put(
   '/:id/status',
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
+  requireShift,
   validate({ body: updateOrderStatusSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
@@ -343,6 +347,7 @@ router.put(
   authGuard,
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
+  requireShift,
   validate({ body: z.object({ status: z.enum(['PENDING', 'COOKING', 'READY', 'SERVED']) }) }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);

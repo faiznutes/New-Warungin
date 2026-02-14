@@ -21,8 +21,14 @@ const updateSW = registerSW({
 const app = createApp(App);
 const pinia = createPinia();
 
+import { permission, role } from './directives/permission';
+
 app.use(pinia);
 app.use(router);
+
+// Register Global Directives
+app.directive('permission', permission);
+app.directive('role', role);
 
 // Development mode: Show all errors for debugging
 const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';

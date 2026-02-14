@@ -45,6 +45,12 @@ export class OrderService {
         if (outletId) {
           if (!allowedStoreIds.includes(outletId)) {
             // Supervisor trying to access outlet they don't have access to
+            logger.warn('Supervisor attempted access to unauthorized outlet', {
+              tenantId,
+              userRole,
+              requestedOutletId: outletId,
+              allowedStoreIds,
+            });
             return {
               data: [],
               pagination: {
@@ -62,6 +68,10 @@ export class OrderService {
         }
       } else {
         // No stores assigned, return empty
+        logger.warn('Supervisor has no stores assigned, returning empty orders', {
+          tenantId,
+          userRole,
+        });
         return {
           data: [],
           pagination: {

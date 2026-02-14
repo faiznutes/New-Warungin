@@ -30,6 +30,18 @@
       />
       <ToastContainer />
       <PWAInstallPrompt />
+      
+      <!-- Global Security Modals -->
+      <OpenShiftModal 
+        :show="uiStore.showOpenShiftModal" 
+        @close="uiStore.closeShiftModal"
+      />
+      <SubscriptionExpiredModal 
+        :show="uiStore.showSubscriptionExpiredModal" 
+        :message="uiStore.subscriptionExpiredMessage"
+        :expired-date="uiStore.subscriptionExpiredDate"
+        @close="uiStore.closeSubscriptionExpiredModal" 
+      />
     </template>
   </div>
 </template>
@@ -37,9 +49,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onErrorCaptured, onUnmounted } from 'vue';
 import { useAuthStore } from './stores/auth';
+import { useUIStore } from './stores/ui.store';
+import { globalEventBus, EVENTS } from './utils/eventBus';
 import NotificationModal from './components/NotificationModal.vue';
 import ToastContainer from './components/ToastContainer.vue';
 import PWAInstallPrompt from './components/PWAInstallPrompt.vue';
+// Global Security Modals
+import OpenShiftModal from './components/OpenShiftModal.vue';
+import SubscriptionExpiredModal from './components/SubscriptionExpiredModal.vue';
+
 import { useNotification } from './composables/useNotification';
 import { getFriendlyErrorMessage } from './utils/error-messages';
 import {
@@ -49,6 +67,7 @@ import {
 } from './composables/useNotification';
 
 const authStore = useAuthStore();
+const uiStore = useUIStore();
 const { showNotification, notificationOptions, notify } = useNotification();
 const globalError = ref(false);
 const globalErrorMessage = ref<string>('');
@@ -58,6 +77,23 @@ const handleGlobalErrorRetry = () => {
   globalErrorMessage.value = '';
   window.location.reload();
 };
+
+// Event Handlers for Global Bus
+const handleShiftRequired = () => {
+  uiStore.openShiftModal();
+};
+
+const handleSubscriptionExpired = (payload: any) => {
+  uiStore.openSubscriptionExpiredModal(payload?.message, payload?.expiredDate);
+};
+
+onUnmounted(() => {
+  window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+  // Clean up global event listeners
+  globalEventBus.off(EVENTS.SHIFT_REQUIRED, handleShiftRequired);
+  globalEventBus.off(EVENTS.SUBSCRIPTION_EXPIRED, handleSubscriptionExpired);
+});
+
 
 // Global error handler untuk menangkap semua error Vue
 onErrorCaptured((err: any, instance, info) => {
@@ -112,6 +148,10 @@ onUnmounted(() => {
 
 onMounted(async () => {
   window.addEventListener('unhandledrejection', handleUnhandledRejection);
+  
+  // Register global event listeners
+  globalEventBus.on(EVENTS.SHIFT_REQUIRED, handleShiftRequired);
+  globalEventBus.on(EVENTS.SUBSCRIPTION_EXPIRED, handleSubscriptionExpired);
   
   // Skip restore if we're on login page (to avoid flash)
   if (window.location.pathname === '/login') {

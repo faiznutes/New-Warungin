@@ -14,6 +14,7 @@ import stockTransferService from '../services/stock-transfer.service';
 import { z } from 'zod';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
 import { logAction } from '../middlewares/audit-logger';
+import { requireShift } from '../middlewares/shift-guard';
 
 const router = Router();
 
@@ -141,6 +142,7 @@ router.post(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
+  requireShift,
   checkInventoryAccess,
   validate({ body: createStockTransferSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {

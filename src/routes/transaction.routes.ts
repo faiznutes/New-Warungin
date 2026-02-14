@@ -7,6 +7,7 @@ import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { requireShift } from '../middlewares/shift-guard';
 
 const router = Router();
 
@@ -80,6 +81,7 @@ router.post(
   authGuard,
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
+  requireShift,
   validate({ body: createTransactionSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);

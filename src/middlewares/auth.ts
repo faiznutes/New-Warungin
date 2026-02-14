@@ -276,7 +276,7 @@ export const authGuard = async (
     // Attach user info to request
     req.userId = decoded.userId;
     req.tenantId = tenantId;
-    req.role = decoded.role;
+    req.role = user.role;
 
     // Also attach to req.user for compatibility with routes
     interface ExtendedRequest extends Request {
@@ -294,7 +294,7 @@ export const authGuard = async (
     (req as ExtendedRequest).user = {
       id: decoded.userId,
       tenantId: tenantId,
-      role: decoded.role,
+      role: user.role,
       email: user.email,
       name: user.name,
       permissions: (user.permissions && typeof user.permissions === 'object' && !Array.isArray(user.permissions))

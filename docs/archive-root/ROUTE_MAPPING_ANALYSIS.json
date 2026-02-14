@@ -1,0 +1,1274 @@
+{
+  "project_analysis": {
+    "title": "Warungin Project - Routes & Services Mapping Analysis",
+    "versions": {
+      "new": "F:\\Backup W11\\Project\\New-Warungin",
+      "old": "F:\\Backup W11\\Project\\BACKUP LAST\\New-Warungin"
+    },
+    "analysis_date": "2026-02-11"
+  },
+  "version_new": {
+    "name": "New-Warungin (Current)",
+    "routes_directory": "src/routes",
+    "services_directory": "src/services",
+    "total_route_files": 43,
+    "total_service_files": 47,
+    "enabled_routes": [
+      {
+        "file": "auth.routes.ts",
+        "route_path": "/auth",
+        "service": "auth.service",
+        "endpoints": [
+          "POST /api/auth/login",
+          "POST /api/auth/register",
+          "POST /api/auth/logout",
+          "POST /api/auth/refresh-token",
+          "POST /api/auth/verify-otp"
+        ],
+        "middleware": [
+          "authGuard",
+          "authLimiter",
+          "logAction",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "tenant.routes.ts",
+        "route_path": "/tenants",
+        "service": "tenant.service",
+        "endpoints": [
+          "POST /api/tenants",
+          "GET /api/tenants",
+          "GET /api/tenants/:id",
+          "GET /api/tenants/:id/stores",
+          "GET /api/tenants/:id/users",
+          "GET /api/tenants/:id/subscription",
+          "PUT /api/tenants/:id",
+          "DELETE /api/tenants/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "require2FA",
+          "auditLogger"
+        ]
+      },
+      {
+        "file": "product.routes.ts",
+        "route_path": "/products",
+        "service": "product.service",
+        "endpoints": [
+          "GET /api/products",
+          "GET /api/products/low-stock/all",
+          "GET /api/products/:id",
+          "POST /api/products",
+          "PUT /api/products/:id",
+          "DELETE /api/products/:id",
+          "POST /api/products/bulk/upload"
+        ],
+        "middleware": [
+          "authGuard",
+          "subscriptionGuard",
+          "supervisorStoresGuard",
+          "validate",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "order.routes.ts",
+        "route_path": "/orders",
+        "service": "order.service",
+        "endpoints": [
+          "GET /api/orders",
+          "GET /api/orders/:id",
+          "POST /api/orders",
+          "PUT /api/orders/:id",
+          "PUT /api/orders/:id/status",
+          "PUT /api/orders/bulk-update-kitchen",
+          "DELETE /api/orders/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard",
+          "supervisorStoreGuard"
+        ]
+      },
+      {
+        "file": "dashboard.routes.ts",
+        "route_path": "/dashboard",
+        "service": "dashboard.service",
+        "endpoints": [
+          "GET /api/dashboard/stats",
+          "GET /api/dashboard/stats/cashier",
+          "GET /api/dashboard/revenue",
+          "GET /api/dashboard/top-products",
+          "GET /api/dashboard/recent-orders"
+        ],
+        "middleware": [
+          "authGuard",
+          "subscriptionGuard",
+          "supervisorStoresGuard"
+        ]
+      },
+      {
+        "file": "customer.routes.ts",
+        "route_path": "/customers",
+        "service": "customer.service",
+        "endpoints": [
+          "GET /api/customers",
+          "GET /api/customers/:id",
+          "POST /api/customers",
+          "PUT /api/customers/:id",
+          "DELETE /api/customers/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard",
+          "supervisorStoresGuard"
+        ]
+      },
+      {
+        "file": "member.routes.ts",
+        "route_path": "/members",
+        "service": "member.service",
+        "endpoints": [
+          "GET /api/members",
+          "GET /api/members/code/:code",
+          "GET /api/members/:id",
+          "POST /api/members",
+          "PUT /api/members/:id",
+          "DELETE /api/members/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "subscription.routes.ts",
+        "route_path": "/subscriptions",
+        "service": "subscription.service",
+        "endpoints": [
+          "GET /api/subscriptions/current",
+          "POST /api/subscriptions/extend",
+          "POST /api/subscriptions/upgrade",
+          "POST /api/subscriptions/reduce",
+          "GET /api/subscriptions/history"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard"
+        ]
+      },
+      {
+        "file": "addon.routes.ts",
+        "route_path": "/addons",
+        "service": "addon.service",
+        "endpoints": [
+          "GET /api/addons/available",
+          "GET /api/addons",
+          "GET /api/addons/:id",
+          "POST /api/addons/:id/subscribe",
+          "POST /api/addons/:id/unsubscribe"
+        ],
+        "middleware": [
+          "authGuard",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "receipt.routes.ts",
+        "route_path": "/receipts",
+        "service": "receipt.service",
+        "endpoints": [
+          "GET /api/receipts/templates",
+          "GET /api/receipts/templates/default",
+          "GET /api/receipts/templates/:id",
+          "POST /api/receipts/templates",
+          "PUT /api/receipts/templates/:id",
+          "DELETE /api/receipts/templates/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "checkReceiptEditorAddon",
+          "roleGuard"
+        ]
+      },
+      {
+        "file": "user.routes.ts",
+        "route_path": "/users",
+        "service": "user.service",
+        "endpoints": [
+          "GET /api/users",
+          "GET /api/users/:id",
+          "POST /api/users",
+          "PUT /api/users/:id",
+          "DELETE /api/users/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "subscriptionGuard"
+        ]
+      },
+      {
+        "file": "report.routes.ts",
+        "route_path": "/reports",
+        "service": "report.service",
+        "endpoints": [
+          "GET /api/reports/global",
+          "GET /api/reports/tenant",
+          "GET /api/reports/sales",
+          "GET /api/reports/products",
+          "GET /api/reports/customers"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard"
+        ]
+      },
+      {
+        "file": "payment.routes.ts",
+        "route_path": "/payment",
+        "service": "payment.service",
+        "endpoints": [
+          "POST /api/payment/create",
+          "GET /api/payment/status/:orderId",
+          "POST /api/payment/webhook",
+          "POST /api/payment/webhook/n8n",
+          "POST /api/payment/cancel/:orderId"
+        ],
+        "middleware": [
+          "authGuard",
+          "validate",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "outlet.routes.ts",
+        "route_path": "/outlets",
+        "service": "outlet.service",
+        "endpoints": [
+          "GET /api/outlets",
+          "GET /api/outlets/:id",
+          "POST /api/outlets",
+          "PUT /api/outlets/:id",
+          "DELETE /api/outlets/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard"
+        ]
+      },
+      {
+        "file": "outlet.advanced.routes.ts",
+        "route_path": "/outlets",
+        "service": "outlet.service",
+        "endpoints": [
+          "POST /api/outlets/bulk/update",
+          "POST /api/outlets/bulk/delete"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "outlet.import-export.routes.ts",
+        "route_path": "/outlets",
+        "service": "outlet.import-export.service",
+        "endpoints": [
+          "GET /api/outlets/export/csv",
+          "POST /api/outlets/import/csv",
+          "GET /api/outlets/export/json",
+          "POST /api/outlets/import/json"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "createRateLimiter",
+          "sanitizeInput"
+        ]
+      },
+      {
+        "file": "outlet.search.routes.ts",
+        "route_path": "/outlets",
+        "service": "outlet.search.service",
+        "endpoints": [
+          "POST /api/outlets/search/advanced",
+          "GET /api/outlets/search/statistics",
+          "GET /api/outlets/search/fulltext"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard",
+          "subscriptionGuard"
+        ]
+      },
+      {
+        "file": "discount.routes.ts",
+        "route_path": "/discounts",
+        "service": "discount.service",
+        "endpoints": [
+          "GET /api/discounts",
+          "GET /api/discounts/:id",
+          "POST /api/discounts",
+          "PUT /api/discounts/:id",
+          "DELETE /api/discounts/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "subscriptionGuard"
+        ]
+      },
+      {
+        "file": "delivery.routes.ts",
+        "route_path": "/delivery",
+        "service": "delivery.service",
+        "endpoints": [
+          "GET /api/delivery/orders",
+          "GET /api/delivery/orders/:id",
+          "POST /api/delivery/orders",
+          "PUT /api/delivery/orders/:id/status"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "employee.routes.ts",
+        "route_path": "/employees",
+        "service": "employee.service",
+        "endpoints": [
+          "GET /api/employees",
+          "GET /api/employees/stats",
+          "GET /api/employees/:id",
+          "POST /api/employees",
+          "PUT /api/employees/:id",
+          "DELETE /api/employees/:id"
+        ],
+        "middleware": [
+          "authGuard",
+          "auditLogger"
+        ]
+      },
+      {
+        "file": "stock-transfer.routes.ts",
+        "route_path": "/stock-transfers",
+        "service": "stock-transfer.service",
+        "endpoints": [
+          "GET /api/stock-transfers",
+          "GET /api/stock-transfers/:id",
+          "POST /api/stock-transfers",
+          "PUT /api/stock-transfers/:id/status",
+          "PUT /api/stock-transfers/:id/cancel"
+        ],
+        "middleware": [
+          "authGuard",
+          "subscriptionGuard",
+          "supervisorStoresGuard",
+          "checkInventoryAccess"
+        ]
+      },
+      {
+        "file": "stock-alert.routes.ts",
+        "route_path": "/stock-alerts",
+        "service": "stock-alert.service",
+        "endpoints": [
+          "GET /api/stock-alerts",
+          "POST /api/stock-alerts",
+          "PUT /api/stock-alerts/:id",
+          "DELETE /api/stock-alerts/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "transaction.routes.ts",
+        "route_path": "/transactions",
+        "service": "transaction.service",
+        "endpoints": [
+          "GET /api/transactions",
+          "GET /api/transactions/:id",
+          "POST /api/transactions",
+          "PUT /api/transactions/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "settings.routes.ts",
+        "route_path": "/settings",
+        "service": "settings.service",
+        "endpoints": [
+          "GET /api/settings",
+          "GET /api/settings/:key",
+          "PUT /api/settings/:key",
+          "PUT /api/settings/bulk"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "password.routes.ts",
+        "route_path": "/password",
+        "service": "password.service",
+        "endpoints": [
+          "POST /api/password/change",
+          "POST /api/password/reset-request",
+          "POST /api/password/reset-verify"
+        ],
+        "middleware": [
+          "authGuard",
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "session.routes.ts",
+        "route_path": "/sessions",
+        "service": "session.service",
+        "endpoints": [
+          "GET /api/sessions",
+          "POST /api/sessions/logout",
+          "POST /api/sessions/logout-all",
+          "DELETE /api/sessions/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "2fa.routes.ts",
+        "route_path": "/2fa",
+        "service": "2fa.service",
+        "endpoints": [
+          "POST /api/2fa/setup",
+          "POST /api/2fa/verify",
+          "POST /api/2fa/disable",
+          "GET /api/2fa/status"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "webhook.routes.ts",
+        "route_path": "/webhooks",
+        "service": "webhook.service",
+        "endpoints": [
+          "GET /api/webhooks",
+          "POST /api/webhooks",
+          "PUT /api/webhooks/:id",
+          "DELETE /api/webhooks/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "audit-log.routes.ts",
+        "route_path": "/audit-logs",
+        "service": "audit-log.service",
+        "endpoints": [
+          "GET /api/audit-logs",
+          "GET /api/audit-logs/:id",
+          "GET /api/audit-logs/user/:userId",
+          "GET /api/audit-logs/action/:action"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "contact.routes.ts",
+        "route_path": "/contact",
+        "service": "contact.service",
+        "endpoints": [
+          "POST /api/contact/submit",
+          "GET /api/contact/submissions",
+          "GET /api/contact/submissions/:id"
+        ],
+        "middleware": [
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "tenant-profile.routes.ts",
+        "route_path": "/tenant",
+        "service": "tenant.service",
+        "endpoints": [
+          "GET /api/tenant/profile",
+          "PUT /api/tenant/profile",
+          "GET /api/tenant/stats"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "subscription-receipt.routes.ts",
+        "route_path": "/subscription-receipts",
+        "service": "subscription-receipt.service",
+        "endpoints": [
+          "GET /api/subscription-receipts",
+          "GET /api/subscription-receipts/:id",
+          "POST /api/subscription-receipts/download/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "archive.routes.ts",
+        "route_path": "/archives",
+        "service": "archive.service",
+        "endpoints": [
+          "GET /api/archives",
+          "GET /api/archives/:id",
+          "POST /api/archives/restore/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "pdf.routes.ts",
+        "route_path": "/pdf",
+        "service": "pdf.service",
+        "endpoints": [
+          "POST /api/pdf/generate",
+          "POST /api/pdf/receipt/:orderId",
+          "POST /api/pdf/invoice/:invoiceId"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "internal.routes.ts",
+        "route_path": "/internal",
+        "service": "various",
+        "endpoints": [
+          "POST /api/internal/n8n/webhook",
+          "POST /api/internal/sync"
+        ],
+        "middleware": [
+          "asyncHandler"
+        ]
+      },
+      {
+        "file": "supplier.routes.ts",
+        "route_path": "/suppliers",
+        "service": "supplier.service",
+        "endpoints": [
+          "GET /api/suppliers",
+          "GET /api/suppliers/:id",
+          "POST /api/suppliers",
+          "PUT /api/suppliers/:id",
+          "DELETE /api/suppliers/:id"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "purchase-order.routes.ts",
+        "route_path": "/purchase-orders",
+        "service": "purchase-order.service",
+        "endpoints": [
+          "GET /api/purchase-orders",
+          "GET /api/purchase-orders/:id",
+          "POST /api/purchase-orders",
+          "PUT /api/purchase-orders/:id",
+          "PUT /api/purchase-orders/:id/status"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "admin-monitor.routes.ts",
+        "route_path": "/admin",
+        "service": "admin-monitor.service",
+        "endpoints": [
+          "GET /api/admin/system-stats",
+          "GET /api/admin/tenant-stats",
+          "GET /api/admin/user-activity"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard"
+        ]
+      },
+      {
+        "file": "superadmin-backup.routes.ts",
+        "route_path": "/superadmin/backups",
+        "service": "superadmin-backup.service",
+        "endpoints": [
+          "GET /api/superadmin/backups",
+          "POST /api/superadmin/backups/create",
+          "POST /api/superadmin/backups/:id/restore"
+        ],
+        "middleware": [
+          "authGuard",
+          "roleGuard"
+        ]
+      },
+      {
+        "file": "tenant-backup.routes.ts",
+        "route_path": "/tenant/backup",
+        "service": "tenant-backup.service",
+        "endpoints": [
+          "GET /api/tenant/backup/status",
+          "POST /api/tenant/backup/create",
+          "GET /api/tenant/backup/history"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "cash-shift.routes.ts",
+        "route_path": "/cash-shift",
+        "service": "cash-shift.service",
+        "endpoints": [
+          "GET /api/cash-shift/current",
+          "POST /api/cash-shift/open",
+          "POST /api/cash-shift/close",
+          "GET /api/cash-shift/history"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      },
+      {
+        "file": "store-shift.routes.ts",
+        "route_path": "/store-shift",
+        "service": "store-shift.service",
+        "endpoints": [
+          "GET /api/store-shift",
+          "POST /api/store-shift/open",
+          "POST /api/store-shift/close"
+        ],
+        "middleware": [
+          "authGuard"
+        ]
+      }
+    ],
+    "disabled_routes": [
+      "marketing.routes.ts",
+      "analytics.routes.ts",
+      "finance.routes.ts",
+      "quick-insight.routes.ts",
+      "reward.routes.ts",
+      "metrics.routes.ts",
+      "gdpr.routes.ts",
+      "retention.routes.ts",
+      "email-template.routes.ts",
+      "email-analytics.routes.ts",
+      "email-scheduler.routes.ts",
+      "customer-engagement.routes.ts",
+      "sms-gateway.routes.ts",
+      "push-notification.routes.ts",
+      "customer-engagement-enhancement.routes.ts",
+      "advanced-reporting.routes.ts",
+      "financial-management-enhancement.routes.ts",
+      "advanced-audit.routes.ts",
+      "accounting-integration.routes.ts",
+      "payment-gateway-integration.routes.ts",
+      "restock-suggestion.routes.ts",
+      "price-suggestion.routes.ts"
+    ],
+    "services": [
+      {
+        "name": "auth.service",
+        "file": "auth.service.ts",
+        "methods": [
+          "login",
+          "register",
+          "logout",
+          "refreshToken",
+          "verifyOTP",
+          "setupTwoFactor"
+        ]
+      },
+      {
+        "name": "tenant.service",
+        "file": "tenant.service.ts",
+        "methods": [
+          "createTenant",
+          "getTenants",
+          "getTenantById",
+          "updateTenant",
+          "deleteTenant"
+        ]
+      },
+      {
+        "name": "product.service",
+        "file": "product.service.ts",
+        "methods": [
+          "getProducts",
+          "getProductById",
+          "createProduct",
+          "updateProduct",
+          "deleteProduct",
+          "getLowStockProducts",
+          "bulkUpload"
+        ]
+      },
+      {
+        "name": "product-adjustment.service",
+        "file": "product-adjustment.service.ts",
+        "methods": [
+          "createAdjustment",
+          "getAdjustments",
+          "applyAdjustment"
+        ]
+      },
+      {
+        "name": "product-cache.service",
+        "file": "product-cache.service.ts",
+        "methods": [
+          "cacheProducts",
+          "getCachedProducts",
+          "invalidateCache"
+        ]
+      },
+      {
+        "name": "order.service",
+        "file": "order.service.ts",
+        "methods": [
+          "getOrders",
+          "getOrderById",
+          "createOrder",
+          "updateOrder",
+          "updateOrderStatus",
+          "deleteOrder",
+          "bulkUpdateKitchenStatus"
+        ]
+      },
+      {
+        "name": "dashboard.service",
+        "file": "dashboard.service.ts",
+        "methods": [
+          "getDashboardStats",
+          "getRevenue",
+          "getTopProducts",
+          "getRecentOrders"
+        ]
+      },
+      {
+        "name": "customer.service",
+        "file": "customer.service.ts",
+        "methods": [
+          "getCustomers",
+          "getCustomerById",
+          "createCustomer",
+          "updateCustomer",
+          "deleteCustomer"
+        ]
+      },
+      {
+        "name": "member.service",
+        "file": "member.service.ts",
+        "methods": [
+          "getMembers",
+          "getMemberById",
+          "getMemberByCode",
+          "createMember",
+          "updateMember",
+          "deleteMember"
+        ]
+      },
+      {
+        "name": "subscription.service",
+        "file": "subscription.service.ts",
+        "methods": [
+          "getCurrentSubscription",
+          "extendSubscription",
+          "upgradeSubscription",
+          "reduceSubscription",
+          "getHistory"
+        ]
+      },
+      {
+        "name": "addon.service",
+        "file": "addon.service.ts",
+        "methods": [
+          "getAvailableAddons",
+          "getTenantAddons",
+          "subscribeAddon",
+          "unsubscribeAddon"
+        ]
+      },
+      {
+        "name": "receipt.service",
+        "file": "receipt.service.ts",
+        "methods": [
+          "getReceiptTemplates",
+          "getDefaultTemplate",
+          "createTemplate",
+          "updateTemplate",
+          "deleteTemplate",
+          "generateReceipt"
+        ]
+      },
+      {
+        "name": "user.service",
+        "file": "user.service.ts",
+        "methods": [
+          "getUsers",
+          "getUserById",
+          "createUser",
+          "updateUser",
+          "deleteUser",
+          "changePassword"
+        ]
+      },
+      {
+        "name": "report.service",
+        "file": "report.service.ts",
+        "methods": [
+          "getGlobalReport",
+          "getTenantReport",
+          "getSalesReport",
+          "getProductReport",
+          "getCustomerReport",
+          "exportReport"
+        ]
+      },
+      {
+        "name": "payment.service",
+        "file": "payment.service.ts",
+        "methods": [
+          "createPayment",
+          "checkPaymentStatus",
+          "handleWebhook",
+          "cancelPayment"
+        ]
+      },
+      {
+        "name": "outlet.service",
+        "file": "outlet.service.ts",
+        "methods": [
+          "getOutlets",
+          "getOutletById",
+          "createOutlet",
+          "updateOutlet",
+          "deleteOutlet",
+          "bulkUpdate",
+          "bulkDelete"
+        ]
+      },
+      {
+        "name": "outlet.import-export.service",
+        "file": "outlet.import-export.service.ts",
+        "methods": [
+          "exportToCSV",
+          "importFromCSV",
+          "exportToJSON",
+          "importFromJSON"
+        ]
+      },
+      {
+        "name": "outlet.search.service",
+        "file": "outlet.search.service.ts",
+        "methods": [
+          "search",
+          "getStatistics",
+          "fullTextSearch"
+        ]
+      },
+      {
+        "name": "discount.service",
+        "file": "discount.service.ts",
+        "methods": [
+          "getDiscounts",
+          "getDiscountById",
+          "createDiscount",
+          "updateDiscount",
+          "deleteDiscount",
+          "applyDiscount"
+        ]
+      },
+      {
+        "name": "delivery.service",
+        "file": "delivery.service.ts",
+        "methods": [
+          "getDeliveryOrders",
+          "getDeliveryOrderById",
+          "createDeliveryOrder",
+          "updateDeliveryOrderStatus"
+        ]
+      },
+      {
+        "name": "employee.service",
+        "file": "employee.service.ts",
+        "methods": [
+          "getEmployees",
+          "getEmployeeById",
+          "createEmployee",
+          "updateEmployee",
+          "deleteEmployee",
+          "getEmployeeStats"
+        ]
+      },
+      {
+        "name": "stock-transfer.service",
+        "file": "stock-transfer.service.ts",
+        "methods": [
+          "getStockTransfers",
+          "getStockTransferById",
+          "createStockTransfer",
+          "updateStockTransferStatus",
+          "cancelStockTransfer"
+        ]
+      },
+      {
+        "name": "stock-alert.service",
+        "file": "stock-alert.service.ts",
+        "methods": [
+          "getStockAlerts",
+          "createStockAlert",
+          "updateStockAlert",
+          "deleteStockAlert"
+        ]
+      },
+      {
+        "name": "transaction.service",
+        "file": "transaction.service.ts",
+        "methods": [
+          "getTransactions",
+          "getTransactionById",
+          "createTransaction",
+          "updateTransaction"
+        ]
+      },
+      {
+        "name": "settings.service",
+        "file": "settings.service.ts",
+        "methods": [
+          "getSettings",
+          "getSetting",
+          "updateSetting",
+          "bulkUpdateSettings"
+        ]
+      },
+      {
+        "name": "password.service",
+        "file": "password.service.ts",
+        "methods": [
+          "changePassword",
+          "requestPasswordReset",
+          "verifyAndResetPassword"
+        ]
+      },
+      {
+        "name": "session.service",
+        "file": "session.service.ts",
+        "methods": [
+          "getSessions",
+          "logout",
+          "logoutAll",
+          "deleteSession"
+        ]
+      },
+      {
+        "name": "2fa.service",
+        "file": "2fa.service.ts",
+        "methods": [
+          "setupTwoFactor",
+          "verifyTwoFactor",
+          "disableTwoFactor",
+          "getStatus"
+        ]
+      },
+      {
+        "name": "webhook.service",
+        "file": "webhook.service.ts",
+        "methods": [
+          "getWebhooks",
+          "createWebhook",
+          "updateWebhook",
+          "deleteWebhook",
+          "triggerWebhook"
+        ]
+      },
+      {
+        "name": "audit-log.service",
+        "file": "audit-log.service.ts",
+        "methods": [
+          "getAuditLogs",
+          "getAuditLogById",
+          "logAction",
+          "getActionLogs"
+        ]
+      },
+      {
+        "name": "contact.service",
+        "file": "contact.service.ts",
+        "methods": [
+          "submitContactForm",
+          "getSubmissions",
+          "getSubmissionById"
+        ]
+      },
+      {
+        "name": "tenant-profile.service",
+        "file": "tenant.service",
+        "methods": [
+          "getTenantProfile",
+          "updateTenantProfile",
+          "getTenantStats"
+        ]
+      },
+      {
+        "name": "subscription-receipt.service",
+        "file": "subscription-receipt.service.ts",
+        "methods": [
+          "getSubscriptionReceipts",
+          "getReceiptById",
+          "downloadReceipt"
+        ]
+      },
+      {
+        "name": "archive.service",
+        "file": "archive.service.ts",
+        "methods": [
+          "getArchives",
+          "getArchiveById",
+          "restoreArchive"
+        ]
+      },
+      {
+        "name": "pdf.service",
+        "file": "pdf.service.ts",
+        "methods": [
+          "generatePDF",
+          "generateReceipt",
+          "generateInvoice"
+        ]
+      },
+      {
+        "name": "supplier.service",
+        "file": "supplier.service.ts",
+        "methods": [
+          "getSuppliers",
+          "getSupplierById",
+          "createSupplier",
+          "updateSupplier",
+          "deleteSupplier"
+        ]
+      },
+      {
+        "name": "purchase-order.service",
+        "file": "purchase-order.service.ts",
+        "methods": [
+          "getPurchaseOrders",
+          "getPurchaseOrderById",
+          "createPurchaseOrder",
+          "updatePurchaseOrder",
+          "updatePurchaseOrderStatus"
+        ]
+      },
+      {
+        "name": "cash-shift.service",
+        "file": "cash-shift.service.ts",
+        "methods": [
+          "getCurrentCashShift",
+          "openCashShift",
+          "closeCashShift",
+          "getHistory"
+        ]
+      },
+      {
+        "name": "store-shift.service",
+        "file": "store-shift.service.ts",
+        "methods": [
+          "getStoreShift",
+          "openStoreShift",
+          "closeStoreShift"
+        ]
+      },
+      {
+        "name": "payment-gateway-integration.service",
+        "file": "payment-gateway-integration.service.ts",
+        "methods": [
+          "createPaymentWithGateway",
+          "verifyPayment",
+          "handleCallback"
+        ]
+      },
+      {
+        "name": "2fa.service",
+        "file": "2fa.service.ts",
+        "methods": [
+          "initializeAuth",
+          "verifyCode",
+          "backupCodes"
+        ]
+      },
+      {
+        "name": "business-metrics.service",
+        "file": "business-metrics.service.ts",
+        "methods": [
+          "calculateMetrics",
+          "getMetrics"
+        ]
+      },
+      {
+        "name": "compliance-reporting.service",
+        "file": "compliance-reporting.service.ts",
+        "methods": [
+          "generateComplianceReport"
+        ]
+      },
+      {
+        "name": "courier.service",
+        "file": "courier.service.ts",
+        "methods": [
+          "sendCourier",
+          "trackCourier"
+        ]
+      },
+      {
+        "name": "daily-backup.service",
+        "file": "daily-backup.service.ts",
+        "methods": [
+          "performBackup",
+          "restoreBackup"
+        ]
+      },
+      {
+        "name": "data-encryption.service",
+        "file": "data-encryption.service.ts",
+        "methods": [
+          "encrypt",
+          "decrypt"
+        ]
+      },
+      {
+        "name": "loyalty-tier.service",
+        "file": "loyalty-tier.service.ts",
+        "methods": [
+          "calculateTier",
+          "getTierBenefits"
+        ]
+      },
+      {
+        "name": "multi-location-intelligence.service",
+        "file": "multi-location-intelligence.service.ts",
+        "methods": [
+          "analyzeMultiLocation",
+          "getComparativeStats"
+        ]
+      },
+      {
+        "name": "plan-features.service",
+        "file": "plan-features.service.ts",
+        "methods": [
+          "getFeatures",
+          "checkFeatureAccess"
+        ]
+      },
+      {
+        "name": "telegram.service",
+        "file": "telegram.service.ts",
+        "methods": [
+          "sendMessage",
+          "handleWebhook"
+        ]
+      },
+      {
+        "name": "user-status.service",
+        "file": "user-status.service.ts",
+        "methods": [
+          "updateUserStatus",
+          "getStatus"
+        ]
+      },
+      {
+        "name": "whatsapp.service",
+        "file": "whatsapp.service.ts",
+        "methods": [
+          "sendMessage",
+          "handleWebhook"
+        ]
+      }
+    ]
+  },
+  "version_old": {
+    "name": "BACKUP LAST (Complete)",
+    "routes_directory": "src/routes",
+    "total_route_files": 57,
+    "note": "ALL routes are enabled, including disabled ones in NEW version",
+    "disabled_routes_new_version": [
+      "marketing.routes.ts",
+      "analytics.routes.ts",
+      "finance.routes.ts",
+      "quick-insight.routes.ts",
+      "reward.routes.ts",
+      "metrics.routes.ts",
+      "gdpr.routes.ts",
+      "retention.routes.ts",
+      "email-template.routes.ts",
+      "email-analytics.routes.ts",
+      "email-scheduler.routes.ts",
+      "customer-engagement.routes.ts",
+      "sms-gateway.routes.ts",
+      "push-notification.routes.ts",
+      "customer-engagement-enhancement.routes.ts",
+      "advanced-reporting.routes.ts",
+      "financial-management-enhancement.routes.ts",
+      "advanced-audit.routes.ts",
+      "accounting-integration.routes.ts",
+      "payment-gateway-integration.routes.ts",
+      "restock-suggestion.routes.ts",
+      "price-suggestion.routes.ts"
+    ]
+  },
+  "key_differences": {
+    "new_additions_in_new_version": [
+      "outlet.advanced.routes.ts - Bulk operations for outlets",
+      "outlet.import-export.routes.ts - CSV/JSON import-export functionality",
+      "outlet.search.routes.ts - Advanced search and fulltext search"
+    ],
+    "disabled_in_new_version": 22,
+    "total_services_new": 47,
+    "common_middleware": [
+      "authGuard",
+      "roleGuard",
+      "subscriptionGuard",
+      "supervisorStoresGuard",
+      "validate",
+      "asyncHandler",
+      "auditLogger",
+      "require2FA"
+    ],
+    "database_orm": "Prisma",
+    "validation_library": "Zod"
+  },
+  "summary": {
+    "new_version": {
+      "enabled_routes": 43,
+      "disabled_routes": 22,
+      "total_possible_routes": 65,
+      "services": 47,
+      "primary_database": "PostgreSQL (via Prisma)",
+      "api_style": "RESTful with middleware-based access control"
+    },
+    "old_version": {
+      "total_routes": 57,
+      "status": "All routes enabled",
+      "additional_to_new": 22
+    },
+    "development_trend": "Moving towards a more focused feature set with core business logic enabled while experimental/premium features are disabled"
+  }
+}

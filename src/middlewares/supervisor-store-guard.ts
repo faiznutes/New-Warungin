@@ -59,15 +59,62 @@ export const supervisorStoreGuard = () => {
         return next();
       }
 
-      // Get supervisor's allowed stores from permissions
-      interface UserWithPermissions {
-        permissions?: SupervisorPermissions;
+      // Get supervisor's allowed stores from req.user.permissions (set by authGuard)
+      const userPermissions = (req as any).user?.permissions as SupervisorPermissions | null | undefined;
+
+      // If permissions is missing or not an object, deny access and log
+      if (!userPermissions || typeof userPermissions !== 'object') {
+        logger.warn('Supervisor permissions missing or invalid', {
+          userId: req.userId,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: Supervisor permissions not configured',
+          message: 'Your account does not have supervisor permissions configured. Please contact an administrator.',
+          code: 'SUPERVISOR_PERMISSIONS_MISSING',
+        });
+        return;
       }
-      const userPermissions = (req as unknown as UserWithPermissions).permissions || {};
-      const allowedStoreIds = (userPermissions as SupervisorPermissions).allowedStoreIds || [];
+
+      const allowedStoreIds = userPermissions.allowedStoreIds;
+
+      // Validate allowedStoreIds type
+      if (!Array.isArray(allowedStoreIds)) {
+        logger.warn('Supervisor allowedStoreIds invalid type', {
+          userId: req.userId,
+          allowedStoreIds,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: Supervisor permissions not configured',
+          message: 'Supervisor permissions are misconfigured. Please contact an administrator.',
+          code: 'SUPERVISOR_PERMISSIONS_INVALID',
+        });
+        return;
+      }
+
+      // If allowedStoreIds is empty, deny explicitly and log
+      if (allowedStoreIds.length === 0) {
+        logger.warn('Supervisor allowedStoreIds empty', {
+          userId: req.userId,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: No stores assigned',
+          message: 'No stores are assigned to your account. Please contact an administrator to assign stores.',
+          code: 'SUPERVISOR_NO_STORES',
+        });
+        return;
+      }
 
       // Validate that supervisor is allowed to access this store
-      if (!Array.isArray(allowedStoreIds) || !allowedStoreIds.includes(storeId)) {
+      if (!allowedStoreIds.includes(storeId)) {
         logger.warn('Supervisor store access denied', {
           userId: req.userId,
           requestedStoreId: storeId,
@@ -131,12 +178,57 @@ export const supervisorStoresGuard = () => {
         return next();
       }
 
-      // Get supervisor's allowed stores
-      interface UserWithPermissions {
-        permissions?: SupervisorPermissions;
+      // Get supervisor's allowed stores from req.user.permissions (set by authGuard)
+      const userPermissions = (req as any).user?.permissions as SupervisorPermissions | null | undefined;
+
+      // If permissions is missing or invalid, deny access
+      if (!userPermissions || typeof userPermissions !== 'object') {
+        logger.warn('Supervisor permissions missing or invalid (bulk)', {
+          userId: req.userId,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: Supervisor permissions not configured',
+          message: 'Your account does not have supervisor permissions configured. Please contact an administrator.',
+          code: 'SUPERVISOR_PERMISSIONS_MISSING',
+        });
+        return;
       }
-      const userPermissions = (req as unknown as UserWithPermissions).permissions || {};
-      const allowedStoreIds = (userPermissions as SupervisorPermissions).allowedStoreIds || [];
+
+      const allowedStoreIds = userPermissions.allowedStoreIds;
+
+      if (!Array.isArray(allowedStoreIds)) {
+        logger.warn('Supervisor allowedStoreIds invalid type (bulk)', {
+          userId: req.userId,
+          allowedStoreIds,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: Supervisor permissions not configured',
+          message: 'Supervisor permissions are misconfigured. Please contact an administrator.',
+          code: 'SUPERVISOR_PERMISSIONS_INVALID',
+        });
+        return;
+      }
+
+      if (allowedStoreIds.length === 0) {
+        logger.warn('Supervisor allowedStoreIds empty (bulk)', {
+          userId: req.userId,
+          path: req.path,
+          method: req.method,
+        });
+
+        res.status(403).json({
+          error: 'Forbidden: No stores assigned',
+          message: 'No stores are assigned to your account. Please contact an administrator to assign stores.',
+          code: 'SUPERVISOR_NO_STORES',
+        });
+        return;
+      }
 
       // Check all requested stores are in allowed list
       const unauthorizedStores = storeIds.filter(id => !allowedStoreIds.includes(id));
