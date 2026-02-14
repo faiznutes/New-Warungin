@@ -11,6 +11,7 @@ import { requireTenantId } from '../utils/tenant';
 import { validate } from '../middlewares/validator';
 import { z } from 'zod';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { auditLogger } from '../middlewares/audit-logger';
 
 const router = Router();
 
@@ -38,6 +39,7 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: openShiftSchema }),
+  auditLogger('OPEN', 'cash_shifts'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
     const userId = req.userId!;
@@ -74,6 +76,7 @@ router.post(
   authGuard,
   subscriptionGuard,
   validate({ body: closeShiftSchema }),
+  auditLogger('CLOSE', 'cash_shifts'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
     const userId = req.userId!;

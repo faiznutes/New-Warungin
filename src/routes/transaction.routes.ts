@@ -7,6 +7,7 @@ import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { validate } from '../middlewares/validator';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { auditLogger } from '../middlewares/audit-logger';
 
 const router = Router();
 
@@ -81,6 +82,7 @@ router.post(
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR', 'CASHIER'),
   subscriptionGuard,
   validate({ body: createTransactionSchema }),
+  auditLogger('CREATE', 'transactions', (req) => req.body?.orderId || null),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
     const userId = req.userId!;

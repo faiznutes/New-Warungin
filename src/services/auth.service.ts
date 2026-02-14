@@ -111,10 +111,7 @@ export const login = async (input: LoginInput, req?: any) => {
     logger.info('Super Admin - skipping tenant active check');
   }
 
-  // Verify password
-  logger.info('Verifying password...');
   const isValidPassword = await bcrypt.compare(password, user.password);
-  logger.info('Password comparison result:', isValidPassword);
   
   if (!isValidPassword) {
     // Log for debugging
@@ -123,7 +120,6 @@ export const login = async (input: LoginInput, req?: any) => {
       role: user.role,
       passwordLength: password.length,
       hashLength: user.password.length,
-      hashStart: user.password.substring(0, 20),
     });
     throw new AppError('Password salah', 401);
   }

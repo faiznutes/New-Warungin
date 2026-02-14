@@ -8,6 +8,7 @@ import { validate } from '../middlewares/validator';
 import { requireTenantId } from '../utils/tenant';
 import { z } from 'zod';
 import { asyncHandler, handleRouteError } from '../utils/route-error-handler';
+import { auditLogger, logAction } from '../middlewares/audit-logger';
 
 const router = Router();
 
@@ -238,11 +239,11 @@ router.post(
   roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   subscriptionGuard,
   validate({ body: createOrderSchema }),
+  auditLogger('CREATE', 'orders', (req) => (req as any).createdOrderId || null),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
     const userId = req.user!.id;
     const userRole = req.user!.role;
-    // Get idempotency key from header (X-Idempotency-Key)
     const idempotencyKey = req.headers['x-idempotency-key'] as string | undefined;
     const order = await orderService.createOrder(req.body, userId, tenantId, idempotencyKey, userRole);
     res.status(201).json(order);
@@ -292,7 +293,6 @@ router.post(
 router.put(
   '/:id',
   authGuard,
-  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
   roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   validate({ body: updateOrderSchema }),
   asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -435,20 +435,11 @@ router.post(
 router.delete(
   '/:id',
   authGuard,
-  roleGuard('ADMIN_TENANT', 'SUPERVISOR', 'CASHIER', 'KITCHEN'),
+  roleGuard('SUPER_ADMIN', 'ADMIN_TENANT', 'SUPERVISOR'),
   subscriptionGuard,
+  auditLogger('DELETE', 'orders', (req) => req.params.id),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const tenantId = requireTenantId(req);
-    const userRole = req.user!.role;
-
-    // Only ADMIN_TENANT, SUPERVISOR and SUPER_ADMIN can delete orders
-    if (userRole !== 'ADMIN_TENANT' && userRole !== 'SUPER_ADMIN' && userRole !== 'SUPERVISOR') {
-      return res.status(403).json({
-        error: 'FORBIDDEN',
-        message: 'Hanya admin atau supervisor yang dapat menghapus pesanan'
-      });
-    }
-
     await orderService.deleteOrder(req.params.id, tenantId);
     res.status(204).send();
   })

@@ -1,4 +1,4 @@
-modules = ["vue-node-20", "nodejs-20", "bash"]
+modules = ["vue-node-20", "nodejs-20", "bash", "postgresql-16"]
 [agent]
 expertMode = true
 
