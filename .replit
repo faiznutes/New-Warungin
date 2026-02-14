@@ -1,0 +1,16 @@
+modules = ["vue-node-20", "nodejs-20", "bash"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+JWT_SECRET = "c3965614833c6dd9dde3463911b7905fdd3ba00990d910d89942ad68ec5f25afb3e4f31b73b0bb484521765967aa628e5b580a2e12ec8a15f79869ee9134cd4e"
+NODE_ENV = "development"
+PORT = "3000"
+FRONTEND_URL = "http://localhost:5000"
+BACKEND_URL = "http://localhost:3000"
+CORS_ORIGIN = "*"
