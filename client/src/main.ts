@@ -4,19 +4,23 @@ import App from './App.vue';
 import router from './router';
 import './styles/main.css';
 import { offlineStorage } from './utils/offline-storage';
-import { registerSW } from 'virtual:pwa-register';
 
-// Register PWA Service Worker
-const updateSW = registerSW({
-  onNeedRefresh() {
-    if (confirm('Aplikasi versi baru tersedia. Muat ulang sekarang?')) {
-      updateSW(true);
-    }
-  },
-  onOfflineReady() {
-    console.log('Aplikasi siap digunakan secara offline');
-  },
-});
+let updateSW: ((reloadPage?: boolean) => Promise<void>) | undefined;
+try {
+  const { registerSW } = await import('virtual:pwa-register');
+  updateSW = registerSW({
+    onNeedRefresh() {
+      if (confirm('Aplikasi versi baru tersedia. Muat ulang sekarang?')) {
+        updateSW?.(true);
+      }
+    },
+    onOfflineReady() {
+      console.log('Aplikasi siap digunakan secara offline');
+    },
+  });
+} catch (e) {
+  console.warn('PWA registration skipped:', e);
+}
 
 const app = createApp(App);
 const pinia = createPinia();
