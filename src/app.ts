@@ -19,6 +19,7 @@ import prisma from './config/database';
 
 import { requestSizeLimiter, responseSizeLimiter } from './middlewares/request-limits';
 import { responseTimeAudit } from './middlewares/response-time';
+import path from 'path';
 
 logger.info('Loading Express app...');
 const app: Express = express();
@@ -118,8 +119,21 @@ app.use(responseTimeAudit(1000, true)); // Log requests slower than 1 second
 // Metrics middleware (before routes to track all requests)
 app.use(metricsMiddleware);
 
-// Root route - Redirect to API info or health
-app.get('/', (req, res) => {
+// Serve static client files in production
+const clientDistPath = path.join(__dirname, '../../client/dist');
+if (env.NODE_ENV === 'production') {
+  app.use(express.static(clientDistPath, {
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+    },
+  }));
+}
+
+// Root route - API info (only when not serving static files)
+app.get('/', (req, res, next) => {
+  if (env.NODE_ENV === 'production') {
+    return next();
+  }
   res.json({
     message: 'Warungin POS API Server',
     version: '1.1.0',
@@ -222,6 +236,16 @@ try {
   logger.error('Failed to setup API routes', { error: error?.message || error });
   // This is critical - exit if routes can't be loaded
   process.exit(1);
+}
+
+// SPA fallback for production - serve index.html for non-API routes
+if (env.NODE_ENV === 'production') {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/health') || req.path.startsWith('/api-docs') || req.path.startsWith('/socket.io')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
 }
 
 // 404 handler

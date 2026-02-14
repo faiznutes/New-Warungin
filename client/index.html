@@ -141,18 +141,17 @@
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
     <script>
-      // Hide splash screen when app is loaded
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const splash = document.getElementById('splash-screen');
-          if (splash) {
-            splash.classList.add('hidden');
-            setTimeout(() => {
-              splash.remove();
-            }, 300);
-          }
-        }, 1000);
+      function hideSplash() {
+        var splash = document.getElementById('splash-screen');
+        if (splash && !splash.classList.contains('hidden')) {
+          splash.classList.add('hidden');
+          setTimeout(function() { splash.remove(); }, 300);
+        }
+      }
+      window.addEventListener('load', function() {
+        setTimeout(hideSplash, 1000);
       });
+      setTimeout(hideSplash, 3000);
     </script>
     <script>
       // Register service worker

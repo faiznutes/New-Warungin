@@ -62,7 +62,7 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                maxAgeSeconds: 60 * 60 * 24 * 365
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -76,7 +76,7 @@ export default defineConfig({
               cacheName: 'api-products-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 60 * 60 * 24
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -87,7 +87,6 @@ export default defineConfig({
       }
     })
   ],
-  // Performance optimizations
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'axios'],
   },
@@ -97,68 +96,37 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
-    // Enable detailed error overlay in development
+    port: 5000,
+    host: '0.0.0.0',
+    allowedHosts: 'all',
     hmr: {
-      overlay: true, // Show error overlay on screen
+      overlay: true,
     },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path, // Don't rewrite, keep /api
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.error('❌ Proxy Error:', err);
-            console.error('Error details:', {
-              message: err.message,
-              code: err.code,
-              stack: err.stack,
-            });
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            if (process.env.NODE_ENV === 'development') {
-              console.log('📤 Sending Request:', req.method, req.url);
-            }
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            if (process.env.NODE_ENV === 'development') {
-              const statusColor = proxyRes.statusCode >= 400 ? '🔴' : proxyRes.statusCode >= 300 ? '🟡' : '🟢';
-              console.log(`${statusColor} Response:`, proxyRes.statusCode, req.url);
-              if (proxyRes.statusCode >= 400) {
-                console.error('Error Response Details:', {
-                  status: proxyRes.statusCode,
-                  url: req.url,
-                  headers: proxyRes.headers,
-                });
-              }
-            }
-          });
-        },
+        rewrite: (path) => path,
       },
     },
   },
   build: {
     outDir: 'dist',
-    sourcemap: process.env.NODE_ENV === 'development', // Enable sourcemap in development for debugging
-    minify: 'terser', // Use terser for better minification
+    sourcemap: process.env.NODE_ENV === 'development',
+    minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: process.env.NODE_ENV === 'production', // Keep console.log in development
+        drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: process.env.NODE_ENV === 'production',
       },
     },
-    // Code splitting optimization
     rollupOptions: {
       output: {
-        // Add hash to chunk filenames for better cache busting
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',
-        // Manual chunk splitting for better caching
         manualChunks: (id) => {
-          // Vendor chunks
           if (id.includes('node_modules')) {
             if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
               return 'vue-vendor';
@@ -172,23 +140,18 @@ export default defineConfig({
             if (id.includes('jspdf') || id.includes('html2canvas')) {
               return 'pdf-vendor';
             }
-            // Other node_modules
             return 'vendor';
           }
-          // Component chunks - ensure all views are included
           if (id.includes('/views/')) {
             const match = id.match(/\/views\/([^/]+)/);
             if (match) {
               const viewName = match[1];
-              // Keep component names for better debugging
               return viewName;
             }
           }
         },
       },
     },
-    // Chunk size warning limit
     chunkSizeWarningLimit: 1000,
   },
 });
-

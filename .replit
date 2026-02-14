@@ -14,3 +14,40 @@ PORT = "3000"
 FRONTEND_URL = "http://localhost:5000"
 BACKEND_URL = "http://localhost:3000"
 CORS_ORIGIN = "*"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && npm run dev & sleep 2 && cd /home/runner/workspace/client && npx vite --host 0.0.0.0 --port 5000"
+waitForPort = 5000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "PORT=5000 NODE_ENV=production node dist/src/app.js"]
+build = ["bash", "-c", "npm install && cd client && npm install && cd .. && npx prisma generate && npx tsc && cd client && npx vite build"]
