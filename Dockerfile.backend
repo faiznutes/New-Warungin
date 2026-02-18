@@ -12,8 +12,8 @@ WORKDIR /app/nest
 RUN npm install --legacy-peer-deps --ignore-engines
 
 # Copy source code
-COPY nest/tsconfig.json ./nest/
-COPY nest/nest-cli.json ./nest/
+COPY nest/tsconfig.json .
+COPY nest/nest-cli.json .
 COPY nest/src ./src
 COPY prisma /app/prisma
 
