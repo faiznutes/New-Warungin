@@ -15,7 +15,7 @@ RUN npm install --legacy-peer-deps --ignore-engines
 COPY nest/tsconfig.json ./nest/
 COPY nest/nest-cli.json ./nest/
 COPY nest/src ./src
-COPY prisma ./prisma
+COPY prisma /app/prisma
 
 # Generate Prisma client
 RUN npx prisma generate --schema=../prisma/schema.prisma
