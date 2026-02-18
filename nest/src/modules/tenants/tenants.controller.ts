@@ -1,0 +1,125 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  ParseUUIDPipe,
+  UseGuards,
+} from "@nestjs/common";
+import { TenantsService } from "./tenants.service";
+import {
+  CreateTenantDto,
+  UpdateTenantDto,
+  TenantQueryDto,
+} from "./dto/tenant.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { TenantGuard } from "../../common/guards/tenant.guard";
+import { RolesGuard } from "../../common/guards/roles.guard";
+import { Roles } from "../../common/decorators/roles.decorator";
+import { TenantId } from "../../common/decorators/tenant-id.decorator";
+import { Public } from "../../common/decorators/public.decorator";
+
+@Controller("tenants")
+@UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+export class TenantsController {
+  constructor(private readonly tenantsService: TenantsService) {}
+
+  @Post()
+  create(@Body() dto: CreateTenantDto) {
+    return this.tenantsService.create(dto);
+  }
+
+  @Get()
+  findAll(@Query() query: TenantQueryDto) {
+    return this.tenantsService.findAll(query);
+  }
+
+  @Get(":id")
+  findOne(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.findOne(id);
+  }
+
+  @Public()
+  @Get("slug/:slug")
+  findBySlug(@Param("slug") slug: string) {
+    return this.tenantsService.findBySlug(slug);
+  }
+
+  @Put(":id")
+  update(@Param("id", ParseUUIDPipe) id: string, @Body() dto: UpdateTenantDto) {
+    return this.tenantsService.update(id, dto);
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.remove(id);
+  }
+
+  @Put(":id/subscription")
+  updateSubscription(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body() body: { plan: string; startDate: Date; endDate: Date },
+  ) {
+    return this.tenantsService.updateSubscription(
+      id,
+      body.plan,
+      body.startDate,
+      body.endDate,
+    );
+  }
+
+  @Get(":id/users")
+  getTenantUsers(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.getTenantUsers(id);
+  }
+
+  @Get(":id/products")
+  getTenantProducts(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.getTenantProducts(id);
+  }
+
+  @Get(":id/orders")
+  getTenantOrders(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.getTenantOrders(id);
+  }
+
+  @Put(":id/status")
+  updateTenantStatus(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Body() body: { isActive: boolean },
+  ) {
+    return this.tenantsService.updateTenantStatus(id, body.isActive);
+  }
+
+  @Post(":id/activate")
+  activateTenant(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.activateTenant(id);
+  }
+
+  @Post(":id/deactivate")
+  deactivateTenant(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.deactivateTenant(id);
+  }
+
+  @Post(":id/verify")
+  @Roles("SUPER_ADMIN")
+  async verifyTenant(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.verifyTenant(id);
+  }
+
+  @Get("stats/overview")
+  @Roles("SUPER_ADMIN")
+  async getTenantStatsOverview() {
+    return this.tenantsService.getTenantStatsOverview();
+  }
+
+  @Get(":id/usage")
+  @Roles("SUPER_ADMIN", "ADMIN_TENANT")
+  async getTenantUsage(@Param("id", ParseUUIDPipe) id: string) {
+    return this.tenantsService.getTenantUsage(id);
+  }
+}
